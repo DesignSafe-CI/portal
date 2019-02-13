@@ -86,6 +86,93 @@ class ProjectTreeCtrl {
      * @param {Object} entity.
      *
      * Remove uuids to the correct attributes.
+     * This is specific to Hybrid Simulation project.
+     */
+    unrelateEntityToHybridSimProject(node, entity){
+        let nodeParent = node.parent;
+        if (entity.name == 'designsafe.project.hybrid_simulation.coordinator_output') {
+            entity.value.coordinators = _.without(
+                entity.value.coordinators,
+                nodeParent.data.uuid
+            );
+            nodeParent = nodeParent.parent;
+        } else if (entity.name == 'designsafe.project.hybrid_simulation.sim_output') {
+            entity.value.simSubstructures = _.without(
+                entity.value.simSubstructures,
+                nodeParent.data.uuid
+            );
+            nodeParent = nodeParent.parent;
+        } else if (entity.name == 'designsafe.project.hybrid_simulation.exp_output') {
+            entity.value.expSubstructures = _.without(
+                entity.value.expSubstructures,
+                nodeParent.data.uuid
+            );
+            nodeParent = nodeParent.parent;
+        }
+        if (entity.name == 'designsafe.project.hybrid_simulation.exp_substructure') {
+            entity.value.coordinators = _.without(
+                entity.value.coordinators,
+                nodeParent.data.uuid
+            );
+            nodeParent = nodeParent.parent;
+        }
+        if (entity.name == 'designsafe.project.hybrid_simulation.coordinator_output' ||
+            entity.name == 'designsafe.project.hybrid_simulation.sim_output' ||
+            entity.name == 'designsafe.project.hybrid_simulation.exp_output' ||
+            entity.name == 'designsafe.project.hybrid_simulation.coordinator' ||
+            entity.name == 'designsafe.project.hybrid_simulation.sim_substructure' ||
+            entity.name == 'designsafe.project.hybrid_simulation.exp_substructure') {
+            entity.value.globalModels = _.without(
+                entity.value.globalModels,
+                nodeParent.data.uuid
+            );
+            nodeParent = nodeParent.parent;
+        }
+        entity.value.hybridSimulations = _.without(
+            entity.value.hybridSimulations,
+            nodeParent.data.uuid
+        );
+        return this.removeAssociationIds(node, entity);
+    }
+
+    /*
+     * @method
+     * @param {Object} node. Hierarchical node so we can walk parents.
+     * @param {Object} entity.
+     *
+     * Remove uuids to the correct attributes.
+     * This is specific to Simulation project.
+     */
+    unrelateEntityToSimProject(node, entity){
+        let nodeParent = node.parent;
+        if (entity.name == 'designsafe.project.simulation.output') {
+            entity.value.simInputs = _.without(
+                entity.value.simInputs,
+                nodeParent.data.uuid
+            );
+            nodeParent = nodeParent.parent;
+        }
+        if (entity.name == 'designsafe.project.simulation.output' ||
+            entity.name == 'designsafe.project.simulation.input') {
+            entity.value.modelConfigs = _.without(
+                entity.value.modelConfigs,
+                nodeParent.data.uuid
+            );
+            nodeParent = nodeParent.parent;
+        }
+        entity.value.simulations = _.without(
+            entity.value.simulations,
+            nodeParent.data.uuid
+        );
+        return this.removeAssociationIds(node, entity);
+    }
+
+    /*
+     * @method
+     * @param {Object} node. Hierarchical node so we can walk parents.
+     * @param {Object} entity.
+     *
+     * Remove uuids to the correct attributes.
      * This is specific to Experimental project.
      */
     unrelateEntityToExperimental(node, entity){
@@ -111,11 +198,89 @@ class ProjectTreeCtrl {
         );
         return this.removeAssociationIds(node, entity);
     }
+    /*
+     * @method
+     * @param {Object} leaf.
+     * @param {Object} entity.
+     *
+     * Add uuids to the correct attributes.
+     * This is specific to Hybrid Simulation projects. We probably need to generalize this
+     * but it's easier to read if we implement this method for every project type.
+     * For Hybrid Simulation we need to relate:
+     * - Hybrid Simulations.
+     * - Global Models
+     * - Coordinators.
+     * - Numerical Substructures.
+     * - Experimental Substructures.
+     * We only need to relate every parent to the entity.
+     * For instance, an Output needs to have all of the above related but a Coordinators
+     * only needs to have Global Models and Hybrid Simulations related.
+     */
+    relateEntityToHybridSimProject(leaf, entity){
+        let leafParent = leaf.parent;
+        if (leaf.data.entityType == 'coordinatorOutput') {
+            entity.value.coordinators.push(leafParent.data.uuid);
+            leafParent = leafParent.parent;
+        } else if (leaf.data.entityType == 'simOutput') {
+            entity.value.simSubstructures.push(leafParent.data.uuid);
+            leafParent = leafParent.parent;
+        } else if (leaf.data.entityType == 'expOutput') {
+            entity.value.expSubstructures.push(leafParent.data.uuid);
+            leafParent = leafParent.parent;
+        }
+        if(leaf.data.entityType == 'simSubstructure' ||
+            leaf.data.entityType == 'expSubstructure'){
+            entity.value.coordinators.push(leafParent.data.uuid);
+            leafParent = leafParent.parent;
+        }
+        if (leaf.data.entityType == 'coordinatorOutput' ||
+            leaf.data.entityType == 'simOutput' ||
+            leaf.data.entityType == 'expOutput' ||
+            leaf.data.entityType == 'coordinator' ||
+            leaf.data.entityType == 'simSubstructure' ||
+            leaf.data.entityType == 'expSubstructure') {
+            entity.value.globalModels.push(leafParent.data.uuid);
+            leafParent = leafParent.parent;
+        }
+        entity.value.hybridSimulations.push(leafParent.data.uuid);
+        return this.addAssociationIds(leaf, entity);
+    }
 
     /*
      * @method
-     * @param {Object} entity.
      * @param {Object} leaf.
+     * @param {Object} entity.
+     *
+     * Add uuids to the correct attributes.
+     * This is specific to Simulation projects. We probably need to generalize this
+     * but it's easier to read if we implement this method for every project type.
+     * For Simulation we need to relate:
+     * - Simulations.
+     * - Simulation Model.
+     * - Simulation Input.
+     * We only need to relate every parent to the entity.
+     * For instance, an Output needs to have all of the above related but a Simulation Input
+     * only needs to have Simulation Model and Simulations related.
+     */
+    relateEntityToSimProject(leaf, entity){
+        let leafParent = leaf.parent;
+        if (leaf.data.entityType == 'output') {
+            entity.value.simInputs.push(leafParent.data.uuid);
+            leafParent = leafParent.parent;
+        }
+        if (leaf.data.entityType == 'output' ||
+            leaf.data.entityType == 'input') {
+            entity.value.modelConfigs.push(leafParent.data.uuid);
+            leafParent = leafParent.parent;
+        }
+        entity.value.simulations.push(leafParent.data.uuid);
+        return this.addAssociationIds(leaf, entity);
+    }
+
+    /*
+     * @method
+     * @param {Object} leaf.
+     * @param {Object} entity.
      *
      * Add uuids to the correct attributes.
      * This is specific to Experimental project. We probably need to generalize this
@@ -199,7 +364,8 @@ class ProjectTreeCtrl {
                     name: rep.value.title,
                     uuid: rep.uuid,
                     parent: node.name,
-                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;'
+                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
+                    display: 'Report',
                 };
                 node.children.push(repNode);
             });
@@ -220,6 +386,7 @@ class ProjectTreeCtrl {
                     parent: node.name,
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
+                    display: 'Global Model',
                 };
                 _.each(coordinators, (coord) => {
                     if (_.difference([mod.uuid, node.uuid], coord.associationIds).length){
@@ -231,6 +398,7 @@ class ProjectTreeCtrl {
                         parent: modNode.name,
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
+                        display: 'Master Simulator Coordinator',
                     };
                     _.each(coordOutputs, (output) => {
                         if (_.difference([coord.uuid, mod.uuid, sim.uuid], output.associationIds).length){
@@ -242,14 +410,15 @@ class ProjectTreeCtrl {
                             parent: coordNode.name,
                             children: [],
                             rectStyle: 'stroke: #D04348; fill: #D04348;',
+                            display: 'Coordinator Output',
                         };
                         coordNode.children.push(outNode);
                     });
                     coordNode.children.push(
                         {
                             name: '-- Choose an Output --',
-                            attr: 'output_set',
-                            entityType: 'output',
+                            attr: 'coordinatoroutput_set',
+                            entityType: 'coordinatorOutput',
                         }
                     );
 
@@ -263,6 +432,7 @@ class ProjectTreeCtrl {
                             parent: coordNode.name,
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #B59300;',
+                            display: 'Numerical Substructure',
                         };
                         _.each(simOutputs, (out) => {
                             if (_.difference([num.uuid, mod.uuid, sim.uuid], out.associationIds).length){
@@ -273,7 +443,8 @@ class ProjectTreeCtrl {
                                 uuid: out.uuid,
                                 parent: num.name,
                                 children: [],
-                                rectStyle: 'stroke: #D04348; fill: #D04348;'
+                                rectStyle: 'stroke: #D04348; fill: #D04348;',
+                                display: 'Simulation Output',
                             };
                             numNode.children.push(outNode);
                         });
@@ -303,6 +474,7 @@ class ProjectTreeCtrl {
                             parent: coordNode.name,
                             children: [],
                             rectStyle: 'stroke: #865AA7; fill: #865AA7;',
+                            display: 'Experimental Substructure',
                         };
                         _.each(expOutputs, (out) => {
                             if (_.difference([exp.uuid, mod.uuid, sim.uuid], out.associationIds).length){
@@ -313,7 +485,8 @@ class ProjectTreeCtrl {
                                 uuid: out.uuid,
                                 parent: exp.name,
                                 children: [],
-                                rectStyle: 'stroke: #D04348; fill: #D04348;'
+                                rectStyle: 'stroke: #D04348; fill: #D04348;',
+                                display: 'Experiental Output',
                             };
                             expNode.children.push(outNode);
                         });
@@ -339,8 +512,8 @@ class ProjectTreeCtrl {
                 modNode.children.push(
                     {
                         name: '-- Choose an Master Coordinator --',
-                        attr: 'input_set',
-                        entityType: 'input',
+                        attr: 'coordinator_set',
+                        entityType: 'coordinator',
                     }
                 );
                 node.children.push(modNode);
@@ -348,7 +521,7 @@ class ProjectTreeCtrl {
             node.children.push(
                 {
                     name: '-- Choose a Simulation Model --',
-                    attr: 'model_set',
+                    attr: 'globalmodel_set',
                     entityType: 'model',
                 }
             );
@@ -360,7 +533,8 @@ class ProjectTreeCtrl {
                     name: ana.value.title,
                     uuid: ana.uuid,
                     parent: node.name,
-                    rectStyle: 'stroke: #56C0E0; fill: #CCECF6;'
+                    rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
+                    display: 'Analysis',
                 };
                 node.children.push(anaNode);
             });
@@ -410,7 +584,7 @@ class ProjectTreeCtrl {
                 uuid: sim.uuid,
                 parent: null,
                 children: [],
-                rectStyle: 'stroke: none;'
+                rectStyle: 'stroke: none;',
             };
             _.each(reports, (rep) => {
                 if (!_.contains(rep.associationIds, node.uuid)){
@@ -420,7 +594,8 @@ class ProjectTreeCtrl {
                     name: rep.value.title,
                     uuid: rep.uuid,
                     parent: node.name,
-                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;'
+                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
+                    display: 'Report',
                 };
                 node.children.push(repNode);
             });
@@ -441,6 +616,7 @@ class ProjectTreeCtrl {
                     parent: node.name,
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
+                    display: 'Simulation Model',
                 };
                 _.each(inputs, (input) => {
                     if (_.difference([mod.uuid, node.uuid], input.associationIds).length){
@@ -452,6 +628,7 @@ class ProjectTreeCtrl {
                         parent: modNode.name,
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
+                        display: 'Simulation Input',
                     };
                     _.each(outputs, (output) => {
                         if (_.difference([input.uuid, modNode.uuid, node.uuid], output.associationIds).length){
@@ -463,6 +640,7 @@ class ProjectTreeCtrl {
                             parent: inpNode.name,
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #B59300;',
+                            display: 'Simulation Output',
                         };
                         inpNode.children.push(outNode);
                     });
@@ -499,7 +677,8 @@ class ProjectTreeCtrl {
                     name: ana.value.title,
                     uuid: ana.uuid,
                     parent: node.name,
-                    rectStyle: 'stroke: #56C0E0; fill: #CCECF6;'
+                    rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
+                    display: 'Analysis',
                 };
                 node.children.push(anaNode);
             });
@@ -559,7 +738,8 @@ class ProjectTreeCtrl {
                     name: rep.value.title,
                     uuid: rep.uuid,
                     parent: node.name,
-                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;'
+                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
+                    display: 'Report',
                 };
                 node.children.push(repNode);
             });
@@ -580,6 +760,7 @@ class ProjectTreeCtrl {
                     parent: node.name,
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
+                    display: 'Model Config',
                 };
                 _.each(sensors, (sensor) => {
                     if (_.difference([mcfgNode.uuid, node.uuid], sensor.associationIds).length){
@@ -591,6 +772,7 @@ class ProjectTreeCtrl {
                         parent: mcfgNode.name,
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
+                        display: 'Sensor',
                     };
                     _.each(events, (evt) => {
                         if (_.difference([sensor.uuid, mcfgNode.uuid, node.uuid], evt.associationIds).length){
@@ -602,6 +784,7 @@ class ProjectTreeCtrl {
                             parent: sensorNode.name,
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #B59300;',
+                            display: 'Event',
                         };
                         sensorNode.children.push(eventNode);
                     });
@@ -638,7 +821,8 @@ class ProjectTreeCtrl {
                     name: ana.value.title,
                     uuid: ana.uuid,
                     parent: node.name,
-                    rectStyle: 'stroke: #56C0E0; fill: #CCECF6;'
+                    rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
+                    display: 'Analysis',
                 };
                 node.children.push(anaNode);
             });
@@ -734,7 +918,7 @@ class ProjectTreeCtrl {
             });
         nodes.append('text')
             .text( (d) => {
-                return d.data.name;
+                return d.data.display;
             })
             .attr('style', (d) => {
                 if (!d.data.uuid) {
@@ -743,18 +927,48 @@ class ProjectTreeCtrl {
                 return '';
             })
             .attr('y', 5)
-            .attr('x', 5);
-        svg.selectAll('text')
+            .attr('x', 5)
+            .attr('class', 'entity-label');
+        nodes.append('text.entity-label')
+            .each( (d, i, nds) => {
+                let bbox = nds[i].getBBox();
+                bboxes[d.data.uuid] = bbox;
+            });
+
+        nodes.append('text')
+            .append('text')
+            .text( (d) => {
+                return d.data.name;
+            })
+            .attr('style', (d) => {
+                if (!d.data.uuid) {
+                    return 'display: none;';
+                }
+                return '';
+            })
+            .attr('class', 'entity-name')
+            .attr('x', (d, i, nds) => {
+                let n = nds[i];
+                let bbox = n.getBBox();
+                d.data.btnStyle = {
+                    position: 'absolute',
+                    left: d.x + 25 + XOffset + bbox.width,
+                    top: d.y + 10 + YOffset,
+                };
+                this.buttonsData.push(d);
+                return d.x + 25 + XOffset + bbox.width + 5 + 5;
+            });
+
+        svg.selectAll('text.entity-name')
             .each((d, i, nds) => {
                 if (d.data.uuid) {
-                    let t = nds[i].getBBox();
-                    bboxes[d.data.uuid] = t;
-                    d.data.btnStyle = {
-                        position: 'absolute',
-                        left: d.x + 25 + XOffset + t.width,
-                        top: d.y + 10 + YOffset,
-                    };
-                    this.buttonsData.push(d);
+                    let bbox = nds[i].getBBox();
+                    bboxes[d.data.uuid] = bbox;
+                    let btn = _.filter(this.buttonsData, (b) => { b.uuid === d.data.uuid; } );
+                    if (btn.length) {
+                        btn = btn[0];
+                        btn.data.btnStyle.left += bbox.width;
+                    }
                 }
             });
         svg.selectAll('rect')
@@ -803,7 +1017,16 @@ class ProjectTreeCtrl {
     addRelation(leaf, uuid){
         this._ui.loading = true;
         let entity = this.project.getRelatedByUuid(uuid);
-        this.relateEntityToExperimental(leaf, entity)
+        let type = this.project.value.projectType;
+        let promise;
+        if (type === 'experimental' ){
+            promise = this.relateEntityToExperimental(leaf, entity);
+        } else if (type === 'simulation') {
+            promise = this.relateEntityToSimProject(leaf, entity);
+        } else if (type === 'hybrid_simulation') {
+            promise = this.relateEntityToHybridSimProject(leaf, entity);
+        }
+        promise
             .then( () => {
                 this.treeRelation = {};
                 this.drawProjectTrees();
@@ -816,7 +1039,16 @@ class ProjectTreeCtrl {
     removeRelation(node){
         this._ui.loading = true;
         let entity = this.project.getRelatedByUuid(node.data.uuid);
-        this.unrelateEntityToExperimental(node, entity)
+        let type = this.project.value.projectType;
+        let promise;
+        if (type == 'experimental'){
+            promise = this.unrelateEntityToExperimental(node, entity);
+        } else if (type == 'simulation') {
+            promise = this.unrelateEntityToSimProject(node, entity);
+        } else if (type == 'hybrid_simulation') {
+            promise = this.unrelateEntityToHybridSimProject(node, entity);
+        }
+        promise
             .then( () => {
                 this.drawProjectTrees();
             })
