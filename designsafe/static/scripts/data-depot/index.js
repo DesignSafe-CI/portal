@@ -274,9 +274,40 @@ function config(
                 ],
             },
         })
+        .state('projects.previewSim', {
+            url: '/projects/{projectId}/previewSim',
+            component: 'publicationPreviewSim',
+            params: {
+                filePath: '/',
+                project: null,
+                selectedListings: null,
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
         .state('projects.pipelineSelect', {
             url: '/projects/{projectId}/curation/selection',
             component: 'pipelineSelect',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                }]
+            }
+        })
+        .state('projects.pipelineSelectSim', {
+            url: '/projects/{projectId}/curation/selectionSim',
+            component: 'pipelineSelectSim',
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
@@ -326,9 +357,51 @@ function config(
                 ],
             },
         })
+        .state('projects.pipelineSimulation', {
+            url: '/projects/{projectId}/curation/simulation',
+            component: 'pipelineSimulation',
+            params: {
+                project: '',
+                experiment: '',
+                selectedListings: '',
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
         .state('projects.pipelineCategories', {
             url: '/projects/{projectId}/curation/categories',
             component: 'pipelineCategories',
+            params: {
+                project: '',
+                experiment: '',
+                selectedListings: '',
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
+        .state('projects.pipelineCategoriesSim', {
+            url: '/projects/{projectId}/curation/categoriesSim',
+            component: 'pipelineCategoriesSim',
             params: {
                 project: '',
                 experiment: '',
