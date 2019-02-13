@@ -32,6 +32,8 @@ class PipelineProjectCtrl {
                     this.$state.go('projects.pipelineSelect', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'simulation') {
                     this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
+                } else if (this.projType === 'hybrid_simulation') {
+                    this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
                 }
             });
         } else {
@@ -50,6 +52,8 @@ class PipelineProjectCtrl {
             this.$state.go('projects.pipelineSelect', {projectId: this.project.uuid}, {reload: true});
         } else if (this.projType === 'simulation') {
             this.$state.go('projects.pipelineSelectSim', {projectId: this.project.uuid}, {reload: true});
+        } else if (this.projType === 'hybrid_simulation') {
+            this.$state.go('projects.pipelineSelectHybSim', {projectId: this.project.uuid}, {reload: true});
         }
     }
 
@@ -63,6 +67,13 @@ class PipelineProjectCtrl {
             }, {reload: true});
         } else if (this.projType === 'simulation') {
             this.$state.go('projects.pipelineSimulation', {
+                projectId: this.projectId,
+                project: this.project,
+                experiment: this.experiment,
+                selectedListings: this.selectedListings,
+            }, {reload: true});
+        } else if (this.projType === 'hybrid_simulation') {
+            this.$state.go('projects.pipelineHybrid', {
                 projectId: this.projectId,
                 project: this.project,
                 experiment: this.experiment,

@@ -295,6 +295,27 @@ function config(
                 ],
             },
         })
+        .state('projects.previewHybSim', {
+            url: '/projects/{projectId}/previewHybSim',
+            component: 'publicationPreviewHybSim',
+            params: {
+                filePath: '/',
+                project: null,
+                selectedListings: null,
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
         .state('projects.pipelineSelect', {
             url: '/projects/{projectId}/curation/selection',
             component: 'pipelineSelect',
@@ -308,6 +329,16 @@ function config(
         .state('projects.pipelineSelectSim', {
             url: '/projects/{projectId}/curation/selectionSim',
             component: 'pipelineSelectSim',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                }]
+            }
+        })
+        .state('projects.pipelineSelectHybSim', {
+            url: '/projects/{projectId}/curation/selectionHybSim',
+            component: 'pipelineSelectHybSim',
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
@@ -378,6 +409,27 @@ function config(
                 ],
             },
         })
+        .state('projects.pipelineHybrid', {
+            url: '/projects/{projectId}/curation/hybrid',
+            component: 'pipelineHybrid',
+            params: {
+                project: '',
+                experiment: '',
+                selectedListings: '',
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
         .state('projects.pipelineCategories', {
             url: '/projects/{projectId}/curation/categories',
             component: 'pipelineCategories',
@@ -402,6 +454,27 @@ function config(
         .state('projects.pipelineCategoriesSim', {
             url: '/projects/{projectId}/curation/categoriesSim',
             component: 'pipelineCategoriesSim',
+            params: {
+                project: '',
+                experiment: '',
+                selectedListings: '',
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
+        .state('projects.pipelineCategoriesHybSim', {
+            url: '/projects/{projectId}/curation/categoriesHybSim',
+            component: 'pipelineCategoriesHybSim',
             params: {
                 project: '',
                 experiment: '',

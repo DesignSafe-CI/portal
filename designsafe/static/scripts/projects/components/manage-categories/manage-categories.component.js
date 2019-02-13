@@ -204,9 +204,24 @@ class ManageCategoriesCtrl {
                     name: 'designsafe.project.hybrid_simulation.exp_substructure',
                     yamzId: ''
                 },
+                // {
+                //     label: 'Outputs',
+                //     name: 'designsafe.project.hybrid_simulation.output',
+                //     yamzId: ''
+                // },
                 {
-                    label: 'Outputs',
-                    name: 'designsafe.project.hybrid_simulation.output',
+                    label: 'Coordinator Output',
+                    name: 'designsafe.project.hybrid_simulation.coordinator_output',
+                    yamzId: ''
+                },
+                {
+                    label: 'Simulation Output',
+                    name: 'designsafe.project.hybrid_simulation.sim_output',
+                    yamzId: ''
+                },
+                {
+                    label: 'Experiment Output',
+                    name: 'designsafe.project.hybrid_simulation.exp_output',
                     yamzId: ''
                 },
                 {
@@ -263,8 +278,6 @@ class ManageCategoriesCtrl {
         var nameComps = entity.name.split('.');
         var name = nameComps[nameComps.length - 1];
         entity.description = entity.description || '';
-        console.log(entity);
-        console.log(nameComps);
         if (typeof this.data.files !== 'undefined') {
             entity.filePaths = _.map(this.data.files,
                 (file) => {
