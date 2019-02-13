@@ -44,7 +44,7 @@ class PipelineSimulationCtrl {
     }
 
     goCategories() {
-        this.$state.go('projects.pipelineCategoriesHybSim', {
+        this.$state.go('projects.pipelineCategoriesSim', {
             projectId: this.projectId,
             project: this.project,
             experiment: this.simulation,
