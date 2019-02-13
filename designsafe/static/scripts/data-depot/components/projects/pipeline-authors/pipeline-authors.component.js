@@ -37,6 +37,8 @@ class PipelineAuthorsCtrl {
                     this.$state.go('projects.pipelineSelect', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'simulation') {
                     this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
+                } else if (this.projType === 'hybrid_simulation') {
+                    this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
                 }
             });
         } else {
@@ -69,6 +71,13 @@ class PipelineAuthorsCtrl {
             }, {reload: true});
         } else if (this.projType === 'simulation') {
             this.$state.go('projects.pipelineCategoriesSim', {
+                projectId: this.projectId,
+                project: this.project,
+                experiment: this.experiment,
+                selectedListings: this.selectedListings,
+            }, {reload: true});
+        } else if (this.projType === 'hybrid_simulation') {
+            this.$state.go('projects.pipelineCategoriesHybSim', {
                 projectId: this.projectId,
                 project: this.project,
                 experiment: this.experiment,
