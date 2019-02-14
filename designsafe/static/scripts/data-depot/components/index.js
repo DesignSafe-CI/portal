@@ -11,6 +11,7 @@ import { GoogledriveComponent, DropboxComponent, BoxComponent} from './external-
 import { DataDepotNewComponent } from './data-depot-new/data-depot-new.component';
 import { MainComponent } from './main/main.component';
 import neesPublicationComponent from './nees-publication/nees-publication.component';
+import ddPublicationListingComponent from './dd-publication-listing/dd-publication-listing.component';
 
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);
 
@@ -27,5 +28,6 @@ ddComponents.component('box', BoxComponent);
 ddComponents.component('ddmain', MainComponent);
 ddComponents.component('ddnew', DataDepotNewComponent);
 ddComponents.component('neesPublicationComponent', neesPublicationComponent);
+ddComponents.component('ddPublicationListingComponent', ddPublicationListingComponent);
 
 export default ddComponents;
