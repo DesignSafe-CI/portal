@@ -50,7 +50,6 @@ urlpatterns = [
     url(r'^files/meta/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
         FileMetaView.as_view(), name='files_metadata'),
 
-
     # Permission operations:
     #
     #     GET     /pems/<file_mgr_name>/<system_id>/<file_path>/
