@@ -59,13 +59,16 @@
             <td class="tg-0lax">
               <button class="btn btn-project-l" ng-click="workingDirectory()">
                 Working Directory</button>
-              <button class="btn btn-project-m grayed-out" ng-click="curationDirectory()">
+              <button class="btn btn-project-m grayed-out"
+                      ng-click="curationDirectory()"
+                      ng-hide="data.project.value.projectType === 'other'"
+              >
                 Curation Directory</button>
               <button class="btn btn-project-r grayed-out" ng-click="publicationPreview()">
                 Publication Preview</button>
             </td>
             <td class="tg-0lax">
-              <div ng-if="!data.project.value.projectType === 'other'">
+              <div ng-hide="data.project.value.projectType === 'other' || data.project.value.projectType === 'None'">
                 <span style="padding:10px; font-weight:bold;">1
                   <a  ng-disabled="data.loadingEntities"
                       ng-click="manageExperiments($event)"
