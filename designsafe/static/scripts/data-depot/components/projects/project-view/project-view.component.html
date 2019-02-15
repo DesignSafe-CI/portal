@@ -65,7 +65,7 @@
                 Publication Preview</button>
             </td>
             <td class="tg-0lax">
-              <div>
+              <div ng-if="!data.project.value.projectType === 'other'">
                 <span style="padding:10px; font-weight:bold;">1
                   <a  ng-disabled="data.loadingEntities"
                       ng-click="manageExperiments($event)"
