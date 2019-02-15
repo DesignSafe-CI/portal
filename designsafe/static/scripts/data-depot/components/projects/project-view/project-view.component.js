@@ -149,8 +149,10 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       a new project. At that point we can check if the project
       type is undefined before showing this popup.
       */
-      if ($scope.browser.project.value.projectType === 'other') {
+      if ($scope.browser.project.value.projectType === 'None') {
         $scope.manageProjectType();
+      } else if ($scope.browser.project.value.projectType === 'other') {
+        return;
       } else {
         $state.go('projects.curation', {projectId: projectId}, {reload: true});
       }
@@ -167,6 +169,10 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
         });
       } else if ($scope.browser.project.value.projectType === 'hybrid_simulation') {
         $state.go('projects.previewHybSim', {projectId: $scope.browser.project.uuid}).then(function() {
+          checkState();
+        });
+      } else if ($scope.browser.project.value.projectType === 'other') {
+        $state.go('projects.previewOther', {projectId: $scope.browser.project.uuid}).then(function() {
           checkState();
         });
       }
