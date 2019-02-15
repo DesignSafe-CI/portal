@@ -190,7 +190,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         prj.save(ag)
         project_uuid = prj.uuid
         prj.title = post_data.get('title')
-        prj.project_type = post_data.get('projectType', 'other')
+        prj.project_type = post_data.get('projectType')
         prj.pi = post_data.get('pi')
         prj.copi = post_data.get('copi')
         prj.team = post_data.get('teamMembers')
