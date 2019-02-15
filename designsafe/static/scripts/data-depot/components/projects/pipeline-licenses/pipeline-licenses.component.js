@@ -36,6 +36,8 @@ class PipelineLicensesCtrl {
                    this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
                } else if (this.projType === 'hybrid_simulation') {
                    this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
+               } else if (this.projType === 'other') {
+                this.$state.go('projects.pipelineSelectOther', {projectId: this.uuid}, {reload: true});
                }
            });
         } else {
@@ -53,6 +55,14 @@ class PipelineLicensesCtrl {
             projectId: this.projectId,
             project: this.project,
             experiment: this.experiment,
+            selectedListings: this.selectedListings,
+        }, {reload: true});
+    }
+
+    goData() {
+        this.$state.go('projects.pipelineOther', {
+            projectId: this.projectId,
+            project: this.project,
             selectedListings: this.selectedListings,
         }, {reload: true});
     }

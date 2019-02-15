@@ -316,6 +316,27 @@ function config(
                 ],
             },
         })
+        .state('projects.previewOther', {
+            url: '/projects/{projectId}/previewOther',
+            component: 'publicationPreviewOther',
+            params: {
+                filePath: '/',
+                project: null,
+                selectedListings: null,
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
         .state('projects.pipelineSelect', {
             url: '/projects/{projectId}/curation/selection',
             component: 'pipelineSelect',
@@ -339,6 +360,19 @@ function config(
         .state('projects.pipelineSelectHybSim', {
             url: '/projects/{projectId}/curation/selectionHybSim',
             component: 'pipelineSelectHybSim',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                }]
+            }
+        })
+        .state('projects.pipelineSelectOther', {
+            url: '/projects/{projectId}/curation/selectionOther{filePath:any}',
+            component: 'pipelineSelectOther',
+            params: {
+                filePath: '/',
+            },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
@@ -425,6 +459,25 @@ function config(
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
+        .state('projects.pipelineOther', {
+            url: '/projects/{projectId}/curation/other',
+            component: 'pipelineOther',
+            params: {
+                project: '',
+                selectedListings: '',
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
