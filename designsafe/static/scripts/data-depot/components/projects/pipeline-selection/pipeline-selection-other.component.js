@@ -89,13 +89,13 @@ class PipelineSelectionOtherCtrl {
 
     saveSelections() {
         this.browser.listing.children.forEach((child) => {
-            if (typeof child._ui.selected != 'undefined' && child._ui.selected === true) {
-                if (this.selectedFiles.children.indexOf(child) === -1) {
-                    this.selectedFiles.children.push(child);
-                }
-            } else if (typeof child._ui.selected === 'undefined' || child._ui.selected === false) {
+            if (typeof child._ui === 'undefined' || child._ui.selected === false) {
                 if (this.selectedFiles.children.indexOf(child) > -1) {
                     this.selectedFiles.children.splice(this.selectedFiles.children.indexOf(child), 1);
+                }
+            } else if (child._ui.selected === true) {
+                if (this.selectedFiles.children.indexOf(child) === -1) {
+                    this.selectedFiles.children.push(child);
                 }
             }
         });
