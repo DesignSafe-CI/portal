@@ -1,0 +1,78 @@
+<div style="background:white;">
+    <!-- Project Header Start -->
+    <div>
+        <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
+        <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
+        <div class="prj-row">
+            <span class="prj-label">PI</span>
+            <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname">{{ $ctrl.browser.project.value.pi }}</ds-user>
+        </div>
+        <div class="prj-row">
+            <span class="prj-label" ng-if="$ctrl.browser.project.value.coPis.length">CoPI</span>
+            <span class="prj-data" format="lname" ng-repeat="copi in $ctrl.browser.project.value.coPis">
+                <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
+            </span>
+            <span ng-repeat="user in publicationCtrl.filterUsers($ctrl.browser.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
+        </div>
+        <div class="prj-row">
+            <span class="prj-label">Project Type</span>
+            <span class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</span>
+        </div>
+        <table class="tg" style="table-layout: fixed; width: 100%;">
+            <colgroup>
+                <col style="width: 15%">
+                <col style="width: 84%">
+            </colgroup>
+            <!-- older projects will have awards listed as strings -->
+            <tr ng-if="isSingle($ctrl.browser.project.value.awardNumber)">
+                <td class="tg-0lax">Awards</td>
+                <td class="tg-0lax"><strong>{{ $ctrl.browser.project.value.awardNumber }}</strong></td>
+            </tr>
+            <tr ng-if="!isSingle($ctrl.browser.project.value.awardNumber)" ng-repeat="award in $ctrl.browser.project.value.awardNumber track by $index">
+                <td class="tg-0lax" ng-if="$first">Awards</td>
+                <td class="tg-0lax" ng-if="!$first"></td>
+                <td class="tg-0lax"><strong>{{ award.name }} - {{ award.number }}</strong></td>
+            </tr>
+            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects">
+                <td class="tg-0lax" ng-if="$first">Related Work</td>
+                <td class="tg-0lax" ng-if="!$first"></td>
+                <td class="tg-0lax"><strong>{{ work.title }} | <a>{{ work.href }}</a></strong></td>
+            </tr>
+        </table>
+        <div class="prj-row">
+            <span class="prj-label" ng-if="$ctrl.browser.project.value.keywords">Keywords</span>
+            <span class="prj-data">{{ $ctrl.browser.project.value.keywords }}</span>
+        </div>
+        <div ng-if="$ctrl.browser.project.value.description">
+            <p>{{ $ctrl.browser.project.value.description }}</p>
+        </div>
+    </div>
+    <!-- Project Header End -->
+    <table class="tg" style="table-layout: fixed; width: 100%;">
+        <colgroup>
+            <col style="width: 46%">
+            <col style="width: 50%">
+        </colgroup>
+        <tr>
+            <td class="tg-0lax">
+                <button class="btn btn-project-l grayed-out" ng-click="$ctrl.goWork()">
+                    Working Directory</button>
+                <button class="btn btn-project-m grayed-out" ng-click="$ctrl.goCuration()">
+                    Curation Directory</button>
+                <button class="btn btn-project-r" ng-click="publicationPreview()">
+                    Publication Preview</button>
+            </td>
+            <td class="tg-0lax">
+                <div class="btn-group pull-right" role="group" aria-label="Publish buttons">
+                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
+                        Prepare to Publish <i class="fa fa-arrow-right"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <p>
+        <h3 style="text-align: center;">You will select the data to be published in the next step</h3>
+    </p>
+</div>
