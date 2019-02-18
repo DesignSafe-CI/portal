@@ -25,7 +25,7 @@
                 </tr>
                 <tr ng-repeat="(key, val) in $ctrl.metadata" ng-if="val">
                     <td> <b> {{ key }} </b> </td>
-                    <td ng-if="key === 'geolocation'"> ( {{val[0]["latitude"]}}, {{ val[0].longitude }}) </td>
+                    <td ng-if="key === 'geolocation'"> ({{ val[0].latitude }}, {{ val[0].longitude }}) </td>
                     <td ng-if="key !== 'geolocation'"> {{ val }} </td>
                 </tr>
             </tbody>
