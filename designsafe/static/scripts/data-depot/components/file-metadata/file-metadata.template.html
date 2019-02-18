@@ -1,28 +1,35 @@
-<button class="btn btn-default btn-block" ng-click="$ctrl.toggle()"> Show/Hide Metadata </button>
-<table class="table-preview" ng-show="$ctrl.show" id="file_metadata_table">
-    <tbody>
-        <tr>
-            <th>File name</th>
-            <td>{{ $ctrl.file.name }}</td>
-        </tr>
-        <tr>
-            <th>File path</th>
-            <td>{{ $ctrl.file.path }}</td>
-        </tr>
-        <tr>
-            <th>File size</th>
-            <td ng-if='$ctrl.file.length'>{{ $ctrl.file.length|bytes }}</td>
-            <td ng-if='$ctrl.file.size'>{{ $ctrl.file.size|bytes }}</td>
-        </tr>
-        <tr>
-            <th>Last modified</th>
-            <td>{{ $ctrl.file.lastModified|date:"short" }}</td>
-        </tr>
-        <tr ng-repeat="(key, val) in $ctrl.metadata" ng-if="val">
-            <td> <b> {{ key }} </b> </td>
-            <td ng-if="key === 'geolocation'"> ( {{val[0]["latitude"]}}, {{ val[0].longitude }}) </td>
-            <td ng-if="key !== 'geolocation'"> {{ val }} </td>
-        </tr>
-    </tbody>
-</table>
+<uib-accordion>
+    <div uib-accordion-group class="panel panel-default" is-open="status.open">
+        <uib-accordion-heading>
+            <span> File Metadata </span>
+            <i class="pull-right fa" ng-class="{'fa-chevron-circle-up': status.open, 'fa-chevron-circle-down': !status.open}"></i>
+        </uib-accordion-heading>
+        <table class="table-preview" style="table-layout: fixed;" id="file_metadata_table">
+            <tbody>
+                <tr>
+                    <th>File name</th>
+                    <td>{{ $ctrl.file.name }}</td>
+                </tr>
+                <tr>
+                    <th>File path</th>
+                    <td>{{ $ctrl.file.path }}</td>
+                </tr>
+                <tr>
+                    <th>File size</th>
+                    <td ng-if='$ctrl.file.length'>{{ $ctrl.file.length|bytes }}</td>
+                    <td ng-if='$ctrl.file.size'>{{ $ctrl.file.size|bytes }}</td>
+                </tr>
+                <tr>
+                    <th>Last modified</th>
+                    <td>{{ $ctrl.file.lastModified|date:"short" }}</td>
+                </tr>
+                <tr ng-repeat="(key, val) in $ctrl.metadata" ng-if="val">
+                    <td> <b> {{ key }} </b> </td>
+                    <td ng-if="key === 'geolocation'"> ( {{val[0]["latitude"]}}, {{ val[0].longitude }}) </td>
+                    <td ng-if="key !== 'geolocation'"> {{ val }} </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</uib-accordion>
 <hr>
