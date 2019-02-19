@@ -805,11 +805,10 @@ i[class^="icon-ls-pre/post"]:before,
     [class*=" curation-"]:before {
         font-family: 'Curation-Icons';
         font-style: normal;
-        font-size: 32px;
-        speak: none;
+        /* font-size: 32px; */
+        /* speak: none; */
         font-weight: normal;
         -webkit-font-smoothing: antialiased;
-                font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
     }
     
@@ -819,10 +818,10 @@ i[class^="icon-ls-pre/post"]:before,
     .curation-cc-zero:before {
         content: "\e900";
     }
-    .curation-chevron-dn:before {
+    .dropdown button.collapsed .curation-chevron:before {
         content: "\e901";
     }
-    .curation-chevron-up:before {
+    .dropdown button .curation-chevron:before {
         content: "\e902";
     }
     .curation-close-window:before {

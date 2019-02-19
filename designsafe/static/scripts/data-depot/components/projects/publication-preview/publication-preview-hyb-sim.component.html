@@ -84,8 +84,16 @@
     <div ng-hide="$ctrl.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
         <div class="dropdown" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, report)">
             <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
-                <span class="pull-left">Report | <strong>{{report.value.title}}</strong></span>
-                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                <table style="width:100%">
+                    <tr>
+                        <td style="text-align: left;">
+                            <span>Report | <strong>{{report.value.title}}</strong></span>
+                        </td>
+                        <td style="text-align: right;">
+                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                        </td>
+                    </tr>
+                </table>
             </button>
             <div id="files-{{report.uuid}}" class="collapse">
                 <div class="well">
@@ -98,8 +106,16 @@
     <div ng-hide="$ctrl.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
         <div class="dropdown" id="details-{{hybsim.uuid}}">
             <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}" style="width:100%;">
-                <span class="pull-left">HYBRID SIMULATION | <strong>{{hybsim.value.title}}</strong></span>
-                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                <table style="width:100%">
+                    <tr>
+                        <td style="text-align: left;">
+                            <span>HYBRID SIMULATION | <strong>{{hybsim.value.title}}</strong></span>
+                        </td>
+                        <td style="text-align: right;">
+                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                        </td>
+                    </tr>
+                </table>
             </button>
             <div id="data-{{hybsim.uuid}}" class="collapse" ng-class="{'in': $index==0}">
                 <div class="well">
@@ -140,8 +156,16 @@
                     <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
                         <div class="dropdown" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, report)">
                             <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
-                                <span class="pull-left">Report | <strong>{{report.value.title}}</strong></span>
-                                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="text-align: left;">
+                                            <span>Report | <strong>{{report.value.title}}</strong></span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </button>
                             <div id="files-{{report.uuid}}" class="collapse">
                                 <div class="well">
@@ -156,8 +180,16 @@
                         <div class="dropdown" id="details-{{model.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, model)">
                             <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                                 style="width:100%;">
-                                <span class="pull-left">Global Model | <strong>{{model.value.title}}</strong></span>
-                                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="text-align: left;">
+                                            <span>Global Model | <strong>{{model.value.title}}</strong></span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </button>
                             <div id="files-{{model.uuid}}" class="collapse">
                                 <div class="well">
@@ -171,8 +203,16 @@
                     <div ng-repeat="coordinator in $ctrl.browser.project.coordinator_set | orderBy: 'value.title'">
                         <div class="dropdown" id="details-{{coordinator.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, coordinator)">
                             <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}" style="width:100%;">
-                                <span class="pull-left">Coordinator | <strong>{{coordinator.value.title}}</strong></span>
-                                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="text-align: left;">
+                                            <span>Coordinator | <strong>{{coordinator.value.title}}</strong></span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </button>
                             <div id="files-{{coordinator.uuid}}" class="collapse">
                                 <div class="well">
@@ -187,8 +227,16 @@
                         <div class="dropdown" id="details-{{simsub.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, simsub)">
                             <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{simsub.uuid}}"
                                 style="width:100%;">
-                                <span class="pull-left">Simulation Substructure | <strong>{{simsub.value.title}}</strong></span>
-                                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="text-align: left;">
+                                            <span>Simulation Substructure | <strong>{{simsub.value.title}}</strong></span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </button>
                             <div id="files-{{simsub.uuid}}" class="collapse">
                                 <div class="well">
@@ -203,8 +251,16 @@
                         <div class="dropdown" id="details-{{expsub.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, expsub)">
                             <button class="btn collapsed tab-subst" data-toggle="collapse" data-target="#files-{{expsub.uuid}}"
                                 style="width:100%;">
-                                <span class="pull-left">Experimental Substructure | <strong>{{expsub.value.title}}</strong></span>
-                                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="text-align: left;">
+                                            <span>Experimental Substructure | <strong>{{expsub.value.title}}</strong></span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </button>
                             <div id="files-{{expsub.uuid}}" class="collapse">
                                 <div class="well">
@@ -219,8 +275,16 @@
                         <div class="dropdown" id="details-{{cout.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, cout)">
                             <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{cout.uuid}}"
                                 style="width:100%;">
-                                <span class="pull-left">Coordinator Output | <strong>{{cout.value.title}}</strong></span>
-                                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="text-align: left;">
+                                            <span>Coordinator Output | <strong>{{cout.value.title}}</strong></span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </button>
                             <div id="files-{{cout.uuid}}" class="collapse">
                                 <div class="well">
@@ -235,8 +299,16 @@
                         <div class="dropdown" id="details-{{eout.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, eout)">
                             <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{eout.uuid}}"
                                 style="width:100%;">
-                                <span class="pull-left">Experiment Output | <strong>{{eout.value.title}}</strong></span>
-                                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="text-align: left;">
+                                            <span>Experiment Output | <strong>{{eout.value.title}}</strong></span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </button>
                             <div id="files-{{eout.uuid}}" class="collapse">
                                 <div class="well">
@@ -251,8 +323,16 @@
                         <div class="dropdown" id="details-{{sout.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, sout)">
                             <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{sout.uuid}}"
                                 style="width:100%;">
-                                <span class="pull-left">Simulation Output | <strong>{{sout.value.title}}</strong></span>
-                                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="text-align: left;">
+                                            <span>Simulation Output | <strong>{{sout.value.title}}</strong></span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </button>
                             <div id="files-{{sout.uuid}}" class="collapse">
                                 <div class="well">
@@ -267,8 +347,16 @@
                         <div class="dropdown" id="details-{{analysis.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, analysis)">
                             <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                                 style="width:100%;">
-                                <span class="pull-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
-                                <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="text-align: left;">
+                                            <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </button>
                             <div id="files-{{analysis.uuid}}" class="collapse">
                                 <div class="well">

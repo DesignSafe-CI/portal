@@ -21,6 +21,26 @@ class EditProjectCtrl {
             busy: false,
             error: null
         };
+        this.otherTypes = [
+            'Custom',
+            'Code',
+            'Database',
+            'Dataset',
+            'Image',
+            'Jupyter Notebook',
+            'Learning Object',
+            'Model',
+            'Paper',
+            'Proceeding',
+            'Poster',
+            'Presentation',
+            'Report',
+            'REU',
+            'Softwarem',
+            'Survey',
+            'Video',
+            'White Paper',
+        ];
         this.projectTypes = [{
             id: 'experimental',
             label: 'Experimental'
@@ -42,6 +62,13 @@ class EditProjectCtrl {
             this.form.description = this.project.value.description || '';
             this.form.experimentalFacility = this.project.value.experimentalFacility || '';
             this.form.keywords = this.project.value.keywords || '';
+            this.form.dataType = this.project.value.dataType || '';
+            if (this.form.dataType && this.otherTypes.indexOf(this.form.dataType) === -1) {
+                this.form.dataTypeCustom = this.form.dataType;
+                this.form.dataType = 'Custom';
+            } else {
+                this.form.dataTypeCustom = '';
+            }
             // project type
             if (typeof this.project.value.projectType != 'undefined') {
                 this.form.projectType = _.find(this.projectTypes, (projectType) => { return projectType.id === this.project.value.projectType; });
@@ -248,6 +275,12 @@ class EditProjectCtrl {
         if (this.form.projectType && this.form.projectType.id) {
             projectData.projectType = this.form.projectType.id;
         }
+        if (this.form.dataType) {
+            projectData.dataType = this.form.dataType;
+            if (this.form.dataTypeCustom && this.form.dataType === 'Custom') {
+                projectData.dataType = this.form.dataTypeCustom;
+            }
+        }
         if (this.form.uuid && this.form.uuid) {
             projectData.uuid = this.form.uuid;
         }
@@ -260,8 +293,6 @@ class EditProjectCtrl {
         });
     }
 }
-
-EditProjectCtrl.$inject = ['UserService', 'httpi', 'ProjectModel'];
 
 export const EditProjectComponent = {
     template: EditProjectTemplate,
