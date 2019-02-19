@@ -77,8 +77,16 @@
             <div class="dropdown" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, report) && $ctrl.browser.listings[report.uuid]">
                 <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                     style="width:100%;">
-                    <span class="pull-left">Report | <strong>{{report.value.title}}</strong></span>
-                    <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: left;">
+                                <span>Report | <strong>{{report.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
                 </button>
                 <div id="files-{{report.uuid}}" class="collapse in">
                     <div class="well">
@@ -97,8 +105,16 @@
                 <div class="dropdown" id="details-{{modelConfig.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, modelConfig) && $ctrl.browser.listings[modelConfig.uuid]">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
                         style="width:100%;">
-                        <span class="pull-left">Model Configuration | <strong>{{modelConfig.value.title}}</strong></span>
-                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                        <table style="width:100%">
+                            <tr>
+                                <td style="text-align: left;">
+                                    <span>Model Configuration | <strong>{{modelConfig.value.title}}</strong></span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="curation-chevron" style="font-size: 18px;"></span>
+                                </td>
+                            </tr>
+                        </table>
                     </button>
                     <div id="files-{{modelConfig.uuid}}" class="collapse in">
                         <div class="well">
@@ -116,8 +132,16 @@
                 <div class="dropdown" id="details-{{sensorList.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, sensorList) && $ctrl.browser.listings[sensorList.uuid]">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
                         style="width:100%;">
-                        <span class="pull-left">Sensor Information | <strong>{{sensorList.value.title}}</strong></span>
-                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                        <table style="width:100%">
+                            <tr>
+                                <td style="text-align: left;">
+                                    <span>Sensor Information | <strong>{{sensorList.value.title}}</strong></span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="curation-chevron" style="font-size: 18px;"></span>
+                                </td>
+                            </tr>
+                        </table>
                     </button>
                     <div id="files-{{sensorList.uuid}}" class="collapse in">
                         <div class="well">
@@ -135,8 +159,16 @@
                 <div class="dropdown" id="details-{{event.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, event) && $ctrl.browser.listings[event.uuid]">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}"
                         style="width:100%;">
-                        <span class="pull-left">Event | <strong>{{event.value.title}}</strong></span>
-                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                        <table style="width:100%">
+                            <tr>
+                                <td style="text-align: left;">
+                                    <span>Event | <strong>{{event.value.title}}</strong></span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="curation-chevron" style="font-size: 18px;"></span>
+                                </td>
+                            </tr>
+                        </table>
                     </button>
                     <div id="files-{{event.uuid}}" class="collapse in">
                         <div class="well">
@@ -154,8 +186,16 @@
                 <div class="dropdown" id="details-{{analysis.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, analysis) && $ctrl.browser.listings[analysis.uuid]">
                     <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                         style="width:100%;">
-                        <span class="pull-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
-                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                        <table style="width:100%">
+                            <tr>
+                                <td style="text-align: left;">
+                                    <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="curation-chevron" style="font-size: 18px;"></span>
+                                </td>
+                            </tr>
+                        </table>
                     </button>
                     <div id="files-{{analysis.uuid}}" class="collapse in">
                         <div class="well">
