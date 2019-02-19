@@ -80,12 +80,8 @@ class PublicationPreviewOtherCtrl {
     }
 
     goCuration() {
-        if (this.browser.project.value.projectType === 'other') {
-            this.ProjectService.manageProjectType({'project': this.browser.project});
-        } else {
-            window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
-            this.$state.go('projects.curation', {projectId: this.browser.project.uuid, project: this.browser.project, selectedListings: this.browser.listings}, {reload: true});
-        }
+        window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
+        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, project: this.browser.project, selectedListings: this.browser.listings}, {reload: true});
     }
 
     editProject() {

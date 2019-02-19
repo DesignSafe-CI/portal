@@ -63,8 +63,7 @@
                     Publication Preview</button>
             </td>
             <td class="tg-0lax">
-                <div>
-                    <!-- These will need functionality -->
+                <div ng-hide="$ctrl.browser.project.value.projectType === 'other'">                    
                     <span style="padding:10px; font-weight:bold;">1
                         <a  ng-disabled="$ctrl.browser.loadingEntities"
                             ng-click="$ctrl.manageExperiments()"
