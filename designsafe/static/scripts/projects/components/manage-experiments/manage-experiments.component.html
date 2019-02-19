@@ -10,13 +10,13 @@
   <div class="well">
     <form name='addForm' ng-hide="$ctrl.ui.showEditExperimentForm">
       <div class="text-center">
-        <span style="color: #D04348; font-size:14pt;">&#9679; </span>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <span>Required for Curation & Publication</span>
       </div>
       <!-- Title -->
       <div class="expTitle form-group">
         <label>Experiment Title
-          <span style="color: #D04348;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
         </label>
         <p>
           Different from the Project Title. Make it focused on the methods used to obtain the data in this Experiment.
@@ -28,7 +28,7 @@
       <!-- Experiment Date -->
       <div class="expDate form-group">
         <label>Dates of Experiment</label>
-        <span style="color: #D04348;">&#9679; </span>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <p>
           If you only want to enter a single date, fill in the firest field.
         </p>
@@ -75,7 +75,7 @@
       <!-- Experimental Facility -->
       <div class="expFacility form-group">
         <label>Experimental Facility</label>
-        <span style="color: #D04348;">&#9679; </span>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <div>
           <select ng-options="ef.name as ef.label for ef in $ctrl.ui.efs[$ctrl.data.project.value.projectType]"
                   style="background:white; width:100%"
@@ -95,7 +95,7 @@
       <!-- Experiment Type -->
       <div class="expType form-group">
         <label>Experiment Type</label>
-        <span style="color: #D04348;">&#9679; </span>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <div>
           <select ng-options="type.name as type.label for type in $ctrl.ui.experimentTypes[$ctrl.form.addExperiments[0].experimentalFacility]"
                   style="background:white; width:100%"
@@ -115,7 +115,7 @@
       <!-- Equipment Type -->
       <div class="expEqType form-group">
         <label>Equipment Type</label>
-        <span style="color: #D04348;">&#9679; </span>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <div>
           <select ng-options="et.name as et.label for et in $ctrl.ui.equipmentTypes[$ctrl.form.addExperiments[0].experimentalFacility]"
                   style="background:white; width:100%"
@@ -135,7 +135,7 @@
       <!-- Exp Description -->
       <div class="expDescription form-group">
         <label>Experiment Description</label>
-        <span style="color: #D04348;">&#9679; </span>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <p>
           What was under investigation? How was it tested? What was the outcome? How can the data be reused?
         </p>
@@ -192,13 +192,13 @@
     </form>
     <form name='editForm' ng-if="$ctrl.ui.showEditExperimentForm">
         <div class="text-center">
-          <span style="color: #D04348; font-size:14pt;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <span>Required for Curation & Publication</span>
         </div>
         <!-- Edit Title -->
         <div class="expTitle form-group">
           <label>Experiment Title
-            <span style="color: #D04348;">&#9679; </span>
+            <span style="color: #D04348; font-size:14px;">&#9679; </span>
           </label>
           <p>
             Different from the Project Title. Make it focused on the methods used to obtain the data in this Experiment.
@@ -210,7 +210,7 @@
         <!-- Edit Experiment Date -->
         <div class="expDate form-group">
           <label>Dates of Experiment</label>
-          <span style="color: #D04348;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <p>
             Please confirm your experiment dates for each update. If you only want to enter a single date, fill in the firest field.
           </p>
@@ -257,7 +257,7 @@
         <!-- Edit Experimental Facility -->
         <div class="expFacility form-group">
           <label>Experimental Facility</label>
-          <span style="color: #D04348;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <div>
             <select style="background:white; width:100%"
                     id="add-exp-facility"
@@ -269,7 +269,7 @@
         <!-- Edit Experiment Type -->
         <div class="expType form-group">
           <label>Experiment Type</label>
-          <span style="color: #D04348;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <div>
             <select style="background:white; width:100%"
                     id="add-exp-type"
@@ -281,7 +281,7 @@
         <!-- Edit Equipment Type -->
         <div class="expEqType form-group">
           <label>Equipment Type</label>
-          <span style="color: #D04348;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <div>
             <select style="background:white; width:100%"
                     id="id-equipment-type"
@@ -293,7 +293,7 @@
         <!-- Edit Exp Description -->
         <div class="expDescription form-group">
           <label>Experiment Description</label>
-          <span style="color: #D04348;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <p>
             What was under investigation? How was it tested? What was the outcome? How can the data be reused?
           </p>
@@ -389,16 +389,8 @@
       <div ng-repeat="experiment in $ctrl.data.experiments">
         <div class="dropdown">
           <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{experiment.uuid}}" style="width:100%;">
-              <table style="width:100%">
-                <tr>
-                    <td style="text-align: left;">
-                        <span>EXPERIMENT | <strong>{{experiment.value.title}}</strong></span>
-                    </td>
-                    <td style="text-align: right;">
-                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                    </td>
-                </tr>
-            </table>
+            <span class="pull-left">Experiment | <strong>{{experiment.value.title}}</strong></span>
+            <span class="pull-right"><i class="fa dropdown-caret"></i></span>
           </button>
           <div id="files-{{experiment.uuid}}" class="collapse">
             <div class="well">
