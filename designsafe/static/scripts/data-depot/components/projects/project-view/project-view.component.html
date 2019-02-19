@@ -11,7 +11,12 @@
         <div class="prj-row">
           <span class="prj-label" ng-if="data.project.value.coPis.length">CoPI</span>
           <span class="prj-data" format="lname" ng-repeat="copi in data.project.value.coPis">
-            <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
+            <span ng-if="!$last">
+              <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>; 
+            </span>
+            <span ng-if="$last">
+              <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
+            </span>
           </span>
           <span ng-repeat="user in publicationCtrl.filterUsers(data.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
         </div>
@@ -71,29 +76,6 @@
                 Publication Preview</button>
             </td>
             <td class="tg-0lax">
-              <div ng-hide="data.project.value.projectType === 'other' || data.project.value.projectType === 'None'">
-                <span style="padding:10px; font-weight:bold;">1
-                  <a  ng-disabled="data.loadingEntities"
-                      ng-click="manageExperiments($event)"
-                      ng-if="data.project.value.projectType === 'experimental'"> Add Experiments</a>
-                  <a  ng-disabled="data.loadingEntities"
-                      ng-click="manageSimulations($event)"
-                      ng-if="data.project.value.projectType === 'simulation'"> Add Simulations</a>
-                  <a  ng-disabled="data.loadingEntities"
-                      ng-click="manageHybridSimulations($event)"
-                      ng-if="data.project.value.projectType === 'hybrid_simulation'"> Add Hybrid Simulations</a>
-                </span>
-                <span style="padding:5px; font-weight:bold;">|</span>
-                <span style="padding:10px; font-weight:bold;">2
-                  <a ng-disabled="data.loadingEntities" ng-click="manageCategories($event)"> Add Categories</a>
-                </span>
-                <span style="padding:5px; font-weight:bold;">|</span>
-                <span style="padding:10px; font-weight:bold;">3 
-                    <a data-ng-disabled="browser.loadingEntities"
-                       href="#"
-                       data-ng-click="relateData($event)">Relate Data</a>
-                </span>
-              </div>
             </td>
           </tr>
         </table>

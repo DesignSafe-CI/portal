@@ -76,13 +76,13 @@
     <!-- Order Authors -->
     <div class="well">
         <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'experimental'">
-            EXPERIMENT | <strong>{{ $ctrl.experiment.value.title }}</strong>
+            Experiment | <strong>{{ $ctrl.experiment.value.title }}</strong>
         </div>
         <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'simulation'">
-            SIMULATION | <strong>{{ $ctrl.experiment.value.title }}</strong>
+            Simulation | <strong>{{ $ctrl.experiment.value.title }}</strong>
         </div>
         <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'hybrid_simulation'">
-            HYBRID SIMULATION | <strong>{{ $ctrl.experiment.value.title }}</strong>
+            Hybrid Simulation | <strong>{{ $ctrl.experiment.value.title }}</strong>
         </div>
         <div ng-hide="$ctrl.validAuths">
             Your authors need to be updated. Edit your experiment and select which users are authors for the Experiment.
