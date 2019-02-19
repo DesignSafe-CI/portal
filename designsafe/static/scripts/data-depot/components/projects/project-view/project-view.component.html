@@ -15,9 +15,13 @@
           </span>
           <span ng-repeat="user in publicationCtrl.filterUsers(data.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
         </div>
-        <div class="prj-row">
+        <div class="prj-row" ng-hide="data.project.value.projectType === 'other' && data.project.value.dataType">
           <span class="prj-label">Project Type</span>
           <span class="prj-data">{{ data.project.value.projectType.replace('_', ' ') }}</span>
+        </div>
+        <div class="prj-row" ng-if="data.project.value.projectType === 'other' && data.project.value.dataType">
+          <span class="prj-label">Data Type</span>
+          <span class="prj-data">{{ data.project.value.dataType }}</span>
         </div>
         <table class="tg" style="table-layout: fixed; width: 100%;">
           <colgroup>
