@@ -59,7 +59,6 @@ export function httpSrc($http) {
             var b64 = btoa(raw);
             attrs.$set('src', "data:image/jpeg;base64," + b64);
         }, function (error) {
-            console.log(error);
         });
       }
     };
@@ -231,7 +230,7 @@ export function dsInfiniteScroll(){
         UserService.get(scope.username).then(function (user) {
           switch (format) {
             case 'lname':
-              element.text(user.last_name + ', ' + user.first_name + ';');
+              element.text(user.last_name + ', ' + user.first_name);
               break;
             case 'name':
               element.text(user.first_name + ' ' + user.last_name);
