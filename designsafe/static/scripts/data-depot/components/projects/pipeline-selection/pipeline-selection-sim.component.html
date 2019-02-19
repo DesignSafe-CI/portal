@@ -61,6 +61,15 @@
     </div>
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
+        <!-- Error Messages -->
+        <div class="alert alert-danger" ng-if="$ctrl.missing.length">
+            <p class="lead" style="text-align:center;">Your Selection is Incomplete!</p>
+            <p>
+                The simulation you have selected for publication is missing data or has incomplete requirements.
+                Please review the following fields:
+            </p>
+            <li ng-repeat="item in $ctrl.missing">The {{ item }} for this simulation is missing or has no categorized data.</li>
+        </div>
         <p>
             <h3 style="text-align: center">Select what you want to publish</h3>
             <li>You can only publish one simulation at a time.</li>
@@ -101,6 +110,7 @@
         <div ng-hide="$ctrl.loading" ng-repeat="simulation in $ctrl.browser.project.simulation_set">
             <div class="dropdown" id="details-{{simulation.uuid}}">
                 <a ng-click="$ctrl.selectExperiment(simulation)">Select this Simulation and all of its files</a>
+                <span ng-if="$ctrl.selectedExp.uuid === simulation.uuid"><i class="fa fa-check" style="color: #1CB500;"></i></span>
                 <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
                     style="width:100%;">
                     <table style="width:100%">
