@@ -1,0 +1,64 @@
+{
+    "designsafe.project.simulation.model": {
+        "name": "Global Model",
+        "tags": {
+            "General": [
+                "Diagram",
+                "Image"
+            ]
+        }
+    },
+    "designsafe.project.simulation.input": {
+        "name": "Input",
+        "tags": {
+            "General": [
+                "Boundary Condition",
+                "Control Parameters",
+                "Domain Parameters",
+                "Mesh",
+                "Inflow Conditions",
+                "Material Properties",
+                "Nodal Attributes",
+                "Physical Domain",
+                "Simulation Script"
+            ]
+        }
+    },
+    "designsafe.project.simulation.output": {
+        "name": "Output",
+        "tags": {
+            "General": [
+                "Acceleration",
+                "Displacement",
+                "Forces",
+                "Pressure",
+                "Recorder / Monitoring Station",
+                "Strain",
+                "Stress",
+                "Elevation",
+                "Velocity"
+            ]
+        }
+    },
+    "designsafe.project.simulation.analysis": {
+        "name": "Analysis",
+        "tags": {
+            "General": [
+                "Graph",
+                "README",
+                "Script",
+                "Table",
+                "Visualization"
+            ]
+        }
+    },
+    "designsafe.project.simulation.report": {
+        "name": "Report",
+        "tags": {
+            "General": [
+                "Data Report",
+                "README"
+            ]
+        }
+    }
+}

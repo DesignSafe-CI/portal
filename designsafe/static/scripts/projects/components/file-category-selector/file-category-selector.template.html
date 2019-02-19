@@ -1,7 +1,6 @@
 <form>
     <select name="project-category"
             data-ng-model="$ctrl.selectedUuid"
-            data-ng-change="$ctrl.selectCategory()"
             class="form-control">
         <option value="">-- Select a Category --</option>
         <optgroup label="Model Configuration"
@@ -110,4 +109,9 @@
             </option>
         </optgroup>
     </select>
+    <button type="button" class="btn btn-link"
+            data-ng-click="$ctrl.selectCategory()"
+            data-ng-disabled="!$ctrl.selectedUuid">
+        Save
+    </button>
 </form>
