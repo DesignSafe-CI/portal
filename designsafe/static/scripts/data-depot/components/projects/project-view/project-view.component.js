@@ -151,8 +151,6 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       */
       if ($scope.browser.project.value.projectType === 'None') {
         $scope.manageProjectType();
-      } else if ($scope.browser.project.value.projectType === 'other') {
-        return;
       } else {
         $state.go('projects.curation', {projectId: projectId}, {reload: true});
       }
