@@ -52,6 +52,8 @@ class FileCategorySelectorCtrl {
             entity.update(ret);
             this.file.setEntities(this.project.uuid, this.project.getAllRelatedObjects());
             return this.file;
+        }).finally( ()=> {
+            this.selectedUuid = false;
         });
     }
 
