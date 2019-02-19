@@ -161,14 +161,20 @@ class PipelineSelectionCtrl {
     }
 
     goProject() {
-        this.reviewSelections();
-        window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
-        this.$state.go('projects.pipelineProject', {
-            projectId: this.projectId,
-            project: this.browser.project,
-            experiment: this.selectedExp,
-            selectedListings: this.selectedListings,
-        }, {reload: true});
+        this.gatherSelections();
+        this.missing = this.ProjectService.checkSelectedFiles(this.browser.project, this.selectedExp, this.selectedListings);
+
+        if (this.missing.length) {
+            return;
+        } else {
+            window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
+            this.$state.go('projects.pipelineProject', {
+                projectId: this.projectId,
+                project: this.browser.project,
+                experiment: this.selectedExp,
+                selectedListings: this.selectedListings,
+            }, {reload: true});
+        }
     }
 
     selectExperiment(exp) {
@@ -185,7 +191,7 @@ class PipelineSelectionCtrl {
         });
     }
 
-    reviewSelections() {
+    gatherSelections() {
         this.selectedListings = {};
         Object.keys(this.browser.listings).forEach((key) => {
             this.selectedListings[key] = {
