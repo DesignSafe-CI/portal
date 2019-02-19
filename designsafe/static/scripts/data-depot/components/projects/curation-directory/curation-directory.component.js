@@ -150,6 +150,8 @@ class CurationDirectoryCtrl {
             this.$state.go('projects.previewSim', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
         } else if (this.browser.project.value.projectType === 'hybrid_simulation') {
             this.$state.go('projects.previewHybSim', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
+        } else if (this.browser.project.value.projectType === 'other') {
+            this.$state.go('projects.previewOther', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
         }
     }
 
