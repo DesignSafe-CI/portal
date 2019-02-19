@@ -10,13 +10,13 @@
   <div class="well">
     <form name='addForm' ng-hide="$ctrl.ui.showEditSimulationForm">
       <div class="text-center">
-        <span style="color: #D04348; font-size:14pt;">&#9679; </span>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <span>Required for Curation & Publication</span>
       </div>
       <!-- Simulation Title -->
       <div class="simTitle form-group">
         <label>Simulation Title
-          <span style="color: #D04348;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
         </label>
         <p>
           Different from the Project Title. Make it focused on the methods used to obtain the data in this Hyrbid Simulation.
@@ -28,7 +28,7 @@
       <!-- Simulation Type -->
       <div class="simType form-group">
         <label>Simulation Type</label>
-        <span style="color: #D04348;">&#9679; </span>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <div>
           <select ng-options="type.name as type.label for type in $ctrl.ui.simulationTypes"
                   style="background:white; width:100%"
@@ -48,7 +48,7 @@
       <!-- simulation Description -->
       <div class="simDescription form-group">
         <label>Simulation Description</label>
-        <span style="color: #D04348;">&#9679; </span>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <p>
           What was under investigation? How was it tested? What was the outcome? How can the data be reused?
         </p>
@@ -107,13 +107,13 @@
     </form>
     <form name='editForm' ng-if="$ctrl.ui.showEditSimulationForm">
         <div class="text-center">
-          <span style="color: #D04348; font-size:14pt;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <span>Required for Curation & Publication</span>
         </div>
         <!-- Edit Simulation Title -->
         <div class="simTitle form-group">
           <label>Simulation Title
-            <span style="color: #D04348;">&#9679; </span>
+            <span style="color: #D04348; font-size:14px;">&#9679; </span>
           </label>
           <p>
             Different from the Project Title. Make it focused on the methods used to obtain the data in this Simulation.
@@ -125,7 +125,7 @@
         <!-- Edit Simulation Type -->
         <div class="simType form-group">
           <label>Simulation Type</label>
-          <span style="color: #D04348;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <div>
             <select style="background:white; width:100%"
                     id="edit-sim-type"
@@ -137,7 +137,7 @@
         <!-- Edit Simulation Description -->
         <div class="simDescription form-group">
           <label>Simulation Description</label>
-          <span style="color: #D04348;">&#9679; </span>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <p>
             What was under investigation? How was it tested? What was the outcome? How can the data be reused?
           </p>
@@ -236,16 +236,8 @@
       <div ng-repeat="simulation in $ctrl.data.simulations">
         <div class="dropdown entity-preview-header">
           <button class="btn btn-default collapsed" data-toggle="collapse" data-target="#files-{{simulation.uuid}}" style="width:100%;">
-              <table style="width:100%">
-                <tr>
-                    <td style="text-align: left;">
-                        <span>SIMULATION | <strong>{{simulation.value.title}}</strong></span>
-                    </td>
-                    <td style="text-align: right;">
-                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                    </td>
-                </tr>
-            </table>
+            <span class="pull-left">Simulation | <strong>{{simulation.value.title}}</strong></span>
+            <span class="pull-right"><i class="fa dropdown-caret"></i></span>
           </button>
           <div id="files-{{simulation.uuid}}" class="collapse">
             <div class="well">

@@ -79,7 +79,12 @@
         <div class="prj-row">
             <span class="prj-label" ng-if="$ctrl.project.value.coPis.length">CoPI</span>
             <span class="prj-data" format="lname" ng-repeat="copi in $ctrl.project.value.coPis">
-                <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
+                <span ng-if="!$last">
+                    <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>;
+                </span>
+                <span ng-if="$last">
+                    <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
+                </span>
             </span>
             <span ng-repeat="user in publicationCtrl.filterUsers($ctrl.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
         </div>

@@ -107,35 +107,35 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       });
     };
 
-    $scope.manageCategories = function($event) {
-      if ($event){
-        $event.preventDefault();
-      }
-      ProjectService.manageCategories({'project': $scope.data.project});
-    };
+    // $scope.manageCategories = function($event) {
+    //   if ($event){
+    //     $event.preventDefault();
+    //   }
+    //   ProjectService.manageCategories({'project': $scope.data.project});
+    // };
 
-    $scope.relateData = function($event) {
-      $uibModal.open({
-        component: 'projectTree',
-        resolve: {
-            project: () => {return $scope.browser.project; },
-        },
-        size: 'lg'
-      });
-    };
+    // $scope.relateData = function($event) {
+    //   $uibModal.open({
+    //     component: 'projectTree',
+    //     resolve: {
+    //         project: () => {return $scope.browser.project; },
+    //     },
+    //     size: 'lg'
+    //   });
+    // };
 
-    $scope.manageExperiments = function($event) {
-      if ($event){
-        $event.preventDefault();
-      }
-      var experimentsAttr = $scope.data.project.getRelatedAttrName('designsafe.project.experiment');
-      var experiments = $scope.data.project[experimentsAttr];
-      if (typeof experiments === 'undefined'){
-        $scope.data.project[experimentsAttr] = [];
-        experiments = $scope.data.project[experimentsAttr];
-      }
-      ProjectService.manageExperiments({'experiments': experiments, 'project': $scope.data.project});
-    };
+    // $scope.manageExperiments = function($event) {
+    //   if ($event){
+    //     $event.preventDefault();
+    //   }
+    //   var experimentsAttr = $scope.data.project.getRelatedAttrName('designsafe.project.experiment');
+    //   var experiments = $scope.data.project[experimentsAttr];
+    //   if (typeof experiments === 'undefined'){
+    //     $scope.data.project[experimentsAttr] = [];
+    //     experiments = $scope.data.project[experimentsAttr];
+    //   }
+    //   ProjectService.manageExperiments({'experiments': experiments, 'project': $scope.data.project});
+    // };
 
     $scope.workingDirectory = function() {
       $state.go('projects.view.data', {projectId: projectId}).then(function() {
