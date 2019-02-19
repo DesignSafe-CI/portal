@@ -1,20 +1,56 @@
 <div class="file-categories-content">
+    <div class="loading" data-ng-if="$ctrl._ui.busy">
+        <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+    </div>
     <div class="tag-item" data-ng-repeat="entityTag in $ctrl.file._entityTags">
         {{entityTag}}
     </div>
     <div style="width:100%;" class="file-tag-list">
         <div class="file-tag-item"
-             data-ng-repeat="entity in $ctrl.file._entities"
-         >
-            <span class="label selected"
-                  data-ng-class="entity.cssClasses()['tag']"
-            >
-                {{ entity.value.title }}
-            </span>
-            <button class="btn btn-link"
-                    data-ng-click="$ctrl.removeCategory(entity)">
-                Remove
-            </button>
+             data-ng-repeat="entity in $ctrl.file._entities">
+             <div class="file-category-label">
+                <span class="label selected"
+                      data-ng-class="entity.cssClasses()['tag']">
+                    {{ entity.value.title }}
+                </span>
+                <button class="btn btn-link"
+                        data-ng-click="$ctrl.removeCategory(entity)">
+                    Remove
+                </button>
+             </div>
+             <div class="file-tag-label" data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags)">
+                 <span>{{tag.tagName}}</span>
+                 <button class="btn btn-link"
+                         data-ng-click="$ctrl.removeFileTag(entity, tag)"
+                         data-ng-disabled="$ctrl._ui.busy">
+                     Remove
+                 </button>
+             </div>
+             <div class="file-tag-selector">
+                 <select name="project-file-tags"
+                         data-ng-model="$ctrl.selectedFileTag[entity.uuid]"
+                         class="form-control project-file-tags-select">
+                     <option value="">
+                         -- Select a {{$ctrl.fileTagsForEntity(entity).name}} File Tag --
+                     </option>
+                     <optgroup data-ng-repeat="(tagName, tags) in $ctrl.fileTagsForEntity(entity).tags"
+                               label="{{tagName}}">
+                         <option value="{ 'tagName': tagName,
+                                          'value': 'Other'}">
+                             Other
+                         </option>
+                         <option data-ng-repeat="tag in tags"
+                                 value="{{tag}}">
+                             {{tag}}
+                         </option>
+                     </optgroup>
+                 </select>
+                 <button class="btn btn-link"
+                         data-ng-click="$ctrl.addFileTag(entity)"
+                         data-ng-disabled="$ctrl._ui.busy || !$ctrl.selectedFileTag[entity.uuid]">
+                     Save
+                 </button>
+             </div>
         </div>
     </div>
 </div>
