@@ -187,6 +187,65 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
       return dataResource.get({params: options});
     };
 
+    /**
+     *
+     * @param {Project} project The Project
+     * @param {ProjectEntity} experiment The selected experiment/simulation/hybsim
+     * @param {object} selections Object of file listings based on associated uuids
+     * @returns {Message} Returns an error message to be displayed to the user
+     */
+    service.checkSelectedFiles = function(project, experiment, selections) {
+      var errMsg = {
+        modelconfig_set: 'Model Configuration',
+        sensorlist_set: 'Sensor Information',
+        event_set: 'Event',
+        model_set: 'Model',
+        input_set: 'Input',
+        output_set: 'Output',
+        globalmodel_set: 'Global Model',
+        coordinator_set: 'Coordinator',
+        simsubstructure_set: 'Simulation Substructure',
+        expsubstructure_set: 'Experimental Substructure',
+      };
+      var requiredSets = [];
+      var expSets = [];
+      var selectedSets = [];
+      var missingData = [];
+      if (project.value.projectType === 'experimental') {
+        requiredSets = ['modelconfig_set', 'sensorlist_set', 'event_set'];
+      } else if (project.value.projectType === 'simulation') {
+        requiredSets = ['model_set', 'input_set', 'output_set'];
+      } else if (project.value.projectType === 'hybrid_simulation') {
+        requiredSets = [
+          'globalmodel_set',
+          'coordinator_set',
+          'simsubstructure_set',
+          'expsubstructure_set',
+        ];
+      }
+
+      requiredSets.forEach((set) => {
+        project[set].forEach((s) => {
+          if (s.associationIds.indexOf(experiment.uuid) > -1) {
+            var data = {
+              'type': set,
+              'prjEnt': s
+            };
+            expSets.push(data);
+          }
+        });
+      });
+      expSets.forEach((set) => {
+        if (Object.keys(selections).indexOf(set.prjEnt.uuid) > -1) {
+          selectedSets.push(set.type);
+        }
+      });
+      _.difference(requiredSets, selectedSets).forEach((ent) => {
+        missingData.push(errMsg[ent]);
+      });
+      return missingData;
+    };
+
     service.manageCategories = (options) => {
       $uibModal.open({
         component: 'manageCategories',
