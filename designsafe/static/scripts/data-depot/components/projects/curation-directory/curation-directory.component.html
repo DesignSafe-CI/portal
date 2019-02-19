@@ -2,7 +2,7 @@
     <!-- Project Header Start -->
     <div>
         <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
-        <a ng-click="$ctrl.editProject($event)">Edit Project</a>
+        <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
         <div class="prj-row">
             <span class="prj-label">PI</span>
             <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname">{{ $ctrl.browser.project.value.pi }}</ds-user>
@@ -10,7 +10,12 @@
         <div class="prj-row">
             <span class="prj-label" ng-if="$ctrl.browser.project.value.coPis.length">CoPI</span>
             <span class="prj-data" format="lname" ng-repeat="copi in $ctrl.browser.project.value.coPis">
-                <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
+                <span ng-if="!$last">
+                    <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>;
+                </span>
+                <span ng-if="$last">
+                    <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
+                </span>
             </span>
             <span ng-repeat="user in publicationCtrl.filterUsers($ctrl.browser.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
         </div>
