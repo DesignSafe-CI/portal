@@ -125,6 +125,13 @@
         </div>
         <!-- Edit Project Section -->
         <div ng-if="$ctrl.form.uuid">
+            <!-- Project Members -->
+            <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.project.value.projectType === 'other'">
+                <strong>Data Type(s)</strong>
+                <div>The nature or genre of the content.</div>
+                <select ng-model="$ctrl.form.dataType" ng-options="type for type in $ctrl.otherTypes"></select>
+                <input ng-if="$ctrl.form.dataType === 'Custom'" ng-model="$ctrl.form.dataTypeCustom">
+            </div>
             <!-- Project Awards -->
             <div class="form-group" style="width:100%; display:inline-block;">
                 <table class="tg" style="table-layout: fixed; width: 100%;">
