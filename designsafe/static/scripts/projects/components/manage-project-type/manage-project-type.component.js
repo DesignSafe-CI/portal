@@ -18,7 +18,7 @@ class ManageProjectTypeCtrl {
     }
 
     continue() {
-        if (this.type === 'experimental' || this.type === 'other') {
+        if (this.type) {
             this.loading = true;
             var projectData = {};
             projectData.projectType = this.type;
