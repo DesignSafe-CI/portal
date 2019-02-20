@@ -400,10 +400,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        'opbeat': {
-            'level': 'ERROR',
-            'class': 'logging.StreamHandler',
-        },
         'metrics': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -412,22 +408,18 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'opbeat'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'designsafe': {
-            'handlers': ['console', 'opbeat'],
+            'handlers': ['console'],
             'level': 'DEBUG',
         },
         'celery': {
-            'handlers': ['console', 'opbeat'],
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True
-        },
-        'opbeat': {
-            'handlers': ['console'],
-            'level': 'INFO',
         },
         'metrics': {
             'handlers': ['metrics'],
@@ -507,29 +499,6 @@ PIPELINE['JAVASCRIPT'] = {
         'output_filename': 'js/main.js',
     },
 }
-
-###
-# Opbeat Integration
-#
-if os.environ.get('OPBEAT_ORGANIZATION_ID'):
-    INSTALLED_APPS += (
-        'opbeat.contrib.django',
-    )
-
-    OPBEAT = {
-        'ORGANIZATION_ID': os.environ.get('OPBEAT_ORGANIZATION_ID', ''),
-        'APP_ID': os.environ.get('OPBEAT_APP_ID', ''),
-        'SECRET_TOKEN': os.environ.get('OPBEAT_SECRET_TOKEN', ''),
-    }
-
-    MIDDLEWARE_CLASSES = (
-        'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
-    ) + MIDDLEWARE_CLASSES
-
-    LOGGING['handlers']['opbeat'] = {
-        'level': 'ERROR',
-        'class': 'opbeat.contrib.django.handlers.OpbeatHandler'
-    }
 
 ##
 # django-websockets-redis
