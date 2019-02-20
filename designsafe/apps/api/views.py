@@ -17,7 +17,7 @@ class BaseApiView(View):
         If the error is instance of :class: `ApiException <designsafe.apps.api.exceptions.ApiException>`.
         An extra dictionary object will be used when calling `logger.error()`. 
         This allows to use any information in the `extra` dictionary object on the 
-        logger output as well as the opbeat UI.
+        logger output.
         """
         try:
             return super(BaseApiView, self).dispatch(request, *args, **kwargs)
