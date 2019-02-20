@@ -235,9 +235,17 @@
     <div class="dropdown">
       <div ng-repeat="simulation in $ctrl.data.simulations">
         <div class="dropdown entity-preview-header">
-          <button class="btn btn-default collapsed" data-toggle="collapse" data-target="#files-{{simulation.uuid}}" style="width:100%;">
-            <span class="pull-left">Simulation | <strong>{{simulation.value.title}}</strong></span>
-            <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+          <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#files-{{simulation.uuid}}" style="width:100%;">
+            <table style="width:100%">
+                <tr>
+                    <td style="text-align: left;">
+                        <span>Simulation | <strong>{{simulation.value.title}}</strong></span>
+                    </td>
+                    <td style="text-align: right;">
+                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                    </td>
+                </tr>
+            </table>
           </button>
           <div id="files-{{simulation.uuid}}" class="collapse">
             <div class="well">
