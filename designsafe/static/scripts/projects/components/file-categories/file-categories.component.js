@@ -3,6 +3,7 @@ import _ from 'underscore';
 import FileCategoriesTemplate from './file-categories.template.html';
 import experimentalFileTags from './experimental-file-tags.json';
 import simulationFileTags from './simulation-file-tags.json';
+import hybridSimulationFileTags from './hybrid-simulation-file-tags.json';
 
 const getFileUuid = (file) => {
     let promise;
@@ -133,6 +134,8 @@ class FileCategoriesCtrl {
             return experimentalFileTags[entity.name];
         } else if (this.project.value.projectType === 'simulation') {
             return simulationFileTags[entity.name];
+        } else if (this.project.value.projectType === 'hybrid_simulation') {
+            return hybridSimulationFileTags[entity.name];
         }
         return {};
     }
