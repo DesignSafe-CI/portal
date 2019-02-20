@@ -28,8 +28,10 @@ class FileModel(MetadataModel):
 
 class DataTag(MetadataModel):
     _is_nested = True
-    file = fields.RelatedObjectField(FileModel, default=[])
-    desc = fields.CharField('Description', max_length=512, default='')
+    file_uuid = fields.CharField('File Uuid', max_length=1024, default='')
+    tag_name = fields.CharField('Tag Name', max_length=512, default='')
+    value = fields.CharField('Value', max_length=512, default='')
+
 
 class Simulation(RelatedEntity):
     model_name = 'designsafe.project.simulation'
@@ -39,6 +41,7 @@ class Simulation(RelatedEntity):
     description = fields.CharField('Description', max_length=1024, default='')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(SimulationProject)
+
 
 class Model(RelatedEntity):
     model_name = 'designsafe.project.simulation.model'
@@ -53,6 +56,8 @@ class Model(RelatedEntity):
     project = fields.RelatedObjectField(SimulationProject)
     simulations = fields.RelatedObjectField(Simulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+    file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 
 class Input(RelatedEntity):
     model_name = 'designsafe.project.simulation.input'
@@ -62,6 +67,8 @@ class Input(RelatedEntity):
     simulations = fields.RelatedObjectField(Simulation)
     model_configs = fields.RelatedObjectField(Model)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+    file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 
 class Output(RelatedEntity):
     model_name = 'designsafe.project.simulation.output'
@@ -72,18 +79,20 @@ class Output(RelatedEntity):
     model_configs = fields.RelatedObjectField(Model)
     sim_inputs = fields.RelatedObjectField(Input)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+    file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 
 class Analysis(RelatedEntity):
     model_name = 'designsafe.project.simulation.analysis'
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
-    # reference = fields.CharField('Reference Data', max_length=1024)
-    # referencedoi = fields.CharField('Reference DOI', max_length=1024)
     refs = fields.ListField('References') # new
     project = fields.RelatedObjectField(SimulationProject)
     simulations = fields.RelatedObjectField(Simulation)
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+    file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 
 class Report(RelatedEntity):
     model_name = 'designsafe.project.simulation.report'
@@ -93,3 +102,4 @@ class Report(RelatedEntity):
     simulations = fields.RelatedObjectField(Simulation)
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+    file_tags = fields.ListField('File Tags', list_cls=DataTag)

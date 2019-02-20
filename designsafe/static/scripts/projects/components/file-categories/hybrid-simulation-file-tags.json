@@ -1,0 +1,164 @@
+{
+    "designsafe.project.hybrid_simulation.global_model": {
+        "name": "Global Model",
+        "tags": {
+            "General": [
+                "Assembly Document",
+                "Connectivity File",
+                "Drawings",
+                "Load",
+                "Photos",
+                "Model Component",
+                "Model Configuration",
+                "Simulation Input",
+                "Simulation Model",
+                "Simulation Script",
+                "Sensor Information"
+            ]
+        }
+    },
+    "designsafe.project.hybrid_simulation.coordinator": {
+        "name": "Coordinator",
+        "tags": {
+            "General": [
+                "Assembly Document",
+                "Connectivity File",
+                "Drawings",
+                "Load",
+                "Photos",
+                "Model Component",
+                "Model Configuration",
+                "Simulation Input",
+                "Simulation Model",
+                "Simulation Script",
+                "Sensor Information"
+            ]
+        }
+    },
+    "designsafe.project.hybrid_simulation.sim_substructure": {
+        "name": "Simulation Substructure",
+        "tags": {
+            "General": [
+                "Assembly Document",
+                "Connectivity File",
+                "Drawings",
+                "Load",
+                "Photos",
+                "Model Component",
+                "Model Configuration",
+                "Simulation Input",
+                "Simulation Model",
+                "Simulation Script",
+                "Sensor Information"
+            ]
+        }
+    },
+    "designsafe.project.hybrid_simulation.exp_substructure": {
+        "name": "Experimental Substructure",
+        "tags": {
+            "General": [
+                "Assembly Document",
+                "Connectivity File",
+                "Drawings",
+                "Load",
+                "Photos",
+                "Model Component",
+                "Model Configuration",
+                "Simulation Input",
+                "Simulation Model",
+                "Simulation Script",
+                "Sensor Information"
+            ]
+        }
+    },
+    "designsafe.project.hybrid_simulation.coordinator_output": {
+        "name": "Coordinator Output",
+        "tags": {
+            "General": [
+                "Assembly Document",
+                "Connectivity File",
+                "Drawings",
+                "Load",
+                "Photos",
+                "Model Component",
+                "Model Configuration",
+                "Simulation Input",
+                "Simulation Model",
+                "Simulation Script",
+                "Sensor Information"
+            ]
+        }
+    },
+    "designsafe.project.hybrid_simulation.sim_output": {
+        "name": "Simulation Output",
+        "tags": {
+            "General": [
+                "Assembly Document",
+                "Connectivity File",
+                "Drawings",
+                "Load",
+                "Photos",
+                "Model Component",
+                "Model Configuration",
+                "Simulation Input",
+                "Simulation Model",
+                "Simulation Script",
+                "Sensor Information"
+            ]
+        }
+    },
+    "designsafe.project.hybrid_simulation.exp_output": {
+        "name": "Experimental Output",
+        "tags": {
+            "General": [
+                "Assembly Document",
+                "Connectivity File",
+                "Drawings",
+                "Load",
+                "Photos",
+                "Model Component",
+                "Model Configuration",
+                "Simulation Input",
+                "Simulation Model",
+                "Simulation Script",
+                "Sensor Information"
+            ]
+        }
+    },
+    "designsafe.project.hybrid_simulation.analysis": {
+        "name": "Analysis",
+        "tags": {
+            "General": [
+                "Assembly Document",
+                "Connectivity File",
+                "Drawings",
+                "Load",
+                "Photos",
+                "Model Component",
+                "Model Configuration",
+                "Simulation Input",
+                "Simulation Model",
+                "Simulation Script",
+                "Sensor Information"
+            ]
+        }
+    },
+    "designsafe.project.hybrid_simulation.report": {
+        "name": "Report",
+        "tags": {
+            "General": [
+                "Assembly Document",
+                "Connectivity File",
+                "Drawings",
+                "Load",
+                "Photos",
+                "Model Component",
+                "Model Configuration",
+                "Simulation Input",
+                "Simulation Model",
+                "Simulation Script",
+                "Sensor Information"
+            ]
+        }
+    }
+}
