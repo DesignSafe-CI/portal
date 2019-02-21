@@ -7,11 +7,11 @@ export default class LayerGroup {
     this.show_contents = true;
   }
 
-  num_features () {
+  numFeatures () {
     return this.feature_group.getLayers().length;
   }
 
-  get_feature_type (f) {
+  getFeatureType (f) {
     // debugger
     if (f.options.thumb_src) {
       return 'Image';
