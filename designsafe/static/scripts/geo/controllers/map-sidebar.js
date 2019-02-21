@@ -64,8 +64,8 @@ export default class MapSidebarCtrl {
 
         // Load in a map project from the data service if one does exist, if not
         // create a new one from scratch
-        if (this.GeoDataService.current_project()) {
-            this.project = this.GeoDataService.current_project();
+        if (this.GeoDataService.currentProject()) {
+            this.project = this.GeoDataService.currentProject();
 
             this._initMapLayers();
             this.fitMapToProject();
@@ -87,7 +87,7 @@ export default class MapSidebarCtrl {
         // Auto keep track of current project in the GeoDataService
         // so that if they switch states they will not lose work...
         $interval( () => {
-            this.GeoDataService.current_project(this.project);
+            this.GeoDataService.currentProject(this.project);
         }, 1000);
 
         this.addDrawControls(this.active_layer_group.feature_group);
@@ -127,9 +127,9 @@ export default class MapSidebarCtrl {
 
     fitMapToProject() {
         try {
-            this.map.fitBounds(this.project.get_bounds(), { maxZoom: 16 });
+            this.map.fitBounds(this.project.getBounds(), { maxZoom: 16 });
         } catch (e) {
-            console.log('get_bounds fail', e);
+            console.log('getBounds fail', e);
         }
     }
 
@@ -417,7 +417,7 @@ export default class MapSidebarCtrl {
                 [res.max_lat, res.max_lon]
             ];
             if (res.file) {
-                this.GeoDataService.read_file_as_data_url(res.file).then( (data) => {
+                this.GeoDataService.readFileAsDataUrl(res.file).then( (data) => {
                     console.log(data);
                 });
             }
@@ -435,7 +435,7 @@ export default class MapSidebarCtrl {
 
         files.forEach( (f) => {
             this.loading = true;
-            this.GeoDataService.load_from_data_depot(f)
+            this.GeoDataService.loadFromDataDepot(f)
                 .then(
                     (retval) =>{
                         this._loadDataSuccess(retval);
@@ -455,7 +455,7 @@ export default class MapSidebarCtrl {
         for (let i=0; i<ev.target.files.length; i++) {
             // debugger
             let file = ev.target.files[i];
-            let prom = this.GeoDataService.load_from_local_file(file).then( (retval) =>{return this._loadDataSuccess(retval);});
+            let prom = this.GeoDataService.loadFromLocalFile(file).then( (retval) =>{return this._loadDataSuccess(retval);});
             reqs.push(prom);
             // this.loading = false;
         }
@@ -473,7 +473,7 @@ export default class MapSidebarCtrl {
     }
 
     saveLocally () {
-        this.GeoDataService.save_locally(this.project);
+        this.GeoDataService.saveLocally(this.project);
     }
 
     saveToDepot () {
@@ -489,7 +489,7 @@ export default class MapSidebarCtrl {
             this.project.name = newname.split('.')[0];
             res.location.name = res.saveas;
             this.loading = true;
-            this.GeoDataService.save_to_depot(this.project, res.location).then( (resp) => {
+            this.GeoDataService.saveToDepot(this.project, res.location).then( (resp) => {
                 this.loading = false;
                 this.toastr.success('Saved to data depot');
             }, (err) => {

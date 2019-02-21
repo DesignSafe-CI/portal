@@ -29,14 +29,14 @@ export default class GeoDataService {
 
 
 
-    current_project(project) {
+    currentProject(project) {
         if (!(project)) {
             return this.active_project;
         }
         this.active_project = project;
     }
 
-    _resize_image (blob, max_width=400, max_height=400) {
+    _resizeImage (blob, max_width=400, max_height=400) {
         return this.$q( (res, rej) => {
             let base64 = this._arrayBufferToBase64(blob);
             // Create and initialize two canvas
@@ -81,7 +81,7 @@ export default class GeoDataService {
         return 'data:image/jpg;base64,' + encoded;
     }
 
-    _from_kml(text_blob) {
+    _fromKml(text_blob) {
         return this.$q( (res, rej) => {
             let features = [];
             let l = omnivore.kml.parse(text_blob);
@@ -94,7 +94,7 @@ export default class GeoDataService {
         });
     }
 
-    _from_kmz (blob) {
+    _fromKmz (blob) {
         return this.$q( (res, rej) => {
             let zipper = new JSZip();
             zipper.loadAsync(blob).then( (zip) => {
@@ -107,14 +107,14 @@ export default class GeoDataService {
                     }
                 }
             }).then( (txt) => {
-                let features = this._from_kml(txt);
+                let features = this._fromKml(txt);
                 res(features);
             });
         });
     }
 
-    _from_json (blob) {
-        if (blob.ds_map) return this._from_dsmap(blob);
+    _fromJson (blob) {
+        if (blob.ds_map) return this._fromDsmap(blob);
         return this.$q( (res, rej) => {
 
             try {
@@ -128,7 +128,7 @@ export default class GeoDataService {
                     let props = layer.feature.properties;
                     if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
                         let latlng = layer.getLatLng();
-                        layer = this._make_image_marker(latlng.lat, latlng.lng, props.thumb_src, props.image_src, props.href);
+                        layer = this._makeImageMarker(latlng.lat, latlng.lng, props.thumb_src, props.image_src, props.href);
                     }
 
                     //add in the optional metadata / reserved props
@@ -155,7 +155,7 @@ export default class GeoDataService {
         });
     }
 
-    _from_gpx (blob) {
+    _fromGpx (blob) {
         return this.$q( (res, rej) => {
             // console.log(text_blob)
             let features = [];
@@ -167,7 +167,7 @@ export default class GeoDataService {
         });
     }
 
-    _make_image_marker (lat, lon, thumb, preview, href=null) {
+    _makeImageMarker (lat, lon, thumb, preview, href=null) {
         let icon = L.divIcon({
             iconSize: [40, 40],
             html: "<div class='image' style='background:url(" + thumb + ");background-size: 100% 100%'></div>",
@@ -195,7 +195,7 @@ export default class GeoDataService {
         return marker;
     }
 
-    _from_image (file, fname, agave_file=null) {
+    _fromImage (file, fname, agave_file=null) {
         return this.$q( (res, rej) => {
             try {
                 let exif = EXIF.readFromBinaryFile(file);
@@ -211,13 +211,13 @@ export default class GeoDataService {
                 }
                 let thumb = null;
                 let preview = null;
-                this._resize_image(file, 100, 100).then( (resp)=>{
+                this._resizeImage(file, 100, 100).then( (resp)=>{
                     thumb = resp;
                 }).then( ()=>{
-                    return this._resize_image(file, 400, 400);
+                    return this._resizeImage(file, 400, 400);
                 }).then( (resp)=>{
                     preview = resp;
-                    let marker = this._make_image_marker(lat, lon, thumb, preview, null);
+                    let marker = this._makeImageMarker(lat, lon, thumb, preview, null);
                     if (agave_file) {
                         marker.options.href = agave_file._links.self.href;
                         marker.options.label = agave_file.name;
@@ -234,7 +234,7 @@ export default class GeoDataService {
     }
 
 
-    _from_dsmap (json) {
+    _fromDsmap (json) {
         return this.$q( (res, rej) => {
             // if (json instanceof String) {
             let project = new MapProject();
@@ -280,7 +280,7 @@ export default class GeoDataService {
                     let layer_group_index = d.layer_group_index;
                     if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
                         let latlng = layer.getLatLng();
-                        layer = this._make_image_marker(latlng.lat, latlng.lng, layer.feature.properties.thumb_src, layer.feature.properties.image_src, layer.feature.properties.original_src);
+                        layer = this._makeImageMarker(latlng.lat, latlng.lng, layer.feature.properties.thumb_src, layer.feature.properties.image_src, layer.feature.properties.original_src);
                         // feat.options.image_src = feat.feature.properties.image_src;
                         // feat.options.thumb_src = feat.feature.properties.thumb_src;
                     }
@@ -299,7 +299,7 @@ export default class GeoDataService {
         });
     }
 
-    read_file_as_data_url(file) {
+    readFileAsDataUrl(file) {
 
         let reader = new FileReader();
         return this.$q( (res, rej) => {
@@ -315,9 +315,9 @@ export default class GeoDataService {
   This will return a promise that resolves to an array of features
   that can be added to a LayerGroup
   */
-    load_from_local_file (file) {
+    loadFromLocalFile (file) {
         let deferred = this.$q.defer();
-        let ext = GeoUtils.get_file_extension(file.name);
+        let ext = GeoUtils.getFileExtension(file.name);
         let reader = new FileReader();
         //
         if ((ext === 'kmz') || (ext === 'jpeg') || (ext === 'jpg')){
@@ -329,31 +329,31 @@ export default class GeoDataService {
             let p = null;
             switch (ext) {
                 case 'kml':
-                    p =  this._from_kml(reader.result);
+                    p =  this._fromKml(reader.result);
                     break;
                 case 'json':
-                    p = this._from_json(JSON.parse(reader.result));
+                    p = this._fromJson(JSON.parse(reader.result));
                     break;
                 case 'geojson':
-                    p = this._from_json(JSON.parse(reader.result));
+                    p = this._fromJson(JSON.parse(reader.result));
                     break;
                 case 'kmz':
-                    p = this._from_kmz(reader.result);
+                    p = this._fromKmz(reader.result);
                     break;
                 case 'gpx':
-                    p = this._from_gpx(reader.result);
+                    p = this._fromGpx(reader.result);
                     break;
                 case 'jpeg':
-                    p = this._from_image(reader, file.name);
+                    p = this._fromImage(reader, file.name);
                     break;
                 case 'jpg':
-                    p = this._from_image(reader, file.name);
+                    p = this._fromImage(reader, file.name);
                     break;
                 case 'dsmap':
-                    p = this._from_dsmap(JSON.parse(reader.result));
+                    p = this._fromDsmap(JSON.parse(reader.result));
                     break;
                 default:
-                    p = this._from_json(JSON.parse(reader.result));
+                    p = this._fromJson(JSON.parse(reader.result));
             }
             p.then( (data)=> { return deferred.resolve(data);});
             // deffered.resolve(p)
@@ -364,8 +364,8 @@ export default class GeoDataService {
     //
     // @param f: a file from DataService
     // returns a promise with the LayerGroup
-    load_from_data_depot(f) {
-        let ext = GeoUtils.get_file_extension(f.name);
+    loadFromDataDepot(f) {
+        let ext = GeoUtils.getFileExtension(f.name);
         let responseType = 'text';
         if ((ext === 'kmz') || (ext === 'jpg') || (ext === 'jpeg')) {
             responseType = 'arraybuffer';
@@ -377,31 +377,31 @@ export default class GeoDataService {
             let p = null;
             switch (ext) {
                 case 'kml':
-                    p =  this._from_kml(resp.data);
+                    p =  this._fromKml(resp.data);
                     break;
                 case 'json':
-                    p = this._from_json(resp.data);
+                    p = this._fromJson(resp.data);
                     break;
                 case 'geojson':
-                    p = this._from_json(resp.data);
+                    p = this._fromJson(resp.data);
                     break;
                 case 'kmz':
-                    p = this._from_kmz(resp.data);
+                    p = this._fromKmz(resp.data);
                     break;
                 case 'gpx':
-                    p = this._from_gpx(resp.data);
+                    p = this._fromGpx(resp.data);
                     break;
                 case 'jpeg':
-                    p = this._from_image(resp.data, f.name, f);
+                    p = this._fromImage(resp.data, f.name, f);
                     break;
                 case 'jpg':
-                    p = this._from_image(resp.data, f.name, f);
+                    p = this._fromImage(resp.data, f.name, f);
                     break;
                 case 'dsmap':
-                    p = this._from_dsmap(resp.data);
+                    p = this._fromDsmap(resp.data);
                     break;
                 default:
-                    p = this._from_json(resp.data);
+                    p = this._fromJson(resp.data);
             }
             return p;
         }, (err)=>{
@@ -409,8 +409,8 @@ export default class GeoDataService {
         });
     }
 
-    save_locally (project) {
-        let gjson = project.to_json();
+    saveLocally (project) {
+        let gjson = project.toJson();
         let blob = new Blob([JSON.stringify(gjson)], { type: 'application/json' });
         let url  = URL.createObjectURL(blob);
 
@@ -424,9 +424,9 @@ export default class GeoDataService {
     }
 
     //TODO: Fix that hard coded URL?
-    save_to_depot (project, path) {
+    saveToDepot (project, path) {
         let form = new FormData();
-        let gjson = project.to_json();
+        let gjson = project.toJson();
         let blob = new Blob([JSON.stringify(gjson)], { type: 'application/json' });
         let base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/';
         let post_url = base_file_url;
