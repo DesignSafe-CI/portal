@@ -68,7 +68,6 @@
           <div class="alert alert-danger">
             <div ng-if="browser.error.message" ng-bind-html="browser.error.message"></div>
             <div ng-if="!browser.error.message"> Something went wrong. Please try again, and if this error persists please use Help to file a ticket. </div>
-            <div>Something went wrong. Please try again, and if this error persists please use Help to file a ticket. </div>
           </div>
         </div>
         <div ng-if="! browser.busy && ! browser.error && (browser.listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
