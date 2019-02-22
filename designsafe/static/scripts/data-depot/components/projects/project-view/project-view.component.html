@@ -2,57 +2,58 @@
     <div ng-if="data.project" class="project-detail" style="background:white;">
       <!-- Project Header Start -->
       <div>
-        <span class="prj-head">{{data.project.value.projectId}} | <strong>{{ data.project.value.title }}</strong></span>
-        <a class="edit-link" ng-click="editProject($event)">Edit Project</a>
-        <div class="prj-row">
-          <span class="prj-label">PI</span>
-          <ds-user class="prj-data" username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user>
+        <div>
+          <span class="prj-head">{{data.project.value.projectId}} | <strong>{{ data.project.value.title }}</strong></span>
+          <a class="edit-link" ng-click="editProject($event)">Edit Project</a>
         </div>
-        <div class="prj-row">
-          <span class="prj-label" ng-if="data.project.value.coPis.length">CoPI</span>
-          <span class="prj-data" format="lname" ng-repeat="copi in data.project.value.coPis">
-            <span ng-if="!$last">
-              <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>; 
-            </span>
-            <span ng-if="$last">
-              <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
-            </span>
-          </span>
-          <span ng-repeat="user in publicationCtrl.filterUsers(data.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
-        </div>
-        <div class="prj-row" ng-hide="data.project.value.projectType === 'other' && data.project.value.dataType">
-          <span class="prj-label">Project Type</span>
-          <span class="prj-data">{{ data.project.value.projectType.replace('_', ' ') }}</span>
-        </div>
-        <div class="prj-row" ng-if="data.project.value.projectType === 'other' && data.project.value.dataType">
-          <span class="prj-label">Data Type</span>
-          <span class="prj-data">{{ data.project.value.dataType }}</span>
-        </div>
-        <table class="tg" style="table-layout: fixed; width: 100%;">
+        <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
           <colgroup>
             <col style="width: 15%">
             <col style="width: 84%">
           </colgroup>
+          <tr class="prj-row">
+            <td>PI</td>
+            <td><ds-user class="prj-data" username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user></td>
+          </tr>
+          <tr ng-if="data.project.value.coPis.length">
+            <td>CoPI</td>
+            <td format="lname" class="prj-data">
+              <span ng-repeat="copi in data.project.value.coPis">
+                <span ng-if="!$last">
+                  <ds-user username="copi" format="lname">{{ copi }}</ds-user>; 
+                </span>
+                <ds-user ng-if="$last" username="copi" format="lname">{{ copi }}</ds-user>
+              </span>
+            </td>
+          </tr>
+          <tr class="prj-row" ng-hide="data.project.value.projectType === 'other' && data.project.value.dataType">
+            <td>Project Type</td>
+            <td class="prj-data">{{ data.project.value.projectType.replace('_', ' ') }}</td>
+          </tr>
+          <tr class="prj-row" ng-if="data.project.value.projectType === 'other' && data.project.value.dataType">
+            <td>Data Type</td>
+            <td class="prj-data">{{ data.project.value.dataType }}</td>
+          </tr>
           <!-- older projects will have awards listed as strings -->
           <tr ng-if="isSingle(data.project.value.awardNumber)">
-            <td class="tg-0lax">Awards</td>
-            <td class="tg-0lax"><strong>{{ data.project.value.awardNumber }}</strong></td>
+            <td>Awards</td>
+            <td><strong>{{ data.project.value.awardNumber }}</strong></td>
           </tr>
           <tr ng-if="!isSingle(data.project.value.awardNumber)" ng-repeat="award in data.project.value.awardNumber track by $index">
-            <td class="tg-0lax" ng-if="$first">Awards</td>
-            <td class="tg-0lax" ng-if="!$first"></td>
-            <td class="tg-0lax"><strong>{{ award.name }} - {{ award.number }}</strong></td>
+            <td ng-if="$first">Awards</td>
+            <td ng-if="!$first"></td>
+            <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
           </tr>
           <tr ng-repeat="work in data.project.value.associatedProjects">
-            <td class="tg-0lax" ng-if="$first">Related Work</td>
-            <td class="tg-0lax" ng-if="!$first"></td>
-            <td class="tg-0lax"><strong>{{ work.title }} | <a>{{ work.href }}</a></strong></td>
+            <td ng-if="$first">Related Work</td>
+            <td ng-if="!$first"></td>
+            <td><strong>{{ work.title }} | <a>{{ work.href }}</a></strong></td>
+          </tr>
+          <tr class="prj-row">
+            <td ng-if="data.project.value.keywords">Keywords</td>
+            <td class="prj-data">{{ data.project.value.keywords }}</td>
           </tr>
         </table>
-        <div class="prj-row">
-          <span class="prj-label" ng-if="data.project.value.keywords">Keywords</span>
-          <span class="prj-data">{{ data.project.value.keywords }}</span>
-        </div>
         <div ng-if="data.project.value.description">
           <p>{{ data.project.value.description }}</p>
         </div>
@@ -65,7 +66,7 @@
             <col style="width: 50%">
           </colgroup>
           <tr>
-            <td class="tg-0lax">
+            <td>
               <button class="btn btn-project-l" ng-click="workingDirectory()">
                 Working Directory</button>
               <button class="btn btn-project-m grayed-out"
@@ -75,7 +76,7 @@
               <button class="btn btn-project-r grayed-out" ng-click="publicationPreview()">
                 Publication Preview</button>
             </td>
-            <td class="tg-0lax">
+            <td>
             </td>
           </tr>
         </table>
