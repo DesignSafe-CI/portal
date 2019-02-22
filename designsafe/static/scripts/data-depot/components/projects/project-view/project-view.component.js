@@ -192,7 +192,7 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       if ($event){
         $event.preventDefault();
       }
-      ProjectService.manageProjectType({'project': $scope.data.project});
+      ProjectService.manageProjectType({'project': $scope.data.project, 'warning': false});
     };
 
     $scope.manageSimulations = function($event) {
