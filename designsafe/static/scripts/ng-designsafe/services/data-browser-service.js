@@ -304,7 +304,9 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
         $scope.options = [
           {label: 'My Projects',
             conf: {system: 'projects', path: ''},
-            // comment stuff
+            apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
+            {label: 'Shared with me',
+            conf: {system: 'designsafe.storage.default', path: '$SHARE'},
             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
             {label: 'My Data',
             conf: {system: 'designsafe.storage.default', path: ''},

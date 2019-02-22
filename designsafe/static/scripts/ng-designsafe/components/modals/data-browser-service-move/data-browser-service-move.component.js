@@ -45,12 +45,6 @@ class DataBrowserServiceMoveCtrl {
         ];
 
         this.$scope.currentOption = null;
-        this.customRoot = {
-            name: this.$scope.currentOption.label,
-            href: '#',
-            system: this.$scope.currentOption.conf.system,
-            path: this.$scope.currentOption.conf.path
-        };
 
 
         this.$scope.$watch('currentOption', () => {
