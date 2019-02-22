@@ -748,7 +748,8 @@ font-family: 'DesignSafe-Apps';
 }
 
 .icon-ngl:before {
-    content: "\e900"
+    content: "\e900";
+    font-size: 4vw;
 }
 .icon-compress:before {
     content: "\e909";

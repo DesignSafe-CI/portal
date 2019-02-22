@@ -251,7 +251,7 @@ md-grid-tile:active {
   [class*=" icon-"]:before {
       font-size: 2.7em;
   }
-  .icon-adcirc:before {
+  .icon-adcirc:before, .icon-ngl:before {
     font-size: 2.3em;
   }
   .icon-opensees:before {
@@ -272,7 +272,7 @@ md-grid-tile:active {
   [class*=" icon-"]:before {
       font-size: 4em;
   }
-  .icon-adcirc:before {
+  .icon-adcirc:before, .icon-ngl:before {
     font-size: 3em;
   }
   .icon-opensees:before {
@@ -293,7 +293,7 @@ md-grid-tile:active {
   [class*=" icon-"]:before {
       font-size: 5em;
   }
-  .icon-adcirc:before {
+  .icon-adcirc:before, .icon-ngl:before {
     font-size: 3.5em;
   }
   .fa-icon-letter {
