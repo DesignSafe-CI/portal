@@ -134,6 +134,13 @@ class PipelineSelectionCtrl {
 
     }
 
+    hasEndDate(date) {
+        if (Date.parse(date)) {
+            return true;
+        }
+        return false;
+    }
+
     matchingGroup(exp, model) {
         if (!exp) {
             // if the category is related to the project level
