@@ -58,6 +58,13 @@ class ManageExperimentsCtrl {
         return false;
     }
 
+    hasEndDate(date) {
+        if (Date.parse(date)) {
+            return true;
+        }
+        return false;
+    }
+
     addExperiment() {
         this.form.addExperiments.push({});
     }

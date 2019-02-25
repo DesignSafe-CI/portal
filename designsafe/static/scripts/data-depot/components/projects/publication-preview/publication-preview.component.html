@@ -168,9 +168,12 @@
                     </strong>
                     <div ng-show="experiment.value.procedureStart">
                         <div style="display:inline-block; width:20%;">Date of Experiment</div>
-                        <strong style="display:inline-block; width:78%;">
-                            {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd
-                            | date:'MM-dd-yyyy' }}
+                        <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate(experiment.value.procedureEnd)">
+                            {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213;
+                            {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
+                        </strong>
+                        <strong style="display:inline-block; width:78%;" ng-if="!$ctrl.hasEndDate(experiment.value.procedureEnd)">
+                            {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }}
                         </strong>
                     </div>
                     <div style="display:inline-block; width:20%;">Date of Publication</div>
