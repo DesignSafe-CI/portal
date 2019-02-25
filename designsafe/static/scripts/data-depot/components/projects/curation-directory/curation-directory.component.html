@@ -68,37 +68,55 @@
                 <button class="btn btn-project-r grayed-out" ng-click="$ctrl.goPreview()">
                     Publication Preview</button>
             </td>
-            <td class="tg-0lax">
+            <td class="tg-0lax" ng-if="!$ctrl.loading">
                 <div ng-hide="$ctrl.browser.project.value.projectType === 'other'">                    
                     <span style="padding:10px; font-weight:bold;">1
-                        <a  ng-disabled="$ctrl.browser.loadingEntities"
-                            ng-click="$ctrl.manageExperiments()"
+                        <a  ng-click="$ctrl.manageExperiments()"
                             ng-if="$ctrl.browser.project.value.projectType === 'experimental'"
-                            > Add Experiments
+                        >
+                            Add Experiments
                         </a>
-                        <a  ng-disabled="$ctrl.browser.loadingEntities"
-                            ng-click="$ctrl.manageSimulations()"
+                        <a  ng-click="$ctrl.manageSimulations()"
                             ng-if="$ctrl.browser.project.value.projectType === 'simulation'"
-                            > Add Simulations
+                        >
+                            Add Simulations
                         </a>
-                        <a  ng-disabled="$ctrl.browser.loadingEntities"  
-                            ng-click="$ctrl.manageHybridSimulations()"
+                        <a  ng-click="$ctrl.manageHybridSimulations()"
                             ng-if="$ctrl.browser.project.value.projectType === 'hybrid_simulation'"
-                            > Add Hybrid Simulations
+                        >
+                            Add Hybrid Simulations
                         </a>
                     </span>
                     <span style="padding:5px; font-weight:bold;">|</span>
                     <span style="padding:10px; font-weight:bold;">2
-                        <a  ng-disabled="$ctrl.browser.loadingEntities"
-                            ng-click="$ctrl.manageCategories()"
-                            > Add Categories
-                        </a>
+                        <a ng-click="$ctrl.manageCategories()"> Add Categories</a>
                     </span>
                     <span style="padding:5px; font-weight:bold;">|</span>
                     <span style="padding:10px; font-weight:bold;">3
-                        <a data-ng-disabled="$ctrl.browser.loadingEntities"
-                           href="#"
-                           data-ng-click="$ctrl.relateData($event)">Relate Data</a>
+                        <a ng-click="$ctrl.relateData()"> Relate Data</a>
+                    </span>
+                </div>
+            </td>
+            <td class="tg-0lax" ng-if="$ctrl.loading">
+                <div ng-hide="$ctrl.browser.project.value.projectType === 'other'">                    
+                    <span style="padding:10px; font-weight:bold;">1
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'experimental'">
+                            Add Experiments
+                        </strong>
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'simulation'">
+                            Add Simulations
+                        </strong>
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'hybrid_simulation'">
+                            Add Hybrid Simulations
+                        </strong>
+                    </span>
+                    <span style="padding:5px; font-weight:bold;">|</span>
+                    <span style="padding:10px; font-weight:bold;">2
+                        <strong> Add Categories</strong>
+                    </span>
+                    <span style="padding:5px; font-weight:bold;">|</span>
+                    <span style="padding:10px; font-weight:bold;">3
+                        <strong> Relate Data</strong>
                     </span>
                 </div>
             </td>
@@ -106,5 +124,12 @@
     </table>
     <br>
     <a>breadcrumbs</a> / <a>go</a> / <a>here</a>
-    <files-listing browser="$ctrl.browser"></files-listing>
+    <div ng-if="$ctrl.loading">
+        <h3 class="text-center">
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+        </h3>
+    </div>
+    <div ng-if="!$ctrl.loading">
+        <files-listing browser="$ctrl.browser"></files-listing>
+    </div>
 </div>
