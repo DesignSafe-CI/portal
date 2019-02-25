@@ -61,7 +61,7 @@
                     placeholder="mm-dd-yyyy"
                     datepicker-options="dateOptions"
                     date-disabled="disabled(date, mode)"
-                    ng-required="true"
+                    ng-required="false"
                     close-text="Close"
                     class="form-control">
             <span class="input-group-btn">
@@ -243,7 +243,7 @@
                       placeholder="{{$ctrl.editExpForm.end | date:'MM-dd-yyyy'}}"
                       datepicker-options="dateOptions"
                       date-disabled="disabled(date, mode)"
-                      ng-required="true"
+                      ng-required="false"
                       close-text="Close"
                       class="form-control">
               <span class="input-group-btn">
@@ -429,8 +429,11 @@
                       style="display:inline-block; width:78%; text-transform:capitalize;">{{ experiment.value.equipmentTypeOther }}</strong>
               <div ng-show="experiment.value.procedureStart">
                 <div style="display:inline-block; width:20%;">Date of Experiment</div>
-                <strong style="display:inline-block; width:78%;">
+                <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate(experiment.value.procedureEnd)">
                   {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
+                </strong>
+                <strong style="display:inline-block; width:78%;" ng-if="!$ctrl.hasEndDate(experiment.value.procedureEnd)">
+                  {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }}
                 </strong>
               </div>
               <div>
