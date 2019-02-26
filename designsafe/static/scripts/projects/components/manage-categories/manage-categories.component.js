@@ -236,6 +236,10 @@ class ManageCategoriesCtrl {
                 }
             ];
         }
+
+        if (this.options.edit) {
+            this.editCategory(this.options.edit);
+        }
     }
 
     dropEntity(group) {

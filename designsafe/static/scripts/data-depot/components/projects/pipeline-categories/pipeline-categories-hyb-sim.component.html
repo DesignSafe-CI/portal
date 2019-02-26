@@ -92,7 +92,7 @@
                 <div class="well">
                     <p>{{ report.value.description }}</p>
                     <div>
-                        <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                        <span ng-click="$ctrl.editCategory(report)"><a>Edit</a></span>
                     </div>
                 </div>
                 <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
@@ -120,7 +120,7 @@
                     <div class="well">
                         <p>{{ model.value.description }}</p>
                         <div>
-                            <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                            <span ng-click="$ctrl.editCategory(model)"><a>Edit</a></span>
                         </div>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="true"></files-listing>
@@ -147,7 +147,7 @@
                     <div class="well">
                         <p>{{ coordinator.value.description }}</p>
                         <div>
-                            <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                            <span ng-click="$ctrl.editCategory(coordinator)"><a>Edit</a></span>
                         </div>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" category-listing="true"></files-listing>
@@ -174,7 +174,7 @@
                     <div class="well">
                         <p>{{ simsub.value.description }}</p>
                         <div>
-                            <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                            <span ng-click="$ctrl.editCategory(simsub)"><a>Edit</a></span>
                         </div>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" category-listing="true"></files-listing>
@@ -201,7 +201,7 @@
                     <div class="well">
                         <p>{{ expsub.value.description }}</p>
                         <div>
-                            <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                            <span ng-click="$ctrl.editCategory(expsub)"><a>Edit</a></span>
                         </div>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" category-listing="true"></files-listing>
@@ -228,7 +228,7 @@
                     <div class="well">
                         <p>{{ cout.value.description }}</p>
                         <div>
-                            <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                            <span ng-click="$ctrl.editCategory(cout)"><a>Edit</a></span>
                         </div>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" category-listing="true"></files-listing>
@@ -255,7 +255,7 @@
                     <div class="well">
                         <p>{{ eout.value.description }}</p>
                         <div>
-                            <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                            <span ng-click="$ctrl.editCategory(eout)"><a>Edit</a></span>
                         </div>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" category-listing="true"></files-listing>
@@ -282,7 +282,7 @@
                     <div class="well">
                         <p>{{ sout.value.description }}</p>
                         <div>
-                            <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                            <span ng-click="$ctrl.editCategory(sout)"><a>Edit</a></span>
                         </div>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" category-listing="true"></files-listing>
@@ -309,7 +309,7 @@
                     <div class="well">
                         <p>{{ analysis.value.description }}</p>
                         <div>
-                            <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                            <span ng-click="$ctrl.editCategory(analysis)"><a>Edit</a></span>
                         </div>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-listing="true"></files-listing>
