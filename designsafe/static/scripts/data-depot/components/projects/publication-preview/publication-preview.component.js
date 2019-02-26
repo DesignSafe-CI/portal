@@ -162,6 +162,13 @@ class PublicationPreviewCtrl {
             return false;
         }
     }
+
+    singleExperiment() {
+        if (this.browser.project.experiment_set.length === 1) {
+            return true;
+        }
+        return false;
+    }
     
     goWork() {
         this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
