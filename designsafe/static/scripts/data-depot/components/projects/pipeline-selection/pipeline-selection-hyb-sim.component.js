@@ -151,6 +151,13 @@ class PipelineSelectionHybSimCtrl {
         }
     }
 
+    singleExperiment() {
+        if (this.browser.project.hybridsimulation_set.length === 1) {
+            return true;
+        }
+        return false;
+    }
+
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view.data', {projectId: this.projectId}, {reload: true});
