@@ -58,6 +58,10 @@ class ManageHybridSimCtrl {
                 label: 'Other'
             }
         ];
+
+        if (this.options.edit) {
+            this.editSim(this.options.edit);
+        }
     }
 
     isValid(ent) {
@@ -102,15 +106,21 @@ class ManageHybridSimCtrl {
         });
     }
 
-    editSim(sim) {
-        /* convert string usernames to author objects and remove duplicates */
-        var usersToClean = [...new Set([...this.data.users, ...sim.value.authors.slice()])];
+    configureAuthors(exp) {
+        // combine project and experiment users then check if any authors need to be built into objects
+        var usersToClean = [...new Set([...this.data.users, ...exp.value.authors.slice()])];
         var modAuths = false;
+        var auths = [];
+
         usersToClean.forEach((a) => {
             if (typeof a == 'string') {
                 modAuths = true;
             }
+            if (a.authorship) {
+                auths.push(a);
+            }
         });
+        // create author objects for each user
         if (modAuths) {
             usersToClean.forEach((auth, i) => {
                 if (typeof auth == 'string') {
@@ -123,10 +133,46 @@ class ManageHybridSimCtrl {
         } else {
             usersToClean = _.uniq(usersToClean, 'name');
         }
+        /*
+        Restore previous authorship status if any
+        */
+        if (auths.length) {
+            auths.forEach((a) => {
+                usersToClean.forEach((u, i) => {
+                    if (a.name === u.name) {
+                        usersToClean[i] = a;
+                    }
+                });
+            });
+        }
+        /*
+        It is possible that a user added to an experiment may no longer be on a project
+        Remove any users on the experiment that are not on the project
+        */
+        var rmList = [];
+        usersToClean.forEach((m) => {
+          var person = this.data.users.find(u => u.name === m.name);
+          if (!person) {
+            rmList.push(m);
+          }
+        });
+        rmList.forEach((m) => {
+          var index = usersToClean.indexOf(m);
+          if (index > -1) {
+            usersToClean.splice(index, 1);
+          }
+        });
+        usersToClean.forEach((u, i) => {
+            u.order = i;
+        });
+        return usersToClean;
+    }
 
+    editSim(sim) {
+        var auths = this.configureAuthors(sim);
         this.editSimForm = {
             sim: sim,
-            authors: usersToClean,
+            authors: auths,
             description: sim.value.description,
             simulationType: sim.value.simulationType,
             simulationTypeOther: sim.value.simulationTypeOther,

@@ -53,7 +53,7 @@ class PipelineHybridCtrl {
     }
 
     editExp() {
-        this.ProjectService.manageHybridSimulations({'hybridSimulations': this.project.hybridsimulation_set, 'project': this.project});
+        this.ProjectService.manageHybridSimulations({'hybridSimulations': this.project.hybridsimulation_set, 'project': this.project, 'edit': this.simulation});
     }
 
 }
