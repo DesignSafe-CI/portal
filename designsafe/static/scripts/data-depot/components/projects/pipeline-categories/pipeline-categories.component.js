@@ -58,8 +58,8 @@ class PipelineCategoriesCtrl {
         }, {reload: true});
     }
 
-    editCategory() {
-        this.ProjectService.manageCategories({'project': this.browser.project, 'selectedListings': this.selectedListings});
+    editCategory(selection) {
+        this.ProjectService.manageCategories({'project': this.browser.project, 'selectedListings': this.selectedListings, 'edit': selection});
     }
 
     matchingGroup(exp, model) {
