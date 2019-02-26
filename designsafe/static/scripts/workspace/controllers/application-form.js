@@ -28,6 +28,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
     $scope.$on('launch-app', function(e, app) {
         $scope.error = '';
+        $scope.data.messages = [];
+        $scope.data.submitting = false;
 
         if ($scope.data.app) {
             $rootScope.$broadcast('close-app', $scope.data.app.id);
@@ -78,11 +80,22 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
                     $scope.data.app = resp.data;
 
-                    Systems.getSystemStatus(resp.data.executionSystem).then(function(response) {
-                        let heartbeatStatus = response.data.heartbeat.status;
-                        $scope.data.systemDown = (heartbeatStatus == false);
-                        $scope.resetForm();
-                    });
+                    Systems.getSystemStatus(resp.data.executionSystem)
+                        .then((response) => {
+                            let heartbeatStatus = response.heartbeat.status;
+                            $scope.data.systemDown = (heartbeatStatus == false);
+                        }, (err) => {
+                            $scope.data.messages.push({
+                                type: 'warning',
+                                header: 'System status unknown',
+                                body: `Could not access system status for system ${resp.data.executionSystem}. 
+                                Jobs may fail.`,
+                            });
+                            $scope.data.systemDown = null;
+                        })
+                        .finally(() => {
+                            $scope.resetForm();
+                        });
                 });
         } else if (app.value.type === 'html') {
             $scope.data.type = app.value.type;
