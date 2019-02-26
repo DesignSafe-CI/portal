@@ -41,88 +41,100 @@
                         ng-required="true"><br>
             </div>
         </div>
-        <!-- Project PI -->
-        <div class="form-group pull-left" style="width:48%; display:inline-block;">
-            <label for="id_pi">Principal Investigator (PI)
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
-            </label>
-            <input  type="text"
-                    id="id_pi"
-                    name="pi"
-                    ng-model="$ctrl.form.pi"
-                    placeholder="Lookup user by name or email address"
-                    autocomplete="off"
-                    uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
-                    typeahead-loading="searching"
-                    typeahead-no-results="noResults"
-                    typeahead-input-formatter="$ctrl.formatSelection($ctrl.form.pi)"
-                    typeahead-template-url="itemTmpl.html"
-                    style="width:100%;"
-                    ng-required="true"><br>
-        </div>
-        <!-- Project CoPI -->
-        <div class="form-group pull-right" style="width:48%; display:inline-block;">
-            <label for="id_copi">Co-Principal Investigator (Co-PI)</label>
-            <!-- <div ng-repeat="add in $ctrl.form.copi"> -->
-            <div ng-repeat="(i, usr) in $ctrl.form.copi track by $index">
-                <input  type="text"
-                        id="id_copi"
-                        name="copi"
-                        ng-model="$ctrl.form.copi[i]"
-                        placeholder="Lookup user by name or email address"
-                        autocomplete="off"
-                        uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
-                        typeahead-loading="searching"
-                        typeahead-input-formatter="$ctrl.formatSelection(usr)"
-                        typeahead-template-url="itemTmpl.html"
-                        style="width:100%;"><br>
-            </div>
-            <div>
-                <a ng-click="$ctrl.addEntity($ctrl.form.copi)">&#x2b; Add another CoPI</a>
-            </div>
-            <div ng-hide="$ctrl.checkEmpty($ctrl.form.copi)">
-                <a ng-click="$ctrl.dropEntity($ctrl.form.copi)">&#x2212; Drop CoPI</a>
-            </div>
-        </div>
-        <!-- Project Members -->
+        <!-- TEST -->
         <div class="form-group" style="width:100%; display:inline-block;">
-            <label>Project Members</label><br>
-            <!-- placeholder for prj creator -->
-            <div style="width:48%; display:inline-block;" ng-disabled="true">
-                <input  type="text"
-                        id="id_creator"
-                        name="creator"
-                        style="width:100%;"
-                        placeholder="{{$ctrl.formatSelection($ctrl.form.creator)}}"
-                        ng-disabled="true">
-            </div>
-            <!-- add users -->
-            <div    class="pull-right"
-                    ng-class-odd="'pull-right'"
-                    ng-class-even="'pull-left'"
-                    style="width:48%; display:inline-block;"
-                    ng-repeat="(i, usr) in $ctrl.form.team track by $index">
-                <input  type="text"
-                        id="id_user"
-                        name="user"
-                        style="width:100%;"
-                        ng-model="$ctrl.form.team[i]"
-                        placeholder="Lookup user by name or email address"
-                        autocomplete="off"
-                        uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
-                        typeahead-loading="searching"
-                        typeahead-input-formatter="$ctrl.formatSelection(usr)"
-                        typeahead-template-url="itemTmpl.html">
-            </div>
-            <div style="width:100%; display:inline-block;">
-                <div>
-                    <a ng-click="$ctrl.addEntity($ctrl.form.team)">&#x2b; Add another Project Member</a>
-                </div>
-                <div ng-hide="$ctrl.checkEmpty($ctrl.form.team)">
-                    <a ng-click="$ctrl.dropEntity($ctrl.form.team)">&#x2212; Drop Project Member</a>
-                </div>
-            </div>
+            <table class="tg" style="table-layout: fixed; width: 100%;">
+                <colgroup>
+                    <col style="width: 48%">
+                    <col style="width: 50%">
+                </colgroup>
+                <tr>
+                    <td class="tg-0lax">
+                        <label for="id_pi">Principal Investigators (PI)
+                            <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                        </label>
+                        <div>The creators and authors of the project.</div>
+                    </td>
+                    <td class="tg-0lax" valign="top">
+                        <label>Project Members</label>
+                        <div>Those who helped with the project.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tg-0lax" style="vertical-align:top">
+                        <!-- pi and copi -->
+                        <input  type="text"
+                                id="id_pi"
+                                name="pi"
+                                ng-model="$ctrl.form.pi"
+                                placeholder="Lookup user by name or email address"
+                                autocomplete="off"
+                                uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
+                                typeahead-loading="searching"
+                                typeahead-no-results="noResults"
+                                typeahead-input-formatter="$ctrl.formatSelection($ctrl.form.pi)"
+                                typeahead-template-url="itemTmpl.html"
+                                style="width:94%;"
+                                ng-required="true"
+                        >
+                        <div ng-repeat="(i, usr) in $ctrl.form.copi track by $index">
+                            <input  type="text"
+                                    id="id_copi"
+                                    name="copi"
+                                    ng-model="$ctrl.form.copi[i]"
+                                    placeholder="Lookup user by name or email address"
+                                    autocomplete="off"
+                                    uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
+                                    typeahead-loading="searching"
+                                    typeahead-input-formatter="$ctrl.formatSelection(usr)"
+                                    typeahead-template-url="itemTmpl.html"
+                                    style="width:94%;"
+                            ><br>
+                        </div>
+                        <div>
+                            <a ng-click="$ctrl.addEntity($ctrl.form.copi)">&#x2b; Add another PI</a>
+                        </div>
+                        <div ng-hide="$ctrl.checkEmpty($ctrl.form.copi)">
+                            <a ng-click="$ctrl.dropEntity($ctrl.form.copi)">&#x2212; Drop PI</a>
+                        </div>
+                    </td>
+                    <td class="tg-0lax" style="vertical-align:top">
+                        <!-- team -->
+                        <div ng-disabled="true">
+                            <input  type="text"
+                                    id="id_creator"
+                                    name="creator"
+                                    style="width:100%;"
+                                    placeholder="{{$ctrl.formatSelection($ctrl.form.creator)}}"
+                                    ng-disabled="true"
+                            >
+                        </div>
+                        <!-- add users -->
+                        <div ng-repeat="(i, usr) in $ctrl.form.team track by $index">
+                            <input  type="text"
+                                    id="id_user"
+                                    name="user"
+                                    style="width:100%;"
+                                    ng-model="$ctrl.form.team[i]"
+                                    placeholder="Lookup user by name or email address"
+                                    autocomplete="off"
+                                    uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
+                                    typeahead-loading="searching"
+                                    typeahead-input-formatter="$ctrl.formatSelection(usr)"
+                                    typeahead-template-url="itemTmpl.html"
+                            >
+                        </div>
+                        <div>
+                            <a ng-click="$ctrl.addEntity($ctrl.form.team)">&#x2b; Add another Project Member</a>
+                        </div>
+                        <div ng-hide="$ctrl.checkEmpty($ctrl.form.team)">
+                            <a ng-click="$ctrl.dropEntity($ctrl.form.team)">&#x2212; Drop Project Member</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
+        <!-- TEST -->
         <!-- Edit Project Section -->
         <div ng-if="$ctrl.form.uuid">
             <!-- Project Members -->
