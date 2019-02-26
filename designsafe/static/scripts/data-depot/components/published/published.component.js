@@ -111,7 +111,13 @@ export class PublishedDataCtrl {
 
 
     makeRequest() {
-        return this.$http.get('/api/projects/publication');
+        return this.$http.get('/api/projects/publication')
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     }
 
     resolveBreadcrumbHref(trailItem) {

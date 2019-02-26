@@ -73,7 +73,13 @@
 
         /* Send log message to backend */
         $http.post(djangoUrl.reverse('designsafe_api:logger'),
-          {level: level, name: this._name, message: args[0], args: args.slice(1)});
+          {level: level, name: this._name, message: args[0], args: args.slice(1)})
+            .then((resp) => {
+              return resp.data;
+            },
+            (error) => {
+              return this.$q.reject(error);
+            });
       };
 
       Logger.prototype.log = function() {

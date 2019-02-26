@@ -116,6 +116,12 @@ function NotificationService(
                 'designsafe_api:delete_notification',
                 {pk: encodeURIComponent(pk)}
             )
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
         );
     }
 

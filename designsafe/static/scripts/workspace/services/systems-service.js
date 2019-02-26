@@ -52,7 +52,13 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
             method: 'GET',
             params: {target: systemId},
             cache: false,
-        });
+        })
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     };
 
     service.list = function() {
@@ -90,30 +96,33 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
         switch (system) {
             case 'designsafe.community.exec.stampede2.nores':
                 return $http.get('https://portal.tacc.utexas.edu/commnq/stampede2.tacc.utexas.edu/summary.json',
-                    { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
-                    .then((resp) => {
-                        return resp.data;
-                    }, (err) => {
-                        return $q.reject(err);
-                    });
+                    {headers: {'X-Requested-With': undefined, Authorization: undefined}})
+                        .then((resp) => {
+                            return resp.data;
+                        },
+                        (error) => {
+                            return this.$q.reject(error);
+                        });
 
             case 'designsafe.community.exec.maverick':
                 return $http.get('https://portal.tacc.utexas.edu/commnq/maverick.tacc.utexas.edu/summary.json',
-                    { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
-                    .then((resp) => {
-                        return resp.data;
-                    }, (err) => {
-                        return $q.reject(err);
-                    });
+                    {headers: {'X-Requested-With': undefined, Authorization: undefined}})
+                        .then((resp) => {
+                            return resp.data;
+                        },
+                        (error) => {
+                            return this.$q.reject(error);
+                        });
 
             case 'designsafe.community.exec.ls5':
                 return $http.get('https://portal.tacc.utexas.edu/commnq/lonestar5.tacc.utexas.edu/summary.json',
-                    { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
-                    .then((resp) => {
-                        return resp.data;
-                    }, (err) => {
-                        return $q.reject(err);
-                    });
+                    {headers: {'X-Requested-With': undefined, Authorization: undefined}})
+                        .then((resp) => {
+                            return resp.data;
+                        },
+                        (error) => {
+                            return this.$q.reject(error);
+                        });
 
             default: {
                 let deferred = $q.defer();

@@ -318,6 +318,9 @@ export function dsInfiniteScroll(){
                       element.attr('title', content);
                       element.tooltip('fixTitle');
                       //element.tooltip('show');
+                  },
+                  (error) => {
+                      return this.$q.reject(error);
                   });
               }
           });

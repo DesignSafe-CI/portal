@@ -461,8 +461,12 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
    * @returns {*}
    */
   function getFileManagers () {
-    return $http.get('/api/files/file-managers/').then(function (resp) {
-      return resp.data;
+    return $http.get('/api/files/file-managers/')
+      .then((resp) => {
+        return resp.data;
+      },
+      (error) => {
+        return this.$q.reject(error);
     });
   }
 
@@ -2468,7 +2472,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
 
           var neesCitation = function (prj) {
             $http.get('/api/projects/publication/' + prj[0].meta.projectId)
-            .then(function (resp) {
+            .then((resp) => {
               
               prj = resp.data.project;
               $ctrl.data.prj = prj;
@@ -2533,6 +2537,9 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
               $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
               $ctrl.doiurl = "https://doi.org/" + $ctrl.data.prj.doi.slice(4);
               $ctrl.doicit = $ctrl.data.prj.doi.slice(4);
+            },
+            (error) => {
+              return this.$q.reject(error);
             });
           };
 

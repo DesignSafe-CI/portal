@@ -11,6 +11,9 @@ export function UserService($http, $q) {
       return $http.get("/api/users", {params: {username: username}})
         .then(function (resp) {
           return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
         });
     };
 
@@ -22,8 +25,11 @@ export function UserService($http, $q) {
      */
     this.search = function (options) {
       return $http.get("/api/users", {params: {q: options.q, role:options.role}})
-        .then(function (resp) {
+        .then((resp) => {
           return resp.data;
+        },
+        (error) => {
+            return this.$q.reject(error);
         });
     };
 
@@ -33,10 +39,14 @@ export function UserService($http, $q) {
      * @returns {Promise}
      */
     this.authenticate = function () {
-      return $http.get('/api/users/auth').then(function (resp) {
-        user = resp.data;
-        return resp.data;
-      });
+      return $http.get('/api/users/auth')
+        .then((resp) => {
+          user = resp.data;
+          return resp.data;
+        },
+        (error) => {
+            return this.$q.reject(error);
+        });
     };
 
     /**
@@ -56,9 +66,13 @@ export function UserService($http, $q) {
     };
 
     this.usage = function () {
-      return $http.get('/api/users/usage/').then(function (resp) {
-        return resp.data;
-      });
+      return $http.get('/api/users/usage/')
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
   }

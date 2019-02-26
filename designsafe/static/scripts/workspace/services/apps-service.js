@@ -10,7 +10,13 @@ export function appsService($http, $q, $translate, djangoUrl) {
             method: 'GET',
             params: { q: query },
             cache: true,
-        });
+        })
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     };
 
     service.get = function(appId) {
@@ -18,7 +24,13 @@ export function appsService($http, $q, $translate, djangoUrl) {
             url: djangoUrl.reverse('designsafe_workspace:call_api', ['apps']),
             method: 'GET',
             params: { app_id: appId },
-        });
+        })
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     };
 
     service.getMeta = function(appId) {
@@ -26,7 +38,13 @@ export function appsService($http, $q, $translate, djangoUrl) {
             url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
             method: 'GET',
             params: { q: { name: $translate.instant('apps_metadata_name'), 'value.definition.id': appId } },
-        });
+        })
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     };
 
     service.copyNotebook = function(fileMgrName, systemId, filePath) {
@@ -38,7 +56,13 @@ export function appsService($http, $q, $translate, djangoUrl) {
                 ipynb: true,
                 system: 'designsafe.storage.default',
             },
-        });
+        })
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     };
 
     service.setupNotebook = function(filePath) {
@@ -49,7 +73,13 @@ export function appsService($http, $q, $translate, djangoUrl) {
                 file_path: filePath,
                 system: 'designsafe.storage.default',
             },
-        });
+        })
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     };
 
     service.getAppDropdownDescription = function(appId) {
@@ -57,7 +87,13 @@ export function appsService($http, $q, $translate, djangoUrl) {
             url: djangoUrl.reverse('designsafe_workspace:call_api', ['description']),
             method: 'GET',
             params: { app_id: appId },
-        });
+        })
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     };
 
     service.formSchema = function(app) {

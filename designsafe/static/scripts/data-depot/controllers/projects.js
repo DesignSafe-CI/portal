@@ -212,6 +212,9 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
             $scope.data.publication.eventsList = $scope.data.publication.eventsList || [];
             $scope.data.publication.analysisList = $scope.data.publication.analysisList || []; 
             $scope.data.publication.reportsList = $scope.data.publication.reportsList || [];
+        },
+        (error) => {
+            return this.$q.reject(error);
         });
     });
 
@@ -405,8 +408,11 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
       $scope.ui.savingPublication = true;
       $http.post('/api/projects/publication/' +  projectId,
         {publication: publication, status: 'saved'})
-        .then(function(resp){
+        .then((resp) => {
           $scope.ui.savingPublication = false;
+        },
+        (error) => {
+          return this.$q.reject(error);
         });
     }
 
@@ -1073,13 +1079,16 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
 
       $http.post('/api/projects/publication/', {publication: publication,
                                                 status: status})
-        .then(function(resp){
+        .then((resp) => {
           if (resp.data.response.status == 'published'){
               $scope.state.publicationMsg = resp.data.message;
               DataBrowserService.state().publicationMsg = resp.data.message;
           }
           $scope.state.project.publicationStatus = resp.data.response.status;
           DataBrowserService.state().project.publicationStatus = resp.data.response.status;
+        },
+        (error) => {
+          return this.$q.reject(error);
         });
     };
 
