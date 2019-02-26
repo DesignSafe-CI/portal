@@ -100,7 +100,7 @@
                     </table>
                 </button>
                 <div id="files-{{report.uuid}}" class="collapse">
-                    <div class="well">
+                    <div class="well" ng-if="report.value.description">
                         <p>{{ report.value.description }}</p>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
@@ -179,7 +179,7 @@
                                     </table>
                                 </button>
                                 <div id="files-{{report.uuid}}" class="collapse">
-                                    <div class="well">
+                                    <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
                                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
@@ -203,7 +203,7 @@
                                     </table>
                                 </button>
                                 <div id="files-{{model.uuid}}" class="collapse">
-                                    <div class="well">
+                                    <div class="well" ng-if="model.value.description">
                                         <p>{{ model.value.description }}</p>
                                     </div>
                                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]"></files-listing>
@@ -227,7 +227,7 @@
                                     </table>
                                 </button>
                                 <div id="files-{{input.uuid}}" class="collapse">
-                                    <div class="well">
+                                    <div class="well" ng-if="input.value.description">
                                         <p>{{ input.value.description }}</p>
                                     </div>
                                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]"></files-listing>
@@ -251,7 +251,7 @@
                                     </table>
                                 </button>
                                 <div id="files-{{output.uuid}}" class="collapse">
-                                    <div class="well">
+                                    <div class="well" ng-if="output.value.description">
                                         <p>{{ output.value.description }}</p>
                                     </div>
                                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]"></files-listing>
@@ -275,8 +275,19 @@
                                     </table>
                                 </button>
                                 <div id="files-{{analysis.uuid}}" class="collapse">
-                                    <div class="well">
-                                        <p>{{ analysis.value.description }}</p>
+                                    <div class="well" ng-if="analysis.value.refs && analysis.value.description">
+                                        <table class="tg" style="table-layout: fixed; width: 100%;">
+                                            <colgroup>
+                                                <col style="width: 15%">
+                                                <col style="width: 84%">
+                                            </colgroup>
+                                            <tr ng-repeat="ref in analysis.value.refs">
+                                                <td class="tg-0lax" ng-if="$first">Referenced Work</td>
+                                                <td class="tg-0lax" ng-if="!$first"></td>
+                                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a>{{ ref.referencedoi }}</a></strong></td>
+                                            </tr>
+                                        </table>
+                                        <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                     </div>
                                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]"></files-listing>
                                 </div>

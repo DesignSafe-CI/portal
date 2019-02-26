@@ -307,6 +307,17 @@
                 </button>
                 <div id="files-{{analysis.uuid}}" class="collapse in">
                     <div class="well">
+                        <table class="tg" style="table-layout: fixed; width: 100%;">
+                            <colgroup>
+                                <col style="width: 15%">
+                                <col style="width: 84%">
+                            </colgroup>
+                            <tr ng-repeat="ref in analysis.value.refs">
+                                <td class="tg-0lax" ng-if="$first">Referenced Work</td>
+                                <td class="tg-0lax" ng-if="!$first"></td>
+                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a>{{ ref.referencedoi }}</a></strong></td>
+                            </tr>
+                        </table>
                         <p>{{ analysis.value.description }}</p>
                         <div>
                             <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
