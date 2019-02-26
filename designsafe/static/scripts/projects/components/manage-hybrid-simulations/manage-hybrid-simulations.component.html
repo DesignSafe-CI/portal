@@ -234,7 +234,7 @@
     </div>
     <div class="dropdown">
       <div ng-repeat="simulation in $ctrl.data.simulations">
-        <div class="dropdown entity-preview-header">
+        <div class="dropdown dropdown-spacer-sm entity-preview-header">
           <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{simulation.uuid}}" style="width:100%;">
             <table style="width:100%">
                 <tr>
@@ -247,7 +247,7 @@
                 </tr>
             </table>
           </button>
-          <div id="files-{{simulation.uuid}}" class="collapse">
+          <div id="files-{{simulation.uuid}}" class="collapse dropdown-spacer-lg">
             <div class="well">
               <div style="display:inline-block; width:20%;">Hybrid Simulation Type</div>
               <strong ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationType }}</strong>

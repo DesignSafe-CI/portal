@@ -87,7 +87,7 @@
     </div>
     <!-- Project Reports -->
     <div ng-hide="$ctrl.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
-        <div class="dropdown" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(simulation, report)">
+        <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(simulation, report)">
             <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                 <table style="width:100%">
                     <tr>
@@ -109,7 +109,7 @@
         </div>
     </div>
     <div ng-hide="$ctrl.loading" ng-repeat="simulation in $ctrl.browser.project.simulation_set">
-        <div class="dropdown" id="details-{{simulation.uuid}}">
+        <div class="dropdown dropdown-spacer-sm" id="details-{{simulation.uuid}}">
             <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
                 <table style="width:100%">
                     <tr>
@@ -122,7 +122,7 @@
                     </tr>
                 </table>
             </button>
-            <div id="data-{{simulation.uuid}}" class="collapse" ng-class="{'in': $index==0}">
+            <div id="data-{{simulation.uuid}}" class="collapse dropdown-spacer-lg" ng-class="{'in': $ctrl.singleExperiment()}">
                 <div class="well">
                     <div style="display:inline-block; width:20%;">Simulation Type</div>
                     <strong ng-if="!$ctrl.isValid(simulation.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
@@ -160,7 +160,7 @@
                     </p>
             <!-- Simulation Reports -->
                     <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
-                        <div class="dropdown" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(simulation, report)">
+                        <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(simulation, report)">
                             <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                                 <table style="width:100%">
                                     <tr>
@@ -183,7 +183,7 @@
                     </div>
             <!-- Model -->
                     <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'">
-                        <div class="dropdown" id="details-{{model.uuid}}" ng-if="$ctrl.matchingGroup(simulation, model)">
+                        <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}" ng-if="$ctrl.matchingGroup(simulation, model)">
                             <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                                 style="width:100%;">
                                 <table style="width:100%">
@@ -207,7 +207,7 @@
                     </div>
             <!-- Inputs -->
                     <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: 'value.title'">
-                        <div class="dropdown" id="details-{{input.uuid}}" ng-if="$ctrl.matchingGroup(simulation, input)">
+                        <div class="dropdown dropdown-spacer-sm" id="details-{{input.uuid}}" ng-if="$ctrl.matchingGroup(simulation, input)">
                             <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{input.uuid}}" style="width:100%;">
                                 <table style="width:100%">
                                     <tr>
@@ -230,7 +230,7 @@
                     </div>
             <!-- Output -->
                     <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: 'value.title'">
-                        <div class="dropdown" id="details-{{output.uuid}}" ng-if="$ctrl.matchingGroup(simulation, output)">
+                        <div class="dropdown dropdown-spacer-sm" id="details-{{output.uuid}}" ng-if="$ctrl.matchingGroup(simulation, output)">
                             <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{output.uuid}}"
                                 style="width:100%;">
                                 <table style="width:100%">
@@ -254,7 +254,7 @@
                     </div>
             <!-- Analysis -->
                     <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'">
-                        <div class="dropdown" id="details-{{analysis.uuid}}" ng-if="$ctrl.matchingGroup(simulation, analysis)">
+                        <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}" ng-if="$ctrl.matchingGroup(simulation, analysis)">
                             <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                                 style="width:100%;">
                                 <table style="width:100%">

@@ -387,7 +387,7 @@
     </div>
     <div class="dropdown">
       <div ng-repeat="experiment in $ctrl.data.experiments">
-        <div class="dropdown">
+        <div class="dropdown dropdown-spacer-sm">
           <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{experiment.uuid}}" style="width:100%;">
             <table style="width:100%">
                 <tr>
@@ -400,7 +400,7 @@
                 </tr>
             </table>
           </button>
-          <div id="files-{{experiment.uuid}}" class="collapse">
+          <div id="files-{{experiment.uuid}}" class="collapse dropdown-spacer-lg">
             <div class="well">
               <div style="display:inline-block; width:20%;">Experiment Type</div>
               <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)"
