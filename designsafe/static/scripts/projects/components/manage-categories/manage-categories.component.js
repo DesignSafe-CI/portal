@@ -321,8 +321,6 @@ class ManageCategoriesCtrl {
             entity: catCopy,
             type: catCopy._displayName,
             title: catCopy.value.title,
-            reference: catCopy.value.reference,
-            referencedoi: catCopy.value.referencedoi,
             refs: catCopy.value.refs,
             description: catCopy.value.description
         };
@@ -330,11 +328,19 @@ class ManageCategoriesCtrl {
     }
 
     updateCategory() {
+        var pruneRefs = [];
         var cat = this.editForm.entity;
         cat.value.title = this.editForm.title;
-        cat.value.reference = this.editForm.reference;
-        cat.value.referencedoi = this.editForm.referencedoi;
         cat.value.description = this.editForm.description;
+        this.editForm.refs.forEach((r) => {
+            if (r) {
+                if (r.referencedoi && r.referencedoi != '' && 
+                    typeof r.reference != 'undefined' && r.reference != '') {
+                    pruneRefs.push(r);
+                }
+            }
+        });
+        cat.value.refs = pruneRefs;
         this.ProjectEntitiesService.update({
             data: {
                 uuid: cat.uuid,
