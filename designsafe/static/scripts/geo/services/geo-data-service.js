@@ -446,7 +446,13 @@ export default class GeoDataService {
             'Content-Type': undefined,
             Authorization: 'Bearer ' + this.UserService.currentUser().oauth.access_token
         };
-        return this.$http.post(post_url, form, { headers: headers });
+        return this.$http.post(post_url, form, { headers: headers })
+            .then((resp) => {
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     }
 
 }

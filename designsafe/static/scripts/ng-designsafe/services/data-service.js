@@ -12,7 +12,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
      * @returns {HttpPromise} that will be resolved with a list of available data sources.
      */
     service.listSources = function() {
-      return $http.get(djangoUrl.reverse('designsafe_api:sources'));
+      return $http.get(djangoUrl.reverse('designsafe_api:sources'))
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+      });
     };
 
 
@@ -72,7 +78,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
         var offset = options.page * 100;
         url += '&offset=' + offset;
       }
-      return $http.get(url);
+      return $http.get(url)
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
 
@@ -93,7 +105,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
         'action': 'mkdir',
         'dir_name': options.dir_name
       };
-      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body)
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
 
@@ -114,7 +132,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
       body.append('action', 'upload');
       return $http.post(djangoUrl.reverse('designsafe_api:file', params), body, {
         headers : {'Content-Type': undefined}
-      });
+      })
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
 
@@ -124,7 +148,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
      */
     service.download = function(options) {
       options = options || {};
-      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'download'});
+      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'download'})
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
 
@@ -134,7 +164,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
      */
     service.preview = function(options) {
       options = options || {};
-      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'preview'});
+      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'preview'})
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
 
@@ -146,7 +182,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
      */
     service.trash = function(options) {
       options = options || {};
-      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'move_to_trash'});
+      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'move_to_trash'})
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
 
@@ -158,7 +200,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
      */
     service.delete = function(options) {
       options = options || {};
-      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'delete'});
+      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'delete'})
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
 
@@ -180,7 +228,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
         dest_resource: options.dest_resource,
         dest_file_id: options.dest_file_id
       };
-      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body)
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
 
@@ -202,7 +256,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
         dest_resource: options.dest_resource,
         dest_file_id: options.dest_file_id
       };
-      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body)
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
 
@@ -222,7 +282,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
         action: 'rename',
         target_name: options.target_name
       };
-      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body)
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
     /**
@@ -242,7 +308,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
         action: 'share',
         permissions: options.permissions
       };
-      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body)
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
     /**
@@ -267,7 +339,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
         var offset = page * 100;
         url += '&offset=' + offset;
       }
-      return $http.get(url);
+      return $http.get(url)
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
     service.updateMeta = function(options){
@@ -280,7 +358,13 @@ export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
         meta_obj: options.meta_obj
       };
       var url = djangoUrl.reverse('designsafe_api:file', params);
-      return $http.put(url, body);
+      return $http.put(url, body)
+        .then((resp) => {
+          return resp.data;
+        },
+        (error) => {
+          return this.$q.reject(error);
+        });
     };
 
     return service;

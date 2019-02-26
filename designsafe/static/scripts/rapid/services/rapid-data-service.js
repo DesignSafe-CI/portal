@@ -8,19 +8,27 @@ export default class RapidDataService {
     }
 
     get_events (opts) {
-        return this.$http.get('/recon-portal/events', opts).then( (resp) => {
-            resp.data.forEach( (d) =>{
+        return this.$http.get('/recon-portal/events', opts)
+            .then( (resp) => {
+            resp.data.forEach( (d) => {
                 d.created_date = new Date(d.created_date);
                 d.event_date = new Date(d.event_date);
             });
             return resp.data;
-        });
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     }
 
     get_event_types () {
-        return this.$http.get('/recon-portal/event-types').then( (resp) => {
+        return this.$http.get('/recon-portal/event-types')
+            .then( (resp) => {
             return resp.data;
-        });
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     }
 
     search (events, filter_options) {

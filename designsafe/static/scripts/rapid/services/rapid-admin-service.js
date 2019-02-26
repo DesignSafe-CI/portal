@@ -11,8 +11,12 @@ export default class RapidAdminService {
             action: action
         };
 
-        return this.$http.post('/recon-portal/admin/users/permissions/', payload).then( (resp)=>{
-            return resp.data;
-        });
+        return this.$http.post('/recon-portal/admin/users/permissions/', payload)
+            .then( (resp)=>{
+                return resp.data;
+            },
+            (error) => {
+                return this.$q.reject(error);
+            });
     }
 }
