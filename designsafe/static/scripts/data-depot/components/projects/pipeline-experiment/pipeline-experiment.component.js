@@ -60,7 +60,7 @@ class PipelineExperimentCtrl {
     }
 
     editExp() {
-        this.ProjectService.manageExperiments({'experiments': this.project.experiment_set, 'project': this.project});
+        this.ProjectService.manageExperiments({'experiments': this.project.experiment_set, 'project': this.project, 'edit': this.experiment});
     }
 
 }

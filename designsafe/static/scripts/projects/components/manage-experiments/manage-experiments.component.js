@@ -49,6 +49,10 @@ class ManageExperimentsCtrl {
             entitiesToAdd: []
         };
         this.form.curExperiments = this.data.project.experiment_set;
+
+        if (this.options.edit) {
+            this.editExp(this.options.edit);
+        }
     }
 
     isValid(ent) {
@@ -116,7 +120,6 @@ class ManageExperimentsCtrl {
                     auth.order = i;
                 }
             });
-            usersToClean
             usersToClean = _.uniq(usersToClean, 'name');
         } else {
             usersToClean = _.uniq(usersToClean, 'name');
