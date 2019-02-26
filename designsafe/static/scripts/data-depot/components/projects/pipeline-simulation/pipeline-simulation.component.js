@@ -25,7 +25,7 @@ class PipelineSimulationCtrl {
             for now we can send them back to the selection area
             */
             this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
-            this.$state.go('projects.pipelineSelectHybSim', {projectId: this.projectId}, {reload: true});
+            this.$state.go('projects.pipelineSelectSim', {projectId: this.projectId}, {reload: true});
         }
     }
 
@@ -53,7 +53,7 @@ class PipelineSimulationCtrl {
     }
 
     editExp() {
-        this.ProjectService.manageSimulations({'simulations': this.project.simulation_set, 'project': this.project});
+        this.ProjectService.manageSimulations({'simulations': this.project.simulation_set, 'project': this.project, 'edit': this.simulation});
     }
 
 }
