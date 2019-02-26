@@ -132,8 +132,8 @@
 <div class="modal-footer">
     <div class="text-right">
         <button class="btn btn-primary" type="button"
-                ng-disabled="! $ctrl.validDestination(listing)"
-                ng-click="$ctrl.chooseDestination(listing)"
+                ng-disabled="! $ctrl.validDestination($ctrl.listing)"
+                ng-click="$ctrl.chooseDestination($ctrl.listing)"
         >
             Move to {{ $ctrl.listing.name }}
         </button>
