@@ -158,6 +158,13 @@ class PipelineSelectionCtrl {
         }
     }
 
+    singleExperiment() {
+        if (this.browser.project.experiment_set.length === 1) {
+            return true;
+        }
+        return false;
+    }
+
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view.data', {projectId: this.projectId}, {reload: true});

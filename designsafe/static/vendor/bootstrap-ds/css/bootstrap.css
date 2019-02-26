@@ -3708,6 +3708,12 @@ tbody.collapse.in {
 .dropdown {
   position: relative;
 }
+.dropdown-spacer-sm {
+  margin-bottom: 2px;
+}
+.dropdown-spacer-lg {
+  margin-bottom: 16px;
+}
 .dropdown-toggle:focus {
   outline: 0;
 }
@@ -4882,7 +4888,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-experiment {
   background-color: #f5f5f5;
   border-color: #cccccc;
-  margin-bottom: 2px;
 }
 .category-model-conf {
   font-weight: bold;
@@ -4891,7 +4896,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-model-conf {
   background-color: #C4D9F2;
   border-color: #1568C9;
-  margin-bottom: 2px;
 }
 .category-sensor-info {
   font-weight: bold;
@@ -4900,7 +4904,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-sensor-info {
   background-color: #CAE9E6;
   border-color: #43A59D;
-  margin-bottom: 2px;
 }
 .category-event {
   font-weight: bold;
@@ -4909,7 +4912,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-event {
   background-color: #ECE4BF;
   border-color: #B59300;
-  margin-bottom: 2px;
 }
 .category-subst {
   font-weight: bold;
@@ -4918,7 +4920,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-subst {
   background-color: #c09add;
   border-color: #865AA7;
-  margin-bottom: 2px;
 }
 .category-outpt {
   font-weight: bold;
@@ -4927,7 +4928,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-outpt {
   background-color: #df878a;
   border-color: #D04348;
-  margin-bottom: 2px;
 }
 .category-analysis {
   font-weight: bold;
@@ -4936,7 +4936,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-analysis {
   background-color: #CCECF6;
   border-color: #56C0E0;
-  margin-bottom: 2px;
 }
 .category-report {
   font-weight: bold;
@@ -4945,7 +4944,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-report {
   background-color: #C4C4C4;
   border-color: #3E3E3E;
-  margin-bottom: 2px;
 }
 .breadcrumb {
   padding: 8px 15px;
@@ -6077,7 +6075,7 @@ button.list-group-item-danger.active:focus {
 .well {
   min-height: 20px;
   padding: 19px;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   background-color: #f5f5f5;
   border: 1px solid #e3e3e3;
   border-radius: 0px;
