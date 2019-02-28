@@ -22,10 +22,10 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         page = request.GET.get('page', 0)
 
         if event_type is not None:
-            notifs = Notification.objects.filter(event_type = event_type,
+            notifs = Notification.objects.filter(
                           deleted = False,
                           user = request.user.username).order_by('-datetime')
-            total = Notification.objects.filter(event_type = event_type,
+            total = Notification.objects.filter(
                           deleted = False,
                           user = request.user.username).count()
         else:

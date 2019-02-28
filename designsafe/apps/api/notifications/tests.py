@@ -12,6 +12,8 @@ from unittest import skip
 from django.dispatch import receiver
 from django.core.urlresolvers import reverse
 from designsafe.apps.api.notifications.models import Notification
+from designsafe.apps.api.notifications.views.api import ManageNotificationsView
+from designsafe.apps.api.notifications.views.api import NotificationsBadgeView
 
 import logging
 
@@ -28,11 +30,50 @@ webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING)))
 
 wh_url = reverse('designsafe_api:jobs_wh_handler')
 
+class NotificationsViewsTests(TestCase):
+    fixtures = ['user-data.json', 'agave-oauth-token-data.json']
+
+    def setUp(self):
+        user = get_user_model().objects.get(username="ds_user")
+        note = Notification(
+            event_type="JOB",
+            status="SUCCESS",
+            message="Job succeeded",
+            user=user
+        )
+        note.save()
+
+    def test_get_notifications(self):
+        user = get_user_model().objects.get(username="ds_user")
+        self.client.force_login(user)
+        resp = self.client.get("/api/notifications/")
+        print(resp.json())
+        data = resp.json()
+        self.assertTrue(len(data["notifs"])==1)
+
+    def test_get_request(self):
+        resp = self.client.get("api/notification")
+        # if resp(event_type) 
+        if resp != "":
+            self.assertTrue(resp)
+        print(resp)
+        limit = request
+
+    # def test_post_request(self):
+    #     resp = self.client.get("api/notification")
+    #     notif = n.read
+    #     if notif != "":
+    #         self.assertTrue(notif)
+    #     print(notif)
+
+
+            
+
+
 # Create your tests here.
 @skip("Need to mock websocket call to redis")
 class NotificationsTestCase(TestCase):
     fixtures = ['user-data.json', 'agave-oauth-token-data.json']
-
     def setUp(self):
         user = get_user_model().objects.get(pk=2)
         user.set_password('password')
