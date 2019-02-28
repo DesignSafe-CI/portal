@@ -77,14 +77,23 @@
                 Experiment | <strong>{{ $ctrl.experiment.value.title }}</strong>
             </div>
             <div style="display:inline-block; width:20%;">Experiment Type</div>
-            <strong ng-if="!$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%; text-transform:capitalize;">{{
-                $ctrl.experiment.value.experimentType.replace('_', ' ') }}</strong>
-            <strong ng-if="$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%; text-transform:capitalize;">{{
-                $ctrl.experiment.value.experimentTypeOther }}</strong>
+            <strong ng-if="!$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+                    style="display:inline-block; width:78%; text-transform:capitalize;"
+            >
+                {{ $ctrl.experiment.value.experimentType.replace('_', ' ') }}
+            </strong>
+            <strong ng-if="$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+                    style="display:inline-block; width:78%; text-transform:capitalize;"
+            >
+                {{ $ctrl.experiment.value.experimentTypeOther }}
+            </strong>
             <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
             <div style="display:inline-block; width:78%; font-weight: bold;">
-                <div ng-repeat="author in $ctrl.experiment.value.authors | orderBy: 'order'" ng-if="!author.length">
-                    <ds-user username="author.name" format="lname" ng-if="author.authorship">{{ author.name }}</ds-user>
+                <div ng-repeat="author in $ctrl.experiment.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
+                    <span ng-if="!author.guest">
+                        <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>
+                    </span>
+                    <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span>
                 </div>
                 <!-- older author list -->
                 <div ng-repeat="author in $ctrl.experiment.value.authors" ng-if="author.length">

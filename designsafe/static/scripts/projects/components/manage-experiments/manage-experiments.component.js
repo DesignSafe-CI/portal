@@ -17,10 +17,29 @@ class ManageExperimentsCtrl {
         this.experimentTypes = this.resolve.experimentTypes;
         this.equipmentTypes = this.resolve.equipmentTypes;
         
-        var members = [this.options.project.value.pi].concat(this.options.project.value.coPis, this.options.project.value.teamMembers);
+        var members = [this.options.project.value.pi].concat(
+            this.options.project.value.coPis,
+            this.options.project.value.teamMembers,
+            this.options.project.value.guestMembers.map(g => g.user)
+        );
         members.forEach((m, i) => {
             if (typeof m == 'string') {
-                members[i] = { name: m, order: i, authorship: false };
+                // if user is guest append their data
+                if(m.slice(0,5) === 'guest') {
+                    var guestData = this.options.project.value.guestMembers.find(x => x.user === m);
+                    members[i] = {
+                        name: m,
+                        order: i,
+                        authorship: false,
+                        guest: true,
+                        fname: guestData.fname,
+                        lname: guestData.lname,
+                        email: guestData.email,
+                        inst: guestData.inst,
+                    };
+                } else {
+                    members[i] = { name: m, order: i, authorship: false };
+                }
             }
         });
 
@@ -115,7 +134,22 @@ class ManageExperimentsCtrl {
         if (modAuths) {
             usersToClean.forEach((auth, i) => {
                 if (typeof auth == 'string') {
-                    usersToClean[i] = {name: auth, order: i, authorship: false};
+                    // if user is guest append their data
+                    if(auth.slice(0,5) === 'guest') {
+                        var guestData = this.options.project.value.guestMembers.find(x => x.user === auth);
+                        usersToClean[i] = {
+                            name: auth,
+                            order: i,
+                            authorship: false,
+                            guest: true,
+                            fname: guestData.fname,
+                            lname: guestData.lname,
+                            email: guestData.email,
+                            inst: guestData.inst,
+                        };
+                    } else {
+                        usersToClean[i] = {name: auth, order: i, authorship: false};
+                    }
                 } else {
                     auth.order = i;
                 }

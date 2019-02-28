@@ -155,34 +155,9 @@
         <div class="form-group">
           <div ng-repeat="usr in $ctrl.data.users track by $index" style="width:46%; display:inline-block; white-space: nowrap;">
             <input type="checkbox" format="lname" id="{{ 'newAuthor' + $index }}" ng-click="$ctrl.addAuthors(usr, $index)">
-            <ds-user username="usr.name" format="lname">{{ usr.name }}</ds-user><br>
+            <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
+            <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
           </div>
-        </div>
-        <div class="expAuthorsAssign form-group">
-          <label>Add Authors not Registered on DesignSafe</label>
-          <div ng-repeat="guest in $ctrl.form.addGuest">
-            <span style="width:26%; display:inline-block;">
-              <div>
-                Last Name, First Name
-              </div>
-              <input style="width:100%" type="text" name="ExpAuthorName">
-            </span>
-            <span style="width:26%; display:inline-block;">
-              <div>
-                Email
-              </div>
-              <input style="width:100%" type="text" name="ExpAuthorMail">
-            </span>
-            <span style="width:46%; display:inline-block;">
-              <div>
-                Institution
-              </div>
-              <input style="width:100%" type="text" name="ExpAuthorInst">
-            </span>
-          </div>
-          <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
-            + Add another Outside Author
-          </a>
         </div>
         <!-- Add Exp Btn -->
         <div class="text-right">
@@ -315,35 +290,11 @@
                       format="lname"
                       id="{{ 'editAuthor' + $index }}"
                       ng-checked="author.authorship"
-                      ng-click="$ctrl.editAuthors(author, $index)">
-              <ds-user username="author.name" format="lname">{{ author.name }}</ds-user><br>
+                      ng-click="$ctrl.editAuthors(author, $index)"
+              >
+              <ds-user ng-if="!author.guest" username="author.name" format="lname">{{ author.name }}</ds-user>
+              <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span><br>
             </div>
-          </div>
-          <div class="expAuthorsAssign form-group">
-            <label>Add Authors not Registered on DesignSafe</label>
-            <div ng-repeat="guestUsr in $ctrl.form.addGuest">
-              <span style="width:26%; display:inline-block;">
-                <div>
-                  Last Name, First Name
-                </div>
-                <input style="width:100%" type="text" name="ExpAuthorName" ng-model="$ctrl.editExpForm.addGuest.name">
-              </span>
-              <span style="width:26%; display:inline-block;">
-                <div>
-                  Email
-                </div>
-                <input style="width:100%" type="text" name="ExpAuthorMail" ng-model="$ctrl.editExpform.addGuest.email">
-              </span>
-              <span style="width:46%; display:inline-block;">
-                <div>
-                  Institution
-                </div>
-                <input style="width:100%" type="text" name="ExpAuthorInst" ng-model="$ctrl.editExpform.addGuest.institution">
-              </span>
-            </div>
-            <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
-              + Add another Outside Author
-            </a>
           </div>
           <!-- Sort Authors  -->
           <strong>Order of Authors</strong>
@@ -363,8 +314,20 @@
                           format="lname"
                           ng-model="$ctrl.editExpForm.selectedAuthor"
                           ng-value="author"
-                          ng-if="author.authorship">
-                  <ds-user username="author.name" format="lname" ng-style="!author.authorship && {'text-decoration':'line-through'}">{{ author.name }}</ds-user><br>
+                          ng-if="author.authorship"
+                  >
+                  <ds-user  ng-if="!author.guest"
+                            username="author.name"
+                            format="lname"
+                            ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                  >
+                    {{ author.name }}
+                  </ds-user>
+                  <span ng-if="author.guest"
+                        ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                  >
+                    {{ author.lname }}, {{ author.fname }}
+                  </span><br>
                 </div>
               </td>
               <td class="tg-0lax">
@@ -409,8 +372,11 @@
                       style="display:inline-block; width:78%; text-transform:capitalize;">{{ experiment.value.experimentTypeOther }}</strong>
               <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
               <div style="display:inline-block; width:78%; font-weight: bold;">
-                <div ng-repeat="author in experiment.value.authors | orderBy: 'order'" ng-if="!author.length">
-                  <ds-user username="author.name" format="lname" ng-if="author.authorship">{{ author.name }}</ds-user>
+                <div ng-repeat="author in experiment.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
+                  <span ng-if="!author.guest">
+                    <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>
+                  </span>
+                  <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span>
                 </div>
                 <!-- older author list -->
                 <div ng-repeat="author in experiment.value.authors" ng-if="author.length">

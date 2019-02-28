@@ -3,7 +3,7 @@
     <div>
         <div>
             <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
-            <a class="edit-link" ng-click="editProject($event)">Edit Project</a>
+            <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
         </div>
         <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
             <colgroup>
@@ -142,11 +142,12 @@
                     </strong>
                     <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
                     <div style="display:inline-block; width:78%; font-weight: bold;">
-                        <span ng-repeat="author in simulation.value.authors | orderBy: 'order'" ng-if="!author.length">
-                            <div>
-                                <ds-user username="author.name" format="lname" ng-if="author.authorship">{{ author.name }}</ds-user>
-                            </div>
-                        </span>
+                        <div ng-repeat="author in simulation.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
+                            <span ng-if="!author.guest">
+                                <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>
+                            </span>
+                            <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span>
+                        </div>
                         <!-- support older author list -->
                         <div ng-repeat="author in simulation.value.authors" ng-if="author.length">
                             <ds-user username="author" format="lname">{{ author }}</ds-user>
