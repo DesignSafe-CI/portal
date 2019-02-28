@@ -455,7 +455,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
           DataBrowserService.apiParams.fileMgr = 'public';
           DataBrowserService.apiParams.baseUrl = '/api/public/files';
           DataBrowserService.apiParams.searchState = 'publicData';
-          return DataBrowserService.browse({system: systemId, path: filePath}, {queryString: $stateParams.query_string});
+          //return DataBrowserService.browse({system: systemId, path: filePath}, {queryString: $stateParams.query_string});
         }],
         'auth': function($q) {
             return true;

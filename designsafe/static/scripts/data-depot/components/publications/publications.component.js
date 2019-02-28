@@ -24,20 +24,27 @@ class PublicationDataCtrl {
             reachedEnd: false,
             page: 0
         };
-        if (!this.browser.error) {
-            this.browser.listing.href = this.$state.href('publicData', {
-                system: this.browser.listing.system,
-                filePath: this.browser.listing.path
-            });
-            this.browser.listing.children.forEach((child) => {
-                if (child.system === 'nees.public') {
-                    child.href = this.$state.href('neesPublishedData', { filePath: child.path });
+
+        var systemId = this.$stateParams.systemId || 'nees.public';
+        var filePath = this.$stateParams.filePath || '/';
+        
+        this.DataBrowserService.browse({system: systemId, path: filePath}, {queryString: this.$stateParams.query_string})
+            .then(resp => {
+                if (!this.browser.error) {
+                    this.browser.listing.href = this.$state.href('publicData', {
+                        system: this.browser.listing.system,
+                        filePath: this.browser.listing.path
+                    });
+                    this.browser.listing.children.forEach((child) => {
+                        if (child.system === 'nees.public') {
+                            child.href = this.$state.href('neesPublishedData', { filePath: child.path });
+                        }
+                        if (child.system === 'designsafe.storage.published') {
+                            child.href = this.$state.href('publishedData', { system: child.system, filePath: child.path });
+                        }
+                    });
                 }
-                if (child.system === 'designsafe.storage.published') {
-                    child.href = this.$state.href('publishedData', { system: child.system, filePath: child.path });
-                }
-            });
-        }
+            })
         this.data = {
             customRoot: {
                 name: 'Published',

@@ -1,7 +1,7 @@
 const ddPublicationListingComponent = {
     template: require('./dd-publication-listing.template.html'),
     bindings: {
-        browser: '=',
+        browser: '<',
         queryString: '<',
         onBrowse: '&',
         onSelect: '&',
