@@ -47,7 +47,7 @@
           <tr ng-repeat="work in data.project.value.associatedProjects">
             <td ng-if="$first">Related Work</td>
             <td ng-if="!$first"></td>
-            <td><strong>{{ work.title }} | <a>{{ work.href }}</a></strong></td>
+            <td><strong>{{ work.title }} | <a href="{{ work.href }}" target=”_blank”>{{ work.href }}</a></strong></td>
           </tr>
           <tr class="prj-row">
             <td ng-if="data.project.value.keywords">Keywords</td>
