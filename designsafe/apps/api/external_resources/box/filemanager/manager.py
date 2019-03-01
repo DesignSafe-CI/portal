@@ -3,7 +3,7 @@ import os
 import re
 import sys
 import logging
-from designsafe.apps.api.tasks import reindex_agave
+from designsafe.apps.data.tasks import reindex_agave
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.external_resources.box.models.files import BoxFile
 from designsafe.apps.api.notifications.models import Notification

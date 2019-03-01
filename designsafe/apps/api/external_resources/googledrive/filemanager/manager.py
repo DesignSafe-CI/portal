@@ -5,7 +5,7 @@ import sys
 import logging
 import io
 import time
-from designsafe.apps.api.tasks import reindex_agave
+from designsafe.apps.data.tasks import reindex_agave
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.external_resources.googledrive.models.files import GoogleDriveFile
 from designsafe.apps.api.notifications.models import Notification

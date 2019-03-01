@@ -5,7 +5,7 @@ from designsafe.apps.api.agave.filemanager.base import BaseFileManager
 from designsafe.apps.data.models.agave.files import (BaseFileResource,
                                                     BaseFilePermissionResource,
                                                     BaseAgaveFileHistoryRecord)
-from designsafe.apps.api.tasks import reindex_agave
+from designsafe.apps.data.tasks import reindex_agave
 from requests import HTTPError
 import logging
 

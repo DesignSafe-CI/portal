@@ -12,7 +12,7 @@ from celery import shared_task
 from requests import ConnectionError, HTTPError
 import logging
 
-from designsafe.apps.api.tasks import reindex_agave
+from designsafe.apps.data.tasks import reindex_agave
 
 logger = logging.getLogger(__name__)
 
