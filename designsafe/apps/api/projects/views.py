@@ -246,9 +246,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'initial_pems_create',
                             'info': {'collab': request.user.username, 'pi': prj.pi} })
-        if request.user.username not in prj.copi and request.user.username not in prj.team and request.user.username is not prj.pi:
-            prj.add_team_members([request.user.username])
-        
+        prj.add_team_members([request.user.username])
         prj.add_co_pis(prj.copi)
         prj.add_team_members(prj.team)
         tasks.set_facl_project.apply_async(args=[prj.uuid, [request.user.username]], queue='api')
