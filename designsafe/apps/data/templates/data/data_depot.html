@@ -6,18 +6,18 @@
 {% endblock %}
 {% block content %}
     <div class="container">
-        <div>
-            <ddmain style="position: relative;">
-                <ddtoolbar></ddtoolbar>
-                <div class="row">
-                    <div class="col-sm-3 col-md-2">
-                        
-                        <ddnew></ddnew> 
-                        <ddnav></ddnav>
-                    </div>
-                    <div class="col-sm-9 col-md-10">
-                        <ui-view></ui-view>
-                    </div>
+        <ddmain style="position: relative;">    
+            <div class="row">
+                <div class="col-sm-3 col-md-2">
+                    <h1 class="headline headline-research" id="headline-data-depot">
+                        <span class="hl hl-research">Data Depot</span>
+                    </h1>
+                    <ddnew></ddnew> 
+                    <ddnav></ddnav>
+                </div>
+                <div class="col-sm-9 col-md-10">
+                    <ddtoolbar></ddtoolbar>
+                    <ui-view></ui-view>
                 </div>
             </div>
         </ddmain>
