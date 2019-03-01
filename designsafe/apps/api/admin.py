@@ -1,3 +1,4 @@
 from django.contrib import admin
+from designsafe.apps.api.messages.models import PageAlert
 
-# Register your models here.
+admin.site.register(PageAlert)

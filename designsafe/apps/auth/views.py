@@ -5,15 +5,18 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
+from django.forms.models import model_to_dict
 
 from .models import AgaveOAuthToken, AgaveServiceStatus
 from agavepy.agave import Agave
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir, new_user_alert
+from designsafe.apps.api.messages.models import PageAlert
 import logging
 import os
 import requests
 import time
 from requests import HTTPError
+import json
 
 
 
@@ -107,8 +110,10 @@ def agave_oauth_callback(request):
     """
     http://agaveapi.co/documentation/authorization-guide/#authorization_code_flow
     """
+    load_alerts_into_session(request)
+
     state = request.GET.get('state')
-    
+        
     if request.session['auth_state'] != state:
         msg = (
             'OAuth Authorization State mismatch!? auth_state=%s '
@@ -198,3 +203,9 @@ def agave_oauth_callback(request):
 
 def agave_session_error(request):
     return render(request, 'designsafe/apps/auth/agave_session_error.html')
+
+# load_alerts_into_session() will be called after a new login ( within agave_oauth_callback() )
+def load_alerts_into_session(request):
+    alert_messages = [model_to_dict(alert) for alert in PageAlert.objects.all()]
+    request.session['alertslist'] = alert_messages
+    request.session['alertslist_size'] = len(alert_messages)

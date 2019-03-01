@@ -1,0 +1,9 @@
+{% if request.session.alertslist_size > 0 %}
+<div class="container ds-alert-container">
+    {% for single_alert in request.session.alertslist %}
+    <div class="alert ds-alert {{ single_alert.alert_type }}">
+        {% autoescape off %}{{ single_alert.alert_message }}{% endautoescape %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

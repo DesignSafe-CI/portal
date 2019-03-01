@@ -23,6 +23,15 @@
     line-height:18px;
 }
 
+.ds-alert-container {
+    padding-top: 10px;
+}
+
+.ds-alert {
+    margin-bottom: 0px;
+    padding: 5px;
+}
+
 .flo-select-btn {
     border: 0;
     background: none;
