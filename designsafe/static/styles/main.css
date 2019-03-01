@@ -250,6 +250,11 @@ h4 {
   margin-bottom: 20px;
 }
 
+#headline-data-depot {
+  font-size:28px;
+  margin-top:16px;
+}
+
 .headline::after {
   content: "___";
   color: #333;
