@@ -26,6 +26,7 @@ class BaseFileMetadata(BaseMetadataResource):
         if file_obj:
             query = '{{"associationIds": "{}", "name": "designsafe.file"}}'.format(file_obj.uuid)
             meta_objs = agave_client.meta.listMetadata(q=query)
+            logger.info(meta_objs)
             if meta_objs:
                 defaults = meta_objs[0]
             if not meta_objs:
@@ -123,10 +124,10 @@ class BaseFileMetadata(BaseMetadataResource):
 
 class BaseFileResource(BaseAgaveResource):
     """Represents an Agave Files API Resource"""
-   
+
     SUPPORTED_MS_WORD = [
         '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
-    ] 
+    ]
     SUPPORTED_MS_EXCEL = [
         '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xltx', '.xltm',
     ]
@@ -165,7 +166,7 @@ class BaseFileResource(BaseAgaveResource):
 
     SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                     SUPPORTED_TEXT_PREVIEW_EXTS +
-                                    SUPPORTED_OBJECT_PREVIEW_EXTS + 
+                                    SUPPORTED_OBJECT_PREVIEW_EXTS +
                                     SUPPORTED_MS_OFFICE)
 
     def __init__(self, agave_client, system, path, **kwargs):
@@ -400,7 +401,7 @@ class BaseFileResource(BaseAgaveResource):
             lower = 0
 
         list_result = agave_client.files.list(systemId=system,
-                                              filePath=urllib.quote(path), 
+                                              filePath=urllib.quote(path),
                                               offset=offset,
                                               limit=limit)
         listing = cls(agave_client=agave_client, **list_result[0])
@@ -486,7 +487,7 @@ class BaseFileResource(BaseAgaveResource):
         :rtype: :class:`BaseFileResource`
         """
         return self.move(os.path.dirname(self.path), new_name)
-    
+
     def share(self, username, permission, recursive=False):
         """
         Updates the permissions on this file for the provided username.

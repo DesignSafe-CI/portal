@@ -10,6 +10,7 @@ import { SharedDataComponent } from './shared-data/shared-data.component';
 import { GoogledriveComponent, DropboxComponent, BoxComponent} from './external-data/external-data.component';
 import { DataDepotNewComponent } from './data-depot-new/data-depot-new.component';
 import { MainComponent } from './main/main.component';
+import { FileMetadataComponent } from './file-metadata/file-metadata.component';
 import neesPublicationComponent from './nees-publication/nees-publication.component';
 import ddPublicationListingComponent from './dd-publication-listing/dd-publication-listing.component';
 
@@ -29,5 +30,6 @@ ddComponents.component('ddmain', MainComponent);
 ddComponents.component('ddnew', DataDepotNewComponent);
 ddComponents.component('neesPublicationComponent', neesPublicationComponent);
 ddComponents.component('ddPublicationListingComponent', ddPublicationListingComponent);
+ddComponents.component('fileMetadata', FileMetadataComponent);
 
 export default ddComponents;

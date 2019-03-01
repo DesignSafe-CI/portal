@@ -10,29 +10,9 @@
             </div>
         </div>
         <div class="caption">
-            <table class="table-preview">
-                <tbody>
-                <tr>
-                    <th>File name</th>
-                    <td>{{ $ctrl.file.name }}</td>
-                </tr>
-                <tr>
-                    <th>File path</th>
-                    <td>{{ $ctrl.file.path }}</td>
-                </tr>
-                <tr>
-                    <th>File size</th>
-                    <td ng-if='$ctrl.file.length'>{{ $ctrl.file.length|bytes }}</td>
-                    <td ng-if='$ctrl.file.size'>{{ $ctrl.file.size|bytes }}</td>
-                </tr>
-                <tr>
-                    <th>Last modified</th>
-                    <td>{{ $ctrl.file.lastModified|date:"short" }}</td>
-                </tr>
-                </tbody>
-            </table>
+            <file-metadata file="$ctrl.file"></file-metadata>
         </div>
-    </div>    
+    </div>
     <div class="table-preview actions text-center">
         <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canRename" ng-click="$ctrl.rename()">
             <i class="fa fa-pencil"></i> Rename
