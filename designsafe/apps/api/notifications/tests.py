@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+from parser import *
 from django.test import TestCase
 from django.test import Client
 from django.contrib.auth import get_user_model
@@ -39,7 +40,7 @@ class NotificationsViewsTests(TestCase):
             event_type="JOB",
             status="SUCCESS",
             message="Job succeeded",
-            user=user
+            user=user,
         )
         note.save()
 
@@ -47,25 +48,33 @@ class NotificationsViewsTests(TestCase):
         user = get_user_model().objects.get(username="ds_user")
         self.client.force_login(user)
         resp = self.client.get("/api/notifications/")
-        print(resp.json())
-        data = resp.json()
+        # print(resp.json())
+        # data = resp.json()
         self.assertTrue(len(data["notifs"])==1)
 
     def test_get_request(self):
-        resp = self.client.get("api/notification")
-        # if resp(event_type) 
+        user = get_user_model().objects.get(username="ds_user")
+        self.client.force_login(user)
+        resp = self.client.get("/api/notifications/")       
         if resp != "":
             self.assertTrue(resp)
-        print(resp)
-        limit = request
+        print(resp.status_code)
 
-    # def test_post_request(self):
-    #     resp = self.client.get("api/notification")
-    #     notif = n.read
-    #     if notif != "":
-    #         self.assertTrue(notif)
-    #     print(notif)
+    def test_post_request(self):
+        user = get_user_model().objects.get(username="ds_user")
+        self.client.force_login(user)
+        resp = self.client.post("/api/notifications/", {"id": 1, "read": True})
+        print(resp.status_code)
+        # post = resp.json.dumps()
+        # read = post.json['read']
+        # if read != "":
+        #     self.assertTrue(read)
+        # print(read)
 
+    # def test_delete_request(self):
+    #     resp = self.client.delete("notification/1")
+    #     if resp.data == 'OK':
+    #         print(resp)
 
             
 

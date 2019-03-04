@@ -20,7 +20,7 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
     def get(self, request, event_type = None, *args, **kwargs):
         limit = request.GET.get('limit', 0)
         page = request.GET.get('page', 0)
-
+        print("Lucky")
         if event_type is not None:
             notifs = Notification.objects.filter(
                           deleted = False,
@@ -48,6 +48,8 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         # return self.render_to_json_response(notifs)
 
     def post(self, request, *args, **kwargs):
+        print("post")
+        print(request)
         body_json = json.loads(request.body)
         nid = body_json['id']
         read = body_json['read']
@@ -62,6 +64,7 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         # n = Notification.objects.get(pk = pk)
         # n.deleted = deleted
         # n.save()
+        print("delete ran")
         if pk == 'all':
             items=Notification.objects.filter(deleted=False, user=str(request.user))
             for i in items:
