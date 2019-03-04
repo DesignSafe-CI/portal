@@ -461,7 +461,6 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         """
         ag = request.user.agave_oauth.client
         try:
-            logger.debug('name: %s', name)
             if name is not None and name != 'all':
                 model = self._lookup_model(name)
                 resp = model._meta.model_manager.list(ag, project_id)
@@ -564,6 +563,10 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             post_data = request.POST.copy()
         try:
             entity = post_data.get('entity')
+            category = Category.objects.get_or_create_from_json(
+                uuid=entity['uuid'],
+                dict_obj=['_ui']
+            )
             model_cls = self._lookup_model(entity['name'])
             model = model_cls(**entity)
             saved = model.save(ag)
