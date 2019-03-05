@@ -409,7 +409,7 @@ class ProjectTreeCtrl {
                             uuid: output.uuid,
                             parent: coordNode.name,
                             children: [],
-                            rectStyle: 'stroke: #D04348; fill: #EFBFC1;',
+                            rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Coordinator Output',
                         };
                         coordNode.children.push(outNode);
@@ -431,7 +431,7 @@ class ProjectTreeCtrl {
                             uuid: num.uuid,
                             parent: coordNode.name,
                             children: [],
-                            rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
+                            rectStyle: 'stroke: #BD5717; fill: #EBCCB9;',
                             display: 'Numerical Substructure',
                         };
                         _.each(simOutputs, (out) => {
@@ -443,7 +443,7 @@ class ProjectTreeCtrl {
                                 uuid: out.uuid,
                                 parent: num.name,
                                 children: [],
-                                rectStyle: 'stroke: #D04348; fill: #EFBFC1;',
+                                rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                                 display: 'Simulation Output',
                             };
                             numNode.children.push(outNode);
@@ -473,7 +473,7 @@ class ProjectTreeCtrl {
                             uuid: exp.uuid,
                             parent: coordNode.name,
                             children: [],
-                            rectStyle: 'stroke: #865AA7; fill: #DABFEF;',
+                            rectStyle: 'stroke: #4B3181; fill: #C8C0D9;',
                             display: 'Experimental Substructure',
                         };
                         _.each(expOutputs, (out) => {
@@ -485,7 +485,7 @@ class ProjectTreeCtrl {
                                 uuid: out.uuid,
                                 parent: exp.name,
                                 children: [],
-                                rectStyle: 'stroke: #D04348; fill: #EFBFC1;',
+                                rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                                 display: 'Experiental Output',
                             };
                             expNode.children.push(outNode);
