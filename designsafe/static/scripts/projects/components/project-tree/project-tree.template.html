@@ -19,6 +19,20 @@
                  data-ng-repeat="node in $ctrl.buttonsData"
                  data-ng-style="node.data.btnStyle">
                 <button type="button"
+                        class="btn btn-link btn-sm"
+                        data-ng-click="$ctrl.moveNodeUp(node)"
+                        data-ng-disabled="$ctrl._ui.loading"
+                        data-ng-if="node.parent">
+                    <i class="fa fa-arrow-up">&nbsp;</i><span class="sr-only">Move Up</span>
+                </button>
+                <button type="button"
+                        class="btn btn-link btn-sm"
+                        data-ng-click="$ctrl.moveNodeDown(node)"
+                        data-ng-disabled="$ctrl._ui.loading"
+                        data-ng-if="node.parent">
+                    <i class="fa fa-arrow-down">&nbsp;</i><span class="sr-only">Move Down</span>
+                </button>
+                <button type="button"
                         class="btn btn-link"
                         data-ng-click="$ctrl.removeRelation(node)"
                         data-ng-disabled="$ctrl._ui.loading"

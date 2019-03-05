@@ -3,11 +3,12 @@ import _ from 'underscore';
 import ProjectTreeTemplate from './project-tree.template.html';
 
 class ProjectTreeCtrl {
-    constructor(ProjectService, ProjectEntitiesService, $scope){
+    constructor(ProjectService, ProjectEntitiesService, $scope, $q){
         'ngInject';
         this.ProjectService = ProjectService;
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.$scope = $scope;
+        this.$q = $q;
         this.trees = [];
         this._ui = { loading: false };
     }
@@ -295,6 +296,16 @@ class ProjectTreeCtrl {
      */
     relateEntityToExperimental(leaf, entity){
         let leafParent = leaf.parent;
+        let highestOrder = -1;
+        _.each(leafParent.children, (child) => {
+            if (child.data.order !== null && 
+                child.data.type === entity.name &&
+                child.data.order > highestOrder){
+                highestOrder = child.data.order;
+            }
+        });
+        highestOrder += 1;
+        entity.setOrderFor(leafParent.data.uuid, highestOrder);
         if (leaf.data.entityType == 'event') {
             entity.value.sensorLists.push(leafParent.data.uuid);
             leafParent = leafParent.parent;
@@ -725,24 +736,35 @@ class ProjectTreeCtrl {
         _.each(experiments, (exp) => {
             let node = {
                 name: exp.value.title,
+                type: exp.name,
                 uuid: exp.uuid,
                 parent: null,
                 children: [],
                 rectStyle: 'stroke: none;',
             };
+            let childReports = [];
             _.each(reports, (rep) => {
                 if (!_.contains(rep.associationIds, node.uuid)){
                     return;
                 }
                 let repNode = {
                     name: rep.value.title,
+                    type: rep.name,
                     uuid: rep.uuid,
                     parent: node.name,
                     rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
                     display: 'Report',
+                    order: rep.orderOf(node.uuid).value,
                 };
-                node.children.push(repNode);
+                childReports.push(repNode);
             });
+            childReports = _.sortBy(childReports, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childReports);
             node.children.push(
                 {
                     name: '-- Choose a Report --',
@@ -750,44 +772,60 @@ class ProjectTreeCtrl {
                     entityType: 'report',
                 }
             );
+            let childModels = [];
             _.each(modelConfigs, (mcfg) => {
                 if (!_.contains(mcfg.associationIds, node.uuid)){
                     return;
                 }
                 let mcfgNode = {
                     name: mcfg.value.title,
+                    type: mcfg.name,
                     uuid: mcfg.uuid,
                     parent: node.name,
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
                     display: 'Model Config',
+                    order: mcfg.orderOf(node.uuid).value,
                 };
+                let childSensors = [];
                 _.each(sensors, (sensor) => {
                     if (_.difference([mcfgNode.uuid, node.uuid], sensor.associationIds).length){
                         return;
                     }
                     let sensorNode = {
                         name: sensor.value.title,
+                        type: sensor.name,
                         uuid: sensor.uuid,
                         parent: mcfgNode.name,
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
                         display: 'Sensor',
+                        order: sensor.orderOf(mcfgNode.uuid).value,
                     };
+                    let childEvents = [];
                     _.each(events, (evt) => {
                         if (_.difference([sensor.uuid, mcfgNode.uuid, node.uuid], evt.associationIds).length){
                             return;
                         }
                         let eventNode = {
                             name: evt.value.title,
+                            type: evt.name,
                             uuid: evt.uuid,
                             parent: sensorNode.name,
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Event',
+                            order: evt.orderOf(sensorNode.uuid).value,
                         };
-                        sensorNode.children.push(eventNode);
+                        childEvents.push(eventNode);
                     });
+                    childEvents = _.sortBy(childEvents, (child) => {
+                        if (child.order !== null) {
+                            return child.order;
+                        }
+                        return child.name;
+                    });
+                    sensorNode.children = sensorNode.children.concat(childEvents);
                     sensorNode.children.push(
                         {
                             name: '-- Choose an Event --',
@@ -795,8 +833,15 @@ class ProjectTreeCtrl {
                             entityType: 'event',
                         }
                     );
-                    mcfgNode.children.push(sensorNode);
+                    childSensors.push(sensorNode);
                 });
+                childSensors = _.sortBy(childSensors, (child) => {
+                    if (child.order !== null) {
+                        return child.order;
+                    }
+                    return child.name;
+                });
+                mcfgNode.children = mcfgNode.children.concat(childSensors);
                 mcfgNode.children.push(
                     {
                         name: '-- Choose a Sensor Info --',
@@ -804,8 +849,15 @@ class ProjectTreeCtrl {
                         entityType: 'sensorList',
                     }
                 );
-                node.children.push(mcfgNode);
+                childModels.push(mcfgNode);
             });
+            childModels = _.sortBy(childModels, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childModels);
             node.children.push(
                 {
                     name: '-- Choose a Model Config --',
@@ -813,19 +865,29 @@ class ProjectTreeCtrl {
                     entityType: 'modelConfig',
                 }
             );
+            let childAnalysis = [];
             _.each(analysis, (ana) => {
                 if (!_.contains(ana.associationIds, node.uuid)){
                     return;
                 }
                 let anaNode = {
                     name: ana.value.title,
+                    type: ana.name,
                     uuid: ana.uuid,
                     parent: node.name,
                     rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
                     display: 'Analysis',
+                    order: ana.orderOf(node.uuid).value
                 };
-                node.children.push(anaNode);
+                childAnalysis.push(anaNode);
             });
+            childAnalysis = _.sortBy(childAnalysis, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childAnalysis);
             node.children.push(
                 {
                     name: '-- Choose an Analysis --',
@@ -836,6 +898,73 @@ class ProjectTreeCtrl {
             roots.push(node);
         });
         this.trees = roots;
+    }
+
+    /*
+     * @method
+     * @param {Object} Node as created by D3.js
+     *
+     * Move node up or down in the tree. Basically manipulates custom order weight.
+     * Moving a node up or down in the tree means subtracting one (for up)
+     * or adding one (for down) to the order weight,
+     * and adding one (for up) and subtracting one (for down) to the sibling's node order weight.
+     * Essentially swapping two sibling nodes.
+     */
+    moveNode(node, direction) {
+        this._ui.loading = true;
+        let entity = this.project.getRelatedByUuid(node.data.uuid);
+        let parentNode = node.parent;
+        let promises = [];
+        let siblingNodes = _.filter(parentNode.children, (child) => {
+            if (direction === 'up') {
+                return child.data.type === node.data.type && child.data.order === node.data.order - 1;
+            }
+            return child.data.type === node.data.type && child.data.order === node.data.order + 1;
+        });
+        if (!siblingNodes.length) {
+            return;
+        }
+        let siblingEntity = this.project.getRelatedByUuid(siblingNodes[0].data.uuid);
+        siblingEntity.setOrderFor(parentNode.data.uuid, node.data.order);
+        promises.push(
+            this.ProjectEntitiesService.update({
+                data: {
+                    uuid: siblingEntity.uuid,
+                    entity: siblingEntity,
+                },
+            })
+        );
+        if (direction === 'up') {
+            entity.setOrderFor(parentNode.data.uuid, node.data.order - 1);
+        } else {
+            entity.setOrderFor(parentNode.data.uuid, node.data.order + 1);
+        }
+        promises.push(
+            this.ProjectEntitiesService.update({
+                data: {
+                    uuid: entity.uuid,
+                    entity: entity,
+                },
+            })
+        );
+        this.$q.all(promises).then( (resps) => {
+            _.each(resps, (resp) => {
+                let ent = this.project.getRelatedByUuid(resp.uuid);
+                ent.update(resp);
+            });
+        }).then( () => {
+            this.drawProjectTrees();
+        }).finally( () => {
+            this._ui.loading = false;
+        });
+    }
+
+    moveNodeUp(node) {
+        this.moveNode(node, 'up');
+    }
+
+    moveNodeDown(node) {
+        this.moveNode(node, 'down');
     }
 
     $postLink() {
@@ -967,9 +1096,17 @@ class ProjectTreeCtrl {
         svg.selectAll('text.entity-name')
             .each( (d, i, nds) => {
                 let bbox = nds[i].getBBox();
-                let btn = _.filter(this.buttonsData, (b) => { return b.data.uuid == d.data.uuid; });
-                if (btn.length) {
-                    btn[0].data.btnStyle.left += bbox.width + 5;
+                let btns = _.filter(
+                    this.buttonsData,
+                    (b) => { 
+                        return b.data.uuid == d.data.uuid && !b.data.visited;
+                    }
+                );
+                if (btns.length) {
+                    _.each(btns, (btn) => {
+                        btn.data.btnStyle.left += bbox.width + 10;
+                        btn.data.visited = true;
+                    });
                 }
             });
 

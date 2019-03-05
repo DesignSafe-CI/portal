@@ -6,7 +6,7 @@ import re
 import logging
 import datetime
 from designsafe.apps.api import tasks
-from designsafe.app.projects.models import Category
+from designsafe.apps.projects.models import Category
 
 logger = logging.getLogger(__name__)
 
@@ -435,7 +435,7 @@ class Model(object):
         if ('lastUpdated' in dict_obj and isinstance(dict_obj['lastUpdated'], datetime.datetime)):
             dict_obj['lastUpdated'] = dict_obj['lastUpdated'].isoformat()
 
-        category = Category.objects.get_or_create(id=self.uuid)
+        category, _ = Category.objects.get_or_create(uuid=self.uuid)
         dict_obj['_ui'] = category.to_dict()
         return dict_obj
 

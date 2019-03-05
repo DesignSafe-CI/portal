@@ -18,6 +18,7 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.projects.models.agave.base import Project as BaseProject
+from designsafe.apps.projects.models.categories import Category
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.files import BaseFileResource
@@ -561,12 +562,12 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
+        entity = post_data.get('entity')
+        category = Category.objects.get_or_create_from_json(
+            uuid=entity['uuid'],
+            dict_obj=entity['_ui']
+        )
         try:
-            entity = post_data.get('entity')
-            category = Category.objects.get_or_create_from_json(
-                uuid=entity['uuid'],
-                dict_obj=['_ui']
-            )
             model_cls = self._lookup_model(entity['name'])
             model = model_cls(**entity)
             saved = model.save(ag)
