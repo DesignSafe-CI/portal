@@ -922,6 +922,7 @@ class ProjectTreeCtrl {
             return child.data.type === node.data.type && child.data.order === node.data.order + 1;
         });
         if (!siblingNodes.length) {
+            this._ui.loading = false;
             return;
         }
         let siblingEntity = this.project.getRelatedByUuid(siblingNodes[0].data.uuid);
