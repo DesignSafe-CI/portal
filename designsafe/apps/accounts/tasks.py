@@ -14,6 +14,7 @@ from designsafe.apps.accounts.models import (DesignSafeProfile,
 
 logger = logging.getLogger(__name__)
 
+
 @shared_task(default_retry_delay=1*30, max_retries=3)
 def create_report(username, list_name):
    

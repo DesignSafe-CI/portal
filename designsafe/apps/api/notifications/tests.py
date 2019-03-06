@@ -1,6 +1,8 @@
 import requests
 import json
 import os
+import requests
+import requests_mock
 from parser import *
 from django.test import TestCase
 from django.test import Client
@@ -15,6 +17,7 @@ from django.core.urlresolvers import reverse
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.notifications.views.api import ManageNotificationsView
 from designsafe.apps.api.notifications.views.api import NotificationsBadgeView
+# import pdb; pdb.set_trace()
 
 import logging
 
@@ -31,50 +34,6 @@ webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING)))
 
 wh_url = reverse('designsafe_api:jobs_wh_handler')
 
-class NotificationsViewsTests(TestCase):
-    fixtures = ['user-data.json', 'agave-oauth-token-data.json']
-
-    def setUp(self):
-        user = get_user_model().objects.get(username="ds_user")
-        note = Notification(
-            event_type="JOB",
-            status="SUCCESS",
-            message="Job succeeded",
-            user=user,
-        )
-        note.save()
-
-    def test_get_notifications(self):
-        user = get_user_model().objects.get(username="ds_user")
-        self.client.force_login(user)
-        resp = self.client.get("/api/notifications/")
-        # print(resp.json())
-        # data = resp.json()
-        self.assertTrue(len(data["notifs"])==1)
-
-    def test_get_request(self):
-        user = get_user_model().objects.get(username="ds_user")
-        self.client.force_login(user)
-        resp = self.client.get("/api/notifications/")       
-        if resp != "":
-            self.assertTrue(resp)
-        print(resp.status_code)
-
-    def test_post_request(self):
-        user = get_user_model().objects.get(username="ds_user")
-        self.client.force_login(user)
-        resp = self.client.post("/api/notifications/", {"id": 1, "read": True})
-        print(resp.status_code)
-        # post = resp.json.dumps()
-        # read = post.json['read']
-        # if read != "":
-        #     self.assertTrue(read)
-        # print(read)
-
-    # def test_delete_request(self):
-    #     resp = self.client.delete("notification/1")
-    #     if resp.data == 'OK':
-    #         print(resp)
 
             
 
@@ -226,3 +185,57 @@ class TestJobsWebhookView(TestCase):
         self.assertEqual(action_link, link_from_event)
         self.assertEqual(n.operation, 'web_link')
         self.assertEqual(response.status_code, 200)
+
+
+class NotificationsViewsTests(TestCase):
+    fixtures = ['user-data.json', 'agave-oauth-token-data.json']
+
+    def setUp(self):
+        #user = get_user_model().objects.get(username="ds_user")
+        note = Notification(
+            event_type="JOB",
+            status="SUCCESS",
+            message="Job succeeded",
+            user="ds_user",
+        )
+        note.save()
+        #self.client=Client()
+        # json.dumps(user)
+
+    # def test_get_notifications(self):
+    #     user = get_user_model().objects.get(username="ds_user")
+    #     self.client.force_login(user)
+    #     resp = self.client.get("/api/notifications/")
+    #     # print(resp.json())
+    #     # data = resp.json()
+    #     self.assertTrue(len(data["notifs"])==1)
+
+    # def test_get_request(self):
+    #     user = get_user_model().objects.get(username="ds_user")
+    #     self.client.force_login(user)
+    #     resp = self.client.get("/api/notifications/")       
+    #     if resp != "":
+    #         self.assertTrue(resp)
+    #         print(resp.status_code)
+
+    def test_post_request(self):
+        payload = {'key': 'value', 'key2': 'value2'}
+        # r = requests.post('/api/notifications/')
+        user = get_user_model().objects.get(username="ds_user")
+        self.client.force_login(user)
+        resp = ManageNotificationsView().post('/api/notifications/', {"id":1, "read": True})
+        print("POST REQUEST")
+        print(resp.status_code)
+
+    
+        # post = resp.json.dumps()
+        # read = post.json['read']
+        # if read != "":
+        #     self.assertTrue(read)
+        # print(read)
+
+
+    # def test_delete_notification(self):
+    #     resp = self.client.delete("/api/notification")
+    #     if resp == 'OK':
+    #         print(resp)

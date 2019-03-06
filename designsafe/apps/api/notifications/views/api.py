@@ -1,4 +1,5 @@
 import logging
+import requests
 from django.http.response import HttpResponseBadRequest
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
@@ -50,7 +51,7 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
     def post(self, request, *args, **kwargs):
         print("post")
         print(request)
-        body_json = json.loads(request.body)
+        body_json = json.loads(request)
         nid = body_json['id']
         read = body_json['read']
         n = Notification.get(id = nid)
