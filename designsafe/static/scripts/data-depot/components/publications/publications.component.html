@@ -1,21 +1,11 @@
-<dd-breadcrumb listing="browser.listing" skip-root="true" custom-root="data.customRoot" on-browse="onBrowse" item-href="resolveBreadcrumbHref"></dd-breadcrumb>
-<dd-public-listing ng-if="browser.listing.path==='/' || browser.listing.path==='/$SEARCH'"
-            browser="browser"
-            on-browse="onBrowse"
-            on-select="onSelect"
-            on-detail="onDetail"
-            on-metadata="onMetadata"
-            render-path="renderPath"
-            render-name="renderName"
-            scroll-to-bottom="scrollToBottom"
-            scroll-to-top="scrollToTop">
-</dd-public-listing>
-
-<dd-listing ng-if="browser.listing.path !== '/' && browser.listing.path !== '/$SEARCH'"
-            browser="browser"
-            on-browse="onBrowse"
-            on-select="onSelect"
-            on-detail="onDetail"
-            scroll-to-top="scrollToTop"
-            scroll-to-bottom="scrollToBottom">
-</dd-listing>
+<dd-breadcrumb listing="$ctrl.browser.listing" skip-root="true" custom-root="$ctrl.data.customRoot" on-browse="$ctrl.onBrowse" item-href="$ctrl.resolveBreadcrumbHref"></dd-breadcrumb>
+<dd-publication-listing-component
+            browser="$ctrl.browser"
+            query-string="$ctrl.$stateParams.query_string"
+            on-browse="$ctrl.onBrowse"
+            on-select="$ctrl.onSelect"
+            render-path="$ctrl.renderPath"
+            render-name="$ctrl.renderName"
+            scroll-to-bottom="$ctrl.scrollToBottom"
+            scroll-to-top="$ctrl.scrollToTop">
+</dd-publication-listing-component>

@@ -264,7 +264,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     if (options.page){
       offset += limit * options.page;
     }
-    var params = {limit: limit, offset: offset};
+    var params = {limit: limit, offset: offset, queryString: options.queryString};
     return FileListing.get(options, apiParams, params).then(function (listing) {
       select([], true);
       currentState.busy = false;
@@ -2655,7 +2655,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     return;
   }
 
-  function scrollToBottom(){
+  function scrollToBottom(params){
     if (currentState.loadingMore || currentState.reachedEnd){
       return;
     }
@@ -2669,7 +2669,9 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     currentState.loadingMore = true;
     return browsePage({system: currentState.listing.system,
                 path: currentState.listing.path,
-                page: currentState.page})
+                page: currentState.page,
+                queryString: (params || {}).queryString
+                })
     .then(function(listing){
         currentState.loadingMore = false;
         if (listing.children.length < 95) {

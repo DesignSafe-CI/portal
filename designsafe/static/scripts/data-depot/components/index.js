@@ -12,6 +12,7 @@ import { DataDepotNewComponent } from './data-depot-new/data-depot-new.component
 import { MainComponent } from './main/main.component';
 import { FileMetadataComponent } from './file-metadata/file-metadata.component';
 import neesPublicationComponent from './nees-publication/nees-publication.component';
+import ddPublicationListingComponent from './dd-publication-listing/dd-publication-listing.component';
 
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);
 
@@ -28,6 +29,7 @@ ddComponents.component('box', BoxComponent);
 ddComponents.component('ddmain', MainComponent);
 ddComponents.component('ddnew', DataDepotNewComponent);
 ddComponents.component('neesPublicationComponent', neesPublicationComponent);
+ddComponents.component('ddPublicationListingComponent', ddPublicationListingComponent);
 ddComponents.component('fileMetadata', FileMetadataComponent);
 
 export default ddComponents;

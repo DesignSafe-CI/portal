@@ -441,6 +441,40 @@ class ElasticFileManager(BaseFileManager):
         }
         return result
 
+    def search_published_view(self, system, query_string, project_id=None, offset=0, limit=100):
+        split_query = query_string.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR", "NOT"]:
+                split_query[i] = "*" + c + "*"
+        
+        query_string = " ".join(split_query)
+
+        filters = Q('term', system="designsafe.storage.published") & \
+            Q({'prefix': {'path._exact': project_id}})
+                #Q('term', system="designsafe.storage.published") | \
+                #Q('term', system="designsafe.storage.community")
+        search = IndexedFile.search()\
+            .query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])\
+            .filter(filters)\
+            .extra(from_=offset, size=limit)
+            #.filter("term", type="file")\
+        
+        res = search.execute()
+        children = []
+        if res.hits.total:
+            children = [Object(wrap=o).to_dict() for o in search[offset:limit]]
+
+        result = {
+            'trail': [{'name': '/', 'path': '/', 'system': system}, {'name': project_id, 'path': '/'+project_id, system: system}],
+            'name': '$SEARCH',
+            'path': '/$SEARCH',
+            'system': system,
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
+        return result        
+
     def search_projects(self, username, query_string, file_path=None, offset=0, limit=100):
         user = get_user_model().objects.get(username=username)
         ag = user.agave_oauth.client
