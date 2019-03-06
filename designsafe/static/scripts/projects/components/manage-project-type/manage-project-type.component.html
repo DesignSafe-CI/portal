@@ -11,7 +11,7 @@
 </div>
 
 <div class="modal-body" style="padding: 30px;">
-    <p ng-if="!$ctrl.warning">To begin curation, select a Project Type:</p><br>
+    <!-- <p ng-if="!$ctrl.warning">To begin curation, select a Project Type:</p><br> -->
     <!-- Error Messages -->
     <div class="alert alert-danger" ng-if="$ctrl.warning">
         <p class="lead" style="text-align:center;">Warning!</p>
@@ -26,7 +26,7 @@
     </div><br>
     <!-- Type Select -->
     <div ng-if="$ctrl.slide === 'type'">
-        <p>To begin curation, select a Project Type:</p><br>
+        <p ng-if="!$ctrl.warning">To begin curation, select a Project Type:</p><br>
         <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
             <colgroup>
                 <col style="width: 16.5%">
