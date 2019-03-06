@@ -13,6 +13,7 @@ class ManageProjectTypeCtrl {
 
     $onInit() {
         this.project = this.resolve.options.project;
+        this.warning = this.resolve.options.warning;
         this.type = '';
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     }

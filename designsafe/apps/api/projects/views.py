@@ -251,7 +251,6 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         prj.add_team_members(prj.team)
         tasks.set_facl_project.apply_async(args=[prj.uuid, [request.user.username]], queue='api')
         if prj.pi and prj.pi != request.user.username:
-            prj.add_team_members([prj.pi])
             tasks.set_facl_project.apply_async(args=[prj.uuid, [prj.pi]], queue='api')
             collab_users = get_user_model().objects.filter(username=prj.pi)
             if collab_users:
