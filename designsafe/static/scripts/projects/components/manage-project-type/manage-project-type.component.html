@@ -8,7 +8,19 @@
 </div>
 
 <div class="modal-body" style="padding: 30px;">
-    <p>To begin curation, select a Project Type:</p><br>
+    <p ng-if="!$ctrl.warning">To begin curation, select a Project Type:</p><br>
+    <!-- Error Messages -->
+    <div class="alert alert-danger" ng-if="$ctrl.warning">
+        <p class="lead" style="text-align:center;">Warning!</p>
+        <p>
+            You are about to change the project type. This means that all
+            associated data, categories, and models you've created will be lost.
+            The files in your project directory will remain, but any other relations
+            you created will be unrecoverable once you select a new project type.
+            If you have questions, please contact us during our office hours.
+        </p>
+        <li ng-repeat="item in $ctrl.missing">The {{ item }} for this experiment is missing or has no categorized data.</li>
+    </div><br>
     <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
         <colgroup>
             <col style="width: 16.5%">
