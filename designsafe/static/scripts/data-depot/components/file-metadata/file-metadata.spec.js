@@ -1,6 +1,6 @@
 
 
-fdescribe("FileMetadataComponent", ()=> {
+describe("FileMetadataComponent", ()=> {
     var FileListing,
         $rootScope,
         $compile,
@@ -49,7 +49,7 @@ fdescribe("FileMetadataComponent", ()=> {
         let el = angular.element("<file-metadata file='fl'></file-metadata>");
         element = $compile(el)(scope);
         scope.$digest();
-        expect(element.find('table').html()).toContain('1/1/18 12:00 PM');
+        expect(element.find('table').html()).toContain('1/1/18');
         expect(element.find('table').html()).toContain('test/test.txt');
     });
 
