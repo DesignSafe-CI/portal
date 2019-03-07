@@ -117,9 +117,7 @@ class DataDepotNavCtrl {
       // allows state to be refreshed
       // by clicking current nav button
     stateReload(childItem) {
-        if(childItem == this.$state.current.name) {
-          this.$state.reload();
-        }
+        this.$state.go(childItem, {query_string: null}, {reload: true, inherit: false, location: true});
       };
   
     

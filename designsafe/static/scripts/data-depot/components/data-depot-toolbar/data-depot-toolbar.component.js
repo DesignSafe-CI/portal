@@ -87,7 +87,6 @@ class DataDepotToolbarCtrl {
         this.$state.go(state, {
             'query_string': this.search.queryString,
             'systemId': this.browser.listing.system,
-            'filePath': '$SEARCH'
         });
     }
 }

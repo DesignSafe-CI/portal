@@ -64,7 +64,7 @@ describe('PublishedComponent', () => {
         spyOn(PublishedService, 'getPublished').and.returnValue(deferred.promise)
         spyOn(FileListing, 'get').and.returnValue($q.defer().promise)
         spyOn(PublishedService, 'updateHeaderMetadata').and.returnValue({})
-
+        ctrl.$stateParams = {filePath: '/PRJ-2110'}
         ctrl.$onInit()
         deferred.resolve(fixture)
         $rootScope.$digest()
