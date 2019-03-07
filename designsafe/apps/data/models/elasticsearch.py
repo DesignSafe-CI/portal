@@ -12,6 +12,7 @@ from elasticsearch_dsl import (Search, DocType, Date, Nested,
 from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError, ConnectionTimeout
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
+from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -46,10 +47,66 @@ class IndexedFile(DocType):
             'execute': Boolean()
         })
     })
-    uuid = Keyword()
+
+    @classmethod
+    def _pems_filter(self):
+        term_username_query = Q(
+            'term',
+            **{'permissions.username': self.username}
+        )
+        term_world_query = Q(
+            'term',
+            **{'permissions.username': 'WORLD'}
+        )
+        bool_query = Q('bool')
+        bool_query.should = [term_username_query, term_world_query]
+        nested_query = Q('nested')
+        nested_query.path = 'permissions'
+        nested_query.query = bool_query
+        return nested_query
+
+    @classmethod
+    def from_path(cls, system, path):
+        search = cls.search()
+        search = search.filter('term', **{'system._exact': system})
+        search = search.filter('term', **{'path._exact': path})
+        try:
+            res = search.execute()
+        except Exception as e:
+            raise e
+        if res.hits.total > 1:
+            for doc in res[1:res.hits.total]:
+                doc.delete()
+            return res[0]
+        elif res.hits.total == 1:
+            return res[0]
+        else:
+            raise DocumentNotFound("No document found for "
+                                   "{}/{}".format(system, path))
+
+    @classmethod
+    def children(cls, username, system, path, limit=100, search_after=None):
+        search = cls.search()
+        # search = search.filter(cls._pems_filter(username))
+        search = search.filter('term', **{'basePath._exact': path})
+        search = search.filter('term', **{'system._exact': system})
+        search = search.sort('_uid')
+        search = search.extra(size=limit)
+        if search_after:
+            search = search.extra(search_after=search_after)
+        try:
+            res = search.execute()
+        except TransportError:
+            raise TransportError
+        if len(res.hits) > 0:
+            wrapped_children = [cls.get(doc._id) for doc in res]
+            sort_key = res.hits.hits[-1]['sort']
+            return wrapped_children, sort_key
+        else:
+            return [], None
 
     class Meta:
-        index = settings.ES_INDICES['files']['name']
+        index = settings.ES_INDICES['files']['alias'][0]
         doc_type = settings.ES_INDICES['files']['documents'][0]['name']
         dynamic = MetaField('strict')
 
