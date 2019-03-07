@@ -122,7 +122,7 @@ def repair_path(name, path):
     return path
 
 @python_2_unicode_compatible
-def repair_paths(limit=10):
+def repair_paths(limit=1000):
     from designsafe.apps.data.models.elasticsearch import IndexedFile
     file_search = IndexedFile.search().sort('_uid').extra(size=limit)
     res = file_search.execute()
