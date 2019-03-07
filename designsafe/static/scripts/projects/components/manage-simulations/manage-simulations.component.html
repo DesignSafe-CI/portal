@@ -266,12 +266,8 @@
                 <br>{{ simulation.value.description }}
               </div>
               <div><br>
-                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editSim(simulation)"><a>Edit</a></span> | 
-                <span ng-click="$ctrl.checkDelete(simulation.uuid)" ng-hide="$ctrl.ui.idDel == simulation.uuid"><a>Delete </a></span>
-                <span ng-if="$ctrl.ui.idDel == simulation.uuid">
-                    Confirm Deletion:
-                    <a ng-click="$ctrl.deleteSimulation(simulation)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                </span>
+                <span ng-click="$ctrl.editSim(simulation)"><a>Edit</a></span> | 
+                <span ng-click="$ctrl.deleteSimulation(simulation)"><a>Delete </a></span>
               </div>
             </div>
           </div>

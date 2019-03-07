@@ -353,12 +353,8 @@
                         <div class="well">
                             <div>{{ modelConf.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(modelConf)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(modelConf.uuid)" ng-hide="$ctrl.ui.idDel == modelConf.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == modelConf.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(modelConf)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(modelConf)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(modelConf)"><a>Delete </a></span>
                             </div>
                         </div>
                             <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConf.uuid]" category-listing="true"></files-listing>
@@ -385,12 +381,8 @@
                         <div class="well">
                             <div>{{ sensorInfo.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(sensorInfo)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(sensorInfo.uuid)" ng-hide="$ctrl.ui.idDel == sensorInfo.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == sensorInfo.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(sensorInfo)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(sensorInfo)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(sensorInfo)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorInfo.uuid]" category-listing="true"></files-listing>
@@ -417,12 +409,8 @@
                         <div class="well">
                             <div>{{ event.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(event)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(event.uuid)" ng-hide="$ctrl.ui.idDel == event.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == event.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(event)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(event)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(event)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]" category-listing="true"></files-listing>
@@ -449,12 +437,8 @@
                         <div class="well">
                             <div>{{ model.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(model)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(model.uuid)" ng-hide="$ctrl.ui.idDel == model.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == model.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(model)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(model)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(model)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="true"></files-listing>
@@ -481,12 +465,8 @@
                         <div class="well">
                             <div>{{ input.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(input)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(input.uuid)" ng-hide="$ctrl.ui.idDel == input.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == input.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(input)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(input)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(input)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]" category-listing="true"></files-listing>
@@ -513,12 +493,8 @@
                         <div class="well">
                             <div>{{ output.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(output)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(output.uuid)" ng-hide="$ctrl.ui.idDel == output.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == output.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(output)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(output)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(ouput)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]" category-listing="true"></files-listing>
@@ -545,12 +521,8 @@
                         <div class="well">
                             <div>{{ gm.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(gm)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(gm.uuid)" ng-hide="$ctrl.ui.idDel == gm.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == gm.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(gm)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(gm)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(gm)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[gm.uuid]" category-listing="true"></files-listing>
@@ -577,12 +549,8 @@
                         <div class="well">
                             <div>{{ coordinator.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(coordinator)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(coordinator.uuid)" ng-hide="$ctrl.ui.idDel == coordinator.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == coordinator.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(coordinator)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(coordinator)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(coordinator)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" category-listing="true"></files-listing>
@@ -609,12 +577,8 @@
                         <div class="well">
                             <div>{{ simsub.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(simsub)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(simsub.uuid)" ng-hide="$ctrl.ui.idDel == simsub.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == simsub.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(simsub)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(simsub)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(simsub)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" category-listing="true"></files-listing>
@@ -641,12 +605,8 @@
                         <div class="well">
                             <div>{{ expsub.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(expsub)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(expsub.uuid)" ng-hide="$ctrl.ui.idDel == expsub.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == expsub.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(expsub)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(expsub)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(expsub)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" category-listing="true"></files-listing>
@@ -673,12 +633,8 @@
                         <div class="well">
                             <div>{{ cout.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(cout)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(cout.uuid)" ng-hide="$ctrl.ui.idDel == cout.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == cout.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(cout)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(cout)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(cout)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" category-listing="true"></files-listing>
@@ -705,12 +661,8 @@
                         <div class="well">
                             <div>{{ eout.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(eout)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(eout.uuid)" ng-hide="$ctrl.ui.idDel == eout.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == eout.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(eout)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(eout)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(eout)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" category-listing="true"></files-listing>
@@ -737,12 +689,8 @@
                         <div class="well">
                             <div>{{ sout.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(sout)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(sout.uuid)" ng-hide="$ctrl.ui.idDel == sout.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == sout.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(sout)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(sout)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(sout)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" category-listing="true"></files-listing>
@@ -780,12 +728,8 @@
                             </table>
                             <div>{{ analysis.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(analysis)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(analysis.uuid)" ng-hide="$ctrl.ui.idDel == analysis.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == analysis.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(analysis)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(analysis)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(analysis)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-listing="true"></files-listing>
@@ -812,12 +756,8 @@
                         <div class="well">
                             <div>{{ report.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(report)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.checkDelete(report.uuid)" ng-hide="$ctrl.ui.idDel == report.uuid"><a>Delete </a></span>
-                                <span ng-if="$ctrl.ui.idDel == report.uuid">
-                                    Confirm Deletion:
-                                    <a ng-click="$ctrl.deleteCategory(report)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                                </span>
+                                <span ng-click="$ctrl.editCategory(report)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.deleteCategory(report)"><a>Delete </a></span>
                             </div>
                         </div>
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
