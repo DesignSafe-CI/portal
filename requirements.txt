@@ -1,4 +1,5 @@
-agavepy==0.7.0
+# agavepy==0.7.0
+-e git+git://github.com/TACC/agavepy@aloe#egg=agavepy
 alabaster==0.7.10
 amqp==2.2.1
 appnope==0.1.0
