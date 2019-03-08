@@ -81,10 +81,10 @@
             </option>
         </optgroup>
         <optgroup label="Experiment Output"
-                  data-ng-if="$ctrl.project.experimentoutput_set.length">
-            <option data-ng-repeat="experimentOutput in $ctrl.project.experimentoutput_set | orderBy: ['value.title']"
-                    value="{{coordinatorOutput.uuid}}">
-                {{coordinatorOutput.value.title}}
+                  data-ng-if="$ctrl.project.expoutput_set.length">
+            <option data-ng-repeat="experimentOutput in $ctrl.project.expoutput_set | orderBy: ['value.title']"
+                    value="{{experimentOutput.uuid}}">
+                {{experimentOutput.value.title}}
             </option>
         </optgroup>
         <optgroup label="Simulation Output"
