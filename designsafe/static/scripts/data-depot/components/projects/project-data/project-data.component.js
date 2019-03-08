@@ -55,9 +55,6 @@ function ProjectDataCtrl($scope, $state, Django, ProjectService, DataBrowserServ
                 _.each($scope.browser.listing.children, function(child){
                   child.setEntities($scope.browser.project.uuid, entities);
                 });
-                //var _state = DataBrowserService.state();
-                //_state.project.setupAllRels();
-                //$scope.browser = _state;
               }
             });
           }

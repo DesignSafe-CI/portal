@@ -3,7 +3,18 @@ import publishedTemplate from './published.component.html';
 
 export class PublishedDataCtrl {
 
-    constructor($state, $filter, Django, $window, DataBrowserService, PublishedService, FileListing, $uibModal, $http, $stateParams) {
+    constructor(
+        $state,
+        $filter,
+        Django,
+        $window,
+        DataBrowserService,
+        PublishedService,
+        FileListing,
+        $uibModal,
+        $http,
+        $stateParams
+    ) {
         'ngInject';
 
         this.$state = $state;
