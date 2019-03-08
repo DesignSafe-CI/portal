@@ -9,6 +9,12 @@
                          $ctrl.browser.publishPipeline == 'select' ||
                          $ctrl.browser.publishPipeline == 'review'))"
     >
+        <div>
+            <span ng-repeat="path in $ctrl.breadcrumbs">
+                <span ng-if="!$last"><a ng-click="$ctrl.breadcrumbBrowse($ecent, path)">{{ path || 'Main' }}</a> / </span>
+                <span ng-if="$last">{{ path || 'Main' }}</span>
+            </span>
+        </div>
         <table class="files-listing-table table table-bordered table-striped"
                style="background-color: #fff;">
             <thead ng-hide="$ctrl.categoryMode()">
