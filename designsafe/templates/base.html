@@ -35,6 +35,7 @@
       <meta name="author" content=""> <!-- author names -->
 
       <!-- used in google citation -->
+      {% block google_ciation_meta %}
       <meta name="citation_title" content=""> <!-- project title -->
       <meta name="citation_author" content=""> <!-- author; can have multiple lines -->
       <meta name="citation_author_institution" content=""> <!-- example: University of Texas at Austin-->
@@ -45,6 +46,7 @@
       <meta name="citation_abstract_html_url" content=""> <!-- project url -->
       <meta name="citation_publisher" content="DesignSafe-CI">
       <meta name="citation_language" content="en">
+      {% endblock %}
   </head>
   <body ng-app="designsafe.portal">
     {% cms_toolbar %}
