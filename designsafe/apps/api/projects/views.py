@@ -18,6 +18,7 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.projects.models.agave.base import Project as BaseProject
+from designsafe.apps.projects.models.categories import Category
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.files import BaseFileResource
@@ -195,6 +196,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         prj.pi = post_data.get('pi')
         prj.copi = post_data.get('copi')
         prj.team = post_data.get('teamMembers')
+        prj.guest_members = post_data.get('guestMembers', {})
         prj.project_id = post_data.get('projectId', '')
         prj.award_number = post_data.get('awardNumber', {})
         prj.associated_projects = post_data.get('associatedProjects', {})
@@ -355,6 +357,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         p.description = post_data.get('description', p.description)
         p.co_pis = post_data.get('copi')
         p.team_members = post_data.get('teamMembers', p.team_members)
+        p.guest_members = post_data.get('guestMembers', p.guest_members)
         p.keywords = post_data.get('keywords', p.keywords)
         new_pi = post_data.get('pi')
         p.project_id = post_data.get('projectId', p.project_id)
@@ -460,7 +463,6 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         """
         ag = request.user.agave_oauth.client
         try:
-            logger.debug('name: %s', name)
             if name is not None and name != 'all':
                 model = self._lookup_model(name)
                 resp = model._meta.model_manager.list(ag, project_id)
@@ -561,8 +563,12 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
+        entity = post_data.get('entity')
+        category = Category.objects.get_or_create_from_json(
+            uuid=entity['uuid'],
+            dict_obj=entity['_ui']
+        )
         try:
-            entity = post_data.get('entity')
             model_cls = self._lookup_model(entity['name'])
             model = model_cls(**entity)
             saved = model.save(ag)

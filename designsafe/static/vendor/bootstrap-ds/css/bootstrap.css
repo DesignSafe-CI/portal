@@ -4913,13 +4913,21 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
   background-color: #ECE4BF;
   border-color: #B59300;
 }
-.category-subst {
+.category-sim-subst {
   font-weight: bold;
-  color: #865AA7;
+  color: #BD5717;
 }
-.tab-subst {
-  background-color: #c09add;
-  border-color: #865AA7;
+.tab-sim-subst {
+  background-color: #EBCCB9;
+  border-color: #BD5717;
+}
+.category-exp-subst {
+  font-weight: bold;
+  color: #4B3181;
+}
+.tab-exp-subst {
+  background-color: #C8C0D9;
+  border-color: #4B3181;
 }
 .category-outpt {
   font-weight: bold;

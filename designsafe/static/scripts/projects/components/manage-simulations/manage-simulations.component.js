@@ -3,20 +3,40 @@ import _ from 'underscore';
 
 class ManageSimulationCtrl {
 
-    constructor($q, Django, UserService, ProjectEntitiesService) {
+    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.UserService = UserService;
         this.Django = Django;
         this.$q = $q;
+        this.$uibModal = $uibModal;
     }
 
     $onInit() {
         this.options = this.resolve.options;
-        var members = [this.options.project.value.pi].concat(this.options.project.value.coPis, this.options.project.value.teamMembers);
+        var members = [this.options.project.value.pi].concat(
+            this.options.project.value.coPis,
+            this.options.project.value.teamMembers,
+            this.options.project.value.guestMembers.map(g => g.user)
+        );
         members.forEach((m, i) => {
             if (typeof m == 'string') {
-                members[i] = { name: m, order: i, authorship: false };
+                // if user is guest append their data
+                if(m.slice(0,5) === 'guest') {
+                    var guestData = this.options.project.value.guestMembers.find(x => x.user === m);
+                    members[i] = {
+                        name: m,
+                        order: i,
+                        authorship: false,
+                        guest: true,
+                        fname: guestData.fname,
+                        lname: guestData.lname,
+                        email: guestData.email,
+                        inst: guestData.inst,
+                    };
+                } else {
+                    members[i] = { name: m, order: i, authorship: false };
+                }
             }
         });
 
@@ -34,8 +54,6 @@ class ManageSimulationCtrl {
             showAddSimAnalysis: {},
             showAddIntReport: {},
             showAddIntAnalysis: {},
-            confirmDel: false,
-            idDel: '',
         };
         this.form = {
             curSimulation: [],
@@ -137,7 +155,22 @@ class ManageSimulationCtrl {
         if (modAuths) {
             usersToClean.forEach((auth, i) => {
                 if (typeof auth == 'string') {
-                    usersToClean[i] = {name: auth, order: i, authorship: false};
+                    // if user is guest append their data
+                    if(auth.slice(0,5) === 'guest') {
+                        var guestData = this.options.project.value.guestMembers.find(x => x.user === auth);
+                        usersToClean[i] = {
+                            name: auth,
+                            order: i,
+                            authorship: false,
+                            guest: true,
+                            fname: guestData.fname,
+                            lname: guestData.lname,
+                            email: guestData.email,
+                            inst: guestData.inst,
+                        };
+                    } else {
+                        usersToClean[i] = {name: auth, order: i, authorship: false};
+                    }
                 } else {
                     auth.order = i;
                 }
@@ -259,38 +292,41 @@ class ManageSimulationCtrl {
         });
     }
 
-    checkDelete(ent) {
-        this.ui.confirmDel = true;
-        this.ui.idDel = ent;
+    deleteSimulation(ent) {
         if (this.editSimForm) {
             this.editSimForm = {};
             this.ui.showEditSimulationForm = false;
         }
-    }
-
-    cancelDelete() {
-        this.ui.confirmDel = false;
-        this.ui.idDel = '';
-    }
-
-    deleteSimulation(ent) {
-        this.ProjectEntitiesService.delete({
-            data: {
-                uuid: ent.uuid,
-            }
-        }).then((entity) => {
-            var entityAttr = this.data.project.getRelatedAttrName(entity.name);
-            var entitiesArray = this.data.project[entityAttr];
-            entitiesArray = _.filter(entitiesArray, (e) => {
-                return e.uuid !== entity.uuid;
+        var confirmDelete = (options) => {
+            var modalInstance = this.$uibModal.open({
+                component: 'confirmDelete',
+                resolve: {
+                    options: () => options,
+                },
+                size: 'sm'
             });
-            this.data.project[entityAttr] = entitiesArray;
-            this.data.simulations = this.data.project[entityAttr];
-        });
+
+            modalInstance.result.then((res) => {
+                if (res) {
+                    this.ProjectEntitiesService.delete({
+                        data: {
+                            uuid: ent.uuid,
+                        }
+                    }).then((entity) => {
+                        var entityAttr = this.data.project.getRelatedAttrName(entity.name);
+                        var entitiesArray = this.data.project[entityAttr];
+                        entitiesArray = _.filter(entitiesArray, (e) => {
+                            return e.uuid !== entity.uuid;
+                        });
+                        this.data.project[entityAttr] = entitiesArray;
+                        this.data.simulations = this.data.project[entityAttr];
+                    });
+                }
+            });
+        };
+        confirmDelete({'entity': ent});
     }
 }
-
-ManageSimulationCtrl.$inject = ['$q', 'Django', 'UserService', 'ProjectEntitiesService'];
 
 export const ManageSimulationComponent = {
     template: ManageSimulationTemplate,

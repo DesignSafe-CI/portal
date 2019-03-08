@@ -19,7 +19,7 @@
           <span style="color: #D04348; font-size:14px;">&#9679; </span>
         </label>
         <p>
-          Different from the Project Title. Make it focused on the methods used to obtain the data in this Hyrbid Simulation.
+          Different from the Project Title. Make it focused on the methods used to obtain the data in this Simulation.
         </p>
         <div>
           <input type="text" id="add-sim-title" style="width:100%;" ng-model="$ctrl.form.addSimulation[0].title" ng-required="true"><br>
@@ -70,34 +70,9 @@
         <div class="form-group">
           <div ng-repeat="usr in $ctrl.data.users track by $index" style="width:46%; display:inline-block; white-space: nowrap;">
             <input type="checkbox" format="lname" id="{{ 'newAuthor' + $index }}" ng-click="$ctrl.addAuthors(usr, $index)">
-            <ds-user username="usr.name" format="lname">{{ usr.name }}</ds-user><br>
+            <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
+            <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
           </div>
-        </div>
-        <div class="simAuthorsAssign form-group">
-          <label>Add Authors not Registered on DesignSafe</label>
-          <div ng-repeat="guest in $ctrl.form.addGuest">
-            <span style="width:26%; display:inline-block;">
-              <div>
-                Last Name, First Name
-              </div>
-              <input style="width:100%" type="text" name="simAuthorName">
-            </span>
-            <span style="width:26%; display:inline-block;">
-              <div>
-                Email
-              </div>
-              <input style="width:100%" type="text" name="simAuthorMail">
-            </span>
-            <span style="width:46%; display:inline-block;">
-              <div>
-                Institution
-              </div>
-              <input style="width:100%" type="text" name="simAuthorInst">
-            </span>
-          </div>
-          <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
-            + Add another Outside Author
-          </a>
         </div>
         <!-- Add Sim Btn -->
         <div class="text-right">
@@ -162,40 +137,16 @@
                       format="lname"
                       id="{{ 'editAuthor' + $index }}"
                       ng-checked="author.authorship"
-                      ng-click="$ctrl.editAuthors(author, $index)">
-              <ds-user username="author.name" format="lname">{{ author.name }}</ds-user><br>
+                      ng-click="$ctrl.editAuthors(author, $index)"
+              >
+              <ds-user ng-if="!author.guest" username="author.name" format="lname">{{ author.name }}</ds-user>
+              <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span><br>
             </div>
-          </div>
-          <div class="simAuthorsAssign form-group">
-            <label>Add Authors not Registered on DesignSafe</label>
-            <div ng-repeat="guestUsr in $ctrl.form.addGuest">
-              <span style="width:26%; display:inline-block;">
-                <div>
-                  Last Name, First Name
-                </div>
-                <input style="width:100%" type="text" name="SimAuthorName" ng-model="$ctrl.editSimForm.addGuest.name">
-              </span>
-              <span style="width:26%; display:inline-block;">
-                <div>
-                  Email
-                </div>
-                <input style="width:100%" type="text" name="SimAuthorMail" ng-model="$ctrl.editSimForm.addGuest.email">
-              </span>
-              <span style="width:46%; display:inline-block;">
-                <div>
-                  Institution
-                </div>
-                <input style="width:100%" type="text" name="SimAuthorInst" ng-model="$ctrl.editSimForm.addGuest.institution">
-              </span>
-            </div>
-            <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
-              + Add another Outside Author
-            </a>
           </div>
           <!-- Sort Authors  -->
           <strong>Order of Authors</strong>
           <p>
-            You can adjust the order of authors for your experiment by selecting an author and using the arrows to change their position.
+            You can adjust the order of authors for your simulation by selecting an author and using the arrows to change their position.
           </p>
           <table class="tg" style="table-layout: fixed; width: 100%;">
             <colgroup>
@@ -210,8 +161,20 @@
                           format="lname"
                           ng-model="$ctrl.editSimForm.selectedAuthor"
                           ng-value="author"
-                          ng-if="author.authorship">
-                  <ds-user username="author.name" format="lname" ng-style="!author.authorship && {'text-decoration':'line-through'}">{{ author.name }}</ds-user><br>
+                          ng-if="author.authorship"
+                  >
+                  <ds-user  ng-if="!author.guest"
+                            username="author.name"
+                            format="lname"
+                            ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                  >
+                    {{ author.name }}
+                  </ds-user>
+                  <span ng-if="author.guest"
+                        ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                  >
+                    {{ author.lname }}, {{ author.fname }}
+                  </span><br>
                 </div>
               </td>
               <td class="tg-0lax">
@@ -254,8 +217,11 @@
               <strong ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationTypeOther }}</strong>
               <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
               <div style="display:inline-block; width:78%; font-weight: bold;">
-                <div ng-repeat="author in simulation.value.authors | orderBy: 'order'" ng-if="!author.length">
-                  <ds-user username="author.name" format="lname" ng-if="author.authorship">{{ author.name }}</ds-user>
+                <div ng-repeat="author in simulation.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
+                  <span ng-if="!author.guest">
+                    <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>
+                  </span>
+                  <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span>
                 </div>
                 <!-- older author list -->
                 <div ng-repeat="author in simulation.value.authors" ng-if="author.length">
@@ -266,12 +232,8 @@
                 <br>{{ simulation.value.description }}
               </div>
               <div><br>
-                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editSim(simulation)"><a>Edit</a></span> | 
-                <span ng-click="$ctrl.checkDelete(simulation.uuid)" ng-hide="$ctrl.ui.idDel == simulation.uuid"><a>Delete </a></span>
-                <span ng-if="$ctrl.ui.idDel == simulation.uuid">
-                    Confirm Deletion:
-                    <a ng-click="$ctrl.deleteSimulation(simulation)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                </span>
+                <span ng-click="$ctrl.editSim(simulation)"><a>Edit</a></span> | 
+                <span ng-click="$ctrl.deleteSimulation(simulation)"><a>Delete </a></span>
               </div>
             </div>
           </div>
