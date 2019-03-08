@@ -99,7 +99,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
       filePath: null,
       projectTitle: null,
       query_string: null
-    }
+    };
 
     /**
      * Get a list of Projects for the current user
@@ -310,10 +310,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
       });
 
       modalInstance.result.then((experiment) => {
-        if (window.sessionStorage.experimentData) {
-          window.sessionStorage.setItem('experimentData', JSON.stringify(experiment));
-          $state.reload();
-        }
+        $state.reload();
       });
     };
     
