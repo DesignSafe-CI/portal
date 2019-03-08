@@ -10,82 +10,84 @@
             </form>
             -->
         </div>
-        <div class="btn-toolbar btn-toolbar-right" role="toolbar" aria-label="Data Browser Toolbar">
+        <div class="btn-toolbar btn-toolbar-left" role="toolbar" aria-label="Data Browser Toolbar">
             <form class="navbar-form navbar-left" ng-submit="$ctrl.ddSearch()" style="display:flex" 
             ng-hide="['Dropbox', 'Box', 'Google Drive', 'Project View', 'NEES Published'].includes($ctrl.placeholder())">
                 <input class="form-control" style="width:240px;" placeholder="Find in {{ $ctrl.placeholder() }}" ng-model="$ctrl.search.queryString">
                 <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
             </form>
-            <div class="btn-group-data-depot-toolbar btn-group">
-                <button class="btn btn-sm btn-default" title="Categorize"
-                        ng-click="$ctrl.viewCategories()"
-                        ng-disabled="!$ctrl.browser.tests.canViewCategories ||
-                                      $ctrl.browser.project.publicationStatus === 'publishing'"
-                        ng-if="$ctrl.browser.listing.system.startsWith('project') &&
-                               $ctrl.browser.project.value.projectType != 'other'">
-                    <img src="/static/images/ds-icons/icon-categorize.svg" width="50px" height="16px"/>
-                    <span style="display:block;">Categorize</span>
-                </button>
-                <button class="btn btn-sm btn-default" title="Categorize" ng-click="$ctrl.viewMetadata()"
-                         ng-disabled="!$ctrl.browser.tests.canViewMetadata ||
-                                      $ctrl.browser.project.publicationStatus === 'publishing'">
-                    <i class="fa fa-tags"></i><span style="display:block;">Tag</span>
-                </button>
-                <button class="btn btn-sm btn-default" title="Rename" ng-click="$ctrl.rename()"
-                         ng-disabled="!$ctrl.browser.tests.canRename ||
-                                      $ctrl.browser.project.publicationStatus === 'publishing'">
-                    <i class="fa fa-pencil"></i><span style="display:block;">Rename</span>
-                </button>
+            <div class="btn-toolbar-right">
+                <div class="btn-group-data-depot-toolbar btn-group">
+                    <button class="btn btn-sm btn-default" title="Categorize"
+                            ng-click="$ctrl.viewCategories()"
+                            ng-disabled="!$ctrl.browser.tests.canViewCategories ||
+                                        $ctrl.browser.project.publicationStatus === 'publishing'"
+                            ng-if="$ctrl.browser.listing.system.startsWith('project') &&
+                                $ctrl.browser.project.value.projectType != 'other'">
+                        <img src="/static/images/ds-icons/icon-categorize.svg" width="50px" height="16px"/>
+                        <span style="display:block;">Categorize</span>
+                    </button>
+                    <button class="btn btn-sm btn-default" title="Categorize" ng-click="$ctrl.viewMetadata()"
+                            ng-disabled="!$ctrl.browser.tests.canViewMetadata ||
+                                        $ctrl.browser.project.publicationStatus === 'publishing'">
+                        <i class="fa fa-tags"></i><span style="display:block;">Tag</span>
+                    </button>
+                    <button class="btn btn-sm btn-default" title="Rename" ng-click="$ctrl.rename()"
+                            ng-disabled="!$ctrl.browser.tests.canRename ||
+                                        $ctrl.browser.project.publicationStatus === 'publishing'">
+                        <i class="fa fa-pencil"></i><span style="display:block;">Rename</span>
+                    </button>
+                </div>
+                <div class="btn-group-data-depot-toolbar btn-group">
+                    <button class="btn btn-sm btn-default" title="Move" ng-click="$ctrl.move()"
+                            ng-disabled="!$ctrl.browser.tests.canMove ||
+                                        $ctrl.browser.project.publicationStatus === 'publishing'">
+                        <i class="fa fa-arrows"></i><span style="display:block;">Move</span>
+                    </button>
+                    <button class="btn btn-sm btn-default" title="Copy" ng-click="$ctrl.copy()"
+                            ng-disabled="!$ctrl.browser.tests.canCopy ||
+                                        $ctrl.browser.project.publicationStatus === 'publishing'">
+                        <i class="fa fa-copy"></i><span style="display:block;">Copy</span>
+                    </button>
+                    <button class="btn btn-sm btn-default" title="Preview" ng-click="$ctrl.preview()"
+                            ng-disabled="!$ctrl.browser.tests.canPreview ||
+                                        $ctrl.browser.project.publicationStatus === 'publishing'">
+                        <i class="fa fa-binoculars"></i><span style="display:block;">Preview</span>
+                    </button>
+                    <button class="btn btn-sm btn-default" title="Preview Images" ng-click="$ctrl.previewImages()" ng-disabled="!$ctrl.browser.tests.canPreviewImages">
+                        <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
+                    </button>
+                    <button class="btn btn-sm btn-default" title="Preview Citation" ng-if="$ctrl.browser.listing.system.startsWith('nees')" ng-click="$ctrl.showCitation()" ng-disabled="!$ctrl.browser.tests.canViewCitation || $ctrl.browser.selected[0].name.includes('NEES')">
+                        <i class="fa fa-book" style="color:#5bc0de;"></i><span style="display:block;">Citation</span>
+                    </button>
+                </div>
+                <div class="btn-group-data-depot-toolbar btn-group">
+        
+                    <button class="btn btn-sm btn-default" title="Download" ng-click="$ctrl.download()"
+                            ng-disabled="!$ctrl.browser.tests.canDownload">
+                        <i class="fa fa-cloud-download"></i><span style="display:block;">Download</span>
+                    </button>
+                </div>
+                <div class="btn-group-data-depot-toolbar btn-group">
+                    <button class="btn btn-sm btn-default" title="Move to trash" ng-click="$ctrl.trash()"
+                            ng-disabled="!$ctrl.browser.tests.canTrash ||
+                                        $ctrl.browser.project.publicationStatus === 'publishing'"
+                            ng-if="!$ctrl.browser.tests.canDelete">
+                        <i class="fa fa-trash"></i><span style="display:block;">Move to Trash</span>
+                    </button>
+                    <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="$ctrl.rm()" ng-disabled="!$ctrl.browser.tests.canDelete" ng-if="$ctrl.browser.tests.canDelete">
+                        <i class="fa fa-trash"></i><span style="display:block;">Delete selected files</span>
+                    </button>
+                </div>
+                <!--
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-info" title="Details for {{ browser.listing.name }}" ng-click="ops.details()">
+                        <i class="fa fa-info-circle"></i><span style="display:block;">Details</span>
+                        <span class="sr-only">{{ browser.listing.name }}</span>
+                    </button>
+                </div>
+                -->
             </div>
-            <div class="btn-group-data-depot-toolbar btn-group">
-                <button class="btn btn-sm btn-default" title="Move" ng-click="$ctrl.move()"
-                         ng-disabled="!$ctrl.browser.tests.canMove ||
-                                      $ctrl.browser.project.publicationStatus === 'publishing'">
-                    <i class="fa fa-arrows"></i><span style="display:block;">Move</span>
-                </button>
-                <button class="btn btn-sm btn-default" title="Copy" ng-click="$ctrl.copy()"
-                         ng-disabled="!$ctrl.browser.tests.canCopy ||
-                                      $ctrl.browser.project.publicationStatus === 'publishing'">
-                    <i class="fa fa-copy"></i><span style="display:block;">Copy</span>
-                </button>
-                <button class="btn btn-sm btn-default" title="Preview" ng-click="$ctrl.preview()"
-                         ng-disabled="!$ctrl.browser.tests.canPreview ||
-                                      $ctrl.browser.project.publicationStatus === 'publishing'">
-                    <i class="fa fa-binoculars"></i><span style="display:block;">Preview</span>
-                </button>
-                <button class="btn btn-sm btn-default" title="Preview Images" ng-click="$ctrl.previewImages()" ng-disabled="!$ctrl.browser.tests.canPreviewImages">
-                    <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
-                </button>
-                <button class="btn btn-sm btn-default" title="Preview Citation" ng-if="$ctrl.browser.listing.system.startsWith('nees')" ng-click="$ctrl.showCitation()" ng-disabled="!$ctrl.browser.tests.canViewCitation || $ctrl.browser.selected[0].name.includes('NEES')">
-                    <i class="fa fa-book" style="color:#5bc0de;"></i><span style="display:block;">Citation</span>
-                </button>
-             </div>
-             <div class="btn-group-data-depot-toolbar btn-group">
-    
-                <button class="btn btn-sm btn-default" title="Download" ng-click="$ctrl.download()"
-                         ng-disabled="!$ctrl.browser.tests.canDownload">
-                    <i class="fa fa-cloud-download"></i><span style="display:block;">Download</span>
-                </button>
-            </div>
-            <div class="btn-group-data-depot-toolbar btn-group">
-                <button class="btn btn-sm btn-default" title="Move to trash" ng-click="$ctrl.trash()"
-                         ng-disabled="!$ctrl.browser.tests.canTrash ||
-                                      $ctrl.browser.project.publicationStatus === 'publishing'"
-                         ng-if="!$ctrl.browser.tests.canDelete">
-                    <i class="fa fa-trash"></i><span style="display:block;">Move to Trash</span>
-                </button>
-                 <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="$ctrl.rm()" ng-disabled="!$ctrl.browser.tests.canDelete" ng-if="$ctrl.browser.tests.canDelete">
-                    <i class="fa fa-trash"></i><span style="display:block;">Delete selected files</span>
-                </button>
-            </div>
-            <!--
-            <div class="btn-group">
-                <button class="btn btn-sm btn-info" title="Details for {{ browser.listing.name }}" ng-click="ops.details()">
-                    <i class="fa fa-info-circle"></i><span style="display:block;">Details</span>
-                    <span class="sr-only">{{ browser.listing.name }}</span>
-                </button>
-            </div>
-            -->
         </div>
     </div>
     
