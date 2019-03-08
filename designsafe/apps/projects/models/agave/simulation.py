@@ -11,6 +11,7 @@ class SimulationProject(Project):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
     co_pis = fields.ListField('Co PIs')
+    guest_members = fields.ListField('Guest Members')
     project_type = fields.CharField('Project Type', max_length=255, default='simulation')
     project_id = fields.CharField('Project Id')
     description = fields.CharField('Description', max_length=1024, default='')
