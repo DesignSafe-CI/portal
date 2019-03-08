@@ -379,7 +379,7 @@
                                             <tr ng-repeat="ref in analysis.value.refs">
                                                 <td class="tg-0lax" ng-if="$first">Referenced Work</td>
                                                 <td class="tg-0lax" ng-if="!$first"></td>
-                                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a>{{ ref.referencedoi }}</a></strong></td>
+                                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a href="{{ ref.referencedoi }}" target=”_blank”>{{ ref.referencedoi }}</a></strong></td>
                                             </tr>
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
