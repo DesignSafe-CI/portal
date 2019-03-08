@@ -1739,8 +1739,6 @@ export function applicationAddCtrl(window, angular, $, _) {
                             metadata.value.definition.id = $scope.customModel.label + '-' + $scope.customModel.version;
                             metadata.value.definition.available = true;
                             metadata.value.definition.isPublic = false;
-                            metadata.value.definition.appCategory = $scope.customModel.appCategory;
-                            metadata.value.definition.appIcon = $scope.customModel.appIcon;
                             metadata.value.type = 'html';
                             _.extend(metadata.value.definition, angular.copy($scope.customModel));
 

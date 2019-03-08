@@ -1612,8 +1612,6 @@ export function applicationEditCtrl(window, angular, $, _) {
                             metadata.value = {};
                             metadata.value.definition = {};
                             metadata.value.definition.id = $scope.customModel.label + '-' + $scope.customModel.version;
-                            metadata.value.definition.appCategory = $scope.customModel.appCategory;
-                            metadata.value.definition.appIcon = $scope.customModel.appIcon;
                             metadata.value.type = $translate.instant('apps_metadata_custom');
                             _.extend(metadata.value.definition, angular.copy($scope.customModel));
 
