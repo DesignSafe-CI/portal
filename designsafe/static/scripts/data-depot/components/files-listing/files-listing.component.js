@@ -11,6 +11,19 @@ class FilesListingCtrl {
 
     $onInit() {
         this._ui = { loading: false, error: false };
+        this.bread = (path, system) => {
+            if (!path) {
+                return;
+            }
+            if (path === '/') {
+                this.breadcrumbs = [''];
+            } else {
+                this.breadcrumbs = path.split('/');
+            }
+            if (system === 'designsafe.storage.default') {
+                this.breadcrumbs.shift();
+            }
+        };
         this.curationMode = () => {
             if (this.$state.current.name === 'projects.curation') {
                 return true;
@@ -28,10 +41,30 @@ class FilesListingCtrl {
                 return;
             }
             if (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList)){
+                if (typeof this.browser.listing !== 'undefined' && this.browser.listing !== null) {
+                    this.bread(this.browser.listing.path, this.browser.listing.system);
+                }
                 return this.browser.listing;
             }
             return this.filesList;
         };
+    }
+
+    breadcrumbBrowse($event, path) {
+        if ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+        }
+        let systemId = this.browser.listing.system || this.browser.listing.systemId;
+        var filePath = '';
+        for (var i = 0; i < this.breadcrumbs.length; i++) {
+            filePath = filePath.concat(this.breadcrumbs[i] + '/');
+            if (this.breadcrumbs[i] === path) { break; }
+        }
+        return this.$state.go(
+            this.$state.current.name,
+            { 'systemId': systemId, 'filePath': filePath }, { reload: true }
+        );
     }
 
     onBrowse($event, file) {
