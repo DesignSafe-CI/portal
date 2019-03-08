@@ -11,6 +11,7 @@ class FilesListingCtrl {
 
     $onInit() {
         this._ui = { loading: false, error: false };
+        this.allowSelect = true;
         this.curationMode = () => {
             if (this.$state.current.name === 'projects.curation') {
                 return true;
@@ -28,8 +29,10 @@ class FilesListingCtrl {
                 return;
             }
             if (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList)){
+                this.allowSelect = true;
                 return this.browser.listing;
             }
+            this.allowSelect = false;
             return this.filesList;
         };
     }
@@ -63,40 +66,31 @@ class FilesListingCtrl {
         );
     }
 
-    onSelect(file) {
-        const selectedIndex = this.browser.selected.indexOf(file);
-        if (selectedIndex > -1) {
-            this.DataBrowserService.deselect([file]);
+    selectAll () {
+        if (this.browser.selected.length) {
+            this.DataBrowserService.deselect(this.browser.listing.children);
         } else {
-            this.DataBrowserService.select([file]);
+            this.DataBrowserService.select(this.browser.listing.children, true);
         }
     }
-    
-    /*
-    They might change their mind with the way files 
-    are selected, so keeping this here for now.
-    */
-    // onSelect($event, file) {
-    //     if ($event.ctrlKey || $event.metaKey) {
-    //         const selectedIndex = this.browser.selected.indexOf(file);
-    //         if (selectedIndex > -1) {
-    //             this.DataBrowserService.deselect([file]);
-    //         } else {
-    //             this.DataBrowserService.select([file]);
-    //         }
-    //     } else if ($event.shiftKey && this.browser.selected.length > 0) {
-    //         const lastFile = this.browser.selected[this.browser.selected.length - 1];
-    //         const lastIndex = this.browser.listing.children.indexOf(lastFile);
-    //         const fileIndex = this.browser.listing.children.indexOf(file);
-    //         const min = Math.min(lastIndex, fileIndex);
-    //         const max = Math.max(lastIndex, fileIndex);
-    //         this.DataBrowserService.select(this.browser.listing.children.slice(min, max + 1));
-    //     } else if (typeof file._ui !== 'undefined' && file._ui.selected) {
-    //         this.DataBrowserService.deselect([file]);
-    //     } else {
-    //         this.DataBrowserService.select([file], true);
-    //     }
-    // }
+
+    onSelect($event, file) {
+        if ($event.shiftKey && this.browser.selected.length > 0) {
+            const lastFile = this.browser.selected[this.browser.selected.length - 1];
+            const lastIndex = this.browser.listing.children.indexOf(lastFile);
+            const fileIndex = this.browser.listing.children.indexOf(file);
+            const min = Math.min(lastIndex, fileIndex);
+            const max = Math.max(lastIndex, fileIndex);
+            this.DataBrowserService.select(this.browser.listing.children.slice(min, max + 1));
+        } else {
+            const selectedIndex = this.browser.selected.indexOf(file);
+            if (selectedIndex > -1) {
+                this.DataBrowserService.deselect([file]);
+            } else {
+                this.DataBrowserService.select([file]);
+            }
+        }
+    }
 
     scrollToBottom() {
         return this.DataBrowserService.scrollToBottom();
