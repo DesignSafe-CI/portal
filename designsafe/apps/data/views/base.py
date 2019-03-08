@@ -14,6 +14,10 @@ from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView, View
 from django.views.decorators.csrf import ensure_csrf_cookie
 from designsafe.libs.common.decorators import profile
+from designsafe.apps.api.agave.filemanager.public_search_index import (
+    Publication,
+    LegacyPublication
+)
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +29,6 @@ class  BasePublicTemplate(TemplateView):
         context = super(BasePublicTemplate, self).get_context_data(**kwargs)
         context['unreadNotifications'] = 0
         return context
-
-
 
 
 class DataDepotView(BasePublicTemplate):
@@ -144,6 +146,7 @@ class DataBrowserTestView(BasePublicTemplate):
         })
         return context
 
+
 class FileMediaView(View):
     systems_mappings = {
         'designsafe.storage.default': 'shared',
@@ -174,3 +177,59 @@ class FileMediaView(View):
         response['Content-Disposition'] = 'attachment; filename={filename}'.format(filename=filename)
         response['X-Accel-Redirect'] = '/internal-resource/{filepath}'.format(filepath=filepath)
         return response
+
+
+class DataDepotPublishedView(TemplateView):
+    """Data Depot view for published projects.
+
+    This view will be used when a user goes directly to a published project.
+    """
+    template_name = 'data/data_depot.html'
+
+    def get_context_data(self, **kwargs):
+        """Update context data to add publication."""
+        context = super(DataDepotPublishedView, self).get_context_data(**kwargs)
+        pub = Publication(project_id=kwargs['project_id'].strip('/'))
+        context['citation_title'] = pub.project.value.title
+        context['citation_date'] = pub.created
+        context['doi'] = pub.project.doi
+        context['keywords'] = pub.project.value.keywords.split(',')
+        context['authors'] = [{
+            'full_name': '{last_name}, {first_name}'.format(
+                last_name=user['last_name'], first_name=user['first_name']
+            ),
+            'institution': getattr(getattr(user, 'profile'), 'institution', '')
+        } for user in pub.users]
+        context['publication'] = pub
+        return context
+
+
+class DataDepotLegacyPublishedView(TemplateView):
+    """Data Depot view for published projects.
+
+    This view will be used when a user goes directly to a legacy published project.
+    """
+    template_name = 'data/data_depot.html'
+
+    def get_context_data(self, **kwargs):
+        """Update context data to add publication."""
+        context = super(DataDepotLegacyPublishedView, self).get_context_data(**kwargs)
+        nees_id = kwargs['project_id'].strip('.groups').strip('/')
+        logger.debug('nees_id: %s', nees_id)
+        pub = LegacyPublication(nees_id=nees_id)
+        context['citation_title'] = pub.title
+        context['citation_date'] = getattr(pub, 'startDate', '')
+        experiments = getattr(pub, 'experiments')
+        if experiments and len(experiments):
+            context['doi'] = getattr(pub.experiments[0], 'doi', '')
+            exp_users = [getattr(exp, 'creators', []) for exp in experiments]
+            users  = [user for users in exp_users for user in users]
+            context['authors'] = [{
+                'full_name': '{last_name}, {first_name}'.format(
+                    last_name=user.get('lastName'),
+                    first_name=user.get('firstName'),
+                ),
+                'institution': ''
+            } for user in users]
+        context['publication'] = pub
+        return context
