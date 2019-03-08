@@ -103,8 +103,19 @@
                     <div ng-repeat="author in $ctrl.experiment.value.authors | orderBy: 'order'">
                         <input type="radio" name="author" format="lname" ng-model="$ctrl.selectedAuthor" ng-value="author"
                             ng-if="author.authorship">
-                        <ds-user username="author.name" format="lname" ng-style="!author.authorship && {'text-decoration':'line-through'}">{{
-                            author.name }}</ds-user><br>
+                        <span ng-if="!author.guest">
+                            <ds-user    username="author.name"
+                                        format="lname"
+                                        ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                            >
+                                {{ author.name }}
+                            </ds-user>
+                        </span>
+                        <span   ng-if="author.guest"
+                                ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                        >
+                            {{ author.lname }}, {{ author.fname }}
+                        </span>
                     </div>
                 </td>
                 <td class="tg-0lax">

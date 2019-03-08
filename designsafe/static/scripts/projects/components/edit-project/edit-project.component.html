@@ -41,7 +41,7 @@
                         ng-required="true"><br>
             </div>
         </div>
-        <!-- TEST -->
+        <!-- Add PI and PRJ Members -->
         <div class="form-group" style="width:100%; display:inline-block;">
             <table class="tg" style="table-layout: fixed; width: 100%;">
                 <colgroup>
@@ -62,13 +62,12 @@
                 </tr>
                 <tr>
                     <td class="tg-0lax" style="vertical-align:top">
-                        <!-- pi and copi -->
                         <input  type="text"
                                 id="id_pi"
                                 name="pi"
+                                autocomplete="username"
                                 ng-model="$ctrl.form.pi"
                                 placeholder="Lookup user by name or email address"
-                                autocomplete="off"
                                 uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
                                 typeahead-loading="searching"
                                 typeahead-no-results="noResults"
@@ -81,9 +80,9 @@
                             <input  type="text"
                                     id="id_copi"
                                     name="copi"
+                                    autocomplete="username"
                                     ng-model="$ctrl.form.copi[i]"
                                     placeholder="Lookup user by name or email address"
-                                    autocomplete="off"
                                     uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
                                     typeahead-loading="searching"
                                     typeahead-input-formatter="$ctrl.formatSelection(usr)"
@@ -99,8 +98,7 @@
                         </div>
                     </td>
                     <td class="tg-0lax" style="vertical-align:top">
-                        <!-- team -->
-                        <!-- <div ng-disabled="true">
+                        <div ng-disabled="true">
                             <input  type="text"
                                     id="id_creator"
                                     name="creator"
@@ -108,16 +106,15 @@
                                     placeholder="{{$ctrl.formatSelection($ctrl.form.creator)}}"
                                     ng-disabled="true"
                             >
-                        </div> -->
-                        <!-- add users -->
+                        </div>
                         <div ng-repeat="(i, usr) in $ctrl.form.team track by $index">
                             <input  type="text"
                                     id="id_user"
                                     name="user"
+                                    autocomplete="username"
                                     style="width:100%;"
                                     ng-model="$ctrl.form.team[i]"
                                     placeholder="Lookup user by name or email address"
-                                    autocomplete="off"
                                     uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
                                     typeahead-loading="searching"
                                     typeahead-input-formatter="$ctrl.formatSelection(usr)"
@@ -134,7 +131,40 @@
                 </tr>
             </table>
         </div>
-        <!-- TEST -->
+        <div class="expAuthorsAssign form-group">
+            <label>Add Users not Registered on DesignSafe</label>
+            <table style="table-layout: fixed; width: 100%;">
+                <colgroup>
+                    <col span="3" style="width: 20%">
+                </colgroup>
+                <tr>
+                    <td>First Name</td>
+                    <td>Last Name</td>
+                    <td>Email</td>
+                    <td>Institution</td>
+                </tr>
+                <tr ng-repeat="(i, usr) in $ctrl.form.guests track by $index">
+                    <td>
+                        <input style="width: 95%" type="text" name="guestFName" id="id_guest_fname" ng-model="$ctrl.form.guests[i].fname" autocomplete="additional-name">
+                    </td>
+                    <td>
+                        <input style="width: 95%" type="text" name="guestLName" id="id_guest_lname" ng-model="$ctrl.form.guests[i].lname" autocomplete="additional-name">
+                    </td>
+                    <td>
+                        <input style="width: 95%" type="text" name="guestEmail" id="id_guest_email" ng-model="$ctrl.form.guests[i].email" autocomplete="email">
+                    </td>
+                    <td>
+                        <input style="width: 100%" type="text" name="ExpAuthorInst" id="id_guest_inst" ng-model="$ctrl.form.guests[i].inst" autocomplete="organization">
+                    </td>
+                </tr>
+            </table>
+            <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
+                + Add another Guest
+            </a>
+            <div ng-hide="$ctrl.checkEmpty($ctrl.form.guests)">
+                <a ng-click="$ctrl.dropEntity($ctrl.form.guests)">&#x2212; Drop Guest</a>
+            </div>
+        </div>
         <!-- Edit Project Section -->
         <div ng-if="$ctrl.form.uuid">
             <!-- Project Members -->
