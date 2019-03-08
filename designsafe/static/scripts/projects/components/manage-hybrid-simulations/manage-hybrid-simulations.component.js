@@ -201,7 +201,8 @@ class ManageHybridSimCtrl {
         return usersToClean;
     }
 
-    editSim(sim) {
+    editSim(simulation) {
+        var sim = jQuery.extend(true, {}, simulation);
         var auths = this.configureAuthors(sim);
         this.editSimForm = {
             sim: sim,
