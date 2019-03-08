@@ -53,7 +53,7 @@
                     <li
                         ng-repeat="output in $ctrl.getRelated('coordinator_outputs', false, [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
                         <div class="tree-el">
-                            <span class="label tag-red tree-el"
+                            <span class="label tag-yellow tree-el"
                     ng-class="{'selected': output.uuid === $ctrl.data.selectedUuid}">
                                 Coordinator Output</span>
                             <span class="tag-title">{{output.value.title}}</span>
@@ -64,7 +64,7 @@
                       <li style="border-bottom:0;"
                            ng-repeat="substructure in $ctrl.getRelated('sim_substructures', false, [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
                           <div class="tree-el">
-                              <span class="label tag-yellow tree-el"
+                              <span class="label tag-orange tree-el"
                     ng-class="{'selected': substructure.uuid === $ctrl.data.selectedUuid}">
                                   Numerical Substructure</span>
                               <span class="tag-title">{{substructure.value.title}}</span>
@@ -73,7 +73,7 @@
                     <li
                         ng-repeat="output in $ctrl.getRelated('sim_outputs', false, [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
                         <div class="tree-el">
-                            <span class="label tag-red tree-el"
+                            <span class="label tag-yellow tree-el"
                     ng-class="{'selected': output.uuid === $ctrl.data.selectedUuid}">
                                 Simulation Output</span>
                             <span class="tag-title">{{output.value.title}}</span>
@@ -94,7 +94,7 @@
                     <li
                         ng-repeat="output in $ctrl.getRelated('exp_outputs', false, [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
                         <div class="tree-el">
-                            <span class="label tag-red tree-el"
+                            <span class="label tag-yellow tree-el"
                     ng-class="{'selected': output.uuid === $ctrl.data.selectedUuid}">Event Output</span>
                             <span class="tag-title">{{output.value.title}}</span>
                         </div>
