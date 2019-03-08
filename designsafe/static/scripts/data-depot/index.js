@@ -78,7 +78,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       url: '/agave-search/?query_string&offset&limit',
       //controller: 'MyDataCtrl',
       //template: require('./templates/agave-search-data-listing.html'),
-      component: 'my-data',
+      component: 'myData',
       params: {
         systemId: 'designsafe.storage.default',
         filePath: '$SEARCH'
@@ -371,37 +371,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
         }
       }
     })
-
-    /* Public */
-    .state('publicDataSearch',{
-      url: '/public-search/?query_string&offset&limit',
-      //controller: 'PublicationDataCtrl',
-      //template: require('./templates/search-public-data-listing.html'),
-      component: 'publications',
-      params: {
-        systemId: 'nees.public',
-        filePath: '$SEARCH'
-      },
-      resolve: {
-        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-          var systemId = $stateParams.systemId || 'nees.public';
-          var filePath = $stateParams.filePath || '/';
-          DataBrowserService.apiParams.fileMgr = 'public';
-          DataBrowserService.apiParams.baseUrl = '/api/public/files';
-          DataBrowserService.apiParams.searchState = 'publicDataSearch';
-          var queryString = $stateParams.query_string;
-          //if (/[^A-Za-z0-9]/.test(queryString)){
-          //  queryString = '"' + queryString + '"';
-          //}
-          var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
-          return DataBrowserService.search(options);
-        }],
-        'auth': function($q) {
-            return true;
-        }
-      }
-    })
-
     .state('communityDataSearch',{
       url: '/community-search/?query_string&offset&limit',
       //controller: 'CommunityDataCtrl',
@@ -470,13 +439,14 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       }
     })
     .state('publicData', {
-      url: '/public/nees.public',
+      url: '/public/nees.public?query_string',
       //controller: 'PublicationDataCtrl',
       //template: require('./templates/agave-public-data-listing.html'),
       component: 'publications',
       params: {
         systemId: 'nees.public',
-        filePath: ''
+        filePath: '',
+        query_string: null
       },
       resolve: {
         'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
@@ -484,8 +454,8 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
           var filePath = $stateParams.filePath || '/';
           DataBrowserService.apiParams.fileMgr = 'public';
           DataBrowserService.apiParams.baseUrl = '/api/public/files';
-          DataBrowserService.apiParams.searchState = 'publicDataSearch';
-          return DataBrowserService.browse({system: systemId, path: filePath});
+          DataBrowserService.apiParams.searchState = 'publicData';
+          //return DataBrowserService.browse({system: systemId, path: filePath}, {queryString: $stateParams.query_string});
         }],
         'auth': function($q) {
             return true;
@@ -500,13 +470,14 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       }
     })
     .state('publishedData', {
-      url: '/public/designsafe.storage.published/{filePath:any}',
+      url: '/public/designsafe.storage.published/{filePath:any}?query_string',
       //controller: 'PublishedDataCtrl',
       //template: require('./templates/published-data-listing.html'),
       component: 'published',
       params: {
         systemId: 'designsafe.storage.published',
         filePath: '',
+        query_string: null,
       },
       onExit: ($window) => {
         $window.document.getElementsByName('description')[0].content = ""
@@ -529,8 +500,8 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
           var filePath = $stateParams.filePath;
           DataBrowserService.apiParams.fileMgr = 'published';
           DataBrowserService.apiParams.baseUrl = '/api/public/files';
-          DataBrowserService.apiParams.searchState = 'publicDataSearch';
-          return DataBrowserService.browse({system: systemId, path: filePath});
+          DataBrowserService.apiParams.searchState = 'publishedData';
+          return DataBrowserService.browse({system: systemId, path: filePath}, {queryString: $stateParams.query_string});
         }],
         'auth': function($q){
             return true;

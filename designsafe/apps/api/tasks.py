@@ -15,6 +15,7 @@ from requests.exceptions import HTTPError
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.projects.models.elasticsearch import IndexedProject
+from designsafe.apps.data.tasks import agave_indexer
 from elasticsearch_dsl.query import Q
 
 logger = logging.getLogger(__name__)
@@ -880,11 +881,7 @@ def copy_publication_files_to_corral(self, project_id):
     os.chmod(prefix_dest, 0555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0555)
     save_to_fedora.apply_async(args=[project_id])
-    reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                        'file_id': '{}/{}'.format('designsafe.storage.published', project_id ),
-                                        'levels': 0
-                                        },
-                              queue='indexing')
+    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': '/' + project_id, 'recurse':True}, queue='indexing')
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
 def save_publication(self, project_id):

@@ -15,6 +15,8 @@ class NeesPublicationCtrl {
     }
     
     $onInit() {
+        this.DataBrowserService.apiParams.fileMgr = 'published';
+        this.DataBrowserService.apiParams.baseUrl = '/api/public/files';
         this.data = {
             customRoot: {
                 name: 'Published',
@@ -26,6 +28,9 @@ class NeesPublicationCtrl {
         
         //Retrieve NEES project name using path
         this.projectName = this.$stateParams.filePath.slice(1).split('.')[0]
+        if (this.projectName[0] === '/') {
+            this.projectName = this.projectName.slice(1) // handle double slash in front of NEES path.
+        }
         this.PublishedService.getNeesPublished(this.projectName)
         .then(res => {
             this.project = res.data;
@@ -44,7 +49,7 @@ class NeesPublicationCtrl {
         if (typeof (file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder') {
             this.DataBrowserService.preview(file, this.browser.listing);
         } else {
-            this.$state.go('neesPublishedData', { filePath: file.path });
+            this.$state.go('neesPublishedData', { filePath: file.path }, { reload: true });
         }
     };
     onSelect($event, file) {

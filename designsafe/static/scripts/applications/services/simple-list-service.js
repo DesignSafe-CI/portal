@@ -49,8 +49,17 @@ export class SimpleList {
                     }
 
                     // Parse app icon from tags for agave apps, or from metadata field for html apps
-                    appMeta.value.definition.appIcon = null;
-                    if (self.tagIncludesParam(appMeta.value.definition, 'appIcon')) {
+                    if (appMeta.value.type == 'html' && appMeta.value.definition.appIcon) {
+                        let appIcon = appMeta.value.definition.appIcon;
+                        appMeta.value.definition.appIcon = null;
+                        self.appIcons.some(function(icon) {
+                            if (appIcon.toLowerCase() == icon.toLowerCase()) {
+                                appMeta.value.definition.appIcon = icon;
+                                return true;
+                            }
+                            return false;
+                        });
+                    } else if (self.tagIncludesParam(appMeta.value.definition, 'appIcon')) {
                         appMeta.value.definition.appIcon = appMeta.value.definition.tags.filter((s) => s.includes('appIcon'))[0].split(':')[1];
                     } else {
                         self.appIcons.some(function(icon) {
@@ -78,7 +87,7 @@ export class SimpleList {
 
                 deferred.resolve(self);
             },
-            function(apps) {
+            function() {
                 deferred.reject();
             }
         );

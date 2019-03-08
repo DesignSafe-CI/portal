@@ -80,7 +80,7 @@ Every file needed is in `conf/nginx/certs`.
 
 1. Open mac's Keychain Access
 2. File > Import Items
-3. Navigate to `$PROJECT/conf/nginx/certs`
+3. Navigate to `$PROJECT/conf/nginx/certificates`
 4. Select `ca.pem`
 5. Search for designsafe and double click on Designsafe CA
 6. Click on Trust and select "Trust Always"
@@ -88,7 +88,7 @@ Every file needed is in `conf/nginx/certs`.
 
 #### Linux
 
-1. `$ cd $PROJECT/conf/nginx/certs`
+1. `$ cd $PROJECT/conf/nginx/certificates`
 2. `$ sudo mkdir /usr/local/share/ca-certificates/extra`
 3. `$ sudo cp ca.pem /usr/local/share/ca-certificates/extra/designsafeCA.pem`
 4. `$ sudo update-ca-certificates`
@@ -100,7 +100,7 @@ Every file needed is in `conf/nginx/certs`.
 4. Click on "View Certificates" under "Certificates"
 5. On the Certificate Manager go to the "Authorities" tab
 6. Click on "Import..."
-7. Browse to `$PROJECT/conf/nginx/certs`
+7. Browse to `$PROJECT/conf/nginx/certificates`
 8. Select `ca.pem`
 
 #### Firefox CLI (not tested)
@@ -191,7 +191,7 @@ Django tests should be written according to standard [Django testing procedures]
 You can run Django tests with the following command:
 
 ```shell
-$ docker run -it --rm portal_django python manage.py test --settings=designsafe.test_settings
+$ docker run -it --rm portal_django python manage.py test --settings=designsafe.settings.test_settings
 ```
 
 ### Frontend tests

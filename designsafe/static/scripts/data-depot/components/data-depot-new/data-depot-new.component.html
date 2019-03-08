@@ -29,7 +29,7 @@
                         <i class="fa fa-file-o fa-stack-2x"></i>
                         <i class="fa fa-cloud-upload fa-stack-1x"></i>
                     </span>
-                    <span>File upload</span>
+                    <span>File upload: max 100MB</span>
                 </a>
             </li>
             <li ng-class="{'disabled': ! test.createFiles}">
@@ -38,7 +38,7 @@
                         <i class="fa fa-folder-o fa-stack-2x"></i>
                         <i class="fa fa-cloud-upload fa-stack-1x"></i>
                     </span>
-                    <span>Folder upload</span>
+                    <span>Folder upload: max 25 files</span>
                 </a>
             </li>
             <li ng-class="{'disabled': ! test.createFiles}" ng-init="popoverOpened=false" ng-mouseover="popoverOpened=true" ng-mouseleave="popoverOpened=false">

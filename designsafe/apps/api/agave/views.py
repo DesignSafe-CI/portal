@@ -13,6 +13,8 @@ from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.agave.filemanager.search_index import ElasticFileManager
 from designsafe.apps.api.agave import get_service_account_client
@@ -69,8 +71,8 @@ class FileListingView(BaseApiView):
                                                      user_context=request.user.username)
                 return JsonResponse(listing)
             else:
-                query_string = request.GET.get('query_string') 
-    
+                query_string = request.GET.get('query_string')
+
                 offset = int(request.GET.get('offset', 0))
                 limit = int(request.GET.get('limit', 100))
                 if (not query_string) or (query_string==""):
@@ -80,7 +82,7 @@ class FileListingView(BaseApiView):
                     query_string = request.GET.get('query_string')
                     # Performing an Agave listing here prevents a race condition.
                     listing = fm.listing(system=system_id, file_path='/',
-                                        offset=offset, limit=limit) 
+                                        offset=offset, limit=limit)
                     efmgr = ElasticFileManager()
                     listing = efmgr.search_in_project(system_id, query_string,
                                 offset=offset, limit=limit)
@@ -568,7 +570,7 @@ class FileSearchView(View):
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string')
-        
+
         if file_mgr_name != ElasticFileManager.NAME or not query_string:
             return HttpResponseBadRequest()
 
@@ -660,30 +662,33 @@ class FilePermissionsView(View):
 
         return HttpResponseBadRequest("Unsupported operation")
 
+
 class FileMetaView(View):
 
     @profile_fn
+    @method_decorator(login_required)
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == ElasticFileManager.NAME:
-            if not request.user.is_authenticated:
-                return HttpResponseForbidden('Login required')
-
-            fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+            all = request.GET.get("all")
+            client = request.user.agave_oauth.client
+            fmgr = AgaveFileManager(agave_client=client)
             file_obj = fmgr.listing(system_id, file_path)
+            if all:
+                file_uuid = file_obj.uuid
+                query = {"associationIds": file_uuid}
+                objs = client.meta.listMetadata(q=json.dumps(query))
+                return JsonResponse([o.value for o in objs], safe=False)
             file_dict = file_obj.to_dict()
             file_dict['keywords'] = file_obj.metadata.value['keywords']
             return JsonResponse(file_dict)
-
         return HttpResponseBadRequest('Unsupported file manager.')
 
     @profile_fn
+    @method_decorator(login_required)
     def put(self, request, file_mgr_name, system_id, file_path):
         post_body = json.loads(request.body)
         metadata = post_body.get('metadata', {})
         if file_mgr_name == ElasticFileManager.NAME or not metadata:
-            if not request.user.is_authenticated:
-                return HttpResponseForbidden('Login required')
-
             fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             try:
                 file_obj = fmgr.listing(system_id, file_path)
