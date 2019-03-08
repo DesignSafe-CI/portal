@@ -3,8 +3,9 @@ import _ from 'underscore';
 
 class EditProjectCtrl {
 
-    constructor(UserService, httpi, ProjectModel) {
+    constructor(ProjectService, UserService, httpi, ProjectModel) {
         'ngInject';
+        this.ProjectService = ProjectService;
         this.UserService = UserService;
         this.httpi = httpi;
         this.ProjectModel = ProjectModel;
@@ -197,6 +198,10 @@ class EditProjectCtrl {
         return this.projectResource.post({ data: options }).then((resp) => {
             return new this.ProjectModel(resp.data);
         });
+    }
+
+    type () {
+        this.ProjectService.manageProjectType({'project': this.project, 'warning': true});
     }
 
     save() {

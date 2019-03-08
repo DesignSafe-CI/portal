@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 class ManageCategoriesCtrl {
 
-    constructor($q, Django, UserService, ProjectEntitiesService, DataBrowserService, FileListing) {
+    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService, DataBrowserService, FileListing) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.FileListing = FileListing;
@@ -11,6 +11,7 @@ class ManageCategoriesCtrl {
         this.UserService = UserService;
         this.Django = Django;
         this.$q = $q;
+        this.$uibModal = $uibModal;
     }
 
     $onInit() {
@@ -37,8 +38,6 @@ class ManageCategoriesCtrl {
             simulation: false,
             hybridSim: false,
             showEditCategory: false,
-            confirmDel: false,
-            idDel: ''
         };
 
 
@@ -359,33 +358,36 @@ class ManageCategoriesCtrl {
         });
     }
 
-    checkDelete(ent) {
-        this.ui.confirmDel = true;
-        this.ui.idDel = ent;
+    deleteCategory(ent) {
         if (this.editForm.entity) {
             this.editForm = {};
             this.ui.showEditCategory = false;
         }
-    }
+        var confirmDelete = (options) => {
+            var modalInstance = this.$uibModal.open({
+                component: 'confirmDelete',
+                resolve: {
+                    options: () => options,
+                },
+                size: 'sm'
+            });
 
-    cancelDelete() {
-        this.ui.confirmDel = false;
-        this.ui.idDel = '';
-    }
-
-    deleteCategory(ent) {
-        this.ProjectEntitiesService.delete({
-            data: {
-                uuid: ent.uuid
-            }
-        }).then((entity) => {
-            this.data.project.removeEntity(entity);
-            this.ui.confirmDel = false;
-        });
+            modalInstance.result.then((res) => {
+                if (res) {
+                    this.ProjectEntitiesService.delete({
+                        data: {
+                            uuid: ent.uuid
+                        }
+                    }).then((entity) => {
+                        this.data.project.removeEntity(entity);
+                        this.ui.confirmDel = false;
+                    });
+                }
+            });
+        };
+        confirmDelete({'entity': ent});
     }
 }
-
-ManageCategoriesCtrl.$inject = ['$q', 'Django', 'UserService', 'ProjectEntitiesService', 'DataBrowserService', 'FileListing'];
 
 export const ManageCategoriesComponent = {
     template: ManageCategoriesTemplate,

@@ -81,7 +81,7 @@ class Command(BaseCommand):
         uuids = []
         for attrname, field in six.iteritems(ent._meta._related_fields):
             if attrname == 'files':
-                continue
+                continue;
 
             attr = getattr(ent, attrname)
             for uuid in getattr(attr, 'uuids', []):
@@ -91,6 +91,9 @@ class Command(BaseCommand):
                     self.stdout.write(e.response.text)
                     uuids.append(uuid)
             #self.stdout.write('uuids: %s' % uuids)
+        none_files = filter(lambda x: x['href'] is None, ent._links.associationIds)
+        file_uuids = [nfl['rel'] for nfl in none_files]
+        uuids += file_uuids
         if len(uuids):
             self._delete_relations(ent, uuids)
 

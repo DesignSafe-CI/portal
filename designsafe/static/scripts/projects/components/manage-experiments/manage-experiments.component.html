@@ -406,12 +406,8 @@
                 <br>{{ experiment.value.description }}
               </div>
               <div><br>
-                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editExp(experiment)"><a>Edit</a></span> | 
-                <span ng-click="$ctrl.checkDelete(experiment.uuid)" ng-hide="$ctrl.ui.idDel == experiment.uuid"><a>Delete </a></span>
-                <span ng-if="$ctrl.ui.idDel == experiment.uuid">
-                    Confirm Deletion:
-                    <a ng-click="$ctrl.deleteExperiment(experiment)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
-                </span>
+                <span ng-click="$ctrl.editExp(experiment)"><a>Edit</a></span> | 
+                <span ng-click="$ctrl.deleteExperiment(experiment)"><a>Delete </a></span>
               </div>
             </div>
           </div>
