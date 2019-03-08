@@ -17,6 +17,7 @@ class EditProjectCtrl {
         this.form = {
             copi: new Array (1),
             team: new Array (1),
+            guests: new Array (1),
         };
         this.ui = {
             busy: false,
@@ -130,6 +131,15 @@ class EditProjectCtrl {
                     });
                 });
             }
+            // guests
+            if (this.project.value.guestMembers.length) {
+                this.form.guests = [];
+                this.project.value.guestMembers.forEach((usr) => {
+                    this.form.guests.push(usr);
+                });
+            } else {
+                this.form.associatedProjects = new Array (1);
+            }
         }
         this.UserService.authenticate().then((u) => {
             this.form.creator = u;
@@ -176,6 +186,10 @@ class EditProjectCtrl {
         group.push(undefined);
     }
 
+    addGuests() {
+        this.form.guests.push({});
+    }
+
     cancel() {
         this.close();
     }
@@ -202,6 +216,7 @@ class EditProjectCtrl {
             projectId: this.form.projectId,
             copi: [],
             teamMembers: [],
+            guestMembers: [],
         };
 
         // move this to the back end ------------------------------------------------------->
@@ -270,6 +285,15 @@ class EditProjectCtrl {
             this.form.teamPrune.forEach((ent) => {
                 projectData.teamMembers.push(ent.username);
             });
+        }
+        if (this.form.guests) {
+            this.form.guests.forEach((g, i) => {
+                // create a "username" for guests
+                if (!g.user) {
+                    g.user = "guest" + g.fname + g.lname.charAt(0) + i;
+                }
+            });
+            projectData.guestMembers = this.form.guests;
         }
         if (this.form.awardPrune) {
             projectData.awardNumber = this.form.awardPrune;

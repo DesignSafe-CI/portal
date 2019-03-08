@@ -12,6 +12,7 @@ class HybridSimulationProject(Project):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
     co_pis = fields.ListField('Co PIs')
+    guest_members = fields.ListField('Guest Members')
     project_type = fields.CharField(
         'Project Type',
         max_length=255,
