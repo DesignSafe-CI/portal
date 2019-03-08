@@ -487,6 +487,9 @@ label.required:after,
     margin-left: -2px;
 }
 
+.btn-toolbar > .btn-group-data-depot-toolbar {
+  margin-left:0px;
+}
 
 .callout {
   padding: 1em;
