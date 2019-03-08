@@ -538,7 +538,7 @@
             </div>
             <div ng-if="analysis.doi" style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; width:50%; display:inline-block; float:right;">
               <p style="overflow:hidden; display:block; height:20px;">
-                <span style="font-weight:bold;">DOI: </span><i>analysis doi: "{{analysis.doi}}" </i>
+                <span style="font-weight:bold;">DOI: </span>{{analysis.doi}}
               </p>
               <div>
                 <button class="btn btn-info btn-sm"
@@ -562,7 +562,7 @@
                     </a>
                   </td>
                   <td ng-if="file.type == 'dir'">&nbsp;</td>
-                  <td ng-if="file.type == 'file'; else folderBlock">{{file.length|bytes}}</td>
+                  <td ng-if="file.type == 'file'">{{file.length|bytes}}</td>
                   <td>{{file.lastModified|date:"short"}}</td>
                 </tr>
               </tbody>
