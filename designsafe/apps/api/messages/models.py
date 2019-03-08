@@ -8,14 +8,22 @@ TYPE_CHOICES = (
     ('alert-info', 'INFO'),
     ('alert-success', 'SUCCESS'),
     )
-    
+
 class PageAlert(models.Model):
     alert_id = models.CharField(max_length=120, unique=True, primary_key=True)
     alert_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='alert-warning')
     alert_message = models.TextField(help_text='Page alert message text.')
     
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return '{alert_id}: {alert_type} - {alert_message}...'.format(
+            alert_id=self.alert_id,
+            alert_type=self.alert_type,
+            alert_message=self.alert_message[0:50]
+        )
 
-    def __unicode__(self):
-        return u"{}".format(self.alert_id)
+    def __repr__(self):
+        return {
+            'alert_id':self.alert_id,
+            'alert_type':self.alert_type,
+            'alert_message':self.alert_message
+        }
