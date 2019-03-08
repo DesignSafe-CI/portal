@@ -3,12 +3,13 @@ import _ from 'underscore';
 
 class ManageSimulationCtrl {
 
-    constructor($q, Django, UserService, ProjectEntitiesService) {
+    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.UserService = UserService;
         this.Django = Django;
         this.$q = $q;
+        this.$uibModal = $uibModal;
     }
 
     $onInit() {
@@ -34,8 +35,6 @@ class ManageSimulationCtrl {
             showAddSimAnalysis: {},
             showAddIntReport: {},
             showAddIntAnalysis: {},
-            confirmDel: false,
-            idDel: '',
         };
         this.form = {
             curSimulation: [],
@@ -259,38 +258,41 @@ class ManageSimulationCtrl {
         });
     }
 
-    checkDelete(ent) {
-        this.ui.confirmDel = true;
-        this.ui.idDel = ent;
+    deleteSimulation(ent) {
         if (this.editSimForm) {
             this.editSimForm = {};
             this.ui.showEditSimulationForm = false;
         }
-    }
-
-    cancelDelete() {
-        this.ui.confirmDel = false;
-        this.ui.idDel = '';
-    }
-
-    deleteSimulation(ent) {
-        this.ProjectEntitiesService.delete({
-            data: {
-                uuid: ent.uuid,
-            }
-        }).then((entity) => {
-            var entityAttr = this.data.project.getRelatedAttrName(entity.name);
-            var entitiesArray = this.data.project[entityAttr];
-            entitiesArray = _.filter(entitiesArray, (e) => {
-                return e.uuid !== entity.uuid;
+        var confirmDelete = (options) => {
+            var modalInstance = this.$uibModal.open({
+                component: 'confirmDelete',
+                resolve: {
+                    options: () => options,
+                },
+                size: 'sm'
             });
-            this.data.project[entityAttr] = entitiesArray;
-            this.data.simulations = this.data.project[entityAttr];
-        });
+
+            modalInstance.result.then((res) => {
+                if (res) {
+                    this.ProjectEntitiesService.delete({
+                        data: {
+                            uuid: ent.uuid,
+                        }
+                    }).then((entity) => {
+                        var entityAttr = this.data.project.getRelatedAttrName(entity.name);
+                        var entitiesArray = this.data.project[entityAttr];
+                        entitiesArray = _.filter(entitiesArray, (e) => {
+                            return e.uuid !== entity.uuid;
+                        });
+                        this.data.project[entityAttr] = entitiesArray;
+                        this.data.simulations = this.data.project[entityAttr];
+                    });
+                }
+            });
+        };
+        confirmDelete({'entity': ent});
     }
 }
-
-ManageSimulationCtrl.$inject = ['$q', 'Django', 'UserService', 'ProjectEntitiesService'];
 
 export const ManageSimulationComponent = {
     template: ManageSimulationTemplate,
