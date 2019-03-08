@@ -73,6 +73,7 @@
         <p>
             <h3 style="text-align: center">Select what you want to publish</h3>
             <li>You can only publish one hybrid simulation at a time.</li>
+            <li>Click "Select this Hybrid Simulation and all of its files"</li>
             <li>If you want to deselect individual files, deselect the checkboxes.</li>
             <li>If you need help, attend <a>Curation office hours</a> for help with publishing.</li>
         </p>
@@ -486,7 +487,7 @@
                                             <tr ng-repeat="ref in analysis.value.refs">
                                                 <td class="tg-0lax" ng-if="$first">Referenced Work</td>
                                                 <td class="tg-0lax" ng-if="!$first"></td>
-                                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a>{{ ref.referencedoi }}</a></strong></td>
+                                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a href="{{ ref.referencedoi }}" target=”_blank”>{{ ref.referencedoi }}</a></strong></td>
                                             </tr>
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>

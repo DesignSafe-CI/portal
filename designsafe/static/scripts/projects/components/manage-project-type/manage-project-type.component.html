@@ -1,6 +1,9 @@
 <div class="modal-header" style="background: #e6e6e6;">
     <h4 class="modal-title" style="border:none;">
-        <span>Select a Project Type</span>
+        <span ng-if="$ctrl.slide === 'type'">Select a Project Type</span>
+        <span ng-if="$ctrl.slide != 'type'">
+            <span style="text-transform: capitalize;">{{$ctrl.prjType.replace('_', ' ')}}</span> Project Overview | 5 minutes to read
+        </span>
         <span class="pull-right" ng-click="$ctrl.cancel()">
             <i class="fa fa-times"></i>
         </span>
@@ -8,98 +11,581 @@
 </div>
 
 <div class="modal-body" style="padding: 30px;">
-    <p>To begin curation, select a Project Type:</p><br>
-    <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
-        <colgroup>
-            <col style="width: 16.5%">
-            <col style="width: 16.5%">
-        </colgroup>
-        <tr>
-            <table>
-                <tr>
-                    <td>
-                        <input type="radio"
-                                name="type"
-                                ng-model="$ctrl.type"
-                                value="experimental"
-                                style="margin-top: -18px; vertical-align: middle;"
-                        >
-                        <span class="curation-experiment" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                    </td>
-                    <td>
-                        <strong>Experimental Project</strong>
-                        <div>
-                            For physical work, typically done at an experimental facility or in the field.
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <br>
-            <table>
-                <tr>
-                    <td>
-                        <input type="radio"
-                                name="type"
-                                ng-model="$ctrl.type"
-                                value="simulation"
-                                style="margin-top: -18px; vertical-align: middle;"
-                        >
-                        <span class="curation-simulation" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                    </td>
-                    <td>
-                        <strong>Simulation Project</strong>
-                        <div>
-                            For numerical and/or analytical work, done with software.
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <br>
-            <table>
-                <tr>
-                    <td>
-                        <input type="radio"
-                                name="type"
-                                ng-model="$ctrl.type"
-                                value="hybrid_simulation"
-                                style="margin-top: -18px; vertical-align: middle;"
-                        >
-                        <span class="curation-hybrid-icon" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                    </td>
-                    <td>
-                        <strong>Hybrid Simulation Project</strong>
-                        <div>
-                            For work using both physical and numerical components.
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <br>
-            <table>
-                <tr>
-                    <td>
-                        <input type="radio"
-                                name="type"
-                                ng-model="$ctrl.type"
-                                value="other"
-                                style="margin-top: -18px; vertical-align: middle;"
-                        >
-                        <span class="curation-other" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                    </td>
-                    <td>
-                        <strong>Other Project</strong>
-                        <div>
-                            For work other than the project types above.
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </tr>
-    </table>
-    <div>
-        <span style="display:inline-block; width:79%;"></span>
-        <button class="btn btn-add" style="display:inline-block; width:20%;" ng-click="$ctrl.continue()">
-            Continue
-        </button>
+    <!-- <p ng-if="!$ctrl.warning">To begin curation, select a Project Type:</p><br> -->
+    <!-- Error Messages -->
+    <div class="alert alert-danger" ng-if="$ctrl.warning">
+        <p class="lead" style="text-align:center;">Warning!</p>
+        <p>
+            You are about to change the project type. This means that all
+            associated data, categories, and models you've created will be lost.
+            The files in your project directory will remain, but any other relations
+            you created will be unrecoverable once you select a new project type.
+            If you have questions, please contact us during our office hours.
+        </p>
+        <li ng-repeat="item in $ctrl.missing">The {{ item }} for this experiment is missing or has no categorized data.</li>
+    </div><br>
+    <!-- Type Select -->
+    <div ng-if="$ctrl.slide === 'type'">
+        <p ng-if="!$ctrl.warning">To begin curation, select a Project Type:</p><br>
+        <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
+            <colgroup>
+                <col style="width: 16.5%">
+                <col style="width: 16.5%">
+            </colgroup>
+            <tr>
+                <table>
+                    <tr>
+                        <td>
+                            <input type="radio"
+                                    name="type"
+                                    ng-model="$ctrl.prjType"
+                                    value="experimental"
+                                    style="margin-top: -18px; vertical-align: middle;"
+                            >
+                            <span class="curation-experiment" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                        </td>
+                        <td>
+                            <strong>Experimental Project</strong>
+                            <div>
+                                For physical work, typically done at an experimental facility or in the field.
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <table>
+                    <tr>
+                        <td>
+                            <input type="radio"
+                                    name="type"
+                                    ng-model="$ctrl.prjType"
+                                    value="simulation"
+                                    style="margin-top: -18px; vertical-align: middle;"
+                            >
+                            <span class="curation-simulation" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                        </td>
+                        <td>
+                            <strong>Simulation Project</strong>
+                            <div>
+                                For numerical and/or analytical work, done with software.
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <table>
+                    <tr>
+                        <td>
+                            <input type="radio"
+                                    name="type"
+                                    ng-model="$ctrl.prjType"
+                                    value="hybrid_simulation"
+                                    style="margin-top: -18px; vertical-align: middle;"
+                            >
+                            <span class="curation-hybrid-icon" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                        </td>
+                        <td>
+                            <strong>Hybrid Simulation Project</strong>
+                            <div>
+                                For work using both physical and numerical components.
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <table>
+                    <tr>
+                        <td>
+                            <input type="radio"
+                                    name="type"
+                                    ng-model="$ctrl.prjType"
+                                    value="other"
+                                    style="margin-top: -18px; vertical-align: middle;"
+                            >
+                            <span class="curation-other" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                        </td>
+                        <td>
+                            <strong>Other Project</strong>
+                            <div>
+                                For work other than the project types above.
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </tr>
+        </table>
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 80%;"></td>
+                <td style="width: 20%;">
+                    <button class="btn btn-add" style="width: 100%;" ng-disabled="!$ctrl.prjType" ng-click="$ctrl.continue('overview')">
+                        Continue
+                    </button> 
+                </td>
+            </tr>
+        </table>
     </div>
+    <!-- Type Select -->
+    <div ng-if="$ctrl.prjType === 'experimental'">
+        <!-- Project Overview -->
+        <div ng-if="$ctrl.slide === 'overview'">
+            <div>
+                <p>
+                    DesignSafe offers an interactive interface to curate and publish data with other project members.
+                    Curation is important so your data can be organized, discovered, and understood for years to come.
+                </p>
+                <p>
+                    The four components of curation:
+                    <div style="margin-left: 18px;">
+                        <div><strong>Experiments</strong> contain all the files you want to publish under a single DOI.</div>
+                        <div><strong>Categories</strong> group files together based on shared purpose in an experiment.</div>
+                        <div><strong>Tree Diagrams</strong> relate categories to each other and to an experiment.</div>
+                        <div><strong>File Tags</strong> are agreed upon terms from the community for individual files.</div>
+                    </div>
+                </p>
+                <p>
+                    For further help with curation, DesignSafe has the following resources:
+                    <li> <a href="/rw/user-guides/data-curation-publication/" target="_blank">Data Curation and Publication user guide</a></li>
+                    <li> <a href="/rw/user-guides/data-publication-guidelines/" target="_blank">Data Publication Guidelines</a></li>
+                    <li> <a href="https://www.youtube.com/playlist?list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">YouTube video instruction series</a></li>
+                    <!-- <li> <a href="______" target="_blank">Example projects that highlight best practices</a> (recommended)</li> -->
+                    <li> <a href="/learning-center/training/" target="_blank">Curation office hours</a></li>
+                    <li> <a href="/learning-center/training/" target="_blank">Webinars</a></li>
+                </p>
+                <br>   
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('experiment')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Overview -->
+        <!-- Project Experiment -->
+        <div ng-if="$ctrl.slide === 'experiment'">
+            <div>
+                <p>
+                    <strong>Experiments</strong> contain all the files you want to publish under a single DOI.
+                </p>
+                <img src="/static/images/expExperiment.png" style="width:100%; padding-bottom: 20px;">
+                <p>
+                    Add another experiment <strong>only if</strong>:
+                    <li>The experimental facility, experiment type, or equipment type change</li>
+                    <li>The dates of the experiment change</li>
+                    <li>The authors change</li>
+                    <li>You want a different DOI</li>
+                    Do not add another experiment <strong>if</strong>:
+                    <li>You are testing multiple model configurations and the information above stays the same</li>
+                </p>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('categories')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Experiment -->
+        <!-- Project Categories -->
+        <div ng-if="$ctrl.slide === 'categories'">
+            <div>
+                <strong>Categories</strong> group files together based on a shared purpose in an experiment.
+                <p>
+                    You can add five category types, each with a custom title and description:
+                    <div>
+                        <span class="category-model-conf">Model Configuration</span>: Files describing the design and layout
+                        of what is being tested (some call this a specimen).
+                    </div>
+                    <div>
+                        <span class="category-sensor-info">Sensor Information</span>: Files about the sensor instrumentation
+                        used in a model configuration to conduct one or more event.
+                    </div>
+                    <div>
+                        <span class="category-event">Event</span>: Files from unique occurrences during which data are
+                        generated.
+                    </div>
+                    <div>
+                        <span class="category-analysis">Analysis</span>: Tables, graphs, visualizations, Jupyter Notebooks,
+                        or other representations of the results.
+                    </div>
+                    <div>
+                        <span class="category-report">Report</span>: Written accounts made to convey information about an
+                        entire project or experiment.
+                    </div>
+                </p>
+                <img src="/static/images/expCategory.png" style="width:100%; padding-bottom: 20px;">
+                <li>A file or a directory can belong to one or more categories.</li>
+                <li>Every file in a directory inherits the directory's category.</li>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('experiment')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('tree')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Categories -->
+        <!-- Project Tree -->
+        <div ng-if="$ctrl.slide === 'tree'">
+            <div>
+                <p>
+                    DesignSafe uses a flexible data model to organize your porject in different ways.
+                    Think about how you will organize your project now, at the beginning of the curation process.
+                    Use a <strong>Tree Diagram</strong> to relate categories to each other and to an experiment.
+                    If you have trouble organizing your project, attend <a>Curation office hours</a> at the beginning of the curation process.
+                    You can <a>download</a> and print this diagram to sketch and organize your work.
+                </p>
+                <img src="/static/images/expRelateData.png" style="width:100%; padding-bottom: 20px;">
+                <div style="width: 100%; text-align: center; padding-bottom: 20px;">
+                    <a href="/static/images/expRelateData.png" download="tree_diagram.png">
+                        <i class="fa fa-download"></i> <strong>Download Diagram</strong>
+                    </a>
+                </div>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('categories')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('tags')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Tree -->
+        <!-- Project Tags -->
+        <div ng-if="$ctrl.slide === 'tags'">
+            <div>
+                <p>
+                    <strong>File Tags</strong> are custom or agreed-upon terms from the community for describing files or directories.
+                    Using agreed-upon tags helps other researchers refine their search and discovered specific files in your publication.
+                    The natural hazards community has contributed to creating the agreed-upon terms.
+                </p>
+                <img src="/static/images/expFileTag.png" style="width:100%; padding-bottom: 20px;">
+                <br>
+                <li>The agreed-upon tags available for selection depend on the categories you have selected.</li>
+                <li>If you can't find a tag that describes your file, select other to type in a short tag.</li>
+                <li>These tags are optional, but recommended.</li>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('tree')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('finish')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Tags -->
+    </div>
+    <div ng-if="$ctrl.prjType === 'simulation'">
+        <!-- Project Overview -->
+        <div ng-if="$ctrl.slide === 'overview'">
+            <div>
+                <p>
+                    DesignSafe offers an interactive interface to curate and publish data with other project members.
+                    Curation is important so your data can be organized, discovered, and understood for years to come.
+                </p>
+                <p>
+                    The four components of curation:
+                    <div style="margin-left: 18px;">
+                        <div><strong>Simulation</strong> contain all the files you want to publish under a single DOI.</div>
+                        <div><strong>Categories</strong> group files together based on shared purpose in an simulation.</div>
+                        <div><strong>Tree Diagrams</strong> relate categories to each other and to an simulation.</div>
+                        <div><strong>File Tags</strong> are agreed upon terms from the community for individual files.</div>
+                    </div>
+                </p>
+                <p>
+                    For further help with curation, DesignSafe has the following resources:
+                    <li> <a href="/rw/user-guides/data-curation-publication/" target="_blank">Data Curation and Publication user guide</a></li>
+                    <li> <a href="/rw/user-guides/data-publication-guidelines/" target="_blank">Data Publication Guidelines</a></li>
+                    <li> <a href="https://www.youtube.com/playlist?list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">YouTube video instruction series</a></li>
+                    <!-- <li> <a href="______" target="_blank">Example projects that highlight best practices</a> (recommended)</li> -->
+                    <li> <a href="/learning-center/training/" target="_blank">Curation office hours</a></li>
+                    <li> <a href="/learning-center/training/" target="_blank">Webinars</a></li>
+                </p>
+                <br>   
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('simulation')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Overview -->
+        <!-- Project Simulation -->
+        <div ng-if="$ctrl.slide === 'simulation'">
+            <div>
+                <p>
+                    <strong>Simulations</strong> contain all the files you want to publish under a single DOI.
+                </p>
+                <img src="/static/images/simSimulation.png" style="width:100%; padding-bottom: 20px;">
+                <p>
+                    Add another simulation <strong>only if</strong>:
+                    <li>The simulation type changes</li>
+                    <li>The authors change</li>
+                    <li>You want a different DOI</li>
+                    Do not add another simulation <strong>if</strong>:
+                    <li>You are simulating multiple models and the information above stays the same</li>
+                </p>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('categories')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Simulation -->
+        <!-- Project Categories -->
+        <div ng-if="$ctrl.slide === 'categories'">
+            <div>
+                <strong>Categories</strong> group files together based on a shared purpose in an simulation.
+                <p>
+                    You can add five category types, each with a custom title and description:
+                    <div>
+                        <span class="category-model-conf">Model</span>: Files and/or information describing the design, 
+                        geometry, and/or code of a simulation.
+                    </div>
+                    <div>
+                        <span class="category-sensor-info">Input</span>: Files containing the parameters of the simulation.
+                    </div>
+                    <div>
+                        <span class="category-event">Output</span>: Files containing the results of a simulation.
+                    </div>
+                    <div>
+                        <span class="category-analysis">Analysis</span>: Tables, graphs, visualizations, Jupyter Notebooks,
+                        or other representations of the results.
+                    </div>
+                    <div>
+                        <span class="category-report">Report</span>: Written accounts made to convey information about an
+                        entire project or experiment.
+                    </div>
+                </p>
+                <img src="/static/images/simCategory.png" style="width:100%; padding-bottom: 20px;">
+                <li>A file or a directory can belong to one or more categories.</li>
+                <li>Every file in a directory inherits the directory's category.</li>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('simulation')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('tree')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Categories -->
+        <!-- Project Tree -->
+        <div ng-if="$ctrl.slide === 'tree'">
+            <div>
+                <p>
+                    DesignSafe uses a flexible data model to organize your porject in different ways.
+                    Think about how you will organize your project now, at the beginning of the curation process.
+                    Use a <strong>Tree Diagram</strong> to relate categories to each other and to a simulation.
+                    If you have trouble organizing your project, attend <a>Curation office hours</a> at the beginning of the curation process.
+                    You can <a>download</a> and print this diagram to sketch and organize your work.
+                </p>
+                <img src="/static/images/simRelateData.png" style="width:100%; padding-bottom: 20px;">
+                <div style="width: 100%; text-align: center; padding-bottom: 20px;">
+                    <a href="/static/images/simRelateData.png" download="tree_diagram.png">
+                        <i class="fa fa-download"></i> <strong>Download Diagram</strong>
+                    </a>
+                </div>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('categories')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('tags')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Tree -->
+        <!-- Project Tags -->
+        <div ng-if="$ctrl.slide === 'tags'">
+            <div>
+                <p>
+                    <strong>File Tags</strong> are custom or agreed-upon terms from the community for describing files or directories.
+                    Using agreed-upon tags helps other researchers refine their search and discovered specific files in your publication.
+                    The natural hazards community has contributed to creating the agreed-upon terms.
+                </p>
+                <img src="/static/images/simFileTag.png" style="width:100%; padding-bottom: 20px;">
+                <br>
+                <li>The agreed-upon tags available for selection depend on the categories you have selected.</li>
+                <li>If you can't find a tag that describes your file, select other to type in a short tag.</li>
+                <li>These tags are optional, but recommended.</li>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('tree')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('finish')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Tags -->
+    </div>
+    <div ng-if="$ctrl.prjType === 'hybrid_simulation'">
+        <!-- Project Overview -->
+        <div ng-if="$ctrl.slide === 'overview'">
+            <div>
+                <h3>Hybrid Simulation Overview Coming Soon...</h3>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <!-- <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended) -->
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('finish')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Overview -->
+    </div>
+    <div ng-if="$ctrl.prjType === 'other'">
+        <!-- Project Overview -->
+        <div ng-if="$ctrl.slide === 'overview'">
+            <div>
+                <h3>Other Overview Coming Soon...</h3>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <!-- <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended) -->
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <a ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td style="width: 20%;">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('finish')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Project Overview -->
+    </div>
+    <!-- Project Finish -->
+    <div ng-if="$ctrl.slide === 'finish'">
+        <div>
+            <p>
+                <strong>We recommend you follow these best practices for curation:</strong>
+                <li>
+                    Publish data files in a format that is interoperable and open.
+                    Example: CSV files instead of Excel spreadsheet files
+                </li>
+                <li>Before publishing raw data, consider why it is necessary. If so, explain how other can use the raw data.</li>
+                <li>Be selective with any images you choose. Use file tags to describe them. Make sure they have a purpose or a function.</li>
+                <li>Use applicable software to review for any errors in your data before you publish.</li>
+            </p>
+        </div>
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 70%;">
+                </td>
+                <td style="width: 10%; text-align: center;">
+                    <a ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation'" ng-click="$ctrl.continue('tags')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    <a ng-if="$ctrl.prjType === 'hybrid_simulation' || $ctrl.prjType == 'other'" ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                </td>
+                <td style="width: 20%;">
+                    <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.finish()">
+                        Finish
+                    </button> 
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!-- Project Finish -->
 </div>

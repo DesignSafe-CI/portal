@@ -18,6 +18,7 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.projects.models.agave.base import Project as BaseProject
+from designsafe.apps.projects.models.categories import Category
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.files import BaseFileResource
@@ -251,7 +252,6 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         prj.add_team_members(prj.team)
         tasks.set_facl_project.apply_async(args=[prj.uuid, [request.user.username]], queue='api')
         if prj.pi and prj.pi != request.user.username:
-            prj.add_team_members([prj.pi])
             tasks.set_facl_project.apply_async(args=[prj.uuid, [prj.pi]], queue='api')
             collab_users = get_user_model().objects.filter(username=prj.pi)
             if collab_users:
@@ -461,7 +461,6 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         """
         ag = request.user.agave_oauth.client
         try:
-            logger.debug('name: %s', name)
             if name is not None and name != 'all':
                 model = self._lookup_model(name)
                 resp = model._meta.model_manager.list(ag, project_id)
@@ -562,8 +561,12 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
+        entity = post_data.get('entity')
+        category = Category.objects.get_or_create_from_json(
+            uuid=entity['uuid'],
+            dict_obj=entity['_ui']
+        )
         try:
-            entity = post_data.get('entity')
             model_cls = self._lookup_model(entity['name'])
             model = model_cls(**entity)
             saved = model.save(ag)

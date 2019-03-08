@@ -13,7 +13,13 @@
                style="background-color: #fff;">
             <thead ng-hide="$ctrl.categoryMode()">
                 <tr>
-                    <th>Name</th>
+                    <th>
+                        <span ng-if="$ctrl.allowSelect">
+                            <i class="fa fa-lg fa-check-square" style="color:#337ab7;" ng-click="$ctrl.selectAll()"></i>
+                            <span>Name</span>
+                        </span>
+                        <span ng-if="!$ctrl.allowSelect">Name</span>
+                    </th>
                     <th>Size</th>
                     <th>Last modified</th>
                 </tr>
@@ -21,16 +27,19 @@
             <tbody>
                 <tr data-ng-if="!$ctrl.browser.busyListing"
                     data-ng-repeat="item in $ctrl.listing().children"
+                    ng-class="{highlight: item._ui.selected}"
                 >
-                    <td>
-                        <div class="checkbox" ng-if="!$ctrl.categoryMode()">
-                            <label>
-                                <input type="checkbox"
-                                       data-ng-checked="item._ui.selected"
-                                       data-ng-click="$ctrl.onSelect(item)">
-                                <span class="sr-only">Selected</span>
-                            </label>
-                        </div>
+                    <td class="unselectable">
+                        <span ng-if="!$ctrl.categoryMode()">
+                            <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="item._ui.selected" data-ng-click="$ctrl.onSelect($event, item)">
+                                <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
+                                <i class="fa fa-check-square fa-stack-1x" style="color:#1CB500;"></i>
+                            </span>
+                            <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="!item._ui.selected" data-ng-click="$ctrl.onSelect($event, item)">
+                                <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
+                                <i class="fa fa-square-o fa-stack-1x" style="color:lightgray;"></i>
+                            </span>
+                        </span>
                         <i class="fa {{ item.icon() }}">&nbsp;</i>
                         <a data-ng-href="{{ item.href }}" data-ng-click="$ctrl.onBrowse($event, item)">
                             {{ item.name }}

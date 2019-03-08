@@ -167,12 +167,21 @@
     width: 100%;
 }
 
-.files-listing-table tbody tr:hover,
-.files-listing-table tbody tr:focus {
+.files-listing-table .unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.files-listing-table .highlight {
     background-color: #a1d2eb !important;
 }
 
 .files-listing-table tbody tr td div.checkbox {
+    vertical-align: middle !important;
     display: inline-block;
     margin: 0;
 }

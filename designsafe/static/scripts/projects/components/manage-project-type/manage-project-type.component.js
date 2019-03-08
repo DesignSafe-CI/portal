@@ -3,25 +3,32 @@ import _ from 'underscore';
 
 class ManageProjectTypeCtrl {
 
-    constructor(ProjectEntitiesService, ProjectModel, httpi, DataBrowserService) {
+    constructor(ProjectEntitiesService, ProjectModel, httpi, DataBrowserService, ProjectService) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectModel = ProjectModel;
         this.httpi = httpi;
         this.DataBrowserService = DataBrowserService;
+        this.ProjectService = ProjectService;
     }
 
     $onInit() {
         this.project = this.resolve.options.project;
-        this.type = '';
+        this.warning = this.resolve.options.warning;
+        this.prjType = '';
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
+        this.slide = 'type';
     }
 
-    continue() {
-        if (this.type) {
+    continue(slide) {
+        this.slide = slide;
+    }
+
+    finish() {
+        if (this.prjType) {
             this.loading = true;
             var projectData = {};
-            projectData.projectType = this.type;
+            projectData.projectType = this.prjType;
             projectData.projectId = this.project.value.projectId;
             projectData.title = this.project.value.title;
             projectData.uuid = this.project.uuid;
@@ -37,6 +44,7 @@ class ManageProjectTypeCtrl {
                 this.DataBrowserService.state().project.value.projectType = project.value.projectType;
                 this.close({$value: project});
                 this.loading = false;
+                this.ProjectService.editProject(this.project);
             });
         }
     }
