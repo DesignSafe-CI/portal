@@ -192,7 +192,8 @@ class ManageExperimentsCtrl {
         return usersToClean;
     }
 
-    editExp(exp) {
+    editExp(experiment) {
+        var exp = jQuery.extend(true, {}, experiment);
         var auths = this.configureAuthors(exp);
         this.editExpForm = {
             exp: exp,
