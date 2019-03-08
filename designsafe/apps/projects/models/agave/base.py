@@ -18,6 +18,7 @@ class RelatedEntity(MetadataModel):
 class Project(MetadataModel):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
+    guest_members = fields.ListField('Guest Members')
     co_pis = fields.ListField('Co PIs')
     project_type = fields.CharField('Project Type', max_length=255, default='other')
     data_type = fields.CharField('Data Type', max_length=255)
