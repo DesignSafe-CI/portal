@@ -434,9 +434,9 @@ class Model(object):
 
         if ('lastUpdated' in dict_obj and isinstance(dict_obj['lastUpdated'], datetime.datetime)):
             dict_obj['lastUpdated'] = dict_obj['lastUpdated'].isoformat()
-
-        category, _ = Category.objects.get_or_create(uuid=self.uuid)
-        dict_obj['_ui'] = category.to_dict()
+        if self.uuid:
+            category, _ = Category.objects.get_or_create(uuid=self.uuid)
+            dict_obj['_ui'] = category.to_dict()
         return dict_obj
 
     def save(self, agave_client):
