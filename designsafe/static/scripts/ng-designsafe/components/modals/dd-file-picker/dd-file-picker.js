@@ -111,7 +111,7 @@ class DataDepotFilePickerCtrl {
             this.data.dirPath = this.data.filePath.split('/');
         }, (err)=> {
             this.data.loading = false;
-            this.data.error = 'Something went wrong';
+            this.data.error = 'Something went wrong. Please try again, and if this error persists please use Help to file a ticket.';
         });
     }
 
