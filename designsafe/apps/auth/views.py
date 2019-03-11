@@ -170,10 +170,6 @@ def agave_oauth_callback(request):
                               filePath=user.username)
             except HTTPError as e:
                 if e.response.status_code == 404:
-                    body = {'action': 'mkdir', 'path': user.username}
-                    ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
-                                filePath='',
-                                body=body)
                     check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')
                     
         else:
