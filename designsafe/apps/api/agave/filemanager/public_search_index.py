@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 class PublicationIndexed(DocType):
     class Meta:
-        index = settings.ES_INDICES['publications']['name']
+        index = settings.ES_INDICES['publications']['alias'][0]
         doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
 
 class Publication(object):
@@ -121,7 +121,9 @@ class Publication(object):
                          'pi': self.project['value']['pi'],
                          'dateOfPublication': self.created,
                          'type': self.project['value']['projectType'],
-                         'projectId': self.project['value']['projectId']
+                         'projectId': self.project['value']['projectId'],
+                         'keywords': self.project['value']['keywords'],
+                         'description': self.project['value']['description']
                          },
                      'name': self.project.value.projectId,
                      'path': '/{}'.format(self.project.value.projectId),
@@ -174,7 +176,7 @@ class Publication(object):
 
 class LegacyPublicationIndexed(DocType):
    class Meta:
-        index = settings.ES_INDICES['publications_legacy']['name']
+        index = settings.ES_INDICES['publications_legacy']['alias'][0]
         doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name'] 
 
 class LegacyPublication(object):
@@ -444,7 +446,9 @@ class PublicElasticFileManager(BaseFileManager):
         nees_published_res = nees_published_search.execute()
         des_published_res = des_published_search.execute()
 
-        logger.debug(nees_published_res.hits.total)
+        for res in des_published_res:
+            new_desc = re.sub(query_string, lambda x: '<b>{}</b>'.format(x.group(0)), res.project.value.description)
+            res.project.value.description = new_desc
 
         children = [Publication(res).to_file() for res in des_published_res]
         children += [LegacyPublication(res).to_file() for res in nees_published_res]

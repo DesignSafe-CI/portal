@@ -2,13 +2,14 @@ import _ from 'underscore';
 import publicationsTemplate from './publications.component.html';
 
 class PublicationDataCtrl {
-    constructor($scope, $state, $stateParams, Django, DataBrowserService) {
+    constructor($scope, $state, $stateParams, $uibModal, Django, DataBrowserService) {
         'ngInject';
         this.$scope = $scope;
         this.$state = $state;
         this.$stateParams = $stateParams;
         this.Django = Django;
         this.DataBrowserService = DataBrowserService;
+        this.$uibModal = $uibModal;
 
         this.resolveBreadcrumbHref = this.resolveBreadcrumbHref.bind(this);
         this.onBrowse = this.onBrowse.bind(this);
@@ -16,6 +17,7 @@ class PublicationDataCtrl {
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.onSelect = this.onSelect.bind(this);
         this.renderName = this.renderName.bind(this);
+        this.showDescription = this.showDescription.bind(this);
     }
     $onInit() {
         this.browser = this.DataBrowserService.state();
@@ -37,12 +39,13 @@ class PublicationDataCtrl {
                     });
                     this.browser.listing.children.forEach((child) => {
                         if (child.system === 'nees.public') {
-                            child.href = this.$state.href('neesPublishedData', { filePath: child.path });
+                            child.href = this.$state.href('neesPublishedData', { filePath: child.path }).replace('%2F', '/');
                         }
                         if (child.system === 'designsafe.storage.published') {
-                            child.href = this.$state.href('publishedData', { system: child.system, filePath: child.path });
+                            child.href = this.$state.href('publishedData', { system: child.system, filePath: child.path }).replace('%2F', '/');
                         }
                     });
+                    console.log(this.browser.listing)
                 }
             })
         this.data = {
@@ -116,6 +119,18 @@ class PublicationDataCtrl {
             return file.metadata.project.title;
         }
     };
+    
+    showDescription(title, description) {
+      var modal = this.$uibModal.open({
+        component: 'publicationDescriptionModalComponent',
+        resolve: {
+          title: () => title,
+          description: () => description,
+        },
+        size: 'lg'
+      })
+    }
+    
 }
 
 export const PublicationsComponent = {

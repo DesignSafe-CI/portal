@@ -6,11 +6,11 @@
          data-bottom-height="0">
      <table class="table table-bordered table-striped files-listing-table" style="background-color: #fff;">
           <thead>
-          <th style="width: 400px;">Name</th>
-          <th style="width: 100px;">PI</th>
+          <th style="width: 350px;">Publication Title</th>
+          <th style="width: 100px;">Author</th>
+          <th style="width: 100px;">Publication Description</th>
+          <th style="width: 150px;">Keywords</th>
           <th style="width: 100px;">Date of Publication</th>
-          <th style="width: 100px;">Project Type</th>
-          <th style="width: 100px;">Project Number</th>
           </thead>
   
           <tbody>
@@ -22,8 +22,9 @@
               <td>
                   <i class="fa {{ item.icon() }}"></i>
                   <a ng-href="{{ item.href }}" ng-click="$ctrl.onBrowse()($event, item)">
-                      {{ $ctrl.renderName()(item) }}
+                      {{ $ctrl.renderName()(item) }} 
                   </a>
+                  <span style="text-transform:capitalize;">({{ item.meta.type || 'NEES' }})</span>
               </td>
               <td ng-if="item.meta.piLabel">
                   {{item.meta.piLabel}}
@@ -31,23 +32,23 @@
               <td ng-if="!item.meta.pi">
                 N/A
               </td>
-              <td ng-if="item.meta.dateOfPublication">
-                {{ item.meta.dateOfPublication| date: 'MMM/d/yyyy'}}
+              <td align="center" ng-if="item.meta.dateOfPublication">
+                <a ng-click="$ctrl.showDescription()($ctrl.renderName()(item), item.meta.description)">View Description</a>
               </td>
               <td ng-if="!item.meta.dateOfPublication">
                 N/A
               </td>
               <td ng-if="item.meta.type">
-                <span style="text-transform:capitalize;">{{ item.meta.type }}</span>
+                {{item.meta.keywords}}
               </td>
               <td ng-if="!item.meta.type">
                 NEES
               </td>
-              <td ng-if="item.meta.projectId">
-                {{ item.meta.projectId }}
+              <td ng-if="item.meta.dateOfPublication">
+                {{ item.meta.dateOfPublication| date: 'M/d/yyyy'}}
               </td>
-              <td ng-if="!item.meta.projectId">
-               {{item.name}}
+              <td ng-if="!item.meta.dateOfPublication">
+                N/A
               </td>
           </tr>
           <tr ng-if="$ctrl.browser.busyListingPage">

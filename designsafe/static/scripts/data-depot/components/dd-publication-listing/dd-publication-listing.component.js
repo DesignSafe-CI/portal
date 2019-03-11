@@ -9,6 +9,7 @@ const ddPublicationListingComponent = {
         renderName: '&',
         scrollToBottom: '&',
         scrollToTop: '&',
+        showDescription: '&',
     }
 }
 

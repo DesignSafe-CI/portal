@@ -14,6 +14,8 @@ import { FileMetadataComponent } from './file-metadata/file-metadata.component';
 import neesPublicationComponent from './nees-publication/nees-publication.component';
 import ddPublicationListingComponent from './dd-publication-listing/dd-publication-listing.component';
 
+import publicationDescriptionModalComponent from './publications/publication-description-modal/publication-description.component';
+
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);
 
 ddComponents.component('ddtoolbar', DataDepotToolbarComponent);
@@ -31,5 +33,6 @@ ddComponents.component('ddnew', DataDepotNewComponent);
 ddComponents.component('neesPublicationComponent', neesPublicationComponent);
 ddComponents.component('ddPublicationListingComponent', ddPublicationListingComponent);
 ddComponents.component('fileMetadata', FileMetadataComponent);
+ddComponents.component('publicationDescriptionModalComponent', publicationDescriptionModalComponent)
 
 export default ddComponents;
