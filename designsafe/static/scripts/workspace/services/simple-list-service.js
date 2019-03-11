@@ -55,7 +55,17 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
                         appMeta.value.definition.orderBy = appMeta.value.definition.label;
 
                         // Parse app icon from tags for agave apps, or from metadata field for html apps
-                        if (tagIncludesParam(appMeta.value.definition, 'appIcon')) {
+                        if (appMeta.value.type == 'html' && appMeta.value.definition.appIcon) {
+                            let appIcon = appMeta.value.definition.appIcon;
+                            appMeta.value.definition.appIcon = null;
+                            appIcons.some(function(icon) {
+                                if (appIcon.toLowerCase() == icon.toLowerCase()) {
+                                    appMeta.value.definition.appIcon = appMeta.value.definition.orderBy = icon;
+                                    return true;
+                                }
+                                return false;
+                            });
+                        } else if (tagIncludesParam(appMeta.value.definition, 'appIcon')) {
                             const appIcon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
 
                             // Use icon for binning of apps, with '_icon-letter' appended to denote the icon will be a letter, not a true icon

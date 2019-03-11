@@ -5,7 +5,7 @@ from designsafe.apps.api.agave.filemanager.base import BaseFileManager
 from designsafe.apps.data.models.agave.files import (BaseFileResource,
                                                     BaseFilePermissionResource,
                                                     BaseAgaveFileHistoryRecord)
-from designsafe.apps.api.tasks import reindex_agave
+from designsafe.apps.data.tasks import agave_indexer
 from requests import HTTPError
 import logging
 
@@ -54,9 +54,11 @@ class AgaveFileManager(BaseFileManager):
         f = BaseFileResource.listing(self._ag, system, file_path)
         res = f.import_data(from_system, from_file_path)
         file_name = from_file_path.split('/')[-1]
-        reindex_agave.apply_async(kwargs={'username': 'ds_admin',
-                                          'file_id': '{}/{}'.format(system, os.path.join(file_path, file_name))},
-                                  queue='indexing')
+
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(res.path), 'recurse': False}, queue='indexing')
+        if res.format == 'folder':
+            agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': res.path, 'recurse': True}, queue='indexing')
+
         return res
 
     def copy(self, system, file_path, dest_path=None, dest_name=None):
@@ -76,20 +78,18 @@ class AgaveFileManager(BaseFileManager):
 
         copied_file = f.copy(dest_path, dest_name)
 
-        # schedule celery task to index new copy
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}/{}'.format(system, dest_path.strip('/'), dest_name)},
-                                  queue='indexing')
-
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(copied_file.path), 'recurse': False}, queue='indexing')
+        if copied_file.format == 'folder':
+            agave_indexer.apply_async(kwargs={'systemId': system, 'filePath': copied_file.path, 'recurse': True}, routing_key='indexing')
+        
         return copied_file
 
     def delete(self, system, path):
-        resp = BaseFileResource(self._ag, system, path).delete()
+        f = BaseFileResource(self._ag, system, path)
+        resp = f.delete()
         parent_path = '/'.join(path.strip('/').split('/')[:-1])
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, parent_path),
-                                            'levels': 1}, 
-                                            queue='indexing')
+
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(f.path), 'recurse': False}, queue='indexing')
         return resp
 
     def download(self, system, path):
@@ -113,9 +113,8 @@ class AgaveFileManager(BaseFileManager):
     def mkdir(self, system, file_path, dir_name):
         f = BaseFileResource(self._ag, system, file_path)
         resp = f.mkdir(dir_name)
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, file_path)},
-                                            queue='indexing')
+
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': f.path, 'recurse': False}, queue='indexing')
         return resp
 
     def move(self, system, file_path, dest_path, dest_name=None):
@@ -123,24 +122,19 @@ class AgaveFileManager(BaseFileManager):
         resp = f.move(dest_path, dest_name)
         parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
         parent_path = parent_path.strip('/') or '/'
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, parent_path),
-                                            'levels': 1},
-                                            queue='indexing')
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, os.path.join(dest_path, resp.name)),
-                                            'levels': 1},
-                                            queue='indexing')
+
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(f.path), 'recurse': False}, queue='indexing')
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(resp.path), 'recurse': False}, queue='indexing')
+        if resp.format == 'folder':
+             agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': resp.path}, queue='indexing')
         return resp
 
     def rename(self, system, file_path, rename_to):
         f = BaseFileResource.listing(self._ag, system, file_path)
         resp = f.rename(rename_to)
         parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, parent_path),
-                                            'levels': 1},
-                                            queue='indexing')
+
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(resp.path), 'recurse': False}, queue='indexing')
         return resp
 
     def share(self, system, file_path, username, permission):
@@ -150,9 +144,6 @@ class AgaveFileManager(BaseFileManager):
         pem.username = username
         pem.permission_bit = permission
         resp = pem.save()
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, file_path)},
-                                            queue='indexing')
         return resp
 
     def trash(self, system, file_path, trash_path):
@@ -179,21 +170,13 @@ class AgaveFileManager(BaseFileManager):
         resp = f.move(trash_path, name)
         parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
         parent_path = parent_path.strip('/') or '/'
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, trash_path),
-                                            'levels': 1},
-                                            queue='indexing')
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, parent_path),
-                                            'levels': 1},
-                                            queue='indexing')
+
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(f.path), 'recurse': False}, queue='indexing')
         return resp
 
     def upload(self, system, file_path, upload_file):
         f = BaseFileResource(self._ag, system, file_path)
         resp = f.upload(upload_file)
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, file_path),
-                                            'levels': 1},
-                                            queue='indexing')
+
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(resp.path), 'recurse': False}, queue='indexing') 
         return resp

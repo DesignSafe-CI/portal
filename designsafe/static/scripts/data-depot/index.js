@@ -78,7 +78,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       url: '/agave-search/?query_string&offset&limit',
       //controller: 'MyDataCtrl',
       //template: require('./templates/agave-search-data-listing.html'),
-      component: 'my-data',
+      component: 'myData',
       params: {
         systemId: 'designsafe.storage.default',
         filePath: '$SEARCH'

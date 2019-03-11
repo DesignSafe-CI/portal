@@ -12,7 +12,7 @@ from celery import shared_task
 from requests import ConnectionError, HTTPError
 import logging
 
-from designsafe.apps.api.tasks import reindex_agave
+from designsafe.apps.data.tasks import agave_indexer
 
 logger = logging.getLogger(__name__)
 
@@ -172,7 +172,7 @@ def handle_webhook_request(job):
                         logger.debug('Preparing to Index Job Output job=%s', job_name)
 
                         archivePath = '/'.join([job['archiveSystem'], job['archivePath']])
-                        reindex_agave.delay(username, archivePath, levels=0)
+                        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': job['archiveSystem'], 'filePath': job['archivePath'], 'recurse':True}, queue='indexing')
                         logger.debug('Finished Indexing Job Output job=%s', job_name)
                     except Exception as e:
                         logger.exception('Error indexing job output')
