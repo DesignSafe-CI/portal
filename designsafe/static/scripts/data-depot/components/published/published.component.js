@@ -222,7 +222,11 @@ export class PublishedDataCtrl {
             uuids = [uuids];
         }
         var ents = [];
-        ents = this.browser.publication[attrib];
+        if (this.browser) {
+            ents = this.browser.publication[attrib];
+        } else {
+            ents = this.data.publication[attrib];
+        }
         var res = _.filter(ents, (ent) => {
             var inter = _.intersection(uuids, ent.associationIds);
             if (inter && inter.length === uuids.length) {
@@ -348,7 +352,7 @@ export class PublishedDataCtrl {
     viewSimulationRelations(uuid) {
         this.$uibModal.open({
             templateUrl: '/static/scripts/data-depot/templates/view-simulation-relations.html',
-            controller: ['$uibModalInstance', 'browser', function ($uibModalInstance, browser) {
+            controller: ['$uibModalInstance', 'browser', 'getRelated', function ($uibModalInstance, browser, getRelated) {
                 var $ctrl = this;
                 $ctrl.data = {};
                 if (browser.listing.project) {
@@ -356,6 +360,7 @@ export class PublishedDataCtrl {
                 } else {
                     $ctrl.data.publication = browser.publication;
                 }
+                $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
                     if (entityUuid === $ctrl.data.selectedUuid) {
@@ -370,9 +375,9 @@ export class PublishedDataCtrl {
             }],
             controllerAs: '$ctrl',
             resolve: {
-                browser: this.browser
+                browser: this.browser,
+                getRelated: () => this.getRelated
             },
-            scope: this,
             size: 'lg'
         });
     }
@@ -380,7 +385,7 @@ export class PublishedDataCtrl {
     viewHybridSimulationRelations(uuid) {
         this.$uibModal.open({
             templateUrl: '/static/scripts/data-depot/templates/view-hybrid-simulation-relations.html',
-            controller: ['$uibModalInstance', 'browser', function ($uibModalInstance, browser) {
+            controller: ['$uibModalInstance', 'browser', 'getRelated', function ($uibModalInstance, browser, getRelated) {
                 var $ctrl = this;
                 $ctrl.data = {};
                 if (browser.listing.project) {
@@ -388,6 +393,7 @@ export class PublishedDataCtrl {
                 } else {
                     $ctrl.data.publication = browser.publication;
                 }
+                $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
                     if (entityUuid === $ctrl.data.selectedUuid) {
@@ -402,9 +408,9 @@ export class PublishedDataCtrl {
             }],
             controllerAs: '$ctrl',
             resolve: {
-                browser: this.browser
+                browser: this.browser,
+                getRelated: () => this.getRelated
             },
-            scope: this,
             size: 'lg'
         });
     }
@@ -412,7 +418,7 @@ export class PublishedDataCtrl {
     viewRelations(uuid) {
         this.$uibModal.open({
             templateUrl: '/static/scripts/data-depot/templates/view-relations.html',
-            controller: ['$uibModalInstance', 'browser', function ($uibModalInstance, browser) {
+            controller: ['$uibModalInstance', 'browser', 'getRelated', function ($uibModalInstance, browser, getRelated) {
                 var $ctrl = this;
                 $ctrl.data = {};
                 if (browser.listing.project) {
@@ -420,6 +426,7 @@ export class PublishedDataCtrl {
                 } else {
                     $ctrl.data.publication = browser.publication;
                 }
+                $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
                     if (entityUuid === $ctrl.data.selectedUuid) {
@@ -434,9 +441,9 @@ export class PublishedDataCtrl {
             }],
             controllerAs: '$ctrl',
             resolve: {
-                browser: this.browser
+                browser: this.browser,
+                getRelated: () => this.getRelated
             },
-            scope: this,
             size: 'lg'
         });
     }
