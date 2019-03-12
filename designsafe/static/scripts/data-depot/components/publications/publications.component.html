@@ -1,4 +1,4 @@
-<dd-breadcrumb listing="$ctrl.browser.listing" skip-root="true" custom-root="$ctrl.data.customRoot" on-browse="$ctrl.onBrowse" item-href="$ctrl.resolveBreadcrumbHref"></dd-breadcrumb>
+<dd-breadcrumb ng-if="!$ctrl.$stateParams.query_string" listing="$ctrl.browser.listing" skip-root="true" custom-root="$ctrl.data.customRoot" on-browse="$ctrl.onBrowse" item-href="$ctrl.resolveBreadcrumbHref"></dd-breadcrumb>
 <dd-publication-listing-component
             browser="$ctrl.browser"
             query-string="$ctrl.$stateParams.query_string"
@@ -8,5 +8,9 @@
             render-name="$ctrl.renderName"
             scroll-to-bottom="$ctrl.scrollToBottom"
             scroll-to-top="$ctrl.scrollToTop"
-            show-description="$ctrl.showDescription">
+            show-description="$ctrl.showDescription"
+            toggles="$ctrl.toggles"
+            type-filter="$ctrl.typeFilter"
+            are-filters-empty="$ctrl.areFiltersEmpty"
+            clear-filters="$ctrl.clearFilters">
 </dd-publication-listing-component>

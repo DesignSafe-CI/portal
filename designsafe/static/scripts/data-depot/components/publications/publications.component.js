@@ -18,6 +18,10 @@ class PublicationDataCtrl {
         this.onSelect = this.onSelect.bind(this);
         this.renderName = this.renderName.bind(this);
         this.showDescription = this.showDescription.bind(this);
+        this.swapToggle = this.swapToggle.bind(this);
+        this.typeFilter = this.typeFilter.bind(this);
+        this.clearFilters = this.clearFilters.bind(this);
+        this.areFiltersEmpty = this.areFiltersEmpty.bind(this);
     }
     $onInit() {
         this.browser = this.DataBrowserService.state();
@@ -26,7 +30,13 @@ class PublicationDataCtrl {
             reachedEnd: false,
             page: 0
         };
-
+        this.toggles = {
+            experimental: false,
+            simulation: false,
+            hybrid: false,
+            nees: false,
+            other: false
+        }
         var systemId = this.$stateParams.systemId || 'nees.public';
         var filePath = this.$stateParams.filePath || '/';
         
@@ -45,7 +55,6 @@ class PublicationDataCtrl {
                             child.href = this.$state.href('publishedData', { system: child.system, filePath: child.path }).replace('%2F', '/');
                         }
                     });
-                    console.log(this.browser.listing)
                 }
             })
         this.data = {
@@ -119,7 +128,6 @@ class PublicationDataCtrl {
             return file.metadata.project.title;
         }
     };
-    
     showDescription(title, description) {
       var modal = this.$uibModal.open({
         component: 'publicationDescriptionModalComponent',
@@ -130,7 +138,32 @@ class PublicationDataCtrl {
         size: 'lg'
       })
     }
-    
+    areFiltersEmpty() {
+        let noneToggled = true
+        for (const key of Object.keys(this.toggles)) {
+            if (this.toggles[key]) {
+                noneToggled = false
+            }
+        }
+        if (noneToggled) {
+            return true
+        }
+        return false
+    }
+    typeFilter(item, x, y) {
+        if (this.areFiltersEmpty()) {
+            return true
+        }
+        if (item.metadata && this.toggles['nees']) {
+            return true
+        }
+        return this.toggles[(item.meta || {}).type]; 
+    }
+    clearFilters() {
+        for (const key of Object.keys(this.toggles)) {
+            this.toggles[key] = false
+        }
+    }
 }
 
 export const PublicationsComponent = {
