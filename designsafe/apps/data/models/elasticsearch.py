@@ -11,7 +11,8 @@ from elasticsearch_dsl import (Search, DocType, Date, Nested,
                                GeoPoint, String, MetaField)
 from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError, ConnectionTimeout
-from designsafe.libs.elasticsearch.analyzers import path_analyzer, name_analyzer, keyword_analyzer
+from designsafe.libs.elasticsearch.analyzers import path_analyzer
+from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -111,11 +112,11 @@ class IndexedFile(DocType):
 
 @python_2_unicode_compatible
 class IndexedPublication(DocType):
-    analysisList = Object(properties={
+    analysisList = Nested(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
         'doi': String(fields={'_exact':Keyword()}),
-        'fileObjs': Object(properties={
+        'fileObjs': Nested(properties={
             'lenght': Long(),
             'name': String(fields={'_exact':Keyword()}),
             'path': String(fields={'_exact': Keyword(),
@@ -125,17 +126,17 @@ class IndexedPublication(DocType):
         'name': String({'_exact':Keyword()}),
         'owner': String(),
         'uuid': String({'_exact':Keyword()}),
-        'value': Object(properties={
+        'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english')
         })
     })
     created = Date()
-    eventsList = Object(properties={
+    eventsList = Nested(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
         'doi': String(fields={'_exact':Keyword()}),
-        'fileObjs': Object(properties={
+        'fileObjs': Nested(properties={
             'lenght': Long(),
             'name': String(fields={'_exact':Keyword()}),
             'path': String(fields={'_exact': Keyword(),
@@ -145,7 +146,7 @@ class IndexedPublication(DocType):
         'name': String({'_exact':Keyword()}),
         'owner': String(),
         'uuid': String({'_exact':Keyword()}),
-        'value': Object(properties={
+        'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english'),
             'experiments': String(multi=True, fields={'_exact':Keyword()}),
@@ -155,11 +156,11 @@ class IndexedPublication(DocType):
             'sensorLists': String(multi=True, fields={'_exact': Keyword()}),
         })
     })
-    experimentsList = Object(properties={
+    experimentsList = Nested(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
         'doi': String(fields={'_exact':Keyword()}),
-        'fileObjs': Object(properties={
+        'fileObjs': Nested(properties={
             'lenght': Long(),
             'name': String(fields={'_exact':Keyword()}),
             'path': String(fields={'_exact': Keyword(),
@@ -169,7 +170,7 @@ class IndexedPublication(DocType):
         'name': String({'_exact':Keyword()}),
         'owner': String(),
         'uuid': String({'_exact':Keyword()}),
-        'value': Object(properties={
+        'value': Nested(properties={
             'authors': String(multi=True, fields={'_exact': Keyword()}),
             'description': Text(analyzer='english'),
             'equipmentType': String(analyzer='english', fields={'_exact': Keyword()}),
@@ -180,15 +181,15 @@ class IndexedPublication(DocType):
             'project': String(fields={'_exact': Keyword()}),
         })
     })
-    institutions = Object(properties={
+    institutions = Nested(properties={
         'label': String(fields={'_exact': Keyword()}),
         'name': String(fields={'_exact': Keyword()})
     })
-    modelConfigs = Object(properties={
+    modelConfigs = Nested(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
         'doi': String(fields={'_exact':Keyword()}),
-        'fileObjs': Object(properties={
+        'fileObjs': Nested(properties={
             'lenght': Long(),
             'name': String(fields={'_exact':Keyword()}),
             'path': String(fields={'_exact': Keyword(),
@@ -198,7 +199,7 @@ class IndexedPublication(DocType):
         'name': String({'_exact':Keyword()}),
         'owner': String(),
         'uuid': String({'_exact':Keyword()}),
-        'value': Object(properties={
+        'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english'),
             'experiments': String(multi=True, fields={'_exact':Keyword()}),
@@ -206,7 +207,7 @@ class IndexedPublication(DocType):
             'project': String(fields={'_exact': Keyword()}),
         })
     })
-    project =Object(properties={
+    project = Nested(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
         'doi': String(fields={'_exact':Keyword()}),
@@ -214,8 +215,8 @@ class IndexedPublication(DocType):
         'name': String({'_exact':Keyword()}),
         'owner': String(),
         'uuid': String({'_exact':Keyword()}),
-        'value': Object(properties={
-            'associatedProjects': Object(properties={
+        'value': Nested(properties={
+            'assocaitedProjects': Nested(properties={
                 'href': String(fields={'_exact': Keyword()}),
                 'title': String(fields={'_exact': Keyword()}, analyzer='english')
             }),
@@ -225,18 +226,17 @@ class IndexedPublication(DocType):
             'ef': String(analyzer='english', fields={'_exact': Keyword()}),
             'pi': String(fields={'_exact': Keyword()}),
             'description': Text(analyzer='english'),
-            'title': Text(analyzer='english', fields={'_exact':Keyword()}),
+            'title': Text(analyzer='english'),
             'projectId': String(fields={'_exact': Keyword()}),
             'projectType': String(fields={'_exact': Keyword()}),
-            'keywords': String(analyzer=keyword_analyzer)
         })
     })
     projectId = String(fields={'_exact': Keyword()}),
-    reportsList = Object(properties={
+    reportsList = Nested(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
         'doi': String(fields={'_exact':Keyword()}),
-        'fileObjs': Object(properties={
+        'fileObjs': Nested(properties={
             'lenght': Long(),
             'name': String(fields={'_exact':Keyword()}),
             'path': String(fields={'_exact': Keyword(),
@@ -246,7 +246,7 @@ class IndexedPublication(DocType):
         'name': String({'_exact':Keyword()}),
         'owner': String(),
         'uuid': String({'_exact':Keyword()}),
-        'value': Object(properties={
+        'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english'),
             'experiments': String(multi=True, fields={'_exact':Keyword()}),
@@ -254,11 +254,11 @@ class IndexedPublication(DocType):
             'project': String(fields={'_exact': Keyword()}),
         })
     })
-    sensorLists = Object(properties={
+    sensorLists = Nested(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
         'doi': String(fields={'_exact':Keyword()}),
-        'fileObjs': Object(properties={
+        'fileObjs': Nested(properties={
             'lenght': Long(),
             'name': String(fields={'_exact':Keyword()}),
             'path': String(fields={'_exact': Keyword(),
@@ -268,7 +268,7 @@ class IndexedPublication(DocType):
         'name': String({'_exact':Keyword()}),
         'owner': String(),
         'uuid': String({'_exact':Keyword()}),
-        'value': Object(properties={
+        'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english'),
             'experiments': String(multi=True, fields={'_exact':Keyword()}),
@@ -279,11 +279,11 @@ class IndexedPublication(DocType):
         })
     })
     status = String()
-    users = Object(properties={
+    users = Nested(properties={
         'email': String(fields={'_exact': Keyword()}),
         'first_name': String(fields={'_exact': Keyword()}),
         'last_name': String(fields={'_exact': Keyword()}),
-        'profile': Object(properties={
+        'profile': Nested(properties={
             'institution': String(fields={'_exact': Keyword()}),
         }),
         'username': String(fields={'_exact': Keyword()}),
@@ -317,7 +317,7 @@ class IndexedPublicationLegacy(DocType):
     startDate = Date()
     endDate = Date()
     description = Text(analyzer='english')
-    facility = Object(
+    facility = Nested(
         properties={
             'country': Text(analyzer='english'),
             'name': Text(analyzer='english'),
@@ -327,7 +327,7 @@ class IndexedPublicationLegacy(DocType):
     path = String(fields={'_exact':Keyword(), '_path':String(analyzer=path_analyzer)})
     title = String(analyzer='english', fields={'_exact':Keyword()})
     name = String(fields={'_exact': Keyword()})
-    equipment = Object(
+    equipment = Nested(
         properties={
             'component': Text(analyzer='english'),
             'equipment': Text(analyzer='english'),
@@ -335,62 +335,62 @@ class IndexedPublicationLegacy(DocType):
             'facility': Text(analyzer='english')
         })
     system = String(fields={'_exact':Keyword()})
-    organization = Object(
+    organization = Nested(
         properties={
             'country': Text(analyzer='english'),
             'name': String(analyzer='english'),
             'state': String(analyzer='english')
         })
-    pis = Object(
+    pis = Nested(
         properties={
             'lastName': String(analyzer='english'),
             'firstName': String(analyzer='english')
         })
     project = String(fields={'_exact':Keyword()})
-    sponsor = Object(
+    sponsor = Nested(
         properties={
             'name': String(analyzer='english'),
             'url': String()
         })
     fundorg = String(analyzer='english', fields={'_exact': Keyword()})
     fundorgprojid = String(fields={'_exact': Keyword()})
-    publications = Object(
+    publications = Nested(
         properties={
             'authors': String(analyzer='english', multi=True),
             'title': Text(analyzer='english')
         })
-    experiments = Object(
+    experiments = Nested(
         properties={
             'startDate': Date(),
             'endDate': Date(),
             'doi': Keyword(),
             'description': Text(analyzer='english'),
-            'facility': Object(properties={
+            'facility': Nested(properties={
                 'country': Text(analyzer='english'),
                 'state': Text(analyzer='english'),
                 'name': Text(analyzer='english'),
                 }),
             'deleted': Boolean(),
             'path': String(fields={'_exact': Keyword(), '_path':String(analyzer=path_analyzer)}),
-            'material': Object(properties={
+            'material': Nested(properties={
                 'materials': String(analyzer='english', multi=True),
                 'component': String(analyzer='english')
                 }),
-            'equipment': Object(properties={
+            'equipment': Nested(properties={
                 'component': Text(analyzer='english'),
                 'equipment': Text(analyzer='english'),
                 'equipmentClass': Text(analyzer='english'),
                 'facility': Text(analyzer='english')
             }),
-            'title': Text(analyzer='english', fields={'_exact': Keyword()}),
+            'title': Text(analyzer='english'),
             'sensors': String(analyzer='english', multi=True),
             'type': Text(analyzer='english'),
-            'specimenType': Object(properties={
+            'specimenType': Nested(properties={
                 'name': Text(analyzer='english'),
                 'description': Text(analyzer='english')
                 }),
             'name': Text(analyzer='english'),
-            'creators': Object(properties={
+            'creators': Nested(properties={
                 'lastName': Text(analyzer='english'),
                 'firstName': Text(analyzer='english')
             })
