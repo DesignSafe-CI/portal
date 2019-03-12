@@ -1,6 +1,7 @@
 import json
 import logging
 
+from datetime import datetime
 from designsafe.apps.api.data import lookup_file_manager
 from designsafe.apps.api.data.sources import SourcesApi
 from designsafe.apps.api.exceptions import ApiException
@@ -174,3 +175,33 @@ class FileMediaView(View):
         response['Content-Disposition'] = 'attachment; filename={filename}'.format(filename=filename)
         response['X-Accel-Redirect'] = '/internal-resource/{filepath}'.format(filepath=filepath)
         return response
+
+
+class WordView(View):
+    corral = '/corral-repl/tacc/NHERI/'
+    def required(input):
+        if input == " ":
+            raise ValueError("Field required")
+    date = WordView.datetime.datetime
+
+
+    def get(self):
+        term = required(self.input())
+        definition = required(input())
+        vocabBuilder = logger.logging.getLogger(__name__)
+        date
+        permalink = required(input())
+
+
+
+    def post(self):
+        vocabBuilder = logger.logging.getLogger(__name__)
+        term = required(self.input())
+        definition = required(input())
+        permalink = required(input())
+
+
+
+    
+    def delete(self):
+        delete = self.client.del
