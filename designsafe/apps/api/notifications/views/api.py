@@ -49,14 +49,13 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         # return self.render_to_json_response(notifs)
 
     def post(self, request, *args, **kwargs):
-        print("post")
-        print(request)
-        body_json = json.loads(request)
+        body_json = json.loads(request.body)
         nid = body_json['id']
         read = body_json['read']
-        n = Notification.get(id = nid)
+        n = Notification.objects.get(pk = nid) #?
         n.read = read
         n.save()
+        return self.render_to_json_response(n)
 
     def delete(self, request, pk, *args, **kwargs):
         # body_json = json.loads(request.body)

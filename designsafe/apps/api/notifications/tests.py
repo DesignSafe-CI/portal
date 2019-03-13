@@ -219,13 +219,25 @@ class NotificationsViewsTests(TestCase):
     #         print(resp.status_code)
 
     def test_post_request(self):
-        payload = {'key': 'value', 'key2': 'value2'}
-        # r = requests.post('/api/notifications/')
+        note = Notification(
+            event_type="JOB",
+            status="SUCCESS",
+            message="Job succeeded",
+            user="ds_user",
+        )
+        note.save()
         user = get_user_model().objects.get(username="ds_user")
+        payload = {'id': note.pk, 'read': True}
+    #   r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')        user = get_user_model().objects.get(username="ds_user")
         self.client.force_login(user)
-        resp = ManageNotificationsView().post('/api/notifications/', {"id":1, "read": True})
+        logger.info(json.dumps(payload))
+        resp = self.client.post('/api/notifications', json.dumps(default=payload))
         print("POST REQUEST")
         print(resp.status_code)
+        # check response status code == 200
+
+        # check to make sure that the notification is marked as read
+        Notification.objects.get({'read': True})
 
     
         # post = resp.json.dumps()
