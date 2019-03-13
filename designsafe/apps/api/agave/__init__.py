@@ -49,7 +49,7 @@ def impersonate_service_account(username):
     cred = (settings.AGAVE_CLIENT_KEY, settings.AGAVE_CLIENT_SECRET)
 
     if getattr(settings, 'AGAVE_USE_SANDBOX', False):
-        cred = (settings.AGAVE_CLIENT_KEY, settings.AGAVE_CLIENT_SECRET)
+        cred = (settings.AGAVE_SANDBOX_CLIENT_KEY, settings.AGAVE_SANDBOX_CLIENT_SECRET)
 
     body = {
         'grant_type': 'admin_password',

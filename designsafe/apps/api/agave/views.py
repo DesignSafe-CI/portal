@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.agave.filemanager.search_index import ElasticFileManager
-from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.agave import get_service_account_client, impersonate_service_account
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.systems import BaseSystemResource
@@ -102,7 +102,7 @@ class FileMediaView(View):
             or file_mgr_name == 'published':
             if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
-                    ag = get_user_model().objects.get(username='envision').agave_oauth.client
+                    ag = impersonate_service_account('envision')
                 else:
                     return HttpResponseForbidden('Login required')
             else:
@@ -237,7 +237,7 @@ class FileMediaView(View):
 
             if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
-                    ag = get_user_model().objects.get(username='envision').agave_oauth.client
+                    ag = impersonate_service_account('envision')
                 else:
                     return HttpResponseForbidden('Login required')
             else:
