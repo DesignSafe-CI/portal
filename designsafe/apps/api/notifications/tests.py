@@ -231,13 +231,12 @@ class NotificationsViewsTests(TestCase):
     #   r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')        user = get_user_model().objects.get(username="ds_user")
         self.client.force_login(user)
         logger.info(json.dumps(payload))
-        resp = self.client.post('/api/notifications', json.dumps(default=payload))
+        resp = self.client.post('/api/notifications', content_type="application/json", data=json.dumps(payload))
         print("POST REQUEST")
         print(resp.status_code)
         # check response status code == 200
-
         # check to make sure that the notification is marked as read
-        Notification.objects.get({'read': True})
+        # Notification.objects.get(json.load({'read': True}))
 
     
         # post = resp.json.dumps()
