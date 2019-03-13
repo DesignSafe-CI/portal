@@ -13,7 +13,6 @@ import { MainComponent } from './main/main.component';
 import { FileMetadataComponent } from './file-metadata/file-metadata.component';
 import neesPublicationComponent from './nees-publication/nees-publication.component';
 import ddPublicationListingComponent from './dd-publication-listing/dd-publication-listing.component';
-
 import publicationDescriptionModalComponent from './publications/publication-description-modal/publication-description.component';
 
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);

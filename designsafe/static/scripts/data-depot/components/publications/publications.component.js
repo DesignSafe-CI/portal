@@ -18,7 +18,6 @@ class PublicationDataCtrl {
         this.onSelect = this.onSelect.bind(this);
         this.renderName = this.renderName.bind(this);
         this.showDescription = this.showDescription.bind(this);
-        this.swapToggle = this.swapToggle.bind(this);
         this.typeFilter = this.typeFilter.bind(this);
         this.clearFilters = this.clearFilters.bind(this);
         this.areFiltersEmpty = this.areFiltersEmpty.bind(this);
