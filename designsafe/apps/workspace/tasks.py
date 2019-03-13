@@ -2,9 +2,11 @@ from __future__ import absolute_import
 
 import os
 import json
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from designsafe.apps.api.agave import impersonate_service_account
 from designsafe.apps.api.notifications.models import Notification
 from django.db import transaction
 from agavepy.agave import AgaveException
@@ -45,8 +47,12 @@ def submit_job(request, username, job_post):
     logger.info('Submitting job for user=%s: %s' % (username, job_post))
 
     try:
-        user = get_user_model().objects.get(username=username)
-        agave = user.agave_oauth.client
+        logger.info('Using Sandbox: %s', getattr(settings, 'AGAVE_USE_SANDBOX', False))
+        if getattr(settings, 'AGAVE_USE_SANDBOX', False):
+            agave = impersonate_service_account(username)
+        else:
+            user = get_user_model().objects.get(username=username)
+            agave = user.agave_oauth.client
         response = agave.jobs.submit(body=job_post)
         logger.debug('Job Submission Response: {}'.format(response))
 
