@@ -210,13 +210,13 @@ class NotificationsViewsTests(TestCase):
     #     # data = resp.json()
     #     self.assertTrue(len(data["notifs"])==1)
 
-    # def test_get_request(self):
-    #     user = get_user_model().objects.get(username="ds_user")
-    #     self.client.force_login(user)
-    #     resp = self.client.get("/api/notifications/")       
-    #     if resp != "":
-    #         self.assertTrue(resp)
-    #         print(resp.status_code)
+    def test_get_request(self):
+        user = get_user_model().objects.get(username="ds_user")
+        self.client.force_login(user)
+        resp = self.client.get("/api/notifications/")       
+        if resp != "":
+            self.assertTrue(resp)
+            print(resp.status_code)
 
     def test_post_request(self):
         note = Notification(
@@ -246,7 +246,7 @@ class NotificationsViewsTests(TestCase):
         # print(read)
 
 
-    # def test_delete_notification(self):
-    #     resp = self.client.delete("/api/notification")
-    #     if resp == 'OK':
-    #         print(resp)
+    def test_delete_notification(self):
+        resp = self.client.delete("/api/notification")
+        if resp == 'OK':
+            print(resp)
