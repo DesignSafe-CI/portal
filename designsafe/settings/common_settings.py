@@ -419,7 +419,6 @@ LOGGING = {
         'celery': {
             'handlers': ['console'],
             'level': 'DEBUG',
-            'propagate': True
         },
         'metrics': {
             'handlers': ['metrics'],
@@ -534,14 +533,25 @@ AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL', 'https://api.examp
 # Agave Client Configuration
 AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')
 AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
-AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
+
+AGAVE_SANDBOX_CLIENT_KEY = os.environ.get('AGAVE_SANDBOX_CLIENT_KEY', '')
+AGAVE_SANDBOX_CLIENT_SECRET = os.environ.get('AGAVE_SANDBOX_CLIENT_SECRET', '')
+AGAVE_SANDBOX_SUPER_TOKEN = os.environ.get('AGAVE_SANDBOX_SUPER_TOKEN', '')
+
+AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
 AGAVE_JWT_HEADER = os.environ.get('AGAVE_JWT_HEADER')
 AGAVE_JWT_USER_CLAIM_FIELD = os.environ.get('AGAVE_JWT_USER_CLAIM_FIELD')
+
+AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
+AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', False)
+
+DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
+DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
 
 PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'id': 'project-{}',

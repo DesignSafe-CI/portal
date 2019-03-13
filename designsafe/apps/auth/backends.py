@@ -162,9 +162,9 @@ class AgaveOAuthBackend(ModelBackend):
                     prefs = NotificationPreferences(user=user)
                     prefs.save()
 
-                self.logger.info('Login successful for user "%s"' % username)
+                self.logger.error('Login successful for user "%s"' % username)
             else:
-                self.logger.info('Agave Authentication failed: %s' % response.text)
+                self.logger.error('Agave Authentication failed: %s' % response.text)
         return user
 
     def revoke(self, user):
