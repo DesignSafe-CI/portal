@@ -7,11 +7,8 @@ export function TicketsService($http, $q, djangoUrl) {
      */
     function get(username) {
       return $http.get('/help/tickets?fmt=json')
-        .then((resp) => {
+        .then(function (resp) {
           return resp.data;
-        },
-        (error) => {
-            return this.$q.reject(error);
         });
     };
     return {

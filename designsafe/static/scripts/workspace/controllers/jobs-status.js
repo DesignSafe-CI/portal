@@ -110,10 +110,10 @@ export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job,
         $http.delete(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
             params: {job_id: job.id},
 
-        }).then((response) => {
+        }).then(function(response) {
             $uibModalInstance.dismiss('cancel');
             $scope.$parent.$broadcast('jobs-refresh');
-        }, (error) => {
+        }, function(error) {
             logger.log('nope!', error); // todo make error handling UI
         });
     };
@@ -123,10 +123,10 @@ export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job,
         $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
             job_id: job.id,
             params: {job_id: job.id, action: 'cancel', body: '{"action":"stop"}'},
-        }).then((response) => {
+        }).then(function(response) {
             $uibModalInstance.dismiss('cancel');
             $scope.$parent.$broadcast('jobs-refresh');
-        }, (error) => {
+        }, function(error) {
             logger.log('nope!', error); // todo make error handling UI
         });
     };

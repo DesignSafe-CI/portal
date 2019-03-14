@@ -63,12 +63,9 @@ export function NotificationBadgeCtrl(
       };
 
       $scope.count = function() {
-        $http.get(djangoUrl.reverse('designsafe_api:badge', []))
-          .then((resp) => {
+        $http.get(djangoUrl.reverse('designsafe_api:badge', [])).then(
+          function(resp) {
             $scope.data.unread = resp.data.unread;
-          },
-          (error) => {
-            return this.$q.reject(error);
           });
       };
 
