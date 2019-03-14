@@ -184,16 +184,17 @@ class LegacyPublication(object):
         if wrap is not None and isinstance(wrap, LegacyPublicationIndexed):
             self._wrap = wrap
 
-        s = LegacyPublicationIndexed.search()
-        s.query = Q({"term": {"name._exact": nees_id}})
-        try:
-            res = s.execute()
-        except (TransportError, ConnectionTimeout) as e:
-            if getattr(e, 'status_code', 500) == 404:
-                raise
-            res = s.execute()
-        if res.hits.total:
-            self._wrap = res[0]
+        if nees_id is not None:
+            s = LegacyPublicationIndexed.search()
+            s.query = Q({"term": {"name._exact": nees_id}})
+            try:
+                res = s.execute()
+            except (TransportError, ConnectionTimeout) as e:
+                if getattr(e, 'status_code', 500) == 404:
+                    raise
+                res = s.execute()
+            if res.hits.total:
+                self._wrap = res[0]
 
     def to_dict(self):
         return self._wrap.to_dict()
