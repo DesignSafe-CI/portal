@@ -51,7 +51,7 @@ export class PublishedDataCtrl {
                 return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
             });
         };
-        var projId = this.$stateParams.filePath.split('/')[1];
+        var projId = this.$stateParams.filePath;
         if (projId) {
             this.ui.loadingProjectMeta = true;
             this.PublishedService.getPublished(projId)
@@ -98,12 +98,17 @@ export class PublishedDataCtrl {
         }
 
         if (!this.browser.error) {
-            this.browser.listing.href = this.$state.href('publishedData', {
-                system: this.browser.listing.system,
-                filePath: this.browser.listing.path
-            });
+            this.browser.listing.href = this.$state.href(
+                'publishedData', {
+                    system: this.browser.listing.system,
+                    filePath: this.browser.listing.path.replace(/\/+/, '')
+                });
             _.each(this.browser.listing.children, (child) => {
-                child.href = this.$state.href('publishedData', { system: child.system, filePath: child.path });
+                child.href = this.$state.href(
+                    'publishedData', {
+                        system: child.system,
+                        filePath: child.path.replace(/\/+/, '')
+                });
             });
         }
 
@@ -112,7 +117,7 @@ export class PublishedDataCtrl {
                 name: 'Published',
                 href: this.$state.href('publicData', {
                     systemId: 'nees.public',
-                    filePath: '/'
+                    filePath: ''
                 }),
                 system: 'nees.public',
                 filePath: '/'
@@ -142,7 +147,7 @@ export class PublishedDataCtrl {
     }
 
     resolveBreadcrumbHref(trailItem) {
-        return this.$state.href('publicData', { systemId: this.browser.listing.system, filePath: trailItem.path });
+        return this.$state.href('publicData', { systemId: this.browser.listing.system, filePath: trailItem.path.replace(/\/+/, '') });
     }
 
     scrollToTop() {

@@ -58,11 +58,9 @@ def impersonate_service_account(username):
         'token_username': '/'.join([settings.AGAVE_USER_STORE_ID, username]),
         'scope': 'PRODUCTION',
     }
-    logger.debug('impersonate body: %s', body)
     response = requests.post(url, data=body, auth=cred)
     response.raise_for_status()
     token_data = response.json()
-    logger.debug('impersonate token_data: %s', token_data)
     return Agave(
         api_server=settings.AGAVE_TENANT_BASEURL,
         api_key=cred[0],
