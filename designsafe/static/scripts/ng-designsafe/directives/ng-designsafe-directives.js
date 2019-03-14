@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import { $q } from '@uirouter/core';
 
 export function fileModel($parse) {
     'ngInject';
@@ -192,68 +194,99 @@ export function dsDraggable() {
   }
 
 export function dsInfiniteScroll(){
-    return {
-      restrict: 'A',
-      scope: {
-        scrollBottom: '&',
-        scrollTop: '&',
-        bottomHeight: '='
-      },
-      link: function(scope, element, attrs){
-        var el = element[0];
-        el.addEventListener('scroll', function(e){
-          var pos = el.offsetHeight + el.scrollTop;
-          if (pos >= el.scrollHeight - scope.bottomHeight){
-            scope.scrollBottom(el, pos);
+  return {
+    restrict: 'A',
+    scope: {
+      scrollBottom: '&',
+      scrollTop: '&',
+      bottomHeight: '='
+    },
+    link: function(scope, element, attrs){
+      var el = element[0];
+      el.addEventListener('scroll', function(e){
+        var pos = el.offsetHeight + el.scrollTop;
+        if (pos >= el.scrollHeight - scope.bottomHeight){
+          scope.scrollBottom(el, pos);
+        }
+        if (pos <= el.offsetHeight){
+          if (scope.scrollTop){
+            scope.scrollTop(el, pos);
           }
-          if (pos <= el.offsetHeight){
-            if (scope.scrollTop){
-              scope.scrollTop(el, pos);
-            }
+        }
+      });
+    }
+  };
+}
+
+export function dsUser(UserService) {
+  'ngInject';
+  return {
+    restrict: 'EA',
+    scope: {
+      username: '=',
+      format: '@'
+    },
+    link: function(scope, element) {
+      var format = scope.format || 'name';
+
+      UserService.get(scope.username).then(function (user) {
+        switch (format) {
+          case 'lname':
+            element.text(user.last_name + ', ' + user.first_name);
+            break;
+          case 'name':
+            element.text(user.first_name + ' ' + user.last_name);
+            break;
+          case 'email':
+            element.text(user.email);
+            break;
+          case 'name-email':
+            element.text(user.first_name + ' ' + user.last_name + ' <' + user.email + '>');
+            break;
+          case 'name-username':
+            element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ')');
+            break;
+          case 'name-username-email':
+            element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ') <' + user.email + '>');
+            break;
+          default:
+            element.text(user.username);
+        }
+      });
+    }
+  };
+}
+
+export function dsUserList(UserService) {
+  'ngInject';
+  return {
+    restrict: 'EA',
+    scope: {
+      usernames: '='
+    },
+    link: function (scope, element) {
+      var longString = '';
+      var promises = [];
+
+      scope.usernames.forEach((usr) => {
+        promises.push(UserService.get(usr));
+      });
+
+      $q.all(promises).then((res) => {
+        res = _.sortBy(res, 'last_name');
+
+        res.forEach((u, i, arr) => {
+          if (i === (arr.length - 1)) {
+            longString += u.last_name + ', ' + u.first_name;
+          } else {
+            longString += u.last_name + ', ' + u.first_name + '; ';
           }
         });
-      }
-    };
-  }
-
-  export function dsUser(UserService) {
-    'ngInject';
-    return {
-      restrict: 'EA',
-      scope: {
-        username: '=',
-        format: '@'
-      },
-      link: function(scope, element) {
-        var format = scope.format || 'name';
-
-        UserService.get(scope.username).then(function (user) {
-          switch (format) {
-            case 'lname':
-              element.text(user.last_name + ', ' + user.first_name);
-              break;
-            case 'name':
-              element.text(user.first_name + ' ' + user.last_name);
-              break;
-            case 'email':
-              element.text(user.email);
-              break;
-            case 'name-email':
-              element.text(user.first_name + ' ' + user.last_name + ' <' + user.email + '>');
-              break;
-            case 'name-username':
-              element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ')');
-              break;
-            case 'name-username-email':
-              element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ') <' + user.email + '>');
-              break;
-            default:
-              element.text(user.username);
-          }
-        });
-      }
-    };
-  }
+        element.text(longString);
+      });
+    }
+  };
+}
 
  export function dsFixTop($window) {
     'ngInject';
