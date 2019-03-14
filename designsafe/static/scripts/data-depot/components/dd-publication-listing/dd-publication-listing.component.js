@@ -1,5 +1,6 @@
 class ddPublicationListingController {
     constructor($stateParams) {
+        'ngInject';
         this.$stateParams = $stateParams;
     }
 }
