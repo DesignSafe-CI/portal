@@ -350,9 +350,6 @@ export function dsUserList(UserService) {
                       element.attr('title', content);
                       element.tooltip('fixTitle');
                       //element.tooltip('show');
-                  },
-                  (error) => {
-                      return this.$q.reject(error);
                   });
               }
           });

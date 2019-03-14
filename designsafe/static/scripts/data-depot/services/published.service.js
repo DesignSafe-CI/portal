@@ -10,22 +10,10 @@ export class PublishedService {
 
     getPublished(projId) {
         return this.$http.get('/api/projects/publication/' + projId)
-            .then((resp) => {
-                return resp.data;
-            },
-            (error) => {
-                return this.$q.reject(error);
-            });
     }
 
     getNeesPublished(neesId) {
         return this.$http.get('/api/projects/nees-publication/' + neesId)
-            .then((resp) => {
-                return resp.data;
-            },
-            (error) => {
-                return this.$q.reject(error);
-            });
     }
 
     updateHeaderMetadata(projId, resp) {

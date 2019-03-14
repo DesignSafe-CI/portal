@@ -15,42 +15,21 @@ export function jobsService($http, djangoUrl) {
                 d.created = new Date(d.created);
             });
             return data;
-            },
-            (error) => {
-                return this.$q.reject(error);
-            });
+        });
     };
 
     service.get = function(uuid) {
         return $http.get(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
             params: { job_id: uuid },
-        })
-            .then((resp) => {
-                return resp.data;
-            },
-            (error) => {
-                return this.$q.reject(error);
-            });
+        });
     };
 
     service.submit = function(data) {
-        return $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), data)
-            .then((resp) => {
-                return resp.data;
-            },
-            (error) => {
-                return this.$q.reject(error);
-            });
+        return $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), data);
     };
 
     service.getWebhookUrl = function() {
-        return $http.get(djangoUrl.reverse('designsafe_api:jobs_wh_handler'))
-            .then((resp) => {
-                return resp.data;
-            },
-            (error) => {
-                return this.$q.reject(error);
-            });
+        return $http.get(djangoUrl.reverse('designsafe_api:jobs_wh_handler'));
     };
 
     service.jobsByDate = function(jobs) {

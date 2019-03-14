@@ -11,13 +11,8 @@ export class SearchService {
         offset = offset || 0;
         // return $http.get(djangoUrl.reverse('ds_search_api.search', []), {params: {'q': text}});
         return this.$http.get('/api/search',
-            {params: {'query_string': text, 'limit': limit, 'offset': offset, 'type_filter': type_filter}})
-              .then((resp) => {
-                return resp.data;
-              },
-              (error) => {
-                return this.$q.reject(error);
-              });
+            {params: {'query_string': text, 'limit': limit, 'offset': offset, 'type_filter': type_filter}}
+        );
     };
 
     help() {
