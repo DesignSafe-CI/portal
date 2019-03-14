@@ -74,7 +74,7 @@ function config(
                     }
                     return $stateParams.filePath;
                 },
-                auth: ($q) => {
+                auth: ($q, Django) => {
                     'ngInject';
                     if (Django.context.authenticated) {
                         return true;
@@ -103,7 +103,8 @@ function config(
                         searchState: 'dataSearch',
                     };
                 },
-                auth: function($q) {
+                auth: ($q, Django) => {
+                    'ngInject';
                     if (Django.context.authenticated) {
                         return true;
                     }
@@ -133,7 +134,8 @@ function config(
                     'ngInject';
                     return $stateParams.filePath || '$SHARE/';
                 },
-                auth: function($q) {
+                auth: ($q, Django) =>{
+                    'ngInject';
                     if (Django.context.authenticated) {
                         return true;
                     }
@@ -161,7 +163,8 @@ function config(
                         searchState: 'sharedDataSearch',
                     };
                 },
-                auth: function($q) {
+                auth: ($q, Django) => {
+                    'ngInject';
                     if (Django.context.authenticated) {
                         return true;
                     }
@@ -615,7 +618,8 @@ function config(
                         return DataBrowserService.search(options);
                     },
                 ],
-                auth: function($q) {
+                auth: ($q, Django) => {
+                    'ngInject';
                     if (Django.context.authenticated) {
                         return true;
                     }
@@ -646,7 +650,7 @@ function config(
                     'ngInject';
                     return $stateParams.filePath || '/';
                 },
-                auth: function($q) {
+                auth: ($q, Django) => {
                     if (Django.context.authenticated) {
                         return true;
                     }
@@ -677,7 +681,8 @@ function config(
                     'ngInject';
                     return $stateParams.filePath || '/';
                 },
-                auth: function($q) {
+                auth: ($q, Django) => {
+                    'ngInject';
                     if (Django.context.authenticated) {
                         return true;
                     }
@@ -708,7 +713,8 @@ function config(
                     'ngInject';
                     return $stateParams.filePath || '/';
                 },
-                auth: function($q) {
+                auth: ($q, Django) => {
+                    'ngInject';
                     if (Django.context.authenticated) {
                         return true;
                     }
@@ -735,7 +741,7 @@ function config(
                         searchState: 'publicDataSearch',
                     };
                 },
-                auth: function() {
+                auth: () =>{
                     return true;
                 },
             },
@@ -755,7 +761,7 @@ function config(
                         searchState: 'communityDataSearch',
                     };
                 },
-                auth: function() {
+                auth: () => {
                     return true;
                 },
             },
@@ -779,13 +785,13 @@ function config(
                     'ngInject';
                     return $stateParams.filePath || '/';
                 },
-                auth: function() {
+                auth: () => {
                     return true;
                 },
             },
         })
         .state('publicData', {
-            url: '/public/{filePath:any}',
+            url: '/public/',
             component: 'dataDepotPublicationsBrowser',
             params: {
                 systemId: 'nees.public',
@@ -803,7 +809,31 @@ function config(
                     'ngInject';
                     return $stateParams.filePath || '/';
                 },
-                auth: function() {
+                auth: () => {
+                    return true;
+                },
+            },
+        })
+        .state('neesPublished', {
+            url: '/public/nees.public/{filePath:any}',
+            component: 'neesPublished',
+            params: {
+                systemId: 'nees.public',
+                filePath: '',
+            },
+            resolve: {
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'public',
+                        baseUrl: '/api/public/files',
+                        searchState: 'publicDataSearch',
+                    };
+                },
+                path: ($stateParams)=>{
+                    'ngInject';
+                    return $stateParams.filePath || '/';
+                },
+                auth: () => {
                     return true;
                 },
             },
@@ -844,7 +874,7 @@ function config(
                     DataBrowserService.apiParams.searchState = 'publicDataSearch';
                     return DataBrowserService.browse({ system: systemId, path: filePath });
                 },
-                auth: function(){
+                auth: () => {
                     return true;
                 },
             }
