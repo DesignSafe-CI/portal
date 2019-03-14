@@ -15,7 +15,7 @@ import { ManageCategoriesComponent } from '../../projects/components/manage-cate
 import { ManageExperimentsComponent } from '../../projects/components/manage-experiments/manage-experiments.component';
 import { ManageHybridSimComponent } from '../../projects/components/manage-hybrid-simulations/manage-hybrid-simulations.component';
 import { ManageSimulationComponent } from '../../projects/components/manage-simulations/manage-simulations.component';
-import { EditProjectComponent } from '../../projects/edit-project/edit-project.component';
+import { EditProjectComponent } from '../../projects/components/edit-project/edit-project.component';
 
 
 let designsafeServices = angular.module('designsafe.services', []);
