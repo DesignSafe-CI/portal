@@ -14,7 +14,7 @@ import { metadataListing } from './metadata-listing';
 // import { myDataBrowser } from './my-data-browser';
 import { fileModel, spinnerOnLoad, httpSrc, accessfiles,
          selectOnFocus, dsDataDraggable, dsDraggable, dsInfiniteScroll,
-         dsUser, dsFixTop, yamzTerm, } from './ng-designsafe-directives';
+         dsUser, dsUserList, dsFixTop, yamzTerm, } from './ng-designsafe-directives';
 
 designsafeDirectives.directive('ddAltmetrics', ['$sce', '$filter', ddAltmetrics]);
 designsafeDirectives.directive('ddBoxListing', ddBoxListing);
@@ -36,6 +36,7 @@ designsafeDirectives.directive('dsDataDraggable', dsDataDraggable);
 designsafeDirectives.directive('dsDraggable', dsDraggable);
 designsafeDirectives.directive('dsInfiniteScroll', dsInfiniteScroll);
 designsafeDirectives.directive('dsUser', dsUser);
+designsafeDirectives.directive('dsUserList', dsUserList);
 designsafeDirectives.directive('dsFixTop', dsFixTop);
 designsafeDirectives.directive('yamzTerm', yamzTerm);
 
