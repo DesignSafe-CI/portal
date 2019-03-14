@@ -24,7 +24,12 @@
             <col style="width: 15%">
             <col style="width: 84%">
           </colgroup>
-          <tr ng-repeat="award in data.project.value.awardNumber">
+          <!-- older projects will have awards listed as strings -->
+          <tr ng-if="isSingle(data.project.value.awardNumber)">
+            <td class="tg-0lax">Awards</td>
+            <td class="tg-0lax"><strong>{{ data.project.value.awardNumber }}</strong></td>
+          </tr>
+          <tr ng-if="!isSingle(data.project.value.awardNumber)" ng-repeat="award in data.project.value.awardNumber track by $index">
             <td class="tg-0lax" ng-if="$first">Awards</td>
             <td class="tg-0lax" ng-if="!$first"></td>
             <td class="tg-0lax"><strong>{{ award.name }} - {{ award.number }}</strong></td>
@@ -40,7 +45,7 @@
           <span class="prj-data">{{ data.project.value.keywords }}</span>
         </div>
         <div ng-if="data.project.value.description">
-          <span>{{ data.project.value.description }}</span>
+          <p>{{ data.project.value.description }}</p>
         </div>
       </div>
       <!-- New Header End -->
