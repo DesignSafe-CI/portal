@@ -31,13 +31,13 @@ class PublicationDataCtrl {
             if (child.system === 'nees.public') {
                 child.href = this.$state.href(
                     'publicData',
-                    { system: child.system, filePath: child.path.replace(/\/+/, '') }
+                    { system: child.system, filePath: child.path.replace(/^\/+/, '') }
                 );
             }
             if (child.system === 'designsafe.storage.published') {
                 child.href = this.$state.href(
                     'publishedData',
-                    { system: child.system, filePath: child.path.replace(/\/+/, '') }
+                    { system: child.system, filePath: child.path.replace(/^\/+/, '') }
                 );
             }
         });
