@@ -31,11 +31,8 @@ export function SystemsService($rootScope, $http, $q, $uibModal, $state, Django,
 
     function list(options){
       return $http.get(_baseUrl, {params: options})
-        .then((resp) => {
+        .then(function(resp){
             return resp.data;
-        },
-        (error) => {
-            return this.$q.reject(error);
         });
     }
 

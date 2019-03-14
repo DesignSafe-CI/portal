@@ -189,104 +189,87 @@ export function FileListing($http, $q) {
      * @returns {*}
      */
     FileListing.prototype.copy = function (options) {
-      options.action = "copy";
-      // var body = {
-      //   "action": "copy",
-      //   "system": options.system,
-      //   "path": options.path,
-      //   "name": options.name,
-      //   "resource": options.resource || ""
-      // };
-      return $http.put(this.mediaUrl(), options)
-        .then((resp) => {
-          return new FileListing(resp.data);
-        },
-        (error) => {
-          return this.$q.reject(error);
+        options.action = 'copy';
+        // var body = {
+        //   "action": "copy",
+        //   "system": options.system,
+        //   "path": options.path,
+        //   "name": options.name,
+        //   "resource": options.resource || ""
+        // };
+        return $http.put(this.mediaUrl(), options).then(function (resp) {
+            return new FileListing(resp.data);
         });
     };
 
     FileListing.prototype.download = function () {
-      var body = {
-        "action": "download"
-      };
-      return $http.put(this.mediaUrl(), body)
-        .then((resp) => {
-          return resp.data;
-        },
-        (error) => {
-          return this.$q.reject(error);
+        var body = {
+            action: 'download'
+        };
+        return $http.put(this.mediaUrl(), body).then(function (resp) {
+            return resp.data;
         });
     };
 
     FileListing.prototype.search = function(params) {
-      var self = this;
-      return $http.get(this.searchUrl(), {params: params})
-        .then((res) => {
-        angular.extend(self, res.data);
-        if (self.children && self.children instanceof Array) {
-          self.children = _.map(self.children, function (child) {
-            var fl = new FileListing(child, self.apiParams);
-            fl._parent = self;
-            return fl;
-          }, self);
-        }
-        return self;
-        },
-        (error) => {
-          return this.$q.reject(error);
+        var self = this;
+        return $http.get(this.searchUrl(), { params: params }).then(function(res){
+            angular.extend(self, res.data);
+            if (self.children && self.children instanceof Array) {
+                self.children = _.map(self.children, function (child) {
+                    var fl = new FileListing(child, self.apiParams);
+                    fl._parent = self;
+                    return fl;
+                }, self);
+            }
+            return self;
         });
     };
 
     FileListing.prototype.fetch = function (params) {
-      var self = this;
-      // recreate a deferred timeout for the promise
-      stopper = $q.defer();
+        var self = this;
+        // recreate a deferred timeout for the promise
+        stopper = $q.defer();
 
-      var req = $http.get(this.listingUrl(), {params: params, timeout: stopper.promise})
-        .then((resp) => {
-        angular.extend(self, resp.data);
+        var req = $http.get(this.listingUrl(), { params: params, timeout: stopper.promise }).then(function (resp) {
+            angular.extend(self, resp.data);
 
-        // wrap children as FileListing instances
-        if (self.children && self.children instanceof Array) {
-          self.children = _.map(self.children, function (child) {
-            var fl = new FileListing(child, self.apiParams);
-            fl._parent = self;
-            return fl;
-          }, self);
-        }
+            // wrap children as FileListing instances
+            if (self.children && self.children instanceof Array) {
+                self.children = _.map(self.children, function (child) {
+                    var fl = new FileListing(child, self.apiParams);
+                    fl._parent = self;
+                    return fl;
+                }, self);
+            }
 
-        return self;
-        },
-        (error) => {
-          return this.$q.reject(error);
+            return self;
         });
-      // return request with timeout
-      req.stopper = stopper;
-      return req;
+        // return request with timeout
+        req.stopper = stopper;
+        return req;
     };
 
     FileListing.prototype.getMeta = function() {
-      var self = this;
-      return $http.get(this.metaUrl())
-        .then((resp) => {
-          angular.extend(self, resp.data);
-          return self;
-        },
-        (error) => {
-          return this.$q.reject(error);
+        var self = this;
+        return $http.get(this.metaUrl()).then(function (resp){
+            angular.extend(self, resp.data);
+            return self;
+        });
+    };
+
+    FileListing.prototype.getAssociatedMetadata = function() {
+        var url = this.metaUrl() + '?all=true';
+        return $http.get(url).then((resp)=>{
+            return resp.data;
         });
     };
 
     FileListing.prototype.updateMeta = function(metaObj){
-      var self = this;
-      return $http.put(this.metaUrl(), metaObj)
-          .then((resp) => {
-          angular.extend(self, resp.data);
-        return self;
-        },
-        (error) => {
-            return this.$q.reject(error);
+        var self = this;
+        return $http.put(this.metaUrl(), metaObj).then(function (resp){
+            angular.extend(self, resp.data);
+            return self;
         });
     };
 
@@ -364,23 +347,19 @@ export function FileListing($http, $q) {
      * @param {string} options.name The name for the new directory
      */
     FileListing.prototype.mkdir = function (options) {
-      if (this.type !== 'dir') {
-        throw new Error('FileListing.mkdir can only be called for "dir" type FileListings.');
-      }
+        if (this.type !== 'dir') {
+            throw new Error('FileListing.mkdir can only be called for "dir" type FileListings.');
+        }
 
-      var self = this;
-      var body = {
-        "action": "mkdir",
-        "name": options.name
-      };
-      return $http.put(this.mediaUrl(), body)
-        .then((resp) => {
-          var newDir = new FileListing(resp.data);
-          self.children.push(newDir);
-          return newDir;
-        },
-        (error) => {
-            return this.$q.reject(error);
+        var self = this;
+        var body = {
+            action: 'mkdir',
+            name: options.name
+        };
+        return $http.put(this.mediaUrl(), body).then(function (resp) {
+            var newDir = new FileListing(resp.data);
+            self.children.push(newDir);
+            return newDir;
         });
     };
 
@@ -393,27 +372,23 @@ export function FileListing($http, $q) {
      * @returns {*}
      */
     FileListing.prototype.move = function (options) {
-      var self = this;
-      var body = {
-        "action": "move",
-        "system": options.system,
-        "path": options.path,
-        "name": options.name
-      };
-      return $http.put(this.mediaUrl(), body)
-        .then((resp) => {
-          var newDir = new FileListing(resp.data);
-          /* remove this file from previous parent's children */
-          if (self._parent) {
-            self._parent.children = _.reject(self._parent.children, function (child) {
-              return child.path === self.path;
-            });
-            self._parent = undefined;
-          }
-          return newDir;
-        },
-          (error) => {
-            return this.$q.reject(error);
+        var self = this;
+        var body = {
+            action: 'move',
+            system: options.system,
+            path: options.path,
+            name: options.name
+        };
+        return $http.put(this.mediaUrl(), body).then(function (resp) {
+            var newDir = new FileListing(resp.data);
+            /* remove this file from previous parent's children */
+            if (self._parent) {
+                self._parent.children = _.reject(self._parent.children, function (child) {
+                    return child.path === self.path;
+                });
+                self._parent = undefined;
+            }
+            return newDir;
         });
     };
 
@@ -427,14 +402,10 @@ export function FileListing($http, $q) {
             return $q.resolve(this._permissions);
         }
         var self = this;
-        return $http.get(this.pemsUrl())
-          .then((resp) => {
+        return $http.get(this.pemsUrl()).then(function (resp) {
             self._permissions = resp.data;
             return self._permissions;
-          },
-          (error) => {
-            return this.$q.reject(error);
-          });
+        });
     };
 
     /**
@@ -445,15 +416,11 @@ export function FileListing($http, $q) {
      * @return {Promise}
      */
     FileListing.prototype.preview = function () {
-      var body = {
-        "action": "preview"
-      };
-      return $http.put(this.mediaUrl(), body)
-        .then((resp) => {
-          return resp.data;
-        },
-        (error) => {
-          return this.$q.reject(error);
+        var body = {
+            action: 'preview'
+        };
+        return $http.put(this.mediaUrl(), body).then(function (resp) {
+            return resp.data;
         });
     };
 
@@ -466,19 +433,15 @@ export function FileListing($http, $q) {
      * @returns {Promise}
      */
     FileListing.prototype.rename = function (options) {
-      var self = this;
-      var body = {
-        "action": "rename",
-        "name": options.name
-      };
-      return $http.put(this.mediaUrl(), body)
-        .then((resp) => {
-          /* update self */
-          angular.extend(self, resp.data);
-          return self;
-        },
-        (error) => {
-          return this.$q.reject(error);
+        var self = this;
+        var body = {
+            action: 'rename',
+            name: options.name
+        };
+        return $http.put(this.mediaUrl(), body).then(function (resp) {
+        /* update self */
+            angular.extend(self, resp.data);
+            return self;
         });
     };
 
@@ -489,18 +452,14 @@ export function FileListing($http, $q) {
      * @return {Promise}
      */
     FileListing.prototype.rm = function () {
-      var self = this;
-      return $http.delete(this.mediaUrl())
-        .then(function (resp) {
-          /* remove from self._parent.children */
-          if (self._parent) {
-            self._parent.children = _.reject(self._parent.children, function (child) {
-            return child.path === self.path;
-            });
-          }
-        },
-        (error) => {
-            return this.$q.reject(error);
+        var self = this;
+        return $http.delete(this.mediaUrl()).then(function (resp) {
+        /* remove from self._parent.children */
+            if (self._parent) {
+                self._parent.children = _.reject(self._parent.children, function (child) {
+                    return child.path === self.path;
+                });
+            }
         });
     };
 
@@ -512,12 +471,8 @@ export function FileListing($http, $q) {
      * @param {string} options.permission The new permission value
      */
     FileListing.prototype.share = function (options) {
-      return $http.post(this.pemsUrl(), options)
-        .then(function (resp) {
-          return resp.data;
-        },
-        (error) => {
-          return this.$q.reject(error);
+        return $http.post(this.pemsUrl(), options).then(function (resp) {
+            return resp.data;
         });
     };
 
@@ -530,29 +485,25 @@ export function FileListing($http, $q) {
      * @returns {Promise}
      */
     FileListing.prototype.trash = function () {
-      var self = this;
-      var body = {
-        "action": "trash"
-      };
-      return $http.put(this.mediaUrl(), body)
-        .then((resp) => {
-          var trashed = new FileListing(resp.data);
+        var self = this;
+        var body = {
+            action: 'trash'
+        };
+        return $http.put(this.mediaUrl(), body).then(function (resp) {
+            var trashed = new FileListing(resp.data);
 
-          /* remove this file from previous parent's children */
-          if (self._parent) {
-            self._parent.children = _.reject(self._parent.children, function (child) {
-              return child.path === self.path;
-            });
-            self._parent = undefined;
-          }
-          if (trashed.name !== self.name) {
-            // TODO notify user via Toastr
-            window.alert('File was renamed to "' + trashed.name + '".');
-          }
-          return trashed;
-        },
-        (error) => {
-          return this.$q.reject(error);
+            /* remove this file from previous parent's children */
+            if (self._parent) {
+                self._parent.children = _.reject(self._parent.children, function (child) {
+                    return child.path === self.path;
+                });
+                self._parent = undefined;
+            }
+            if (trashed.name !== self.name) {
+                // TODO notify user via Toastr
+                window.alert('File was renamed to "' + trashed.name + '".');
+            }
+            return trashed;
         });
     };
 
@@ -561,13 +512,10 @@ export function FileListing($http, $q) {
      * @param {FormData} data The Multipart FormData
      */
     FileListing.prototype.upload = function (data) {
-      return $http.post(this.mediaUrl(), data, {headers: {'Content-Type': undefined}})
-        .then((result) => {
-          return result.data;
-        },
-        (error) => {
-          return this.$q.reject(error);
-        });
+        return $http.post(this.mediaUrl(), data, { headers: { 'Content-Type': undefined } })
+            .then(function (result) {
+                return result.data;
+            });
     };
 
 
