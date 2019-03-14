@@ -87,13 +87,8 @@
             </tr>
             <tr ng-if="$ctrl.project.value.coPis.length">
                 <td>CoPIs</td>
-                <td format="lname" class="prj-data">
-                    <span ng-repeat="copi in $ctrl.project.value.coPis">
-                        <span ng-if="!$last">
-                            <ds-user username="copi" format="lname">{{ copi }}</ds-user>;
-                        </span>
-                        <ds-user ng-if="$last" username="copi" format="lname">{{ copi }}</ds-user>
-                    </span>
+                <td class="prj-data">
+                    <ds-user-list usernames="$ctrl.project.value.coPis"></ds-user-list>
                 </td>
             </tr>
             <tr class="prj-row" ng-hide="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
