@@ -180,20 +180,20 @@ class LegacyPublicationIndexed(DocType):
 class LegacyPublication(object):
 
     def __init__(self, wrap=None, nees_id=None, *args, **kwargs):
-        if wrap is not None:
-            if isinstance(wrap, LegacyPublicationIndexed):
-                self._wrap = wrap
-        else:
-            s = LegacyPublicationIndexed.search()
-            s.query = Q({"term": {"name._exact": nees_id}})
-            try:
-                res = s.execute()
-            except (TransportError, ConnectionTimeout) as e:
-                if getattr(e, 'status_code', 500) == 404:
-                    raise
-                res = s.execute()
-            if res.hits.total:
-                self._wrap = res[0]
+        self._wrap = LegacyPublicationIndexed()
+        if wrap is not None and isinstance(wrap, LegacyPublicationIndexed):
+            self._wrap = wrap
+
+        s = LegacyPublicationIndexed.search()
+        s.query = Q({"term": {"name._exact": nees_id}})
+        try:
+            res = s.execute()
+        except (TransportError, ConnectionTimeout) as e:
+            if getattr(e, 'status_code', 500) == 404:
+                raise
+            res = s.execute()
+        if res.hits.total:
+            self._wrap = res[0]
 
     def to_dict(self):
         return self._wrap.to_dict()
@@ -248,7 +248,6 @@ class LegacyPublication(object):
             return val
         else:
             return 'N/A'
-            # raise AttributeError('\'LegacyPublication\' has no attribute \'{}\''.format(name))
     
 class CMSIndexed(DocType):
     class Meta:

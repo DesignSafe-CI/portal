@@ -24,7 +24,7 @@ class DataDepotBrowserCtrl {
                 this.$state.current.name,
                 {
                     system: this.browser.listing.system,
-                    filePath: this.browser.listing.path.replace(/\/+/, ''),
+                    filePath: this.browser.listing.path.replace(/^\/+/, ''),
                 }
             );
             _.each(this.browser.listing.children, (child) => {
@@ -36,7 +36,7 @@ class DataDepotBrowserCtrl {
                 }
                 child.href = this.$state.href(
                     stateName,
-                    { systemId: child.system, filePath: child.path.replace(/\/+/, '') }
+                    { systemId: child.system, filePath: child.path.replace(/^\/+/, '') }
                 );
             });
             this.data = {
