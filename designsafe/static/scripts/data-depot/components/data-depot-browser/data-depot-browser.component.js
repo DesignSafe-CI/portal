@@ -24,19 +24,19 @@ class DataDepotBrowserCtrl {
                 this.$state.current.name,
                 {
                     system: this.browser.listing.system,
-                    filePath: this.browser.listing.path,
+                    filePath: this.browser.listing.path.replace(/\/+/, ''),
                 }
             );
             _.each(this.browser.listing.children, (child) => {
                 let stateName = this.$state.current.name;
                 if (child.system === 'nees.public') {
-                    stateName = 'publicData';
+                    stateName = 'neesPublished';
                 } else if (child.system === 'designsafe.storage.published'){
                     stateName = 'publishedData';
                 }
                 child.href = this.$state.href(
                     stateName,
-                    { systemId: child.system, filePath: child.path }
+                    { systemId: child.system, filePath: child.path.replace(/\/+/, '') }
                 );
             });
             this.data = {
