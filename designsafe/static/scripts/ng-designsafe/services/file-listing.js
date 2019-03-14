@@ -435,7 +435,6 @@ export function FileListing($http, $q) {
           (error) => {
             return this.$q.reject(error);
           });
-      }
     };
 
     /**
