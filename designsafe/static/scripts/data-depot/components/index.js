@@ -8,6 +8,7 @@ import { MainComponent } from './main/main.component';
 import { FilesListingComponent, FilesListingPublicComponent } from './files-listing/files-listing.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataDepotBrowserComponent, DataDepotPublicationsBrowserComponent } from './data-depot-browser/data-depot-browser.component';
+import { NeesPublishedComponent } from './nees-publication/nees-publication.component';
 
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);
 
@@ -21,5 +22,6 @@ ddComponents.component('filesListingPublic', FilesListingPublicComponent);
 ddComponents.component('breadcrumb', BreadcrumbComponent);
 ddComponents.component('dataDepotBrowser', DataDepotBrowserComponent);
 ddComponents.component('dataDepotPublicationsBrowser', DataDepotPublicationsBrowserComponent);
+ddComponents.component('neesPublished', NeesPublishedComponent);
 
 export default ddComponents;
