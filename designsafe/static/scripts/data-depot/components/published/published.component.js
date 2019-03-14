@@ -101,13 +101,13 @@ export class PublishedDataCtrl {
             this.browser.listing.href = this.$state.href(
                 'publishedData', {
                     system: this.browser.listing.system,
-                    filePath: this.browser.listing.path.replace(/\/+/, '')
+                    filePath: this.browser.listing.path.replace(/^\/+/, '')
                 });
             _.each(this.browser.listing.children, (child) => {
                 child.href = this.$state.href(
                     'publishedData', {
                         system: child.system,
-                        filePath: child.path.replace(/\/+/, '')
+                        filePath: child.path.replace(/^\/+/, '')
                 });
             });
         }
@@ -153,7 +153,7 @@ export class PublishedDataCtrl {
     }
 
     resolveBreadcrumbHref(trailItem) {
-        return this.$state.href('publicData', { systemId: this.browser.listing.system, filePath: trailItem.path.replace(/\/+/, '') });
+        return this.$state.href('publicData', { systemId: this.browser.listing.system, filePath: trailItem.path.replace(/^\/+/, '') });
     }
 
     scrollToTop() {
