@@ -63,7 +63,6 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         # n = Notification.objects.get(pk = pk)
         # n.deleted = deleted
         # n.save()
-        print("delete ran")
         if pk == 'all':
             items=Notification.objects.filter(deleted=False, user=str(request.user))
             for i in items:
