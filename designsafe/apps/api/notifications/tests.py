@@ -199,16 +199,7 @@ class NotificationsViewsTests(TestCase):
             user="ds_user",
         )
         note.save()
-        #self.client=Client()
-        # json.dumps(user)
 
-    # def test_get_notifications(self):
-    #     user = get_user_model().objects.get(username="ds_user")
-    #     self.client.force_login(user)
-    #     resp = self.client.get("/api/notifications/")
-    #     # print(resp.json())
-    #     # data = resp.json()
-    #     self.assertTrue(len(data["notifs"])==1)
 
     def test_get_request(self):
         user = get_user_model().objects.get(username="ds_user")
