@@ -51,7 +51,7 @@ export class PublishedDataCtrl {
                 return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
             });
         };
-        var projId = this.$stateParams.filePath;
+        var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         if (projId) {
             this.ui.loadingProjectMeta = true;
             this.PublishedService.getPublished(projId)
