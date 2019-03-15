@@ -21,7 +21,6 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
     def get(self, request, event_type = None, *args, **kwargs):
         limit = request.GET.get('limit', 0)
         page = request.GET.get('page', 0)
-        print("Lucky")
         if event_type is not None:
             notifs = Notification.objects.filter(
                           deleted = False,
