@@ -47,8 +47,9 @@ def submit_job(request, username, job_post):
     logger.info('Submitting job for user=%s: %s' % (username, job_post))
 
     try:
-        logger.info('Using Sandbox: %s', getattr(settings, 'AGAVE_USE_SANDBOX', False))
-        if getattr(settings, 'AGAVE_USE_SANDBOX', False):
+        use_sandbox = getattr(settings, 'AGAVE_USE_SANDBOX', False)
+        logger.info('Using Sandbox: %s', use_sandbox)
+        if use_sandbox:
             agave = impersonate_service_account(username)
         else:
             user = get_user_model().objects.get(username=username)
