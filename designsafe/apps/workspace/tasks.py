@@ -59,16 +59,23 @@ def submit_job(request, username, job_post):
         return response
 
     except ConnectionError as e:
-        logger.error('ConnectionError while submitting job: %s' % e.message,
-                     extra={'job': job_post})
+        logger.exception(
+            'ConnectionError while submitting job: %s',
+            e.message,
+            extra={'job': job_post}
+        )
         raise JobSubmitError(status='error',
                              status_code=500,
                              message='We were unable to submit your job at this time due '
                                      'to a Job Service Interruption. Please try again later.')
 
     except HTTPError as e:
-        logger.error('HTTPError while submitting job: %s' % e.message,
-                       extra={'job': job_post})
+        logger.exception(
+            'HTTPError while submitting job: %s\n%s',
+            e.message,
+            e.response.content,
+            extra={'job': job_post}
+        )
         if e.response.status_code >= 500:
             raise JobSubmitError(
                 status='error',

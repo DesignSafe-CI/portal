@@ -15,6 +15,8 @@ class ProjectTreeCtrl {
 
     $onInit() {
         this.project = this.resolve.project;
+        this.rootCategoryUuid = this.resolve.rootCategoryUuid;
+        this.readOnly = this.resolve.readOnly || false;
     }
 
     /*
@@ -348,7 +350,18 @@ class ProjectTreeCtrl {
      * [...]
      */
     buildHybridSimulationTree() {
-        let simulations = _.sortBy(this.project.hybridsimulation_set, (sim) => { return sim.value.title; });
+        let simulations = [];
+        if (this.rootCategoryUuid) {
+            simulations = _.filter(
+                this.project.hybridsimulation_set,
+                (sim) => { return sim.uuid === this.rootCategoryUuid; }
+            );
+        } else {
+            simulations = _.sortBy(
+                this.project.hybridsimulation_set,
+                (sim) => { return sim.value.title; }
+            );
+        }
         let models = _.sortBy(this.project.globalmodel_set, (mod) => { return mod.value.title; });
         let coordinators = _.sortBy(this.project.coordinator_set, (coor) => { return coor.value.title; });
         let coordOutputs = _.sortBy(this.project.coordinatoroutput_set, (cout) => { return cout.value.title; });
@@ -582,7 +595,15 @@ class ProjectTreeCtrl {
      * [...]
      */
     buildSimulationTree() {
-        let simulations = _.sortBy(this.project.simulation_set, (sim) => { return sim.value.title; });
+        let simulations = [];
+        if ( this.rootCategoryUuid ) {
+            simulations = _.filter(
+                this.project.simoutput_set,
+                (sim) => { return sim.uuid === this.rootCategoryUuid; }
+            );
+        } else {
+            simulations = _.sortBy(this.project.simulation_set, (sim) => { return sim.value.title; });
+        }
         let models = _.sortBy(this.project.model_set, (mod) => { return mod.value.title; });
         let inputs = _.sortBy(this.project.input_set, (inp) => { return inp.value.title; });
         let outputs = _.sortBy(this.project.output_set, (out) => { return out.value.title; });
@@ -726,7 +747,15 @@ class ProjectTreeCtrl {
      * [...]
      */
     buildExperimentalTree() {
-        let experiments = _.sortBy(this.project.experiment_set, (exp) => { return exp.value.title; });
+        let experiments = [];
+        if (this.rootCategoryUuid) {
+            experiments = _.filter(
+                this.project.experiment_set,
+                (exp) => { return exp.uuid === this.rootCategoryUuid; }
+            );
+        } else {
+            experiments = _.sortBy(this.project.experiment_set, (exp) => { return exp.value.title; });
+        }
         let modelConfigs = _.sortBy(this.project.modelconfig_set, (mod) => { return mod.value.title; });
         let sensors = _.sortBy(this.project.sensorlist_set, (sen) => { return sen.value.title; });
         let events = _.sortBy(this.project.event_set, (evt) => { return evt.value.title; });

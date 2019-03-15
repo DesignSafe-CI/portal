@@ -161,6 +161,12 @@
                     <p>
                         <br>{{ hybsim.value.description }}
                     </p>
+                    <div class="preview-tree-btn-wrapper">
+                        <button class="btn btn-link"
+                                data-ng-click="$ctrl.treeDiagram(hybsim)">
+                            View Tree Diagram
+                        </button>
+                    </div>
             <!-- Hybrid Reports -->
                     <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
                         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, report)">

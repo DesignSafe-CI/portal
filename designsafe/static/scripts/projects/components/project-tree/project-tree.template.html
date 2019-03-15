@@ -14,7 +14,7 @@
         <p>{{$ctrl._ui.error}}</p>
     </div>
     <div id="relation-tree">
-        <div class="button-list" style="position:relative;">
+        <div class="button-list" style="position:relative;" data-ng-if="!$ctrl.readOnly">
             <div class="button-item"
                  data-ng-repeat="node in $ctrl.buttonsData"
                  data-ng-style="node.data.btnStyle">
@@ -41,7 +41,7 @@
                 </button>
             </div>
         </div>
-        <div class="dropdowns" style="position:relative;">
+        <div class="dropdowns" style="position:relative;" data-ng-if="!$ctrl.readOnly">
             <div class="dropdown"
                  data-ng-repeat="leaf in $ctrl.dropdownsData"
                  data-ng-style="leaf.data.style">

@@ -4,6 +4,7 @@ import '../../styles/base.scss';
 import '../../styles/main.css';
 import '../projects/components/file-categories/file-categories.scss';
 import '../projects/components/file-category-selector/file-category-selector.scss';
+import '../data-depot/components/projects/publication-preview/publication-preview.scss';
 
 import $ from 'jquery';
 import angular from 'angular';
