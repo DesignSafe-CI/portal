@@ -73,9 +73,11 @@
     </div>
     <!-- Categories Start -->
     <!-- Reports -->
-    <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
-        <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.simulation, report) && $ctrl.browser.listings[report.uuid]">
-            <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+    <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+         ng-if="$ctrl.matchingGroup($ctrl.simulation, report) && $ctrl.browser.listings[report.uuid]"
+    >
+        <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+            <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                 style="width:100%;">
                 <table style="width:100%">
                     <tr>
@@ -100,9 +102,11 @@
         </div>
     </div>
     <!-- Models -->
-    <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'">
-        <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.simulation, model)">
-            <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
+    <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'"
+         ng-if="$ctrl.matchingGroup($ctrl.simulation, model)"
+    >
+        <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
+            <button class="btn tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                 style="width:100%;">
                 <table style="width:100%">
                     <tr>
@@ -123,11 +127,12 @@
             </div>
         </div>
         <!-- Inputs -->
-        <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: 'value.title'">
-            <div    class="dropdown dropdown-spacer-sm"
-                    id="details-{{input.uuid}}"
-                    ng-if="$ctrl.matchingGroup(model, input)"
-                    style="margin-left: 10px"
+        <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: 'value.title'"
+             ng-if="$ctrl.matchingGroup($ctrl.simulation, input) && $ctrl.matchingGroup(model, input)"
+        >
+            <div class="dropdown dropdown-spacer-sm"
+                 id="details-{{input.uuid}}"
+                 style="margin-left: 10px"
             >
                 <table>
                     <tr>
@@ -137,7 +142,7 @@
                             </span>
                         </td>
                         <td style="width: 100%;">
-                            <button class="btn collapsed tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{input.uuid}}{{model.uuid}}"
+                            <button class="btn tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{input.uuid}}{{model.uuid}}"
                             style="width:100%;">
                             <table style="width:100%">
                                 <tr>
@@ -160,11 +165,12 @@
                     </tr>
                 </table>
                 <!-- Output -->
-                <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: 'value.title'">
-                    <div    class="dropdown dropdown-spacer-sm"
-                            id="details-{{output.uuid}}"
-                            ng-if="$ctrl.matchingGroup(model, output) && $ctrl.matchingGroup(input, output)"
-                            style="margin-left: 30px"
+                <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: 'value.title'"
+                     ng-if="$ctrl.matchingGroup($ctrl.simulation, output) && $ctrl.matchingGroup(model, output) && $ctrl.matchingGroup(input, output)"
+                >
+                    <div class="dropdown dropdown-spacer-sm"
+                         id="details-{{output.uuid}}"
+                         style="margin-left: 30px"
                     >
                         <table>
                             <tr>
@@ -174,7 +180,7 @@
                                     </span>
                                 </td>
                                 <td style="width: 100%;">
-                                    <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{output.uuid}}{{model.uuid}}" style="width:100%;">
+                                    <button class="btn tab-outpt" data-toggle="collapse" data-target="#files-{{output.uuid}}{{model.uuid}}" style="width:100%;">
                                         <table style="width:100%">
                                             <tr>
                                                 <td style="text-align: left;">
@@ -204,9 +210,11 @@
     </div>
     <!-- Models -->
         <!-- Analysis -->
-        <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'">
-            <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.simulation, analysis) && $ctrl.browser.listings[analysis.uuid]">
-                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+        <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'"
+             ng-if="$ctrl.matchingGroup($ctrl.simulation, analysis) && $ctrl.browser.listings[analysis.uuid]"
+        >
+            <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
+                <button class="btn tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                     style="width:100%;">
                     <table style="width:100%">
                         <tr>
