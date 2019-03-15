@@ -113,6 +113,18 @@ class PublicationPreviewOtherCtrl {
             size: 'lg',
         });
     }
+
+    treeDiagram(rootCategory) {
+        this.$uibModal.open({
+            component: 'projectTree',
+            resolve: {
+                project: () => {return this.browser.project; },
+                rootCategoryUuid: () => {return rootCategory.uuid; },
+                readOnly: () => {return true;},
+            },
+            size: 'lg'
+        });
+    }
 }
 
 PublicationPreviewOtherCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$uibModal', '$state', '$q'];
