@@ -185,6 +185,12 @@
                     <p>
                         <br>{{ experiment.value.description }}
                     </p>
+                    <div class="preview-tree-btn-wrapper">
+                        <button class="btn btn-link"
+                                data-ng-click="$ctrl.treeDiagram(experiment)">
+                            View Tree Diagram
+                        </button>
+                    </div>
             <!-- Experiment Reports -->
                     <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
                         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(experiment, report)">

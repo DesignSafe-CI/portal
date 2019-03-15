@@ -66,7 +66,7 @@ class FilesListingCtrl {
         }
         return this.$state.go(
             this.$state.current.name,
-            { 'systemId': systemId, 'filePath': filePath }, { reload: true }
+            { systemId: systemId, filePath: filePath }, { reload: true }
         );
     }
 
@@ -89,7 +89,7 @@ class FilesListingCtrl {
         }
         let stateName = this.$state.current.name;
         if (file.system === 'nees.public') {
-            stateName = 'publicData';
+            stateName = 'neesPublished';
         } else if (file.system === 'designsafe.storage.published') {
             stateName = 'publishedData';
         }

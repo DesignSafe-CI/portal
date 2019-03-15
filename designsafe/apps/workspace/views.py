@@ -175,7 +175,10 @@ def call_api(request, service):
                     else:
                         wh_base_url = request.build_absolute_uri('/webhooks/')
 
-                    job_post['parameters']['_webhook_base_url'] = wh_base_url
+                    if 'designsafe-ci.org' in request.META['HTTP_HOST']:
+                        job_post['parameters']['_webhook_base_url'] = wh_base_url
+                    else:
+                        job_post['parameters'].pop('_userProjects', None)
 
                     try:
                         data = submit_job(request, request.user.username, job_post)
