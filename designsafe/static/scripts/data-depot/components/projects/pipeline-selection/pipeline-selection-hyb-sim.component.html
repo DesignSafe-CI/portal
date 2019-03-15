@@ -85,8 +85,10 @@
             </h3>
         </div>
         <!-- Hybrid Simulation Reports -->
-        <div ng-hide="$ctrl.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
-            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, report)">
+        <div ng-hide="$ctrl.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+             ng-if="$ctrl.matchingGroup(hybsim, report)"
+        >
+            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                 <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                     style="width:100%;">
                     <table style="width:100%">
@@ -112,7 +114,7 @@
             <div class="dropdown dropdown-spacer-lg" id="details-{{hybsim.uuid}}" style="margin-top: 15px">
                 <a ng-click="$ctrl.selectExperiment(hybsim)">Select this Hybrid Simulation and all of its files</a>
                 <span ng-if="$ctrl.selectedExp.uuid === hybsim.uuid"><i class="fa fa-check" style="color: #1CB500;"></i></span>
-                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}"
+                <button class="btn tab-experiment" ng-class="{'collapsed': !$ctrl.singleExperiment()}" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}"
                     style="width:100%;">
                     <table style="width:100%">
                         <tr>
@@ -163,8 +165,10 @@
                             <br>{{ hybsim.value.description }}
                         </p>
                         <!-- Hybrid Reports -->
-                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
-                            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, report)">
+                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+                             ng-if="$ctrl.matchingGroup(hybsim, report)"
+                        >
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                                 <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                                     style="width:100%;">
                                     <table style="width:100%">
@@ -187,8 +191,10 @@
                             </div>
                         </div>
                         <!-- Models -->
-                        <div ng-repeat="model in $ctrl.browser.project.globalmodel_set | orderBy: 'value.title'">
-                            <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, model)">
+                        <div ng-repeat="model in $ctrl.browser.project.globalmodel_set | orderBy: 'value.title'"
+                             ng-if="$ctrl.matchingGroup(hybsim, model)"
+                        >
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
                                 <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                                     style="width:100%;">
                                     <table style="width:100%">
@@ -210,11 +216,12 @@
                                 </div>
                             </div>
                             <!-- Coordinator -->
-                            <div ng-repeat="coordinator in $ctrl.browser.project.coordinator_set | orderBy: 'value.title'">
-                                <div    class="dropdown dropdown-spacer-sm"
-                                        id="details-{{coordinator.uuid}}"
-                                        ng-if="$ctrl.matchingGroup(hybsim, coordinator)"
-                                        style="margin-left: 10px"
+                            <div ng-repeat="coordinator in $ctrl.browser.project.coordinator_set | orderBy: 'value.title'"
+                                 ng-if="$ctrl.matchingGroup(hybsim, coordinator) && $ctrl.matchingGroup(model, coordinator)"
+                            >
+                                <div class="dropdown dropdown-spacer-sm"
+                                     id="details-{{coordinator.uuid}}"
+                                     style="margin-left: 10px"
                                 >
                                     <table>
                                         <tr>
@@ -247,11 +254,14 @@
                                         </tr>
                                     </table>
                                     <!-- Coordinator Output -->
-                                    <div ng-repeat="cout in $ctrl.browser.project.coordinatoroutput_set | orderBy: 'value.title'">
-                                        <div    class="dropdown dropdown-spacer-sm"
-                                                id="details-{{cout.uuid}}"
-                                                ng-if="$ctrl.matchingGroup(model, cout) && $ctrl.matchingGroup(coordinator, cout)"
-                                                style="margin-left: 30px"
+                                    <div ng-repeat="cout in $ctrl.browser.project.coordinatoroutput_set | orderBy: 'value.title'"
+                                         ng-if="$ctrl.matchingGroup(hybsim, cout) &&
+                                                $ctrl.matchingGroup(model, cout) &&
+                                                $ctrl.matchingGroup(coordinator, cout)"
+                                    >
+                                        <div class="dropdown dropdown-spacer-sm"
+                                             id="details-{{cout.uuid}}"
+                                             style="margin-left: 30px"
                                         >
                                             <table>
                                                 <tr>
@@ -286,11 +296,12 @@
                                     </div>
                                     <!-- Coordinator Output -->
                                     <!-- Simulation Substructure -->
-                                    <div ng-repeat="simsub in $ctrl.browser.project.simsubstructure_set | orderBy: 'value.title'">
-                                        <div    class="dropdown"
-                                                id="details-{{simsub.uuid}}"
-                                                ng-if="$ctrl.matchingGroup(model, simsub)"
-                                                style="margin-left: 30px"
+                                    <div ng-repeat="simsub in $ctrl.browser.project.simsubstructure_set | orderBy: 'value.title'"
+                                         ng-if="$ctrl.matchingGroup(hybsim, simsub) && $ctrl.matchingGroup(model, simsub)"
+                                    >
+                                        <div class="dropdown"
+                                             id="details-{{simsub.uuid}}"
+                                             style="margin-left: 30px"
                                         >
                                             <table>
                                                 <tr>
@@ -326,11 +337,15 @@
                                                 </tr>
                                             </table>
                                             <!-- Simulation Output -->
-                                            <div ng-repeat="sout in $ctrl.browser.project.simoutput_set | orderBy: 'value.title'">
-                                                <div    class="dropdown"
-                                                        id="details-{{sout.uuid}}"
-                                                        ng-if="$ctrl.matchingGroup(model, sout) && $ctrl.matchingGroup(coordinator, sout) && $ctrl.matchingGroup(simsub, sout)"
-                                                        style="margin-left: 30px"
+                                            <div ng-repeat="sout in $ctrl.browser.project.simoutput_set | orderBy: 'value.title'"
+                                                 ng-if="$ctrl.matchingGroup(hybsim, sout) &&
+                                                        $ctrl.matchingGroup(model, sout) &&
+                                                        $ctrl.matchingGroup(coordinator, sout) &&
+                                                        $ctrl.matchingGroup(simsub, sout)"
+                                            >
+                                                <div class="dropdown"
+                                                     id="details-{{sout.uuid}}"
+                                                     style="margin-left: 30px"
                                                 >
                                                     <table>
                                                         <tr>
@@ -372,11 +387,12 @@
                                     </div>
                                     <!-- Simulation Substructure -->
                                     <!-- Experimental Substrucutre -->
-                                    <div ng-repeat="expsub in $ctrl.browser.project.expsubstructure_set | orderBy: 'value.title'">
-                                        <div    class="dropdown dropdown-spacer-sm"
-                                                id="details-{{expsub.uuid}}"
-                                                ng-if="$ctrl.matchingGroup(model, expsub)"
-                                                style="margin-left: 30px"
+                                    <div ng-repeat="expsub in $ctrl.browser.project.expsubstructure_set | orderBy: 'value.title'"
+                                         ng-if="$ctrl.matchingGroup(hybsim, expsub) && $ctrl.matchingGroup(model, expsub)"
+                                    >
+                                        <div class="dropdown dropdown-spacer-sm"
+                                             id="details-{{expsub.uuid}}"
+                                             style="margin-left: 30px"
                                         >
                                             <table>
                                                 <tr>
@@ -412,10 +428,14 @@
                                                 </tr>
                                             </table>
                                             <!-- Experiment Output -->
-                                            <div ng-repeat="eout in $ctrl.browser.project.expoutput_set | orderBy: 'value.title'">
+                                            <div ng-repeat="eout in $ctrl.browser.project.expoutput_set | orderBy: 'value.title'"
+                                                 ng-if="$ctrl.matchingGroup(hybsim, eout) &&
+                                                        $ctrl.matchingGroup(model, eout) &&
+                                                        $ctrl.matchingGroup(coordinator, eout) &&
+                                                        $ctrl.matchingGroup(expsub, eout)"
+                                            >
                                                 <div    class="dropdown dropdown-spacer-sm"
                                                         id="details-{{eout.uuid}}"
-                                                        ng-if="$ctrl.matchingGroup(model, eout) && $ctrl.matchingGroup(coordinator, eout) && $ctrl.matchingGroup(expsub, eout)"
                                                         style="margin-left: 30px"
                                                 >
                                                     <table>
@@ -463,8 +483,10 @@
                         </div>
                         <!-- Models -->
                         <!-- Analysis -->
-                        <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'">
-                            <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}" ng-if="$ctrl.matchingGroup(hybsim, analysis)">
+                        <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'"
+                             ng-if="$ctrl.matchingGroup(hybsim, analysis)"
+                        >
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
                                 <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                                     style="width:100%;">
                                     <table style="width:100%">
