@@ -102,7 +102,7 @@ class FileMediaView(View):
             or file_mgr_name == 'published':
             if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
-                    ag = impersonate_service_account('envision')
+                    ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
                     return HttpResponseForbidden('Login required')
             else:
@@ -237,7 +237,7 @@ class FileMediaView(View):
 
             if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
-                    ag = impersonate_service_account('envision')
+                    ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
                     return HttpResponseForbidden('Login required')
             else:
