@@ -70,12 +70,12 @@ def setup_index(index_config, force=False, reindex=False):
      - If an index does not exist under the provided alias, then create a new
        index with that alias and the provided name.
     """
-    alias = index_config['alias'][0]
+    alias = index_config['alias']
     if reindex:
         alias = alias + '_reindex'
 
     time_now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
-    name = '{}_{}'.format(index_config['alias'][0], time_now)
+    name = '{}_{}'.format(index_config['alias'], time_now)
 
     index = Index(alias)
 

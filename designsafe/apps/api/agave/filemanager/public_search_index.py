@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 class PublicationIndexed(DocType):
     class Meta:
-        index = settings.ES_INDICES['publications']['alias'][0]
+        index = settings.ES_INDICES['publications']['alias']
         doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
 
 class Publication(object):
@@ -176,7 +176,7 @@ class Publication(object):
 
 class LegacyPublicationIndexed(DocType):
    class Meta:
-        index = settings.ES_INDICES['publications_legacy']['alias'][0]
+        index = settings.ES_INDICES['publications_legacy']['alias']
         doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name'] 
 
 class LegacyPublication(object):
