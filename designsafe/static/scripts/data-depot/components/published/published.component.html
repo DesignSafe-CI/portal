@@ -929,7 +929,7 @@
   </div>
 </div> <!-- Simulation published view close -->
 
-<div ng-if="$ctrl.project.value.projectType == 'hybrid_simulation' && filePathComps.length <= 1">  <!-- hybrid simulation publishe dview -->
+<div ng-if="$ctrl.project.value.projectType == 'hybrid_simulation' && $ctrl.filePathComps.length <= 1">  <!-- hybrid simulation published view -->
 
 <div ng-repeat="simulation in $ctrl.browser.publication.hybrid_simulations | orderBy: 'value.title'">
 
