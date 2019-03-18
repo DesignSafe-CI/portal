@@ -548,7 +548,7 @@ AGAVE_JWT_HEADER = os.environ.get('AGAVE_JWT_HEADER')
 AGAVE_JWT_USER_CLAIM_FIELD = os.environ.get('AGAVE_JWT_USER_CLAIM_FIELD')
 
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
-AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', False)
+AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
 
 DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
 DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
