@@ -30,7 +30,7 @@
         <label>Dates of Experiment</label>
         <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <p>
-          If you only want to enter a single date, fill in the firest field.
+          If you only want to enter a single date, fill in the first field.
         </p>
         <div style="display:flex;">
           <span class="input-group" style="width:25%;">
@@ -185,9 +185,8 @@
         <!-- Edit Experiment Date -->
         <div class="expDate form-group">
           <label>Dates of Experiment</label>
-          <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <p>
-            Please confirm your experiment dates for each update. If you only want to enter a single date, fill in the firest field.
+            Please confirm your experiment dates for each update. If you only want to enter a single date, fill in the first field.
           </p>
           <div style="display:flex;">
             <span class="input-group" style="width:25%;">
@@ -198,7 +197,7 @@
                       placeholder="{{$ctrl.editExpForm.start | date:'MM-dd-yyyy'}}"
                       datepicker-options="dateOptions"
                       date-disabled="disabled(date, mode)"
-                      ng-required="true"
+                      ng-required="false"
                       close-text="Close"
                       class="form-control">
               <span class="input-group-btn">
@@ -218,7 +217,7 @@
                       placeholder="{{$ctrl.editExpForm.end | date:'MM-dd-yyyy'}}"
                       datepicker-options="dateOptions"
                       date-disabled="disabled(date, mode)"
-                      ng-required="true"
+                      ng-required="false"
                       close-text="Close"
                       class="form-control">
               <span class="input-group-btn">
