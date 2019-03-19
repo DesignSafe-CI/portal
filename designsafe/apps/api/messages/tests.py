@@ -7,32 +7,31 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.messages.storage.fallback import FallbackStorage
 from mock import patch, Mock
 
-alerts = []
 class PageAlertTests(TestCase):
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
+        self.alerts = []
         # Rows are ordered alphanumerically by id.
-        alerts.append(PageAlert.objects.create(
+        self.alerts.append(PageAlert.objects.create(
             alert_id=u"test_danger", alert_type=u"alert-danger", alert_message=u"This is a <i>test</i> danger"))
-        alerts.append(PageAlert.objects.create(
+        self.alerts.append(PageAlert.objects.create(
             alert_id=u"test_info", alert_type=u"alert-info", alert_message=u"This is a <i>test</i> info"))
-        alerts.append(PageAlert.objects.create(
+        self.alerts.append(PageAlert.objects.create(
             alert_id=u"test_success", alert_type=u"alert-success", alert_message=u"This is a <i>test</i> success"))
-        alerts.append(PageAlert.objects.create(
+        self.alerts.append(PageAlert.objects.create(
             alert_id=u"test_warning", alert_type=u"alert-warning", alert_message=u"This is a <i>test</i> warning"))
         
     def test_page_alerts(self):
         request = RequestFactory().get('/')
-        add_session_to_request(request)
+        self.add_session_to_request(request)
         load_alerts_into_session(request)
         alert_messages = []
-        for alert in alerts:
+        for alert in self.alerts:
             alert_messages.append(model_to_dict(alert))
         self.assertEqual(request.session['alertslist'], alert_messages)
         self.assertEqual(request.session['alertslist_size'], len(alert_messages))
-
-def add_session_to_request(request):
+    
+    def add_session_to_request(self, request):
         #Annotate a request object with a session
         middleware = SessionMiddleware()
         middleware.process_request(request)
