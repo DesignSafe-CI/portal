@@ -1,0 +1,12 @@
+<breadcrumb data-browser="$ctrl.browser"
+            data-skip-root="true"
+            data-custom-root="$ctrl.data.customRoot"
+></breadcrumb>
+<files-listing-public ng-if="$ctrl.browser.listing.path==='/' ||
+                             $ctrl.browser.listing.path==='/$SEARCH'"
+                      data-browser="$ctrl.browser"
+></files-listing-public>
+<files-listing ng-if="$ctrl.browser.listing.path!=='/' &&
+                      $ctrl.browser.listing.path!=='/$SEARCH'"
+               data-browser="$ctrl.browser"
+></files-listing>

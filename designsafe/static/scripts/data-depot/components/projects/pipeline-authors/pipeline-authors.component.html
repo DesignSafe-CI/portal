@@ -1,0 +1,133 @@
+<div style="background:white; padding-top: 20px">
+    <!-- progression map -->
+    <div class="pull-right" style="padding-bottom: 20px;">
+        <a ng-click="$ctrl.goWork()">
+            <i class="fa fa-times"></i> Exit Prepare to Publish
+        </a>
+    </div>
+    <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
+        <colgroup>
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+        </colgroup>
+        <tr style="text-align: center">
+            <td class="tg-0lax">
+                <strong>Selection</strong>
+                <div>
+                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Project</strong>
+                <div>
+                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong ng-if="$ctrl.projType === 'experimental'">Proofread Experiment</strong>
+                <strong ng-if="$ctrl.projType === 'simulation'">Proofread Simulation</strong>
+                <strong ng-if="$ctrl.projType === 'hybrid_simulation'">Proofread Hybrid Sim</strong>
+                <div>
+                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Categories</strong>
+                <div>
+                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Order Authors</strong>
+                <div>
+                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Licenses</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div>
+        <a class="pull-left" ng-click="$ctrl.goCategories()">
+            <i class="fa fa-arrow-left"></i> Back to Proofread Categories
+        </a>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goLicenses()" ng-disabled="!$ctrl.validAuths || $ctrl.loading">Continue</button>
+    </div>
+    <!-- progression map -->
+    <div style="padding-top: 40px; padding-bottom: 40px;">
+        <p>
+            <h3 style="text-align: center">Order the Authors of the Experiment</h3>
+            <h3 style="text-align: center; color: orange;">
+                <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
+            </h3>
+            <li>In order to add or remove authors, go back to Proofread Experiment and click Edit.</li>
+            <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
+        </p>
+    </div>
+    <!-- Order Authors -->
+    <div class="well">
+        <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'experimental'">
+            Experiment | <strong>{{ $ctrl.experiment.value.title }}</strong>
+        </div>
+        <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'simulation'">
+            Simulation | <strong>{{ $ctrl.experiment.value.title }}</strong>
+        </div>
+        <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'hybrid_simulation'">
+            Hybrid Simulation | <strong>{{ $ctrl.experiment.value.title }}</strong>
+        </div>
+        <div ng-hide="$ctrl.validAuths">
+            Your authors need to be updated. Edit your experiment and select which users are authors for the Experiment.
+        </div>
+        <div ng-show="$ctrl.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+        <table class="tg" style="table-layout: fixed; width: 100%;" ng-show="$ctrl.validAuths && !$ctrl.loading">
+            <colgroup>
+                <col style="width: 35%">
+                <col style="width: 30%">
+                <col style="width: 34%">
+            </colgroup>
+            <tr>
+                <td class="tg-0lax">
+                    <div ng-repeat="author in $ctrl.experiment.value.authors | orderBy: 'order'">
+                        <input type="radio" name="author" format="lname" ng-model="$ctrl.selectedAuthor" ng-value="author"
+                            ng-if="author.authorship">
+                        <span ng-if="!author.guest">
+                            <ds-user    username="author.name"
+                                        format="lname"
+                                        ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                            >
+                                {{ author.name }}
+                            </ds-user>
+                        </span>
+                        <span   ng-if="author.guest"
+                                ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                        >
+                            {{ author.lname }}, {{ author.fname }}
+                        </span>
+                    </div>
+                </td>
+                <td class="tg-0lax">
+                    <i class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderAuthors(true)"></i>
+                    <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderAuthors(false)"></i>
+                </td>
+                <td>
+                    <button class="btn btn-small btn-add" ng-if="!$ctrl.saved" ng-click="$ctrl.saveAuthors()">Save</button>
+                    <button class="btn btn-small btn-add" ng-if="$ctrl.saved" disabled>Authors Saved</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!-- Order Authors -->
+</div>

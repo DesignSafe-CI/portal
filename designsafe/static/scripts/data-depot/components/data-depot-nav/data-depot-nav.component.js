@@ -29,12 +29,7 @@ class DataDepotNavCtrl {
             collapsible: false,
             state: 'communityData',
             description: 'Non-curated user-contributed data'
-          }/*,
-          {
-            name: 'Training Materials',
-            collapsible: false,
-            state: 'trainingMaterials'
-          }*/
+          }
       );
   
       if (this.Django.context.authenticated) {
@@ -50,12 +45,7 @@ class DataDepotNavCtrl {
               collapsible: false,
               state: 'projects.list',
               description: 'Group access to shared directories'
-            },/*
-            {
-              name: 'My Publications',
-              collapsible: false,
-              state: 'myPublications'
-            },*/
+            },
             {
               name: 'Shared with Me',
               collapsible: false,
@@ -81,30 +71,6 @@ class DataDepotNavCtrl {
               description: 'Access to my Google Drive for copying'
             }
         );
-  
-        // $scope.routerItems.push({
-        //     name: 'Workspace',
-        //     collapsible: true,
-        //     collapse: true,
-        //     children: [
-        //       {
-        //         name: 'Application Catalog',
-        //         collapsible: false,
-        //         state: 'applicationCatalog'
-        //       },
-        //       {
-        //         name: 'Run Application',
-        //         collapsible: false,
-        //         state: 'runApplication'
-        //       },
-        //       {
-        //         name: 'Job History',
-        //         collapsible: false,
-        //         state: 'jobHistory'
-        //       }
-        //     ]
-        //   }
-        // );
       }
     }
   

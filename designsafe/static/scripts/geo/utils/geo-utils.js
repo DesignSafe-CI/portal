@@ -1,4 +1,4 @@
-function get_file_extension (fname) {
+function getFileExtension (fname) {
   return fname.split('.').pop().toLowerCase();
 }
 
@@ -14,4 +14,4 @@ const RESERVED_KEYS = [
   'metadata'
 ];
 
-export {RESERVED_KEYS, get_file_extension};
+export {RESERVED_KEYS, getFileExtension};

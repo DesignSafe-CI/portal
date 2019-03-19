@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.0.0
+
+Improvements:
+
+- Publication V2.
+- Updates on search and published views.
+
 ## v3.2.3
 
 Fixes:

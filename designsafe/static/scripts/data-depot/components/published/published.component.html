@@ -1,4 +1,8 @@
 <dd-breadcrumb listing="$ctrl.browser.listing" skip-root="true" custom-root="$ctrl.data.customRoot" on-browse="$ctrl.onBrowse" item-href="$ctrl.resolveBreadcrumbHref"></dd-breadcrumb>
+<breadcrumb data-browser="$ctrl.browser"
+            data-skip-root="true"
+            data-custom-root="$ctrl.data.customRoot"
+></breadcrumb>
 <!-- Published View -->
 <div class="project">
   <div class="project-detail" style="background:white;" ng-if="!$ctrl.ui.loadingProjectMeta">
@@ -377,7 +381,7 @@
                 <p style="font-weight:bold;">Description</p>
                 <p>{{experiment.value.description}}</p>
               </div>
-              <div style="width:100%; paddin-left:10px;">
+              <div style="width:100%; padding-left:10px;">
                 <div>
                 </div>
               </div>
@@ -929,7 +933,7 @@
   </div>
 </div> <!-- Simulation published view close -->
 
-<div ng-if="$ctrl.project.value.projectType == 'hybrid_simulation' && filePathComps.length <= 1">  <!-- hybrid simulation publishe dview -->
+<div ng-if="$ctrl.project.value.projectType == 'hybrid_simulation' && $ctrl.filePathComps.length <= 1">  <!-- hybrid simulation published view -->
 
 <div ng-repeat="simulation in $ctrl.browser.publication.hybrid_simulations | orderBy: 'value.title'">
 
@@ -1014,7 +1018,7 @@
                   </a>
                   <div style="display:inline-block" ng-repeat="output in $ctrl.getRelated('coordinator_outputs', false,
                                                                [simulation.uuid, model.uuid, coordinator.uuid])">
-                    <a class="ds-text-red" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
+                    <a class="ds-text-yellow" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
                       {{output.value.title}}
                     </a>
                   </div>
@@ -1024,14 +1028,14 @@
                        style="margin-top:10px;">
                     <div style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
                     padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
-                      <a class="ds-text-yellow"
+                      <a class="ds-text-orange"
                          href=""
                          ng-click="$ctrl.viewHybridSimulationRelations(substructure.uuid)">
                           {{substructure.value.title}}
                       </a>
                       <div style="display:inline-block" ng-repeat="output in $ctrl.getRelated('sim_outputs', false,
                                                                    [simulation.uuid, model.uuid, substructure.uuid])">
-                        <a class="ds-text-red" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
+                        <a class="ds-text-yellow" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
                         {{output.value.title}}
                         </a>
                       </div>
@@ -1049,7 +1053,7 @@
                       </a>
                       <div style="display:inline-block" ng-repeat="output in $ctrl.getRelated('exp_outputs', false,
                                                                    [simulation.uuid, model.uuid, substructure.uuid])">
-                        <a class="ds-text-red" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
+                        <a class="ds-text-yellow" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
                         {{output.value.title}}
                         </a>
                       </div>
@@ -1103,7 +1107,7 @@
 
                            <td colspan="4">
                             <div class="entity-preview-header" id="details-{{output.uuid}}">
-                              <button class="btn btn-default btn-sm ds-text-red"
+                              <button class="btn btn-default btn-sm ds-text-yellow"
                                       style="width:100%">Coordinator Output {{output.value.title}}</button>
                             </div>
                             <table class="table table-bordered table-striped">
@@ -1127,7 +1131,7 @@
                             ng-repeat="substructure in $ctrl.getRelated('sim_substructures', false, [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: 'value.title'">
                             <td colspan="6">
                                 <div class="entity-preview-header" id="details-{{substructure.uuid}}">
-                                  <button class="btn btn-default btn-sm ds-text-yellow"
+                                  <button class="btn btn-default btn-sm ds-text-orange"
                                           style="width:100%">Numerical (Simulation) Substructure {{substructure.value.title}}</button>
                                 </div>
                                 <table class="table table-bordered table-striped">
@@ -1147,7 +1151,7 @@
 
                                        <td colspan="4">
                                         <div class="entity-preview-header" id="details-{{output.uuid}}">
-                                          <button class="btn btn-default btn-sm ds-text-red"
+                                          <button class="btn btn-default btn-sm ds-text-yellow"
                                                   style="width:100%">Simulation Output {{output.value.title}}</button>
                                         </div>
                                         <table class="table table-bordered table-striped">
@@ -1195,7 +1199,7 @@
 
                                        <td colspan="4">
                                         <div class="entity-preview-header" id="details-{{output.uuid}}">
-                                          <button class="btn btn-default btn-sm ds-text-red"
+                                          <button class="btn btn-default btn-sm ds-text-yellow"
                                                   style="width:100%">Event Output {{output.value.title}}</button>
                                         </div>
                                         <table class="table table-bordered table-striped">

@@ -1,0 +1,328 @@
+<script type="text/ng-template" id="itemTmpl.html">
+    <a href>
+        <span ng-bind-html="match.label.last_name | uibTypeaheadHighlight:query"></span>,
+        <span ng-bind-html="match.label.first_name | uibTypeaheadHighlight:query"></span> :  
+        ( <span ng-bind-html="match.label.email | uibTypeaheadHighlight:query"></span> )
+    </a>
+</script>
+<div class="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        <span ng-if="!$ctrl.form.uuid">Add New Project</span>
+        <span ng-if="$ctrl.form.uuid">Edit Project</span>
+        <span class="pull-right" ng-click="$ctrl.cancel()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <form name="projForm">
+        <div class="text-center" ng-if="!$ctrl.form.uuid">
+            <span style="color: #D04348; font-size:14px;">&#9679; </span>
+            <span>Required to Add a Project</span>
+        </div>
+        <div class="text-center" ng-if="$ctrl.form.uuid">
+            <span style="color: #D04348; font-size:14px;">&#9679; </span>
+            <span>Required for Curation & Publication</span>
+        </div>
+        <!-- Project Title -->
+        <div class="form-group">
+            <label for="id_title">Project Title
+                <span style="color: #D04348; font-size:14px;">&#9679; </span>
+            </label>
+            <div>
+                Incorporate the project's focus with words indicating the hazard, model, system, and research approach. Do not use acronyms.
+            </div>
+            <div>
+                <input  type="text"
+                        id="id_title"
+                        name="title"
+                        style="width:100%;"
+                        ng-model="$ctrl.form.title"
+                        ng-required="true"><br>
+            </div>
+        </div>
+        <!-- Add PI and PRJ Members -->
+        <div class="form-group" style="width:100%; display:inline-block;">
+            <table class="tg" style="table-layout: fixed; width: 100%;">
+                <colgroup>
+                    <col style="width: 48%">
+                    <col style="width: 50%">
+                </colgroup>
+                <tr>
+                    <td class="tg-0lax">
+                        <label for="id_pi">Principal Investigators (PI)
+                            <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                        </label>
+                        <div>Can view, edit, curate, and publish. Include Co-PIs.</div>
+                    </td>
+                    <td class="tg-0lax" valign="top">
+                        <label>Project Members</label>
+                        <div>These users can view, edit, curate, and publish.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tg-0lax" style="vertical-align:top">
+                        <input  type="text"
+                                id="id_pi"
+                                name="pi"
+                                autocomplete="username"
+                                ng-model="$ctrl.form.pi"
+                                placeholder="Lookup user by name or email address"
+                                uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
+                                typeahead-loading="searching"
+                                typeahead-no-results="noResults"
+                                typeahead-input-formatter="$ctrl.formatSelection($ctrl.form.pi)"
+                                typeahead-template-url="itemTmpl.html"
+                                style="width:94%;"
+                                ng-required="true"
+                        >
+                        <div ng-repeat="(i, usr) in $ctrl.form.copi track by $index">
+                            <input  type="text"
+                                    id="id_copi"
+                                    name="copi"
+                                    autocomplete="username"
+                                    ng-model="$ctrl.form.copi[i]"
+                                    placeholder="Lookup user by name or email address"
+                                    uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
+                                    typeahead-loading="searching"
+                                    typeahead-input-formatter="$ctrl.formatSelection(usr)"
+                                    typeahead-template-url="itemTmpl.html"
+                                    style="width:94%;"
+                            ><br>
+                        </div>
+                        <div>
+                            <a ng-click="$ctrl.addEntity($ctrl.form.copi)">&#x2b; Add another PI</a>
+                        </div>
+                        <div ng-hide="$ctrl.checkEmpty($ctrl.form.copi)">
+                            <a ng-click="$ctrl.dropEntity($ctrl.form.copi)">&#x2212; Drop PI</a>
+                        </div>
+                    </td>
+                    <td class="tg-0lax" style="vertical-align:top">
+                        <div ng-disabled="true">
+                            <input  type="text"
+                                    id="id_creator"
+                                    name="creator"
+                                    style="width:100%;"
+                                    placeholder="{{$ctrl.formatSelection($ctrl.form.creator)}}"
+                                    ng-disabled="true"
+                            >
+                        </div>
+                        <div ng-repeat="(i, usr) in $ctrl.form.team track by $index">
+                            <input  type="text"
+                                    id="id_user"
+                                    name="user"
+                                    autocomplete="username"
+                                    style="width:100%;"
+                                    ng-model="$ctrl.form.team[i]"
+                                    placeholder="Lookup user by name or email address"
+                                    uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
+                                    typeahead-loading="searching"
+                                    typeahead-input-formatter="$ctrl.formatSelection(usr)"
+                                    typeahead-template-url="itemTmpl.html"
+                            >
+                        </div>
+                        <div>
+                            <a ng-click="$ctrl.addEntity($ctrl.form.team)">&#x2b; Add another Project Member</a>
+                        </div>
+                        <div ng-hide="$ctrl.checkEmpty($ctrl.form.team)">
+                            <a ng-click="$ctrl.dropEntity($ctrl.form.team)">&#x2212; Drop Project Member</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="expAuthorsAssign form-group">
+            <label>These names can be selected as authors during the publication process.</label>
+            <table style="table-layout: fixed; width: 100%;">
+                <colgroup>
+                    <col span="3" style="width: 20%">
+                </colgroup>
+                <tr>
+                    <td>First Name</td>
+                    <td>Last Name</td>
+                    <td>Email</td>
+                    <td>Institution</td>
+                </tr>
+                <tr ng-repeat="(i, usr) in $ctrl.form.guests track by $index">
+                    <td>
+                        <input style="width: 95%" type="text" name="guestFName" id="id_guest_fname" ng-model="$ctrl.form.guests[i].fname" autocomplete="additional-name">
+                    </td>
+                    <td>
+                        <input style="width: 95%" type="text" name="guestLName" id="id_guest_lname" ng-model="$ctrl.form.guests[i].lname" autocomplete="additional-name">
+                    </td>
+                    <td>
+                        <input style="width: 95%" type="text" name="guestEmail" id="id_guest_email" ng-model="$ctrl.form.guests[i].email" autocomplete="email">
+                    </td>
+                    <td>
+                        <input style="width: 100%" type="text" name="ExpAuthorInst" id="id_guest_inst" ng-model="$ctrl.form.guests[i].inst" autocomplete="organization">
+                    </td>
+                </tr>
+            </table>
+            <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
+                + Add another Unregistered Project Member
+            </a>
+            <div ng-hide="$ctrl.checkEmpty($ctrl.form.guests)">
+                <a ng-click="$ctrl.dropEntity($ctrl.form.guests)">&#x2212; Drop Unregistered Project Member</a>
+            </div>
+        </div>
+        <!-- Edit Project Section -->
+        <div ng-if="$ctrl.form.uuid">
+            <!-- Project Members -->
+            <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.project.value.projectType === 'other'">
+                <strong>Data Type(s)</strong>
+                <div>The nature or genre of the content.</div>
+                <select ng-model="$ctrl.form.dataType" ng-options="type for type in $ctrl.otherTypes"></select>
+                <input ng-if="$ctrl.form.dataType === 'Custom'" ng-model="$ctrl.form.dataTypeCustom">
+            </div>
+            <!-- Project Awards -->
+            <div class="form-group" style="width:100%; display:inline-block;">
+                <table class="tg" style="table-layout: fixed; width: 100%;">
+                    <colgroup>
+                        <col style="width: 70%">
+                        <col style="width: 28%">
+                    </colgroup>
+                    <tr>
+                        <td class="tg-0lax">
+                            <strong>Award Name</strong>
+                            <div>Recommended for funded projects.</div>
+                        </td>
+                        <td class="tg-0lax">
+                            <strong>Award Number</strong>
+                            <div>Recommended for funded projects.</div>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="(i, award) in $ctrl.form.awardNumber | orderBy: award track by $index">
+                        <td class="tg-0lax">
+                            <input  type="text"
+                                    id="id_awardName"
+                                    name="awardName"
+                                    style="width:94%;"
+                                    ng-model="$ctrl.form.awardNumber[i].name">
+                        </td>
+                        <td class="tg-0lax">
+                            <input  type="text"
+                                    id="id_awardNumber"
+                                    name="awardNumber"
+                                    style="width:100%;"
+                                    ng-model="$ctrl.form.awardNumber[i].number">
+                        </td>
+                    </tr>
+                </table>
+                <div style="width:28%; display:inline-block;">
+                    <div>
+                        <a ng-click="$ctrl.addEntity($ctrl.form.awardNumber)">&#x2b; Add another Award</a>
+                    </div>
+                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.awardNumber)">
+                        <a ng-click="$ctrl.dropEntity($ctrl.form.awardNumber)">&#x2212; Drop Award</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Related Works -->
+            <div class="form-group" style="width:100%; display:inline-block;">
+                <table class="tg" style="table-layout: fixed; width: 100%;">
+                    <colgroup>
+                        <col style="width: 48%">
+                        <col style="width: 50%">
+                    </colgroup>
+                    <tr>
+                        <td class="tg-0lax">
+                            <strong>Related Work Title</strong>
+                            <div>Other projects, publications, or datasets related to this project.</div>
+                        </td>
+                        <td class="tg-0lax" valign="top">
+                            <strong>Related Work DOI or URL</strong><br>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="(i, work) in $ctrl.form.associatedProjects track by $index">
+                        <td class="tg-0lax">
+                            <input  type="text"
+                                    id="id_workTitle"
+                                    name="workTitle"
+                                    style="width:94%;"
+                                    ng-model="$ctrl.form.associatedProjects[i].title">
+                        </td>
+                        <td class="tg-0lax">
+                            <input  type="text"
+                                    id="id_workHref"
+                                    name="workHref"
+                                    style="width:100%;"
+                                    ng-model="$ctrl.form.associatedProjects[i].href">
+                        </td>
+                    </tr>
+                </table>
+                <div style="width:28%; display:inline-block;">
+                    <div>
+                        <a ng-click="$ctrl.addEntity($ctrl.form.associatedProjects)">&#x2b; Add another Related Work</a>
+                    </div>
+                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.associatedProjects)">
+                        <a ng-click="$ctrl.dropEntity($ctrl.form.associatedProjects)">&#x2212; Drop Related Work</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Project Keywords -->
+            <div class="form-group" style="width:100%; display:inline-block;">
+                <label for="id_keywords">Keywords
+                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                </label>
+                <div>
+                    Choose informative words that indicate the content of the project.
+                </div>
+                <div>
+                    <input  type="text"
+                            style="width:100%;"
+                            id="id_keywords"
+                            ng-model="$ctrl.form.keywords"
+                            ng-required="$ctrl.form.uuid"><br>
+                </div>
+            </div>
+            <!-- Project Description -->
+            <div class="form-group" style="width:100%; display:inline-block;">
+                <label for="id_description">Project Description
+                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                </label>
+                <div>
+                    Make sure this is understandable to a wider audience. Answer questions such as what, how, and why. Do not use acronyms.
+                </div>
+                <div>
+                    <textarea   type="text"
+                                style="width:100%; height:3em; resize: vertical;"
+                                id="id_description"
+                                ng-model="$ctrl.form.description"
+                                ng-required="$ctrl.form.uuid"></textarea>
+                </div>
+            </div>
+        </div>
+        <!-- update, save, and help buttons -->
+        <div class="form-group">
+            <table class="tg" style="table-layout: fixed; width: 100%; margin-top:20px;">
+                <colgroup>
+                    <col style="width: 48%">
+                    <col style="width: 50%">
+                </colgroup>
+                <tr style="height: 40px;">
+                    <td class="tg-0lax" valign="center">
+                        <div ng-if="$ctrl.form.uuid">
+                            <a ng-click="$ctrl.type()">Did you select the wrong project type?</a>
+                        </div>
+                    </td>
+                    <td class="tg-0lax" valign="center" style="text-align: right;">
+                        <div ng-if="!$ctrl.ui.busy">
+                            <button class="btn btn-add" type="submit" ng-click="projForm.$valid && $ctrl.save($event)" ng-if="!$ctrl.form.uuid">
+                                &#x2b; Add Project
+                            </button>
+                            <button class="btn btn-add" type="submit" ng-click="projForm.$valid && $ctrl.save($event)" ng-if="$ctrl.form.uuid">
+                                Update Project
+                            </button>
+                        </div>
+                        <div>
+                            <span ng-if="$ctrl.ui.busy">
+                                <i class="fa fa-spinner fa-spin"></i>
+                                Adding project...
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>

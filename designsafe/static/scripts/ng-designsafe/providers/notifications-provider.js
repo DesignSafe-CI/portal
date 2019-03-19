@@ -114,8 +114,7 @@ function NotificationService(
         return $http.delete(
             djangoUrl.reverse(
                 'designsafe_api:delete_notification',
-                {pk: encodeURIComponent(pk)}
-            )
+                {pk: encodeURIComponent(pk)})
         );
     }
 

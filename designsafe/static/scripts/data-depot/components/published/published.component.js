@@ -3,7 +3,18 @@ import publishedTemplate from './published.component.html';
 
 export class PublishedDataCtrl {
 
-    constructor($state, $filter, Django, $window, DataBrowserService, PublishedService, FileListing, $uibModal, $http, $stateParams) {
+    constructor(
+        $state,
+        $filter,
+        Django,
+        $window,
+        DataBrowserService,
+        PublishedService,
+        FileListing,
+        $uibModal,
+        $http,
+        $stateParams
+    ) {
         'ngInject';
 
         this.$state = $state;
@@ -20,7 +31,7 @@ export class PublishedDataCtrl {
         this.viewCollabs = this.viewCollabs.bind(this);
         this.getUserDets = this.getUserDets.bind(this);
         this.onCitation = this.onCitation.bind(this);
-        this.onBrowse = this.onBrowse.bind(this);
+        this.getFileObjs = this.getFileObjs.bind(this);
     }
 
     $onInit() {
@@ -40,7 +51,7 @@ export class PublishedDataCtrl {
                 return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
             });
         };
-        var projId = this.$stateParams.filePath.split('/')[1];
+        var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         if (projId) {
             this.ui.loadingProjectMeta = true;
             this.PublishedService.getPublished(projId)
@@ -87,12 +98,17 @@ export class PublishedDataCtrl {
         }
 
         if (!this.browser.error) {
-            this.browser.listing.href = this.$state.href('publishedData', {
-                system: this.browser.listing.system,
-                filePath: this.browser.listing.path
-            });
+            this.browser.listing.href = this.$state.href(
+                'publishedData', {
+                    system: this.browser.listing.system,
+                    filePath: this.browser.listing.path.replace(/^\/+/, '')
+                });
             _.each(this.browser.listing.children, (child) => {
-                child.href = this.$state.href('publishedData', { system: child.system, filePath: child.path });
+                child.href = this.$state.href(
+                    'publishedData', {
+                        system: child.system,
+                        filePath: child.path.replace(/^\/+/, '')
+                });
             });
         }
 
@@ -101,7 +117,7 @@ export class PublishedDataCtrl {
                 name: 'Published',
                 href: this.$state.href('publicData', {
                     systemId: 'nees.public',
-                    filePath: '/'
+                    filePath: ''
                 }),
                 system: 'nees.public',
                 filePath: '/'
@@ -109,13 +125,29 @@ export class PublishedDataCtrl {
         };
     }
 
+    getFileObjs(evt) {
+        const _apiParams = {
+            fileMgr: 'published',
+            baseUrl: '/api/public/files'
+        };
+        evt.files = _.map(evt.fileObjs, (f) => {
+            f.system = 'designsafe.storage.published';
+            f.path = this.browser.publication.projectId + f.path;
+            f.permissions = 'READ';
+            return this.FileListing.init(f, _apiParams);
+        });
+    }
+
+    getTitle() {
+        this.$window.document.getElementsByName('citation_author_institution')[0].content = 'dingus'
+    }
 
     makeRequest() {
         return this.$http.get('/api/projects/publication');
     }
 
     resolveBreadcrumbHref(trailItem) {
-        return this.$state.href('publicData', { systemId: this.browser.listing.system, filePath: trailItem.path });
+        return this.$state.href('publicData', { systemId: this.browser.listing.system, filePath: trailItem.path.replace(/^\/+/, '') });
     }
 
     scrollToTop() {
@@ -216,7 +248,11 @@ export class PublishedDataCtrl {
             uuids = [uuids];
         }
         var ents = [];
-        ents = this.browser.publication[attrib];
+        if (this.browser) {
+            ents = this.browser.publication[attrib];
+        } else {
+            ents = this.data.publication[attrib];
+        }
         var res = _.filter(ents, (ent) => {
             var inter = _.intersection(uuids, ent.associationIds);
             if (inter && inter.length === uuids.length) {
@@ -342,7 +378,7 @@ export class PublishedDataCtrl {
     viewSimulationRelations(uuid) {
         this.$uibModal.open({
             templateUrl: '/static/scripts/data-depot/templates/view-simulation-relations.html',
-            controller: ['$uibModalInstance', 'browser', function ($uibModalInstance, browser) {
+            controller: ['$uibModalInstance', 'browser', 'getRelated', function ($uibModalInstance, browser, getRelated) {
                 var $ctrl = this;
                 $ctrl.data = {};
                 if (browser.listing.project) {
@@ -350,6 +386,7 @@ export class PublishedDataCtrl {
                 } else {
                     $ctrl.data.publication = browser.publication;
                 }
+                $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
                     if (entityUuid === $ctrl.data.selectedUuid) {
@@ -364,9 +401,9 @@ export class PublishedDataCtrl {
             }],
             controllerAs: '$ctrl',
             resolve: {
-                browser: this.browser
+                browser: this.browser,
+                getRelated: () => this.getRelated
             },
-            scope: this,
             size: 'lg'
         });
     }
@@ -374,7 +411,7 @@ export class PublishedDataCtrl {
     viewHybridSimulationRelations(uuid) {
         this.$uibModal.open({
             templateUrl: '/static/scripts/data-depot/templates/view-hybrid-simulation-relations.html',
-            controller: ['$uibModalInstance', 'browser', function ($uibModalInstance, browser) {
+            controller: ['$uibModalInstance', 'browser', 'getRelated', function ($uibModalInstance, browser, getRelated) {
                 var $ctrl = this;
                 $ctrl.data = {};
                 if (browser.listing.project) {
@@ -382,6 +419,7 @@ export class PublishedDataCtrl {
                 } else {
                     $ctrl.data.publication = browser.publication;
                 }
+                $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
                     if (entityUuid === $ctrl.data.selectedUuid) {
@@ -396,9 +434,9 @@ export class PublishedDataCtrl {
             }],
             controllerAs: '$ctrl',
             resolve: {
-                browser: this.browser
+                browser: this.browser,
+                getRelated: () => this.getRelated
             },
-            scope: this,
             size: 'lg'
         });
     }
@@ -406,7 +444,7 @@ export class PublishedDataCtrl {
     viewRelations(uuid) {
         this.$uibModal.open({
             templateUrl: '/static/scripts/data-depot/templates/view-relations.html',
-            controller: ['$uibModalInstance', 'browser', function ($uibModalInstance, browser) {
+            controller: ['$uibModalInstance', 'browser', 'getRelated', function ($uibModalInstance, browser, getRelated) {
                 var $ctrl = this;
                 $ctrl.data = {};
                 if (browser.listing.project) {
@@ -414,6 +452,7 @@ export class PublishedDataCtrl {
                 } else {
                     $ctrl.data.publication = browser.publication;
                 }
+                $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
                     if (entityUuid === $ctrl.data.selectedUuid) {
@@ -428,9 +467,9 @@ export class PublishedDataCtrl {
             }],
             controllerAs: '$ctrl',
             resolve: {
-                browser: this.browser
+                browser: this.browser,
+                getRelated: () => this.getRelated
             },
-            scope: this,
             size: 'lg'
         });
     }

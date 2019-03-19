@@ -406,7 +406,6 @@ export function FileListing($http, $q) {
             self._permissions = resp.data;
             return self._permissions;
         });
-
     };
 
     /**

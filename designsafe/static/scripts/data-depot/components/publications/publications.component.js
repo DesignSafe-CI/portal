@@ -4,9 +4,8 @@ import publicationsTemplate from './publications.component.html';
 class PublicationDataCtrl {
     constructor($scope, $state, $stateParams, $uibModal, Django, DataBrowserService) {
         'ngInject';
-        this.$scope = $scope;
+        this.DataBrowserService = DataBrowserService;
         this.$state = $state;
-        this.$stateParams = $stateParams;
         this.Django = Django;
         this.DataBrowserService = DataBrowserService;
         this.$uibModal = $uibModal;
@@ -21,111 +20,70 @@ class PublicationDataCtrl {
         this.typeFilter = this.typeFilter.bind(this);
         this.clearFilters = this.clearFilters.bind(this);
         this.areFiltersEmpty = this.areFiltersEmpty.bind(this);
+        this.browser = DataBrowserService.state();
     }
+
     $onInit() {
-        this.browser = this.DataBrowserService.state();
         this.state = {
             loadingMore: false,
             reachedEnd: false,
-            page: 0
+            page: 0,
         };
-        this.toggles = {
-            experimental: false,
-            simulation: false,
-            hybrid: false,
-            nees: false,
-            other: false
+
+        if (this.browser.error) {
+            return;
         }
-        var systemId = this.$stateParams.systemId || 'nees.public';
-        var filePath = this.$stateParams.filePath || '/';
-        
-        this.DataBrowserService.browse({system: systemId, path: filePath}, {queryString: this.$stateParams.query_string})
-            .then(resp => {
-                if (!this.browser.error) {
-                    this.browser.listing.href = this.$state.href('publicData', {
-                        system: this.browser.listing.system,
-                        filePath: this.browser.listing.path
-                    });
-                    this.browser.listing.children.forEach((child) => {
-                        if (child.system === 'nees.public') {
-                            child.href = this.$state.href('neesPublishedData', { filePath: child.path }).replace('%2F', '/');
-                        }
-                        if (child.system === 'designsafe.storage.published') {
-                            child.href = this.$state.href('publishedData', { system: child.system, filePath: child.path }).replace('%2F', '/');
-                        }
-                    });
-                }
-            })
+        this.browser.listing.href = this.$state.href(
+            'publicData',
+            {
+                system: this.browser.listing.system,
+                filePath: this.browser.listing.path,
+            }
+        );
+        _.each(this.browser.listing.children, (child) => {
+            if (child.system === 'nees.public') {
+                child.href = this.$state.href(
+                    'publicData',
+                    { system: child.system, filePath: child.path.replace(/^\/+/, '') }
+                );
+            }
+            if (child.system === 'designsafe.storage.published') {
+                child.href = this.$state.href(
+                    'publishedData',
+                    { system: child.system, filePath: child.path.replace(/^\/+/, '') }
+                );
+            }
+        });
+
         this.data = {
             customRoot: {
                 name: 'Published',
-                href: this.$state.href('publicData', { systemId: 'nees.public', filePath: '' }),
+                href: this.$state.href(
+                    'publicData',
+                    { systemId: 'nees.public', filePath: '' }
+                ),
                 system: 'nees.public',
-                path: '/'
-            }
+                path: '/',
+            },
         };
     }
-    resolveBreadcrumbHref(trailItem) {
-        return this.$state.href('publicData', { systemId: this.browser.listing.system, filePath: trailItem.path });
-    };
-    scrollToTop() {
-        return;
-    };
-    scrollToBottom() {
-        this.DataBrowserService.scrollToBottom();
-    };
-    onBrowse($event, file) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        if (file.system === 'nees.public') {
-            if (file.path === '/') {
-                this.$state.go('publicData', {query_string: null}, {reload: true, inherit: false});
-            }
-            else {
-                this.$state.go('neesPublishedData', { filePath: file.path });
-            }
-        } else {
-            this.$state.go('publishedData', { systemId: file.system, filePath: file.path });
-        }
-    };
-    onSelect($event, file) {
-        $event.preventDefault();
-        $event.stopPropagation();
 
-        if ($event.ctrlKey || $event.metaKey) {
-            var selectedIndex = this.browser.selected.indexOf(file);
-            if (selectedIndex > -1) {
-                this.DataBrowserService.deselect([file]);
-            } else {
-                this.DataBrowserService.select([file]);
-            }
-        } else if ($event.shiftKey && this.browser.selected.length > 0) {
-            var lastFile = this.browser.selected[this.browser.selected.length - 1];
-            var lastIndex = this.browser.listing.children.indexOf(lastFile);
-            var fileIndex = this.browser.listing.children.indexOf(file);
-            var min = Math.min(lastIndex, fileIndex);
-            var max = Math.max(lastIndex, fileIndex);
-            this.DataBrowserService.select(this.browser.listing.children.slice(min, max + 1));
-        } else if (typeof file._ui !== 'undefined' &&
-            file._ui.selected) {
-            this.DataBrowserService.deselect([file]);
-        } else {
-            this.DataBrowserService.select([file], true);
-        }
-    };
     renderName(file) {
         if (typeof file.metadata === 'undefined' ||
-            file.metadata === null ||
-            Object.keys(file.metadata).length === 0) {
+            file.metadata === null || _.isEmpty(file.metadata)) {
             if (file.meta && file.meta.title) {
                 return file.meta.title;
-            } else {
-                return file.name;
             }
+            return file.name;
         }
-        else {
+        var pathComps = file.path.split('/');
+        var experiment_re = /^experiment/;
+        if (file.path[0] === '/' && pathComps.length === 2) {
             return file.metadata.project.title;
+        } else if (file.path[0] !== '/' && pathComps.length === 2 && experiment_re.test(file.name.toLowerCase())) {
+            return file.metadata.experiments[0].title;
         }
+        return file.name;
     };
     showDescription(title, description) {
       var modal = this.$uibModal.open({
@@ -162,11 +120,12 @@ class PublicationDataCtrl {
         for (const key of Object.keys(this.toggles)) {
             this.toggles[key] = false
         }
+        
     }
 }
 
 export const PublicationsComponent = {
     controller: PublicationDataCtrl,
     controllerAs: '$ctrl',
-    template: publicationsTemplate
-}
+    template: publicationsTemplate,
+};

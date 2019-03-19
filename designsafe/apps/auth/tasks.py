@@ -26,16 +26,19 @@ def check_or_create_agave_home_dir(username):
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                    token=settings.AGAVE_SUPER_TOKEN)
         try:
-            ag.files.list(
+            resp = ag.files.list(
                 systemId=settings.AGAVE_STORAGE_SYSTEM,
-                filePath=username)  
+                filePath=username)
+            logger.info('check home dir response: {}'.format(resp))
                 
         except HTTPError as e:
-            if e.status_code == 404:
+            if e.response.status_code == 404:
+                logger.info("creating the home directory for user=%s then going to run setfacl", username)
                 body = {'action': 'mkdir', 'path': username}
-                ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM, 
+                response1 = ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM, 
                                 filePath='', 
                                 body=body)
+                logger.info('mkdir response: {}'.format(response1))
 
                 ds_admin_client = Agave(
                     api_server=getattr(
@@ -55,9 +58,8 @@ def check_or_create_agave_home_dir(username):
                     'name': 'setfacl',
                     'appId': 'setfacl_corral3-0.1'
                 }
-
-                ds_admin_client.jobs.submit(body=job_body)
-                # logger.debug('setfacl response: {}'.format(response))
+                response = ds_admin_client.jobs.submit(body=job_body)
+                logger.info('setfacl response: {}'.format(response))
 
                 # add dir to index
                 fm = FileManager(user)
@@ -67,8 +69,8 @@ def check_or_create_agave_home_dir(username):
                     levels=1
                 )
 
-
-    except (HTTPError, AgaveException):
+    except(AgaveException):
+    #except (HTTPError, AgaveException):
         logger.exception('Failed to create home directory.',
                          extra={'user': username,
                                 'systemId': settings.AGAVE_STORAGE_SYSTEM})

@@ -1,13 +1,32 @@
 from django.conf.urls import url
-from designsafe.apps.data.views.base import DataDepotView, FileMediaView
+from designsafe.apps.data.views.base import (
+    DataDepotView,
+    FileMediaView,
+    DataDepotPublishedView,
+    DataDepotLegacyPublishedView
+)
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = [
-    url(r'^browser/', DataDepotView.as_view(template_name='data/data_depot.html'),
-        name='data_depot'),
-    url(r'^browser/files/media/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
-        FileMediaView.as_view(), name='files_media'),
+    url(
+        r'^browser/public/designsafe.storage.published/(?P<project_id>[\w.\-\/]+)/(?P<file_path>[ \S]+)/?',
+        DataDepotPublishedView.as_view()
+    ),
+    url(
+        r'^browser/public/nees.public/(?P<project_id>[\w.\-\/]+)/(?P<file_path>[ \S]+)/?',
+        DataDepotLegacyPublishedView.as_view()
+    ),
+    url(
+        r'^browser/',
+        DataDepotView.as_view(template_name='data/data_depot.html'),
+        name='data_depot'
+    ),
+    url(
+        r'^browser/files/media/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.\-]+)/(?P<file_path>[ \S]+)$',
+        FileMediaView.as_view(),
+        name='files_media'
+    ),
 ]
 
 # Seems to be unused

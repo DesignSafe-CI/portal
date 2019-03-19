@@ -1,0 +1,38 @@
+.file-categories-content {
+    margin:5px 0;
+
+    .file-tag-list {
+
+        .file-tag-item {
+            margin-top:5px;
+            overflow: auto;
+            .file-category-label {
+                width: 49%;
+                display: inline-block;
+            }
+            .file-tag-label {
+                width: 49%;
+                display: inline-block;
+                float: right;
+                span {
+                    background: white;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    padding:3px;
+                    font-style:italic;
+                    width: 70%;
+                    display: inline-block;
+                }
+            }
+            .file-tag-selector {
+                width: 49%;
+                display: inline-block;
+                float: right;
+                .project-file-tags-select {
+                    width: 80%;
+                    display: inline-block;
+                }
+            }
+        }
+    }
+}

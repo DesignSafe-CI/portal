@@ -18,6 +18,7 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.projects.models.agave.base import Project as BaseProject
+from designsafe.apps.projects.models.categories import Category
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.files import BaseFileResource
@@ -190,13 +191,17 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         prj.save(ag)
         project_uuid = prj.uuid
         prj.title = post_data.get('title')
-        prj.award_number = post_data.get('awardNumber', '')
-        prj.project_type = post_data.get('projectType', 'other')
+        prj.project_type = post_data.get('projectType')
+        prj.data_type = post_data.get('dataType')
+        prj.pi = post_data.get('pi')
+        prj.copi = post_data.get('copi')
+        prj.team = post_data.get('teamMembers')
+        prj.guest_members = post_data.get('guestMembers', {})
+        prj.project_id = post_data.get('projectId', '')
+        prj.award_number = post_data.get('awardNumber', {})
         prj.associated_projects = post_data.get('associatedProjects', {})
         prj.description = post_data.get('description', '')
-        prj.pi = post_data.get('pi')
         prj.keywords = post_data.get('keywords', '')
-        prj.project_id = post_data.get('projectId', '')
         prj.save(ag)
 
         # create Project Directory on Managed system
@@ -244,9 +249,10 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                             'operation': 'initial_pems_create',
                             'info': {'collab': request.user.username, 'pi': prj.pi} })
         prj.add_team_members([request.user.username])
+        prj.add_co_pis(prj.copi)
+        prj.add_team_members(prj.team)
         tasks.set_facl_project.apply_async(args=[prj.uuid, [request.user.username]], queue='api')
         if prj.pi and prj.pi != request.user.username:
-            prj.add_team_members([prj.pi])
             tasks.set_facl_project.apply_async(args=[prj.uuid, [prj.pi]], queue='api')
             collab_users = get_user_model().objects.filter(username=prj.pi)
             if collab_users:
@@ -346,9 +352,12 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         p.title = post_data.get('title')
         p.award_number = post_data.get('awardNumber', p.award_number)
         p.project_type = post_data.get('projectType', p.project_type)
+        p.data_type = post_data.get('dataType', p.data_type)
         p.associated_projects = post_data.get('associatedProjects', p.associated_projects)
         p.description = post_data.get('description', p.description)
+        p.co_pis = post_data.get('copi')
         p.team_members = post_data.get('teamMembers', p.team_members)
+        p.guest_members = post_data.get('guestMembers', p.guest_members)
         p.keywords = post_data.get('keywords', p.keywords)
         new_pi = post_data.get('pi')
         p.project_id = post_data.get('projectId', p.project_id)
@@ -454,7 +463,6 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         """
         ag = request.user.agave_oauth.client
         try:
-            logger.debug('name: %s', name)
             if name is not None and name != 'all':
                 model = self._lookup_model(name)
                 resp = model._meta.model_manager.list(ag, project_id)
@@ -555,8 +563,12 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
+        entity = post_data.get('entity')
+        category = Category.objects.get_or_create_from_json(
+            uuid=entity['uuid'],
+            dict_obj=entity['_ui']
+        )
         try:
-            entity = post_data.get('entity')
             model_cls = self._lookup_model(entity['name'])
             model = model_cls(**entity)
             saved = model.save(ag)

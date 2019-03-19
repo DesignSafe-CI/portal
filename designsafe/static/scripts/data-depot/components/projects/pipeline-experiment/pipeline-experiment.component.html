@@ -1,0 +1,130 @@
+<div style="background:white; padding-top: 20px">
+        <!-- progression map -->
+        <div class="pull-right" style="padding-bottom: 20px;">
+            <a ng-click="$ctrl.goWork()">
+                <i class="fa fa-times"></i> Exit Prepare to Publish
+            </a>
+        </div>
+        <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
+            <colgroup>
+                <col style="width: 16.5%">
+                <col style="width: 16.5%">
+                <col style="width: 16.5%">
+                <col style="width: 16.5%">
+                <col style="width: 16.5%">
+                <col style="width: 16.5%">
+            </colgroup>
+            <tr style="text-align: center">
+                <td class="tg-0lax">
+                    <strong>Selection</strong>
+                    <div>
+                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    </div>
+                </td>
+                <td class="tg-0lax">
+                    <strong>Proofread Project</strong>
+                    <div>
+                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    </div>
+                </td>
+                <td class="tg-0lax">
+                    <strong>Proofread Experiment</strong>
+                    <div>
+                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    </div>
+                </td>
+                <td class="tg-0lax">
+                    <strong>Proofread Categories</strong>
+                    <div>
+                        <i class="fa fa-circle-thin"></i>
+                    </div>
+                </td>
+                <td class="tg-0lax">
+                    <strong>Order Authors</strong>
+                    <div>
+                        <i class="fa fa-circle-thin"></i>
+                    </div>
+                </td>
+                <td class="tg-0lax">
+                    <strong>Licenses</strong>
+                    <div>
+                        <i class="fa fa-circle-thin"></i>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <div>
+            <a class="pull-left" ng-click="$ctrl.goProject()">
+                <i class="fa fa-arrow-left"></i> Back to Proofread Project
+            </a>
+            <button class="btn btn-add pull-right" ng-click="$ctrl.goCategories()">Continue</button>
+        </div>
+        <!-- progression map -->
+        <div style="padding-top: 40px; padding-bottom: 40px;">
+            <p>
+                <h3 style="text-align: center">Proofread your Experiment Metadata</h3>
+                <h3 style="text-align: center; color: orange;">
+                    <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
+                </h3>
+                <li>If you selected the wrong experiment, go back to Selection.</li>
+                <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
+            </p>
+        </div>
+        <!-- Experiment Header Start -->
+        <div class="well">
+            <div class="prj-head" style="padding-bottom:20px">
+                Experiment | <strong>{{ $ctrl.experiment.value.title }}</strong>
+            </div>
+            <div style="display:inline-block; width:20%;">Experiment Type</div>
+            <strong ng-if="!$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+                    style="display:inline-block; width:78%; text-transform:capitalize;"
+            >
+                {{ $ctrl.experiment.value.experimentType.replace('_', ' ') }}
+            </strong>
+            <strong ng-if="$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+                    style="display:inline-block; width:78%; text-transform:capitalize;"
+            >
+                {{ $ctrl.experiment.value.experimentTypeOther }}
+            </strong>
+            <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
+            <div style="display:inline-block; width:78%; font-weight: bold;">
+                <div ng-repeat="author in $ctrl.experiment.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
+                    <span ng-if="!author.guest">
+                        <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>
+                    </span>
+                    <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span>
+                </div>
+                <!-- older author list -->
+                <div ng-repeat="author in $ctrl.experiment.value.authors" ng-if="author.length">
+                    <ds-user username="author" format="lname">{{ author }}</ds-user>
+                </div>
+            </div>
+            <div style="display:inline-block; width:20%;">Experimental Facility</div>
+            <strong ng-if="!$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%; text-transform:capitalize;">{{
+                $ctrl.experiment.value.experimentalFacility.replace('_', ' ') }}</strong>
+            <strong ng-if="$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%; text-transform:capitalize;">{{
+                $ctrl.experiment.value.experimentalFacilityOther }}</strong>
+            <div style="display:inline-block; width:20%;">Equipment Type</div>
+            <strong ng-if="!$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%; text-transform:capitalize;">{{
+                $ctrl.experiment.value.equipmentType.replace('_', ' ') }}</strong>
+            <strong ng-if="$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%; text-transform:capitalize;">{{
+                $ctrl.experiment.value.equipmentTypeOther }}</strong>
+            <div ng-show="$ctrl.experiment.value.procedureStart">
+                <div style="display:inline-block; width:20%;">Date of Experiment</div>
+                <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate($ctrl.experiment.value.procedureEnd)">
+                    {{ $ctrl.experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ $ctrl.experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
+                </strong>
+                <strong style="display:inline-block; width:78%;" ng-if="!$ctrl.hasEndDate($ctrl.experiment.value.procedureEnd)">
+                    {{ $ctrl.experiment.value.procedureStart | date:'MM-dd-yyyy' }}
+                </strong>
+            </div>
+            <div>
+                <br>{{ $ctrl.experiment.value.description }}
+            </div>
+            <div><br>
+                <span class="prj-head" ng-click="$ctrl.editExp()"><a>Edit</a></span>
+            </div>
+        </div>
+        <!-- Experiment Header End -->
+    </div>

@@ -182,10 +182,11 @@ class LegacyPublicationIndexed(DocType):
 class LegacyPublication(object):
 
     def __init__(self, wrap=None, nees_id=None, *args, **kwargs):
-        if wrap is not None:
-            if isinstance(wrap, LegacyPublicationIndexed):
-                self._wrap = wrap
-        else:
+        self._wrap = LegacyPublicationIndexed()
+        if wrap is not None and isinstance(wrap, LegacyPublicationIndexed):
+            self._wrap = wrap
+
+        if nees_id is not None:
             s = LegacyPublicationIndexed.search()
             s.query = Q({"term": {"name._exact": nees_id}})
             try:
@@ -250,7 +251,6 @@ class LegacyPublication(object):
             return val
         else:
             return 'N/A'
-            # raise AttributeError('\'LegacyPublication\' has no attribute \'{}\''.format(name))
     
 class CMSIndexed(DocType):
     class Meta:

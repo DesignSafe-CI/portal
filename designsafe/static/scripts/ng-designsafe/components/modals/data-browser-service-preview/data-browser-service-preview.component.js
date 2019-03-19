@@ -49,8 +49,8 @@ class DataBrowserServicePreviewCtrl {
                             oReq.responseType = 'blob';
 
                             oReq.onload = () => {
-                                if (this.status === 200) {
-                                    var videoBlob = this.response;
+                                if (oReq.status === 200) {
+                                    var videoBlob = oReq.response;
                                     var vid = URL.createObjectURL(videoBlob);
 
                                     // set video source and mimetype

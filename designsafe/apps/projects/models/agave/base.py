@@ -18,13 +18,15 @@ class RelatedEntity(MetadataModel):
 class Project(MetadataModel):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
+    guest_members = fields.ListField('Guest Members')
     co_pis = fields.ListField('Co PIs')
     project_type = fields.CharField('Project Type', max_length=255, default='other')
+    data_type = fields.CharField('Data Type', max_length=255)
     project_id = fields.CharField('Project Id')
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=255, default='')
     pi = fields.CharField('PI', max_length=255)
-    award_number = fields.CharField('Award Number', max_length=255)
+    award_number = fields.ListField('Award Number')
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512)
     keywords = fields.CharField('Keywords')

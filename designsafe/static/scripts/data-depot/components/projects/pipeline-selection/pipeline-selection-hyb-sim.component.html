@@ -1,0 +1,527 @@
+<div style="background:white; padding-top: 20px">
+    <!-- progression map -->
+    <div class="pull-right" style="padding-bottom: 20px;">
+        <a ng-click="$ctrl.goWork()">
+            <i class="fa fa-times"></i> Exit Prepare to Publish
+        </a>
+    </div>
+    <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
+        <colgroup>
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+        </colgroup>
+        <tr style="text-align: center">
+            <td class="tg-0lax">
+                <strong>Selection</strong>
+                <div>
+                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Project</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Hybrid Sim</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Categories</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Order Authors</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Licenses</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div>
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+            Preview</a>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedExp">Continue</button>
+    </div>
+    <!-- progression map -->
+    <div style="padding-top: 40px; padding-bottom: 40px;">
+        <!-- Error Messages -->
+        <div class="alert alert-danger" ng-if="$ctrl.missing.length">
+            <p class="lead" style="text-align:center;">Your Selection is Incomplete!</p>
+            <p>
+                The hybrid simulation you have selected for publication is missing data or has incomplete requirements.
+                Please review the following fields:
+            </p>
+            <li ng-repeat="item in $ctrl.missing">The {{ item }} for this hybrid simulation is missing or has no categorized data.</li>
+        </div>
+        <p>
+            <h3 style="text-align: center">Select what you want to publish</h3>
+            <li>You can only publish one hybrid simulation at a time.</li>
+            <li>Click "Select this Hybrid Simulation and all of its files"</li>
+            <li>If you want to deselect individual files, deselect the checkboxes.</li>
+            <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
+        </p>
+    </div>
+        <!-- Hybrid Simulations -->
+        <div ng-show="$ctrl.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+        <!-- Hybrid Simulation Reports -->
+        <div ng-hide="$ctrl.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+             ng-if="$ctrl.matchingGroup(hybsim, report)"
+        >
+            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                    style="width:100%;">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: left;">
+                                <span>Report | <strong>{{report.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="files-{{report.uuid}}" class="collapse">
+                    <div class="well" ng-if="report.value.description">
+                        <p>{{ report.value.description }}</p>
+                    </div>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
+                </div>
+            </div>
+        </div>
+        <div ng-hide="$ctrl.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
+            <div class="dropdown dropdown-spacer-lg" id="details-{{hybsim.uuid}}" style="margin-top: 15px">
+                <a ng-click="$ctrl.selectExperiment(hybsim)">Select this Hybrid Simulation and all of its files</a>
+                <span ng-if="$ctrl.selectedExp.uuid === hybsim.uuid"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                <button class="btn tab-experiment" ng-class="{'collapsed': !$ctrl.singleExperiment()}" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}"
+                    style="width:100%;">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: left;">
+                                <span>Hybrid Simulation | <strong>{{hybsim.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="data-{{hybsim.uuid}}" class="collapse" ng-class="{'in': $ctrl.singleExperiment()}">
+                    <div class="well">
+                        <div style="display:inline-block; width:20%;">Hybrid Simulation Type</div>
+                        <strong ng-if="!$ctrl.isValid(hybsim.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                            {{ hybsim.value.experimentType.replace('_', ' ') }}
+                        </strong>
+                        <strong ng-if="$ctrl.isValid(hybsim.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                            {{ hybsim.value.experimentTypeOther }}
+                        </strong>
+                        <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
+                        <div style="display:inline-block; width:78%; font-weight: bold;">
+                            <div ng-repeat="author in hybsim.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
+                                <span ng-if="!author.guest">
+                                    <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>
+                                </span>
+                                <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span>
+                            </div>
+                            <!-- support older author list -->
+                            <div ng-repeat="author in hybsim.value.authors" ng-if="author.length">
+                                <ds-user username="author" format="lname">{{ author }}</ds-user>
+                            </div>
+                        </div>
+                        <div style="display:inline-block; width:20%;">Date of Publication</div>
+                        <strong style="display:inline-block; width:78%;">
+                            (Appears when published)
+                        </strong>
+                        <div style="display:inline-block; width:20%;">DOI <button class="btn btn-info btn-sm">Citation</button></div>
+                        <strong style="display:inline-block; width:78%;">
+                            (Appears when published)
+                        </strong>
+                        <div style="display:inline-block; width:20%;">License</div>
+                        <strong style="display:inline-block; width:78%;">
+                            (Appears when published)
+                        </strong>
+                        <p>
+                            <br>{{ hybsim.value.description }}
+                        </p>
+                        <!-- Hybrid Reports -->
+                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+                             ng-if="$ctrl.matchingGroup(hybsim, report)"
+                        >
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                                    style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Report | <strong>{{report.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{report.uuid}}" class="collapse">
+                                    <div class="well" ng-if="report.value.description">
+                                        <p>{{ report.value.description }}</p>
+                                    </div>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Models -->
+                        <div ng-repeat="model in $ctrl.browser.project.globalmodel_set | orderBy: 'value.title'"
+                             ng-if="$ctrl.matchingGroup(hybsim, model)"
+                        >
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
+                                <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
+                                    style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Global Model | <strong>{{model.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{model.uuid}}" class="collapse">
+                                    <div class="well" ng-if="model.value.description">
+                                        <p>{{ model.value.description }}</p>
+                                    </div>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]"></files-listing>
+                                </div>
+                            </div>
+                            <!-- Coordinator -->
+                            <div ng-repeat="coordinator in $ctrl.browser.project.coordinator_set | orderBy: 'value.title'"
+                                 ng-if="$ctrl.matchingGroup(hybsim, coordinator) && $ctrl.matchingGroup(model, coordinator)"
+                            >
+                                <div class="dropdown dropdown-spacer-sm"
+                                     id="details-{{coordinator.uuid}}"
+                                     style="margin-left: 10px"
+                                >
+                                    <table>
+                                        <tr>
+                                            <td style="padding-right: 10px;" valign="top">
+                                                <span style="font-size: 20px; color: #1568C9">
+                                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                                </span>
+                                            </td>
+                                            <td style="width: 100%;">
+                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}{{model.uuid}}"
+                                                style="width:100%;">
+                                                <table style="width:100%">
+                                                    <tr>
+                                                        <td style="text-align: left;">
+                                                            <span>Coordinator | <strong>{{coordinator.value.title}}</strong></span>
+                                                        </td>
+                                                        <td style="text-align: right;">
+                                                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </button>
+                                            <div id="files-{{coordinator.uuid}}{{model.uuid}}" class="collapse">
+                                                <div class="well" ng-if="coordinator.value.description">
+                                                    <p>{{ coordinator.value.description }}</p>
+                                                </div>
+                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]"></files-listing>
+                                            </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Coordinator Output -->
+                                    <div ng-repeat="cout in $ctrl.browser.project.coordinatoroutput_set | orderBy: 'value.title'"
+                                         ng-if="$ctrl.matchingGroup(hybsim, cout) &&
+                                                $ctrl.matchingGroup(model, cout) &&
+                                                $ctrl.matchingGroup(coordinator, cout)"
+                                    >
+                                        <div class="dropdown dropdown-spacer-sm"
+                                             id="details-{{cout.uuid}}"
+                                             style="margin-left: 30px"
+                                        >
+                                            <table>
+                                                <tr>
+                                                    <td style="padding-right: 10px" valign="top">
+                                                        <span style="font-size: 20px; color: #43A59D">
+                                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                                        </span>
+                                                    </td>
+                                                    <td style="width: 100%;">
+                                                        <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{cout.uuid}}{{model.uuid}}" style="width:100%;">
+                                                            <table style="width:100%">
+                                                                <tr>
+                                                                    <td style="text-align: left;">
+                                                                        <span>Coordinator Output | <strong>{{cout.value.title}}</strong></span>
+                                                                    </td>
+                                                                    <td style="text-align: right;">
+                                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </button>
+                                                        <div id="files-{{cout.uuid}}{{model.uuid}}" class="collapse">
+                                                            <div class="well" ng-if="cout.value.description">
+                                                                <p>{{ cout.value.description }}</p>
+                                                            </div>
+                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]"></files-listing>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <!-- Coordinator Output -->
+                                    <!-- Simulation Substructure -->
+                                    <div ng-repeat="simsub in $ctrl.browser.project.simsubstructure_set | orderBy: 'value.title'"
+                                         ng-if="$ctrl.matchingGroup(hybsim, simsub) && $ctrl.matchingGroup(model, simsub)"
+                                    >
+                                        <div class="dropdown"
+                                             id="details-{{simsub.uuid}}"
+                                             style="margin-left: 30px"
+                                        >
+                                            <table>
+                                                <tr>
+                                                    <td style="padding-right: 10px;" valign="top">
+                                                        <span style="font-size: 20px; color: #43A59D">
+                                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                                        </span>
+                                                    </td>
+                                                    <td style="width: 100%;">
+                                                        <button class="btn collapsed tab-sim-subst dropdown-spacer-sm"
+                                                                data-toggle="collapse"
+                                                                data-target="#files-{{simsub.uuid}}{{model.uuid}}"
+                                                                style="width:100%;"
+                                                        >
+                                                            <table style="width:100%">
+                                                                <tr>
+                                                                    <td style="text-align: left;">
+                                                                        <span>Simulation Substructure | <strong>{{simsub.value.title}}</strong></span>
+                                                                    </td>
+                                                                    <td style="text-align: right;">
+                                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </button>
+                                                        <div id="files-{{simsub.uuid}}{{model.uuid}}" class="collapse">
+                                                            <div class="well" ng-if="simsub.value.description">
+                                                                <p>{{ simsub.value.description }}</p>
+                                                            </div>
+                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]"></files-listing>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <!-- Simulation Output -->
+                                            <div ng-repeat="sout in $ctrl.browser.project.simoutput_set | orderBy: 'value.title'"
+                                                 ng-if="$ctrl.matchingGroup(hybsim, sout) &&
+                                                        $ctrl.matchingGroup(model, sout) &&
+                                                        $ctrl.matchingGroup(coordinator, sout) &&
+                                                        $ctrl.matchingGroup(simsub, sout)"
+                                            >
+                                                <div class="dropdown"
+                                                     id="details-{{sout.uuid}}"
+                                                     style="margin-left: 30px"
+                                                >
+                                                    <table>
+                                                        <tr>
+                                                            <td style="padding-right: 10px;" valign="top">
+                                                                <span style="font-size: 20px; color: #BD5717">
+                                                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                                                </span>
+                                                            </td>
+                                                            <td style="width: 100%;">
+                                                                <button class="btn collapsed tab-event dropdown-spacer-sm"
+                                                                        data-toggle="collapse"
+                                                                        data-target="#files-{{sout.uuid}}{{model.uuid}}{{simsub.uuid}}"
+                                                                        style="width:100%;"
+                                                                >
+                                                                    <table style="width:100%">
+                                                                        <tr>
+                                                                            <td style="text-align: left;">
+                                                                                <span>Simulation Output | <strong>{{sout.value.title}}</strong></span>
+                                                                            </td>
+                                                                            <td style="text-align: right;">
+                                                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </button>
+                                                                <div id="files-{{sout.uuid}}{{model.uuid}}{{simsub.uuid}}" class="collapse">
+                                                                    <div class="well" ng-if="sout.value.description">
+                                                                        <p>{{ sout.value.description }}</p>
+                                                                    </div>
+                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]"></files-listing>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <!-- Simulation Output -->
+                                        </div>
+                                    </div>
+                                    <!-- Simulation Substructure -->
+                                    <!-- Experimental Substrucutre -->
+                                    <div ng-repeat="expsub in $ctrl.browser.project.expsubstructure_set | orderBy: 'value.title'"
+                                         ng-if="$ctrl.matchingGroup(hybsim, expsub) && $ctrl.matchingGroup(model, expsub)"
+                                    >
+                                        <div class="dropdown dropdown-spacer-sm"
+                                             id="details-{{expsub.uuid}}"
+                                             style="margin-left: 30px"
+                                        >
+                                            <table>
+                                                <tr>
+                                                    <td style="padding-right: 10px;" valign="top">
+                                                        <span style="font-size: 20px; color: #43A59D">
+                                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                                        </span>
+                                                    </td>
+                                                    <td style="width: 100%;">
+                                                        <button class="btn collapsed tab-exp-subst dropdown-spacer-sm"
+                                                                data-toggle="collapse"
+                                                                data-target="#files-{{expsub.uuid}}{{model.uuid}}"
+                                                                style="width:100%;"
+                                                        >
+                                                            <table style="width:100%">
+                                                                <tr>
+                                                                    <td style="text-align: left;">
+                                                                        <span>Experimental Substrucutre | <strong>{{expsub.value.title}}</strong></span>
+                                                                    </td>
+                                                                    <td style="text-align: right;">
+                                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </button>
+                                                        <div id="files-{{expsub.uuid}}{{model.uuid}}" class="collapse">
+                                                            <div class="well" ng-if="expsub.value.description">
+                                                                <p>{{ expsub.value.description }}</p>
+                                                            </div>
+                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]"></files-listing>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <!-- Experiment Output -->
+                                            <div ng-repeat="eout in $ctrl.browser.project.expoutput_set | orderBy: 'value.title'"
+                                                 ng-if="$ctrl.matchingGroup(hybsim, eout) &&
+                                                        $ctrl.matchingGroup(model, eout) &&
+                                                        $ctrl.matchingGroup(coordinator, eout) &&
+                                                        $ctrl.matchingGroup(expsub, eout)"
+                                            >
+                                                <div    class="dropdown dropdown-spacer-sm"
+                                                        id="details-{{eout.uuid}}"
+                                                        style="margin-left: 30px"
+                                                >
+                                                    <table>
+                                                        <tr>
+                                                            <td style="padding-right: 10px;" valign="top">
+                                                                <span style="font-size: 20px; color: #4B3181">
+                                                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                                                </span>
+                                                            </td>
+                                                            <td style="width: 100%;">
+                                                                <button class="btn collapsed tab-event"
+                                                                        data-toggle="collapse"
+                                                                        data-target="#files-{{eout.uuid}}{{model.uuid}}{{expsub.uuid}}"
+                                                                        style="width:100%;"
+                                                                >
+                                                                    <table style="width:100%">
+                                                                        <tr>
+                                                                            <td style="text-align: left;">
+                                                                                <span>Experimental Output | <strong>{{eout.value.title}}</strong></span>
+                                                                            </td>
+                                                                            <td style="text-align: right;">
+                                                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </button>
+                                                                <div id="files-{{eout.uuid}}{{model.uuid}}{{expsub.uuid}}" class="collapse">
+                                                                    <div class="well" ng-if="eout.value.description">
+                                                                        <p>{{ eout.value.description }}</p>
+                                                                    </div>
+                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]"></files-listing>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Experimental Output -->
+                                    </div>
+                                    <!-- Experimental Substrucutre -->
+                                </div>
+                            </div>
+                            <!-- Coordinator -->
+                        </div>
+                        <!-- Models -->
+                        <!-- Analysis -->
+                        <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'"
+                             ng-if="$ctrl.matchingGroup(hybsim, analysis)"
+                        >
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
+                                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+                                    style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{analysis.uuid}}" class="collapse">
+                                    <div class="well" ng-if="analysis.value.refs && analysis.value.description">
+                                        <table class="tg" style="table-layout: fixed; width: 100%;">
+                                            <colgroup>
+                                                <col style="width: 15%">
+                                                <col style="width: 84%">
+                                            </colgroup>
+                                            <tr ng-repeat="ref in analysis.value.refs">
+                                                <td class="tg-0lax" ng-if="$first">Referenced Work</td>
+                                                <td class="tg-0lax" ng-if="!$first"></td>
+                                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a href="{{ ref.referencedoi }}" target=”_blank”>{{ ref.referencedoi }}</a></strong></td>
+                                            </tr>
+                                        </table>
+                                        <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
+                                    </div>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]"></files-listing>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

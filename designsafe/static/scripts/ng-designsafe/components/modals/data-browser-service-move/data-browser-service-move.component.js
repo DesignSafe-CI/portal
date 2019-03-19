@@ -31,20 +31,21 @@ class DataBrowserServiceMoveCtrl {
 
         this.options = [
             {
-                label: 'My Data',
-                conf: { system: 'designsafe.storage.default', path: '' }
+                label: 'My Projects',
+                conf: { system: 'projects', path: '' }
             },
             {
                 label: 'Shared with me',
                 conf: { system: 'designsafe.storage.default', path: '$SHARE' }
             },
             {
-                label: 'My Projects',
-                conf: { system: 'projects', path: '' }
+                label: 'My Data',
+                conf: { system: 'designsafe.storage.default', path: ''  }
             }
         ];
 
         this.$scope.currentOption = null;
+
 
         this.$scope.$watch('currentOption', () => {
             this.state.busy = true;

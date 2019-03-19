@@ -1,0 +1,95 @@
+<div class="table-responsive">
+    <div
+        class="ds-table-display-wrapper"
+        data-ds-infinite-scroll
+        data-scroll-bottom="$ctrl.scrollToBottom()"
+        data-scroll-top="$ctrl.scrollToTop()"
+        data-bottom-height="0"
+    >
+        <table class="table table-bordered table-striped files-listing-table" style="background-color: #fff;">
+            <thead>
+                <tr>
+                    <th style="width: 400px;">Name</th>
+                    <th style="width: 100px;">PI</th>
+                    <th style="width: 100px;">Date of Publication</th>
+                    <th style="width: 100px;">Project Type</th>
+                    <th style="width: 100px;">Project Number</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr
+                    data-ng-if="!$ctrl.browser.busyListing"
+                    data-ng-repeat="item in $ctrl.browser.listing.children"
+                    data-ng-click="$ctrl.onSelect($event, item)"
+                    data-ng-class="{'ds-data-selected': item._ui.selected}"
+                >
+                    <td>
+                        <i class="fa {{ item.icon() }}"></i>
+                        <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
+                            {{ $ctrl.renderName(item) }}
+                        </a>
+                    </td>
+                    <td ng-if="item.meta.piLabel">
+                        {{item.meta.piLabel}}
+                    </td>
+                    <td ng-if="!item.meta.pi">
+                        N/A
+                    </td>
+                    <td ng-if="item.meta.dateOfPublication">
+                        {{ item.meta.dateOfPublication| date: 'MMM/d/yyyy'}}
+                    </td>
+                    <td ng-if="!item.meta.dateOfPublication">
+                        N/A
+                    </td>
+                    <td ng-if="item.meta.type">
+                        <span style="text-transform:capitalize;">{{ item.meta.type }}</span>
+                    </td>
+                    <td ng-if="!item.meta.type">
+                        NEES
+                    </td>
+                    <td ng-if="item.meta.projectId">
+                        {{ item.meta.projectId }}
+                    </td>
+                    <td ng-if="!item.meta.projectId">
+                        {{ item.name }}
+                    </td>
+                </tr>
+                <tr ng-if="$ctrl.browser.busyListingPage">
+                    <td>
+                        <span class="bg-info text-info">
+                            <i class="fa fa-spinner fa-spin"></i> Loading...
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+            <caption>
+                <div data-ng-if="$ctrl.browser.busy"
+                     style="padding:10px; font-size:large; width:100%;"
+                     class="bg-info">
+                    <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
+                </div>
+
+                <div ng-if="! $ctrl.browser.busy && browser.error"
+                     class="text-center">
+                    <p class="alert alert-danger"
+                       ng-bind-html="$ctrl.browser.error.message ||
+                                     $ctrl.browser.error | toTrusted"></p>
+                </div>
+
+                <div
+                    ng-if="! $ctrl.browser.busy &&
+                           ! $ctrl.browser.error &&
+                           ($ctrl.browser.listing.children|length) === 0"
+                    style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
+                    class="text-center"
+                >
+                    <p class="lead">
+                        This folder is empty!
+                        <br /><i class="fa fa-folder-open-o"></i>
+                    </p>
+                </div>
+            </caption>
+        </table>
+    </div>
+</div>

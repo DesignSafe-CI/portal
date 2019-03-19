@@ -175,7 +175,10 @@ def call_api(request, service):
                     else:
                         wh_base_url = request.build_absolute_uri('/webhooks/')
 
-                    job_post['parameters']['_webhook_base_url'] = wh_base_url
+                    if 'designsafe-ci.org' in request.META['HTTP_HOST']:
+                        job_post['parameters']['_webhook_base_url'] = wh_base_url
+                    else:
+                        job_post['parameters'].pop('_userProjects', None)
 
                     try:
                         data = submit_job(request, request.user.username, job_post)
@@ -235,18 +238,22 @@ def call_api(request, service):
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
     except HTTPError as e:
-        logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
-            service, e.message))
+        logger.exception(
+            'Failed to execute %s API call due to HTTPError=%s\n%s',
+            service,
+            e.message,
+            e.response.content
+        )
         return HttpResponse(json.dumps(e.message),
                             content_type='application/json',
                             status=400)
     except AgaveException as e:
-        logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
+        logger.exception('Failed to execute {0} API call due to AgaveException={1}'.format(
             service, e.message))
         return HttpResponse(json.dumps(e.message), content_type='application/json',
                             status=400)
     except Exception as e:
-        logger.error('Failed to execute {0} API call due to Exception={1}'.format(
+        logger.exception('Failed to execute {0} API call due to Exception={1}'.format(
             service, e))
         return HttpResponse(
             json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),

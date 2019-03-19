@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.agave.filemanager.search_index import ElasticFileManager
-from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.agave import get_service_account_client, impersonate_service_account
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.systems import BaseSystemResource
