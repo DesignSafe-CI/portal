@@ -3,10 +3,17 @@ import FilesListingTemplate from './files-listing.template.html';
 import FilesListingPublicTemplate from './files-listing.public.template.html';
 
 class FilesListingCtrl {
-    constructor($state, DataBrowserService){
+    constructor($state, DataBrowserService, $stateParams, $uibModal){
         'ngInject';
         this.$state = $state;
         this.DataBrowserService = DataBrowserService;
+        this.$stateParams = $stateParams;
+        this.$uibModal = $uibModal;
+
+        this.areFiltersEmpty = this.areFiltersEmpty.bind(this)
+        this.typeFilter = this.typeFilter.bind(this)
+        this.renderName = this.renderName.bind(this)
+        this.clearFilters = this.clearFilters.bind(this)
     }
 
     $onInit() {
@@ -51,6 +58,14 @@ class FilesListingCtrl {
             this.allowSelect = false;
             return this.filesList;
         };
+
+        this.toggles = {
+            experimental: false,
+            simulation: false,
+            hybrid: false,
+            nees: false,
+            other: false
+        }
     }
 
     breadcrumbBrowse($event, path) {
@@ -157,6 +172,43 @@ class FilesListingCtrl {
             this.browser.listing
         );
     }
+
+    showDescription(title, description) {
+        var modal = this.$uibModal.open({
+          component: 'publicationDescriptionModalComponent',
+          resolve: {
+            title: () => title,
+            description: () => description,
+          },
+          size: 'lg'
+        })
+      }
+      areFiltersEmpty() {
+          let noneToggled = true
+          for (const key of Object.keys(this.toggles)) {
+              if (this.toggles[key]) {
+                  noneToggled = false
+              }
+          }
+          if (noneToggled) {
+              return true
+          }
+          return false
+      }
+      typeFilter(item, x, y) {
+          if (this.areFiltersEmpty()) {
+              return true
+          }
+          if (item.metadata && this.toggles['nees']) {
+              return true
+          }
+          return this.toggles[(item.meta || {}).type]; 
+      }
+      clearFilters() {
+          for (const key of Object.keys(this.toggles)) {
+              this.toggles[key] = false
+          }
+      }
 }
 
 export const FilesListingComponent = {

@@ -1,3 +1,13 @@
+<div style="background-color:white;padding:10px"> 
+    <a  ng-if="$ctrl.$stateParams.query_string"ng-href="/data/browser/public/"><i class="fa fa-arrow-left"></i> Back to all publications</a>
+    <p ng-if="$ctrl.$stateParams.query_string">{{filtered.length}} Results found for <b>{{$ctrl.$stateParams.query_string}}</b></p>
+    <p><b>Publication Type</b> <a ng-if=!$ctrl.areFiltersEmpty() ng-click="$ctrl.clearFilters()">clear</a></p>
+    <label class="checkbox-inline custom-control-input my-error"><input type="checkbox" value="" ng-model="$ctrl.toggles.experimental">Experimental</label>
+    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.toggles.simulation" >Simulation</label>
+    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.toggles.hybrid">Hybrid Simulation</label>
+    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.toggles.nees">NEES</label>
+    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.toggles.other">Other</label>
+  </div>
 <div class="table-responsive">
     <div
         class="ds-table-display-wrapper"
@@ -8,53 +18,50 @@
     >
         <table class="table table-bordered table-striped files-listing-table" style="background-color: #fff;">
             <thead>
-                <tr>
-                    <th style="width: 400px;">Name</th>
-                    <th style="width: 100px;">PI</th>
-                    <th style="width: 100px;">Date of Publication</th>
-                    <th style="width: 100px;">Project Type</th>
-                    <th style="width: 100px;">Project Number</th>
-                </tr>
-            </thead>
+                <th style="width: 350px;">Publication Title</th>
+                <th style="width: 100px;">Author</th>
+                <th style="width: 100px;">Publication Description</th>
+                <th style="width: 150px;">Keywords</th>
+                <th style="width: 100px;">Date of Publication</th>
+                </thead>
 
             <tbody>
-                <tr
-                    data-ng-if="!$ctrl.browser.busyListing"
-                    data-ng-repeat="item in $ctrl.browser.listing.children"
-                    data-ng-click="$ctrl.onSelect($event, item)"
-                    data-ng-class="{'ds-data-selected': item._ui.selected}"
-                >
-                    <td>
-                        <i class="fa {{ item.icon() }}"></i>
-                        <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
-                            {{ $ctrl.renderName(item) }}
-                        </a>
-                    </td>
-                    <td ng-if="item.meta.piLabel">
-                        {{item.meta.piLabel}}
-                    </td>
-                    <td ng-if="!item.meta.pi">
-                        N/A
-                    </td>
-                    <td ng-if="item.meta.dateOfPublication">
-                        {{ item.meta.dateOfPublication| date: 'MMM/d/yyyy'}}
-                    </td>
-                    <td ng-if="!item.meta.dateOfPublication">
-                        N/A
-                    </td>
-                    <td ng-if="item.meta.type">
-                        <span style="text-transform:capitalize;">{{ item.meta.type }}</span>
-                    </td>
-                    <td ng-if="!item.meta.type">
-                        NEES
-                    </td>
-                    <td ng-if="item.meta.projectId">
-                        {{ item.meta.projectId }}
-                    </td>
-                    <td ng-if="!item.meta.projectId">
-                        {{ item.name }}
-                    </td>
-                </tr>
+                <tr ng-if="!$ctrl.browser.busyListing"
+              ng-repeat="item in $ctrl.browser.listing.children | filter:$ctrl.typeFilter as filtered"
+              ng-click="$ctrl.onSelect($event, item)"
+              ng-class="{'ds-data-selected': item._ui.selected}"
+          >
+              <td>
+                  <a ng-href="{{ item.href }}" ng-click="$ctrl.onBrowse($event, item)">
+                      {{ $ctrl.renderName(item) }}
+                  </a>
+                  <span style="text-transform:capitalize;">({{ item.meta.type || 'NEES' }})</span>
+              </td>
+              <td ng-if="item.meta.piLabel">
+                  {{item.meta.piLabel}}
+              </td>
+              <td ng-if="!item.meta.pi">
+                N/A
+              </td>
+              <td align="center" ng-if="item.meta.dateOfPublication">
+                <a ng-click="$ctrl.showDescription($ctrl.renderName(item), item.meta.description)">View Description</a>
+              </td>
+              <td ng-if="!item.meta.dateOfPublication">
+                N/A
+              </td>
+              <td ng-if="item.meta.type">
+                {{item.meta.keywords}}
+              </td>
+              <td ng-if="!item.meta.type">
+                NEES
+              </td>
+              <td ng-if="item.meta.dateOfPublication">
+                {{ item.meta.dateOfPublication| date: 'M/d/yyyy'}}
+              </td>
+              <td ng-if="!item.meta.dateOfPublication">
+                N/A
+              </td>
+          </tr>
                 <tr ng-if="$ctrl.browser.busyListingPage">
                     <td>
                         <span class="bg-info text-info">

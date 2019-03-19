@@ -2,12 +2,9 @@ import PublicationDescriptionModalTemplate from './publication-description.compo
 class PublicationDescriptionModalCtrl {
     constructor() {
     }
-    $onInit() {
-        console.log(this.resolve)
-    }
 }
 
-const publicationDescriptionModalComponent = {
+export const PublicationDescriptionModalComponent = {
     template: PublicationDescriptionModalTemplate,
     controller: PublicationDescriptionModalCtrl,
     controllerAs: '$ctrl',
@@ -17,5 +14,3 @@ const publicationDescriptionModalComponent = {
         dismiss: '&'
     },
 }
-
-export default publicationDescriptionModalComponent
