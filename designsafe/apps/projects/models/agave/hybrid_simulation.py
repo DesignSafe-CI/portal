@@ -159,7 +159,7 @@ class Analysis(RelatedEntity):
     model_name = 'designsafe.project.hybrid_simulation.analysis'
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
-    refs = fields.ListField('References') # new
+    refs = fields.ListField('References')
     project = fields.RelatedObjectField(HybridSimulationProject)
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
