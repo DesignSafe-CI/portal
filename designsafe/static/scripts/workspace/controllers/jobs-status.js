@@ -1,5 +1,7 @@
 export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
     'ngInject';
+    NotificationService.subscribe(() => { $scope.refresh(); });
+
     NotificationService.processors.web = {
         process: function(msg) {
             $uibModal.open({
