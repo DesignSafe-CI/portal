@@ -163,6 +163,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 archive: true,
                 inputs: {},
                 parameters: {},
+                appDefinition: $scope.data.app,
             };
 
             /* copy form model to disconnect from $scope */
@@ -198,7 +199,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
             }
 
             $scope.jobReady = true;
-            if ($scope.data.app.tags.includes('VNC')) {
+            if ($scope.data.app.parameters.some((p) => p.id === '_userProjects')) {
                 $scope.jobReady = false;
                 ProjectService.list({ offset: 0, limit: 500 }).then(function(resp) {
                     if (resp.length > 0) {

@@ -177,7 +177,11 @@ def call_api(request, service):
                         wh_base_url = request.build_absolute_uri('/webhooks/')
                         jobs_wh_url = request.build_absolute_uri(reverse('designsafe_api:jobs_wh_handler'))
 
-                    job_post['parameters']['_webhook_base_url'] = wh_base_url
+                    # Add _webhook_base_url for interactive apps that have that param
+                    if any(p['id'] == '_webhook_base_url' for p in job_post['appDefinition']['parameters']):
+                        job_post['parameters']['_webhook_base_url'] = wh_base_url
+                    del job_post['appDefinition']
+
                     job_post['notifications'] = [
                         {'url': jobs_wh_url,
                         'event': e}
