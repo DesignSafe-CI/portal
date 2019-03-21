@@ -186,6 +186,12 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 }
             });
 
+            /* To ensure that DCV server is alive, name of job
+            * needs to contain 'dcvserver' */
+            if ($scope.data.app.tags.includes('DCV')) {
+                jobData.name += '-dcvserver';
+            }
+
             // Calculate processorsPerNode if nodeCount parameter submitted
             if (_.has(jobData, 'nodeCount')) {
                 jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
