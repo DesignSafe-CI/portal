@@ -102,6 +102,7 @@ export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djang
 export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job, djangoUrl, logger) {
     'ngInject';
     $scope.job = job;
+    $scope.jobFinished = jobIsFinished($scope.job);
 
     $scope.dismiss = function() {
         $uibModalInstance.dismiss('cancel');
@@ -132,6 +133,11 @@ export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job,
             logger.log('nope!', error); // todo make error handling UI
         });
     };
+
+    function jobIsFinished(job) {
+        let finishedStatus = ['FAILED', 'STOPPED', 'FINISHED', 'KILLED']
+        return (finishedStatus.some((e) => e === job.status));
+    }
 }
 
 export function VNCJobDetailsModalCtrl($scope, $uibModalInstance, msg) {
