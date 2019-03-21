@@ -16,10 +16,6 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         selectedApp: null,
     };
 
-    Jobs.getWebhookUrl().then(function(response) {
-        $scope.webhookUrl = response.data;
-    });
-
     $scope.$watch('data.selectedApp', function(app) {
         if (app) {
             $scope.$broadcast('launch-app', app);
@@ -167,12 +163,6 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 archive: true,
                 inputs: {},
                 parameters: {},
-                notifications: ['PENDING', 'QUEUED', 'SUBMITTING', 'PROCESSING_INPUTS', 'STAGED', 'KILLED', 'FAILED', 'STOPPED', 'FINISHED'].map(
-                    (e) => ({
-                        url: $scope.webhookUrl,
-                        event: e,
-                    })
-                ),
             };
 
             /* copy form model to disconnect from $scope */

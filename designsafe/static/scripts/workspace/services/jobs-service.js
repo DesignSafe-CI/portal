@@ -28,10 +28,6 @@ export function jobsService($http, djangoUrl) {
         return $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), data);
     };
 
-    service.getWebhookUrl = function() {
-        return $http.get(djangoUrl.reverse('designsafe_api:jobs_wh_handler'));
-    };
-
     service.jobsByDate = function(jobs) {
         let nested = d3.nest()
             .key(function(d) {
