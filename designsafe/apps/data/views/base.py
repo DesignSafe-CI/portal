@@ -177,31 +177,25 @@ class FileMediaView(View):
         return response
 
 
-class WordView(View):
-    corral = '/corral-repl/tacc/NHERI/'
-    def required(input):
-        if input == " ":
-            raise ValueError("Field required")
-    date = WordView.datetime.datetime
+# class WordView(View):
+#     corral = '/corral-repl/tacc/NHERI/'
+#     def required(input):
+#         if input == " ":
+#             raise ValueError("Field required")
+#     date = WordView.datetime.datetime
 
 
-    def get(self):
-        term = required(self.input())
-        definition = required(input())
-        vocabBuilder = logger.logging.getLogger(__name__)
-        date
-        permalink = required(input())
-
-
-
-    def post(self):
-        vocabBuilder = logger.logging.getLogger(__name__)
-        term = required(self.input())
-        definition = required(input())
-        permalink = required(input())
+#     def get(self):
+#         term = required(self.input())
+#         definition = required(input())
+#         vocabBuilder = logger.logging.getLogger(__name__)
+#         date
+#         permalink = required(input())
 
 
 
-    
-    def delete(self):
-        delete = self.client.del
+#     def post(self):
+#         vocabBuilder = logger.logging.getLogger(__name__)
+#         term = required(self.input())
+#         definition = required(input())
+#         permalink = required(input())
