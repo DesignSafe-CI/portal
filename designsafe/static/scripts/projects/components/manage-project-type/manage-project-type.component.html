@@ -16,11 +16,9 @@
     <div class="alert alert-danger" ng-if="$ctrl.warning">
         <p class="lead" style="text-align:center;">Warning!</p>
         <p>
-            You are about to change the project type. This means that all
-            associated data, categories, and models you've created will be lost.
-            The files in your project directory will remain, but any other relations
-            you created will be unrecoverable once you select a new project type.
-            If you have questions, please contact us during our <a href="/learning-center/training/" target="_blank">office hours</a>.
+            You are about to change the project type. <strong>All curation from your current project type will be erased.</strong>
+            Files will remain in the project. If you do not want to change the project type, exit this window and do not continue.
+            If you have questions, please attend our <a href="/learning-center/training/" target="_blank">curation office hours</a>.
         </p>
         <li ng-repeat="item in $ctrl.missing">The {{ item }} for this experiment is missing or has no categorized data.</li>
     </div><br>
