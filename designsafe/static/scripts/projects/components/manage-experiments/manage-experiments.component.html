@@ -383,12 +383,13 @@
                       style="display:inline-block; width:78%; text-transform:capitalize;">{{ experiment.value.experimentTypeOther }}</strong>
               <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
               <div style="display:inline-block; width:78%; font-weight: bold;">
-                <div ng-repeat="author in experiment.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
+                <span ng-repeat="author in experiment.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
                   <span ng-if="!author.guest">
-                    <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>
+                    <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>;
                   </span>
-                  <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span>
-                </div>
+                  <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }};</span>
+                </span>
+                <span class="authors-end">__</span>
                 <!-- older author list -->
                 <div ng-repeat="author in experiment.value.authors" ng-if="author.length">
                   <ds-user username="author" format="lname">{{ author }}</ds-user>

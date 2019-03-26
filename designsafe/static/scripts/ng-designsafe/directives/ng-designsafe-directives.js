@@ -231,6 +231,9 @@ export function dsUser(UserService) {
 
       UserService.get(scope.username).then(function (user) {
         switch (format) {
+          case 'hname':
+            element.text(user.last_name + ', ' + user.first_name[0] + '.');
+            break;
           case 'lname':
             element.text(user.last_name + ', ' + user.first_name);
             break;
