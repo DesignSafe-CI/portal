@@ -186,6 +186,9 @@ class DataBrowserServicePreviewCtrl {
         } else if (specificLocation === 'publishedData') {
             specificLocation = 'Published';
         }
+        if (this.file.system === 'designsafe.storage.published') { 
+            specificLocation = 'NHERI-Published';
+        }
         const fileLocation = specificLocation + "/" + pathToFile;
         const jupyterPath = `http://jupyter.designsafe-ci.org/user/${this.Django.user}/notebooks/${fileLocation}`;
         window.open(jupyterPath);
