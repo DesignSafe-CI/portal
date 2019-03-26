@@ -50,6 +50,12 @@ function NotificationService(
         return url;
     }
 
+    function subscribe(callback) {
+        $rootScope.$on('notification', (ev, data) => {
+            callback(data);
+        });
+    }
+
     /**
      * init
      * @function
@@ -66,8 +72,8 @@ function NotificationService(
      * @param {Object} msg
      */
     function processMessage(e, msg) {
-        processToastr(e, msg);
         processors.notifs.process(msg);
+        $rootScope.$broadcast('notification', msg);
         const eventType = msg.event_type.toLowerCase();
 
         if (typeof processors[eventType] !== 'undefined' &&
@@ -75,7 +81,7 @@ function NotificationService(
             typeof processors[eventType].process === 'function') {
             processors[eventType].process(msg);
         } else {
-            logger.warn('Process var is not a function for this event type. ', processors);
+            processToastr(e, msg);
         }
     }
 
@@ -170,6 +176,7 @@ function NotificationService(
         processors: processors,
         list: list,
         delete: del,
+        subscribe: subscribe,
     };
 }
 

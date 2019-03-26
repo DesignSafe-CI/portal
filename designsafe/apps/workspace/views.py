@@ -172,13 +172,20 @@ def call_api(request, service):
 
                     if settings.DEBUG:
                         wh_base_url = settings.WEBHOOK_POST_URL.strip('/') + '/webhooks/'
+                        jobs_wh_url = settings.WEBHOOK_POST_URL + reverse('designsafe_api:jobs_wh_handler')
                     else:
                         wh_base_url = request.build_absolute_uri('/webhooks/')
+                        jobs_wh_url = request.build_absolute_uri(reverse('designsafe_api:jobs_wh_handler'))
 
-                    if 'designsafe-ci.org' in request.META['HTTP_HOST']:
-                        job_post['parameters']['_webhook_base_url'] = wh_base_url
-                    else:
-                        job_post['parameters'].pop('_userProjects', None)
+                    # Remove any params from job_post that are not in appDef
+                    for param, _ in job_post['parameters'].items():
+                        if not any(p['id'] == param for p in job_post['appDefinition']['parameters']):
+                            del job_post['parameters'][param]
+
+                    job_post['notifications'] = [
+                        {'url': jobs_wh_url,
+                        'event': e}
+                        for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
 
                     try:
                         data = submit_job(request, request.user.username, job_post)

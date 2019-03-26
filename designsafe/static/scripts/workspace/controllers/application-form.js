@@ -16,10 +16,6 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         selectedApp: null,
     };
 
-    Jobs.getWebhookUrl().then(function(response) {
-        $scope.webhookUrl = response.data;
-    });
-
     $scope.$watch('data.selectedApp', function(app) {
         if (app) {
             $scope.$broadcast('launch-app', app);
@@ -167,12 +163,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 archive: true,
                 inputs: {},
                 parameters: {},
-                notifications: ['PENDING', 'QUEUED', 'SUBMITTING', 'PROCESSING_INPUTS', 'STAGED', 'KILLED', 'FAILED', 'STOPPED', 'FINISHED'].map(
-                    (e) => ({
-                        url: $scope.webhookUrl,
-                        event: e,
-                    })
-                ),
+                appDefinition: $scope.data.app,
             };
 
             /* copy form model to disconnect from $scope */
@@ -196,13 +187,19 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 }
             });
 
+            /* To ensure that DCV server is alive, name of job
+            * needs to contain 'dcvserver' */
+            if ($scope.data.app.tags.includes('DCV')) {
+                jobData.name += '-dcvserver';
+            }
+
             // Calculate processorsPerNode if nodeCount parameter submitted
             if (_.has(jobData, 'nodeCount')) {
                 jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
             }
 
             $scope.jobReady = true;
-            if ($scope.data.app.tags.includes('VNC')) {
+            if ($scope.data.app.parameters.some((p) => p.id === '_userProjects')) {
                 $scope.jobReady = false;
                 ProjectService.list({ offset: 0, limit: 500 }).then(function(resp) {
                     if (resp.length > 0) {
