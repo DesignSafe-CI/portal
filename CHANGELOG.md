@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.0.2
+
+Fixes:
+
+- Curation directory fixes.
+
+## v4.0.1
+
+Fixes:
+
+- Agave sandbox code.
+
 ## v4.0.0
 
 Improvements:
