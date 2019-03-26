@@ -135,7 +135,7 @@ def repair_paths(limit=1000):
             hit.update(**{'basePath': os.path.dirname(new_path)})
 
             # use from_path to remove any duplicates.
-            IndexedFile.from_path(hit.system, hit.path)
+            # IndexedFile.from_path(hit.system, hit.path)
 
         search_after = res.hits.hits[-1]['sort']
         logger.debug(search_after)
