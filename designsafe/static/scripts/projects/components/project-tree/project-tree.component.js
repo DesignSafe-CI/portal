@@ -671,7 +671,7 @@ class ProjectTreeCtrl {
                             uuid: output.uuid,
                             parent: inpNode.name,
                             children: [],
-                            rectStyle: 'stroke: #D04348; fill: #EFBFC1;',
+                            rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Simulation Output',
                         };
                         inpNode.children.push(outNode);
