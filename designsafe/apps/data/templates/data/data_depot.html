@@ -2,6 +2,7 @@
 {% load cms_tags staticfiles sekizai_tags%}
 
 {% block google_ciation_meta %}
+    <!--data/data_depot.html-->
     <meta name="citation_title" content="{{citation_title}}">
     <meta name="citation_publication_date" content="{{citation_date}}">
     <meta name="citation_doi" content="{{doi}}">
@@ -15,6 +16,7 @@
         <meta name="citation_author_institution" content="{{author.institution}}">
     {% endfor %}
     <meta name="citation_abstract_html_url" content="">
+    <!--data/data_depot.html-->
 {% endblock %}
 {% block title %}
 Data Depot {% if citation_title %} - {{citation_title}} {% endif %}
