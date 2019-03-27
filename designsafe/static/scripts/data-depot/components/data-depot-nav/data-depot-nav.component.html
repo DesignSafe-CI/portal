@@ -2,13 +2,13 @@
 
     <div class="list-group collapse" ng-class="{'in': !routerItem.collapse}" ng-repeat="childItem in $ctrl.routerItems" ng-click="$ctrl.stateReload(childItem.state)">
       <div ng-switch="childItem.state">
-        
         <div ng-switch-when="projects.list">
           <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ng-class="{active: $ctrl.$state.includes('projects')}">
-            {{ childItem.name }}
+            {{ childItem.name }} 
           </a>
         </div>
         <div ng-switch-when="publicData">
+          <hr>
           <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ng-class="{active: $ctrl.$state.includes('publicData') || $ctrl.$state.includes('publishedData') || $ctrl.$state.includes('neesPublishedData')}">
             {{ childItem.name }}
           </a>
@@ -17,11 +17,11 @@
           <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ui-sref-active="active">
             {{ childItem.name }}
           </a>
+          <div ng-If="childItem.name == 'Shared with Me'"> <hr> </div>
+          </div>
         </div>
-  
       </div>
     </div>
-  </div>
   
   <div style="text-align:center;">
     <div>
