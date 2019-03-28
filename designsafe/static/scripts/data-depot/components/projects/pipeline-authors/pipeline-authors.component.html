@@ -74,7 +74,7 @@
         </p>
     </div>
     <!-- Citation Preview -->
-    <h5>Citation Preview</h5>
+    <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
     <div class="well" style="margin-bottom:20px">
         <div>
             <span ng-repeat="author in $ctrl.experiment.value.authors | orderBy: 'order'" ng-if="author.authorship">
@@ -84,7 +84,7 @@
                 <span ng-if="author.guest">{{ author.lname }}, {{ author.fname[0] }}., </span>
             </span>
             <span style="background: #f5f5f5;padding-left: 7px;margin-left: -9px;">
-                ({{ $ctrl.curDate }}) “{{ $ctrl.experiment.value.title }}.” Designsafe-CI. doi: 00.00000/0000000.
+                ({{ $ctrl.curDate }}) “{{ $ctrl.experiment.value.title }}”, in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI. <a>https://doi.org/10.12345/ABCDEF</a>.
             </span>
         </div>
     </div>
