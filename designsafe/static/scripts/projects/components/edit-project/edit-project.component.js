@@ -286,7 +286,7 @@ class EditProjectCtrl {
                 projectData.teamMembers.push(ent.username);
             });
         }
-        if (this.form.guests) {
+        if (this.form.guests && this.form.guests.indexOf(null) === -1) {
             this.form.guests.forEach((g, i) => {
                 // create a "username" for guests
                 if (!g.user) {

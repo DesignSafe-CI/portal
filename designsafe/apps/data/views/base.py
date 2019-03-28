@@ -54,6 +54,7 @@ class DataDepotView(BasePublicTemplate):
 
     def get_context_data(self, **kwargs):
         context = super(DataDepotView, self).get_context_data(**kwargs)
+        logger.info('Get context Data')
         
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
@@ -84,6 +85,7 @@ class DataBrowserTestView(BasePublicTemplate):
 
     def get_context_data(self, **kwargs):
         context = super(DataBrowserTestView, self).get_context_data(**kwargs)
+        logger.info('Get context Data')
 
         context['unreadNotifications'] = get_number_unread_notifications(self.request)
 
@@ -189,7 +191,9 @@ class DataDepotPublishedView(TemplateView):
     def get_context_data(self, **kwargs):
         """Update context data to add publication."""
         context = super(DataDepotPublishedView, self).get_context_data(**kwargs)
+        logger.info('Get context Data')
         pub = Publication(project_id=kwargs['project_id'].strip('/'))
+        logger.debug('pub: %s', pub.to_dict())
         context['citation_title'] = pub.project.value.title
         context['citation_date'] = pub.created
         context['doi'] = pub.project.doi
@@ -223,6 +227,7 @@ class DataDepotLegacyPublishedView(TemplateView):
     def get_context_data(self, **kwargs):
         """Update context data to add publication."""
         context = super(DataDepotLegacyPublishedView, self).get_context_data(**kwargs)
+        logger.info('Get context Data')
         nees_id = kwargs['project_id'].strip('.groups').strip('/')
         logger.debug('nees_id: %s', nees_id)
         pub = LegacyPublication(nees_id=nees_id)
@@ -235,8 +240,8 @@ class DataDepotLegacyPublishedView(TemplateView):
             users  = [user for users in exp_users for user in users]
             context['authors'] = [{
                 'full_name': '{last_name}, {first_name}'.format(
-                    last_name=user.get('lastName'),
-                    first_name=user.get('firstName'),
+                    last_name=getattr(user, 'lastName', ''),
+                    first_name=getattr(user, 'firstName', ''),
                 ),
                 'institution': ''
             } for user in users]

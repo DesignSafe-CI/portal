@@ -204,7 +204,9 @@ class ManageExperimentsCtrl {
             title: exp.value.title,
             facility: exp.getEF(this.data.project.value.projectType, exp.value.experimentalFacility).label,
             type: exp.value.experimentType,
-            equipment: exp.getET(exp.value.experimentalFacility, exp.value.equipmentType).label,
+            equipment: exp.value.equipmentType,
+            equipmentOther: exp.value.equipmentTypeOther,
+            equipmentList: this.equipmentTypes[exp.value.experimentalFacility],
             description: exp.value.description
         };
         this.ui.showEditExperimentForm = true;
@@ -260,6 +262,8 @@ class ManageExperimentsCtrl {
         exp.value.procedureEnd = this.editExpForm.end;
         exp.value.authors = this.editExpForm.authors;
         exp.value.guests = this.editExpForm.guests;
+        exp.value.equipmentType = this.editExpForm.equipment;
+        exp.value.equipmentTypeOther = this.editExpForm.equipmentOther;
         this.ui.savingEditExp = true;
         this.ProjectEntitiesService.update({
             data: {

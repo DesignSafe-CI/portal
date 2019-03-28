@@ -62,20 +62,19 @@
             <dt>Finished<dt>
             <dd>{{job.endTime | date:'medium'}}</dd>
 
-            <dt>Output</dt>
-            <dd ng-if="job.status === 'FINISHED'">
+            <dt ng-if="job.archiveSystem">Output</dt>
+            <dd ng-if="jobFinished && job.archiveSystem">
                 <a href="{{job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View</a>
-
             </dd>
-            <dd ng-if="job.status !== 'FINISHED'">
+            <dd ng-if="!jobFinished">
                 <button class="btn btn-default disabled" type="button">Output pending</button>
             </dd>
 
             <dt>Actions</dt>
-            <dd ng-if="job.status === 'FINISHED'">
+            <dd ng-if="jobFinished">
                 <button class="btn btn-danger" type="button" ng-click="deleteJob()">Delete</button>
             </dd>
-            <dd ng-if="job.status !== 'FINISHED'">
+            <dd ng-if="!jobFinished">
                 <a href="{{data.connection_address}}" ng-if="data.interactive" class="btn btn-primary" title="Connect to Interactive Session" target="_blank">Connect</a>
                 <button class="btn btn-warning" type="button" ng-click="cancelJob()">Cancel</button>
                 <button class="btn btn-danger" type="button" ng-click="deleteJob()">Delete</button>

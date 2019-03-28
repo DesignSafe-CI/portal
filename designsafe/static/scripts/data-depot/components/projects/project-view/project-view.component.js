@@ -51,8 +51,13 @@ class ProjectViewCtrl {
 
   isSingle(val) {
     // we will have older projects with a single award number as a string
-    return typeof val === 'string';
-  }
+    if (val.length) {
+        if (typeof val[0] === 'string') {
+            return true;
+        }
+    }
+    return false;
+}
 
   editProject($event) {
     if ($event) {

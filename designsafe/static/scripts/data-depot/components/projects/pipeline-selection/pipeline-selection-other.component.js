@@ -78,15 +78,6 @@ class PipelineSelectionOtherCtrl {
         }, {reload: true});
     }
 
-    selectAll() {
-        this.DataBrowserService.select(this.browser.listing.children);
-
-    }
-
-    deselectAll() {
-        this.DataBrowserService.deselect(this.browser.listing.children);
-    }
-
     saveSelections() {
         this.browser.listing.children.forEach((child) => {
             if (typeof child._ui === 'undefined' || child._ui.selected === false) {

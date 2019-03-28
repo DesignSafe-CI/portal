@@ -44,6 +44,7 @@
         <p>
             <h3 style="text-align: center">Select what you want to publish</h3>
             <li>You may only select files from one directory.</li>
+            <li>Select the files you wish to publish and click "Save Selections".</li>
             <li>If you want to deselect individual files, deselect the checkboxes.</li>
             <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
         </p>
@@ -54,14 +55,12 @@
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
-        <div ng-hide="$ctrl.loading || !$ctrl.selectedFiles.children.length">
-            <h4>Your Selected Files:</h4>
+        <div class="well" style="margin-bottom: 20px;" ng-hide="$ctrl.loading || !$ctrl.selectedFiles.children.length">
+            <h4>These files will be published:</h4>
             <files-listing browser="$ctrl.browser" files-list="$ctrl.selectedFiles" category-listing="true"></files-listing>
         </div>
-        <div ng-hide="$ctrl.loading">
-            <button ng-click="$ctrl.selectAll()">Select All</button>
-            <button ng-click="$ctrl.deselectAll()">Deselect All</button>
-            <button ng-click="$ctrl.saveSelections()">Save Selections</button>
+        <div ng-hide="$ctrl.loading" style="text-align: center;">
+            <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
         </div>
         <div ng-hide="$ctrl.loading">
             <files-listing browser="$ctrl.browser"></files-listing>

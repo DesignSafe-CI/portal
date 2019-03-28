@@ -121,11 +121,22 @@ class CurationDirectoryCtrl {
                     },
                     (err) => {
                         this.browser.ui.error = err;
+                        this.loading = false;
                     });
             };
             this.setFilesDetails(allFilePaths);
         });
 
+    }
+
+    isSingle(val) {
+        // we will have older projects with a single award number as a string
+        if (val && val.length) {
+            if (typeof val[0] === 'string') {
+                return true;
+            }
+        }
+        return false;
     }
 
     matchingGroup(exp, model) {

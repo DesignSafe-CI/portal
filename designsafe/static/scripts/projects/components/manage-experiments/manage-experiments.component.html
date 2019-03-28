@@ -234,9 +234,10 @@
           <label>Experimental Facility</label>
           <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <div>
-            <select style="background:white; width:100%"
+            <select style="width:100%"
+                    class="grayed-out"
                     id="add-exp-facility"
-                    readonly>
+                    disabled>
               <option value="$ctrl.editExpForm.facility">{{ $ctrl.editExpForm.facility }}</option>
             </select>
           </div>
@@ -246,9 +247,10 @@
           <label>Experiment Type</label>
           <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <div>
-            <select style="background:white; width:100%"
+            <select style=" width:100%"
+                    class="grayed-out"
                     id="add-exp-type"
-                    readonly>
+                    disabled>
               <option value="$ctrl.editExpForm.type">{{ $ctrl.editExpForm.type }}</option>
             </select>
           </div>
@@ -258,11 +260,20 @@
           <label>Equipment Type</label>
           <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <div>
-            <select style="background:white; width:100%"
+            <select ng-options="equip.name as equip.label for equip in $ctrl.editExpForm.equipmentList"
+                    ng-model="$ctrl.editExpForm.equipment"
+                    style="background:white; width:100%"
                     id="id-equipment-type"
-                    readonly>
-              <option value="$ctrl.editExpForm.equipment">{{ $ctrl.editExpForm.equipment }}</option>
+            >
             </select>
+            <input type="text"
+                   style="background:white; width:100%"
+                   id="id-equipment-type-other"
+                   placeholder="$ctrl.editExpForm.equipmentOther"
+                   ng-model="$ctrl.editExpForm.equipmentOther"
+                   ng-if="$ctrl.editExpForm.equipment == 'other'"
+                   ng-required="true"
+            >
           </div>
         </div>
         <!-- Edit Exp Description -->
