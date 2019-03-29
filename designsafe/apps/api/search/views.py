@@ -6,7 +6,7 @@
 """
 import logging
 import operator
-from elasticsearch_dsl import Q, Search
+from elasticsearch_dsl import Q, Search, Index
 from elasticsearch import TransportError, ConnectionTimeout
 from django.http import (HttpResponseBadRequest,
                          JsonResponse)
@@ -29,17 +29,17 @@ class SearchView(BaseApiView):
         limit = int(request.GET.get('limit', 10))
         if limit > 500:
             return HttpResponseBadRequest("limit must not exceed 500")
-        type_filter = request.GET.get('type_filter', 'cms')
+        type_filter = request.GET.get('type_filter', 'all')
 
         if type_filter == 'public_files':
-            es_query = self.search_public_files(q, offset, limit)
+            es_query = SearchView.search_public_files(q, offset, limit)
         elif type_filter == 'published':
-            es_query = self.search_published(q, offset, limit)
+            es_query = SearchView.search_published(q, offset, limit)
         elif type_filter == 'cms':
-            es_query = self.search_cms_content(q, offset, limit)
-        elif type_filter == 'private_files':
-            es_query = self.search_my_data(self.request.user.username, q, offset, limit)
-
+            es_query = SearchView.search_cms_content(q, offset, limit)
+        elif type_filter == 'all':
+            es_query = SearchView.search_all(q, offset, limit)
+            
         try:
             res = es_query.execute()
         except (TransportError, ConnectionTimeout) as err:
@@ -47,46 +47,33 @@ class SearchView(BaseApiView):
                 raise
             res = es_query.execute()
 
-        results = [r for r in res]
         out = {}
         hits = []
-        if (type_filter != 'publications'):
-            for r in results:
-                d = r.to_dict()
-                d["doc_type"] = r.meta.doc_type
-                if hasattr(r.meta, 'highlight'):
-                    highlight = r.meta.highlight.to_dict()
-                    d["highlight"] = highlight
-                hits.append(d)
+
+        for r in res:
+            d = r.to_dict()
+            d["doc_type"] = r.meta.doc_type
+            if hasattr(r.meta, 'highlight'):
+                highlight = r.meta.highlight.to_dict()
+                d["highlight"] = highlight
+            if r.meta.doc_type == 'publication' and hasattr(r, 'users'):
+                users = r.users
+                pi = r.project.value.pi
+                pi_user = filter(lambda x: x.username==pi, users)[0]
+                d["piLabel"] = "{}, {}".format(pi_user.last_name, pi_user.first_name)
+            hits.append(d)
 
         out['total_hits'] = res.hits.total
         out['hits'] = hits
-        out['public_files_total'] = self.search_public_files(q, offset, limit).count()
-        out['published_total'] = self.search_published(q, offset, limit).count()
-        out['cms_total'] = self.search_cms_content(q, offset, limit).count()
-        out['private_files_total'] = 0
-        if request.user.is_authenticated:
-            out['private_files_total'] = self.search_my_data(self.request.user.username, q, offset, limit).count()
-
-        filter_totals = {
-            'public_files': out['public_files_total'],
-            'published': out['published_total'],
-            'cms': out['cms_total'],
-            'private_files': out['private_files_total'] 
-        }
-                            
-        out['total_hits_cumulative'] = sum(filter_totals.values())
-        out['filter'] = type_filter
-        # If there are hits not in the current type filter, set the 'filter' output to the filter with the most hits.
-        if out['total_hits'] == 0 and out['total_hits_cumulative'] > 0:
-
-            # get the max value of filter_totals using the number of hits as the key
-            new_filter = max(filter_totals.iteritems(), key=operator.itemgetter(1))[0]
-            out['filter'] = new_filter
+        out['all_total'] = SearchView.search_all(q, offset, limit).count()
+        out['public_files_total'] = SearchView.search_public_files(q, offset, limit).count()
+        out['published_total'] = SearchView.search_published(q, offset, limit).count()
+        out['cms_total'] = SearchView.search_cms_content(q, offset, limit).count()
 
         return JsonResponse(out, safe=False)
 
-    def search_cms_content(self, q, offset, limit):
+    @staticmethod
+    def search_cms_content(q, offset, limit):
         """search cms content """
         search = Search(index="cms").query(
             "query_string",
@@ -102,7 +89,8 @@ class SearchView(BaseApiView):
                     require_field_match=False)
         return search
 
-    def search_public_files(self, q, offset, limit):
+    @staticmethod
+    def search_public_files(q, offset, limit):
 
         split_query = q.split(" ")
         for i, c in enumerate(split_query):
@@ -122,39 +110,86 @@ class SearchView(BaseApiView):
         logger.info(search.to_dict())
         return search
 
-
-    def search_published(self, q, offset, limit):
+    @staticmethod
+    def search_published(q, offset, limit):
         query = Q(
             'bool',
             must=[
-                Q('query_string', query=q),
+                Q('query_string', query=q, default_operator='and'),
             ],
             must_not=[
                 Q('term', status='unpublished'),
                 Q('term', status='saved')
             ]
         )
-
-        search = Search(index="des-publications_legacy,des-publications")\
+        search = Search(index=["des-publications_legacy", "des-publications"])\
             .query(query)\
             .extra(from_=offset, size=limit)
         return search
 
-    def search_my_data(self, username, q, offset, limit):
+    @staticmethod
+    def search_all(q, offset=0, limit=10):
+        search = Search()
+        published_index_name = Index('des-publications').get_alias().keys()[0]
+        legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
+        files_index_name = Index('des-files').get_alias().keys()[0]
 
+        # Publications query
+        published_query = Q(
+            'bool',
+            must=[
+                Q('query_string', query=q, default_operator='and'),
+                Q('bool', should=[
+                    ({'term': {'_index': published_index_name}}),
+                    Q({'term': {'_index': legacy_index_name}})
+                ])
+            ],
+            must_not=[
+                Q('term', status='unpublished'),
+                Q('term', status='saved')
+            ]
+        )
+        # CMS query 
+        cms_query = Q(
+            'bool',
+            must=[
+                Q({'term': {'_index': 'cms'}}),
+                Q("query_string",
+                    query=q,
+                    default_operator="and",
+                    fields=['title', 'body'])
+            ]
+        )
+        # Public files query
         split_query = q.split(" ")
         for i, c in enumerate(split_query):
             if c.upper() not in ["AND", "OR", "NOT"]:
                 split_query[i] = "*" + c + "*"
-        
-        q = " ".join(split_query)
+        file_q = q = " ".join(split_query)
 
-        search = Search(index='des-files')
-        search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])
-        search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
-        search = search.filter("term", system='designsafe.storage.default')
-        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
-        search = search.extra(from_=offset, size=limit)
-        logger.info(search.to_dict())
+        system_filters = Q('term', system="nees.public") | \
+            Q('term', system="designsafe.storage.published") | \
+            Q('term', system="designsafe.storage.community")
+
+        public_files_query = Q(
+            'bool',
+            must=[
+                Q({'term': {'_index': files_index_name}}),
+                system_filters,
+                Q("query_string", query=file_q, default_operator="and"),
+                Q("term", type="file")
+            ]
+        )
+
+        search = search.query('bool',
+                              should=[published_query, cms_query, public_files_query])\
+            .extra(from_=offset, size=limit).highlight(
+            'body',
+            fragment_size=100)\
+            .highlight_options(
+            pre_tags=["<b>"],
+            post_tags=["</b>"],
+            require_field_match=False
+        )
+
         return search

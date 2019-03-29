@@ -16,14 +16,13 @@ class SearchCtrl {
         this.offset = 0;
         this.data.search_text = null;
         this.data.search_results = null;
-        this.data.type_filter = 'cms';
-        this.filetype_filter = 'all';
+        this.data.type_filter = 'all';
         this.searching = false;
         this.inital_q = $location.search().q;
         
         this.prettyFilterName = {
             'cms': 'Web Content', 
-            'private_files': 'My Data' ,
+            'all': 'Designsafe-CI' ,
             'published': 'Published Projects', 
             'public_files': 'Public Files'
         }
@@ -41,12 +40,12 @@ class SearchCtrl {
       this.searchService.help()
     }
 
-    search_browse(switch_filter) {
-      this.$state.go('search', {'query_string': this.data.search_text, 'type_filter': this.data.type_filter, 'switch_filter': switch_filter, 'redirect': false});
+    search_browse() {
+      this.$state.go('search', {'query_string': this.data.search_text, 'type_filter': this.data.type_filter, 'redirect': false});
     };
 
     search(reset){
-      arguments.length ? reset = true : reset= false;
+      arguments.length ? reset = true : reset = false;
       if (reset) {
         this.page_num = 0;
       }
@@ -58,10 +57,6 @@ class SearchCtrl {
             this.data.search_results = resp.data;
             this.max_pages = this.Math.ceil(this.data.search_results.total_hits / this.results_per_page);
             this.searching = false;
-            if (this.data.search_results.filter !== this.data.type_filter && this.$state.params.switch_filter === true) {
-              this.data.type_filter = this.data.search_results.filter;
-              this.search_browse(true);
-            }
             this.$window.scrollTo(0, 0);
         }, err => {
           this.searching = false;
@@ -72,7 +67,7 @@ class SearchCtrl {
     filter(ftype) {
       this.data.type_filter = ftype;
       this.page_num = 0;
-      this.search_browse(false);
+      this.search_browse();
     };
 
     next() {

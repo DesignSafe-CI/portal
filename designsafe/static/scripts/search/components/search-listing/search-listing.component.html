@@ -14,7 +14,7 @@
           <p>
             <h4><a ng-href="{{$ctrl.data.url || '/'}}" target="_self"> {{$ctrl.data.title}} </a></h4>
           </p>
-          <div ng-repeat = "hit in $ctrl.data.highlight.body">
+          <div ng-repeat = "hit in $ctrl.data.highlight.body track by $index">
             <p ng-bind-html = "hit"> </p>
           </div>
           <hr>
@@ -24,14 +24,23 @@
           <span class="label label-success"> Publication </span>
           <!-- This is for designsafe projects -->
           <div ng-if="$ctrl.data.projectId">
-            <h4><a ng-href="/data/browser/public/designsafe.storage.published/{{$ctrl.data.projectId}}"  target="_self"> {{$ctrl.data.project.value.title}} </a> </h4>
-            <strong> Project Type: </strong> {{$ctrl.data.project.value.projectType}}
+            <h4><a ng-href="/data/browser/public/designsafe.storage.published/{{$ctrl.data.projectId}}"  target="_self"> {{$ctrl.data.project.value.projectId}}: {{$ctrl.data.project.value.title}} (<span style="text-transform:capitalize;">{{$ctrl.data.project.value.projectType}}</span>)</a> </h4>
+            <p><strong> Author: </strong> {{$ctrl.data.piLabel}}</p>
+            <p><strong> Keywords: </strong> {{$ctrl.data.project.value.keywords}}</p>
+            <p><strong> Publication Date: </strong> {{$ctrl.data.created | date: 'M/d/yyyy'}}</p>
+            <p><strong> DOI: </strong> {{$ctrl.data.project.doi}}</p>
             <p> {{$ctrl.data.project.value.description}} </p>
             <span class="label label-primary"> Created: {{$ctrl.data.created | date:'short'}} </span>
           </div>
           <!-- This is for old nees projects -->
           <div ng-if="!$ctrl.data.projectId">
-            <h4><a ng-href="/data/browser/public/{{$ctrl.data.system}}/{{$ctrl.data.name}}.groups"  target="_self"> {{$ctrl.data.title}} </a> </h4>
+            <h4><a ng-href="/data/browser/public/{{$ctrl.data.system}}/{{$ctrl.data.name}}.groups"  target="_self"> {{$ctrl.data.project.split('.')[0]}}: {{$ctrl.data.title}} (NEES)</a> </h4>
+            <p><strong> Author(s): </strong>
+              <span ng-repeat="pi in $ctrl.data.pis">
+                  {{pi.lastName}}, {{pi.firstName}}<span ng-if="!$last">;</span>
+                </span>
+
+            </p>
             <p> {{$ctrl.data.description}} </p>
             <span class="label label-primary"> Created: {{$ctrl.data.startDate | date:'short'}} </span>
           </div>
