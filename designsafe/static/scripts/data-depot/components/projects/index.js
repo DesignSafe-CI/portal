@@ -23,6 +23,7 @@ import { PipelineCategoriesComponent } from './pipeline-categories/pipeline-cate
 import { PipelineCategoriesSimComponent } from './pipeline-categories/pipeline-categories-sim.component';
 import { PipelineCategoriesHybSimComponent } from './pipeline-categories/pipeline-categories-hyb-sim.component';
 import { PipelineAuthorsComponent } from './pipeline-authors/pipeline-authors.component';
+import { PipelineTeamComponent } from './pipeline-team/pipeline-team.component';
 import { PipelineLicensesComponent } from './pipeline-licenses/pipeline-licenses.component';
 import { ProjectTreeComponent } from '../../../projects/components/project-tree/project-tree.component';
 
@@ -51,6 +52,7 @@ ddProjectsComponents.component('pipelineCategories', PipelineCategoriesComponent
 ddProjectsComponents.component('pipelineCategoriesSim', PipelineCategoriesSimComponent);
 ddProjectsComponents.component('pipelineCategoriesHybSim', PipelineCategoriesHybSimComponent);
 ddProjectsComponents.component('pipelineAuthors', PipelineAuthorsComponent);
+ddProjectsComponents.component('pipelineTeam', PipelineTeamComponent);
 ddProjectsComponents.component('pipelineLicenses', PipelineLicensesComponent);
 ddProjectsComponents.component('projectTree', ProjectTreeComponent);
 

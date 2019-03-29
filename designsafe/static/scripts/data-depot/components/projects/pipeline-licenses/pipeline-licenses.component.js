@@ -67,6 +67,14 @@ class PipelineLicensesCtrl {
         }, {reload: true});
     }
 
+    goTeam() {
+        this.$state.go('projects.pipelineTeam', {
+            projectId: this.projectId,
+            project: this.project,
+            selectedListings: this.selectedListings,
+        }, {reload: true});
+    }
+
     // Modal for accept and publish...
     prepareModal() {
         this.$uibModal.open({

@@ -34,7 +34,7 @@
                         <i class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
-                <td class="tg-0lax" ng-hide="$ctrl.projType === 'other'">
+                <td class="tg-0lax">
                     <strong>Order Authors</strong>
                     <div>
                         <i class="fa fa-circle" style="color:#1CB500;"></i>
@@ -50,11 +50,11 @@
         </table>
         <br>
         <div>
-            <a class="pull-left" ng-click="$ctrl.goAuthors()" ng-if="!$ctrl.projType === 'other'">
+            <a class="pull-left" ng-click="$ctrl.goAuthors()" ng-if="$ctrl.projType !== 'other'">
                 <i class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
-            <a class="pull-left" ng-click="$ctrl.goData()" ng-if="$ctrl.projType === 'other'">
-                <i class="fa fa-arrow-left"></i> Back to Proofread Data
+            <a class="pull-left" ng-click="$ctrl.goTeam()" ng-if="$ctrl.projType === 'other'">
+                <i class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
             <button class="btn btn-small btn-add pull-right" ng-click="$ctrl.prepareModal()" ng-disabled="!$ctrl.license">
                 <i class="fa fa-globe"></i> Request DOI & Publish
