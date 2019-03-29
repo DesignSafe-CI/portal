@@ -38,6 +38,9 @@ class PipelineTeamCtrl {
             this.project.value.coPis.forEach((c) => {
                 this.team.push({'name': c, 'order': 0, 'guest': false});
             });
+            this.project.value.teamMembers.forEach((c) => {
+                this.team.push({'name': c, 'order': 0, 'guest': false});
+            });
             this.project.value.guestMembers.forEach((g) => {
                 g.order = 0;
                 g.guest = true;
