@@ -96,6 +96,7 @@ def index_level(client, path, folders, files, systemId, username, reindex=False,
             obj_dict.pop('permissions')
             obj_dict.pop('trail')
             obj_dict.pop('_links')
+            obj_dict['basePath'] = os.path.dirname(obj.path)
             doc = BaseESFile(username, reindex=reindex, **obj_dict)
             
             saved = doc.save()
