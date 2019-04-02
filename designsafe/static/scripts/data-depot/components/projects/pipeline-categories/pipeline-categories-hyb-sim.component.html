@@ -120,8 +120,9 @@
                 </table>
             </button>
             <div id="files-{{model.uuid}}" class="collapse in">
-                <div class="well" ng-if="model.value.description">
-                    <p>{{ model.value.description }}</p>
+                <div class="well">
+                    <p ng-if="model.value.description">{{ model.value.description }}</p>
+                    <span ng-click="$ctrl.editCategory(model)"><a>Edit</a></span>
                 </div>
                 <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="true"></files-listing>
             </div>
@@ -156,8 +157,9 @@
                             </table>
                         </button>
                         <div id="files-{{coordinator.uuid}}{{model.uuid}}" class="collapse in">
-                            <div class="well" ng-if="coordinator.value.description">
-                                <p>{{ coordinator.value.description }}</p>
+                            <div class="well">
+                                <p ng-if="coordinator.value.description">{{ coordinator.value.description }}</p>
+                                <span ng-click="$ctrl.editCategory(coordinator)"><a>Edit</a></span>
                             </div>
                             <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" category-listing="true"></files-listing>
                         </div>
@@ -193,8 +195,9 @@
                                         </table>
                                     </button>
                                     <div id="files-{{cout.uuid}}{{model.uuid}}" class="collapse in">
-                                        <div class="well" ng-if="cout.value.description">
-                                            <p>{{ cout.value.description }}</p>
+                                        <div class="well">
+                                            <p ng-if="cout.value.description">{{ cout.value.description }}</p>
+                                            <span ng-click="$ctrl.editCategory(cout)"><a>Edit</a></span>
                                         </div>
                                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" category-listing="true"></files-listing>
                                     </div>
@@ -237,8 +240,9 @@
                                         </table>
                                     </button>
                                     <div id="files-{{simsub.uuid}}{{model.uuid}}" class="collapse in">
-                                        <div class="well" ng-if="simsub.value.description">
-                                            <p>{{ simsub.value.description }}</p>
+                                        <div class="well">
+                                            <p ng-if="simsub.value.description">{{ simsub.value.description }}</p>
+                                            <span ng-click="$ctrl.editCategory(simsub)"><a>Edit</a></span>
                                         </div>
                                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" category-listing="true"></files-listing>
                                     </div>
@@ -281,8 +285,9 @@
                                                 </table>
                                             </button>
                                             <div id="files-{{sout.uuid}}{{model.uuid}}{{simsub.uuid}}" class="collapse in">
-                                                <div class="well" ng-if="sout.value.description">
-                                                    <p>{{ sout.value.description }}</p>
+                                                <div class="well">
+                                                    <p ng-if="sout.value.description">{{ sout.value.description }}</p>
+                                                    <span ng-click="$ctrl.editCategory(sout)"><a>Edit</a></span>
                                                 </div>
                                                 <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" category-listing="true"></files-listing>
                                             </div>
@@ -328,8 +333,9 @@
                                         </table>
                                     </button>
                                     <div id="files-{{expsub.uuid}}{{model.uuid}}" class="collapse in">
-                                        <div class="well" ng-if="expsub.value.description">
-                                            <p>{{ expsub.value.description }}</p>
+                                        <div class="well">
+                                            <p ng-if="expsub.value.description">{{ expsub.value.description }}</p>
+                                            <span ng-click="$ctrl.editCategory(expsub)"><a>Edit</a></span>
                                         </div>
                                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" category-listing="true"></files-listing>
                                     </div>
@@ -372,8 +378,9 @@
                                                 </table>
                                             </button>
                                             <div id="files-{{eout.uuid}}{{model.uuid}}{{expsub.uuid}}" class="collapse in">
-                                                <div class="well" ng-if="eout.value.description">
-                                                    <p>{{ eout.value.description }}</p>
+                                                <div class="well">
+                                                    <p ng-if="eout.value.description">{{ eout.value.description }}</p>
+                                                    <span ng-click="$ctrl.editCategory(eout)"><a>Edit</a></span>
                                                 </div>
                                                 <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" category-listing="true"></files-listing>
                                             </div>
