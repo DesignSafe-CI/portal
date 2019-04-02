@@ -64,13 +64,25 @@
         </colgroup>
         <tr>
             <td class="tg-0lax">
-                <button class="btn btn-project-l grayed-out" ng-click="$ctrl.goWork()">
-                    Working Directory</button>
-                <button class="btn btn-project-m" ng-click="$ctrl.goCuration()"
-                        ng-if="$ctrl.browser.project.value.projectType !== 'other'">
-                    Curation Directory</button>
-                <button class="btn btn-project-r grayed-out" ng-click="$ctrl.goPreview()">
-                    Publication Preview</button>
+                <button class="btn btn-project-l grayed-out"
+                        ng-click="$ctrl.goWork()"
+                        ng-disabled="$ctrl.loading"
+                >
+                    Working Directory
+                </button>
+                <button class="btn btn-project-m"
+                        ng-click="$ctrl.goCuration()"
+                        ng-if="$ctrl.browser.project.value.projectType !== 'other'"
+                        ng-disabled="$ctrl.loading"
+                >
+                    Curation Directory
+                </button>
+                <button class="btn btn-project-r grayed-out"
+                        ng-click="$ctrl.goPreview()"
+                        ng-disabled="$ctrl.loading"
+                >
+                    Publication Preview
+                </button>
             </td>
             <td class="tg-0lax" ng-if="!$ctrl.loading">
                 <div ng-hide="$ctrl.browser.project.value.projectType === 'other'">                    

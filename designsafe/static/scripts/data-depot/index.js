@@ -202,6 +202,7 @@ function config(
                             system: 'designsafe.storage.default',
                             permissions: [],
                         };
+                        delete DataBrowserService.currentState.project;
                     },
                 ],
             },
