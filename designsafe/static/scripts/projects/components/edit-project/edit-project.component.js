@@ -202,6 +202,7 @@ class EditProjectCtrl {
 
     type () {
         this.ProjectService.manageProjectType({'project': this.project, 'warning': true});
+        this.close();
     }
 
     save() {

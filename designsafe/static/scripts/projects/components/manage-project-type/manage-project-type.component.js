@@ -3,13 +3,14 @@ import _ from 'underscore';
 
 class ManageProjectTypeCtrl {
 
-    constructor(ProjectEntitiesService, ProjectModel, httpi, DataBrowserService, ProjectService) {
+    constructor(ProjectEntitiesService, ProjectModel, httpi, DataBrowserService, ProjectService, $state) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectModel = ProjectModel;
         this.httpi = httpi;
         this.DataBrowserService = DataBrowserService;
         this.ProjectService = ProjectService;
+        this.$state = $state;
     }
 
     $onInit() {
@@ -44,7 +45,9 @@ class ManageProjectTypeCtrl {
                 this.DataBrowserService.state().project.value.projectType = project.value.projectType;
                 this.close({$value: project});
                 this.loading = false;
-                this.ProjectService.editProject(this.project);
+                this.$state.go('projects.curation', { projectId: project.uuid }, { reload: true }).then(() => {
+                    this.ProjectService.editProject(project);
+                });
             });
         }
     }
