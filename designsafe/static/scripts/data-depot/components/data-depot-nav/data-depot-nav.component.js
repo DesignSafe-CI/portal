@@ -81,30 +81,6 @@ class DataDepotNavCtrl {
               description: 'Access to my Google Drive for copying'
             }
         );
-  
-        // $scope.routerItems.push({
-        //     name: 'Workspace',
-        //     collapsible: true,
-        //     collapse: true,
-        //     children: [
-        //       {
-        //         name: 'Application Catalog',
-        //         collapsible: false,
-        //         state: 'applicationCatalog'
-        //       },
-        //       {
-        //         name: 'Run Application',
-        //         collapsible: false,
-        //         state: 'runApplication'
-        //       },
-        //       {
-        //         name: 'Job History',
-        //         collapsible: false,
-        //         state: 'jobHistory'
-        //       }
-        //     ]
-        //   }
-        // );
       }
     }
   
