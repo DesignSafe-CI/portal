@@ -62,14 +62,24 @@
         </colgroup>
         <tr>
           <td>
-            <button class="btn btn-project-l" ng-click="$ctrl.workingDirectory()">
+            <button class="btn btn-project-l"
+                    ng-click="$ctrl.workingDirectory()"
+                    ng-disabled="$ctrl.loading"
+            >
               Working Directory</button>
             <button class="btn btn-project-m grayed-out"
                     ng-click="$ctrl.curationDirectory()"
-                    ng-if="$ctrl.browser.project.value.projectType !== 'other'">
-              Curation Directory</button>
-            <button class="btn btn-project-r grayed-out" ng-click="$ctrl.publicationPreview()">
-              Publication Preview</button>
+                    ng-if="$ctrl.browser.project.value.projectType !== 'other'"
+                    ng-disabled="$ctrl.loading"
+            >
+              Curation Directory
+            </button>
+            <button class="btn btn-project-r grayed-out"
+                    ng-click="$ctrl.publicationPreview()"
+                    ng-disabled="$ctrl.loading"
+            >
+              Publication Preview
+            </button>
           </td>
           <td>
           </td>
