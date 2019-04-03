@@ -1,5 +1,12 @@
+class ddPublicationListingController {
+    constructor($stateParams) {
+        'ngInject';
+        this.$stateParams = $stateParams;
+    }
+}
 const ddPublicationListingComponent = {
     template: require('./dd-publication-listing.template.html'),
+    controller: ddPublicationListingController,
     bindings: {
         browser: '<',
         queryString: '<',
@@ -9,6 +16,11 @@ const ddPublicationListingComponent = {
         renderName: '&',
         scrollToBottom: '&',
         scrollToTop: '&',
+        showDescription: '&',
+        typeFilter: '&',
+        clearFilters: '&',
+        areFiltersEmpty: '&',
+        toggles: '=',
     }
 }
 

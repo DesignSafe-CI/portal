@@ -2,11 +2,24 @@ import _ from 'underscore';
 import publicationsTemplate from './publications.component.html';
 
 class PublicationDataCtrl {
-    constructor($state, Django, DataBrowserService) {
+    constructor($scope, $state, $stateParams, $uibModal, Django, DataBrowserService) {
         'ngInject';
         this.DataBrowserService = DataBrowserService;
         this.$state = $state;
         this.Django = Django;
+        this.DataBrowserService = DataBrowserService;
+        this.$uibModal = $uibModal;
+
+        this.resolveBreadcrumbHref = this.resolveBreadcrumbHref.bind(this);
+        this.onBrowse = this.onBrowse.bind(this);
+        this.scrollToTop = this.scrollToTop.bind(this);
+        this.scrollToBottom = this.scrollToBottom.bind(this);
+        this.onSelect = this.onSelect.bind(this);
+        this.renderName = this.renderName.bind(this);
+        this.showDescription = this.showDescription.bind(this);
+        this.typeFilter = this.typeFilter.bind(this);
+        this.clearFilters = this.clearFilters.bind(this);
+        this.areFiltersEmpty = this.areFiltersEmpty.bind(this);
         this.browser = DataBrowserService.state();
     }
 
@@ -71,6 +84,43 @@ class PublicationDataCtrl {
             return file.metadata.experiments[0].title;
         }
         return file.name;
+    };
+    showDescription(title, description) {
+      var modal = this.$uibModal.open({
+        component: 'publicationDescriptionModalComponent',
+        resolve: {
+          title: () => title,
+          description: () => description,
+        },
+        size: 'lg'
+      })
+    }
+    areFiltersEmpty() {
+        let noneToggled = true
+        for (const key of Object.keys(this.toggles)) {
+            if (this.toggles[key]) {
+                noneToggled = false
+            }
+        }
+        if (noneToggled) {
+            return true
+        }
+        return false
+    }
+    typeFilter(item, x, y) {
+        if (this.areFiltersEmpty()) {
+            return true
+        }
+        if (item.metadata && this.toggles['nees']) {
+            return true
+        }
+        return this.toggles[(item.meta || {}).type]; 
+    }
+    clearFilters() {
+        for (const key of Object.keys(this.toggles)) {
+            this.toggles[key] = false
+        }
+        
     }
 }
 

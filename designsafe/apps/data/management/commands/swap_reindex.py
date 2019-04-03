@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
         index_config = settings.ES_INDICES[index]
 
-        default_index_alias = index_config['alias'][0]
+        default_index_alias = index_config['alias']
         reindex_index_alias = default_index_alias + '_reindex'
 
         if not swap_only:

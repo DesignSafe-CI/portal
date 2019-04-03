@@ -106,7 +106,7 @@ class IndexedFile(DocType):
             return [], None
 
     class Meta:
-        index = settings.ES_INDICES['files']['alias'][0]
+        index = settings.ES_INDICES['files']['alias']
         doc_type = settings.ES_INDICES['files']['documents'][0]['name']
         dynamic = MetaField('strict')
 
@@ -290,7 +290,7 @@ class IndexedPublication(DocType):
     })
 
     class Meta:
-        index = settings.ES_INDICES['publications']['name']
+        index = settings.ES_INDICES['publications']['alias']
         doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
 
 @python_2_unicode_compatible
@@ -397,6 +397,6 @@ class IndexedPublicationLegacy(DocType):
         })
 
     class Meta:
-        index = settings.ES_INDICES['publications_legacy']['name']
+        index = settings.ES_INDICES['publications_legacy']['alias']
         doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name']
         dynamic = MetaField('strict')
