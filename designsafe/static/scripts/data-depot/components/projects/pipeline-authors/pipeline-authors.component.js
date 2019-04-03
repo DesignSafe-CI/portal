@@ -17,6 +17,7 @@ class PipelineAuthorsCtrl {
         this.project = this.ProjectService.resolveParams.project;
         this.experiment = this.ProjectService.resolveParams.experiment;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
+        this.curDate = new Date().getFullYear();
 
         this.selectedAuthor = '';
         this.saved = false;
