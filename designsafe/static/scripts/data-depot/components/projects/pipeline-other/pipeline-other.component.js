@@ -47,8 +47,8 @@ class PipelineOtherCtrl {
         }, {reload: true});
     }
 
-    goLicenses() {
-        this.$state.go('projects.pipelineLicenses', {
+    goTeam() {
+        this.$state.go('projects.pipelineTeam', {
             projectId: this.projectId,
             project: this.project,
             selectedListings: this.selectedListings,

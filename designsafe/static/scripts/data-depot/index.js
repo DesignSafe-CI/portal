@@ -570,6 +570,27 @@ function config(
                 ],
             },
         })
+        .state('projects.pipelineTeam', {
+            url: '/projects/{projectId}/curation/team',
+            component: 'pipelineTeam',
+            params: {
+                project: '',
+                experiment: '',
+                selectedListings: '',
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
         .state('projects.pipelineLicenses', {
             url: '/projects/{projectId}/curation/licenses',
             component: 'pipelineLicenses',
