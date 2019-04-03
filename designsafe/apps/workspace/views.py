@@ -177,6 +177,8 @@ def call_api(request, service):
                         wh_base_url = request.build_absolute_uri('/webhooks/')
                         jobs_wh_url = request.build_absolute_uri(reverse('designsafe_api:jobs_wh_handler'))
 
+                    job_post['parameters']['_webhook_base_url'] = wh_base_url
+
                     # Remove any params from job_post that are not in appDef
                     for param, _ in job_post['parameters'].items():
                         if not any(p['id'] == param for p in job_post['appDefinition']['parameters']):
