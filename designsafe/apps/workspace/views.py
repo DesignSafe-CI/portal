@@ -184,6 +184,8 @@ def call_api(request, service):
                         if not any(p['id'] == param for p in job_post['appDefinition']['parameters']):
                             del job_post['parameters'][param]
 
+                    del job_post['appDefinition']
+
                     job_post['notifications'] = [
                         {'url': jobs_wh_url,
                         'event': e}
