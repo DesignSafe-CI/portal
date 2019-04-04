@@ -106,7 +106,7 @@
                     <div class="well" ng-if="report.value.description">
                         <p>{{ report.value.description }}</p>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-selection="true"></files-listing>
                 </div>
             </div>
         </div>
@@ -187,7 +187,7 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-selection="true"></files-listing>
                                 </div>
                             </div>
                         </div>
@@ -213,7 +213,7 @@
                                     <div class="well" ng-if="model.value.description">
                                         <p>{{ model.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-selection="true"></files-listing>
                                 </div>
                             </div>
                             <!-- Coordinator -->
@@ -249,7 +249,7 @@
                                                 <div class="well" ng-if="coordinator.value.description">
                                                     <p>{{ coordinator.value.description }}</p>
                                                 </div>
-                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]"></files-listing>
+                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" category-selection="true"></files-listing>
                                             </div>
                                             </td>
                                         </tr>
@@ -288,7 +288,7 @@
                                                             <div class="well" ng-if="cout.value.description">
                                                                 <p>{{ cout.value.description }}</p>
                                                             </div>
-                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]"></files-listing>
+                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" category-selection="true"></files-listing>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -332,7 +332,7 @@
                                                             <div class="well" ng-if="simsub.value.description">
                                                                 <p>{{ simsub.value.description }}</p>
                                                             </div>
-                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]"></files-listing>
+                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" category-selection="true"></files-listing>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -376,7 +376,7 @@
                                                                     <div class="well" ng-if="sout.value.description">
                                                                         <p>{{ sout.value.description }}</p>
                                                                     </div>
-                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]"></files-listing>
+                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" category-selection="true"></files-listing>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -423,7 +423,7 @@
                                                             <div class="well" ng-if="expsub.value.description">
                                                                 <p>{{ expsub.value.description }}</p>
                                                             </div>
-                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]"></files-listing>
+                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" category-selection="true"></files-listing>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -467,7 +467,7 @@
                                                                     <div class="well" ng-if="eout.value.description">
                                                                         <p>{{ eout.value.description }}</p>
                                                                     </div>
-                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]"></files-listing>
+                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" category-selection="true"></files-listing>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -516,7 +516,7 @@
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-selection="true"></files-listing>
                                 </div>
                             </div>
                         </div>

@@ -17,7 +17,7 @@
         </div>
         <table class="files-listing-table table table-bordered table-striped"
                style="background-color: #fff;">
-            <thead ng-hide="$ctrl.categoryMode()">
+            <thead ng-hide="$ctrl.categoryList()">
                 <tr>
                     <th>
                         <span ng-if="$ctrl.allowSelect">
@@ -36,7 +36,7 @@
                     ng-class="{highlight: item._ui.selected}"
                 >
                     <td class="unselectable">
-                        <span ng-if="!$ctrl.categoryMode()">
+                        <span ng-if="!$ctrl.categoryList()">
                             <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="item._ui.selected" data-ng-click="$ctrl.onSelect($event, item)">
                                 <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
                                 <i class="fa fa-check-square fa-stack-1x" style="color:#1CB500;"></i>
@@ -50,7 +50,7 @@
                         <a data-ng-href="{{ item.href }}" data-ng-click="$ctrl.onBrowse($event, item)">
                             {{ item.name }}
                         </a>
-                        <div class="project-categories" ng-if="$ctrl.curationMode() && !$ctrl.categoryMode()">
+                        <div class="project-categories" ng-if="$ctrl.curationMode() && !$ctrl.categoryList()">
                             <div class="file-categories"
                                  data-ng-if="$ctrl.browser.project && !$ctrl.browser.loadingEntities">
                                 <file-categories data-project="$ctrl.browser.project"
@@ -70,7 +70,7 @@
                     </td>
                     <td data-ng-if="item.format== 'folder'">--</td>
                     <td data-ng-if="item.format== 'raw'">{{ item.length|bytes }}</td>
-                    <td ng-hide="$ctrl.categoryMode()">{{ item.lastModified|date:"short" }}</td>
+                    <td ng-hide="$ctrl.categoryList()">{{ item.lastModified|date:"short" }}</td>
                 </tr>
                 <tr data-ng-if="$ctrl.browser.busyListingPage">
                     <td>
@@ -108,17 +108,20 @@
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"
                 >
-                    <p class="lead">
+                    <p class="lead" style="margin-top:20px" ng-if="!$ctrl.categorySelect() && !$ctrl.categoryList()">
                         This folder is empty! <br />
-                        <i class="fa fa-folder-open-o">&nbsp;</i><br />
-                        <a class=""
-                           data-ng-if="$ctrl.listing().system.indexOf('project-') == 0"
+                        <i class="fa fa-folder-open-o">&nbsp;</i><br/>
+                        <a data-ng-if="$ctrl.listing().system.indexOf('project-') == 0"
                            href="https://www.youtube.com/watch?v=ISrPManDVCYi&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
-                            target="_blank"
+                           target="_blank"
                         >
                             <i class="fa fa-question-circle">&nbsp;</i>
                             Learn how to move files to a project
                         </a>
+                    </p>
+                    <p class="lead" style="margin-top:20px" ng-if="$ctrl.categorySelect() || $ctrl.categoryList()">
+                        This category is empty <br />
+                        <i class="fa fa-file-text-o">&nbsp;</i><br/>
                     </p>
                 </div>
             </caption>

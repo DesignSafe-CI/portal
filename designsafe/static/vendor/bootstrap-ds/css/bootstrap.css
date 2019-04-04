@@ -4888,6 +4888,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-experiment {
   background-color: #f5f5f5;
   border-color: #cccccc;
+  white-space: normal;
 }
 .category-model-conf {
   font-weight: bold;
@@ -4896,6 +4897,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-model-conf {
   background-color: #C4D9F2;
   border-color: #1568C9;
+  white-space: normal;
 }
 .category-sensor-info {
   font-weight: bold;
@@ -4904,6 +4906,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-sensor-info {
   background-color: #CAE9E6;
   border-color: #43A59D;
+  white-space: normal;
 }
 .category-event {
   font-weight: bold;
@@ -4912,6 +4915,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-event {
   background-color: #ECE4BF;
   border-color: #B59300;
+  white-space: normal;
 }
 .category-sim-subst {
   font-weight: bold;
@@ -4920,6 +4924,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-sim-subst {
   background-color: #EBCCB9;
   border-color: #BD5717;
+  white-space: normal;
 }
 .category-exp-subst {
   font-weight: bold;
@@ -4928,6 +4933,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-exp-subst {
   background-color: #C8C0D9;
   border-color: #4B3181;
+  white-space: normal;
 }
 .category-outpt {
   font-weight: bold;
@@ -4936,6 +4942,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-outpt {
   background-color: #df878a;
   border-color: #D04348;
+  white-space: normal;
 }
 .category-analysis {
   font-weight: bold;
@@ -4944,6 +4951,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-analysis {
   background-color: #CCECF6;
   border-color: #56C0E0;
+  white-space: normal;
 }
 .category-report {
   font-weight: bold;
@@ -4952,6 +4960,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .tab-report {
   background-color: #C4C4C4;
   border-color: #3E3E3E;
+  white-space: normal;
 }
 .breadcrumb {
   padding: 8px 15px;

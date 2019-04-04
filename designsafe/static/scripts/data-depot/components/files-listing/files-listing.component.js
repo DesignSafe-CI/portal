@@ -38,14 +38,20 @@ class FilesListingCtrl {
             }
             return false;
         };
-        this.categoryMode = () => {
+        this.categoryList = () => {
             if (typeof this.categoryListing != 'undefined' && this.categoryListing === true) {
                 return true;
             }
             return false;
         };
+        this.categorySelect = () => {
+            if (typeof this.categorySelection != 'undefined' && this.categorySelection === true) {
+                return true;
+            }
+            return false;
+        };
         this.listing = () => {
-            if (this.categoryMode() && (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList))) {
+            if (this.categoryList() && (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList))) {
                 return;
             }
             if (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList)){
@@ -219,6 +225,7 @@ export const FilesListingComponent = {
         browser: '=',
         filesList: '=',
         categoryListing: '=',
+        categorySelection: '=',
     },
 };
 
