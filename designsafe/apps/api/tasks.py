@@ -897,11 +897,9 @@ def save_publication(self, project_id):
 
 @shared_task(bind=True)
 def zip_publication(self, project_id):
-    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
     import zipfile
     import shutil
 
-    publication = Publication(project_id=project_id)
     ARCHIVE_NAME = str(project_id) + '_archive.zip'
     proj_dir = '/srv/www/designsafe/corral-repl/tacc/NHERI/published/{}'.format(project_id)
 
