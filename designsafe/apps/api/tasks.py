@@ -903,12 +903,12 @@ def zip_publication(self, project_id):
 
     publication = Publication(project_id=project_id)
     ARCHIVE_NAME = str(project_id) + '_archive.zip'
-    proj_dir = '/srv/www/designsafe/corral-repl/tacc/NHERI/published' # BOOKMARK: adding any sort of projectID to this messes up the script???
+    proj_dir = '/srv/www/designsafe/corral-repl/tacc/NHERI/published/{}'.format(project_id)
 
     # open directory permissions
     def open_perms(project_directory):
         os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0777)
-        archive_path = os.path.join(project_directory, ARCHIVE_NAME)
+        archive_path = os.path.join(project_directory)
         for root, dirs, files in os.walk(archive_path):
             for d in dirs:
                 os.chmod(os.path.join(root, d), 0777)
@@ -918,7 +918,7 @@ def zip_publication(self, project_id):
     # close directory permissions
     def close_perms(project_directory):
         os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0555)
-        archive_path = os.path.join(project_directory, ARCHIVE_NAME)
+        archive_path = os.path.join(project_directory)
         for root, dirs, files in os.walk(archive_path):
             for d in dirs:
                 os.chmod(os.path.join(root, d), 0555)
@@ -979,7 +979,7 @@ def zip_publication(self, project_id):
         create_archive(proj_dir)
     else:
         update_archive(proj_dir)
-    # close_perms(proj_dir)
+    close_perms(proj_dir)
 
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
