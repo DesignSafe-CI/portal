@@ -210,6 +210,7 @@ class ManageExperimentsCtrl {
             description: exp.value.description
         };
         this.ui.showEditExperimentForm = true;
+        document.getElementById("form-top").scrollIntoView({behavior: "smooth"});
     }
 
     editAuthors(user, i) {

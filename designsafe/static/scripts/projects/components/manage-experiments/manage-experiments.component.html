@@ -7,7 +7,7 @@
   </h4>
 </div>
 <div class="modal-body">
-  <div class="well">
+  <div class="well" id="form-top">
     <form name='addForm' ng-hide="$ctrl.ui.showEditExperimentForm">
       <div class="text-center">
         <span style="color: #D04348; font-size:14px;">&#9679; </span>
@@ -165,7 +165,7 @@
         </div>
       </div>
     </form>
-    <form name='editForm' ng-if="$ctrl.ui.showEditExperimentForm">
+    <form name='editForm' ng-show="$ctrl.ui.showEditExperimentForm">
         <div class="text-center">
           <span style="color: #D04348; font-size:14px;">&#9679; </span>
           <span>Required for Curation & Publication</span>
@@ -179,7 +179,7 @@
             Different from the Project Title. Make it focused on the methods used to obtain the data in this Experiment.
           </p>
           <div>
-            <input type="text" name="exp-title" id="add-exp-title" style="width:100%;" ng-model="$ctrl.editExpForm.title" ng-required="true"><br>
+            <input type="text" name="exp-title" id="edit-exp-title" style="width:100%;" ng-model="$ctrl.editExpForm.title" ng-required="true"><br>
           </div>
         </div>
         <!-- Edit Experiment Date -->
@@ -236,7 +236,7 @@
           <div>
             <select style="width:100%"
                     class="grayed-out"
-                    id="add-exp-facility"
+                    id="edit-exp-facility"
                     disabled>
               <option value="$ctrl.editExpForm.facility">{{ $ctrl.editExpForm.facility }}</option>
             </select>
@@ -249,7 +249,7 @@
           <div>
             <select style=" width:100%"
                     class="grayed-out"
-                    id="add-exp-type"
+                    id="edit-exp-type"
                     disabled>
               <option value="$ctrl.editExpForm.type">{{ $ctrl.editExpForm.type }}</option>
             </select>
@@ -286,7 +286,7 @@
           <div>
             <textarea type="text"
                       style="width:100%; height:3em; resize: vertical;"
-                      id="add-exp-desc"
+                      id="edit-exp-desc"
                       ng-model="$ctrl.editExpForm.description"
                       ng-required="true">
             </textarea>
