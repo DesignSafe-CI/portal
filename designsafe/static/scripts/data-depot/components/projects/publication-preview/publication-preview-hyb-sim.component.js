@@ -131,6 +131,7 @@ class PublicationPreviewHybSimCtrl {
                         },
                         (err) => {
                             this.browser.ui.error = err;
+                            this.loading = false;
                         });
                 };
                 this.setFilesDetails(allFilePaths);
