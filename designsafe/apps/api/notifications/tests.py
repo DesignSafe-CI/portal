@@ -17,7 +17,6 @@ from django.core.urlresolvers import reverse
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.notifications.views.api import ManageNotificationsView
 from designsafe.apps.api.notifications.views.api import NotificationsBadgeView
-# import pdb; pdb.set_trace()
 
 import logging
 
