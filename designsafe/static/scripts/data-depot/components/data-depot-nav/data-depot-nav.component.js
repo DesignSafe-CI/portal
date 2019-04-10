@@ -29,12 +29,7 @@ class DataDepotNavCtrl {
             collapsible: false,
             state: 'communityData',
             description: 'Non-curated user-contributed data'
-          }/*,
-          {
-            name: 'Training Materials',
-            collapsible: false,
-            state: 'trainingMaterials'
-          }*/
+          }
       );
   
       if (this.Django.context.authenticated) {
