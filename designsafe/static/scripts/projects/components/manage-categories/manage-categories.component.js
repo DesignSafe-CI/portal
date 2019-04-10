@@ -317,6 +317,7 @@ class ManageCategoriesCtrl {
             description: catCopy.value.description
         };
         this.ui.showEditCategory = true;
+        document.getElementById("form-top").scrollIntoView({behavior: "smooth"});
     }
 
     updateCategory() {
