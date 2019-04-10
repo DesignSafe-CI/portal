@@ -22,10 +22,10 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         limit = request.GET.get('limit', 0)
         page = request.GET.get('page', 0)
         if event_type is not None:
-            notifs = Notification.objects.filter(
+            notifs = Notification.objects.filter(event_type = event_type,
                           deleted = False,
                           user = request.user.username).order_by('-datetime')
-            total = Notification.objects.filter(
+            total = Notification.objects.filter(event_type = event_type,
                           deleted = False,
                           user = request.user.username).count()
         else:
@@ -45,7 +45,6 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
 
         notifs = [n.to_dict() for n in notifs]
         return self.render_to_json_response({'notifs':notifs, 'page':page, 'total': total})
-        # return self.render_to_json_response(notifs)
 
     def post(self, request, *args, **kwargs):
         body_json = json.loads(request.body)
@@ -57,12 +56,6 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         return self.render_to_json_response(n)
 
     def delete(self, request, pk, *args, **kwargs):
-        # body_json = json.loads(request.body)
-        # nid = body_json['id']
-        # deleted = body_json['deleted']
-        # n = Notification.objects.get(pk = pk)
-        # n.deleted = deleted
-        # n.save()
         if pk == 'all':
             items=Notification.objects.filter(deleted=False, user=str(request.user))
             for i in items:
