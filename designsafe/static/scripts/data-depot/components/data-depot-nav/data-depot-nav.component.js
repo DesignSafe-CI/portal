@@ -45,18 +45,13 @@ class DataDepotNavCtrl {
               collapsible: false,
               state: 'projects.list',
               description: 'Group access to shared directories'
-            },/*
-            {
-              name: 'My Publications',
-              collapsible: false,
-              state: 'myPublications'
-            },*/
+            },
             {
               name: 'Shared with Me',
               collapsible: false,
               state: 'sharedData',
               description: 'Data other users shared with me'
-          },
+            },
             {
               name: 'Box.com',
               collapsible: false,
