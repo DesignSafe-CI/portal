@@ -200,8 +200,8 @@ class EditProjectCtrl {
         });
     }
 
-    type () {
-        this.ProjectService.manageProjectType({'project': this.project, 'warning': true});
+    type (warn) {
+        this.ProjectService.manageProjectType({'project': this.project, 'warning': warn});
         this.close();
     }
 
@@ -266,12 +266,6 @@ class EditProjectCtrl {
             }
         }
         // move this to the back end ------------------------------------------------------->
-        //temp
-        // this.form.copiPrune = this.form.copi;
-        // this.form.teamPrune = this.form.team;
-        // this.form.awardPrune = this.form.awardNumber;
-        // this.form.workPrune = this.form.associatedProjects;
-        //temp
         if (this.form.pi) {
             projectData.pi = this.form.pi.username;
         }

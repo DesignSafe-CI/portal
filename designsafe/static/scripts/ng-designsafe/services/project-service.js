@@ -329,9 +329,6 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
       });
       
       modalInstance.result.then((project) => {
-        if (window.sessionStorage.projectData) {
-          window.sessionStorage.setItem('projectData', JSON.stringify(project));
-        }
         $state.reload();
       });
     };

@@ -131,7 +131,7 @@
                 </tr>
             </table>
         </div>
-        <div class="expAuthorsAssign form-group">
+        <div class="expAuthorsAssign form-group" ng-if="!$ctrl.form.uuid && $ctrl.form.projectType">
             <label>These names can be selected as authors during the publication process.</label>
             <table style="table-layout: fixed; width: 100%;">
                 <colgroup>
@@ -166,7 +166,7 @@
             </div>
         </div>
         <!-- Edit Project Section -->
-        <div ng-if="$ctrl.form.uuid">
+        <div ng-if="$ctrl.form.uuid && $ctrl.form.projectType">
             <!-- Project Members -->
             <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.project.value.projectType === 'other'">
                 <strong>Data Type(s)</strong>
@@ -272,7 +272,7 @@
                             style="width:100%;"
                             id="id_keywords"
                             ng-model="$ctrl.form.keywords"
-                            ng-required="$ctrl.form.uuid"><br>
+                            ng-required="$ctrl.form.uuid && $ctrl.form.projectType"><br>
                 </div>
             </div>
             <!-- Project Description -->
@@ -288,7 +288,7 @@
                                 style="width:100%; height:3em; resize: vertical;"
                                 id="id_description"
                                 ng-model="$ctrl.form.description"
-                                ng-required="$ctrl.form.uuid"></textarea>
+                                ng-required="$ctrl.form.uuid && $ctrl.form.projectType"></textarea>
                 </div>
             </div>
         </div>
@@ -301,8 +301,11 @@
                 </colgroup>
                 <tr style="height: 40px;">
                     <td class="tg-0lax" valign="center">
-                        <div ng-if="$ctrl.form.uuid">
-                            <a ng-click="$ctrl.type()">Did you select the wrong project type?</a>
+                        <div ng-if="$ctrl.form.uuid && $ctrl.form.projectType">
+                            <a ng-click="$ctrl.type(true)">Did you select the wrong project type?</a>
+                        </div>
+                        <div ng-if="$ctrl.form.uuid && !$ctrl.form.projectType">
+                            <a ng-click="$ctrl.type(false)">Are you ready to choose a project type?</a>
                         </div>
                     </td>
                     <td class="tg-0lax" valign="center" style="text-align: right;">
