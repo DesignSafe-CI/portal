@@ -267,13 +267,23 @@ class ProjectTreeCtrl {
      */
     relateEntityToSimProject(leaf, entity){
         let leafParent = leaf.parent;
+        let highestOrder = -1;
+        _.each(leafParent.children, (child) => {
+            if (child.data.order !== null && 
+                child.data.type === entity.name &&
+                child.data.order > highestOrder){
+                highestOrder = child.data.order;
+            }
+        });
+        highestOrder += 1;
+        entity.setOrderFor(leafParent.data.uuid, highestOrder);
         if (leaf.data.entityType == 'output') {
             entity.value.simInputs.push(leafParent.data.uuid);
             leafParent = leafParent.parent;
         }
         if (leaf.data.entityType == 'output' ||
             leaf.data.entityType == 'input') {
-            entity.value.modelConfigs.push(leafParent.data.uuid);
+            entity.value.modelConfigs.push(leafParent.data.uuid); //check model configs
             leafParent = leafParent.parent;
         }
         entity.value.simulations.push(leafParent.data.uuid);
@@ -598,7 +608,7 @@ class ProjectTreeCtrl {
         let simulations = [];
         if ( this.rootCategoryUuid ) {
             simulations = _.filter(
-                this.project.simoutput_set,
+                this.project.simulation_set,
                 (sim) => { return sim.uuid === this.rootCategoryUuid; }
             );
         } else {
@@ -613,24 +623,35 @@ class ProjectTreeCtrl {
         _.each(simulations, (sim) => {
             let node = {
                 name: sim.value.title,
+                type: sim.name,
                 uuid: sim.uuid,
                 parent: null,
                 children: [],
                 rectStyle: 'stroke: none;',
             };
+            let childReports = [];
             _.each(reports, (rep) => {
                 if (!_.contains(rep.associationIds, node.uuid)){
                     return;
                 }
                 let repNode = {
                     name: rep.value.title,
+                    type: rep.name,
                     uuid: rep.uuid,
                     parent: node.name,
                     rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
                     display: 'Report',
+                    order: rep.orderOf(node.uuid).value,
                 };
-                node.children.push(repNode);
+                childReports.push(repNode);
             });
+            childReports = _.sortBy(childReports, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childReports);
             node.children.push(
                 {
                     name: '-- Choose a Report --',
@@ -638,44 +659,60 @@ class ProjectTreeCtrl {
                     entityType: 'report',
                 }
             );
+            let childModel = [];
             _.each(models, (mod) => {
                 if (!_.contains(mod.associationIds, node.uuid)){
                     return;
                 }
                 let modNode = {
                     name: mod.value.title,
+                    type: mod.name,
                     uuid: mod.uuid,
                     parent: node.name,
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
                     display: 'Simulation Model',
+                    order: mod.orderOf(node.uuid).value,
                 };
+                let childInputs = [];
                 _.each(inputs, (input) => {
-                    if (_.difference([mod.uuid, node.uuid], input.associationIds).length){
+                    if (_.difference([modNode.uuid, node.uuid], input.associationIds).length){
                         return;
                     }
                     let inpNode = {
                         name: input.value.title,
+                        type: input.name,
                         uuid: input.uuid,
                         parent: modNode.name,
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
                         display: 'Simulation Input',
+                        order: input.orderOf(modNode.uuid).value,
                     };
+                    let childOutputs = [];
                     _.each(outputs, (output) => {
                         if (_.difference([input.uuid, modNode.uuid, node.uuid], output.associationIds).length){
                             return;
                         }
-                        let outNode = {
+                        let outputNode = {
                             name: output.value.title,
+                            type: output.name,
                             uuid: output.uuid,
                             parent: inpNode.name,
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Simulation Output',
+                            order: output.orderOf(inpNode.uuid).value,
                         };
-                        inpNode.children.push(outNode);
+                        childOutputs.push(outputNode);
                     });
+                    childOutputs = _.sortBy(childOutputs, (child) => {
+                        if (child.order !== null) {
+                            return child.order;
+                        }
+                        return child.name;
+                    });
+                    inpNode.children = inpNode.children.concat(childOutputs);
                     inpNode.children.push(
                         {
                             name: '-- Choose an Output --',
@@ -683,8 +720,15 @@ class ProjectTreeCtrl {
                             entityType: 'output',
                         }
                     );
-                    modNode.children.push(inpNode);
+                    childInputs.push(inpNode);
                 });
+                childInputs = _.sortBy(childInputs, (child) => {
+                    if (child.order !== null) {
+                        return child.order;
+                    }
+                    return child.name;
+                });
+                modNode.children = modNode.children.concat(childInputs);
                 modNode.children.push(
                     {
                         name: '-- Choose an Input --',
@@ -692,8 +736,15 @@ class ProjectTreeCtrl {
                         entityType: 'input',
                     }
                 );
-                node.children.push(modNode);
+                childModel.push(modNode);
             });
+            childModel = _.sortBy(childModel, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childModel);
             node.children.push(
                 {
                     name: '-- Choose a Simulation Model --',
@@ -701,19 +752,29 @@ class ProjectTreeCtrl {
                     entityType: 'model',
                 }
             );
+            let childAnalysis = [];
             _.each(analysis, (ana) => {
                 if (!_.contains(ana.associationIds, node.uuid)){
                     return;
                 }
                 let anaNode = {
                     name: ana.value.title,
+                    type: ana.name,
                     uuid: ana.uuid,
                     parent: node.name,
                     rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
                     display: 'Analysis',
+                    order: ana.orderOf(node.uuid).value
                 };
-                node.children.push(anaNode);
+                childAnalysis.push(anaNode);
             });
+            childAnalysis = _.sortBy(childAnalysis, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childAnalysis);
             node.children.push(
                 {
                     name: '-- Choose an Analysis --',
