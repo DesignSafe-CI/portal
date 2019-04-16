@@ -896,89 +896,28 @@ def save_publication(self, project_id):
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
-def zip_publication(self, project_id):
-    import zipfile
-    import shutil
+def zip_project_files(self, project_uuid):
+    from designsafe.apps.projects.models.agave.base import Project
+    from designsafe.apps.api.agave import get_service_account_client
 
-    ARCHIVE_NAME = str(project_id) + '_archive.zip'
-    proj_dir = '/srv/www/designsafe/corral-repl/tacc/NHERI/published/{}'.format(project_id)
+    try:
+        ag = get_service_account_client()
+        proj = Project.manager().get(ag, uuid=project_uuid)
+        proj.archive()
+    except Exception as exc:
+        logger.error('Zip Proj UUID: %s. %s', project_uuid, exc, exc_info=True)
+        raise self.retry(exc=exc)
 
-    # open directory permissions
-    def open_perms(project_directory):
-        os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0777)
-        archive_path = os.path.join(project_directory)
-        for root, dirs, files in os.walk(archive_path):
-            for d in dirs:
-                os.chmod(os.path.join(root, d), 0777)
-            for f in files:
-                os.chmod(os.path.join(root, f), 0777)
+@shared_task(bind=True)
+def zip_publication_files(self, project_id):
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
 
-    # close directory permissions
-    def close_perms(project_directory):
-        os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0555)
-        archive_path = os.path.join(project_directory)
-        for root, dirs, files in os.walk(archive_path):
-            for d in dirs:
-                os.chmod(os.path.join(root, d), 0555)
-            for f in files:
-                os.chmod(os.path.join(root, f), 0555)
-
-    def create_archive(project_directory):
-        try:
-            logger.debug("Creating new archive for %s" % project_directory)
-
-            # create archive within the project directory
-            archive_path = os.path.join(project_directory, ARCHIVE_NAME)
-            abs_path = project_directory.rsplit('/',1)[0]
-
-            
-
-            zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
-            for dirs, _, files in os.walk(project_directory):
-                for f in files:
-                    if f == ARCHIVE_NAME:
-                        continue
-                    # write files without abs file path
-                    zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path,''), f))
-            zf.close()
-        except:
-            logger.debug("Creating archive failed for " % 
-                project_directory)
-
-    def update_archive(project_directory):
-        try:
-            logger.debug("Updating archive for %s" % project_directory)
-
-            archive_path = os.path.join(project_directory, ARCHIVE_NAME)
-            archive_timestamp = os.path.getmtime(archive_path)
-            zf = zipfile.ZipFile(archive_path, mode='a', allowZip64=True)
-            for dirs, _, files in os.walk(project_directory):
-                for f in files:
-                    if f == ARCHIVE_NAME:
-                        continue
-                    file_path = os.path.join(dirs, f)
-                    file_timestamp = os.path.getmtime(file_path)
-                    if file_timestamp > archive_timestamp:
-                        if file_path in zf.namelist():
-                            zf.close()
-                            logger.debug(
-                                "Modified file, deleting archive and " \
-                                "re-archiving project directory %s" % 
-                                project_directory)
-                            os.remove(archive_path)
-                            create_archive(project_directory)
-                            break
-        except:
-            logger.debug("Updating archive failed for project directory" % 
-                project_directory)
-    
-    open_perms(proj_dir)
-    if ARCHIVE_NAME not in os.listdir(proj_dir):
-        create_archive(proj_dir)
-    else:
-        update_archive(proj_dir)
-    close_perms(proj_dir)
-
+    try:
+        pub = Publication(project_id=project_id)
+        pub.archive()
+    except Exception as exc:
+        logger.error('Zip Proj Id: %s. %s', project_id, exc, exc_info=True)
+        raise self.retry(exc=exc)
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_to_fedora(self, project_id):
