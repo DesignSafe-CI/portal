@@ -75,8 +75,14 @@ class ManageExperimentsCtrl {
 
     isValid(ent) {
         if (ent && ent != "" && ent != "None") {
+            if ((typeof this.editExpForm || typeof this.editExpForm) === 'undefined') {
+                //debugger;
+                console.log(this.data.project.experiment_set);
+                //console.log(ent);
+            }
             return true;
         }
+        //debugger;
         return false;
     }
 
@@ -256,6 +262,7 @@ class ManageExperimentsCtrl {
     }
 
     saveEditExperiment() {
+        debugger;
         var exp = this.editExpForm.exp;
         exp.value.title = this.editExpForm.title;
         exp.value.description = this.editExpForm.description;

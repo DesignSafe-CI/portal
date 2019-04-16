@@ -191,40 +191,26 @@
           <div style="display:flex;">
             <span class="input-group" style="width:25%;">
               <input  type="text"
-                      uib-datepicker-popup="MM-dd-yyyy"
                       ng-model="$ctrl.editExpForm.start"
                       is-open="isStartOpen"
-                      placeholder="{{$ctrl.editExpForm.start | date:'MM-dd-yyyy'}}"
-                      datepicker-options="dateOptions"
+                      placeholder="{{experiment.value.procedureStart | date:'MM-dd-yyyy'}}"
                       date-disabled="disabled(date, mode)"
                       ng-required="false"
                       close-text="Close"
                       class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
-                  <i class="glyphicon glyphicon-calendar"></i>
-                </button>
-              </span>
             </span>
             <span style="padding:6px;">
               &#8213;
             </span>
             <span class="input-group" style="width:25%;">
               <input  type="text"
-                      uib-datepicker-popup="MM-dd-yyyy"
                       ng-model="$ctrl.editExpForm.end"
                       is-open="isEndOpen"
-                      placeholder="{{$ctrl.editExpForm.end | date:'MM-dd-yyyy'}}"
-                      datepicker-options="dateOptions"
+                      placeholder="{{experiment.value.procedureEnd | date:'MM-dd-yyyy'}}"
                       date-disabled="disabled(date, mode)"
                       ng-required="false"
                       close-text="Close"
                       class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
-                  <i class="glyphicon glyphicon-calendar"></i>
-                </button>
-              </span>
             </span>
           </div>
         </div>
