@@ -357,15 +357,23 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         p.team_order = post_data.get('teamOrder', p.team_order)
         p.associated_projects = post_data.get('associatedProjects', p.associated_projects)
         p.description = post_data.get('description', p.description)
-        p.co_pis = post_data.get('copi')
-        p.team_members = post_data.get('teamMembers', p.team_members)
         p.guest_members = post_data.get('guestMembers', p.guest_members)
         p.keywords = post_data.get('keywords', p.keywords)
-        new_pi = post_data.get('pi')
         p.project_id = post_data.get('projectId', p.project_id)
+        new_pi = post_data.get('pi')
+        new_co_pis = post_data.get('copi')
+        new_team_members = post_data.get('teamMembers')
+
         if new_pi and  new_pi != 'null' and p.pi != new_pi:
             p.pi = new_pi
             p.add_pi(new_pi)
+        if new_co_pis != 'null' and p.co_pis != new_co_pis:
+            p.co_pis = new_co_pis
+            p.add_co_pis(new_co_pis)
+        if new_team_members != 'null' and p.team_members != new_team_members:
+            p.team_members = new_team_members
+            p.add_team_members(new_team_members)
+
         p.save(ag)
         return JsonResponse(p.to_body_dict())
 
