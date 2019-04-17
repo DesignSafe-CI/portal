@@ -206,6 +206,6 @@ def agave_session_error(request):
 
 # load_alerts_into_session() will be called after a new login ( within agave_oauth_callback() )
 def load_alerts_into_session(request):
-    alert_messages = [model_to_dict(alert) for alert in PageAlert.objects.all()]
+    alert_messages = [{"alert_type": alert.alert_type, "message": alert.message, "is_active": alert.is_active} for alert in PageAlert.objects.all()]
     request.session['alertslist'] = alert_messages
     request.session['alertslist_size'] = len(alert_messages)

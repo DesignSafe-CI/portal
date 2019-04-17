@@ -11,20 +11,22 @@ TYPE_CHOICES = (
     )
 
 class PageAlert(models.Model):
-    alert_id = models.CharField(max_length=120, unique=True, primary_key=True)
+    name = models.CharField(max_length=120, unique=True, primary_key=True)
     alert_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='alert-warning')
-    alert_message = models.TextField(help_text='Page alert message text.')
+    message = models.TextField(help_text='Page alert message text.')
+    is_active = models.BooleanField(default=False)
     
     def __str__(self):
-        return '{alert_id}: {alert_type} - {alert_message}...'.format(
-            alert_id=self.alert_id,
+        return '{name}: {alert_type} - {message}...'.format(
+            name=self.name,
             alert_type=self.alert_type,
-            alert_message=self.alert_message[0:50]
+            message=self.message[0:50]
         )
 
     def __repr__(self):
         return {
-            'alert_id':self.alert_id,
+            'name':self.name,
             'alert_type':self.alert_type,
-            'alert_message':self.alert_message
+            'message':self.message,
+            'is_active':self.is_active
         }
