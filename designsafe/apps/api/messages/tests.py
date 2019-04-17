@@ -13,13 +13,13 @@ class PageAlertTests(TestCase):
         self.alerts = []
         # Rows are ordered alphanumerically by id.
         self.alerts.append(PageAlert.objects.create(
-            alert_id=u"test_danger", alert_type=u"alert-danger", alert_message=u"This is a <i>test</i> danger"))
+            name=u"test_danger", alert_type=u"alert-danger", message=u"This is a <i>test</i> danger", is_active=True))
         self.alerts.append(PageAlert.objects.create(
-            alert_id=u"test_info", alert_type=u"alert-info", alert_message=u"This is a <i>test</i> info"))
+            name=u"test_info", alert_type=u"alert-info", message=u"This is a <i>test</i> info", is_active=True))
         self.alerts.append(PageAlert.objects.create(
-            alert_id=u"test_success", alert_type=u"alert-success", alert_message=u"This is a <i>test</i> success"))
+            name=u"test_success", alert_type=u"alert-success", message=u"This is a <i>test</i> success", is_active=True))
         self.alerts.append(PageAlert.objects.create(
-            alert_id=u"test_warning", alert_type=u"alert-warning", alert_message=u"This is a <i>test</i> warning"))
+            name=u"test_warning", alert_type=u"alert-warning", message=u"This is a <i>test</i> warning", is_active=True))
         
     def test_page_alerts(self):
         request = RequestFactory().get('/')
@@ -27,7 +27,7 @@ class PageAlertTests(TestCase):
         load_alerts_into_session(request)
         alert_messages = []
         for alert in self.alerts:
-            alert_messages.append(model_to_dict(alert))
+            alert_messages.append({"alert_type": alert.alert_type, "message": alert.message, "is_active": alert.is_active})
         self.assertEqual(request.session['alertslist'], alert_messages)
         self.assertEqual(request.session['alertslist_size'], len(alert_messages))
     

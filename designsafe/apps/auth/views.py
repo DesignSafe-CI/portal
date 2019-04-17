@@ -5,7 +5,6 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-from django.forms.models import model_to_dict
 
 from .models import AgaveOAuthToken, AgaveServiceStatus
 from agavepy.agave import Agave
