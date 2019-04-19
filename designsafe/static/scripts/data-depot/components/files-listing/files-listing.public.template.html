@@ -1,12 +1,12 @@
 <div style="background-color:white;padding:10px"> 
     <a  ng-if="$ctrl.$stateParams.query_string"ng-href="/data/browser/public/"><i class="fa fa-arrow-left"></i> Back to all publications</a>
     <p ng-if="$ctrl.$stateParams.query_string">{{filtered.length}} Results found for <b>{{$ctrl.$stateParams.query_string}}</b></p>
-    <p><b>Publication Type</b> <a ng-if=!$ctrl.areFiltersEmpty() ng-click="$ctrl.clearFilters()">clear</a></p>
-    <label class="checkbox-inline custom-control-input my-error"><input type="checkbox" value="" ng-model="$ctrl.toggles.experimental">Experimental</label>
-    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.toggles.simulation" >Simulation</label>
-    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.toggles.hybrid">Hybrid Simulation</label>
-    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.toggles.nees">NEES</label>
-    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.toggles.other">Other</label>
+    <p><b>Publication Type</b> <a ng-if=!$ctrl.areFiltersEmpty() ng-click="$ctrl.clearFilters()">Clear</a></p>
+    <label class="checkbox-inline custom-control-input my-error"><input type="checkbox" value="" ng-model="$ctrl.state.type_filters.experimental">Experimental</label>
+    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.state.type_filters.simulation" >Simulation</label>
+    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.state.type_filters.hybrid">Hybrid Simulation</label>
+    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.state.type_filters.nees">NEES</label>
+    <label class="checkbox-inline"><input type="checkbox" value="" ng-model="$ctrl.state.type_filters.other">Other</label>
   </div>
 <div class="table-responsive">
     <div

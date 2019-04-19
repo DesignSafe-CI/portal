@@ -37,7 +37,14 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     showMainListing: true,
     showPreviewListing: false,
     ui: {},
-    tests: null
+    tests: null,
+    type_filters: {
+      experimental: false,
+      simulation: false,
+      hybrid: false,
+      nees: false,
+      other: false
+    }
   };
 
   var projectBreadcrumbSubject = new Subject();
