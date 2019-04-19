@@ -75,14 +75,8 @@ class ManageExperimentsCtrl {
 
     isValid(ent) {
         if (ent && ent != "" && ent != "None") {
-            if ((typeof this.editExpForm || typeof this.editExpForm) === 'undefined') {
-                //debugger;
-                console.log(this.data.project.experiment_set);
-                //console.log(ent);
-            }
             return true;
         }
-        //debugger;
         return false;
     }
 
@@ -205,8 +199,8 @@ class ManageExperimentsCtrl {
             exp: exp,
             authors: auths,
             selectedAuthor: '',
-            start: exp.value.procedureStart,
-            end: exp.value.procedureEnd,
+            start: exp.value.procedureStart.split("T")[0],
+            end: exp.value.procedureEnd.split("T")[0],
             title: exp.value.title,
             facility: exp.getEF(this.data.project.value.projectType, exp.value.experimentalFacility).label,
             type: exp.value.experimentType,
@@ -262,7 +256,6 @@ class ManageExperimentsCtrl {
     }
 
     saveEditExperiment() {
-        debugger;
         var exp = this.editExpForm.exp;
         exp.value.title = this.editExpForm.title;
         exp.value.description = this.editExpForm.description;
