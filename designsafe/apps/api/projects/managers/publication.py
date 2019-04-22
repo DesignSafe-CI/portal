@@ -10,6 +10,23 @@ import dateutil.parser
 import requests
 import chardet
 
+from django.core.exceptions import ObjectDoesNotExist
+from pytas.http import TASClient
+
+from designsafe.apps.api.agave import service_account
+from designsafe.apps.projects.models.agave.base import Project as BaseProject
+from designsafe.apps.projects.models.agave.experimental import (
+    ExperimentalProject,
+    Event,
+    ModelConfig,
+    SensorList,
+    Report,
+    Analysis
+)
+from designsafe.apps.projects.models.agave.simulation import SimulationProject
+from designsafe.apps.projects.models.agave.hybrid_simulation import HybridSimulationProject
+
+
 logger = logging.getLogger(__name__)
 
 USER = settings.DATACITE_USER
@@ -69,19 +86,18 @@ def format_req(metadata):
 
 def _reserve_doi(xml_obj, target):
     xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
+    logger.debug(xml_str)
     metadata = {'_status': 'reserved', 'datacite': xml_str, '_target': target}
 
-    if SHOULDER != FAKE_SHOULDER:
-        response = requests.post('{}/shoulder/{}'.format(BASE_URI, SHOULDER),
-                                 data=format_req(metadata),
-                                 auth=CREDS,
-                                 headers={'Content-Type': 'text/plain'})
-        res = parse_response(response.text)
-        if 'success' in res:
-            return res['success']
-        else:
-            raise Exception(res['error'])
-    return 'fake_doi'
+    response = requests.post('{}/shoulder/{}'.format(BASE_URI, SHOULDER),
+                             data=format_req(metadata),
+                             auth=CREDS,
+                             headers={'Content-Type': 'text/plain'})
+    res = parse_response(response.text)
+    if 'success' in res:
+        return res['success']
+    else:
+        raise Exception(res['error'])
 
 def _update_doi(doi, xml_obj=None, status='reserved'):
     res = requests.get(
@@ -111,59 +127,55 @@ def _update_doi(doi, xml_obj=None, status='reserved'):
         else:
             raise Exception(res['error'])
 
-def _project_required_xml(publication):
-    project_body = publication['project']
-    proj = project_body['value']
+def _project_required_xml(project, authors, created, doi=None):
     xml_obj = _project_header()
 
     resource = xml_obj
     identifier = ET.SubElement(resource, 'identifier')
     identifier.attrib['identifierType'] = 'DOI'
-    if project_body.get('doi', ''):
-        identifier.text = project_body.get('doi')
+    if doi:
+        identifier.text = doi
     else:
         identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
-    #um = get_user_model()
-    users = sorted(publication['users'], key=lambda x: x['_ui']['order'])
-    for author in users:
+
+    for author in authors:
         creator = ET.SubElement(creators, 'creator')
         creator_name = ET.SubElement(creator, 'creatorName')
         creator_name.text = '{}, {}'.format(author['last_name'], author['first_name'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
-    title.text = proj['title']
+    title.text = project.title
     publisher = ET.SubElement(resource, 'publisher')
     publisher.text = 'Designsafe-CI'
 
-    now = dateutil.parser.parse(publication['created'])
+    now = dateutil.parser.parse(created)
     publication_year = ET.SubElement(resource, 'publicationYear')
     publication_year.text = str(now.year)
 
     resource_type = ET.SubElement(resource, 'resourceType')
-    resource_type.text = "Project/{}".format(proj['projectType'].title())
+    resource_type.text = "Project/{}".format(project.project_type.title())
     resource_type.attrib['resourceTypeGeneral'] = 'Dataset'
     descriptions = ET.SubElement(resource, 'descriptions')
     desc = ET.SubElement(descriptions, 'description')
     desc.attrib['descriptionType'] = 'Abstract'
-    desc.text = proj['description']
+    desc.text = project.description
     return xml_obj
 
-def _experiment_required_xml(users, experiment, created):
-    exp = experiment['value']
+def _experiment_required_xml(users, experiment, created, exp_doi):
     xml_obj = _project_header()
 
     resource = xml_obj
     identifier = ET.SubElement(resource, 'identifier')
     identifier.attrib['identifierType'] = 'DOI'
-    if exp.get('doi', ''):
-        identifier.text = exp.get('doi')
+    if exp_doi:
+        identifier.text = exp_doi
     else:
         identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
     #um = get_user_model()
-    authors = exp.get('authors')
+    authors = experiment.authors
     #authors = authors or users
     for author in authors:
         _userf = filter(lambda x: x['username'] == author, users)
@@ -298,12 +310,14 @@ def analysis_reserve_xml(publication, analysis, created):
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
-def experiment_reserve_xml(publication, experiment, created):
-    exp = experiment['value']
-    xml_obj = _experiment_required_xml(publication['users'], experiment,
-                                       created)
-    now = dateutil.parser.parse(created)
-    if not experiment.get('doi', ''):
+def experiment_reserve_xml(publication, project, experiment, authors_details=None, exp_doi=None):
+    xml_obj = _experiment_required_xml(
+        authors_details,
+        experiment,
+        publication['created'],
+        exp_doi
+    )
+    if not exp_doi:
         reserve_res = _reserve_doi(
             xml_obj,
             ENTITY_TARGET_BASE.format(
@@ -326,32 +340,32 @@ def experiment_reserve_xml(publication, experiment, created):
     contributor = ET.SubElement(contributors, 'contributor')
     contributor.attrib['contributorType'] = 'HostingInstitution'
     name = ET.SubElement(contributor, 'contributorName')
-    name.text = exp['experimentalFacility']
+    name.text = experiment.experimental_facility
     subjects = ET.SubElement(resource, 'subjects')
     exp_type = ET.SubElement(subjects, 'subject')
-    exp_type.text = exp['experimentType'].title()
+    exp_type.text = experiment.experimental_facility.title()
     eq_type = ET.SubElement(subjects, 'subject')
-    eq_type.text = exp['equipmentType']
-    events = [event for event in publication['eventsList'] if \
-              experiment['uuid'] in event['associationIds']]
+    eq_type.text = experiment.equipment_type
+    events = [Event.manager().get(service_account(), uuid=event) for event
+              in publication['eventsList']]
 
     for event in events:
         event_subj = ET.SubElement(subjects, 'subject')
-        event_subj.text = event['value']['title']
+        event_subj.text = event.title
 
-    mcfs = [mcf for mcf in publication['modelConfigs'] if \
-              experiment['uuid'] in mcf['associationIds']]
+    mcfs = [ModelConfig.manager().get(service_account(), uuid=mcf) for mcf
+            in publication['modelConfigs']]
 
     for mcf in mcfs:
         mcf_subj = ET.SubElement(subjects, 'subject')
-        mcf_subj.text = mcf['value']['title']
+        mcf_subj.text = mcf.title
 
-    slts = [slt for slt in publication['sensorLists'] if \
-              experiment['uuid'] in slt['associationIds']]
+    slts = [SensorList.manager().get(service_account(), uuid=slt) for slt
+            in publication['sensorLists']]
 
     for slt in slts:
         slt_subj = ET.SubElement(subjects, 'subject')
-        slt_subj.text = slt['value']['title']
+        slt_subj.text = slt.title
 
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
@@ -444,39 +458,77 @@ def hybrid_simulation_reserve_xml(publication, simulation, created):
     return (doi, ark, xml_obj)
 
 
-def project_reserve_xml(publication):
-    project_body = publication['project']
-    proj = project_body['value']
-    xml_obj = _project_required_xml(publication)
+def project_by_uuid(uuid, prj_type):
+    """Retrieves a project."""
+    agv = service_account()
+
+    if prj_type == 'experimental':
+        project = ExperimentalProject.manager().get(agv, uuid=uuid)
+    elif prj_type == 'simulation':
+        project = SimulationProject.manager().get(agv, uuid=uuid)
+    elif prj_type == 'simulation':
+        project = HybridSimulationProject.manager().get(agv, uuid=uuid)
+    else:
+        project = BaseProject.manager().get(agv, uuid=uuid)
+
+    return project
+
+
+def project_reserve_xml(publication, project, authors_details=None):
+    institutions = set()
+    if not authors_details:
+        authors_details = []
+        for username in [project.pi] + project.co_pis:
+            try:
+                author = get_user_model().objects.get(username=username)
+            except ObjectDoesNotExist:
+                continue
+
+            user_tas = TASClient().get_user(username=username)
+            authors_details.append({
+                'username': username,
+                'first_name': author.first_name,
+                'last_name': author.last_name
+            })
+            institutions.add(user_tas['institution'])
+    else:
+        for author in authors_details:
+            institutions.add(author['institution'])
+
+    xml_obj = _project_required_xml(
+        project=project,
+        authors=authors_details,
+        created=publication['created'],
+        doi=publication['project'].get('doi')
+    )
+
     now = dateutil.parser.parse(publication['created'])
-    if not project_body.get('doi', ''):
-        reserve_resp = _reserve_doi(xml_obj, TARGET_BASE.format(project_id=proj['projectId']))
+    if not publication['project'].get('doi', ''):
+        reserve_resp = _reserve_doi(xml_obj, TARGET_BASE.format(project_id=project.project_id))
         doi = reserve_resp
         ark = doi
     else:
-        doi = project_body.get('doi')
-        ark = project_body.get('doi')
+        doi = publication['project'].get('doi')
+        ark = publication['project'].get('doi')
+
     doi = doi.strip()
     ark = ark.strip()
+
     identifier = xml_obj.find('identifier')
     identifier.text = doi
 
     #Optional stuff
     resource = xml_obj
     subjects = ET.SubElement(resource, 'subjects')
-    for keyword in proj['keywords'].split(','):
+    for keyword in project.keywords.split(','):
         subject = ET.SubElement(subjects, 'subject')
         subject.text = keyword.strip().title()
 
-    institutions = publication['institutions']
     contributors = ET.SubElement(resource, 'contributors')
     for institution in institutions:
-        if not institution.get('label', None):
-            continue
-
         contrib = ET.SubElement(contributors, 'contributor')
         name = ET.SubElement(contrib, 'contributorName')
-        name.text = institution['label']
+        name.text = institution
         contrib.attrib['contributorType'] = 'HostingInstitution'
 
     dates = ET.SubElement(resource, 'dates')
@@ -488,14 +540,18 @@ def project_reserve_xml(publication):
     language.text = 'English'
 
     alternate_ids = ET.SubElement(resource, 'alternateIdentifiers')
-    if proj['awardNumber']:
-        award_number = ET.SubElement(alternate_ids, 'alternateIdentifier')
-        award_number.attrib['alternateIdentifierType'] = 'NSF Award Number'
-        award_number.text = proj['awardNumber']
+    if hasattr(project, 'award_numbers'):
+        for anmbr in project.award_numbers:
+            award_number = ET.SubElement(alternate_ids, 'alternateIdentifier')
+            award_number.attrib['alternateIdentifierType'] = 'NSF Award Number'
+            award_number.text = '{name} - {number}'.format(
+                name=anmbr['name'],
+                number=anmbr['number']
+            )
 
     project_id = ET.SubElement(alternate_ids, 'alternateIdentifier')
     project_id.attrib['alternateIdentifierType'] = 'Project ID'
-    project_id.text = proj['projectId']
+    project_id.text = project.project_id
 
     rights_list = ET.SubElement(resource, 'rightsList')
     rights = ET.SubElement(rights_list, 'rights')
@@ -533,7 +589,11 @@ def publish_project(doi, xml_obj):
         raise Exception(res['error'])
 
 def reserve_publication(publication, analysis_doi=False):
-    proj_doi, proj_ark, proj_xml = project_reserve_xml(publication)
+    project = project_by_uuid(
+        publication['project']['uuid'],
+        publication['project']['value']['projectType']
+    )
+    proj_doi, proj_ark, proj_xml = project_reserve_xml(publication, project, publication.get('authors'))
     logger.debug('proj_doi: %s', proj_doi)
     logger.debug('proj_ark: %s', proj_ark)
     logger.debug('proj_xml: %s', proj_xml)
@@ -542,11 +602,20 @@ def reserve_publication(publication, analysis_doi=False):
     sim_dois = []
     xmls = {proj_doi: proj_xml}
     publication['project']['doi'] = proj_doi
-    if publication['project']['value']['projectType'].lower() == 'experimental':
-        for exp in publication.get('experimentsList', []):
-            exp_doi, exp_ark, exp_xml = experiment_reserve_xml(publication,
-                                                               exp,
-                                                               publication['created'])
+    if project.project_type.lower() == 'experimental':
+        for exp in project.experiment_set(service_account()):
+            exp_doi = ''
+            published_exps = [pexp for pexp in publication['experimentsList'] if pexp == exp.uuid]
+            if published_exps:
+                exp_doi = published_exps[0]['doi']
+
+            exp_doi, exp_ark, exp_xml = experiment_reserve_xml(
+                publication,
+                project,
+                exp,
+                getattr(exp, 'authors', []),
+                exp_doi
+            )
             add_related(exp_xml, [proj_doi])
             exps_dois.append(exp_doi)
             exp['doi'] = exp_doi
@@ -572,7 +641,7 @@ def reserve_publication(publication, analysis_doi=False):
         for _doi in [proj_doi] + exps_dois + anl_dois:
             logger.debug('Final project doi: %s', _doi)
             _update_doi(_doi, xmls[_doi], status='public')
-    elif publication['project']['value']['projectType'].lower() == 'simulation':
+    elif project.project_type.lower() == 'simulation':
         for sim in publication.get('simulations', []):
             sim_doi, sim_ark, sim_xml = simulation_reserve_xml(
                     publication,
@@ -590,7 +659,7 @@ def reserve_publication(publication, analysis_doi=False):
         for _doi in [proj_doi] + sim_dois:
             logger.debug('DOI: %s', _doi)
             _update_doi(_doi, xmls[_doi], status='public')
-    elif publication['project']['value']['projectType'].lower() == 'hybrid_simulation':
+    elif project.project_type.lower() == 'hybrid_simulation':
         for sim in publication.get('hybrid_simulations', []):
             sim_doi, sim_ark, sim_xml = hybrid_simulation_reserve_xml(
                     publication,

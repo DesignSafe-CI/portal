@@ -1,8 +1,8 @@
 <div class="modal-header" style="background: #e6e6e6;">
     <h4 class="modal-title" style="border:none;">
         <span>Agreement</span>
-        <span class="pull-right" ng-click="$ctrl.cancel()">
-            <i class="fa fa-times"></i>
+        <span class="pull-right" data-ng-click="$ctrl.cancel()">
+            <i class="fa fa-times">&nbsp;</i>
         </span>
     </h4>
 </div>
@@ -17,10 +17,14 @@
     </p>
     <div>
         <span style="display:inline-block; width:75%;">
-            <input type="checkbox" id="agreement" ng-click="$ctrl.agree()"> I agree
+            <input type="checkbox" id="agreement" name="agreement" data-ng-model="$ctrl.agreed">
+            <label for="agreement"> I agree </label>
         </span>
-        <button class="btn btn-add" style="display:inline-block; width:24%;" ng-click="$ctrl.publish()" ng-disabled="!$ctrl.valid">
-            <i class="fa fa-globe"></i> Request DOI & Publish
+        <button class="btn btn-add"
+                style="display:inline-block; width:24%;"
+                data-ng-click="$ctrl.publish()"
+                data-ng-disabled="!$ctrl.agreed">
+            <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish
         </button>
     </div>
 </div>

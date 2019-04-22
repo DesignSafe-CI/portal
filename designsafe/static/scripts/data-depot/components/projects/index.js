@@ -26,6 +26,7 @@ import { PipelineAuthorsComponent } from './pipeline-authors/pipeline-authors.co
 import { PipelineTeamComponent } from './pipeline-team/pipeline-team.component';
 import { PipelineLicensesComponent } from './pipeline-licenses/pipeline-licenses.component';
 import { ProjectTreeComponent } from '../../../projects/components/project-tree/project-tree.component';
+import { PipelinePublishComponent } from './pipeline-publish/pipeline-publish.component';
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
@@ -55,5 +56,6 @@ ddProjectsComponents.component('pipelineAuthors', PipelineAuthorsComponent);
 ddProjectsComponents.component('pipelineTeam', PipelineTeamComponent);
 ddProjectsComponents.component('pipelineLicenses', PipelineLicensesComponent);
 ddProjectsComponents.component('projectTree', ProjectTreeComponent);
+ddProjectsComponents.component('pipelinePublishModal', PipelinePublishComponent);
 
 export default ddProjectsComponents;
