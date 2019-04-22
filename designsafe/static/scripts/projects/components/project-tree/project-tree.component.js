@@ -221,6 +221,16 @@ class ProjectTreeCtrl {
      */
     relateEntityToHybridSimProject(leaf, entity){
         let leafParent = leaf.parent;
+        let highestOrder = -1;
+        _.each(leafParent.children, (child) => {
+            if (child.data.order !== null && 
+                child.data.type === entity.name &&
+                child.data.order > highestOrder){
+                highestOrder = child.data.order;
+            }
+        });
+        highestOrder += 1;
+        entity.setOrderFor(leafParent.data.uuid, highestOrder);
         if (leaf.data.entityType == 'coordinatorOutput') {
             entity.value.coordinators.push(leafParent.data.uuid);
             leafParent = leafParent.parent;
@@ -267,13 +277,23 @@ class ProjectTreeCtrl {
      */
     relateEntityToSimProject(leaf, entity){
         let leafParent = leaf.parent;
+        let highestOrder = -1;
+        _.each(leafParent.children, (child) => {
+            if (child.data.order !== null && 
+                child.data.type === entity.name &&
+                child.data.order > highestOrder){
+                highestOrder = child.data.order;
+            }
+        });
+        highestOrder += 1;
+        entity.setOrderFor(leafParent.data.uuid, highestOrder);
         if (leaf.data.entityType == 'output') {
             entity.value.simInputs.push(leafParent.data.uuid);
             leafParent = leafParent.parent;
         }
         if (leaf.data.entityType == 'output' ||
             leaf.data.entityType == 'input') {
-            entity.value.modelConfigs.push(leafParent.data.uuid);
+            entity.value.modelConfigs.push(leafParent.data.uuid); //check model configs
             leafParent = leafParent.parent;
         }
         entity.value.simulations.push(leafParent.data.uuid);
@@ -375,24 +395,35 @@ class ProjectTreeCtrl {
         _.each(simulations, (sim) => {
             let node = {
                 name: sim.value.title,
+                type: sim.name,
                 uuid: sim.uuid,
                 parent: null,
                 children: [],
-                rectStyle: 'stroke: none;'
+                rectStyle: 'stroke: none;',
             };
+            let childReports = [];
             _.each(reports, (rep) => {
                 if (!_.contains(rep.associationIds, node.uuid)){
                     return;
                 }
                 let repNode = {
                     name: rep.value.title,
+                    type: rep.name,
                     uuid: rep.uuid,
                     parent: node.name,
                     rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
                     display: 'Report',
+                    order: rep.orderOf(node.uuid).value,
                 };
-                node.children.push(repNode);
+                childReports.push(repNode);
             });
+            childReports = _.sortBy(childReports, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childReports);
             node.children.push(
                 {
                     name: '-- Choose a Report --',
@@ -400,44 +431,60 @@ class ProjectTreeCtrl {
                     entityType: 'report',
                 }
             );
+            let childModels = [];
             _.each(models, (mod) => {
                 if (!_.contains(mod.associationIds, node.uuid)){
                     return;
                 }
                 let modNode = {
                     name: mod.value.title,
+                    type: mod.name,
                     uuid: mod.uuid,
                     parent: node.name,
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
                     display: 'Global Model',
+                    order: mod.orderOf(node.uuid).value,
                 };
+                let childCoords = [];
                 _.each(coordinators, (coord) => {
                     if (_.difference([mod.uuid, node.uuid], coord.associationIds).length){
                         return;
                     }
                     let coordNode = {
                         name: coord.value.title,
+                        type: coord.name,
                         uuid: coord.uuid,
                         parent: modNode.name,
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
                         display: 'Master Simulator Coordinator',
+                        order: coord.orderOf(modNode.uuid).value,
                     };
+                    let childCoordOuts = [];
                     _.each(coordOutputs, (output) => {
                         if (_.difference([coord.uuid, mod.uuid, sim.uuid], output.associationIds).length){
                             return;
                         }
                         let outNode = {
                             name: output.value.title,
+                            type: output.name,
                             uuid: output.uuid,
                             parent: coordNode.name,
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Coordinator Output',
+                            order: output.orderOf(coordNode.uuid).value,
                         };
-                        coordNode.children.push(outNode);
+                        childCoordOuts.push(outNode);
                     });
+                    childCoordOuts = _.sortBy(childCoordOuts, (child) => {
+                        if (child.order !== null) {
+                            return child.order;
+                        }
+                        return child.name;
+                    });
+                    coordNode.children = coordNode.children.concat(childCoordOuts);
                     coordNode.children.push(
                         {
                             name: '-- Choose an Output --',
@@ -445,33 +492,45 @@ class ProjectTreeCtrl {
                             entityType: 'coordinatorOutput',
                         }
                     );
-
+                    let childNumericals = [];
                     _.each(numericals, (num) => {
                         if (_.difference([coord.uuid, mod.uuid, sim.uuid], num.associationIds).length){
                             return;
                         }
                         let numNode = {
                             name: num.value.title,
+                            type: num.name,
                             uuid: num.uuid,
                             parent: coordNode.name,
                             children: [],
                             rectStyle: 'stroke: #BD5717; fill: #EBCCB9;',
                             display: 'Numerical Substructure',
+                            order: num.orderOf(coordNode.uuid).value,
                         };
+                        let childSimOuts = [];
                         _.each(simOutputs, (out) => {
                             if (_.difference([num.uuid, mod.uuid, sim.uuid], out.associationIds).length){
                                 return;
                             }
                             let outNode = {
                                 name: out.value.title,
+                                type: out.name,
                                 uuid: out.uuid,
                                 parent: num.name,
                                 children: [],
                                 rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                                 display: 'Simulation Output',
+                                order: out.orderOf(num.uuid).value,
                             };
-                            numNode.children.push(outNode);
+                            childSimOuts.push(outNode);
                         });
+                        childSimOuts = _.sortBy(childSimOuts, (child) => {
+                            if (child.order !== null) {
+                                return child.order;
+                            }
+                            return child.name;
+                        });
+                        numNode.children = numNode.children.concat(childSimOuts);
                         numNode.children.push(
                             {
                                 name: '-- Choose a Simulation Output --',
@@ -479,8 +538,15 @@ class ProjectTreeCtrl {
                                 entityType: 'simOutput',
                             }
                         );
-                        coordNode.children.push(numNode);
+                        childNumericals.push(numNode);
                     });
+                    childNumericals = _.sortBy(childNumericals, (child) => {
+                        if (child.order !== null) {
+                            return child.order;
+                        }
+                        return child.name;
+                    });
+                    coordNode.children = coordNode.children.concat(childNumericals);
                     coordNode.children.push(
                         {
                             name: '-- Choose a Numerical Substructure --',
@@ -488,32 +554,45 @@ class ProjectTreeCtrl {
                             entityType: 'simSubstructure',
                         }
                     );
+                    let childExperimentals = [];
                     _.each(experimentals, (exp) => {
                         if (_.difference([coord.uuid, mod.uuid, sim.uuid], exp.associationIds).length){
                             return;
                         }
                         let expNode = {
                             name: exp.value.title,
+                            type: exp.name,
                             uuid: exp.uuid,
                             parent: coordNode.name,
                             children: [],
                             rectStyle: 'stroke: #4B3181; fill: #C8C0D9;',
                             display: 'Experimental Substructure',
+                            order: exp.orderOf(coordNode.uuid).value,
                         };
+                        let childExpOuts = [];
                         _.each(expOutputs, (out) => {
                             if (_.difference([exp.uuid, mod.uuid, sim.uuid], out.associationIds).length){
                                 return;
                             }
                             let outNode = {
                                 name: out.value.title,
+                                type: out.name,
                                 uuid: out.uuid,
                                 parent: exp.name,
                                 children: [],
                                 rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                                 display: 'Experiental Output',
+                                order: out.orderOf(exp.uuid).value,
                             };
-                            expNode.children.push(outNode);
+                            childExpOuts.push(outNode);
                         });
+                        childExpOuts = _.sortBy(childExpOuts, (child) => {
+                            if (child.order !== null) {
+                                return child.order;
+                            }
+                            return child.name;
+                        });
+                        expNode.children = expNode.children.concat(childExpOuts);
                         expNode.children.push(
                             {
                                 name: '-- Choose a Experimental Output --',
@@ -521,8 +600,15 @@ class ProjectTreeCtrl {
                                 entityType: 'expOutput',
                             }
                         );
-                        coordNode.children.push(expNode);
+                        childExperimentals.push(expNode);
                     });
+                    childExperimentals = _.sortBy(childExperimentals, (child) => {
+                        if (child.order !== null) {
+                            return child.order;
+                        }
+                        return child.name;
+                    });
+                    coordNode.children = coordNode.children.concat(childExperimentals);
                     coordNode.children.push(
                         {
                             name: '-- Choose a Experimental Substructure --',
@@ -530,9 +616,15 @@ class ProjectTreeCtrl {
                             entityType: 'expSubstructure',
                         }
                     );
-
-                    modNode.children.push(coordNode);
+                    childCoords.push(coordNode);
                 });
+                childCoords = _.sortBy(childCoords, (child) => {
+                    if (child.order !== null) {
+                        return child.order;
+                    }
+                    return child.name;
+                });
+                modNode.children = modNode.children.concat(childCoords);
                 modNode.children.push(
                     {
                         name: '-- Choose an Master Coordinator --',
@@ -540,8 +632,15 @@ class ProjectTreeCtrl {
                         entityType: 'coordinator',
                     }
                 );
-                node.children.push(modNode);
+                childModels.push(modNode);
             });
+            childModels = _.sortBy(childModels, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childModels);
             node.children.push(
                 {
                     name: '-- Choose a Simulation Model --',
@@ -549,19 +648,29 @@ class ProjectTreeCtrl {
                     entityType: 'model',
                 }
             );
+            let childAnalysis = [];
             _.each(analysis, (ana) => {
                 if (!_.contains(ana.associationIds, node.uuid)){
                     return;
                 }
                 let anaNode = {
                     name: ana.value.title,
+                    type: ana.name,
                     uuid: ana.uuid,
                     parent: node.name,
                     rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
                     display: 'Analysis',
+                    order: ana.orderOf(node.uuid).value,
                 };
-                node.children.push(anaNode);
+                childAnalysis.push(anaNode);
             });
+            childAnalysis = _.sortBy(childAnalysis, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childAnalysis);
             node.children.push(
                 {
                     name: '-- Choose an Analysis --',
@@ -598,7 +707,7 @@ class ProjectTreeCtrl {
         let simulations = [];
         if ( this.rootCategoryUuid ) {
             simulations = _.filter(
-                this.project.simoutput_set,
+                this.project.simulation_set,
                 (sim) => { return sim.uuid === this.rootCategoryUuid; }
             );
         } else {
@@ -613,24 +722,35 @@ class ProjectTreeCtrl {
         _.each(simulations, (sim) => {
             let node = {
                 name: sim.value.title,
+                type: sim.name,
                 uuid: sim.uuid,
                 parent: null,
                 children: [],
                 rectStyle: 'stroke: none;',
             };
+            let childReports = [];
             _.each(reports, (rep) => {
                 if (!_.contains(rep.associationIds, node.uuid)){
                     return;
                 }
                 let repNode = {
                     name: rep.value.title,
+                    type: rep.name,
                     uuid: rep.uuid,
                     parent: node.name,
                     rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
                     display: 'Report',
+                    order: rep.orderOf(node.uuid).value,
                 };
-                node.children.push(repNode);
+                childReports.push(repNode);
             });
+            childReports = _.sortBy(childReports, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childReports);
             node.children.push(
                 {
                     name: '-- Choose a Report --',
@@ -638,44 +758,60 @@ class ProjectTreeCtrl {
                     entityType: 'report',
                 }
             );
+            let childModel = [];
             _.each(models, (mod) => {
                 if (!_.contains(mod.associationIds, node.uuid)){
                     return;
                 }
                 let modNode = {
                     name: mod.value.title,
+                    type: mod.name,
                     uuid: mod.uuid,
                     parent: node.name,
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
                     display: 'Simulation Model',
+                    order: mod.orderOf(node.uuid).value,
                 };
+                let childInputs = [];
                 _.each(inputs, (input) => {
-                    if (_.difference([mod.uuid, node.uuid], input.associationIds).length){
+                    if (_.difference([modNode.uuid, node.uuid], input.associationIds).length){
                         return;
                     }
                     let inpNode = {
                         name: input.value.title,
+                        type: input.name,
                         uuid: input.uuid,
                         parent: modNode.name,
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
                         display: 'Simulation Input',
+                        order: input.orderOf(modNode.uuid).value,
                     };
+                    let childOutputs = [];
                     _.each(outputs, (output) => {
                         if (_.difference([input.uuid, modNode.uuid, node.uuid], output.associationIds).length){
                             return;
                         }
-                        let outNode = {
+                        let outputNode = {
                             name: output.value.title,
+                            type: output.name,
                             uuid: output.uuid,
                             parent: inpNode.name,
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Simulation Output',
+                            order: output.orderOf(inpNode.uuid).value,
                         };
-                        inpNode.children.push(outNode);
+                        childOutputs.push(outputNode);
                     });
+                    childOutputs = _.sortBy(childOutputs, (child) => {
+                        if (child.order !== null) {
+                            return child.order;
+                        }
+                        return child.name;
+                    });
+                    inpNode.children = inpNode.children.concat(childOutputs);
                     inpNode.children.push(
                         {
                             name: '-- Choose an Output --',
@@ -683,8 +819,15 @@ class ProjectTreeCtrl {
                             entityType: 'output',
                         }
                     );
-                    modNode.children.push(inpNode);
+                    childInputs.push(inpNode);
                 });
+                childInputs = _.sortBy(childInputs, (child) => {
+                    if (child.order !== null) {
+                        return child.order;
+                    }
+                    return child.name;
+                });
+                modNode.children = modNode.children.concat(childInputs);
                 modNode.children.push(
                     {
                         name: '-- Choose an Input --',
@@ -692,8 +835,15 @@ class ProjectTreeCtrl {
                         entityType: 'input',
                     }
                 );
-                node.children.push(modNode);
+                childModel.push(modNode);
             });
+            childModel = _.sortBy(childModel, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childModel);
             node.children.push(
                 {
                     name: '-- Choose a Simulation Model --',
@@ -701,19 +851,29 @@ class ProjectTreeCtrl {
                     entityType: 'model',
                 }
             );
+            let childAnalysis = [];
             _.each(analysis, (ana) => {
                 if (!_.contains(ana.associationIds, node.uuid)){
                     return;
                 }
                 let anaNode = {
                     name: ana.value.title,
+                    type: ana.name,
                     uuid: ana.uuid,
                     parent: node.name,
                     rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
                     display: 'Analysis',
+                    order: ana.orderOf(node.uuid).value
                 };
-                node.children.push(anaNode);
+                childAnalysis.push(anaNode);
             });
+            childAnalysis = _.sortBy(childAnalysis, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
+            });
+            node.children = node.children.concat(childAnalysis);
             node.children.push(
                 {
                     name: '-- Choose an Analysis --',
