@@ -551,9 +551,27 @@ class PublicElasticFileManager(BaseFileManager):
 
 class PublicationManager(object):
     def save_publication(self, publication, status='publishing'):
+        keys_to_delete = []
+        for key in publication['project']:
+            if key.endswith('_set'):
+                logger.info('dropping key: %s', key)
+                keys_to_delete.append(key)
+            if key.startswith('_'):
+                logger.info('dropping key: %s', key)
+                keys_to_delete.append(key)
+
+        for key in keys_to_delete:
+            publication['project'].pop(key, '')
+
         publication['projectId'] = publication['project']['value']['projectId']
         publication['created'] = datetime.datetime.now().isoformat()
         publication['status'] = status
+        publication['version'] = 2
+        publication['project']['value']['awardNumbers'] = publication['project']['value'].pop(
+            'awardNumber', []
+        )
+        publication['project']['value']['awardNumber'] = ''
+        logger.debug('publication: %s', json.dumps(publication, indent=2))
         pub = Publication(publication)
         pub.save()
         return pub
