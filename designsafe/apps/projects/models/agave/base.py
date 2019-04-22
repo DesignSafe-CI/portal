@@ -2,6 +2,9 @@
 import logging
 import six
 import json
+import zipfile
+import shutil
+import os
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
 
@@ -142,3 +145,85 @@ class Project(MetadataModel):
             limit=limit)
         ents = [lookup_model(rsp)(**rsp) for rsp in resp]
         return ents
+
+    def archive(self):
+        ARCHIVE_NAME = str(self.project_id) + '_archive.zip'
+        proj_dir = '/corral-repl/tacc/NHERI/projects/{}'.format(self.uuid)
+
+        # open directory permissions
+        def open_perms(project_directory):
+            os.chmod('/corral-repl/tacc/NHERI/projects/', 0777)
+            archive_path = os.path.join(project_directory)
+            for root, dirs, files in os.walk(archive_path):
+                os.chmod(root, 0777)
+                for d in dirs:
+                    os.chmod(os.path.join(root, d), 0777)
+                for f in files:
+                    os.chmod(os.path.join(root, f), 0777)
+
+        # close directory permissions
+        def close_perms(project_directory):
+            os.chmod('/corral-repl/tacc/NHERI/projects/', 0555)
+            archive_path = os.path.join(project_directory)
+            for root, dirs, files in os.walk(archive_path):
+                os.chmod(root, 0555)
+                for d in dirs:
+                    os.chmod(os.path.join(root, d), 0555)
+                for f in files:
+                    os.chmod(os.path.join(root, f), 0555)
+
+        def create_archive(project_directory):
+            try:
+                logger.debug("Creating new archive for %s" % project_directory)
+
+                # create archive within the project directory
+                archive_path = os.path.join(project_directory, ARCHIVE_NAME)
+                abs_path = project_directory.rsplit('/',1)[0]
+
+                
+
+                zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
+                for dirs, _, files in os.walk(project_directory):
+                    for f in files:
+                        if f == ARCHIVE_NAME:
+                            continue
+                        # write files without abs file path
+                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path,''), f))
+                zf.close()
+            except:
+                logger.debug("Creating archive failed for " % 
+                    project_directory)
+
+        def update_archive(project_directory):
+            try:
+                logger.debug("Updating archive for %s" % project_directory)
+
+                archive_path = os.path.join(project_directory, ARCHIVE_NAME)
+                archive_timestamp = os.path.getmtime(archive_path)
+                zf = zipfile.ZipFile(archive_path, mode='a', allowZip64=True)
+                for dirs, _, files in os.walk(project_directory):
+                    for f in files:
+                        if f == ARCHIVE_NAME:
+                            continue
+                        file_path = os.path.join(dirs, f)
+                        file_timestamp = os.path.getmtime(file_path)
+                        if file_timestamp > archive_timestamp:
+                            if file_path in zf.namelist():
+                                zf.close()
+                                logger.debug(
+                                    "Modified file, deleting archive and " \
+                                    "re-archiving project directory %s" % 
+                                    project_directory)
+                                os.remove(archive_path)
+                                create_archive(project_directory)
+                                break
+            except:
+                logger.debug("Updating archive failed for project directory" % 
+                    project_directory)
+        
+        open_perms(proj_dir)
+        if ARCHIVE_NAME not in os.listdir(proj_dir):
+            create_archive(proj_dir)
+        else:
+            update_archive(proj_dir)
+        close_perms(proj_dir)

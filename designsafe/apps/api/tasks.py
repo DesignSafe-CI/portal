@@ -895,6 +895,30 @@ def save_publication(self, project_id):
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
 
+@shared_task(bind=True)
+def zip_project_files(self, project_uuid):
+    from designsafe.apps.projects.models.agave.base import Project
+    from designsafe.apps.api.agave import get_service_account_client
+
+    try:
+        ag = get_service_account_client()
+        proj = Project.manager().get(ag, uuid=project_uuid)
+        proj.archive()
+    except Exception as exc:
+        logger.error('Zip Proj UUID: %s. %s', project_uuid, exc, exc_info=True)
+        raise self.retry(exc=exc)
+
+@shared_task(bind=True)
+def zip_publication_files(self, project_id):
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
+
+    try:
+        pub = Publication(project_id=project_id)
+        pub.archive()
+    except Exception as exc:
+        logger.error('Zip Proj Id: %s. %s', project_id, exc, exc_info=True)
+        raise self.retry(exc=exc)
+
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_to_fedora(self, project_id):
     import requests
