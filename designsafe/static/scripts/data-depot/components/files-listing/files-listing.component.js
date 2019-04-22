@@ -18,6 +18,7 @@ class FilesListingCtrl {
 
     $onInit() {
         this._ui = { loading: false, error: false };
+        this.state = this.DataBrowserService.state()
         this.bread = (path, system) => {
             if (!path) {
                 return;
@@ -64,14 +65,6 @@ class FilesListingCtrl {
             this.allowSelect = false;
             return this.filesList;
         };
-
-        this.toggles = {
-            experimental: false,
-            simulation: false,
-            hybrid: false,
-            nees: false,
-            other: false
-        }
     }
 
     breadcrumbBrowse($event, path) {
@@ -191,8 +184,8 @@ class FilesListingCtrl {
       }
       areFiltersEmpty() {
           let noneToggled = true
-          for (const key of Object.keys(this.toggles)) {
-              if (this.toggles[key]) {
+          for (const key of Object.keys(this.state.type_filters)) {
+              if (this.state.type_filters[key]) {
                   noneToggled = false
               }
           }
@@ -205,14 +198,14 @@ class FilesListingCtrl {
           if (this.areFiltersEmpty()) {
               return true
           }
-          if (item.metadata && this.toggles['nees']) {
+          if (item.metadata && this.state.type_filters['nees']) {
               return true
           }
-          return this.toggles[(item.meta || {}).type]; 
+          return this.state.type_filters[(item.meta || {}).type]; 
       }
       clearFilters() {
-          for (const key of Object.keys(this.toggles)) {
-              this.toggles[key] = false
+          for (const key of Object.keys(this.state.type_filters)) {
+              this.state.type_filters[key] = false
           }
       }
 }
