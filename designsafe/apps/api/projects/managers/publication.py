@@ -17,6 +17,7 @@ from designsafe.apps.api.agave import service_account
 from designsafe.apps.projects.models.agave.base import Project as BaseProject
 from designsafe.apps.projects.models.agave.experimental import (
     ExperimentalProject,
+    Experiment,
     Event,
     ModelConfig,
     SensorList,
@@ -163,7 +164,7 @@ def _project_required_xml(project, authors, created, doi=None):
     desc.text = project.description
     return xml_obj
 
-def _experiment_required_xml(users, experiment, created, exp_doi):
+def _experiment_required_xml(authors_details, experiment, created, exp_doi):
     xml_obj = _project_header()
 
     resource = xml_obj
@@ -173,23 +174,35 @@ def _experiment_required_xml(users, experiment, created, exp_doi):
         identifier.text = exp_doi
     else:
         identifier.text = SHOULDER.replace('doi:', '')
-    creators = ET.SubElement(resource, 'creators')
-    #um = get_user_model()
-    authors = experiment.authors
-    #authors = authors or users
-    for author in authors:
-        _userf = filter(lambda x: x['username'] == author, users)
-        if not len(_userf):
-            continue
 
-        _user = _userf[0]
+    creators = ET.SubElement(resource, 'creators')
+    for author in sorted(authors_details, key=lambda x: x['order']):
+        if not author.get('authorship'):
+            continue
+        elif author.get('lname') and author.get('fname'):
+            _author = {
+                'last_name': author['lname'],
+                'first_name': author['fname']
+            }
+        else:
+            try:
+                user = get_user_model().objects.get(username=author['name'])
+            except ObjectDoesNotExist:
+                logger.error('User does not exists: %s', author['name'])
+                continue
+
+            _author = {
+                'last_name': user.last_name,
+                'first_name': user.first_name
+            }
+
         creator = ET.SubElement(creators, 'creator')
         creator_name = ET.SubElement(creator, 'creatorName')
-        creator_name.text = '{}, {}'.format(_user['last_name'], _user['first_name'])
+        creator_name.text = '{}, {}'.format(_author['last_name'], _author['first_name'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
-    title.text = exp['title']
+    title.text = experiment.title
     publisher = ET.SubElement(resource, 'publisher')
     publisher.text = 'Designsafe-CI'
 
@@ -198,12 +211,12 @@ def _experiment_required_xml(users, experiment, created, exp_doi):
     publication_year.text = str(now.year)
 
     resource_type = ET.SubElement(resource, 'resourceType')
-    resource_type.text = "Experiment/{}".format(exp['experimentType'].title())
+    resource_type.text = "Experiment/{}".format(experiment.experiment_type.title())
     resource_type.attrib['resourceTypeGeneral'] = 'Dataset'
     descriptions = ET.SubElement(resource, 'descriptions')
     desc = ET.SubElement(descriptions, 'description')
     desc.attrib['descriptionType'] = 'Abstract'
-    desc.text = exp['description']
+    desc.text = experiment.description
     return xml_obj
 
 def _analysis_required_xml(users, analysis, created):
@@ -322,7 +335,7 @@ def experiment_reserve_xml(publication, project, experiment, authors_details=Non
             xml_obj,
             ENTITY_TARGET_BASE.format(
                 project_id=publication['project']['value']['projectId'],
-                entity_uuid=experiment['uuid']
+                entity_uuid=experiment.uuid
             )
         )
         doi = reserve_res
@@ -346,26 +359,24 @@ def experiment_reserve_xml(publication, project, experiment, authors_details=Non
     exp_type.text = experiment.experimental_facility.title()
     eq_type = ET.SubElement(subjects, 'subject')
     eq_type.text = experiment.equipment_type
-    events = [Event.manager().get(service_account(), uuid=event) for event
-              in publication['eventsList']]
 
-    for event in events:
+    for event_dict in publication['eventsList']:
+        event = Event.manager().get(service_account(), uuid=event_dict['uuid'])
         event_subj = ET.SubElement(subjects, 'subject')
         event_subj.text = event.title
+        event_dict.update(event.to_body_dict())
 
-    mcfs = [ModelConfig.manager().get(service_account(), uuid=mcf) for mcf
-            in publication['modelConfigs']]
-
-    for mcf in mcfs:
+    for mcf_dict in publication['modelConfigs']:
+        mcf = ModelConfig.manager().get(service_account(), uuid=mcf_dict['uuid'])
         mcf_subj = ET.SubElement(subjects, 'subject')
         mcf_subj.text = mcf.title
+        mcf_dict.update(mcf.to_body_dict())
 
-    slts = [SensorList.manager().get(service_account(), uuid=slt) for slt
-            in publication['sensorLists']]
-
-    for slt in slts:
+    for slt_dict in publication['sensorLists']:
+        slt = SensorList.manager().get(service_account(), uuid=slt_dict['uuid'])
         slt_subj = ET.SubElement(subjects, 'subject')
         slt_subj.text = slt.title
+        slt_dict.update(slt.to_body_dict())
 
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
@@ -588,7 +599,7 @@ def publish_project(doi, xml_obj):
         logger.exception(res['error'])
         raise Exception(res['error'])
 
-def reserve_publication(publication, analysis_doi=False):
+def reserve_publication(publication):
     project = project_by_uuid(
         publication['project']['uuid'],
         publication['project']['value']['projectType']
@@ -603,44 +614,44 @@ def reserve_publication(publication, analysis_doi=False):
     xmls = {proj_doi: proj_xml}
     publication['project']['doi'] = proj_doi
     if project.project_type.lower() == 'experimental':
-        for exp in project.experiment_set(service_account()):
-            exp_doi = ''
-            published_exps = [pexp for pexp in publication['experimentsList'] if pexp == exp.uuid]
-            if published_exps:
-                exp_doi = published_exps[0]['doi']
+        for pexp in publication['experimentsList']:
+            exp = Experiment.manager().get(service_account(), uuid=pexp['uuid'])
+            exp_doi = pexp.get('doi', '')
+            authors = pexp['authors']
 
             exp_doi, exp_ark, exp_xml = experiment_reserve_xml(
                 publication,
                 project,
                 exp,
-                getattr(exp, 'authors', []),
+                authors,
                 exp_doi
             )
             add_related(exp_xml, [proj_doi])
             exps_dois.append(exp_doi)
-            exp['doi'] = exp_doi
+            exp_dict = exp.to_body_dict()
+            keys_to_drop = []
+            for key in exp_dict:
+                if key.startswith('_'):
+                    keys_to_drop.append(key)
+                elif key.endswith('_set'):
+                    keys_to_drop.append(key)
+
+            exp_dict['value'].pop('authors', '')
+            for key in keys_to_drop:
+                exp_dict.pop(key)
+
+            pexp.update(exp_dict)
+            pexp['doi'] = exp_doi
             xmls[exp_doi] = exp_xml
             logger.debug('exp_doi: %s', exp_doi)
             logger.debug('exp_ark: %s', exp_ark)
             logger.debug('exp_xml: %s', exp_xml)
 
-        if analysis_doi:
-            for anl in publication.get('analysisList', []):
-                anl_doi, anl_ark, anl_xml = analysis_reserve_xml(publication,
-                                                                 anl,
-                                                                 publication['created'])
-                add_related(anl_xml, [proj_doi])
-                anl_dois.append(anl_doi)
-                anl['doi'] = anl_doi
-                xmls[anl_doi] = anl_xml
-                logger.debug('anl_doi: %s', anl_doi)
-                logger.debug('anl_ark: %s', anl_ark)
-                logger.debug('anl_xml: %s', anl_xml)
-
         add_related(proj_xml, exps_dois + anl_dois)
         for _doi in [proj_doi] + exps_dois + anl_dois:
             logger.debug('Final project doi: %s', _doi)
             _update_doi(_doi, xmls[_doi], status='public')
+
     elif project.project_type.lower() == 'simulation':
         for sim in publication.get('simulations', []):
             sim_doi, sim_ark, sim_xml = simulation_reserve_xml(
