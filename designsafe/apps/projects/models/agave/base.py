@@ -61,9 +61,10 @@ class Project(MetadataModel):
 
     def add_pi(self, username):
         self._add_team_members_pems([username])
-        if len(self.pi) > 0:
-            self.team_members += [self.pi]
-            self.team_members = list(set(self.team_members))
+        # this may be where we are always adding the PI
+        # if len(self.pi) > 0:
+        #     self.team_members += [self.pi]
+        #     self.team_members = list(set(self.team_members))
         self.pi = username
         self.save(self.manager().agave_client)
         return self
@@ -72,8 +73,8 @@ class Project(MetadataModel):
         self._remove_team_members_pems([username])
         if len(self.co_pis):
             self.pi = self.co_pis[0]
-        elif len(self.team_members):
-            self.pi = self.team_members[0]
+        # elif len(self.team_members):
+        #     self.pi = self.team_members[0]
         self.save(self.manager().agave_client)
         return self
 
