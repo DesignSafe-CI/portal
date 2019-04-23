@@ -15,7 +15,7 @@ class DataBrowserServicePreviewCtrl {
     $onInit() {
         this.file = this.resolve.file;
         this.listing = this.resolve.listing;
-
+        
         const file = this.file;
         const listing = this.listing;
 

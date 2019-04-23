@@ -10,6 +10,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataDepotBrowserComponent, DataDepotPublicationsBrowserComponent } from './data-depot-browser/data-depot-browser.component';
 import { NeesPublishedComponent } from './nees-publication/nees-publication.component';
 import { PublicationDescriptionModalComponent } from './files-listing/publication-description-modal/publication-description.component';
+import { FileMetadataComponent } from './file-metadata/file-metadata.component';
 
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);
 
@@ -24,6 +25,7 @@ ddComponents.component('breadcrumb', BreadcrumbComponent);
 ddComponents.component('dataDepotBrowser', DataDepotBrowserComponent);
 ddComponents.component('dataDepotPublicationsBrowser', DataDepotPublicationsBrowserComponent);
 ddComponents.component('neesPublished', NeesPublishedComponent);
-ddComponents.component('publicationDescriptionModalComponent', PublicationDescriptionModalComponent)
+ddComponents.component('publicationDescriptionModalComponent', PublicationDescriptionModalComponent);
+ddComponents.component('fileMetadata', FileMetadataComponent);
 
 export default ddComponents;
