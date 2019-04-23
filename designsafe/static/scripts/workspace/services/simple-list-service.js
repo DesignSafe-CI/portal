@@ -17,6 +17,13 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
         this.binMap = {};
     };
 
+    SimpleList.prototype.tagIncludesParam = function(definition, param) {
+        return definition.tags &&
+            Array.isArray(definition.tags) &&
+            definition.tags.filter((s) => s.includes(`${param}:`))[0] &&
+            definition.tags.filter((s) => s.includes(`${param}:`))[0].split(':')[1];
+    };
+
     SimpleList.prototype.getDefaultLists = function(query) {
         let self = this,
             deferred = $q.defer();
@@ -33,12 +40,6 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
                  * @param {String} param - Parameter to search for in definition.tags, i.e. 'appIcon'
                  * @return {Boolean}
                  */
-                function tagIncludesParam(definition, param) {
-                    return definition.tags &&
-                        Array.isArray(definition.tags) &&
-                        definition.tags.filter(s => s.includes(`${param}:`))[0] &&
-                        definition.tags.filter(s => s.includes(`${param}:`))[0].split(':')[1];
-                }
 
                 let appsByCategory = {};
                 angular.forEach(self.tabs, function(tab) {
@@ -65,8 +66,8 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
                                 }
                                 return false;
                             });
-                        } else if (tagIncludesParam(appMeta.value.definition, 'appIcon')) {
-                            const appIcon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                        } else if (self.tagIncludesParam(appMeta.value.definition, 'appIcon')) {
+                            const appIcon = appMeta.value.definition.tags.filter((s) => s.includes('appIcon'))[0].split(':')[1];
 
                             // Use icon for binning of apps, with '_icon-letter' appended to denote the icon will be a letter, not a true icon
                             appMeta.value.definition.appIcon = appMeta.value.definition.orderBy = `${appIcon}_icon-letter`;
@@ -96,8 +97,8 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
                             let appCategory;
                             if (appMeta.value.definition.appCategory) {
                                 appCategory = appMeta.value.definition.appCategory;
-                            } else if (tagIncludesParam(appMeta.value.definition, 'appCategory')) {
-                                appCategory = appMeta.value.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                            } else if (self.tagIncludesParam(appMeta.value.definition, 'appCategory')) {
+                                appCategory = appMeta.value.definition.tags.filter((s) => s.includes('appCategory'))[0].split(':')[1];
                             }
 
                             // Place appMeta in category
@@ -176,7 +177,7 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
 
                 deferred.resolve(self);
             },
-            function(apps) {
+            function() {
                 deferred.reject();
             }
         );
