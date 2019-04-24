@@ -186,6 +186,10 @@ class DataDepotPublishedView(TemplateView):
 
     This view will be used when a user goes directly to a published project.
     """
+    @method_decorator(ensure_csrf_cookie)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DataDepotPublishedView, self).dispatch(request, *args, **kwargs)
+
     template_name = 'data/data_depot.html'
 
     def get_context_data(self, **kwargs):
