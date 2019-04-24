@@ -24,8 +24,28 @@ from designsafe.apps.projects.models.agave.experimental import (
     Report,
     Analysis
 )
-from designsafe.apps.projects.models.agave.simulation import SimulationProject
-from designsafe.apps.projects.models.agave.hybrid_simulation import HybridSimulationProject
+from designsafe.apps.projects.models.agave.simulation import (
+    SimulationProject,
+    Simulation,
+    Model as SimModel,
+    Input as SimInput,
+    Output as SimOutput,
+    Analysis as SimAnalysis,
+    Report as SimReport
+)
+from designsafe.apps.projects.models.agave.hybrid_simulation import (
+    HybridSimulationProject,
+    HybridSimulation,
+    GlobalModel,
+    Coordinator,
+    SimSubstructure,
+    ExpSubstructure,
+    CoordinatorOutput,
+    SimOutput as HybridSimOutput,
+    ExpOutput,
+    Analysis as HybridAnalysis,
+    Report as HybridReport
+)
 
 
 logger = logging.getLogger(__name__)
@@ -164,7 +184,7 @@ def _project_required_xml(project, authors, created, doi=None):
     desc.text = project.description
     return xml_obj
 
-def _experiment_required_xml(authors_details, experiment, created, exp_doi):
+def _experiment_required_xml(authors_details, experiment, created, exp_doi=None):
     xml_obj = _project_header()
 
     resource = xml_obj
@@ -260,34 +280,45 @@ def _analysis_required_xml(users, analysis, created):
     desc.text = anl['description']
     return xml_obj
 
-def _simulation_required_xml(users, simulation, created):
-    sim = simulation['value']
+def _simulation_required_xml(authors_details, simulation, created, sim_doi=None):
     xml_obj = _project_header()
 
     resource = xml_obj
     identifier = ET.SubElement(resource, 'identifier')
     identifier.attrib['identifierType'] = 'DOI'
-    if sim.get('doi', ''):
-        identifier.text = sim.get('doi')
+    if sim_doi:
+        identifier.text = sim_doi
     else:
         identifier.text = SHOULDER.replace('doi:', '')
-    creators = ET.SubElement(resource, 'creators')
-    #um = get_user_model()
-    authors = sim.get('authors')
-    #authors = authors or users
-    for author in authors:
-        _userf = filter(lambda x: x['username'] == author, users)
-        if not len(_userf):
-            continue
 
-        _user = _userf[0]
+    creators = ET.SubElement(resource, 'creators')
+    for author in sorted(authors_details, key=lambda x: x['order']):
+        if not author.get('authorship'):
+            continue
+        elif author.get('lname') and author.get('fname'):
+            _author = {
+                'last_name': author['name'],
+                'first_name': author['fname']
+            }
+        else:
+            try:
+                user = get_user_model().objects.get(username=author['name'])
+            except ObjectDoesNotExist:
+                logger.error('User does not exists: %s', author['name'])
+                continue
+
+            _author = {
+                'last_name': user.last_name,
+                'first_name': user.first_name,
+            }
+
         creator = ET.SubElement(creators, 'creator')
         creator_name = ET.SubElement(creator, 'creatorName')
-        creator_name.text = '{}, {}'.format(_user['last_name'], _user['first_name'])
+        creator_name.text = '{}, {}'.format(_author['last_name'], _author['first_name'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
-    title.text = sim['title']
+    title.text = simulation.title
     publisher = ET.SubElement(resource, 'publisher')
     publisher.text = 'Designsafe-CI'
 
@@ -297,12 +328,12 @@ def _simulation_required_xml(users, simulation, created):
 
     resource_type = ET.SubElement(resource, 'resourceType')
     resource_type.text = "Simulation/{}".format(
-            sim['simulationType'].title())
+            simulation.simulation_type.title())
     resource_type.attrib['resourceTypeGeneral'] = 'Dataset'
     descriptions = ET.SubElement(resource, 'descriptions')
     desc = ET.SubElement(descriptions, 'description')
     desc.attrib['descriptionType'] = 'Abstract'
-    desc.text = sim['description']
+    desc.text = simulation.description
     return xml_obj
 
 
@@ -341,8 +372,8 @@ def experiment_reserve_xml(publication, project, experiment, authors_details=Non
         doi = reserve_res
         ark = doi
     else:
-        doi = experiment.get('doi')
-        ark = experiment.get('doi')
+        doi = exp_doi
+        ark = exp_doi
 
     doi = doi.strip()
     ark = ark.strip()
@@ -381,27 +412,26 @@ def experiment_reserve_xml(publication, project, experiment, authors_details=Non
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
-def simulation_reserve_xml(publication, simulation, created):
-    sim = simulation['value']
+def simulation_reserve_xml(publication, project, simulation, authors_details=None, sim_doi=None):
     xml_obj = _simulation_required_xml(
-                publication['users'],
-                simulation,
-                created
-            )
-    now = dateutil.parser.parse(created)
-    if not simulation.get('doi', ''):
+        authors_details,
+        simulation,
+        publication['created'],
+        sim_doi
+    )
+    if not sim_doi:
         reserve_res = _reserve_doi(
             xml_obj,
             ENTITY_TARGET_BASE.format(
                 project_id=publication['project']['value']['projectId'],
-                entity_uuid=simulation['uuid']
+                entity_uuid=simulation.uuid
             )
         )
         doi = reserve_res
         ark = doi
     else:
-        doi = simulation.get('doi')
-        ark = simulation.get('doi')
+        doi = sim_doi
+        ark = sim_doi
 
     doi = doi.strip()
     ark = ark.strip()
@@ -410,41 +440,55 @@ def simulation_reserve_xml(publication, simulation, created):
     resource = xml_obj
     subjects = ET.SubElement(resource, 'subjects')
     sim_type = ET.SubElement(subjects, 'subject')
-    sim_type.text = sim['simulationType'].title()
-    entities = (
-        simulation.get('models', []) +
-        simulation.get('inputs', []) +
-        simulation.get('outputs', [])
-    )
+    sim_type.text = simulation.simulation_type.title()
 
-    for entity in entities:
-        ent_sub = ET.SubElement(subjects, 'subject')
-        ent_sub.text = entity['value']['title']
+    for model_dict in publication['models']:
+        model = SimModel.manager().get(service_account(), uuid=model_dict['uuid'])
+        model_subj = ET.SubElement(subjects, 'subject')
+        model_subj.text = model.title
+        model_dict.update(model.to_body_dict())
+
+    for input_dict in publication['inputs']:
+        sim_input = SimInput.manager().get(service_account(), uuid=input_dict['uuid'])
+        input_subj = ET.SubElement(subjects, 'subject')
+        input_subj.text = sim_input.title
+        input_dict.update(sim_input.to_body_dict())
+
+    for output_dict in publication['outputs']:
+        output = SimOutput.manager().get(service_account(), uuid=output_dict['uuid'])
+        output_subj = ET.SubElement(subjects, 'subject')
+        output_subj.text = output.title
+        output_dict.update(output.to_body_dict())
 
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
-def hybrid_simulation_reserve_xml(publication, simulation, created):
-    sim = simulation['value']
+def hybrid_simulation_reserve_xml(
+        publication,
+        project,
+        hybrid_simulation,
+        authors_details,
+        hybrid_sim_doi
+):
     xml_obj = _simulation_required_xml(
-                publication['users'],
-                simulation,
-                created
-            )
-    now = dateutil.parser.parse(created)
-    if not simulation.get('doi', ''):
+        authors_details,
+        hybrid_simulation,
+        publication['created'],
+        hybrid_sim_doi
+    )
+    if not hybrid_sim_doi:
         reserve_res = _reserve_doi(
             xml_obj,
             ENTITY_TARGET_BASE.format(
                 project_id=publication['project']['value']['projectId'],
-                entity_uuid=simulation['uuid']
+                entity_uuid=hybrid_simulation.uuid
             )
         )
         doi = reserve_res
         ark = doi
     else:
-        doi = simulation.get('doi')
-        ark = simulation.get('doi')
+        doi = hybrid_sim_doi
+        ark = hybrid_sim_doi
 
     doi = doi.strip()
     ark = ark.strip()
@@ -453,17 +497,64 @@ def hybrid_simulation_reserve_xml(publication, simulation, created):
     resource = xml_obj
     subjects = ET.SubElement(resource, 'subjects')
     sim_type = ET.SubElement(subjects, 'subject')
-    sim_type.text = sim['simulationType'].title()
-    entities = (
-        simulation.get('global_models', []) +
-        simulation.get('coordinators', []) +
-        simulation.get('sim_substructures', []) + 
-        simulation.get('exp_substructures', [])
-    )
+    sim_type.text = hybrid_simulation.simulation_type.title()
 
-    for entity in entities:
-        ent_sub = ET.SubElement(subjects, 'subject')
-        ent_sub.text = entity['value']['title']
+    for global_model_dict in publication['global_models']:
+        global_model = GlobalModel.manager().get(service_account(), uuid=global_model_dict['uuid'])
+        global_model_subj = ET.SubElement(subjects, 'subject')
+        global_model_subj.text = global_model.title
+        global_model_dict.update(global_model.to_body_dict())
+
+    for coordinator_dict in publication['coordinators']:
+        coordinator = Coordinator.manager().get(service_account(), uuid=coordinator_dict['uuid'])
+        coordinator_subj = ET.SubElement(subjects, 'subject')
+        coordinator_subj.text = coordinator.title
+        coordinator_dict.update(coordinator.to_body_dict())
+
+    for sim_substructure_dict in publication['sim_substructures']:
+        sim_substructure = SimSubstructure.manager().get(
+            service_account(),
+            uuid=sim_substructure_dict['uuid']
+        )
+        sim_substructure_subj = ET.SubElement(subjects, 'subject')
+        sim_substructure_subj.text = sim_substructure.title
+        sim_substructure_dict.update(sim_substructure.to_body_dict())
+
+    for exp_substructure_dict in publication['exp_substructures']:
+        exp_substructure = ExpSubstructure.manager().get(
+            service_account(),
+            uuid=exp_substructure_dict['uuid']
+        )
+        exp_substructure_subj = ET.SubElement(subjects, 'subject')
+        exp_substructure_subj.text = exp_substructure.title
+        exp_substructure_dict.update(exp_substructure.to_body_dict())
+
+    for coordinator_output_dict in publication['coordinator_outputs']:
+        coordinator_output = CoordinatorOutput.manager().get(
+            service_account(),
+            uuid=coordinator_output_dict['uuid']
+        )
+        coordinator_output_subj = ET.SubElement(subjects, 'subject')
+        coordinator_output_subj.text = coordinator_output.title
+        coordinator_output_dict.update(coordinator_output.to_body_dict())
+
+    for sim_output_dict in publication['sim_outputs']:
+        sim_output = SimOutput.manager().get(
+            service_account(),
+            uuid=sim_output_dict['uuid']
+        )
+        sim_output_subj = ET.SubElement(subjects, 'subject')
+        sim_output_subj.text = sim_output.title
+        sim_output_dict.update(sim_output.to_body_dict())
+
+    for exp_output_dict in publication['exp_outputs']:
+        exp_output = ExpOutput.manager().get(
+            service_account(),
+            uuid=exp_output_dict['uuid']
+        )
+        exp_output_subj = ET.SubElement(subjects, 'subject')
+        exp_output_subj.text = exp_output.title
+        exp_output_dict.update(exp_output.to_body_dict())
 
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
@@ -653,37 +744,76 @@ def reserve_publication(publication):
             _update_doi(_doi, xmls[_doi], status='public')
 
     elif project.project_type.lower() == 'simulation':
-        for sim in publication.get('simulations', []):
+        for psim in publication['simulations']:
+            sim = Simulation.manager().get(service_account(), uuid=psim['uuid'])
+            sim_doi = psim.get('doi')
+            authors = psim['authors']
+
             sim_doi, sim_ark, sim_xml = simulation_reserve_xml(
-                    publication,
-                    sim,
-                    publication['created']
+                publication,
+                project,
+                sim,
+                authors,
+                sim_doi
             )
+            add_related(sim_xml, [proj_doi])
+            sim_dois.append(sim_doi)
+            sim_dict = sim.to_body_dict()
+            keys_to_drop = []
+            for key in sim_dict:
+                if key.startswith('_'):
+                    keys_to_drop.append(key)
+                elif key.endswith('_set'):
+                    keys_to_drop.append(key)
+
+            sim_dict['value'].pop('authors', '')
+            for key in keys_to_drop:
+                sim_dict.pop(key)
+
+            psim.update(sim_dict)
+            psim['doi'] = sim_doi
+            xmls[sim_doi] = sim_xml
             logger.debug('sim_doi: %s', sim_doi)
             logger.debug('sim_ark: %s', sim_ark)
             logger.debug('sim_xml: %s', sim_xml)
-            add_related(sim_xml, [proj_doi])
-            sim_dois.append(sim_doi)
-            sim['doi'] = sim_doi
-            xmls[sim_doi] = sim_xml
+
         add_related(proj_xml, sim_dois)
         for _doi in [proj_doi] + sim_dois:
             logger.debug('DOI: %s', _doi)
             _update_doi(_doi, xmls[_doi], status='public')
     elif project.project_type.lower() == 'hybrid_simulation':
-        for sim in publication.get('hybrid_simulations', []):
+        for psim in publication.get('hybrid_simulations', []):
+            sim = HybridSimulation.manager().get(service_account(), uuid=psim['uuid'])
+            sim_doi = psim.get('doi')
+            authors = psim['authors']
+
             sim_doi, sim_ark, sim_xml = hybrid_simulation_reserve_xml(
-                    publication,
-                    sim,
-                    publication['created']
+                publication,
+                project,
+                sim,
+                authors,
+                sim_doi
             )
+            add_related(sim_xml, [proj_doi])
+            sim_dois.append(sim_doi)
+            sim_dict = sim.to_body_dict()
+            keys_to_drop = []
+            for key in sim_dict:
+                if key.startswith('_'):
+                    keys_to_drop.append(key)
+                elif key.endswith('_set'):
+                    keys_to_drop.append(key)
+
+            sim_dict['value'].pop('authors', '')
+            for key in keys_to_drop:
+                sim_dict.pop(key)
+
+            psim.update(sim_dict)
+            psim['doi'] = sim_doi
+            xmls[sim_doi] = sim_xml
             logger.debug('sim_doi: %s', sim_doi)
             logger.debug('sim_ark: %s', sim_ark)
             logger.debug('sim_xml: %s', sim_xml)
-            add_related(sim_xml, [proj_doi])
-            sim_dois.append(sim_doi)
-            sim['doi'] = sim_doi
-            xmls[sim_doi] = sim_xml
         add_related(proj_xml, sim_dois)
         for _doi in [proj_doi] + sim_dois:
             logger.debug('DOI: %s', _doi)
