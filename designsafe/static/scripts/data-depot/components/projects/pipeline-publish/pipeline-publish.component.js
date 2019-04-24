@@ -67,15 +67,15 @@ class PipelinePublishCtrl {
             }];
         } else if (this.project.value.projectType === 'simulation') {
             publication.simulations = [{
-                uuid: this.resolve.resolveParams.simulation.uuid,
-                authors: this.resolve.resolveParams.simulation.value.authors || [],
-                guests: this.resolve.resolveParams.simulation.value.guests || [],
+                uuid: this.resolve.resolveParams.experiment.uuid,
+                authors: this.resolve.resolveParams.experiment.value.authors || [],
+                guests: this.resolve.resolveParams.experiment.value.guests || [],
             }];
         } else if (this.project.value.projectType === 'hybrid_simulation') {
             publication.hybrid_simulations = [{
-                uuid: this.resolve.resolveParams.hybridSimulation.uuid,
-                authors: this.resolve.resolveParams.hybridSimulation.value.authors || [],
-                guests: this.resolve.resolveParams.hybridSimulation.value.guests || [],
+                uuid: this.resolve.resolveParams.experiment.uuid,
+                authors: this.resolve.resolveParams.experiment.value.authors || [],
+                guests: this.resolve.resolveParams.experiment.value.guests || [],
             }];
         }
         this.publication = publication;
