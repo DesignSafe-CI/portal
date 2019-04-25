@@ -4,6 +4,7 @@ import urllib
 import logging
 import os 
 
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -119,25 +120,44 @@ def repair_path(name, path):
         path = '/' + path
     if not path.endswith(name):
         path = path + '/' + name
+    if path.startswith('//'):
+        path = path[1:]
 
     return path
 
 @python_2_unicode_compatible
 def repair_paths(limit=1000):
     from designsafe.apps.data.models.elasticsearch import IndexedFile
+    from elasticsearch import Elasticsearch
+    from elasticsearch.helpers import bulk
+
+    files_alias = settings.ES_INDICES['files']['alias']
+    HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
+    es_client = Elasticsearch(hosts=HOSTS)
     file_search = IndexedFile.search().sort('_uid').extra(size=limit)
     res = file_search.execute()
 
     while res.hits:
+        update_ops = []
         for hit in res.hits:
-            print hit.name, hit.path
             new_path = repair_path(hit.name, hit.path)
-            hit.update(**{'path': new_path})
-            hit.update(**{'basePath': os.path.dirname(new_path)})
+            new_basepath = os.path.dirname(new_path)
 
+            update_ops.append({
+                '_op_type': 'update',
+                '_index': files_alias,
+                '_type': 'file',
+                '_id': hit.meta.id,
+                'doc': {
+                    'path': new_path,
+                    'basePath': new_basepath
+                }
+            })
+        
             # use from_path to remove any duplicates.
             # IndexedFile.from_path(hit.system, hit.path)
-
+        
+        bulk(es_client, update_ops)
         search_after = res.hits.hits[-1]['sort']
         logger.debug(search_after)
         file_search = IndexedFile.search().sort('_uid').extra(size=limit, search_after=search_after)
