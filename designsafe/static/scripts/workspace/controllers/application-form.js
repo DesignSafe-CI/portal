@@ -130,8 +130,14 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         } else {
             items.push('maxRunTime', 'name', 'archivePath');
         }
-        if ($scope.data.app.parallelism == 'PARALLEL' && !$scope.data.app.tags.includes('hideNodeCount')) {
-            items.push('nodeCount');
+        if ($scope.data.app.parallelism == 'PARALLEL') {
+            if (!$scope.data.app.tags.includes('hideNodeCount')) {
+                items.push('nodeCount');
+            }
+            if (!$scope.data.app.tags.includes('hideProcessorsPerNode')) {
+                items.push('processorsPerNode');
+            }
+
         }
         $scope.form.form.push({
             type: 'fieldset',
@@ -194,8 +200,12 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
             }
 
             // Calculate processorsPerNode if nodeCount parameter submitted
-            if (_.has(jobData, 'nodeCount')) {
+            if (('nodeCount' in jobData) && !('processorsPerNode' in jobData)) {
                 jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
+            } else if (('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
+                jobData.processorsPerNode = jobData.nodeCount * jobData.processorsPerNode;
+            } else if (!('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
+                jobData.processorsPerNode = jobData.defaultNodeCount * jobData.processorsPerNode;
             }
 
             $scope.jobReady = true;
