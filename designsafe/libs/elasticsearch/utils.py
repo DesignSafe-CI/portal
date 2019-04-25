@@ -153,7 +153,7 @@ def repair_paths(limit=1000):
                     'basePath': new_basepath
                 }
             })
-
+            
             # use from_path to remove any duplicates.
             # IndexedFile.from_path(hit.system, hit.path)
         
