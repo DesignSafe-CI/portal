@@ -116,14 +116,10 @@ def index_level(client, path, folders, files, systemId, username, reindex=False,
 
 @python_2_unicode_compatible
 def repair_path(name, path):
-    if not path.startswith('/'):
-        path = '/' + path
     if not path.endswith(name):
         path = path + '/' + name
-    if path.startswith('//'):
-        path = path[1:]
-
-    return path
+    path = path.strip('/')
+    return '/{path}'.format(path=path)
 
 @python_2_unicode_compatible
 def repair_paths(limit=1000):
@@ -140,20 +136,22 @@ def repair_paths(limit=1000):
     while res.hits:
         update_ops = []
         for hit in res.hits:
-            new_path = repair_path(hit.name, hit.path)
-            new_basepath = os.path.dirname(new_path)
+            try:
+                new_path = repair_path(hit.name, hit.path)
+                new_basepath = os.path.dirname(new_path)
 
-            update_ops.append({
-                '_op_type': 'update',
-                '_index': files_alias,
-                '_type': 'file',
-                '_id': hit.meta.id,
-                'doc': {
-                    'path': new_path,
-                    'basePath': new_basepath
-                }
-            })
-        
+                update_ops.append({
+                    '_op_type': 'update',
+                    '_index': files_alias,
+                    '_type': 'file',
+                    '_id': hit.meta.id,
+                    'doc': {
+                        'path': new_path,
+                        'basePath': new_basepath
+                    }
+                })
+            except TypeError:
+                pass
             # use from_path to remove any duplicates.
             # IndexedFile.from_path(hit.system, hit.path)
         
