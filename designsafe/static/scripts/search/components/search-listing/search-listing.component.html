@@ -5,7 +5,7 @@
             <span class="label label-primary"> {{$ctrl.data.length | bytes }} </span>
             <h4> <a ng-href="/data/browser/public/{{$ctrl.data.system}}/{{ $ctrl.data.path }}" target="_self"> {{$ctrl.data.name}} </a> </h4>
             <p> {{$ctrl.data.path}} </p>
-            <span class="label label-primary" ng-if='$ctrl.data.lastModified' style="background-color:#5b4d92"> {{ $ctrl.data.lastModified | date:'short'}} </span>
+            <span class="label label-primary" ng-if='$ctrl.data.lastModified' style="background-color:#5b4d92">Last Modified: {{ $ctrl.data.lastModified | date:'short'}} </span>
             <hr>
         </div>
         <!--  Web Content -->
@@ -26,23 +26,22 @@
           <div ng-if="$ctrl.data.projectId">
             <h4><a ng-href="/data/browser/public/designsafe.storage.published/{{$ctrl.data.projectId}}"  target="_self"> {{$ctrl.data.project.value.projectId}}: {{$ctrl.data.project.value.title}} (<span style="text-transform:capitalize;">{{$ctrl.data.project.value.projectType}}</span>)</a> </h4>
             <p><strong> Author: </strong> {{$ctrl.data.piLabel}}</p>
-            <p><strong> Keywords: </strong> {{$ctrl.data.project.value.keywords}}</p>
             <p><strong> Publication Date: </strong> {{$ctrl.data.created | date: 'M/d/yyyy'}}</p>
             <p><strong> DOI: </strong> {{$ctrl.data.project.doi}}</p>
+            <p><strong> Keywords: </strong> {{$ctrl.data.project.value.keywords}}</p>
             <p> {{$ctrl.data.project.value.description}} </p>
             <span class="label label-primary"> Created: {{$ctrl.data.created | date:'short'}} </span>
           </div>
           <!-- This is for old nees projects -->
           <div ng-if="!$ctrl.data.projectId">
             <h4><a ng-href="/data/browser/public/{{$ctrl.data.system}}/{{$ctrl.data.name}}.groups"  target="_self"> {{$ctrl.data.project.split('.')[0]}}: {{$ctrl.data.title}} (NEES)</a> </h4>
-            <p><strong> Author(s): </strong>
+            <p><strong> Authors: </strong>
               <span ng-repeat="pi in $ctrl.data.pis">
                   {{pi.lastName}}, {{pi.firstName}}<span ng-if="!$last">;</span>
                 </span>
 
             </p>
             <p> {{$ctrl.data.description}} </p>
-            <span class="label label-primary"> Created: {{$ctrl.data.startDate | date:'short'}} </span>
           </div>
           <hr>
         </div>
