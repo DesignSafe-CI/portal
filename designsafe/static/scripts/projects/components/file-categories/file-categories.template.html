@@ -35,8 +35,7 @@
                      </option>
                      <optgroup data-ng-repeat="(tagName, tags) in $ctrl.fileTagsForEntity(entity).tags"
                                label="{{tagName}}">
-                         <option value="{ 'tagName': tagName,
-                                          'value': 'Other'}">
+                         <option value="other">
                              Other
                          </option>
                          <option data-ng-repeat="tag in tags"
@@ -44,8 +43,22 @@
                              {{tag}}
                          </option>
                      </optgroup>
-                 </select>
+                </select>
+                <input class="input-tag"
+                       ng-if="$ctrl.selectedFileTag[entity.uuid] === 'other' "
+                       ng-model="$ctrl.otherTagName[entity.uuid]"
+                       placeholder="Enter your custom tag..."
+                >
+                <!-- save custom tag -->
+                <button class="btn btn-link"
+                        ng-if="$ctrl.selectedFileTag[entity.uuid] === 'other' "
+                        data-ng-click="$ctrl.addFileTag(entity)"
+                        data-ng-disabled="$ctrl._ui.busy || !$ctrl.otherTagName[entity.uuid]">
+                    Save
+                </button>
+                <!-- save tag -->
                  <button class="btn btn-link"
+                         ng-if="$ctrl.selectedFileTag[entity.uuid] != 'other' "
                          data-ng-click="$ctrl.addFileTag(entity)"
                          data-ng-disabled="$ctrl._ui.busy || !$ctrl.selectedFileTag[entity.uuid]">
                      Save

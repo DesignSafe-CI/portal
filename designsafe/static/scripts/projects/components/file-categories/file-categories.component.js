@@ -67,7 +67,7 @@ class FileCategoriesCtrl {
 
     addFileTag(entity) {
         this._ui.busy = true;
-        let tagName = this.selectedFileTag[entity.uuid];
+        let tagName = this.otherTagName[entity.uuid] || this.selectedFileTag[entity.uuid];
         getFileUuid(this.file).then((file)=>{
             entity.value.fileTags.push({
                 fileUuid: file.uuid(),
