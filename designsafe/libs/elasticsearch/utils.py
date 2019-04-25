@@ -136,22 +136,24 @@ def repair_paths(limit=1000):
     while res.hits:
         update_ops = []
         for hit in res.hits:
-            try:
-                new_path = repair_path(hit.name, hit.path)
-                new_basepath = os.path.dirname(new_path)
+            
+            if hit.name is None or hit.path is None:
+                continue
 
-                update_ops.append({
-                    '_op_type': 'update',
-                    '_index': files_alias,
-                    '_type': 'file',
-                    '_id': hit.meta.id,
-                    'doc': {
-                        'path': new_path,
-                        'basePath': new_basepath
-                    }
-                })
-            except TypeError:
-                pass
+            new_path = repair_path(hit.name, hit.path)
+            new_basepath = os.path.dirname(new_path)
+
+            update_ops.append({
+                '_op_type': 'update',
+                '_index': files_alias,
+                '_type': 'file',
+                '_id': hit.meta.id,
+                'doc': {
+                    'path': new_path,
+                    'basePath': new_basepath
+                }
+            })
+
             # use from_path to remove any duplicates.
             # IndexedFile.from_path(hit.system, hit.path)
         
