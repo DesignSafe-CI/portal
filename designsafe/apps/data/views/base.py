@@ -186,7 +186,6 @@ class DataDepotPublishedView(TemplateView):
 
     This view will be used when a user goes directly to a published project.
     """
-
     template_name = 'data/data_depot.html'
 
     def get_context_data(self, **kwargs):
