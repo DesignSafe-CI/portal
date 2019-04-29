@@ -203,6 +203,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         prj.associated_projects = post_data.get('associatedProjects', {})
         prj.description = post_data.get('description', '')
         prj.keywords = post_data.get('keywords', '')
+        prj.file_tags = post_data.get('fileTags', {})
         prj.save(ag)
 
         # create Project Directory on Managed system
@@ -361,6 +362,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         p.team_members = post_data.get('teamMembers', p.team_members)
         p.guest_members = post_data.get('guestMembers', p.guest_members)
         p.keywords = post_data.get('keywords', p.keywords)
+        p.file_tags = post_data.get('fileTags', p.file_tags)
         new_pi = post_data.get('pi')
         p.project_id = post_data.get('projectId', p.project_id)
         if new_pi and  new_pi != 'null' and p.pi != new_pi:
