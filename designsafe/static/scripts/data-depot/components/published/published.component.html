@@ -802,7 +802,7 @@
                                     <tr ng-repeat="file in analysis.files | orderBy: ['type', 'path']">
                                       <td>
                                         <i class="fa {{file.icon()}}"></i>
-                                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                                        <a ng-href="{{file.href}}" ng-click="$ctrl.onBrowse($event, file)">
                                           {{file.name}}
                                         </a>
                                       </td>
@@ -826,7 +826,7 @@
                                     <tr ng-repeat="file in report.files | orderBy: ['type', 'path']">
                                       <td>
                                         <i class="fa {{file.icon()}}"></i>
-                                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                                        <a ng-href="{{file.href}}" ng-click="$ctrl.onBrowse($event, file)">
                                           {{file.name}}
                                         </a>
                                       </td>
@@ -877,7 +877,7 @@
                   <tr ng-repeat="file in analysis.files | orderBy: ['type', 'path']">
                     <td>
                       <i class="fa {{file.icon()}}"></i>
-                      <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                      <a ng-href="{{file.href}}" ng-click="$ctrl.onBrowse($event, file)">
                         {{file.name}}
                       </a>
                     </td>
@@ -917,7 +917,7 @@
                   <tr ng-repeat="file in report.files | orderBy: ['type', 'path']">
                     <td>
                       <i class="fa {{file.icon()}}"></i>
-                      <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                      <a ng-href="{{file.href}}" ng-click="$ctrl.onBrowse($event, file)">
                         {{file.name}}
                       </a>
                     </td>
