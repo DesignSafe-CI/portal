@@ -349,7 +349,6 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         else:
             post_data = request.POST.copy()
 
-        # save Project (metadata)
         p = BaseProject.manager().get(ag, uuid=project_id)
         p.title = post_data.get('title')
         p.award_number = post_data.get('awardNumber', p.award_number)
@@ -358,16 +357,54 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         p.team_order = post_data.get('teamOrder', p.team_order)
         p.associated_projects = post_data.get('associatedProjects', p.associated_projects)
         p.description = post_data.get('description', p.description)
-        p.co_pis = post_data.get('copi')
-        p.team_members = post_data.get('teamMembers', p.team_members)
         p.guest_members = post_data.get('guestMembers', p.guest_members)
         p.keywords = post_data.get('keywords', p.keywords)
         p.file_tags = post_data.get('fileTags', p.file_tags)
         new_pi = post_data.get('pi')
         p.project_id = post_data.get('projectId', p.project_id)
-        if new_pi and  new_pi != 'null' and p.pi != new_pi:
+
+        new_pi = post_data.get('pi', p.pi)
+        new_co_pis = post_data.get('copi', p.co_pis)
+        new_team_members = post_data.get('teamMembers', p.team_members)
+
+        if new_pi and new_pi != 'null' and p.pi != new_pi:
+            names = list(set(p.team_members + p.co_pis + [p.pi]))
+            updatednames = list(set(new_team_members + new_co_pis + [new_pi]))
             p.pi = new_pi
-            p.add_pi(new_pi)
+        else:
+            names = list(set(p.team_members + p.co_pis))
+            updatednames = list(set(new_team_members + new_co_pis))
+
+        add_perm_usrs = [u for u in updatednames if u not in names]
+        rm_perm_usrs = [u for u in names if u not in updatednames]
+
+        # set new members on project metadata
+        p.co_pis = new_co_pis
+        p.team_members = new_team_members
+
+        # remove permissions for users not on project and add permissions for new members
+        if rm_perm_usrs:
+            if p.pi not in rm_perm_usrs:
+                p._remove_team_members_pems(rm_perm_usrs)
+        if add_perm_usrs:
+            p._add_team_members_pems(add_perm_usrs)
+
+        tasks.check_project_files_meta_pems.apply_async(args=[p.uuid], queue='api')
+        tasks.set_facl_project.apply_async(
+            args=[
+                p.project_id,
+                add_perm_usrs
+            ],
+            queue='api'
+        )
+        tasks.email_collaborator_added_to_project.apply_async(
+            args=[
+                p.title,
+                add_perm_usrs,
+                []
+            ]
+        )
+
         p.save(ag)
         return JsonResponse(p.to_body_dict())
 
