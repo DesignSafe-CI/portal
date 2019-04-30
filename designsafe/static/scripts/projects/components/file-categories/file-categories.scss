@@ -34,5 +34,39 @@
                 }
             }
         }
+        .other-tag-item {
+            margin-top:5px;
+            overflow: auto;
+            .other-tag-label {
+                width: 100%;
+                display: inline-block;
+                span {
+                    background: white;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    padding:3px;
+                    font-style:italic;
+                    width: 70%;
+                    display: inline-block;
+                }
+            }
+            .other-tag-selector {
+                width: 100%;
+                display: inline-block;
+                .project-other-tags-select {
+                    width: 80%;
+                    display: inline-block;
+                }
+            }
+        }
     }
+}
+
+.input-tag {
+    background: white;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    margin:5px 0;
+    padding: 6px 12px;
+    width: 80%;
 }
