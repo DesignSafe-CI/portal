@@ -1,0 +1,19 @@
+{
+    "designsafe.project": {
+        "name": "Other",
+        "tags": [
+            "CSV",
+            "Database Files",
+            "GeoJSON",
+            "Jupyter Notebook",
+            "KML",
+            "Map",
+            "Matlab code",
+            "Powerpoint",
+            "Python Code",
+            "Spreadsheet",
+            "Team Photo",
+            "White Paper"
+        ]
+    }
+}

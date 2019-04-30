@@ -34,6 +34,7 @@ class Project(MetadataModel):
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512)
     keywords = fields.CharField('Keywords')
+    file_tags = fields.ListField('File Tags')
 
     @property
     def system(self):
