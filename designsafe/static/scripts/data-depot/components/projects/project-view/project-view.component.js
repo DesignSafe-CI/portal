@@ -103,6 +103,10 @@ class ProjectViewCtrl {
       this.$state.go('projects.previewOther', { projectId: this.browser.project.uuid }).then(() => {
         this.checkState();
       });
+    } else if (this.browser.project.value.projectType === 'field_recon') {
+      this.$state.go('projects.previewFieldRecon', { projectId: this.browser.project.uuid }).then(() => {
+        this.checkState();
+      });
     }
   }
 }

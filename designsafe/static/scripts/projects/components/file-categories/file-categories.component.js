@@ -4,6 +4,7 @@ import FileCategoriesTemplate from './file-categories.template.html';
 import experimentalFileTags from './experimental-file-tags.json';
 import simulationFileTags from './simulation-file-tags.json';
 import hybridSimulationFileTags from './hybrid-simulation-file-tags.json';
+import fieldReconFileTags from './field-recon-file-tags.json';
 import otherFileTags from './other-file-tags.json';
 import { values } from '@uirouter/core';
 
@@ -220,6 +221,8 @@ class FileCategoriesCtrl {
             return hybridSimulationFileTags[entity.name];
         } else if (this.project.value.projectType === 'other'){
             return otherFileTags['designsafe.project'];
+        } else if (this.project.value.projectType === 'field_recon') {
+            return fieldReconFileTags[entity.name];
         }
         return {};
     }

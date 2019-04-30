@@ -51,6 +51,7 @@ class ManageExperimentsCtrl {
             users: [... new Set(members)],
             form: {}
         };
+
         this.ui = {
             experiments: {},
             efs: this.efs,
@@ -59,6 +60,7 @@ class ManageExperimentsCtrl {
             updateExperiments: {},
             showAddReport: {},
         };
+
         this.form = {
             curExperiments: [],
             addExperiments: [{}],
@@ -66,6 +68,7 @@ class ManageExperimentsCtrl {
             addGuest: [{}],
             entitiesToAdd: []
         };
+
         this.form.curExperiments = this.data.project.experiment_set;
 
         if (this.options.edit) {

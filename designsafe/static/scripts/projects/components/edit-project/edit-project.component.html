@@ -259,6 +259,48 @@
                     </div>
                 </div>
             </div>
+            <div data-ng-if="$ctrl.project.value.projectType === 'field_recon'">
+                <div style="width:45%; display:inline-block;" class="pull-left">
+                    <label for="id-nh-event">Natural Hazard Event
+                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                        <span style="font-weight:normal; display:inline-block;">
+                            Name given to the natural hazard (ex. Hurricane Katrina)
+                        </span>
+                    </label>
+                    <input type="text"
+                           id="id-nh-event"
+                           name="nh-event"
+                           style="width:100%"
+                           data-ng-model="$ctrl.form.nhEvent" />
+                </div>
+                <div style="width:45%; display: inline-block;" class="pull-right">
+                    <label for="id-nh-event-date">Natural Hazard Date
+                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                        <span style="font-weight:normal; display:inline-block;">
+                            If you only want to enter a single date, fill in the first field.
+                        </span>
+                    </label>
+                    <input data-ng-model="$ctrl.form.nhEventDateStart" id="id-nh-event-date"/> -
+                    <input data-ng-model="$ctrl.form.nhEventDateEnd" />
+                </div>
+                <div style="width:100%;">
+                    <label for="id-nh-event-type">Natural Hazard Type
+                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                        <span style="font-weight:normal; display:inline-block;">
+                            The hazards occurring from an event. An event can have multiple hazard types (Hurricanes also have storm surge and floods).
+                        </span>
+                    </label>
+                    <select data-ng-model="$ctrl.form.nhEventType"
+                            data-ng-options="type for type in $ctrl.rapidEventTypes">
+                        <option value="">Select Natural Hazard Type</option>
+                    </select>
+                    <input type="text"
+                           style="width:100%"
+                           placeholder="Natural Hazard Type"
+                           data-ng-model="$ctrl.form.nhEventTypeOther"
+                           data-ng-if="$ctrl.form.rapidEventType === 'Other'"/>
+                </div>
+            </div>
             <!-- Project Keywords -->
             <div class="form-group" style="width:100%; display:inline-block;">
                 <label for="id_keywords">Keywords
