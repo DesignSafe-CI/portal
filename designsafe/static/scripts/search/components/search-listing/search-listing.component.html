@@ -30,7 +30,6 @@
             <p><strong> DOI: </strong> {{$ctrl.data.project.doi}}</p>
             <p><strong> Keywords: </strong> {{$ctrl.data.project.value.keywords}}</p>
             <p> {{$ctrl.data.project.value.description}} </p>
-            <span class="label label-primary"> Created: {{$ctrl.data.created | date:'short'}} </span>
           </div>
           <!-- This is for old nees projects -->
           <div ng-if="!$ctrl.data.projectId">
@@ -42,6 +41,7 @@
 
             </p>
             <p> {{$ctrl.data.description}} </p>
+            <span class="label label-primary"> Created: {{$ctrl.data.startDate | date:'short'}} </span>
           </div>
           <hr>
         </div>
