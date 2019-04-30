@@ -89,42 +89,63 @@ class ProjectTreeCtrl {
      * @param {Object} entity.
      *
      * Remove uuids to the correct attributes.
+     * This is specific to Simulation project.
+     */
+    unrelateEntityToFieldReconProject(node, entity){
+        let nodeParent = node.parent;
+        if (entity.name === 'designsafe.project.field_recon.report' &&
+            !entity.value.missions.length) {
+            return this.$q.deferred();
+        }
+        entity.value.simulations = _.without(
+            entity.value.missions,
+            nodeParent.data.uuid
+        );
+        return this.removeAssociationIds(node, entity);
+    }
+
+    /*
+     * @method
+     * @param {Object} node. Hierarchical node so we can walk parents.
+     * @param {Object} entity.
+     *
+     * Remove uuids to the correct attributes.
      * This is specific to Hybrid Simulation project.
      */
     unrelateEntityToHybridSimProject(node, entity){
         let nodeParent = node.parent;
-        if (entity.name == 'designsafe.project.hybrid_simulation.coordinator_output') {
+        if (entity.name === 'designsafe.project.hybrid_simulation.coordinator_output') {
             entity.value.coordinators = _.without(
                 entity.value.coordinators,
                 nodeParent.data.uuid
             );
             nodeParent = nodeParent.parent;
-        } else if (entity.name == 'designsafe.project.hybrid_simulation.sim_output') {
+        } else if (entity.name === 'designsafe.project.hybrid_simulation.sim_output') {
             entity.value.simSubstructures = _.without(
                 entity.value.simSubstructures,
                 nodeParent.data.uuid
             );
             nodeParent = nodeParent.parent;
-        } else if (entity.name == 'designsafe.project.hybrid_simulation.exp_output') {
+        } else if (entity.name === 'designsafe.project.hybrid_simulation.exp_output') {
             entity.value.expSubstructures = _.without(
                 entity.value.expSubstructures,
                 nodeParent.data.uuid
             );
             nodeParent = nodeParent.parent;
         }
-        if (entity.name == 'designsafe.project.hybrid_simulation.exp_substructure') {
+        if (entity.name === 'designsafe.project.hybrid_simulation.exp_substructure') {
             entity.value.coordinators = _.without(
                 entity.value.coordinators,
                 nodeParent.data.uuid
             );
             nodeParent = nodeParent.parent;
         }
-        if (entity.name == 'designsafe.project.hybrid_simulation.coordinator_output' ||
-            entity.name == 'designsafe.project.hybrid_simulation.sim_output' ||
-            entity.name == 'designsafe.project.hybrid_simulation.exp_output' ||
-            entity.name == 'designsafe.project.hybrid_simulation.coordinator' ||
-            entity.name == 'designsafe.project.hybrid_simulation.sim_substructure' ||
-            entity.name == 'designsafe.project.hybrid_simulation.exp_substructure') {
+        if (entity.name === 'designsafe.project.hybrid_simulation.coordinator_output' ||
+            entity.name === 'designsafe.project.hybrid_simulation.sim_output' ||
+            entity.name === 'designsafe.project.hybrid_simulation.exp_output' ||
+            entity.name === 'designsafe.project.hybrid_simulation.coordinator' ||
+            entity.name === 'designsafe.project.hybrid_simulation.sim_substructure' ||
+            entity.name === 'designsafe.project.hybrid_simulation.exp_substructure') {
             entity.value.globalModels = _.without(
                 entity.value.globalModels,
                 nodeParent.data.uuid
@@ -148,15 +169,15 @@ class ProjectTreeCtrl {
      */
     unrelateEntityToSimProject(node, entity){
         let nodeParent = node.parent;
-        if (entity.name == 'designsafe.project.simulation.output') {
+        if (entity.name === 'designsafe.project.simulation.output') {
             entity.value.simInputs = _.without(
                 entity.value.simInputs,
                 nodeParent.data.uuid
             );
             nodeParent = nodeParent.parent;
         }
-        if (entity.name == 'designsafe.project.simulation.output' ||
-            entity.name == 'designsafe.project.simulation.input') {
+        if (entity.name === 'designsafe.project.simulation.output' ||
+            entity.name === 'designsafe.project.simulation.input') {
             entity.value.modelConfigs = _.without(
                 entity.value.modelConfigs,
                 nodeParent.data.uuid
@@ -180,15 +201,15 @@ class ProjectTreeCtrl {
      */
     unrelateEntityToExperimental(node, entity){
         let nodeParent = node.parent;
-        if (entity.name == 'designsafe.project.event') {
+        if (entity.name === 'designsafe.project.event') {
             entity.value.sensorLists = _.without(
                 entity.value.sensorLists,
                 nodeParent.data.uuid
             );
             nodeParent = nodeParent.parent;
         }
-        if (entity.name == 'designsafe.project.event' ||
-            entity.name == 'designsafe.project.sensor_list') {
+        if (entity.name === 'designsafe.project.event' ||
+            entity.name === 'designsafe.project.sensor_list') {
             entity.value.modelConfigs = _.without(
                 entity.value.modelConfigs,
                 nodeParent.data.uuid
@@ -201,6 +222,29 @@ class ProjectTreeCtrl {
         );
         return this.removeAssociationIds(node, entity);
     }
+
+    /*
+     * @method
+     * @param {Object} leaf.
+     * @param {Object} entity.
+     *
+     * Add uuids to the correct attributes.
+     * This is specific to Field Recon projects. We probably need to generalize this
+     * but it's easier to read if we implement this method for every project type.
+     * For Field Recon we need to relate:
+     * - Missions.
+     * - Collections.
+     *
+     * We only need to relate every parent to the entity.
+     * For instance, a Collection  needs to have all of the above related but a Mission
+     * only needs to have the project as a parent.
+     */
+    relateEntityToFieldReconProject(leaf, entity){
+        let leafParent = leaf.parent;
+        entity.value.missions.push(leafParent.data.uuid);
+        return this.addAssociationIds(leaf, entity);
+    }
+
     /*
      * @method
      * @param {Object} leaf.
@@ -339,6 +383,122 @@ class ProjectTreeCtrl {
         }
         entity.value.experiments.push(leafParent.data.uuid);
         return this.addAssociationIds(leaf, entity);
+    }
+
+    /*
+     * @method
+     *
+     * Build tress for every Mission in this class' `this.project`.
+     * The hierarchy is build like so:
+     *
+     * + Mission 1
+     * |
+     * -- + Collection 1
+     * |
+     * -- + Collection 2
+     * 
+     * + Mission 2
+     * [...]
+     */
+    buildFieldReconTree() {
+        let missions = [];
+        if (this.rootCategoryUuid) {
+            missions = _.filter(
+                this.project.mission_set,
+                (mission) => {
+                    return mission.uuid === this.rootCategoryUuid;
+                }
+            );
+        } else {
+            missions = _.sortBy(
+                this.project.mission_set,
+                (mission) => {
+                    return mission.value.title;
+                }
+            );
+        }
+        let collections = _.sortBy(
+            this.project.collection_set,
+            (col) => { return col.value.title; }
+        );
+        let reports = _.sortBy(
+            this.project.report_set,
+            (rep) => { return rep.value.title; }
+        );
+        let roots = [];
+        let projectNode = {
+            name: this.project.value.projectId + ' | ' + this.project.value.title,
+            uuid: this.project.uuid,
+            parent: null,
+            children: [],
+            rectStyle: 'stroke: none;',
+        };
+        _.each(reports, (report) => {
+            if (report.value.missions.length) {
+                return;
+            }
+            let repNode = {
+                name: report.value.title,
+                uuid: report.uuid,
+                parent: projectNode.name,
+                rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
+                display: 'Report',
+            };
+            projectNode.children.push(repNode);
+        });
+        roots.push(projectNode);
+        _.each(missions, (mission) => {
+            let node = {
+                name: mission.value.title,
+                uuid: mission.uuid,
+                parent: null,
+                children: [],
+                rectStyle: 'stroke: none;',
+            };
+            _.each(reports, (rep) => {
+                if (!_.contains(rep.associationIds, node.uuid)) {
+                    return;
+                }
+                let repNode = {
+                    name: rep.value.title,
+                    uuid: rep.uuid,
+                    parent: node.name,
+                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
+                    display: 'Report',
+                };
+                node.children.push(repNode);
+            });
+            node.children.push(
+                {
+                    name: '-- Choose a Report --',
+                    attr: 'report_set',
+                    entityType: 'report',
+                }
+            );
+            _.each(collections, (col) => {
+                if (!_.contains(col.associationIds, node.uuid)){
+                    return;
+                }
+                let colNode = {
+                    name: col.value.title,
+                    uuid: col.uuid,
+                    parent: node.name,
+                    children: [],
+                    rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
+                    display: 'Collection',
+                };
+                node.children.push(colNode);
+            });
+            node.children.push(
+                {
+                    name: '-- Choose a Collection --',
+                    attr: 'collection_set',
+                    entityType: 'collection',
+                }
+            );
+            roots.push(node);
+        });
+        this.trees = roots;
     }
 
     /*
@@ -1324,6 +1484,8 @@ class ProjectTreeCtrl {
                 this.buildSimulationTree();
             } else if (type === 'hybrid_simulation') {
                 this.buildHybridSimulationTree();
+            } else if (type === 'field_recon') {
+                this.buildFieldReconTree();
             }
             _.each(this.trees, (tree, index) => {
                 let XOffset = 0;
@@ -1358,6 +1520,8 @@ class ProjectTreeCtrl {
             promise = this.relateEntityToSimProject(leaf, entity);
         } else if (type === 'hybrid_simulation') {
             promise = this.relateEntityToHybridSimProject(leaf, entity);
+        } else if (type === 'field_recon') {
+            promise = this.relateEntityToFieldReconProject(leaf, entity);
         }
         promise
             .then( () => {
@@ -1380,6 +1544,8 @@ class ProjectTreeCtrl {
             promise = this.unrelateEntityToSimProject(node, entity);
         } else if (type == 'hybrid_simulation') {
             promise = this.unrelateEntityToHybridSimProject(node, entity);
+        } else if (type == 'field_recon') {
+            promise = this.unrelateEntityToFieldReconProject(node, entity);
         }
         promise
             .then( () => {

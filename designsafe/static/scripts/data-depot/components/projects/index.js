@@ -10,6 +10,7 @@ import { PublicationPreviewComponent } from './publication-preview/publication-p
 import { PublicationPreviewSimComponent } from './publication-preview/publication-preview-sim.component';
 import { PublicationPreviewHybSimComponent } from './publication-preview/publication-preview-hyb-sim.component';
 import { PublicationPreviewOtherComponent } from './publication-preview/publication-preview-other.component';
+import { PublicationPreviewFieldReconComponent } from './publication-preview/publication-preview-field-recon.component';
 import { PipelineSelectionComponent } from './pipeline-selection/pipeline-selection.component';
 import { PipelineSelectionSimComponent } from './pipeline-selection/pipeline-selection-sim.component';
 import { PipelineSelectionHybSimComponent } from './pipeline-selection/pipeline-selection-hyb-sim.component';
@@ -27,6 +28,9 @@ import { PipelineTeamComponent } from './pipeline-team/pipeline-team.component';
 import { PipelineLicensesComponent } from './pipeline-licenses/pipeline-licenses.component';
 import { ProjectTreeComponent } from '../../../projects/components/project-tree/project-tree.component';
 import { PipelinePublishComponent } from './pipeline-publish/pipeline-publish.component';
+import { ManageFieldReconMissionsComponent } from '../../../projects/components/manage-field-recon/missions/manage-field-recon-missions.component.js';
+import { ManageFieldReconCollectionsComponent } from '../../../projects/components/manage-field-recon/collections/manage-field-recon-collections.component.js';
+import { ManageFieldReconReportsComponent } from '../../../projects/components/manage-field-recon/reports/manage-field-recon-reports.component.js';
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
@@ -40,6 +44,7 @@ ddProjectsComponents.component('publicationPreview', PublicationPreviewComponent
 ddProjectsComponents.component('publicationPreviewSim', PublicationPreviewSimComponent);
 ddProjectsComponents.component('publicationPreviewHybSim', PublicationPreviewHybSimComponent);
 ddProjectsComponents.component('publicationPreviewOther', PublicationPreviewOtherComponent);
+ddProjectsComponents.component('publicationPreviewFieldRecon', PublicationPreviewFieldReconComponent);
 ddProjectsComponents.component('pipelineSelect', PipelineSelectionComponent);
 ddProjectsComponents.component('pipelineSelectSim', PipelineSelectionSimComponent);
 ddProjectsComponents.component('pipelineSelectHybSim', PipelineSelectionHybSimComponent);
@@ -57,5 +62,8 @@ ddProjectsComponents.component('pipelineTeam', PipelineTeamComponent);
 ddProjectsComponents.component('pipelineLicenses', PipelineLicensesComponent);
 ddProjectsComponents.component('projectTree', ProjectTreeComponent);
 ddProjectsComponents.component('pipelinePublishModal', PipelinePublishComponent);
+ddProjectsComponents.component('fieldReconMissionsModal', ManageFieldReconMissionsComponent);
+ddProjectsComponents.component('fieldReconCollectionsModal', ManageFieldReconCollectionsComponent);
+ddProjectsComponents.component('fieldReconReportsModal', ManageFieldReconReportsComponent);
 
 export default ddProjectsComponents;

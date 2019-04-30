@@ -88,27 +88,62 @@
                     <span style="padding:10px; font-weight:bold;">1
                         <a  ng-click="$ctrl.manageExperiments()"
                             ng-if="$ctrl.browser.project.value.projectType === 'experimental'"
-                        >
+                            href="#">
                             Add Experiments
                         </a>
                         <a  ng-click="$ctrl.manageSimulations()"
                             ng-if="$ctrl.browser.project.value.projectType === 'simulation'"
-                        >
+                            href="#">
                             Add Simulations
                         </a>
                         <a  ng-click="$ctrl.manageHybridSimulations()"
                             ng-if="$ctrl.browser.project.value.projectType === 'hybrid_simulation'"
-                        >
+                            href="#">
                             Add Hybrid Simulations
+                        </a>
+                        <a data-ng-click="$ctrl.manageFieldReconReports()"
+                           data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"
+                           href="#">
+                            Add Reports
                         </a>
                     </span>
                     <span style="padding:5px; font-weight:bold;">|</span>
                     <span style="padding:10px; font-weight:bold;">2
-                        <a ng-click="$ctrl.manageCategories()"> Add Categories</a>
+                        <a ng-click="$ctrl.manageCategories()"
+                           ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'"
+                           href="#">
+                            Add Categories
+                        </a>
+                        <a data-ng-click="$ctrl.manageFieldReconMissions()"
+                           data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"
+                           href="#">
+                            Add Missions
+                        </a>
                     </span>
                     <span style="padding:5px; font-weight:bold;">|</span>
                     <span style="padding:10px; font-weight:bold;">3
-                        <a ng-click="$ctrl.relateData()"> Relate Data</a>
+                        <a ng-click="$ctrl.relateData()"
+                            ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'"
+                            href="#">
+                            Relate Data
+                        </a>
+                        <a ng-click="$ctrl.manageFieldReconCollections()"
+                           ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"
+                           href="#">
+                            Add Collections
+                        </a>
+                    </span>
+                    <span style="padding:5px; font-weight:bold;"
+                          data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">|</span>
+                    <span style="padding:10px;
+                                 font-weight:bold;
+                                 display: inline-block;
+                                 clear:both;"
+                          data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">4
+                        <a ng-click="$ctrl.relateData()"
+                           href="#">
+                            Relate Data
+                        </a>
                     </span>
                 </div>
             </td>

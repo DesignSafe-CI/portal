@@ -23,6 +23,15 @@ class EditProjectCtrl {
             busy: false,
             error: null
         };
+        this.rapidEventTypes = [
+            "Other",
+            "Earthquake",
+            "Flood",
+            "Hurricane",
+            "Landslide",
+            "Tornado",
+            "Tsunami"
+        ]
         this.otherTypes = [
             'Custom',
             'Code',

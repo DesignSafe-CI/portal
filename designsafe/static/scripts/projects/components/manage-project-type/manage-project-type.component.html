@@ -36,6 +36,7 @@
                         <td>
                             <input type="radio"
                                     name="type"
+                                    id="experimental-type"
                                     ng-model="$ctrl.prjType"
                                     value="experimental"
                                     style="margin-top: -18px; vertical-align: middle;"
@@ -43,10 +44,12 @@
                             <span class="curation-experiment" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
                         </td>
                         <td>
-                            <strong>Experimental Project</strong>
-                            <div>
-                                For physical work, typically done at an experimental facility or in the field.
-                            </div>
+                            <label for="experimental-type">
+                                <strong>Experimental Project</strong>
+                                <div>
+                                    For physical work, typically done at an experimental facility or in the field.
+                                </div>
+                            </label>
                         </td>
                     </tr>
                 </table>
@@ -56,6 +59,7 @@
                         <td>
                             <input type="radio"
                                     name="type"
+                                    id="simulation-type"
                                     ng-model="$ctrl.prjType"
                                     value="simulation"
                                     style="margin-top: -18px; vertical-align: middle;"
@@ -63,10 +67,12 @@
                             <span class="curation-simulation" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
                         </td>
                         <td>
-                            <strong>Simulation Project</strong>
-                            <div>
-                                For numerical and/or analytical work, done with software.
-                            </div>
+                            <label for="simulation-type">
+                                <strong>Simulation Project</strong>
+                                <div>
+                                    For numerical and/or analytical work, done with software.
+                                </div>
+                            </label>
                         </td>
                     </tr>
                 </table>
@@ -76,6 +82,7 @@
                         <td>
                             <input type="radio"
                                     name="type"
+                                    id="hybrid-simulation-type"
                                     ng-model="$ctrl.prjType"
                                     value="hybrid_simulation"
                                     style="margin-top: -18px; vertical-align: middle;"
@@ -83,10 +90,12 @@
                             <span class="curation-hybrid-icon" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
                         </td>
                         <td>
-                            <strong>Hybrid Simulation Project</strong>
-                            <div>
-                                For work using both physical and numerical components.
-                            </div>
+                            <label for="hybrid-simulation-type">
+                                <strong>Hybrid Simulation Project</strong>
+                                <div>
+                                    For work using both physical and numerical components.
+                                </div>
+                            </label>
                         </td>
                     </tr>
                 </table>
@@ -96,6 +105,30 @@
                         <td>
                             <input type="radio"
                                     name="type"
+                                    id="field-recon-type"
+                                    ng-model="$ctrl.prjType"
+                                    value="field_recon"
+                                    style="margin-top: -18px; vertical-align: middle;"
+                            >
+                            <span class="field-recon-icon" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                        </td>
+                        <td>
+                            <label for="field-recon-type">
+                                <strong>Field Reconnaissance Project</strong>
+                                <div>
+                                    For field reconnaissance work.
+                                </div>
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <table>
+                    <tr>
+                        <td>
+                            <input type="radio"
+                                    name="type"
+                                    id="other-type"
                                     ng-model="$ctrl.prjType"
                                     value="other"
                                     style="margin-top: -18px; vertical-align: middle;"
@@ -103,10 +136,12 @@
                             <span class="curation-other" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
                         </td>
                         <td>
-                            <strong>Other Project</strong>
-                            <div>
-                                For work other than the project types above.
-                            </div>
+                            <label for="other-type">
+                                <strong>Other Project</strong>
+                                <div>
+                                    For work other than the project types above.
+                                </div>
+                            </label>
                         </td>
                     </tr>
                 </table>
@@ -530,6 +565,22 @@
             </table>
         </div>
         <!-- Project Overview -->
+    </div>
+    <div ng-if="$ctrl.prjType === 'field_recon'">
+        <!-- Project Overview -->
+        <div ng-if="$ctrl.slide === 'overview'">
+            <div>
+                <h3>Other Overview Coming Soon...</h3>
+        </div>
+        <div class="btn-group" style="overflow: auto; width:100%;">
+            <a data-ng-click="$ctrl.continue('type')" class="pull-left">
+                <i class="fa fa-arrow-left">&nbsp;</i> <strong>Back</strong>
+            </a>
+            <button class="btn btn-add pull-right"
+                    data-ng-click="$ctrl.continue('finish')">
+                Continue
+            </button>
+        </div>
     </div>
     <div ng-if="$ctrl.prjType === 'other'">
         <!-- Project Overview -->

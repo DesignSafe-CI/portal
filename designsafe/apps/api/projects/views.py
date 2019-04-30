@@ -15,7 +15,6 @@ from designsafe.apps.api.decorators import agave_jwt_login
 from designsafe.apps.api import tasks
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
-from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.projects.models.agave.base import Project as BaseProject
 from designsafe.apps.projects.models.categories import Category
@@ -26,11 +25,6 @@ from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 from designsafe.libs.common.decorators import profile as profile_fn
-#from requests.exceptions import HTTPError
-from designsafe.apps.projects.models.agave.experimental import (
-    ExperimentalProject, Experiment, ModelConfig,
-    Event, Analysis, SensorList, Report)
-from designsafe.apps.projects.models.agave import simulation, hybrid_simulation
 from designsafe.apps.api.agave.filemanager.public_search_index import (PublicationManager,
                                                                        Publication,
                                                                        LegacyPublication)
@@ -278,47 +272,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         tasks.set_project_id.apply_async(args=[prj.uuid],queue="api")
         return JsonResponse(prj.to_body_dict(), safe=False)
 
-class ProjectMetaLookupMixin(object):
-    def _lookup_model(self, name, prj_type=None):
-        clss = {
-            'designsafe.project': {
-                'experimental': ExperimentalProject,
-                'simulation': simulation.SimulationProject
-            },
-            'designsafe.project.experiment': Experiment,
-            'designsafe.project.event': Event,
-            'designsafe.project.analysis': Analysis,
-            'designsafe.project.sensor_list': SensorList,
-            'designsafe.project.model_config': ModelConfig,
-            'designsafe.project.report': Report,
-            'designsafe.project.simulation': simulation.Simulation,
-            'designsafe.project.simulation.model': simulation.Model,
-            'designsafe.project.simulation.input': simulation.Input,
-            'designsafe.project.simulation.output': simulation.Output,
-            'designsafe.project.simulation.analysis': simulation.Analysis,
-            'designsafe.project.simulation.report': simulation.Report,
-            'designsafe.project.hybrid_simulation': hybrid_simulation.HybridSimulation,
-            'designsafe.project.hybrid_simulation.global_model': hybrid_simulation.GlobalModel,
-            'designsafe.project.hybrid_simulation.coordinator': hybrid_simulation.Coordinator,
-            'designsafe.project.hybrid_simulation.sim_substructure': hybrid_simulation.SimSubstructure,
-            'designsafe.project.hybrid_simulation.exp_substructure': hybrid_simulation.ExpSubstructure,
-            'designsafe.project.hybrid_simulation.coordinator_output': hybrid_simulation.CoordinatorOutput,
-            'designsafe.project.hybrid_simulation.exp_output': hybrid_simulation.ExpOutput,
-            'designsafe.project.hybrid_simulation.sim_output': hybrid_simulation.SimOutput,
-            'designsafe.project.hybrid_simulation.analysis': hybrid_simulation.Analysis,
-            'designsafe.project.hybrid_simulation.report': hybrid_simulation.Report
-        }
-
-        cls = clss.get(name)
-        if isinstance(cls, dict):
-            cls = cls.get(prj_type)
-
-        if cls is None:
-            raise ValueError('No module found with that name.')
-
-        return cls
-
-class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
+class ProjectInstanceView(SecureMixin, BaseApiView):
 
     @profile_fn
     def get(self, request, project_id):
@@ -330,7 +284,6 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         ag = request.user.agave_oauth.client
         #project = Project.from_uuid(agave_client=ag, uuid=project_id)
         meta_obj = ag.meta.getMetadata(uuid=project_id)
-        #model_cls = self._lookup_model(meta_obj['name'])
         cls = project_lookup_model(meta_obj)
         project = cls(**meta_obj)
         return JsonResponse(project.to_body_dict(), safe=False)
@@ -493,7 +446,7 @@ class ProjectDataView(SecureMixin, BaseApiView):
 
         return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
 
-class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
+class ProjectMetaView(BaseApiView, SecureMixin):
 
     @profile_fn
     def get(self, request, project_id=None, name=None, uuid=None):
@@ -505,7 +458,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         ag = request.user.agave_oauth.client
         try:
             if name is not None and name != 'all':
-                model = self._lookup_model(name)
+                model = project_lookup_model(name=name)
                 resp = model._meta.model_manager.list(ag, project_id)
                 resp_list = [r.to_body_dict() for r in resp]
                 resp_list = sorted(resp_list, key=lambda x: x['created'])
@@ -518,7 +471,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
                 return JsonResponse(resp_list, safe=False)
             elif uuid is not None:
                 meta = ag.meta.getMetadata(uuid=uuid)
-                model = self._lookup_model(meta['name'])
+                model = project_lookup_model(meta)
                 resp = model(**meta)
                 return JsonResponse(resp.to_body_dict(), safe=False)
         except ValueError:
@@ -533,7 +486,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         """
         ag = get_service_account_client()
         meta_obj = ag.meta.getMetadata(uuid=uuid)
-        model = self._lookup_model(meta_obj['name'])
+        model = project_lookup_model(meta_obj)
         meta = model(**meta_obj)
         ag.meta.deleteMetadata(uuid=uuid)
         return JsonResponse(meta.to_body_dict(), safe=False)
@@ -553,10 +506,8 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             post_data = request.POST.copy()
         entity = post_data.get('entity')
         try:
-            model_cls = self._lookup_model(name)
-            logger.debug('entity: %s', entity)
+            model_cls = project_lookup_model(name=name)
             model = model_cls(value=entity)
-            logger.debug('model uuid: %s', model.uuid)
             file_uuids = []
             if 'filePaths' in entity:
                 file_paths = entity.get('filePaths', [])
@@ -610,7 +561,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             dict_obj=entity['_ui']
         )
         try:
-            model_cls = self._lookup_model(entity['name'])
+            model_cls = project_lookup_model(entity)
             model = model_cls(**entity)
             saved = model.save(ag)
             resp = model_cls(**saved)

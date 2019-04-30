@@ -1,0 +1,40 @@
+{
+    "designsafe.project.field_recon.collection": {
+        "name": "Collection",
+        "tags": {
+            "General": [
+                "Other",
+                "3D Model",
+                "Area",
+                "Audio",
+                "Ground Investigation",
+                "Image",
+                "Lidar",
+                "Marker",
+                "Note",
+                "Point Cloud",
+                "Questionnaire",
+                "Report",
+                "Route",
+                "Scan",
+                "Survey",
+                "Track",
+                "Video",
+                "Virtual Recon",
+                "Planning Documents",
+                "Data Processing Method",
+                "Wind Observation",
+                "Geotechnical Observation",
+                "Coastal Observation",
+                "Structural Observation",
+                "Survey Observation",
+                "Forensic Observation",
+                "Sample Observation",
+                "Damage Type",
+                "Geolocation",
+                "Lat Long",
+                "Elevation"
+            ]
+        }
+    }
+}

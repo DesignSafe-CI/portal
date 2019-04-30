@@ -341,6 +341,27 @@ function config(
                 ],
             },
         })
+        .state('projects.previewFieldRecon', {
+            url: '/projects/{projectId}/previewOther',
+            component: 'publicationPreviewFieldRecon',
+            params: {
+                filePath: '/',
+                project: null,
+                selectedListings: null,
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
         .state('projects.pipelineSelect', {
             url: '/projects/{projectId}/curation/selection',
             component: 'pipelineSelect',

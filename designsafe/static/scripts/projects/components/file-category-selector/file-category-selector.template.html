@@ -94,6 +94,13 @@
                 {{simOutput.value.title}}
             </option>
         </optgroup>
+        <optgroup label="Collection"
+                  data-ng-if="$ctrl.project.collection_set.length">
+            <option data-ng-repeat="collection in $ctrl.project.collection_set | orderBy: ['value.title']"
+                    value="{{collection.uuid}}">
+                {{collection.value.title}}
+            </option>
+        </optgroup>
         <optgroup label="Analysis"
                   data-ng-if="$ctrl.project.analysis_set.length">
             <option data-ng-repeat="analysis in $ctrl.project.analysis_set | orderBy: ['value.title']"

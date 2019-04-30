@@ -8,31 +8,41 @@ from designsafe.apps.projects.models.agave.base import Project
 
 logger = logging.getLogger(__name__)
 
-def lookup_model(entity):
-    entity_name = entity['name'].replace("designsafe.project.", "")
-    comps = entity_name.split('.')
-    #ename = entity['name'].rsplit('.', 1)[1].lower()
+def lookup_model(entity=None, name=None):
+    if entity is not None:
+        entity_name = entity['name']
+    elif name is not None:
+        entity_name = name
+
+    entity_meta_name = entity_name.replace("designsafe.project.", "")
+    comps = entity_meta_name.split('.')
     project_type = 'experimental'
     if len(comps) == 2:
         project_type, ename = comps
-    elif entity_name in ["simulation", "hybrid_simulation"]:
-        project_type = ename = entity_name
+    elif entity_meta_name in ["simulation", "hybrid_simulation", "field_recon"]:
+        project_type = ename = entity_meta_name
     else:
         ename = entity['name'].rsplit('.', 1)[1].lower()
 
-    if entity['name'] == 'designsafe.project':
-        ename = '{ptype}_project'.format(ptype=entity['value']['projectType'])
+    if entity_name == 'designsafe.project':
+        if isinstance(entity, dict):
+            ename = '{ptype}_project'.format(ptype=entity['value']['projectType'])
+        else:
+            ename = '{ptype}_project'.format(ptype=entity.value.project_type)
+
         modules = [experimental, simulation, hybrid_simulation, rapid]
     else:
         switch = {'experimental': [experimental], 'simulation': [simulation],
-                  'hybrid_simulation': [hybrid_simulation], 'rapid': [rapid]}
+                  'hybrid_simulation': [hybrid_simulation], 'field_recon': [rapid]}
         modules = switch[project_type]
 
+    logger.debug('ename: %s', ename)
+    logger.debug('modules: %s', modules)
     name_comps = ename.split('_')
     name = ''
     for comp in name_comps:
         name += comp[0].upper() + comp[1:]
-    #logger.debug('name: %s', name)
+    logger.debug('name: %s', name)
     cls = None
     for module in modules:
         try:

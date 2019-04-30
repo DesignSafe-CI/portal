@@ -163,6 +163,14 @@ class CurationDirectoryCtrl {
             this.$state.go('projects.previewHybSim', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
         } else if (this.browser.project.value.projectType === 'other') {
             this.$state.go('projects.previewOther', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
+        } else if (this.browser.project.value.projectType === 'field_recon') {
+            this.$state.go('projects.previewFieldRecon',
+                {
+                    projectId: this.browser.project.uuid,
+                    selectedListings: this.browser.listings,
+                    project: this.browser.project 
+                }
+            );
         }
     }
 
@@ -216,8 +224,38 @@ class CurationDirectoryCtrl {
         resolve: {
             project: () => {return this.browser.project; },
         },
-        size: 'lg'
+        size: 'lg',
       });
+    }
+
+    manageFieldReconMissions() {
+        this.$uibModal.open({
+            component: 'fieldReconMissionsModal',
+            resolve: {
+                project: () => { return this.browser.project; },
+            },
+            size: 'lg',
+        });
+    }
+
+    manageFieldReconCollections() {
+        this.$uibModal.open({
+            component: 'fieldReconCollectionsModal',
+            resolve: {
+                project: () => { return this.browser.project; },
+            },
+            size: 'lg',
+        });
+    }
+
+    manageFieldReconReports() {
+        this.$uibModal.open({
+            component: 'fieldReconReportsModal',
+            resolve: {
+                project: () => { return this.browser.project; },
+            },
+            size: 'lg',
+        });
     }
 }
 
