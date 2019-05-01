@@ -15,9 +15,11 @@ class ManageFieldReconMissionsCtrl {
         var members = [this.project.value.pi].concat(
             this.project.value.coPis,
             this.project.value.teamMembers,
-            this.project.value.guestMembers.map(
-                (g) => g.user
-            )
+            this.project.value.
+                guestMembers.filter( (g) => g).
+                map(
+                    (g) => g.user
+                )
         );
 
         members.forEach((m, i) => {
