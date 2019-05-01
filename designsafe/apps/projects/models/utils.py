@@ -1,5 +1,6 @@
 """Utilities for projects models"""
 import logging
+from designsafe.apps.projects.models.agave import base
 from designsafe.apps.projects.models.agave import experimental
 from designsafe.apps.projects.models.agave import simulation
 from designsafe.apps.projects.models.agave import hybrid_simulation
@@ -26,21 +27,21 @@ def lookup_model(entity=None, name=None):
 
     if entity_name == 'designsafe.project':
         if isinstance(entity, dict):
-            ename = '{ptype}_project'.format(ptype=entity['value']['projectType'])
+            ename = '{ptype}_project'.format(ptype=entity['value'].get('projectType', ''))
         else:
             ename = '{ptype}_project'.format(ptype=entity.value.project_type)
 
-        modules = [experimental, simulation, hybrid_simulation, rapid]
+        modules = [base, experimental, simulation, hybrid_simulation, rapid]
     else:
         switch = {'experimental': [experimental], 'simulation': [simulation],
                   'hybrid_simulation': [hybrid_simulation], 'field_recon': [rapid]}
         modules = switch[project_type]
 
-    logger.debug('ename: %s', ename)
-    logger.debug('modules: %s', modules)
     name_comps = ename.split('_')
     name = ''
     for comp in name_comps:
+        if not comp:
+            continue
         name += comp[0].upper() + comp[1:]
     logger.debug('name: %s', name)
     cls = None

@@ -101,10 +101,10 @@
                             href="#">
                             Add Hybrid Simulations
                         </a>
-                        <a data-ng-click="$ctrl.manageFieldReconReports()"
+                        <a data-ng-click="$ctrl.manageFieldReconMissions()"
                            data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"
                            href="#">
-                            Add Reports
+                            Add Missions
                         </a>
                     </span>
                     <span style="padding:5px; font-weight:bold;">|</span>
@@ -114,34 +114,16 @@
                            href="#">
                             Add Categories
                         </a>
-                        <a data-ng-click="$ctrl.manageFieldReconMissions()"
+                        <a data-ng-click="$ctrl.manageFieldReconCollections()"
                            data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"
                            href="#">
-                            Add Missions
+                            Add Collections
                         </a>
                     </span>
                     <span style="padding:5px; font-weight:bold;">|</span>
                     <span style="padding:10px; font-weight:bold;">3
                         <a ng-click="$ctrl.relateData()"
-                            ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'"
                             href="#">
-                            Relate Data
-                        </a>
-                        <a ng-click="$ctrl.manageFieldReconCollections()"
-                           ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"
-                           href="#">
-                            Add Collections
-                        </a>
-                    </span>
-                    <span style="padding:5px; font-weight:bold;"
-                          data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">|</span>
-                    <span style="padding:10px;
-                                 font-weight:bold;
-                                 display: inline-block;
-                                 clear:both;"
-                          data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">4
-                        <a ng-click="$ctrl.relateData()"
-                           href="#">
                             Relate Data
                         </a>
                     </span>

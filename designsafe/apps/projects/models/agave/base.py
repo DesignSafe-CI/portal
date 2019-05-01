@@ -23,7 +23,7 @@ class Project(MetadataModel):
     team_members = fields.ListField('Team Members')
     guest_members = fields.ListField('Guest Members')
     co_pis = fields.ListField('Co PIs')
-    project_type = fields.CharField('Project Type', max_length=255, default='other')
+    project_type = fields.CharField('Project Type', max_length=255, default=None)
     data_type = fields.CharField('Data Type', max_length=255)
     team_order = fields.ListField('Team Order')
     project_id = fields.CharField('Project Id')

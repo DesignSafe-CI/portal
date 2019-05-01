@@ -3,12 +3,13 @@ import _ from 'underscore';
 
 class EditProjectCtrl {
 
-    constructor(ProjectService, UserService, httpi, ProjectModel) {
+    constructor(ProjectService, UserService, httpi, ProjectModel, $state) {
         'ngInject';
         this.ProjectService = ProjectService;
         this.UserService = UserService;
         this.httpi = httpi;
         this.ProjectModel = ProjectModel;
+        this.$state = $state;
     }
 
     $onInit() {
@@ -154,10 +155,10 @@ class EditProjectCtrl {
             }
             if (this.project.value.projectType === 'field_recon') {
                 this.form.nhEvent = this.project.value.nhEvent;
-                if (this.project.value.nhEventDateStart) {
+                if (this.project.value.nhEventStart) {
                     this.form.nhEventDateStart = new Date(this.project.value.nhEventStart);
                 }
-                if (this.project.value.nhEventDateEnd) {
+                if (this.project.value.nhEventEnd) {
                     this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                 }
                 this.form.nhEventType = this.project.value.nhType;
@@ -349,6 +350,15 @@ class EditProjectCtrl {
         this.savePrj(projectData).then((project) => {
             this.close({$value: project});
             this.ui.busy = false;
+            this.$state.go(
+                'projects.view.data',
+                {
+                    projectId: project.uuid,
+                    filePath: '/',
+                    projectTitle: project.value.title
+                },
+                {reload: true}
+            );
         });
     }
 }
