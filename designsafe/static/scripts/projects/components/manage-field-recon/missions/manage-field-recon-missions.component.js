@@ -295,6 +295,31 @@ class ManageFieldReconMissionsCtrl {
             this.ui.busy = false;
         });
     }
+
+    deleteMission(mission) {
+        let confirmDialog = this.$uibModal.open({
+            component: 'confirmDelete',
+            resolve: {
+                options: () => { return { entity: mission }; }
+            },
+            size: 'sm'
+        });
+        confirmDialog.result.then( (res) => {
+            if (!res) {
+                return;
+            }
+            this.ui.busy = true;
+            this.ProjectEntitiesService.delete({
+                data: {
+                    uuid: mission.uuid,
+                }
+            }).then( (entity) => {
+                this.project.removeEntity(entity);
+                let attrName = this.project.getRelatedAttrName(entity);
+                this.data.missions = this.project[attrName];
+            });
+        });
+    }
 }
 
 export const ManageFieldReconMissionsComponent = {

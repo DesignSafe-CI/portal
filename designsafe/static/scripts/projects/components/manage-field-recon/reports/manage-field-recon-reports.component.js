@@ -227,6 +227,32 @@ class ManageFieldReconReportsCtrl {
             this.ui.busy = false;
         });
     }
+
+    deleteReport(report) {
+        let confirmDialog = this.$uibModal.open({
+            component: 'confirmDelete',
+            resolve: {
+                options: () => { return { entity: report }; }
+            },
+            size: 'sm'
+        });
+        confirmDialog.result.then( (res) => {
+            if (!res) {
+                return;
+            }
+            this.ui.busy = true;
+            this.ProjectEntitiesService.delete({
+                data: {
+                    uuid: report.uuid,
+                }
+            }).then( (entity) => {
+                this.project.removeEntity(entity);
+                let attrName = this.project.getRelatedAttrName(entity);
+                this.data.report = this.project[attrName];
+            });
+        });
+    }
+
 }
 
 export const ManageFieldReconReportsComponent = {

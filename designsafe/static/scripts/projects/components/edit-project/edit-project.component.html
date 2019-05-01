@@ -271,7 +271,8 @@
                            id="id-nh-event"
                            name="nh-event"
                            style="width:100%"
-                           data-ng-model="$ctrl.form.nhEvent" />
+                           data-ng-model="$ctrl.form.nhEvent"
+                           data-ng-required="true"/>
                 </div>
                 <div style="width:45%; display: inline-block;" class="pull-right">
                     <label for="id-nh-event-date">Natural Hazard Date
@@ -280,8 +281,45 @@
                             If you only want to enter a single date, fill in the first field.
                         </span>
                     </label>
-                    <input data-ng-model="$ctrl.form.nhEventDateStart" id="id-nh-event-date"/> -
-                    <input data-ng-model="$ctrl.form.nhEventDateEnd" />
+                    <div style="display:flex;">
+                      <span class="input-group" style="width:45%;">
+                        <input  type="text" 
+                                uib-datepicker-popup="MM-dd-yyyy"
+                                ng-model="$ctrl.form.nhEventDateStart"
+                                is-open="isStartOpen"
+                                placeholder="mm-dd-yyyy"
+                                datepicker-options="dateOptions"
+                                date-disabled="disabled(date, mode)"
+                                ng-required="true"
+                                close-text="Close"
+                                class="form-control">
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                          </button>
+                        </span>
+                      </span>
+                      <span style="padding:6px;">
+                        &#8213;
+                      </span>
+                      <span class="input-group" style="width:45%;">
+                        <input  type="text"
+                                uib-datepicker-popup="MM-dd-yyyy"
+                                ng-model="$ctrl.form.nhEventDateEnd"
+                                is-open="isEndOpen"
+                                placeholder="mm-dd-yyyy"
+                                datepicker-options="dateOptions"
+                                date-disabled="disabled(date, mode)"
+                                ng-required="false"
+                                close-text="Close"
+                                class="form-control">
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                          </button>
+                        </span>
+                      </span>
+                    </div>
                 </div>
                 <div style="width:100%;">
                     <label for="id-nh-event-type">Natural Hazard Type

@@ -24,14 +24,14 @@ class EditProjectCtrl {
             error: null
         };
         this.rapidEventTypes = [
-            "Other",
-            "Earthquake",
-            "Flood",
-            "Hurricane",
-            "Landslide",
-            "Tornado",
-            "Tsunami"
-        ]
+            'Other',
+            'Earthquake',
+            'Flood',
+            'Hurricane',
+            'Landslide',
+            'Tornado',
+            'Tsunami'
+        ];
         this.otherTypes = [
             'Custom',
             'Code',
@@ -64,6 +64,9 @@ class EditProjectCtrl {
         }, {
             id: 'other',
             label: 'Other'
+        }, {
+            id: 'field_recon',
+            lable: 'Field Reconnaissance',
         }];
         if (this.project) {
             // project metadata for edit form
@@ -149,6 +152,16 @@ class EditProjectCtrl {
             } else {
                 this.form.associatedProjects = new Array (1);
             }
+            if (this.project.value.projectType === 'field_recon') {
+                this.form.nhEvent = this.project.value.nhEvent;
+                if (this.project.value.nhEventDateStart) {
+                    this.form.nhEventDateStart = new Date(this.project.value.nhEventStart);
+                }
+                if (this.project.value.nhEventDateEnd) {
+                    this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
+                }
+                this.form.nhEventType = this.project.value.nhType;
+            }
         }
         this.UserService.authenticate().then((u) => {
             this.form.creator = u;
@@ -228,6 +241,19 @@ class EditProjectCtrl {
             teamMembers: [],
             guestMembers: [],
         };
+
+        if (this.form.nhEvent) {
+            projectData.nhEvent = this.form.nhEvent;
+        }
+        if (this.form.nhEventDateStart){
+            projectData.nhEventStart = this.form.nhEventDateStart;
+        }
+        if (this.form.nhEventDateEnd) {
+            projectData.nhEventEnd = this.form.nhEventDateEnd;
+        }
+        if (this.form.nhEventType) {
+            projectData.nhType = this.form.nhEventType;
+        }
 
         // move this to the back end ------------------------------------------------------->
         // we're checking for user objects and empty fields...

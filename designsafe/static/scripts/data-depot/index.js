@@ -342,7 +342,7 @@ function config(
             },
         })
         .state('projects.previewFieldRecon', {
-            url: '/projects/{projectId}/previewOther',
+            url: '/projects/{projectId}/previewFieldRecon',
             component: 'publicationPreviewFieldRecon',
             params: {
                 filePath: '/',

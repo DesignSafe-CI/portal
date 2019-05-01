@@ -81,7 +81,9 @@
                   style="background:white; width:100%"
                   ng-model="$ctrl.form.addExperiments[0].experimentalFacility"
                   id="add-exp-facility"
-                  ng-required="true">
+                  ng-required="true"
+                  class="form-control">
+              <option value="">-- Select an Experimental Facility --</option>
           </select>
           <input  type="text"
                   style="background:white; width:100%"
@@ -101,7 +103,9 @@
                   style="background:white; width:100%"
                   ng-model="$ctrl.form.addExperiments[0].experimentType"
                   id="add-exp-type"
-                  ng-required="true">
+                  ng-required="true"
+                  class="form-control">
+              <option value="">-- Select an Experiment Type --</option>
           </select>
           <input  type="text"
                   style="background:white; width:100%"
@@ -121,7 +125,9 @@
                   style="background:white; width:100%"
                   ng-model="$ctrl.form.addExperiments[0].equipmentType"
                   id="id-equipment-type"
-                  ng-required="true">
+                  ng-required="true"
+                  class="form-control">
+              <option value="">-- Select an Equipment Type --</option>
           </select>
           <input  type="text"
                   style="background:white; width:100%"
@@ -237,7 +243,8 @@
             <select style="width:100%"
                     class="grayed-out"
                     id="edit-exp-facility"
-                    disabled>
+                    disabled
+                    class="form-control">
               <option value="$ctrl.editExpForm.facility">{{ $ctrl.editExpForm.facility }}</option>
             </select>
           </div>
@@ -250,7 +257,8 @@
             <select style=" width:100%"
                     class="grayed-out"
                     id="edit-exp-type"
-                    disabled>
+                    disabled
+                    class="form-control">
               <option value="$ctrl.editExpForm.type">{{ $ctrl.editExpForm.type }}</option>
             </select>
           </div>
@@ -264,6 +272,7 @@
                     ng-model="$ctrl.editExpForm.equipment"
                     style="background:white; width:100%"
                     id="id-equipment-type"
+                    class="form-control"
             >
             </select>
             <input type="text"

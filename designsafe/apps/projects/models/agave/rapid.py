@@ -8,7 +8,7 @@ from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
 logger = logging.getLogger(__name__)
 
 class FieldReconProject(Project):
-    model_name = 'designsafe.project.field_recon'
+    model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
     co_pis = fields.ListField('Co PIs')
     guest_members = fields.ListField('Guest Members')
@@ -19,8 +19,8 @@ class FieldReconProject(Project):
     pi = fields.CharField('PI', max_length=255)
     award_number = fields.ListField('Award Number')
     associated_projects = fields.ListField('Associated Project')
-    ef = fields.CharField('Experimental Facility', max_length=512)
     keywords = fields.CharField('Keywords')
+    associated_projects = fields.ListField('Associated Project')
     nh_event = fields.CharField('Natural Hazard Event')
     nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
     nh_event_end = fields.CharField('Date End', max_length=1024, default='')
