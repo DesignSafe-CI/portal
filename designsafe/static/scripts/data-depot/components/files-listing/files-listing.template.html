@@ -50,7 +50,7 @@
                         <a data-ng-href="{{ item.href }}" data-ng-click="$ctrl.onBrowse($event, item)">
                             {{ item.name }}
                         </a>
-                        <div class="project-categories" ng-if="$ctrl.curationMode() && !$ctrl.categoryList()">
+                        <div class="project-categories">
                             <div class="file-categories"
                                  data-ng-if="$ctrl.browser.project && !$ctrl.browser.loadingEntities">
                                 <file-categories data-project="$ctrl.browser.project"

@@ -327,10 +327,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
         },
         size: 'lg'
       });
-      
-      modalInstance.result.then((project) => {
-        $state.reload();
-      });
+      return modalInstance;
     };
 
     

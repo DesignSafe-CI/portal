@@ -231,8 +231,15 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                             'operation': 'initial_pems_create',
                             'info': {'collab': request.user.username, 'pi': prj.pi} })
         prj.add_team_members([request.user.username])
-        prj.add_co_pis(prj.copi)
-        prj.add_team_members(prj.team)
+        if getattr(prj, 'copi', None):
+            prj.add_co_pis(prj.copi)
+        elif getattr(prj, 'co_pis', None):
+            prj.add_co_pis(prj.co_pis)
+        if getattr(prj, 'team', None):
+            prj.add_team_members(prj.team)
+        elif getattr(prj, 'team_members', None):
+            prj.add_team_members(prj.team_members)
+
         tasks.set_facl_project.apply_async(args=[prj.uuid, [request.user.username]], queue='api')
         if prj.pi and prj.pi != request.user.username:
             tasks.set_facl_project.apply_async(args=[prj.uuid, [prj.pi]], queue='api')

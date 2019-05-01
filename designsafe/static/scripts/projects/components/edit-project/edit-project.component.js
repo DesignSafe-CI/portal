@@ -3,12 +3,13 @@ import _ from 'underscore';
 
 class EditProjectCtrl {
 
-    constructor(ProjectService, UserService, httpi, ProjectModel) {
+    constructor(ProjectService, UserService, httpi, ProjectModel, $state) {
         'ngInject';
         this.ProjectService = ProjectService;
         this.UserService = UserService;
         this.httpi = httpi;
         this.ProjectModel = ProjectModel;
+        this.$state = $state;
     }
 
     $onInit() {
@@ -349,6 +350,15 @@ class EditProjectCtrl {
         this.savePrj(projectData).then((project) => {
             this.close({$value: project});
             this.ui.busy = false;
+            this.$state.go(
+                'projects.view.data',
+                {
+                    projectId: project.uuid,
+                    filePath: '/',
+                    projectTitle: project.value.title
+                },
+                {reload: true}
+            );
         });
     }
 }
