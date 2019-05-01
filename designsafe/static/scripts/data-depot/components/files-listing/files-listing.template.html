@@ -52,17 +52,15 @@
                         </a>
                         <div class="project-categories">
                             <div class="file-categories"
-                                 data-ng-if="$ctrl.browser.project && !$ctrl.browser.loadingEntities">
+                                 data-ng-if="$ctrl.showFileCategories()">
                                 <file-categories data-project="$ctrl.browser.project"
                                                  data-file="item"
+                                                 data-category-listing="$ctrl.categoryList()"
                                 >
                                 </file-categories>
                             </div>
                             <div class="file-categories-selector"
-                                 data-ng-if="$ctrl.browser.project &&
-                                 $ctrl.browser.project.value.projectType != 'other' &&
-                                 !$ctrl.browser.loadingEntities"
-                            >
+                                 data-ng-if="$ctrl.showFileCategorySelector()">
                                 <file-category-selector data-project="$ctrl.browser.project"
                                                         data-file="item"
                                 >

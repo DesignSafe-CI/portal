@@ -67,6 +67,22 @@ class FilesListingCtrl {
         };
     }
 
+    showFileCategories() {
+        return (
+            this.browser.project &&
+            !this.browser.loadingEntities
+        );
+    }
+
+    showFileCategorySelector() {
+        return (
+            this.browser.project &&
+            this.browser.project.value.projectType != 'other' &&
+            !this.browser.loadingEntities &&
+            !this.categoryList()
+        );
+    }
+
     breadcrumbBrowse($event, path) {
         if ($event) {
             $event.preventDefault();

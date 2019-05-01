@@ -243,5 +243,6 @@ export const FileCategoriesComponent = {
     bindings: {
         project: '=',
         file: '=',
+        categoryListing: '=',
     },
 };

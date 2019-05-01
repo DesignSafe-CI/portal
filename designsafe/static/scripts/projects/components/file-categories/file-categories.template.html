@@ -15,7 +15,8 @@
                         {{ entity.value.title }}
                     </span>
                     <button class="btn btn-link"
-                            data-ng-click="$ctrl.removeCategory(entity)">
+                            data-ng-click="$ctrl.removeCategory(entity)"
+                            data-ng-if="!$ctrl.categoryListing">
                         Remove
                     </button>
                 </div>
@@ -23,11 +24,12 @@
                     <span>{{tag.tagName}}</span>
                     <button class="btn btn-link"
                             data-ng-click="$ctrl.removeFileTag(entity, tag)"
-                            data-ng-disabled="$ctrl._ui.busy">
+                            data-ng-disabled="$ctrl._ui.busy"
+                            data-ng-if="!$ctrl.categoryListing">
                         Remove
                     </button>
                 </div>
-                <div class="file-tag-selector">
+                <div class="file-tag-selector" data-ng-if="!$ctrl.categoryListing">
                     <select name="project-file-tags"
                             data-ng-model="$ctrl.selectedFileTag[entity.uuid]"
                             class="form-control project-file-tags-select">
