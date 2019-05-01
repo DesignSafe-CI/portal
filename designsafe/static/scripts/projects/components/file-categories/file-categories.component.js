@@ -47,6 +47,7 @@ class FileCategoriesCtrl {
     }
 
     removeCategory(entity) {
+        this._ui.busy = true;
         getFileUuid(this.file).then((file)=>{
             if (!_.contains(entity.associationIds, file.uuid())){
                 return undefined;
@@ -72,6 +73,9 @@ class FileCategoriesCtrl {
             entity.update(ret);
             this.file.setEntities(this.project.uuid, this.project.getAllRelatedObjects());
             return this.file;
+        }).finally(() => {
+            this._ui.busy = false;
+            this.$scope.$apply();
         });
     }
 

@@ -2,39 +2,73 @@ import _ from 'underscore';
 import FileCategorySelectorTemplate from './file-category-selector.template.html';
 
 class FileCategorySelectorCtrl {
-    constructor($q, Django, ProjectService, ProjectEntitiesService){
+    constructor($q, Django, ProjectService, DataBrowserService, ProjectEntitiesService){
         'ngInject';
         this.Django = Django;
         this.ProjectService = ProjectService;
         this.ProjectEntitiesService = ProjectEntitiesService;
+        this.DataBrowserService = DataBrowserService;
         this.$q = $q;
     }
 
     $onInit() {
         this._ui = { busy: false, error: false };
+        this.state = this.DataBrowserService.state();
     }
 
-    selectCategory() {
-        let promise;
-        if (_.isEmpty(this.file.uuid())) {
-            promise = this.file.getMeta();
-        } else {
-            let my_promise = () => {
-                let defer = this.$q.defer();
-                defer.resolve(this.file);
-                return defer.promise;
-            };
-            promise = my_promise();
-        }
-        promise.then((file)=>{
-            let entity = this.project.getRelatedByUuid(this.selectedUuid);
-            if (_.contains(entity.associationIds, file.uuid())){
-                return undefined;
+    selectMultiple() {
+        // hides dropdowns for additionally selected files
+        if (this.state.selected.length > 1) {
+            if (this.file == this.state.selected[0]) {
+                return true;
+            } else if (this.state.selected.includes(this.file)) {
+                return false;
             }
-            entity.associationIds.push(file.uuid());
-            entity.value.files.push(file.uuid());
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    saveSelection() {
+        if (this.state.selected.length > 1) {
+            this.categorizeFiles(this.state.selected);
+        } else {
+            this.categorizeFiles([this.file]);
+        }
+    }
+
+    categorizeFiles(inputs) {
+        this._ui.busy = true;
+
+        var promises = [];
+        var promise;
+
+        inputs.forEach((file) => {
+            if (_.isEmpty(file.uuid())) {
+                promise = file.getMeta();
+            } else {
+                let my_promise = () => {
+                    let defer = this.$q.defer();
+                    defer.resolve(file);
+                    return defer.promise;
+                };
+                promise = my_promise();
+            }
+            promises.push(promise);
+        });
+
+        this.$q.all(promises).then((files) => {
+            let entity = this.project.getRelatedByUuid(this.selectedUuid);
+            files.forEach((file) => {
+                if (_.contains(entity.associationIds, file.uuid())){
+                    return undefined;
+                }
+                entity.associationIds.push(file.uuid());
+                entity.value.files.push(file.uuid());
+            });
             return entity;
-        }).then( (ret) => {
+        }).then((ret) => {
             if (!ret){
                 return undefined;
             }
@@ -44,15 +78,19 @@ class FileCategorySelectorCtrl {
                     entity: ret,
                 },
             });
-        }).then( (ret) => {
+        }).then((ret) => {
             if (!ret) {
-                return this.file;
+                return inputs;
             }
             let entity = this.project.getRelatedByUuid(ret.uuid);
             entity.update(ret);
-            this.file.setEntities(this.project.uuid, this.project.getAllRelatedObjects());
-            return this.file;
+            
+            inputs.forEach((file) => {
+                file.setEntities(this.project.uuid, this.project.getAllRelatedObjects());
+            });
+            return inputs;
         }).finally( ()=> {
+            this._ui.busy = false;
             this.selectedUuid = '';
         });
     }
