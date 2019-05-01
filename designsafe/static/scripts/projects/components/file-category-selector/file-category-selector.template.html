@@ -1,4 +1,4 @@
-<form>
+<form ng-if="$ctrl.selectMultiple()">
     <select name="project-category"
             data-ng-model="$ctrl.selectedUuid"
             class="form-control">
@@ -117,8 +117,9 @@
         </optgroup>
     </select>
     <button type="button" class="btn btn-link"
-            data-ng-click="$ctrl.selectCategory()"
-            data-ng-disabled="!$ctrl.selectedUuid">
+            data-ng-click="$ctrl.saveSelection()"
+            data-ng-disabled="!$ctrl.selectedUuid"
+    >
         Save
     </button>
 </form>
