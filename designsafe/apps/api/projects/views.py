@@ -180,24 +180,10 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'project_create',
                             'info': {'postData': post_data} })
-        prj = BaseProject()
-        prj.manager().set_client(ag)
-        prj.save(ag)
+        prj_model = project_lookup_model({ 'name': 'designsafe.project', 'value': post_data })
+        prj = prj_model(value=post_data)
         project_uuid = prj.uuid
-        prj.title = post_data.get('title')
-        prj.project_type = post_data.get('projectType')
-        prj.data_type = post_data.get('dataType')
-        prj.team_order = post_data.get('teamOrder', {})
-        prj.pi = post_data.get('pi')
-        prj.copi = post_data.get('copi')
-        prj.team = post_data.get('teamMembers')
-        prj.guest_members = post_data.get('guestMembers', {})
-        prj.project_id = post_data.get('projectId', '')
-        prj.award_number = post_data.get('awardNumber', {})
-        prj.associated_projects = post_data.get('associatedProjects', {})
-        prj.description = post_data.get('description', '')
-        prj.keywords = post_data.get('keywords', '')
-        prj.file_tags = post_data.get('fileTags', {})
+        prj.manager().set_client(ag)
         prj.save(ag)
 
         # create Project Directory on Managed system
@@ -302,19 +288,12 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        p = BaseProject.manager().get(ag, uuid=project_id)
-        p.title = post_data.get('title')
-        p.award_number = post_data.get('awardNumber', p.award_number)
-        p.project_type = post_data.get('projectType', p.project_type)
-        p.data_type = post_data.get('dataType', p.data_type)
-        p.team_order = post_data.get('teamOrder', p.team_order)
-        p.associated_projects = post_data.get('associatedProjects', p.associated_projects)
-        p.description = post_data.get('description', p.description)
-        p.guest_members = post_data.get('guestMembers', p.guest_members)
-        p.keywords = post_data.get('keywords', p.keywords)
-        p.file_tags = post_data.get('fileTags', p.file_tags)
+        meta_obj = ag.meta.getMetadata(uuid=project_id)
+        cls = project_lookup_model(meta_obj)
+        logger.info('post_data: %s', post_data)
+        p = cls(value=post_data, uuid=project_id)
+
         new_pi = post_data.get('pi')
-        p.project_id = post_data.get('projectId', p.project_id)
 
         new_pi = post_data.get('pi', p.pi)
         new_co_pis = post_data.get('copi', p.co_pis)

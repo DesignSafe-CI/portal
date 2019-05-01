@@ -198,6 +198,10 @@ class ManageExperimentsCtrl {
     editExp(experiment) {
         var exp = jQuery.extend(true, {}, experiment);
         var auths = this.configureAuthors(exp);
+
+        exp.value.procedureStart = new Date(exp.value.procedureStart);
+        exp.value.procedureEnd = new Date(exp.value.procedureEnd);
+
         this.editExpForm = {
             exp: exp,
             authors: auths,
@@ -308,12 +312,7 @@ class ManageExperimentsCtrl {
                             uuid: ent.uuid,
                         }
                     }).then((entity) => {
-                        var entityAttr = this.data.project.getRelatedAttrName(entity.name);
-                        var entitiesArray = this.data.project[entityAttr];
-                        entitiesArray = _.filter(entitiesArray, (e) => {
-                            return e.uuid !== entity.uuid;
-                        });
-                        this.data.project[entityAttr] = entitiesArray;
+                        this.data.project.removeEntity(entity);
                         this.data.experiments = this.data.project[entityAttr];
                     });
                 }
