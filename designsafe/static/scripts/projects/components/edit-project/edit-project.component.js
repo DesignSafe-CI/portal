@@ -155,10 +155,10 @@ class EditProjectCtrl {
             }
             if (this.project.value.projectType === 'field_recon') {
                 this.form.nhEvent = this.project.value.nhEvent;
-                if (this.project.value.nhEventDateStart) {
+                if (this.project.value.nhEventStart) {
                     this.form.nhEventDateStart = new Date(this.project.value.nhEventStart);
                 }
-                if (this.project.value.nhEventDateEnd) {
+                if (this.project.value.nhEventEnd) {
                     this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                 }
                 this.form.nhEventType = this.project.value.nhType;
