@@ -33,23 +33,17 @@ class FilesListingCtrl {
             }
         };
         this.allowSelect = true;
+        this.previewMode = () => {
+            return this.$state.current.name.indexOf('projects.preview') === 0;
+        }
         this.curationMode = () => {
-            if (this.$state.current.name === 'projects.curation') {
-                return true;
-            }
-            return false;
+            return this.$state.current.name === 'projects.curation';
         };
         this.categoryList = () => {
-            if (typeof this.categoryListing != 'undefined' && this.categoryListing === true) {
-                return true;
-            }
-            return false;
+            return (typeof this.categoryListing != 'undefined' && this.categoryListing);
         };
         this.categorySelect = () => {
-            if (typeof this.categorySelection != 'undefined' && this.categorySelection === true) {
-                return true;
-            }
-            return false;
+            return (typeof this.categorySelection != 'undefined' && this.categorySelection);
         };
         this.listing = () => {
             if (this.categoryList() && (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList))) {
@@ -65,6 +59,23 @@ class FilesListingCtrl {
             this.allowSelect = false;
             return this.filesList;
         };
+    }
+
+    showFileCategories() {
+        return (
+            this.browser.project &&
+            !this.browser.loadingEntities
+        );
+    }
+
+    showFileCategorySelector() {
+        return (
+            this.browser.project &&
+            this.browser.project.value.projectType != 'other' &&
+            !this.browser.loadingEntities &&
+            !this.categoryList() &&
+            this.curationMode()
+        );
     }
 
     breadcrumbBrowse($event, path) {

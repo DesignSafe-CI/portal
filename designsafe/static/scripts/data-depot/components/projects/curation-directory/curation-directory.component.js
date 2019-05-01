@@ -91,6 +91,7 @@ class CurationDirectoryCtrl {
                             var entities = _.filter(allEntities, (entity) => {
                                 return _.contains(entity._filePaths, resp.path);
                             });
+                            resp.setEntities(this.projectId, entities);
                             _.each(entities, (entity) => {
                                 this.browser.listings[entity.uuid].children.push(resp);
                             });
