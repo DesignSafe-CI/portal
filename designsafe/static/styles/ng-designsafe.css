@@ -454,6 +454,20 @@ span.label.tag-yellow.selected {
     color: white;
 }
 
+span.label.tag-yellow.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #ECE4BF;
+    border: 2px solid #B59300;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
+}
+
 span.label.tag-purple {
     border: 2px solid #4B3181;
     color: black;
@@ -463,6 +477,20 @@ span.label.tag-purple.selected {
     border: 2px solid #4B3181;
     background: #4B3181;
     color: white;
+}
+
+span.label.tag-purple.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #C8C0D9;
+    border: 2px solid #4B3181;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
 }
 
 span.label.tag-orange {
@@ -476,6 +504,20 @@ span.label.tag-orange.selected {
     color: white;
 }
 
+span.label.tag-orange.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #EBCCB9;
+    border: 2px solid #BD5717;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
+}
+
 span.label.tag-light-blue {
     border: 2px solid #5BC0DE;
     color: black;
@@ -485,6 +527,20 @@ span.label.tag-light-blue.selected {
     border: 2px solid #5BC0DE;
     background: #5BC0DE;
     color: white;
+}
+
+span.label.tag-light-blue.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #CCECF6;
+    border: 2px solid #5BC0DE;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
 }
 
 span.label.tag-black {
@@ -498,6 +554,20 @@ span.label.tag-black.selected {
     color: white;
 }
 
+span.label.tag-black.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #C4C4C4;
+    border: 2px solid #3E3E3E;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
+}
+
 span.label.tag-blue {
     border: 2px solid #0567CC;
     color: black;
@@ -509,6 +579,20 @@ span.label.tag-blue.selected {
     color: white;
 }
 
+span.label.tag-blue.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #C4D9F2;
+    border: 2px solid #0567CC;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
+}
+
 span.label.tag-green {
     border: 2px solid #2EA89A;
     color: black;
@@ -518,6 +602,20 @@ span.label.tag-green.selected {
     border: 2px solid #2EA89A;
     background:#2EA89A;
     color: white;
+}
+
+span.label.tag-green.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #A8D3CE;
+    border: 2px solid #2EA89A;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
 }
 
 span.label.tag-red {
