@@ -577,7 +577,7 @@ class ProjectTreeCtrl {
                     parent: node.name,
                     rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
                     display: 'Report',
-                    order: rep.orderOf(node.uuid).value,
+                    order: this.orderOf(rep, node.uuid).value,
                 };
                 childReports.push(repNode);
             });
@@ -610,7 +610,7 @@ class ProjectTreeCtrl {
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
                     display: 'Global Model',
-                    order: mod.orderOf(node.uuid).value,
+                    order: this.orderOf(mod, node.uuid).value,
                 };
                 let childCoords = [];
                 _.each(coordinators, (coord) => {
@@ -625,7 +625,7 @@ class ProjectTreeCtrl {
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
                         display: 'Master Simulator Coordinator',
-                        order: coord.orderOf(modNode.uuid).value,
+                        order: this.orderOf(coord, modNode.uuid).value,
                     };
                     let childCoordOuts = [];
                     _.each(coordOutputs, (output) => {
@@ -640,7 +640,7 @@ class ProjectTreeCtrl {
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Coordinator Output',
-                            order: output.orderOf(coordNode.uuid).value,
+                            order: this.orderOf(output, coordNode.uuid).value,
                         };
                         childCoordOuts.push(outNode);
                     });
@@ -673,7 +673,7 @@ class ProjectTreeCtrl {
                             children: [],
                             rectStyle: 'stroke: #BD5717; fill: #EBCCB9;',
                             display: 'Numerical Substructure',
-                            order: num.orderOf(coordNode.uuid).value,
+                            order: this.orderOf(num, coordNode.uuid).value,
                         };
                         let childSimOuts = [];
                         _.each(simOutputs, (out) => {
@@ -688,7 +688,7 @@ class ProjectTreeCtrl {
                                 children: [],
                                 rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                                 display: 'Simulation Output',
-                                order: out.orderOf(num.uuid).value,
+                                order: this.orderOf(out, num.uuid).value,
                             };
                             childSimOuts.push(outNode);
                         });
@@ -739,7 +739,7 @@ class ProjectTreeCtrl {
                             children: [],
                             rectStyle: 'stroke: #4B3181; fill: #C8C0D9;',
                             display: 'Experimental Substructure',
-                            order: exp.orderOf(coordNode.uuid).value,
+                            order: this.orderOf(exp, coordNode.uuid).value,
                         };
                         let childExpOuts = [];
                         _.each(expOutputs, (out) => {
@@ -754,7 +754,7 @@ class ProjectTreeCtrl {
                                 children: [],
                                 rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                                 display: 'Experiental Output',
-                                order: out.orderOf(exp.uuid).value,
+                                order: this.orderOf(out, exp.uuid).value,
                             };
                             childExpOuts.push(outNode);
                         });
@@ -840,7 +840,7 @@ class ProjectTreeCtrl {
                     parent: node.name,
                     rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
                     display: 'Analysis',
-                    order: ana.orderOf(node.uuid).value,
+                    order: this.orderOf(ana, node.uuid).value,
                 };
                 childAnalysis.push(anaNode);
             });
@@ -922,7 +922,7 @@ class ProjectTreeCtrl {
                     parent: node.name,
                     rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
                     display: 'Report',
-                    order: rep.orderOf(node.uuid).value,
+                    order: this.orderOf(rep, node.uuid).value,
                 };
                 childReports.push(repNode);
             });
@@ -955,7 +955,7 @@ class ProjectTreeCtrl {
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
                     display: 'Simulation Model',
-                    order: mod.orderOf(node.uuid).value,
+                    order: this.orderOf(mod, node.uuid).value,
                 };
                 let childInputs = [];
                 _.each(inputs, (input) => {
@@ -970,7 +970,7 @@ class ProjectTreeCtrl {
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
                         display: 'Simulation Input',
-                        order: input.orderOf(modNode.uuid).value,
+                        order: this.orderOf(input, modNode.uuid).value,
                     };
                     let childOutputs = [];
                     _.each(outputs, (output) => {
@@ -985,7 +985,7 @@ class ProjectTreeCtrl {
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Simulation Output',
-                            order: output.orderOf(inpNode.uuid).value,
+                            order: this.orderOf(output, inpNode.uuid).value,
                         };
                         childOutputs.push(outputNode);
                     });
@@ -1053,7 +1053,7 @@ class ProjectTreeCtrl {
                     parent: node.name,
                     rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
                     display: 'Analysis',
-                    order: ana.orderOf(node.uuid).value
+                    order: this.orderOf(ana, node.uuid).value
                 };
                 childAnalysis.push(anaNode);
             });
@@ -1135,7 +1135,7 @@ class ProjectTreeCtrl {
                     parent: node.name,
                     rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
                     display: 'Report',
-                    order: rep.orderOf(node.uuid).value,
+                    order: this.orderOf(rep, node.uuid).value,
                 };
                 childReports.push(repNode);
             });
@@ -1168,7 +1168,7 @@ class ProjectTreeCtrl {
                     children: [],
                     rectStyle: 'stroke: #1568C9; fill: #C4D9F2;',
                     display: 'Model Config',
-                    order: mcfg.orderOf(node.uuid).value,
+                    order: this.orderOf(mcfg, node.uuid).value,
                 };
                 let childSensors = [];
                 _.each(sensors, (sensor) => {
@@ -1183,7 +1183,7 @@ class ProjectTreeCtrl {
                         children: [],
                         rectStyle: 'stroke: #43A59D; fill: #CAE9E6;',
                         display: 'Sensor',
-                        order: sensor.orderOf(mcfgNode.uuid).value,
+                        order: this.orderOf(sensor, mcfgNode.uuid).value,
                     };
                     let childEvents = [];
                     _.each(events, (evt) => {
@@ -1198,7 +1198,7 @@ class ProjectTreeCtrl {
                             children: [],
                             rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Event',
-                            order: evt.orderOf(sensorNode.uuid).value,
+                            order: this.orderOf(evt, sensorNode.uuid).value,
                         };
                         childEvents.push(eventNode);
                     });
@@ -1266,7 +1266,7 @@ class ProjectTreeCtrl {
                     parent: node.name,
                     rectStyle: 'stroke: #56C0E0; fill: #CCECF6;',
                     display: 'Analysis',
-                    order: ana.orderOf(node.uuid).value
+                    order: this.orderOf(ana, node.uuid).value
                 };
                 childAnalysis.push(anaNode);
             });
@@ -1600,6 +1600,20 @@ class ProjectTreeCtrl {
             .finally( () => {
                 this._ui.loading = false;
             });
+    }
+
+    orderOf(obj, parentUuid) {
+        if (typeof obj.orderOf === 'function') {
+            return obj.orderOf(parentUuid, order);
+        }
+        let order = _.findWhere(
+            obj._ui.orders,
+            { parent: parentUuid }
+        );
+        if (!order) {
+            order = { value: 0 };
+        }
+        return order;
     }
 }
 

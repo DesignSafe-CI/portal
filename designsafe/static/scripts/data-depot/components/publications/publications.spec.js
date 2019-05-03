@@ -79,7 +79,7 @@ describe('ddPublicationListingComponent', () => {
         expect(ctrl.$state.href.calls.allArgs()).toEqual([
             ['publicData', {system: 'pub.system', filePath: '/path/to/root'}],
             ['neesPublishedData', {filePath: '/path/to/file1'}],
-            ['publishedData', {system: 'designsafe.storage.published', filePath: '/path/to/file2'}],
+            ['publishedData.view', {system: 'designsafe.storage.published', filePath: '/path/to/file2'}],
             ['publicData', { systemId: 'nees.public', filePath: '' }]
 
         ])
@@ -106,7 +106,7 @@ describe('ddPublicationListingComponent', () => {
         )
 
         ctrl.onBrowse(dummyEvent, ctrl.browser.listing.children[1])
-        expect(ctrl.$state.go).toHaveBeenCalledWith('publishedData', {
+        expect(ctrl.$state.go).toHaveBeenCalledWith('publishedData.view', {
             systemId: 'designsafe.storage.published', 
             filePath: '/path/to/file2'}
         )

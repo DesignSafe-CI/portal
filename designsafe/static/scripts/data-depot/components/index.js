@@ -11,6 +11,13 @@ import { DataDepotBrowserComponent, DataDepotPublicationsBrowserComponent } from
 import { NeesPublishedComponent } from './nees-publication/nees-publication.component';
 import { PublicationDescriptionModalComponent } from './files-listing/publication-description-modal/publication-description.component';
 import { FileMetadataComponent } from './file-metadata/file-metadata.component';
+import { PublishedParentComponent } from './published/published-parent.component.js';
+import { ExpPublishedViewComponent,
+    SimPublishedViewComponent,
+    HybSimPublishedViewComponent,
+    FieldReconPublishedViewComponent,
+    OtherPublishedViewComponent
+} from './published/published-view.component.js';
 
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);
 
@@ -27,5 +34,11 @@ ddComponents.component('dataDepotPublicationsBrowser', DataDepotPublicationsBrow
 ddComponents.component('neesPublished', NeesPublishedComponent);
 ddComponents.component('publicationDescriptionModalComponent', PublicationDescriptionModalComponent);
 ddComponents.component('fileMetadata', FileMetadataComponent);
+ddComponents.component('publishedParent', PublishedParentComponent);
+ddComponents.component('expPublishedView', ExpPublishedViewComponent);
+ddComponents.component('simPublishedView', SimPublishedViewComponent);
+ddComponents.component('simHybPublishedView', HybSimPublishedViewComponent);
+ddComponents.component('fieldReconPublishedView', FieldReconPublishedViewComponent);
+ddComponents.component('otherPublishedView', OtherPublishedViewComponent);
 
 export default ddComponents;

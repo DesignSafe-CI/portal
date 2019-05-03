@@ -51,17 +51,17 @@ export class PublishedDataCtrl {
                 return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
             });
         };
+
         var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         if (projId) {
-            this.ui.loadingProjectMeta = true;
             this.PublishedService.getPublished(projId)
                 .then((resp) => {
                     this.browser.publication = resp.data;
                     this.project = resp.data.project;
-                    var pi = _.find(this.browser.publication.users, (usr) => {
-                        return usr.username === this.project.value.pi;
-                    });
-                    this.project.piLabel = pi.last_name + ', ' + pi.first_name;
+                    //var pi = _.find(this.browser.publication.users, (usr) => {
+                    //    return usr.username === this.project.value.pi;
+                    //});
+                    //this.project.piLabel = pi.last_name + ', ' + pi.first_name;
 
                     if (this.browser.publication.project.value.projectType === 'experimental') {
                         _.each(this.browser.publication.eventsList, this.getFileObjs);
@@ -91,21 +91,21 @@ export class PublishedDataCtrl {
 
                     //add metadata to header
                     this.PublishedService.updateHeaderMetadata(projId, resp);
-
+                    this.version = this.browser.publication.version || 1;
+                    this.type = this.browser.publication.project.value.projectType;
                     this.ui.loadingProjectMeta = false;
-
                 });
         }
 
         if (!this.browser.error) {
             this.browser.listing.href = this.$state.href(
-                'publishedData', {
+                'publishedData.view', {
                     system: this.browser.listing.system,
                     filePath: this.browser.listing.path.replace(/^\/+/, '')
                 });
             _.each(this.browser.listing.children, (child) => {
                 child.href = this.$state.href(
-                    'publishedData', {
+                    'publishedData.view', {
                         system: child.system,
                         filePath: child.path.replace(/^\/+/, '')
                 });
@@ -177,7 +177,7 @@ export class PublishedDataCtrl {
             if (file.system === 'nees.public') {
                 this.$state.go('publicData', { systemId: file.system, filePath: file.path }, { reload: true, inherit: false });
             } else {
-                this.$state.go('publishedData', { systemId: file.system, filePath: file.path, listing: true }, { reload: true, inherit: false });
+                this.$state.go('publishedData.view', { systemId: file.system, filePath: file.path, listing: true }, { reload: true, inherit: false });
             }
         }
     }

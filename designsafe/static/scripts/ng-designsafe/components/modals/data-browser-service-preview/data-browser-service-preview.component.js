@@ -183,7 +183,7 @@ class DataBrowserServicePreviewCtrl {
         } else if (specificLocation.includes('projects')) {
             const prjNumber = this.DataBrowserService.state().project.value.projectId;
             specificLocation = 'projects/' + prjNumber;
-        } else if (specificLocation === 'publishedData') {
+        } else if (specificLocation === 'publishedData.view') {
             specificLocation = 'Published';
         }
         if (this.file.system === 'designsafe.storage.published') { 

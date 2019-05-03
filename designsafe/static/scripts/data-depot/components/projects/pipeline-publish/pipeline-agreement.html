@@ -23,8 +23,11 @@
         <button class="btn btn-add"
                 style="display:inline-block; width:24%;"
                 data-ng-click="$ctrl.publish()"
-                data-ng-disabled="!$ctrl.agreed">
+                data-ng-disabled="!$ctrl.agreed || $ctrl.published">
             <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish
         </button>
+    </div>
+    <div class="alert alert-warning" data-ng-if="$ctrl.published">
+        Your project is being published. Please wait until the project has finished publishing to edit or add anything in the project.
     </div>
 </div>

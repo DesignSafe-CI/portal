@@ -881,12 +881,36 @@ function config(
                 },
             },
         })
-        .state('publishedData', {
+        .state('publishedData',  {
+            component: 'publishedParent',
+            resolve: {
+                version: ($stateParams) => {
+                    'ngInject';
+                    return $stateParams.version || 1;
+                },
+                type: ($stateParams) => {
+                    'ngInject';
+                    return $stateParams.type;
+                }
+            },
+            abstract: true,
+        })
+        .state('publishedData.view', {
             url: '/public/designsafe.storage.published/{filePath:any}',
-            component: 'published',
+            /****/
+            views: {
+                'published-v1@publishedData': 'published',
+                'published-other@publishedData': 'otherPublishedView',
+                'published-field-recon@publishedData': 'fieldReconPublishedView',
+                'published-hyb-sim@publishedData': 'hybSimPublishedView',
+                'published-sim@publishedData': 'simPublishedView',
+                'published-exp@publishedData': 'expPublishedView',
+            },
             params: {
                 systemId: 'designsafe.storage.published',
                 filePath: '',
+                version: 1,
+                type: 'other',
             },
             onExit: ($window) => {
                 'ngInject';

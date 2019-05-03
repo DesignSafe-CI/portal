@@ -46,6 +46,12 @@ from designsafe.apps.projects.models.agave.hybrid_simulation import (
     Analysis as HybridAnalysis,
     Report as HybridReport
 )
+from designsafe.apps.projects.models.agave.rapid import (
+    FieldReconProject,
+    Mission,
+    Collection,
+    Report as FieldReconReport
+)
 
 
 logger = logging.getLogger(__name__)
@@ -409,6 +415,18 @@ def experiment_reserve_xml(publication, project, experiment, authors_details=Non
         slt_subj.text = slt.title
         slt_dict.update(slt.to_body_dict())
 
+    for report_dict in publication.get('reportsList', []):
+        report = Report.manager().get(service_account(), uuid=report_dict['uuid'])
+        report_subj = ET.SubElement(subjects, 'subject')
+        report_subj.text = report.title
+        report_dict.update(report.to_body_dict())
+
+    for analysis_dict in publication.get('analysisList', []):
+        analysis = Analysis.manager().get(service_account(), uuid=analysis_dict['uuid'])
+        analysis_subj = ET.SubElement(subjects, 'subject')
+        analysis_subj.text = analysis.title
+        analysis_dict.update(analysis.to_body_dict())
+
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
@@ -459,6 +477,18 @@ def simulation_reserve_xml(publication, project, simulation, authors_details=Non
         output_subj = ET.SubElement(subjects, 'subject')
         output_subj.text = output.title
         output_dict.update(output.to_body_dict())
+
+    for report_dict in publication.get('reportsList', []):
+        report = SimReport.manager().get(service_account(), uuid=report_dict['uuid'])
+        report_subj = ET.SubElement(subjects, 'subject')
+        report_subj.text = report.title
+        report_dict.update(report.to_body_dict())
+
+    for analysis_dict in publication.get('analysisList', []):
+        analysis = SimAnalysis.manager().get(service_account(), uuid=analysis_dict['uuid'])
+        analysis_subj = ET.SubElement(subjects, 'subject')
+        analysis_subj.text = analysis.title
+        analysis_dict.update(analysis.to_body_dict())
 
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
@@ -555,6 +585,18 @@ def hybrid_simulation_reserve_xml(
         exp_output_subj = ET.SubElement(subjects, 'subject')
         exp_output_subj.text = exp_output.title
         exp_output_dict.update(exp_output.to_body_dict())
+
+    for report_dict in publication.get('reports', []):
+        report = HybridReport.manager().get(service_account(), uuid=report_dict['uuid'])
+        report_subj = ET.SubElement(subjects, 'subject')
+        report_subj.text = report.title
+        report_dict.update(report.to_body_dict())
+
+    for analysis_dict in publication.get('analysiss', []):
+        analysis = HybridAnalysis.manager().get(service_account(), uuid=analysis_dict['uuid'])
+        analysis_subj = ET.SubElement(subjects, 'subject')
+        analysis_subj.text = analysis.title
+        analysis_dict.update(analysis.to_body_dict())
 
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
@@ -702,6 +744,7 @@ def reserve_publication(publication):
     exps_dois = []
     anl_dois = []
     sim_dois = []
+    mis_dois = []
     xmls = {proj_doi: proj_xml}
     publication['project']['doi'] = proj_doi
     if project.project_type.lower() == 'experimental':
@@ -816,6 +859,43 @@ def reserve_publication(publication):
             logger.debug('sim_xml: %s', sim_xml)
         add_related(proj_xml, sim_dois)
         for _doi in [proj_doi] + sim_dois:
+            logger.debug('DOI: %s', _doi)
+            _update_doi(_doi, xmls[_doi], status='public')
+    elif project.project_type.lower() == 'field_recon':
+        for pmis in publication.get('missions', []):
+            mission = Mission.manager().get(service_account(), uuid=psim['uuid'])
+            mission_doi = pmis.get('doi')
+            authors = pmis['authors']
+
+            mis_doi, mis_ark, mis_xml = mission_reserve_xml(
+                publication,
+                project,
+                mission,
+                authors,
+                mis_doi
+            )
+            add_related(mis_xml, [proj_doi])
+            mis_dois.append(mis_doi)
+            mis_dict = mission.to_body_dict()
+            keys_to_drop = []
+            for key in mis_dict:
+                if key.startswith('_'):
+                    keys_to_drop.append(key)
+                elif key.endswith('_set'):
+                    keys_to_drop.append(key)
+
+            mis_dict['value'].pop('authors', '')
+            for key in keys_to_drop:
+                mis_dict.pop(key)
+
+            pmis.update(mis_dict)
+            pmis['doi'] = mis_doi
+            xmls[mis_doi] = mis_xml
+            logger.debug('mis_doi: %s', mis_doi)
+            logger.debug('mis_ark: %s', mis_ark)
+            logger.debug('mis_xml: %s', mis_xml)
+        add_related(proj_xml, mis_dois)
+        for _doi in [proj_doi] + mis_dois:
             logger.debug('DOI: %s', _doi)
             _update_doi(_doi, xmls[_doi], status='public')
     else:
