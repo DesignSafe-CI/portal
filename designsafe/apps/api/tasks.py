@@ -919,6 +919,12 @@ def zip_publication_files(self, project_id):
         logger.error('Zip Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
 
+@shared_task(bind=True)
+def set_publish_status(self, project_id):
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
+    pub = Publication(project_id=project_id)
+    pub.update(status='published')
+
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_to_fedora(self, project_id):
     import requests

@@ -66,19 +66,22 @@ class PublicationView(BaseApiView):
         pub = PublicationManager().save_publication(
             data['publication'], status)
         if data.get('status', 'save').startswith('publish'):
-            group(
-                tasks.save_publication.s(
-                    pub.projectId
-                ).set(
-                    queue='files',
-                    countdown=60
-                ),
-                tasks.copy_publication_files_to_corral.s(
-                    pub.projectId
-                ).set(
-                    queue='files',
-                    countdown=60
-                )
+            (
+                group(
+                    tasks.save_publication.s(
+                        pub.projectId
+                    ).set(
+                        queue='files',
+                        countdown=60
+                    ),
+                    tasks.copy_publication_files_to_corral.s(
+                        pub.projectId
+                    ).set(
+                        queue='files',
+                        countdown=60
+                    )
+                ) |
+                tasks.set_publish_status.s(pub.projectId)
             ).apply_async()
         return JsonResponse({'status': 200,
                              'response': {
