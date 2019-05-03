@@ -32,7 +32,7 @@ class DataDepotBrowserCtrl {
                 if (child.system === 'nees.public') {
                     stateName = 'neesPublished';
                 } else if (child.system === 'designsafe.storage.published'){
-                    stateName = 'publishedData';
+                    stateName = 'publishedData.view';
                 }
                 child.href = this.$state.href(
                     stateName,

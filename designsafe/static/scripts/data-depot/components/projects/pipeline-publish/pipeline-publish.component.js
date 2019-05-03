@@ -20,7 +20,9 @@ const attributeMap = {
     'designsafe.project.hybrid_simulation.sim_output': 'sim_outputs',
     'designsafe.project.hybrid_simulation.exp_output': 'exp_outputs',
     'designsafe.project.hybrid_simulation.analysis': 'analysiss',
-    'designsafe.project.hybrid_simulation.report': 'reports'
+    'designsafe.project.hybrid_simulation.report': 'reports',
+    'designsafe.project.field_recon.collection': 'collections',
+    'designsafe.project.field_recon.report': 'reports',
 };
 
 class PipelinePublishCtrl {
@@ -77,6 +79,12 @@ class PipelinePublishCtrl {
                 authors: this.resolve.resolveParams.experiment.value.authors || [],
                 guests: this.resolve.resolveParams.experiment.value.guests || [],
             }];
+        } else if (this.project.value.projectType === 'field_recon') {
+            publication.missions = [{
+                uuid: this.resolve.resolveParams.experiment.uuid,
+                authors: this.resolve.resolveParams.experiment.value.authors || [],
+                guests: this.resolve.resolveParams.experiment.value.guests || [],
+            }];
         }
         this.publication = publication;
     }
@@ -90,6 +98,7 @@ class PipelinePublishCtrl {
             }
         ).then((resp) => {
             this.DataBrowserService.state().publicationStatus = resp.data.response.status;
+            this.published = true;
         });
     }
 }

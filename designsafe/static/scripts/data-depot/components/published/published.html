@@ -1,0 +1,27 @@
+<div ng-if="$ctrl.ui.loading">
+Loading... <i class="fa fa-spinner fa-spin"></i>
+</div>
+<div data-ui-view="published-v1"
+     data-ng-if="$ctrl.showV1View()">
+    &nbsp;
+</div>
+<div data-ui-view="published-exp"
+     data-ng-if="$ctrl.showExpView()">
+    &nbsp;
+</div>
+<div data-ui-view="published-sim"
+     data-ng-if="$ctrl.showSimView()">
+    &nbsp;
+</div>
+<div data-ui-view="published-hyb-sim"
+     data-ng-if="$ctrl.showHybSimView()">
+    &nbsp;
+</div>
+<div data-ui-view="published-field-recon"
+     data-ng-if="$ctrl.showFieldRecon()">
+    &nbsp;
+</div>
+<div data-ui-view="published-other"
+     data-ng-if="$ctrl.showOther()">
+    &nbsp;
+</div>

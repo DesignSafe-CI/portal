@@ -203,7 +203,7 @@ class DataDepotPublishedView(TemplateView):
                 last_name=user['last_name'], first_name=user['first_name']
             ),
             'institution': getattr(getattr(user, 'profile'), 'institution', '')
-        } for user in pub.users]
+        } for user in getattr(pub, 'users', [])]
         context['publication'] = pub
         
         if self.request.user.is_authenticated:

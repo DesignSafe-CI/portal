@@ -18,6 +18,7 @@ class PublicationPreviewCtrl {
     }
     
     $onInit() {
+        this.readOnly = this.$state.current.name.indexOf('publishedData') === 0;
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.project = this.ProjectService.resolveParams.project;

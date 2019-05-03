@@ -49,7 +49,7 @@ class PublicationDataCtrl {
             }
             if (child.system === 'designsafe.storage.published') {
                 child.href = this.$state.href(
-                    'publishedData',
+                    'publishedData.view',
                     { system: child.system, filePath: child.path.replace(/^\/+/, '') }
                 );
             }

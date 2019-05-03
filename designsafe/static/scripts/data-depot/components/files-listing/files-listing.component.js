@@ -113,14 +113,23 @@ class FilesListingCtrl {
             );
         }
         let stateName = this.$state.current.name;
+        let version = 1;
         if (file.system === 'nees.public') {
             stateName = 'neesPublished';
         } else if (file.system === 'designsafe.storage.published') {
-            stateName = 'publishedData';
+            stateName = 'publishedData.view';
+            if (file.version) {
+                version = file.version;
+            }
         }
         return this.$state.go(
             stateName,
-            { systemId: systemId, filePath: filePath }, { reload: true }
+            { 
+                systemId: systemId,
+                filePath: filePath,
+                version: version
+            },
+            { reload: true }
         );
     }
 

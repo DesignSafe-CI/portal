@@ -17,6 +17,7 @@ import zipfile
 import shutil
 import os
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from elasticsearch import TransportError, ConnectionTimeout
 from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
@@ -134,13 +135,18 @@ class Publication(object):
                      'project': self.project.value.projectId,
                      'system': 'designsafe.storage.published',
                      'systemId': 'designsafe.storage.published',
-                     'type': 'dir'}
+                     'type': 'dir',
+                     'version': getattr(self, 'version', 1)}
         pi = self.project['value']['pi']
-        pi_user = filter(lambda x: x['username'] == pi, self.users)
+        pi_user = filter(lambda x: x['username'] == pi, getattr(self, 'users', []))
         if pi_user:
             pi_user = pi_user[0]
             dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
                 last_name=pi_user['last_name'], first_name=pi_user['first_name'])
+        else:
+            pi_username = get_user_model().objects.get(username=self.project['value']['pi'])
+            dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
+                last_name=pi_username.last_name, first_name=pi_username.first_name)
         return dict_obj
 
     def related_file_paths(self):
@@ -162,11 +168,24 @@ class Publication(object):
                 dict_obj.get('analysiss', []) +
                 dict_obj.get('reports', [])
             )
+        elif dict_obj['project']['value']['projectType'] == 'hybrid_simulation':
+            related_objs = (
+                dict_obj.get('global_models', []) +
+                dict_obj.get('coordinators', []) +
+                dict_obj.get('sim_substructures', []) +
+                dict_obj.get('exp_substructures', []) +
+                dict_obj.get('coordinator_outputs', []) +
+                dict_obj.get('sim_outputs', []) +
+                dict_obj.get('exp_outputs', []) +
+                dict_obj.get('reports', []) +
+                dict_obj.get('analysiss', [])
+            )
 
         file_paths = []
         proj_sys = 'project-{}'.format(dict_obj['project']['uuid'])
         for obj in related_objs:
-            file_paths += obj['_filePaths']
+            for file_dict in obj['fileObjs']:
+                file_paths.append(file_dict['path'])
 
         return file_paths
 
