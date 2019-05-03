@@ -8,6 +8,7 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 
 class PublishedViewCtrl {
     constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal){
+        'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
         this.PublishedService = PublishedService;

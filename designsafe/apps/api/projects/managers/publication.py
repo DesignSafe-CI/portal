@@ -478,13 +478,13 @@ def simulation_reserve_xml(publication, project, simulation, authors_details=Non
         output_subj.text = output.title
         output_dict.update(output.to_body_dict())
 
-    for report_dict in publication.get('reportsList', []):
+    for report_dict in publication.get('reports', []):
         report = SimReport.manager().get(service_account(), uuid=report_dict['uuid'])
         report_subj = ET.SubElement(subjects, 'subject')
         report_subj.text = report.title
         report_dict.update(report.to_body_dict())
 
-    for analysis_dict in publication.get('analysisList', []):
+    for analysis_dict in publication.get('analysiss', []):
         analysis = SimAnalysis.manager().get(service_account(), uuid=analysis_dict['uuid'])
         analysis_subj = ET.SubElement(subjects, 'subject')
         analysis_subj.text = analysis.title
