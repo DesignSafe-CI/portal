@@ -99,7 +99,8 @@ class PipelineLicensesCtrl {
             component: 'pipelinePublishModal',
             resolve: {
                 project: () => { return this.project; },
-                resolveParams: () => { return this.ProjectService.resolveParams; }
+                resolveParams: () => { return this.ProjectService.resolveParams; },
+                license: () => { return this.license; },
             },
             size: 'lg',
         });

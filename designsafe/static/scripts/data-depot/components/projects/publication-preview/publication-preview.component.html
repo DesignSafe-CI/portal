@@ -192,9 +192,16 @@
                             data-ng-if="$ctrl.readOnly">
                         {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
                     </strong>
-                    <div style="display:inline-block; width:20%;">DOI <button class="btn btn-info btn-sm">Citation</button></div>
-                    <strong style="display:inline-block; width:78%;">
+                    <div style="display:inline-block; width:20%;">
+                        DOI <button class="btn btn-info btn-sm">Citation</button>
+                    </div>
+                    <strong style="display:inline-block; width:78%;"
+                            data-ng-if="!$ctrl.readOnly">
                         (Appears when published)
+                    </strong>
+                    <strong style="display:inline-block; width:78%;"
+                            data-ng-if="$ctrl.readOnly">
+                        {{ experiment.doi }}
                     </strong>
                     <div style="display:inline-block; width:20%;">License</div>
                     <strong style="display:inline-block; width:78%;"

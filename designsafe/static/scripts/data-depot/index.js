@@ -405,6 +405,20 @@ function config(
                 }]
             }
         })
+        .state('projects.pipelineSelectFieldRecon', {
+            url: '/projects/{projectId}/curation/selectionFieldRecon{filePath:any}',
+            component: 'pipelineSelectFieldRecon',
+            params: {
+                filePath: '/',
+            },
+            resolve: {
+                projectId: ($stateParams, ProjectService) => {
+                    'ngInject';
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                }
+            }
+        })
         .state('projects.pipelineProject', {
             url: '/projects/{projectId}/curation/project',
             component: 'pipelineProject',
@@ -508,6 +522,24 @@ function config(
                 ],
             },
         })
+        .state('projects.pipelineFieldRecon', {
+            url: '/projects/{projectId}/curation/fieldRecon',
+            component: 'pipelineFieldRecon',
+            params: {
+                project: '',
+                selectedListings: '',
+                mission: '',
+            },
+            resolve: {
+                params: ($stateParams, ProjectService) => {
+                    'ngInject';
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    ProjectService.resolveParams.mission = $stateParams.mission;
+                }
+            }
+        })
         .state('projects.pipelineCategories', {
             url: '/projects/{projectId}/curation/categories',
             component: 'pipelineCategories',
@@ -566,6 +598,27 @@ function config(
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    },
+                ],
+            },
+        })
+        .state('projects.pipelineCategoriesFieldRecon', {
+            url: '/projects/{projectId}/curation/categoriesFieldRecon',
+            component: 'pipelineCategoriesFieldRecon',
+            params: {
+                project: '',
+                mission: '',
+                selectedListings: '',
+            },
+            resolve: {
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.project = $stateParams.project;
+                        ProjectService.resolveParams.mission = $stateParams.mission;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],

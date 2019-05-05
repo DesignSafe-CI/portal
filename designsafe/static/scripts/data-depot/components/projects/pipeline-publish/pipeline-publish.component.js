@@ -37,7 +37,10 @@ class PipelinePublishCtrl {
         this.project = this.resolve.project;
         this.selectedListings = this.resolve.resolveParams.selectedListings;
 
-        let publication = { project: this.project };
+        let publication = {
+            project: this.project,
+            license: this.resolve.license,
+        };
 
         let uuids = Object.keys(this.selectedListings);
         uuids.forEach((uuid) => {

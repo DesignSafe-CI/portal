@@ -57,7 +57,7 @@
         </div>
     </div>
     <!-- Project Header End -->
-    <table class="tg" style="table-layout: fixed; width: 100%;">
+    <table class="tg" style="table-layout: fixed; width: 100%;" data-ng-if="!$ctrl.readOnly">
         <colgroup>
             <col style="width: 46%">
             <col style="width: 50%">
@@ -208,16 +208,31 @@
                         </ul>
                     </div>
                     <div style="display:inline-block; width:20%;">Date of Publication</div>
-                    <strong style="display:inline-block; width:78%;">
+                    <strong style="display:inline-block; width:78%;"
+                            data-ng-if="!$ctrl.readOnly">
                         (Appears when published)
+                    </strong>
+                    <strong style="display:inline-block; width:78%;"
+                            data-ng-if="$ctrl.readOnly">
+                        {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
                     </strong>
                     <div style="display:inline-block; width:20%;">DOI <button class="btn btn-info btn-sm">Citation</button></div>
-                    <strong style="display:inline-block; width:78%;">
+                    <strong style="display:inline-block; width:78%;"
+                            data-ng-if="!$ctrl.readOnly">
                         (Appears when published)
                     </strong>
+                    <strong style="display:inline-block; width:78%;"
+                            data-ng-if="$ctrl.readOnly">
+                        {{ experiment.doi }}
+                    </strong>
                     <div style="display:inline-block; width:20%;">License</div>
-                    <strong style="display:inline-block; width:78%;">
+                    <strong style="display:inline-block; width:78%;"
+                            data-ng-if="!$ctrl.readOnly">
                         (Appears when published)
+                    </strong>
+                    <strong style="display:inline-block; width:78%;"
+                            data-ng-if="$ctrl.readOnly">
+                        {{ $ctrl.browser.publication.license }}
                     </strong>
                     <p>
                         <br>{{ mission.value.description }}

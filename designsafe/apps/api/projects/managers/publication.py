@@ -343,22 +343,62 @@ def _simulation_required_xml(authors_details, simulation, created, sim_doi=None)
     return xml_obj
 
 
-def analysis_reserve_xml(publication, analysis, created):
-    anl = analysis['value']
-    xml_obj = _analysis_required_xml(publication['users'], analysis,
-                                     created)
-    now = dateutil.parser.parse(created)
-    reserve_res = _reserve_doi(xml_obj, ENTITY_TARGET_BASE.format(
-        project_id=publication['project']['value']['projectId'], entity_uuid=analysis['uuid']))
-    doi = reserve_res
-    ark = doi
-    doi = doi.strip()
-    ark = ark.strip()
-    identifier = xml_obj.find('identifier')
-    identifier.text = doi
+def _mission_required_xml(authors_details, mission, created, mis_doi=None):
+    xml_obj = _project_header()
+
     resource = xml_obj
-    _update_doi(doi, xml_obj)
-    return (doi, ark, xml_obj)
+    identifier = ET.SubElement(resource, 'identifier')
+    identifier.attrib['identifierType'] = 'DOI'
+    if mis_doi:
+        identifier.text = mis_doi
+    else:
+        identifier.text = SHOULDER.replace('doi:', '')
+
+    creators = ET.SubElement(resource, 'creators')
+    for author in sorted(authors_details, key=lambda x: x['order']):
+        if not author.get('authorship'):
+            continue
+        elif author.get('lname') and author.get('fname'):
+            _author = {
+                'last_name': author['name'],
+                'first_name': author['fname']
+            }
+        else:
+            try:
+                user = get_user_model().objects.get(username=author['name'])
+            except ObjectDoesNotExist:
+                logger.error('User does not exists: %s', author['name'])
+                continue
+
+            _author = {
+                'last_name': user.last_name,
+                'first_name': user.first_name,
+            }
+
+        creator = ET.SubElement(creators, 'creator')
+        creator_name = ET.SubElement(creator, 'creatorName')
+        creator_name.text = '{}, {}'.format(_author['last_name'], _author['first_name'])
+
+    titles = ET.SubElement(resource, 'titles')
+    title = ET.SubElement(titles, 'title')
+    title.text = mission.title
+    publisher = ET.SubElement(resource, 'publisher')
+    publisher.text = 'Designsafe-CI'
+
+    now = dateutil.parser.parse(created)
+    publication_year = ET.SubElement(resource, 'publicationYear')
+    publication_year.text = str(now.year)
+
+    resource_type = ET.SubElement(resource, 'resourceType')
+    resource_type.text = "Mission/{}".format(
+        mission.location.title())
+    resource_type.attrib['resourceTypeGeneral'] = 'Dataset'
+    descriptions = ET.SubElement(resource, 'descriptions')
+    desc = ET.SubElement(descriptions, 'description')
+    desc.attrib['descriptionType'] = 'Abstract'
+    desc.text = mission.description
+    return xml_obj
+
 
 def experiment_reserve_xml(publication, project, experiment, authors_details=None, exp_doi=None):
     xml_obj = _experiment_required_xml(
@@ -430,6 +470,7 @@ def experiment_reserve_xml(publication, project, experiment, authors_details=Non
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
+
 def simulation_reserve_xml(publication, project, simulation, authors_details=None, sim_doi=None):
     xml_obj = _simulation_required_xml(
         authors_details,
@@ -492,6 +533,7 @@ def simulation_reserve_xml(publication, project, simulation, authors_details=Non
 
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
+
 
 def hybrid_simulation_reserve_xml(
         publication,
@@ -600,6 +642,61 @@ def hybrid_simulation_reserve_xml(
 
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
+
+
+def mission_reserve_xml(publication, project, mission, authors_details=None, mis_doi=None):
+    xml_obj = _mission_required_xml(
+        authors_details,
+        mission,
+        publication['created'],
+        mis_doi
+    )
+    if not mis_doi:
+        reserve_res = _reserve_doi(
+            xml_obj,
+            ENTITY_TARGET_BASE.format(
+                project_id=publication['project']['value']['projectId'],
+                entity_uuid=mission.uuid
+            )
+        )
+        doi = reserve_res
+        ark = doi
+    else:
+        doi = mis_doi
+        ark = mis_doi
+
+    doi = doi.strip()
+    ark = ark.strip()
+    identifier = xml_obj.find('identifier')
+    identifier.text = doi
+    resource = xml_obj
+
+    subjects = ET.SubElement(resource, 'subjects')
+    mis_type = ET.SubElement(subjects, 'subject')
+    mis_type.text = project.nh_event.title()
+
+    for collection_dict in publication['collections']:
+        collection = Collection.manager().get(
+            service_account(),
+            uuid=collection_dict['uuid']
+        )
+        collection_subj = ET.SubElement(subjects, 'subject')
+        collection_subj.text = collection.title
+        collection_dict.update(collection.to_body_dict())
+
+    for report_dict in publication['reports']:
+        report = Report.manager().get(
+            service_account(),
+            uuid=report_dict['uuid']
+        )
+        report_subj = ET.SubElement(subjects, 'subject')
+        report_subj.text = report.title
+        report_dict.update(report.to_body_dict())
+
+    _update_doi(doi, xml_obj)
+    return (doi, ark, xml_obj)
+
+
 
 
 def project_by_uuid(uuid, prj_type):
@@ -864,7 +961,7 @@ def reserve_publication(publication):
     elif project.project_type.lower() == 'field_recon':
         for pmis in publication.get('missions', []):
             mission = Mission.manager().get(service_account(), uuid=psim['uuid'])
-            mission_doi = pmis.get('doi')
+            mis_doi = pmis.get('doi')
             authors = pmis['authors']
 
             mis_doi, mis_ark, mis_xml = mission_reserve_xml(

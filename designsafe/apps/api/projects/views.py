@@ -81,7 +81,7 @@ class PublicationView(BaseApiView):
                         countdown=60
                     )
                 ) |
-                tasks.set_publish_status.s(pub.projectId)
+                tasks.set_publish_status.si(pub.projectId)
             ).apply_async()
         return JsonResponse({'status': 200,
                              'response': {

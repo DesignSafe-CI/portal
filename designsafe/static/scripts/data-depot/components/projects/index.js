@@ -15,14 +15,17 @@ import { PipelineSelectionComponent } from './pipeline-selection/pipeline-select
 import { PipelineSelectionSimComponent } from './pipeline-selection/pipeline-selection-sim.component';
 import { PipelineSelectionHybSimComponent } from './pipeline-selection/pipeline-selection-hyb-sim.component';
 import { PipelineSelectionOtherComponent } from './pipeline-selection/pipeline-selection-other.component';
+import { PipelineSelectionFieldReconComponent } from './pipeline-selection/pipeline-selection-field-recon.component';
 import { PipelineProjectComponent } from './pipeline-project/pipeline-project.component';
 import { PipelineExperimentComponent } from './pipeline-experiment/pipeline-experiment.component';
 import { PipelineSimulationComponent } from './pipeline-simulation/pipeline-simulation.component';
 import { PipelineHybridComponent } from './pipeline-hybrid/pipeline-hybrid.component';
 import { PipelineOtherComponent } from './pipeline-other/pipeline-other.component';
+import { PipelineFieldReconComponent } from './pipeline-field-recon/pipeline-field-recon.component';
 import { PipelineCategoriesComponent } from './pipeline-categories/pipeline-categories.component';
 import { PipelineCategoriesSimComponent } from './pipeline-categories/pipeline-categories-sim.component';
 import { PipelineCategoriesHybSimComponent } from './pipeline-categories/pipeline-categories-hyb-sim.component';
+import { PipelineCategoriesFieldReconComponent } from './pipeline-categories/pipeline-categories-field-recon.component';
 import { PipelineAuthorsComponent } from './pipeline-authors/pipeline-authors.component';
 import { PipelineTeamComponent } from './pipeline-team/pipeline-team.component';
 import { PipelineLicensesComponent } from './pipeline-licenses/pipeline-licenses.component';
@@ -48,15 +51,19 @@ ddProjectsComponents.component('publicationPreviewFieldRecon', PublicationPrevie
 ddProjectsComponents.component('pipelineSelect', PipelineSelectionComponent);
 ddProjectsComponents.component('pipelineSelectSim', PipelineSelectionSimComponent);
 ddProjectsComponents.component('pipelineSelectHybSim', PipelineSelectionHybSimComponent);
+ddProjectsComponents.component('pipelineSelectFieldRecon', PipelineSelectionFieldReconComponent);
+
 ddProjectsComponents.component('pipelineSelectOther', PipelineSelectionOtherComponent);
 ddProjectsComponents.component('pipelineProject', PipelineProjectComponent);
 ddProjectsComponents.component('pipelineExperiment', PipelineExperimentComponent);
 ddProjectsComponents.component('pipelineSimulation', PipelineSimulationComponent);
 ddProjectsComponents.component('pipelineHybrid', PipelineHybridComponent);
 ddProjectsComponents.component('pipelineOther', PipelineOtherComponent);
+ddProjectsComponents.component('pipelineFieldRecon', PipelineFieldReconComponent);
 ddProjectsComponents.component('pipelineCategories', PipelineCategoriesComponent);
 ddProjectsComponents.component('pipelineCategoriesSim', PipelineCategoriesSimComponent);
 ddProjectsComponents.component('pipelineCategoriesHybSim', PipelineCategoriesHybSimComponent);
+ddProjectsComponents.component('pipelineCategoriesFieldRecon', PipelineCategoriesFieldReconComponent);
 ddProjectsComponents.component('pipelineAuthors', PipelineAuthorsComponent);
 ddProjectsComponents.component('pipelineTeam', PipelineTeamComponent);
 ddProjectsComponents.component('pipelineLicenses', PipelineLicensesComponent);
