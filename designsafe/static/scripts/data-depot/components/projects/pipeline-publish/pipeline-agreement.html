@@ -23,7 +23,7 @@
         <button class="btn btn-add"
                 style="display:inline-block; width:24%;"
                 data-ng-click="$ctrl.publish()"
-                data-ng-disabled="!$ctrl.agreed || $ctrl.published">
+                data-ng-disabled="!$ctrl.agreed || $ctrl.published || $ctrl.busy">
             <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish
         </button>
     </div>

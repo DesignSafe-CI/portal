@@ -34,6 +34,7 @@ import { PipelinePublishComponent } from './pipeline-publish/pipeline-publish.co
 import { ManageFieldReconMissionsComponent } from '../../../projects/components/manage-field-recon/missions/manage-field-recon-missions.component.js';
 import { ManageFieldReconCollectionsComponent } from '../../../projects/components/manage-field-recon/collections/manage-field-recon-collections.component.js';
 import { ManageFieldReconReportsComponent } from '../../../projects/components/manage-field-recon/reports/manage-field-recon-reports.component.js';
+import { PublishedCitationComponent } from '../../../projects/components/publication-citation/publication-citation.component.js';
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
@@ -72,5 +73,6 @@ ddProjectsComponents.component('pipelinePublishModal', PipelinePublishComponent)
 ddProjectsComponents.component('fieldReconMissionsModal', ManageFieldReconMissionsComponent);
 ddProjectsComponents.component('fieldReconCollectionsModal', ManageFieldReconCollectionsComponent);
 ddProjectsComponents.component('fieldReconReportsModal', ManageFieldReconReportsComponent);
+ddProjectsComponents.component('publishedCitationModal', PublishedCitationComponent);
 
 export default ddProjectsComponents;
