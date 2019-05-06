@@ -43,7 +43,9 @@ class FileCategoriesCtrl {
             isOther: this.project.value.projectType === 'other',
         };
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
-        getFileUuid(this.file).then(()=>{this._ui.busy=false;});
+        getFileUuid(this.file).finally( ()=>{
+            this._ui.busy=false;
+        });
     }
 
     removeCategory(entity) {
@@ -107,7 +109,7 @@ class FileCategoriesCtrl {
         projectData.associatedProjects = this.project.value.associatedProjects;
         projectData.awardNumber = this.project.value.awardNumber;
 
-        this.savePrj(projectData).then(() => {
+        this.savePrj(projectData).finally(() => {
             this._ui.busy = false;
         });
     }
@@ -128,8 +130,6 @@ class FileCategoriesCtrl {
                 tagName: tagName
             });
         }).then(() => {
-            this._ui.busy = true;
-
             var projectData = {};
             projectData.uuid = this.project.uuid;
             projectData.fileTags = this.project.value.fileTags;
@@ -146,9 +146,10 @@ class FileCategoriesCtrl {
     
             return this.savePrj(projectData);
         }).then(() => {
-            this._ui.busy = false;
             this.selectedFileTag[this.project.uuid] = null;
             this.$scope.$apply();
+        }).finally( ()=> {
+            this._ui.busy = false;
         });
     }
 

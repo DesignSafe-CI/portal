@@ -167,9 +167,12 @@ def _project_required_xml(project, authors, created, doi=None):
     creators = ET.SubElement(resource, 'creators')
 
     for author in authors:
+        if not author.get('lname') and not author.get('fname'):
+            logger.error('Author in wrong format: %s', author)
+            continue
         creator = ET.SubElement(creators, 'creator')
         creator_name = ET.SubElement(creator, 'creatorName')
-        creator_name.text = '{}, {}'.format(author['last_name'], author['first_name'])
+        creator_name.text = '{}, {}'.format(author['lname'], author['fname'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
@@ -734,7 +737,7 @@ def project_reserve_xml(publication, project, authors_details=None):
             institutions.add(user_tas['institution'])
     else:
         for author in authors_details:
-            institutions.add(author['institution'])
+            institutions.add(author.get('inst'))
 
     xml_obj = _project_required_xml(
         project=project,
@@ -829,12 +832,46 @@ def publish_project(doi, xml_obj):
         logger.exception(res['error'])
         raise Exception(res['error'])
 
+def get_or_craete_authors(publication):
+    authors = publication.get('authors', [])
+    if authors:
+        return authors
+
+    if publication['project']['value']['projectType'] == 'experimental':
+        authors = publication['experimentsList'][-1].get('authors')
+    elif publication['project']['value']['projectType'] == 'simulation':
+        authors = publication['simulations'][-1].get('authors')
+    elif publication['project']['value']['projectType'] == 'hybrid_simulation':
+        authors = publication['hybrid_simulations'][-1].get('authors')
+    elif publication['project']['value']['projectType'] == 'field_recon':
+        authors = publication['missions'][-1].get('authors')
+
+    for author in authors:
+        if not author.get('lname'):
+            try:
+                user = get_user_model().objects.get(username=author.get('name'))
+                author['lname'] = user.last_name
+                author['fname'] = user.first_name
+                author['email'] = user.email
+                user_tas = TASClient().get_user(username=user.username)
+                author['inst'] = user_tas.get('institution')
+            except ObjectDoesNotExist:
+                logger.error('User does not exists: %s', author.get('name'))
+
+    publication['authors'] = authors
+    return publication['authors']
+
+
 def reserve_publication(publication):
     project = project_by_uuid(
         publication['project']['uuid'],
         publication['project']['value']['projectType']
     )
-    proj_doi, proj_ark, proj_xml = project_reserve_xml(publication, project, publication.get('authors'))
+    proj_doi, proj_ark, proj_xml = project_reserve_xml(
+        publication,
+        project,
+        get_or_craete_authors(publication)
+    )
     logger.debug('proj_doi: %s', proj_doi)
     logger.debug('proj_ark: %s', proj_ark)
     logger.debug('proj_xml: %s', proj_xml)

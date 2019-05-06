@@ -52,7 +52,7 @@ class Publication(object):
                 if res.hits.total:
                     self._wrap = res[0]
                     for exp in getattr(self._wrap, 'experimentsList', []):
-                        doi = getattr(exp, 'doi')
+                        doi = getattr(exp, 'doi', None)
                         if not doi:
                             continue
 

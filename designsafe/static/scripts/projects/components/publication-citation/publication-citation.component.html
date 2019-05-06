@@ -1,0 +1,21 @@
+<div class="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        Citation
+        <span class="pull-right" ng-click="$ctrl.close()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <p>
+    {{$ctrl.citation}}
+    </p>
+    <p>
+    DOI: <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
+    </p>
+    <button type="button"
+            data-ng-click="$ctrl.downloadCitation()"
+            class="btn btn-info">
+        Download Citation
+    </button>
+</div>

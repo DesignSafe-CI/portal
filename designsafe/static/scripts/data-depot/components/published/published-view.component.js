@@ -148,6 +148,16 @@ class PublishedViewCtrl {
             size: 'lg'
         });
     }
+
+    showCitation(entity) {
+        this.$uibModal.open({
+            component: 'publishedCitationModal',
+            resolve: {
+                publication: () => { return this.browser.publication; },
+                entity: () => { return entity; },
+            }
+        });
+    }
 }
 
 export const ExpPublishedViewComponent = {

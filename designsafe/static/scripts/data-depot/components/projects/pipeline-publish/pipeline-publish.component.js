@@ -93,6 +93,7 @@ class PipelinePublishCtrl {
     }
 
     publish() {
+        this.busy = true;
         this.$http.post(
             '/api/projects/publication/',
             {
@@ -102,6 +103,8 @@ class PipelinePublishCtrl {
         ).then((resp) => {
             this.DataBrowserService.state().publicationStatus = resp.data.response.status;
             this.published = true;
+        }).finally( () => {
+            this.busy = false;
         });
     }
 }
