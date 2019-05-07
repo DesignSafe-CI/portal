@@ -3,7 +3,7 @@
     <div>
         <div>
             <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
-            <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
+            <a class="edit-link" data-ng-if="!$ctrl.readOnly" ng-click="$ctrl.editProject($event)">Edit Project</a>
         </div>
         <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
             <colgroup>
@@ -13,8 +13,7 @@
             <tr class="prj-row">
                 <td>PI</td>
                 <td>
-                    <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname">{{ $ctrl.browser.project.value.pi }}
-                    </ds-user>
+                    <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname"></ds-user>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
@@ -91,7 +90,17 @@
         </tr>
     </table>
     <br>
-    <p>
+    <p ng-if="!$ctrl.readOnly">
         <h3 style="text-align: center;">You will select the data to be published in the next step</h3>
     </p>
+    <div ng-if="$ctrl.readOnly">
+        <div ng-show="this.ui.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+        <div ng-hide="this.ui.loading">
+            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="true"></files-listing>
+        </div>
+    </div>
 </div>

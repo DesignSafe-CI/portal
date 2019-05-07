@@ -46,6 +46,7 @@ class PublicationPreviewOtherCtrl {
                     { query_string: this.$state.params.query_string }
                 );
             }).then((listing) => {
+                this.loading = false;
                 this.browser.listing = listing;
                 this.browser.listing.href = this.$state.href('projects.view.data', {
                     projectId: this.projectId,
