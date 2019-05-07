@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.0-20190508
+
+Fixes:
+
+- Fixes for published template and project type template.
+
 ## v4.0.2
 
 Fixes:
