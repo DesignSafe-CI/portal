@@ -42,5 +42,6 @@ export const PublishedCitationComponent = {
     controller: PublicationCitationCtrl,
     bindings: {
         resolve: '<',
+        close: '&'
     }
 };

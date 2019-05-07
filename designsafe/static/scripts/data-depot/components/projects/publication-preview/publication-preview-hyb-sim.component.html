@@ -3,7 +3,7 @@
     <div>
         <div>
             <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
-            <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
+            <a class="edit-link" data-ng-if="!$ctrl.readOnly" ng-click="$ctrl.editProject($event)">Edit Project</a>
         </div>
         <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
             <colgroup>
@@ -13,8 +13,7 @@
             <tr class="prj-row">
                 <td>PI</td>
                 <td>
-                    <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname">{{ $ctrl.browser.project.value.pi }}
-                    </ds-user>
+                    <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname"></ds-user>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
@@ -122,7 +121,7 @@
                 <div class="well" ng-if="report.value.description">
                     <p>{{ report.value.description }}</p>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
             </div>
         </div>
     </div>
@@ -151,7 +150,13 @@
                     </strong>
                     <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
                     <div style="display:inline-block; width:78%; font-weight: bold;">
-                        <span ng-repeat="author in hybsim.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
+                        <span ng-repeat="author in hybsim.authors | orderBy: 'order'" ng-if="!author.length && author.authorship && $ctrl.readOnly">
+                            <span ng-if="!author.guest">
+                                <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>;
+                            </span>
+                            <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }};</span>
+                        </span>
+                        <span ng-repeat="author in hybsim.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship && !$ctrl.readOnly">
                             <span ng-if="!author.guest">
                                 <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>;
                             </span>
@@ -226,7 +231,7 @@
                                 <div class="well" ng-if="report.value.description">
                                     <p>{{ report.value.description }}</p>
                                 </div>
-                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
+                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                             </div>
                         </div>
                     </div>
@@ -252,7 +257,7 @@
                                 <div class="well" ng-if="model.value.description">
                                     <p>{{ model.value.description }}</p>
                                 </div>
-                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="true"></files-listing>
+                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                             </div>
                         </div>
                         <!-- Coordinator -->
@@ -288,7 +293,7 @@
                                             <div class="well" ng-if="coordinator.value.description">
                                                 <p>{{ coordinator.value.description }}</p>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" category-listing="true"></files-listing>
+                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                                         </div>
                                         </td>
                                     </tr>
@@ -325,7 +330,7 @@
                                                         <div class="well" ng-if="cout.value.description">
                                                             <p>{{ cout.value.description }}</p>
                                                         </div>
-                                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" category-listing="true"></files-listing>
+                                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -369,7 +374,7 @@
                                                         <div class="well" ng-if="simsub.value.description">
                                                             <p>{{ simsub.value.description }}</p>
                                                         </div>
-                                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" category-listing="true"></files-listing>
+                                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -413,7 +418,7 @@
                                                                 <div class="well" ng-if="sout.value.description">
                                                                     <p>{{ sout.value.description }}</p>
                                                                 </div>
-                                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" category-listing="true"></files-listing>
+                                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -553,7 +558,7 @@
                                     </table>
                                     <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                 </div>
-                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-listing="true"></files-listing>
+                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                             </div>
                         </div>
                     </div>

@@ -227,34 +227,36 @@ export function dsUser(UserService) {
       format: '@'
     },
     link: function(scope, element) {
-      var format = scope.format || 'name';
+      scope.$watch('username', function() {
+        var format = scope.format || 'name';
 
-      UserService.get(scope.username).then(function (user) {
-        switch (format) {
-          case 'hname':
-            element.text(user.last_name + ', ' + user.first_name[0] + '.');
-            break;
-          case 'lname':
-            element.text(user.last_name + ', ' + user.first_name);
-            break;
-          case 'name':
-            element.text(user.first_name + ' ' + user.last_name);
-            break;
-          case 'email':
-            element.text(user.email);
-            break;
-          case 'name-email':
-            element.text(user.first_name + ' ' + user.last_name + ' <' + user.email + '>');
-            break;
-          case 'name-username':
-            element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ')');
-            break;
-          case 'name-username-email':
-            element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ') <' + user.email + '>');
-            break;
-          default:
-            element.text(user.username);
-        }
+        UserService.get(scope.username).then((user) => {
+          switch (format) {
+            case 'hname':
+              element.text(user.last_name + ', ' + user.first_name[0] + '.');
+              break;
+            case 'lname':
+              element.text(user.last_name + ', ' + user.first_name);
+              break;
+            case 'name':
+              element.text(user.first_name + ' ' + user.last_name);
+              break;
+            case 'email':
+              element.text(user.email);
+              break;
+            case 'name-email':
+              element.text(user.first_name + ' ' + user.last_name + ' <' + user.email + '>');
+              break;
+            case 'name-username':
+              element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ')');
+              break;
+            case 'name-username-email':
+              element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ') <' + user.email + '>');
+              break;
+            default:
+              element.text(user.username);
+          }
+        });
       });
     }
   };

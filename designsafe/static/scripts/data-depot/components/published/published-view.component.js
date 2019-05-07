@@ -44,8 +44,9 @@ class PublishedViewCtrl {
             this.PublishedService.getPublished(projId)
                 .then((resp) => {
                     this.browser.publication = resp.data;
-                    this.browser.project = this.browser.publication.project;
+                    this.browser.project = resp.data.project;
                     this.project = resp.data.project;
+                    
                     //var pi = _.find(this.browser.publication.users, (usr) => {
                     //    return usr.username === this.project.value.pi;
                     //});
@@ -81,7 +82,7 @@ class PublishedViewCtrl {
                     this.PublishedService.updateHeaderMetadata(projId, resp);
                     this.version = this.browser.publication.version || 1;
                     this.type = this.browser.publication.project.value.projectType;
-                    this.ui.loadingProjectMeta = false;
+                    this.ui.loading = false;
                 }).then( () => {
                     this.prepProject();
                 });
