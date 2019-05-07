@@ -95,13 +95,12 @@
     </p>
     <div ng-if="$ctrl.readOnly">
         <div ng-show="this.ui.loading">
-                <h3 class="text-center">
-                    <i class="fa fa-spinner fa-spin"></i> Loading...
-                </h3>
-            </div>
-            <div ng-hide="this.ui.loading">
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="true"></files-listing>
-            </div>
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+        <div ng-hide="this.ui.loading">
+            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="true"></files-listing>
         </div>
     </div>
 </div>
