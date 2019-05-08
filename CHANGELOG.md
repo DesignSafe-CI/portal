@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.0-20190509
+
+Fixes:
+
+- Fixes a bug where users could see other users' indexed data.
+- Fixes to publication templates and file tag formatting.
+
 ## v4.3.0-20190508
 
 Fixes:
