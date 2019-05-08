@@ -63,8 +63,7 @@ class FileListingView(BaseApiView):
                 file_path = request.user.username
 
             if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and \
-                (file_path.strip('/') == '$SHARE' or
-                 file_path.strip('/').split('/')[0] != request.user.username):
+                (file_path.strip('/') == '$SHARE'):
 
                 listing = ElasticFileManager.listing(system=system_id,
                                                      file_path=file_path,
