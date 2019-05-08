@@ -22,7 +22,8 @@
                 <tbody>
                   <tr>
                     <th style="border-top:none; width:25%">PI</th>
-                    <td style="border-top:none; width:75%">{{$ctrl.project.piLabel}}
+                    <td style="border-top:none; width:75%">
+                      <ds-user username="$ctrl.browser.publication.project.value.pi" format="lname"></ds-user>
                       <button class="btn btn-sm btn-default pull-right"
                               ng-click="$ctrl.viewCollabs($event)">View Team Members</button>
                     </td>

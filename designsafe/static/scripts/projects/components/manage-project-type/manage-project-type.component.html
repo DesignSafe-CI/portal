@@ -2,7 +2,8 @@
     <h4 class="modal-title" style="border:none;">
         <span ng-if="$ctrl.slide === 'type'">Select a Project Type</span>
         <span ng-if="$ctrl.slide != 'type'">
-            <span style="text-transform: capitalize;">{{$ctrl.prjType.replace('_', ' ')}}</span> Project Overview | 5 minutes to read
+            <span style="text-transform: capitalize;">{{$ctrl.prjType.replace('_', ' ')}}</span>
+            Project Overview
         </span>
         <span class="pull-right" ng-click="$ctrl.cancel()">
             <i class="fa fa-times"></i>
@@ -153,7 +154,20 @@
             <tr>
                 <td style="width: 80%;"></td>
                 <td style="width: 20%;">
-                    <button class="btn btn-add" style="width: 100%;" ng-disabled="!$ctrl.prjType" ng-click="$ctrl.continue('overview')">
+                    <button class="btn btn-add"
+                            style="width: 100%;"
+                            ng-disabled="!$ctrl.prjType"
+                            ng-click="$ctrl.continue('overview')"
+                            ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation' "
+                    >
+                        Continue
+                    </button> 
+                    <button class="btn btn-add"
+                            style="width: 100%;"
+                            ng-disabled="!$ctrl.prjType"
+                            ng-click="$ctrl.continue('finish')"
+                            ng-if="$ctrl.prjType !== 'experimental' && $ctrl.prjType !== 'simulation' "
+                    >
                         Continue
                     </button> 
                 </td>
@@ -573,15 +587,16 @@
         <div ng-if="$ctrl.slide === 'overview'">
             <div>
                 <h3>Other Overview Coming Soon...</h3>
-        </div>
-        <div class="btn-group" style="overflow: auto; width:100%;">
-            <a data-ng-click="$ctrl.continue('type')" class="pull-left">
-                <i class="fa fa-arrow-left">&nbsp;</i> <strong>Back</strong>
-            </a>
-            <button class="btn btn-add pull-right"
-                    data-ng-click="$ctrl.continue('finish')">
-                Continue
-            </button>
+            </div>
+            <div class="btn-group" style="overflow: auto; width:100%;">
+                <a data-ng-click="$ctrl.continue('type')" class="pull-left">
+                    <i class="fa fa-arrow-left">&nbsp;</i> <strong>Back</strong>
+                </a>
+                <button class="btn btn-add pull-right"
+                        data-ng-click="$ctrl.continue('finish')">
+                    Continue
+                </button>
+            </div>
         </div>
     </div>
     <div ng-if="$ctrl.prjType === 'other'">
@@ -601,42 +616,42 @@
                     <td style="width: 20%;">
                         <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('finish')">
                             Continue
-                        </button> 
+                        </button>
                     </td>
                 </tr>
             </table>
         </div>
         <!-- Project Overview -->
     </div>
-</div>
-<!-- Project Finish -->
-<div ng-if="$ctrl.slide === 'finish'">
-    <div>
-        <p>
-            <strong>We recommend you follow these best practices for curation:</strong>
-            <li>
-                Publish data files in a format that is interoperable and open.
-                Example: CSV files instead of Excel spreadsheet files
-            </li>
-            <li>Before publishing raw data, consider why it is necessary. If so, explain how other can use the raw data.</li>
-            <li>Be selective with any images you choose. Use file tags to describe them. Make sure they have a purpose or a function.</li>
-            <li>Use applicable software to review for any errors in your data before you publish.</li>
-        </p>
+    <!-- Project Finish -->
+    <div ng-if="$ctrl.slide === 'finish'">
+        <div>
+            <p>
+                <strong>We recommend you follow these best practices for curation:</strong>
+                <li>
+                    Publish data files in a format that is interoperable and open.
+                    Example: CSV files instead of Excel spreadsheet files
+                </li>
+                <li>Before publishing raw data, consider why it is necessary. If so, explain how other can use the raw data.</li>
+                <li>Be selective with any images you choose. Use file tags to describe them. Make sure they have a purpose or a function.</li>
+                <li>Use applicable software to review for any errors in your data before you publish.</li>
+            </p>
+        </div>
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 70%;">
+                </td>
+                <td style="width: 10%; text-align: center;">
+                    <a ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation'" ng-click="$ctrl.continue('tags')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    <a ng-if="$ctrl.prjType === 'hybrid_simulation' || $ctrl.prjType == 'other'" ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                </td>
+                <td style="width: 20%;">
+                    <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.finish()">
+                        Finish
+                    </button> 
+                </td>
+            </tr>
+        </table>
     </div>
-    <table style="width: 100%;">
-        <tr>
-            <td style="width: 70%;">
-            </td>
-            <td style="width: 10%; text-align: center;">
-                <a ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation'" ng-click="$ctrl.continue('tags')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
-                <a ng-if="$ctrl.prjType === 'hybrid_simulation' || $ctrl.prjType == 'other'" ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
-            </td>
-            <td style="width: 20%;">
-                <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.finish()">
-                    Finish
-                </button> 
-            </td>
-        </tr>
-    </table>
+    <!-- Project Finish -->
 </div>
-<!-- Project Finish -->

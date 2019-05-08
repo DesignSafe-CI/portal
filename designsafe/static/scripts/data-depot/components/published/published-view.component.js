@@ -46,11 +46,6 @@ class PublishedViewCtrl {
                     this.browser.publication = resp.data;
                     this.browser.project = resp.data.project;
                     this.project = resp.data.project;
-                    
-                    //var pi = _.find(this.browser.publication.users, (usr) => {
-                    //    return usr.username === this.project.value.pi;
-                    //});
-                    //this.project.piLabel = pi.last_name + ', ' + pi.first_name;
 
                     if (this.browser.publication.project.value.projectType === 'experimental') {
                         _.each(this.browser.publication.eventsList, this.getFileObjs);

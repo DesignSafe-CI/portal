@@ -18,7 +18,7 @@ class FilesListingCtrl {
 
     $onInit() {
         this._ui = { loading: false, error: false };
-        this.state = this.DataBrowserService.state()
+        this.state = this.DataBrowserService.state();
         this.bread = (path, system) => {
             if (!path) {
                 return;
@@ -65,6 +65,13 @@ class FilesListingCtrl {
         return (
             this.browser.project &&
             !this.browser.loadingEntities
+        );
+    }
+
+    tagListing() {
+        return (
+            this.$state.current.name !== 'projects.view.data' &&
+            this.$state.current.name !== 'projects.curation'
         );
     }
 
