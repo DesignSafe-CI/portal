@@ -100,7 +100,7 @@ class FileCategoriesCtrl {
         projectData.fileTags = this.project.value.fileTags;
         projectData.title = this.project.value.title;
         projectData.pi = this.project.value.pi;
-        projectData.copi = this.project.value.coPis;
+        projectData.co_pis = this.project.value.coPis;
         projectData.projectType = this.project.value.projectType;
         projectData.projectId = this.project.value.projectId;
         projectData.description = this.project.value.description;
@@ -135,7 +135,7 @@ class FileCategoriesCtrl {
             projectData.fileTags = this.project.value.fileTags;
             projectData.title = this.project.value.title;
             projectData.pi = this.project.value.pi;
-            projectData.copi = this.project.value.coPis;
+            projectData.co_pis = this.project.value.coPis;
             projectData.projectType = this.project.value.projectType;
             projectData.projectId = this.project.value.projectId;
             projectData.description = this.project.value.description;
@@ -245,5 +245,6 @@ export const FileCategoriesComponent = {
         project: '=',
         file: '=',
         categoryListing: '=',
+        tagListing: '=',
     },
 };

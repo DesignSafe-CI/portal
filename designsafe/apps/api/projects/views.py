@@ -303,8 +303,6 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         logger.info('post_data: %s', post_data)
         p = cls(value=post_data, uuid=project_id)
 
-        new_pi = post_data.get('pi')
-
         new_pi = post_data.get('pi', p.pi)
         new_co_pis = post_data.get('copi', p.co_pis)
         new_team_members = post_data.get('teamMembers', p.team_members)

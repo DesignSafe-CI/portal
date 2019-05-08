@@ -42,9 +42,11 @@ class PipelineTeamCtrl {
                 this.team.push({'name': c, 'order': 0, 'guest': false});
             });
             this.project.value.guestMembers.forEach((g) => {
-                g.order = 0;
-                g.guest = true;
-                this.team.push(g);
+                if (g) {
+                    g.order = 0;
+                    g.guest = true;
+                    this.team.push(g);
+                }
             });
             this.team.forEach((t, index) => {
                 t.order = index;
@@ -58,11 +60,12 @@ class PipelineTeamCtrl {
         var projectData = {
             title: this.project.value.title,
             uuid: this.project.uuid,
+            fileTags: this.project.value.fileTags,
             projectId: this.project.value.projectId,
             projectType: this.project.value.projectType,
             dataType: this.project.value.dataType,
             pi: this.project.value.pi,
-            copi: this.project.value.coPis,
+            co_pis: this.project.value.coPis,
             teamMembers: this.project.value.teamMembers,
             guestMembers: this.project.value.guestMembers,
             teamOrder: this.team,
@@ -70,7 +73,6 @@ class PipelineTeamCtrl {
             associatedProjects: this.project.value.associatedProjects,
             description: this.project.value.description,
             keywords: this.project.value.keywords,
-
         };
         return projectData;
     }
@@ -79,7 +81,6 @@ class PipelineTeamCtrl {
         var prj = this.data();
         this.projectResource.post({ data: prj }).then((resp) => {
             this.saved = true;
-            console.log(resp);
             return new this.ProjectModel(resp.data);
         });
     }

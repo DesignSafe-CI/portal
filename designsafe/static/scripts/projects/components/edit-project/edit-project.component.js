@@ -78,6 +78,7 @@ class EditProjectCtrl {
             this.form.experimentalFacility = this.project.value.experimentalFacility || '';
             this.form.keywords = this.project.value.keywords || '';
             this.form.dataType = this.project.value.dataType || '';
+            this.form.fileTags = this.project.value.fileTags || [];
             if (this.form.dataType && this.otherTypes.indexOf(this.form.dataType) === -1) {
                 this.form.dataTypeCustom = this.form.dataType;
                 this.form.dataType = 'Custom';
@@ -238,9 +239,10 @@ class EditProjectCtrl {
             awardNumber: this.form.awardNumber,
             description: this.form.description,
             projectId: this.form.projectId,
-            copi: [],
+            co_pis: [],
             teamMembers: [],
             guestMembers: [],
+            fileTags: [],
         };
 
         if (this.form.nhEvent) {
@@ -306,9 +308,8 @@ class EditProjectCtrl {
             projectData.pi = this.form.pi.username;
         }
         if (this.form.copiPrune) {
-            // projectData.copi = this.form.copiPrune;
             this.form.copiPrune.forEach((ent) => {
-                projectData.copi.push(ent.username);
+                projectData.co_pis.push(ent.username);
             });
         }
         if (this.form.teamPrune) {
@@ -340,6 +341,9 @@ class EditProjectCtrl {
             if (this.form.dataTypeCustom && this.form.dataType === 'Custom') {
                 projectData.dataType = this.form.dataTypeCustom;
             }
+        }
+        if (this.form.fileTags) {
+            projectData.fileTags = this.form.fileTags;
         }
         if (this.form.uuid && this.form.uuid) {
             projectData.uuid = this.form.uuid;
