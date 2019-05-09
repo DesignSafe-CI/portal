@@ -1,33 +1,52 @@
 import DataBrowserServiceMoveTemplate from './data-browser-service-move.component.html';
 import _ from 'underscore';
+import { DataBrowserService } from '../../../services/data-browser-service';
+// import angular from 'angular';
 
 
 class DataBrowserServiceMoveCtrl {
 
-    constructor($scope, $state, FileListing, ProjectService) {
+    constructor($scope, $state, FileListing, ProjectService, DataBrowserService) {
         'ngInject';
         this.$scope = $scope
         this.$state = $state
         this.FileListing = FileListing
         this.ProjectService = ProjectService
+        this.DataBrowserService = DataBrowserService
     }
 
     $onInit() {
         this.files = this.resolve.files
         this.initialDestination = this.resolve.initialDestination
-    
+        console.log(this.DataBrowserService.currentState)
         this.data = {
             files: this.files
         };
         //$scope.data = data;
 
         this.listing = this.initialDestination;
+        this.position = this.$scope.currentOption = null;
+        let dbState = this.DataBrowserService.currentState;
+        if (dbState.listing.system == 'designsafe.storage.default') {
+          this.$scope.currentOption = this.options[2];
+        }
 
         this.state = {
             busy: false,
             error: null,
             listingProjects: false
         };
+
+        this.$scope.currentOption = null;
+        let dbState = this.DataBrowserService.currentState;
+        if (dbState.listing.system == 'designsafe.storage.default') {
+          this.$scope.currentOption = this.options[2];
+        };
+        if (dbState.listing.system == 'projects') {
+            this.$scope.currentOption = this.options[0]
+        }
+
+        
 
         this.options = [
             {
@@ -44,8 +63,7 @@ class DataBrowserServiceMoveCtrl {
             }
         ];
 
-        this.$scope.currentOption = null;
-
+      
 
         this.$scope.$watch('currentOption', () => {
             this.state.busy = true;
