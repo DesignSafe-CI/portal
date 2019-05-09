@@ -1,5 +1,18 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.7
+
+Improvements:
+
+- Limits project indexer to once per day.
+- Enables iFrame embedding in CMS pages via ckeditor.
+
+Fixes:
+
+- Fixes a bug with user data views.
+- Fixes to publication templates and file tag formatting.
+- Fixes for published template and project type template.
+
 ## v4.3.0-20190510
 
 Improvements:
