@@ -306,6 +306,10 @@ CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'ResponsiveEmbedPlugin',
 )
 
+# These settings enable iFrames in the CMS cktext-editor.
+TEXT_ADDITIONAL_TAGS = ('iframe',)
+TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'src', 'height', 'width')
+
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
