@@ -45,7 +45,7 @@ class NeesPublicationCtrl {
         if (typeof file.type !== 'undefined' && file.type !== 'dir' && file.type !== 'folder') {
             this.DataBrowserService.preview(file, this.browser.listing);
         } else {
-            this.$state.go('neesPublishedData', { filePath: file.path }, { reload: true });
+            this.$state.go('neesPublished', { filePath: file.path }, { reload: true });
         }
     }
     onSelect($event, file) {
@@ -83,7 +83,7 @@ class NeesPublicationCtrl {
         this.DataBrowserService.preview(file, this.browser.listing);
     }
     resolveBreadcrumbHref(trailItem) {
-        return this.$state.href('neesPublishedData', { filePath: trailItem.path.replace(/^\/+/, '') });
+        return this.$state.href('neesPublished', { filePath: trailItem.path.replace(/^\/+/, '') });
     }
 }
 

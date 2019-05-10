@@ -173,8 +173,8 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     var tests = {};
       tests.canDownload = files.length >= 1 && hasPermission('READ', files) && (!(containsFolder(files)));
       tests.canPreview = files.length === 1 && hasPermission('READ', files) && !['publicData'].includes($state.current.name);
-      tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files) && !['dropboxData', 'boxData', 'googledriveData', 'publicData', 'neesPublishedData'].includes($state.current.name);
-      tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files) && !['publicData', 'publishedData.view', 'communityData', 'neesPublishedData'].includes($state.current.name);
+      tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files) && !['dropboxData', 'boxData', 'googledriveData', 'publicData', 'neesPublished'].includes($state.current.name);
+      tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files) && !['publicData', 'publishedData.view', 'communityData', 'neesPublished'].includes($state.current.name);
       tests.canViewCitation = files.length >= 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files) && !['publicData'].includes($state.current.name);
