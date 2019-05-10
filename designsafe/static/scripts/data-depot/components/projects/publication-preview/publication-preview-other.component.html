@@ -13,7 +13,7 @@
             <tr class="prj-row">
                 <td>PI</td>
                 <td>
-                    <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname"></ds-user>
+                    <ds-user-list class="prj-data" usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">

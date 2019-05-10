@@ -65,7 +65,7 @@ class PipelineTeamCtrl {
             projectType: this.project.value.projectType,
             dataType: this.project.value.dataType,
             pi: this.project.value.pi,
-            co_pis: this.project.value.coPis,
+            coPis: this.project.value.coPis,
             teamMembers: this.project.value.teamMembers,
             guestMembers: this.project.value.guestMembers,
             teamOrder: this.team,
