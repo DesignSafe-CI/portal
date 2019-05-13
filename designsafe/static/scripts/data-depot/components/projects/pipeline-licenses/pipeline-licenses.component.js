@@ -16,7 +16,11 @@ class PipelineLicensesCtrl {
         this.project = this.ProjectService.resolveParams.project;
         this.experiment = this.ProjectService.resolveParams.experiment;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
-        this.license = '';
+        this.license = {
+            datasets: '',
+            works: '',
+            software: ''
+        };
 
         if (!this.project) {
             /*
