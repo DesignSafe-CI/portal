@@ -1,6 +1,6 @@
 # DesignSafe-CI Portal Release Notes
 
-## v4.3.7-201905011
+## v4.3.7-20190511
 
 Improvements:
 
