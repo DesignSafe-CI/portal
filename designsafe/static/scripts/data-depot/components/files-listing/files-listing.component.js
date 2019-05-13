@@ -10,10 +10,10 @@ class FilesListingCtrl {
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
 
-        this.areFiltersEmpty = this.areFiltersEmpty.bind(this)
-        this.typeFilter = this.typeFilter.bind(this)
-        this.renderName = this.renderName.bind(this)
-        this.clearFilters = this.clearFilters.bind(this)
+        this.areFiltersEmpty = this.areFiltersEmpty.bind(this);
+        this.typeFilter = this.typeFilter.bind(this);
+        this.renderName = this.renderName.bind(this);
+        this.clearFilters = this.clearFilters.bind(this);
     }
 
     $onInit() {
@@ -28,14 +28,17 @@ class FilesListingCtrl {
             } else {
                 this.breadcrumbs = path.split('/');
             }
-            if (system === 'designsafe.storage.default' || system === 'nees.public') {
+
+            if (system === 'designsafe.storage.default' ||
+                system === 'designsafe.storage.published' ||
+                system === 'nees.public') {
                 this.breadcrumbs.shift();
             }
         };
         this.allowSelect = true;
         this.previewMode = () => {
             return this.$state.current.name.indexOf('projects.preview') === 0;
-        }
+        };
         this.curationMode = () => {
             return this.$state.current.name === 'projects.curation';
         };
@@ -57,6 +60,7 @@ class FilesListingCtrl {
                 return this.browser.listing;
             }
             this.allowSelect = false;
+            this.bread(this.filesList.path, this.filesList.system);
             return this.filesList;
         };
     }

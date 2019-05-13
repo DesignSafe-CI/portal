@@ -42,52 +42,54 @@ class PipelinePublishCtrl {
             license: this.resolve.license,
         };
 
-        let uuids = Object.keys(this.selectedListings);
-        uuids.forEach((uuid) => {
-            let listing = this.selectedListings[uuid];
-            let entity = this.project.getRelatedByUuid(uuid);
-            let attr = attributeMap[entity.name];
-            let pubEntity = { name: entity.name, uuid: entity.uuid };
-            pubEntity.fileObjs = _.map(listing.children, (child) => {
-                return {
-                    name: child.name,
-                    path: child.path,
-                    system: child.system,
-                    type: child.type
-                };
+        if (this.project.value.projectType !== 'other') {
+            let uuids = Object.keys(this.selectedListings);
+            uuids.forEach((uuid) => {
+                let listing = this.selectedListings[uuid];
+                let entity = this.project.getRelatedByUuid(uuid);
+                let attr = attributeMap[entity.name];
+                let pubEntity = { name: entity.name, uuid: entity.uuid };
+                pubEntity.fileObjs = _.map(listing.children, (child) => {
+                    return {
+                        name: child.name,
+                        path: child.path,
+                        system: child.system,
+                        type: child.type
+                    };
+                });
+                if (!publication[attr] ||
+                    _.isEmpty(publication[attr]) ||
+                    typeof publication[attr] === 'undefined'){
+                    publication[attr] = [];
+                }
+                publication[attr].push(pubEntity);
             });
-            if (!publication[attr] ||
-                _.isEmpty(publication[attr]) ||
-                typeof publication[attr] === 'undefined'){
-                publication[attr] = [];
+    
+            if (this.project.value.projectType === 'experimental'){
+                publication.experimentsList = [{
+                    uuid: this.resolve.resolveParams.experiment.uuid,
+                    authors: this.resolve.resolveParams.experiment.value.authors || [],
+                    guests: this.resolve.resolveParams.experiment.value.guests || [],
+                }];
+            } else if (this.project.value.projectType === 'simulation') {
+                publication.simulations = [{
+                    uuid: this.resolve.resolveParams.experiment.uuid,
+                    authors: this.resolve.resolveParams.experiment.value.authors || [],
+                    guests: this.resolve.resolveParams.experiment.value.guests || [],
+                }];
+            } else if (this.project.value.projectType === 'hybrid_simulation') {
+                publication.hybrid_simulations = [{
+                    uuid: this.resolve.resolveParams.experiment.uuid,
+                    authors: this.resolve.resolveParams.experiment.value.authors || [],
+                    guests: this.resolve.resolveParams.experiment.value.guests || [],
+                }];
+            } else if (this.project.value.projectType === 'field_recon') {
+                publication.missions = [{
+                    uuid: this.resolve.resolveParams.experiment.uuid,
+                    authors: this.resolve.resolveParams.experiment.value.authors || [],
+                    guests: this.resolve.resolveParams.experiment.value.guests || [],
+                }];
             }
-            publication[attr].push(pubEntity);
-        });
-
-        if (this.project.value.projectType === 'experimental'){
-            publication.experimentsList = [{
-                uuid: this.resolve.resolveParams.experiment.uuid,
-                authors: this.resolve.resolveParams.experiment.value.authors || [],
-                guests: this.resolve.resolveParams.experiment.value.guests || [],
-            }];
-        } else if (this.project.value.projectType === 'simulation') {
-            publication.simulations = [{
-                uuid: this.resolve.resolveParams.experiment.uuid,
-                authors: this.resolve.resolveParams.experiment.value.authors || [],
-                guests: this.resolve.resolveParams.experiment.value.guests || [],
-            }];
-        } else if (this.project.value.projectType === 'hybrid_simulation') {
-            publication.hybrid_simulations = [{
-                uuid: this.resolve.resolveParams.experiment.uuid,
-                authors: this.resolve.resolveParams.experiment.value.authors || [],
-                guests: this.resolve.resolveParams.experiment.value.guests || [],
-            }];
-        } else if (this.project.value.projectType === 'field_recon') {
-            publication.missions = [{
-                uuid: this.resolve.resolveParams.experiment.uuid,
-                authors: this.resolve.resolveParams.experiment.value.authors || [],
-                guests: this.resolve.resolveParams.experiment.value.guests || [],
-            }];
         }
         this.publication = publication;
     }

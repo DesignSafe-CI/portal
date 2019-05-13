@@ -45,6 +45,12 @@ class PublishedViewCtrl {
             });
         };
 
+        if (this.$stateParams.filePath.endsWith(projId + "/")) {
+            this.fileNav = false;
+        } else {
+            this.fileNav = true;
+        }
+
         if (projId) {
             this.PublishedService.getPublished(projId)
                 .then((resp) => {
