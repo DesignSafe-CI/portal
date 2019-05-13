@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## v.4.3.7-201905011
+
+Improvements:
+
+- Add links to license websites for project publications.
+
+Fixes:
+
+- Allow selections of multiple licenses in project publication.
+- Fix experiment links in NEES projects.
+- Fix issue causing new project entities to 500.
+
 ## v4.3.7
 
 Improvements:
