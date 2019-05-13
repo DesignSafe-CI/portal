@@ -79,7 +79,7 @@ describe('neesPublishedComponent', () => {
             {path: '/NEES-0000-0000.groups/path/to/file'}
         )
         expect(ctrl.$state.go).toHaveBeenCalledWith(
-            'neesPublishedData', 
+            'neesPublished', 
             {filePath: '/NEES-0000-0000.groups/path/to/file'},
             {reload: true});
     })

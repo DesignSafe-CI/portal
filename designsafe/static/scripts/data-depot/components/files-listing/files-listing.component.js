@@ -28,7 +28,7 @@ class FilesListingCtrl {
             } else {
                 this.breadcrumbs = path.split('/');
             }
-            if (system === 'designsafe.storage.default') {
+            if (system === 'designsafe.storage.default' || system === 'nees.public') {
                 this.breadcrumbs.shift();
             }
         };
