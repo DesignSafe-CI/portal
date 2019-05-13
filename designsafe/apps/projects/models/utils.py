@@ -23,7 +23,7 @@ def lookup_model(entity=None, name=None):
     elif entity_meta_name in ["simulation", "hybrid_simulation", "field_recon"]:
         project_type = ename = entity_meta_name
     else:
-        ename = entity['name'].rsplit('.', 1)[1].lower()
+        ename = entity_meta_name
 
     if entity_name == 'designsafe.project':
         if isinstance(entity, dict):
