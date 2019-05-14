@@ -141,10 +141,14 @@
                         <strong ng-if="$ctrl.browser.project.value.projectType === 'hybrid_simulation'">
                             Add Hybrid Simulations
                         </strong>
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
+                            Add Missions
+                        </strong>
                     </span>
                     <span style="padding:5px; font-weight:bold;">|</span>
                     <span style="padding:10px; font-weight:bold;">2
-                        <strong> Add Categories</strong>
+                        <strong ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'"> Add Categories</strong>
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"> Add Collections</strong>
                     </span>
                     <span style="padding:5px; font-weight:bold;">|</span>
                     <span style="padding:10px; font-weight:bold;">3
