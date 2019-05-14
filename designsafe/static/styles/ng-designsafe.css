@@ -944,7 +944,7 @@ i[class^="icon-ls-pre/post"]:before,
         text-rendering: optimizeLegibility;
     }
     
-    .curation-hybrid-icon:before {
+    .curation-hybrid:before {
         content: "\e907";
     }
     .curation-cc-zero:before {
@@ -979,4 +979,10 @@ i[class^="icon-ls-pre/post"]:before,
     }
     .curation-req-doi:before {
         content: "\e910";
+    }
+    .curation-recon:before {
+        content: "\e912";
+    }
+    .curation-download:before {
+        content: "\e913";
     }
