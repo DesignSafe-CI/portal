@@ -100,7 +100,10 @@
             <tr ng-if="$ctrl.project.value.coPis.length">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <ds-user-list usernames="$ctrl.project.value.coPis"></ds-user-list>
+                    <span ng-repeat="copi in $ctrl.project.value.coPis">
+                        <span ng-if="!$last"><ds-user-list usernames="copi"></ds-user-list>; </span>
+                        <span ng-if="$last"><ds-user-list usernames="copi"></ds-user-list></span>
+                    </span>
                 </td>
             </tr>
             <tr class="prj-row" ng-hide="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">

@@ -271,24 +271,8 @@ export function dsUserList(UserService) {
     },
     link: function (scope, element) {
       scope.$watch('usernames', function() {
-        var longString = '';
-        var promises = [];
-
-        scope.usernames.forEach((usr) => {
-          promises.push(UserService.getPublic(usr));
-        });
-
-        $q.all(promises).then((res) => {
-          res = _.sortBy(res, 'last_name');
-
-          res.forEach((u, i, arr) => {
-            if (i === (arr.length - 1)) {
-              longString += u.last_name + ', ' + u.first_name;
-            } else {
-              longString += u.last_name + ', ' + u.first_name + '; ';
-            }
-          });
-          element.text(longString);
+        UserService.getPublic(scope.usernames).then((user) => {
+          element.text(user.last_name + ', ' + user.first_name);
         });
       });
     }

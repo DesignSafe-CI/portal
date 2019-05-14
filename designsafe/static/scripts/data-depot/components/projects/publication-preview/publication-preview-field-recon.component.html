@@ -13,13 +13,16 @@
             <tr class="prj-row">
                 <td>PI</td>
                 <td>
-                    <ds-user-list class="prj-data" usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
+                    <ds-user-list class="prj-data" usernames="$ctrl.browser.project.value.pi"></ds-user-list>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
+                    <span ng-repeat="copi in $ctrl.browser.project.value.coPis">
+                        <span ng-if="!$last"><ds-user-list usernames="copi"></ds-user-list>; </span>
+                        <span ng-if="$last"><ds-user-list usernames="copi"></ds-user-list></span>
+                    </span>
                 </td>
             </tr>
             <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
@@ -119,7 +122,7 @@
                          data-ng-if="!author.length &&
                          author.authorship">
                         <span data-ng-if="!author.guest">
-                            <ds-user-list usernames="[author.name]"></ds-user-list>
+                            <ds-user-list usernames="author.name"></ds-user-list>
                             <!-- <ds-user data-username="author.name"
                                      data-format="lname">
                                 {{author}}
@@ -180,7 +183,7 @@
                         <div data-ng-repeat="author in mission.value.authors | orderBy: 'order'"
                              data-ng-if="!author.length && author.authorship">
                             <span data-ng-if="!author.guest">
-                                <ds-user-list usernames="[author.name]"></ds-user-list>
+                                <ds-user-list usernames="author.name"></ds-user-list>
                                 <!-- <ds-user data-username="author.name" data-format="lname">
                                     {{author}}
                                 </ds-user> -->
@@ -316,7 +319,7 @@
                                     <div data-ng-repeat="author in collection.value.dataCollectors | orderBy: 'order'"
                                          data-ng-if="!author.length && author.authorship">
                                         <span data-ng-if="!author.guest">
-                                            <ds-user-list usernames="[author.name]"></ds-user-list>
+                                            <ds-user-list usernames="author.name"></ds-user-list>
                                             <!-- <ds-user data-username="author.name" data-format="lname">
                                                 {{author}}
                                             </ds-user> -->
