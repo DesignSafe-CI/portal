@@ -14,6 +14,7 @@ class ManageExperimentsCtrl {
 
     $onInit() {
         this.options = this.resolve.options;
+
         this.efs = this.resolve.efs;
         this.experimentTypes = this.resolve.experimentTypes;
         this.equipmentTypes = this.resolve.equipmentTypes;
@@ -103,19 +104,27 @@ class ManageExperimentsCtrl {
     }
 
     getEF(str) {
-        var efs = this.ui.efs[this.data.project.value.projectType];
-        var ef = _.find(efs, function (ef) {
+        let efs = this.ui.efs[this.data.project.value.projectType];
+        let ef = _.find(efs, function (ef) {
             return ef.name === str;
         });
-        return ef;
+        return ef.label;
     }
 
-    getET(type, str) {
-        var ets = this.ui.experimentTypes[type];
-        var et = _.find(ets, function (et) {
-            return et.name === str;
+    getET(exp) {
+        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+        let et = _.find(ets, (x) => {
+            return x.name === exp.value.experimentType;
         });
-        return et;
+        return et.label;
+    }
+
+    getEQ(exp) {
+        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+        let eqt = _.find(eqts, (x) => {
+            return x.name === exp.value.equipmentType;
+        });
+        return eqt.label;
     }
 
     configureAuthors(exp) {

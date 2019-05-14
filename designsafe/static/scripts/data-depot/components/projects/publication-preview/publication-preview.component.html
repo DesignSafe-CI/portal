@@ -138,10 +138,10 @@
             <div id="data-{{experiment.uuid}}" class="collapse dropdown-spacer-lg" ng-class="{'in': $ctrl.singleExperiment()}">
                 <div class="well">
                     <div style="display:inline-block; width:20%;">Experiment Type</div>
-                    <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ experiment.value.experimentType.replace('_', ' ') }}
+                    <strong ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                        {{ $ctrl.getET(experiment) }}
                     </strong>
-                    <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                    <strong ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
                         {{ experiment.value.experimentTypeOther }}
                     </strong>
                     <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
@@ -166,16 +166,16 @@
                     </div>
                     <div style="display:inline-block; width:20%;">Experimental Facility</div>
                     <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ experiment.value.experimentalFacility.replace('_', ' ') }}
+                        {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
                     </strong>
                     <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
                         {{ experiment.value.experimentalFacilityOther }}
                     </strong>
                     <div style="display:inline-block; width:20%;">Equipment Type</div>
-                    <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ experiment.value.equipmentType.replace('_', ' ') }}
+                    <strong ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                        {{ $ctrl.getEQ(experiment) }}
                     </strong>
-                    <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                    <strong ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
                         {{ experiment.value.equipmentTypeOther }}
                     </strong>
                     <div ng-show="experiment.value.procedureStart">
