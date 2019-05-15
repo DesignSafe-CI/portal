@@ -45,7 +45,7 @@ class PublishedViewCtrl {
             });
         };
 
-        if (this.$stateParams.filePath.endsWith(projId + "/")) {
+        if (this.$stateParams.filePath.replace('/',  '') === projId) {
             this.fileNav = false;
         } else {
             this.fileNav = true;
