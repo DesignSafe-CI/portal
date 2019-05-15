@@ -98,16 +98,24 @@ class PublicView(View):
 
     def get(self, request):
         model = get_user_model()
-        q = request.GET.get('username')
+        q = request.GET.get('usernames')
 
-        try:
-            user = model.objects.get(username=q)
-        except ObjectDoesNotExist as err:
-            return HttpResponseNotFound()
-    
-        res_dict = {
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-        }
+        nl = q.split('/')
+        nl.pop()
 
+        res_list = []
+
+        for i in nl:
+            if i:
+                try:
+                    user = model.objects.get(username=i)
+                    data = {
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                    }
+                    res_list.append(data)
+                except ObjectDoesNotExist as err:
+                    return HttpResponseNotFound()
+
+        res_dict = {"userData": res_list}
         return JsonResponse(res_dict)

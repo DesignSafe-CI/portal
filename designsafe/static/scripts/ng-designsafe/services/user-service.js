@@ -14,8 +14,8 @@ export function UserService($http, $q) {
         });
     };
 
-    this.getPublic = function (username) {
-      return $http.get("/api/users/public", {params: {username: username}})
+    this.getPublic = function (users) {
+      return $http.get("/api/users/public", {params: {usernames: users}})
         .then(function (resp) {
           return resp.data;
         });

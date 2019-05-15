@@ -267,14 +267,53 @@ export function dsUserList(UserService) {
   return {
     restrict: 'EA',
     scope: {
-      usernames: '='
+      usernames: '=',
+      type: '='
     },
     link: function (scope, element) {
-      scope.$watch('usernames', function() {
-        UserService.getPublic(scope.usernames).then((user) => {
-          element.text(user.last_name + ', ' + user.first_name);
-        });
+      let formatted = [];
+      let reqList = '';
+
+      if (!scope.usernames) {
+        return;
+      }
+      console.log(scope.usernames);
+      console.log(scope.type);
+
+
+
+      // split up usernames, guests, and users with details
+      scope.usernames.forEach((user) => {
+        if (typeof user === 'string') {
+          reqList = reqList.concat(user + '/');
+        } else if (!user.fname || !user.lname) {
+          reqList = reqList.concat(user.name + '/');
+        } else if (user.guest) {
+          formatted.push(user);
+        }
       });
+
+      console.log(reqList); // get this in order before sending...
+
+      UserService.getPublic(reqList).then((users) => {
+        var userData = users.userData;
+        var longString = '';
+
+        
+
+        userData.forEach((u, i, arr) => {
+          if (i === (arr.length -1)) {
+            longString += u.last_name + ', ' + u.first_name;
+          } else {
+            longString += u.last_name + ', ' + u.first_name + '; ';
+          }
+        });
+        element.text(longString);
+      });
+
+      // scope.$watch('usernames', function() {
+      //   // console.log(userData);
+      // });
     }
   };
 }
