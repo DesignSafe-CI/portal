@@ -5,6 +5,7 @@ import SimPublicationTemplate from '../projects/publication-preview/publication-
 import HybSimPublicationTemplate from '../projects/publication-preview/publication-preview-hyb-sim.component.html';
 import FieldReconPublicationTemplate from '../projects/publication-preview/publication-preview-field-recon.component.html';
 import OtherPublicationTemplate from '../projects/publication-preview/publication-preview-other.component.html';
+import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
     constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal){
@@ -19,7 +20,11 @@ class PublishedViewCtrl {
     $onInit() {
         //this.version = this.resolve.version;
         this.readOnly = true;
-        this.ui = {};
+        this.ui = {
+            efs: experimentalData.experimentalFacility,
+            equipmentTypes: experimentalData.equipmentTypes,
+            experimentTypes: experimentalData.experimentTypes
+        };
         this.browser = this.DataBrowserService.state();
         this.browser.listings = {};
         var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
@@ -114,6 +119,30 @@ class PublishedViewCtrl {
         }
         if (this.project.value.projectType === 'field_recon'){
         }
+    }
+
+    getEF(str) {
+        let efs = this.ui.efs[this.browser.project.value.projectType];
+        let ef = _.find(efs, (ef) => {
+            return ef.name === str;
+        });
+        return ef.label;
+    }
+
+    getET(exp) {
+        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+        let et = _.find(ets, (x) => {
+            return x.name === exp.value.experimentType;
+        });
+        return et.label;
+    }
+
+    getEQ(exp) {
+        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+        let eqt = _.find(eqts, (x) => {
+            return x.name === exp.value.equipmentType;
+        });
+        return eqt.label;
     }
 
     matchingGroup(exp, model) {

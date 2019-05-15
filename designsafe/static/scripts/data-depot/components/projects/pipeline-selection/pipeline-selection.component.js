@@ -1,4 +1,5 @@
 import PipelineSelectionTemplate from './pipeline-selection.component.html';
+import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 import _ from 'underscore';
 import { deprecate } from 'util';
 
@@ -20,6 +21,11 @@ class PipelineSelectionCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
+        this.ui = {
+            efs: experimentalData.experimentalFacility,
+            equipmentTypes: experimentalData.equipmentTypes,
+            experimentTypes: experimentalData.experimentTypes
+        };
         // this.selectedFiles = {};
         this.loading = true;
         
@@ -132,6 +138,30 @@ class PipelineSelectionCtrl {
             this.setFilesDetails(allFilePaths);
         });
 
+    }
+
+    getEF(str) {
+        let efs = this.ui.efs[this.browser.project.value.projectType];
+        let ef = _.find(efs, (ef) => {
+            return ef.name === str;
+        });
+        return ef.label;
+    }
+
+    getET(exp) {
+        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+        let et = _.find(ets, (x) => {
+            return x.name === exp.value.experimentType;
+        });
+        return et.label;
+    }
+
+    getEQ(exp) {
+        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+        let eqt = _.find(eqts, (x) => {
+            return x.name === exp.value.equipmentType;
+        });
+        return eqt.label;
     }
 
     hasEndDate(date) {
