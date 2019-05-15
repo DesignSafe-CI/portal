@@ -239,7 +239,7 @@ class EditProjectCtrl {
             awardNumber: this.form.awardNumber,
             description: this.form.description,
             projectId: this.form.projectId,
-            co_pis: [],
+            coPis: [],
             teamMembers: [],
             guestMembers: [],
             fileTags: [],
@@ -309,7 +309,7 @@ class EditProjectCtrl {
         }
         if (this.form.copiPrune) {
             this.form.copiPrune.forEach((ent) => {
-                projectData.co_pis.push(ent.username);
+                projectData.coPis.push(ent.username);
             });
         }
         if (this.form.teamPrune) {

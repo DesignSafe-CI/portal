@@ -36,7 +36,7 @@ class ManageProjectTypeCtrl {
             projectData.description = this.project.value.description;
             projectData.keywords = this.project.value.keywords;
             projectData.pi = this.project.value.pi;
-            projectData.co_pis = this.project.value.coPis;
+            projectData.coPis = this.project.value.coPis;
             projectData.teamMembers = this.project.value.teamMembers;
             projectData.associatedProjects = this.project.value.associatedProjects;
             projectData.awardNumber = this.project.value.awardNumber;

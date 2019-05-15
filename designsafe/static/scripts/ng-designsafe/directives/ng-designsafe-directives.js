@@ -270,24 +270,10 @@ export function dsUserList(UserService) {
       usernames: '='
     },
     link: function (scope, element) {
-      var longString = '';
-      var promises = [];
-
-      scope.usernames.forEach((usr) => {
-        promises.push(UserService.get(usr));
-      });
-
-      $q.all(promises).then((res) => {
-        res = _.sortBy(res, 'last_name');
-
-        res.forEach((u, i, arr) => {
-          if (i === (arr.length - 1)) {
-            longString += u.last_name + ', ' + u.first_name;
-          } else {
-            longString += u.last_name + ', ' + u.first_name + '; ';
-          }
+      scope.$watch('usernames', function() {
+        UserService.getPublic(scope.usernames).then((user) => {
+          element.text(user.last_name + ', ' + user.first_name);
         });
-        element.text(longString);
       });
     }
   };
