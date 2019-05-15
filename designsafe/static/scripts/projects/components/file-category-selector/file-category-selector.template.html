@@ -2,7 +2,7 @@
     <select name="project-category"
             data-ng-model="$ctrl.selectedUuid"
             class="form-control">
-        <option value="">-- Select a Category --</option>
+        <option value="">-- Select a Collection --</option>
         <optgroup label="Model Configuration"
                   data-ng-if="$ctrl.project.modelconfig_set.length">
             <option data-ng-repeat="modelConfig in $ctrl.project.modelconfig_set | orderBy: ['value.title']"

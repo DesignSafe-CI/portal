@@ -314,7 +314,7 @@
     <div class="collection-list-title">
         <label> Collection Inventory <label>
     </div>
-    <div class="dorpdown">
+    <div class="dropdown">
         <div data-ng-repeat="collection in $ctrl.data.collections">
             <div class="dropdown dropdown-spacer-sm">
                 <button class="btn collapsed tab-experiment"
@@ -322,7 +322,7 @@
                         data-target="#files-{{collection.uuid}}"
                         style="width: 100%;">
                     <table style="width: 100%;">
-                        <tr>
+                        
                             <td style="text-align: left;">
                                 <span>
                                     Collection | 
@@ -335,7 +335,7 @@
                                     &nbsp;
                                 </span>
                             </td>
-                        </tr>
+                        
                     </table>
                 </button>
                 <div id="files-{{collection.uuid}}"
