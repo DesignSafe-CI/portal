@@ -1,5 +1,20 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.7-20190512
+
+Improvements:
+
+- Added FAQ link to side nav.
+- Update project icons and change field recon description.
+- Render PI/author names in published when not logged in.
+
+Fixes:
+
+- Add publication subdirectory navigation.
+- Format experiment details in published and project areas.
+- Fix copis not saving to project
+- Removed 'tag files' button from file upload.
+
 ## v4.3.7-20190511
 
 Improvements:
