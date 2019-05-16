@@ -322,7 +322,7 @@ class ManageExperimentsCtrl {
                         }
                     }).then((entity) => {
                         this.data.project.removeEntity(entity);
-                        this.data.experiments = this.data.project[entityAttr];
+                        this.data.experiments = this.data.project.experiment_set;
                     });
                 }
             });
