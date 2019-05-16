@@ -18,7 +18,6 @@ class DataBrowserServiceMoveCtrl {
     $onInit() {
         this.files = this.resolve.files
         this.initialDestination = this.resolve.initialDestination
-        console.log(this.DataBrowserService.currentState)
         this.data = {
             files: this.files
         };
@@ -43,7 +42,10 @@ class DataBrowserServiceMoveCtrl {
           this.$scope.currentOption = this.options[2];
         };
         if (dbState.listing.system == 'projects') {
-            this.$scope.currentOption = this.options[0]
+            this.$scope.currentOption = find(opt => opt.label === 'My Projects');
+        }
+        else if(dbState.listing.system == 'My Data') {
+            this.$scope.currentOption = find(opt => opt.label === 'My Data');
         }
 
         
@@ -72,7 +74,6 @@ class DataBrowserServiceMoveCtrl {
                 this.state.listingProjects = false;
                 this.FileListing.get(conf)
                     .then(listing => {
-                        console.log(listing)
                         this.listing = listing;
                         this.state.busy = false;
                     });
@@ -82,7 +83,6 @@ class DataBrowserServiceMoveCtrl {
                     .then(projects => {
                         this.projects = _.map(projects, (p) => {
                             p.href = this.$state.href('projects.view', { projectId: p.uuid });
-                            console.log(p)
                             return p;
                         });
                         this.state.busy = false;
@@ -138,7 +138,6 @@ class DataBrowserServiceMoveCtrl {
 
     chooseDestination(fileListing) {
         //$uibModalInstance.close(fileListing);
-        console.log(fileListing)
         this.close({$value: fileListing})
     };
 
