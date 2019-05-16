@@ -81,8 +81,10 @@ class PublicationView(BaseApiView):
                         countdown=60
                     )
                 ) |
-                tasks.set_publish_status.si(pub.projectId)
+                tasks.set_publish_status.si(pub.projectId) |
+                tasks.zip_publication_files.si(pub.projectId)
             ).apply_async()
+
         return JsonResponse({'status': 200,
                              'response': {
                                  'message': 'Your publication has been '
