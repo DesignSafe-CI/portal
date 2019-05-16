@@ -219,7 +219,7 @@ class ManageExperimentsCtrl {
             end: exp.value.procedureEnd,
             title: exp.value.title,
             facility: exp.getEF(this.data.project.value.projectType, exp.value.experimentalFacility).label,
-            type: exp.value.experimentType,
+            type: this.getET(experiment),
             equipment: exp.value.equipmentType,
             equipmentOther: exp.value.equipmentTypeOther,
             equipmentList: this.equipmentTypes[exp.value.experimentalFacility],
