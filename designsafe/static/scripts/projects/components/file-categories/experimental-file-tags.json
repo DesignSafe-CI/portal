@@ -60,6 +60,75 @@
             ]
         }
     },
+    "designsafe.project.event": {
+        "name": "Event",
+        "tags": {
+            "General": [
+                "Data Units",
+                "Image",
+                "Video"
+            ],
+            "Centrifuge": [
+                "Actuator",
+                "Bender Element Test",
+                "Calibrated",
+                "Cone Penetrometer",
+                "Fast Data",
+                "Raw Data",
+                "Shaking",
+                "Centrifuge Speed",
+                "T-bar Test"
+            ],
+            "Shake Table": [
+                "Shake Table Test"
+            ],
+            "Mobile Shaker": [
+                "Field Notes",
+                "Load"
+            ],
+            "Wave": [
+                "Bathymetric Survey Data",
+                "Channel Name",
+                "Experimental Conditions",
+                "Physical Units",
+                "Raw"
+            ],
+            "Wind": [
+                "Aerodynamic roughness",
+                "Flow Boundary Layer",
+                "Flow Gusting",
+                "Flow Profile",
+                "Flow Steady",
+                "Flow Uniform",
+                "Incident Flow",
+                "Reynolds Number",
+                "Reynolds Stress",
+                "Scale Integral Length",
+                "Terrain Open",
+                "Terrain Urban",
+                "Terrain Aerodynamic",
+                "Test Complex Topography",
+                "Test Destructive",
+                "Test Dispersion",
+                "Test Environmental",
+                "Test External Pressure",
+                "Test High Frequency Force Balance",
+                "Test Internal Pressure",
+                "Test Pedestrian Level Winds",
+                "Turbulence Profile",
+                "Turbulence Spectrum",
+                "Velocity Mean",
+                "Velocity Profile",
+                "Wind Direction",
+                "Wind Duration",
+                "Wind Speed",
+                "Wind Tunnel Open Circuit",
+                "Wind Tunnel Open Jet",
+                "Wind Tunnel closed Circuit",
+                "3 Sec Gust"
+            ]
+        }
+    },
     "designsafe.project.sensor_list": {
         "name": "Sensor Info",
         "tags": {
