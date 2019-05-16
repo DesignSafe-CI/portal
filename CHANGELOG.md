@@ -1,5 +1,19 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.7-20190513
+
+Improvements:
+
+- Download published project files.
+
+Fixes:
+
+- Added icon to FAQ.
+- Update experiement on deletion.
+- Fix license deselect option.
+- Add event file tags
+- Various cosmetic publication fixes.
+
 ## v4.3.7-20190512
 
 Improvements:
