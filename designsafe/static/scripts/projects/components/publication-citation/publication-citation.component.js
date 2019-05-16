@@ -11,6 +11,9 @@ class PublicationCitationCtrl {
         this.entity = this.resolve.entity;
         this.publication = this.resolve.publication;
         let authors = '';
+        this.entity.authors.sort((a, b) => {
+            return a.order - b.order;
+        });
         this.entity.authors.forEach(
             (a) => {
                 if (a && a.lname && a.fname && a.authorship) {
