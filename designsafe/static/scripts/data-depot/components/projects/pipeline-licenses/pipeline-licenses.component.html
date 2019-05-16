@@ -56,7 +56,7 @@
             <a class="pull-left" ng-click="$ctrl.goTeam()" ng-if="$ctrl.projType === 'other'">
                 <i class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
-            <button class="btn btn-small btn-add pull-right" ng-click="$ctrl.prepareModal()" ng-disabled="!$ctrl.license">
+            <button class="btn btn-small btn-add pull-right" ng-click="$ctrl.prepareModal()" ng-disabled="!$ctrl.validSelection()">
                 <i class="fa fa-globe"></i> Request DOI & Publish
             </button>
         </div>
@@ -74,6 +74,9 @@
         </div>
         <div>
             <h3>Datasets</h3>
+            <button class="btn-danger pull-right" ng-click="$ctrl.reset()" ng-if="$ctrl.validSelection()">
+                <strong>Clear Selection</strong>
+            </button>
             <p>
                 If you are publishing data, such as simulation or experimental data, choose between:
             </p>
@@ -88,6 +91,7 @@
                             <tr>
                                 <td>
                                     <input type="radio"
+                                            id="odca"
                                             name="license-datasets"
                                             ng-model="$ctrl.license.datasets"
                                             value="Open Data Commons Attribution"
@@ -117,6 +121,7 @@
                             <tr>
                                 <td>
                                     <input type="radio"
+                                            id="odcpdd"
                                             name="license-datasets"
                                             ng-model="$ctrl.license.datasets"
                                             value="Open Data Commons Public Domain Dedication"
@@ -159,6 +164,7 @@
                             <tr>
                                 <td>
                                     <input type="radio"
+                                            id="ccasa"
                                             name="license-works"
                                             ng-model="$ctrl.license.works"
                                             value="Creative Commons Attribution Share Alike"
@@ -187,6 +193,7 @@
                             <tr>
                                 <td>
                                     <input type="radio"
+                                            id="ccpdd"
                                             name="license-works"
                                             ng-model="$ctrl.license.works"
                                             value="Creative Commons Public Domain Dedication"
@@ -222,6 +229,7 @@
                 <tr>
                     <td>
                         <input type="radio"
+                                id="gnu"
                                 name="license-software"
                                 ng-model="$ctrl.license.software"
                                 value="GNU General Public License"

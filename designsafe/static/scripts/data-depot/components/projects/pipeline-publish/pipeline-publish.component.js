@@ -26,10 +26,11 @@ const attributeMap = {
 };
 
 class PipelinePublishCtrl {
-    constructor(ProjectService, DataBrowserService, $http) {
+    constructor(ProjectService, DataBrowserService, $http, $state) {
         'ngInject';
         this.ProjectService = ProjectService;
         this.$http = $http;
+        this.$state = $state;
         this.DataBrowserService = DataBrowserService;
     }
 
@@ -92,6 +93,16 @@ class PipelinePublishCtrl {
             }
         }
         this.publication = publication;
+    }
+
+    return() {
+        window.sessionStorage.clear();
+        this.$state.go(
+            'projects.view.data',
+            { projectId: this.project.uuid },
+            { reload: true }
+        );
+        this.close();
     }
 
     publish() {

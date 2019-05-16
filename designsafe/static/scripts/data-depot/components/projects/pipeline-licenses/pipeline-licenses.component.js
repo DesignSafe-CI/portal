@@ -63,6 +63,34 @@ class PipelineLicensesCtrl {
         }
     }
 
+    validSelection() {
+        if (this.license.datasets ||
+            this.license.works ||
+            this.license.software) {
+                return true;
+        } else {
+            return false;
+        }
+    }
+
+    reset() {
+        var ids = [
+        'odca',
+        'odcpdd',
+        'ccasa',
+        'ccpdd',
+        'gnu'
+        ];
+        ids.forEach((id) => {
+            document.getElementById(id).checked = false;
+        });
+        this.license = {
+            datasets: '',
+            works: '',
+            software: ''
+        };
+    }
+
     goWork() {
         window.sessionStorage.clear();
         this.$state.go(

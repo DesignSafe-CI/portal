@@ -15,7 +15,7 @@
         digital object identifier (DOI), this will result in a publication that cannot be changed.
         If I have revisions this will result in a new version of the publication including a new DOI.
     </p>
-    <div>
+    <div ng-if="!$ctrl.published">
         <span style="display:inline-block; width:75%;">
             <input type="checkbox" id="agreement" name="agreement" data-ng-model="$ctrl.agreed">
             <label for="agreement"> I agree </label>
@@ -27,7 +27,19 @@
             <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish
         </button>
     </div>
-    <div class="alert alert-warning" data-ng-if="$ctrl.published">
-        Your project is being published. Please wait until the project has finished publishing to edit or add anything in the project.
+    <div data-ng-if="$ctrl.published">
+        <div class="alert alert-warning">
+            Your project is being published. <strong>Do not attempt to publish your project again.</strong>
+            Please wait until the project has finished publishing to edit or add anything in the project.
+            You will find your published project in the "Published" ared of the Data Depot soon.
+        </div>
+        <div style="text-align: center">
+                <button class="btn btn-add"
+                        style="width:24%;"
+                        data-ng-click="$ctrl.return()"
+                >
+                    Complete Submission
+                </button>
+        </div>
     </div>
 </div>
