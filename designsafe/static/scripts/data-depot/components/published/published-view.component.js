@@ -8,7 +8,7 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http){
+    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl){
         'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
@@ -16,6 +16,7 @@ class PublishedViewCtrl {
         this.FileListing = FileListing;
         this.$uibModal = $uibModal;
         this.$http = $http;
+        this.djangoUrl = djangoUrl;
     }
 
     $onInit() {
@@ -159,10 +160,9 @@ class PublishedViewCtrl {
         var system = this.$stateParams.systemId;
         var projectId = this.project.value.projectId;
         
-        // I can make this entire path except for the "media" part.
-        var path = `/api/public/files/media/published/${system}/${projectId}/${projectId}_archive.zip`;
+        var url = this.djangoUrl.reverse('designsafe_api:public_files_media', ['published', system, `${projectId}/${projectId}_archive.zip`]);
 
-        this.$http.put(path, body).then(function (resp) {
+        this.$http.put(url, body).then(function (resp) {
             var postit = resp.data.href;
 
             // Is there a better way of doing this?
