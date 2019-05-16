@@ -8,13 +8,14 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal){
+    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http){
         'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
         this.PublishedService = PublishedService;
         this.FileListing = FileListing;
         this.$uibModal = $uibModal;
+        this.$http = $http;
     }
 
     $onInit() {
@@ -149,6 +150,30 @@ class PublishedViewCtrl {
             return x.name === exp.value.equipmentType;
         });
         return eqt.label;
+    }
+
+    download() {
+        var body = {
+            action: 'download'
+        };
+        var system = this.$stateParams.systemId;
+        var projectId = this.project.value.projectId;
+        
+        // I can make this entire path except for the "media" part.
+        var path = `/api/public/files/media/published/${system}/${projectId}/${projectId}_archive.zip`;
+
+        this.$http.put(path, body).then(function (resp) {
+            var postit = resp.data.href;
+
+            // Is there a better way of doing this?
+            var link = document.createElement('a');
+            link.style.display = 'none';
+            link.setAttribute('href', postit);
+            link.setAttribute('download', "null");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
     }
 
     matchingGroup(exp, model) {
