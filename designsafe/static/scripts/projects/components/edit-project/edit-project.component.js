@@ -352,17 +352,9 @@ class EditProjectCtrl {
             projectData.keywords = this.form.keywords;
         }
         this.savePrj(projectData).then((project) => {
+            this.project.value = project.value;
             this.close({$value: project});
             this.ui.busy = false;
-            this.$state.go(
-                'projects.view.data',
-                {
-                    projectId: project.uuid,
-                    filePath: '/',
-                    projectTitle: project.value.title
-                },
-                {reload: true}
-            );
         });
     }
 }
