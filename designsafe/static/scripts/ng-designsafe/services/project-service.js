@@ -250,7 +250,6 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      */
     service.editProject = (project) => {
       var modalInstance = $uibModal.open({
-        backdrop: 'static',
         component: 'editProject',
         resolve: {
           project: () => project,
