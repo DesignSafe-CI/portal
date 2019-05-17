@@ -30,7 +30,7 @@
         <label>Dates of Experiment</label>
         <span style="color: #D04348; font-size:14px;">&#9679; </span>
         <p>
-          If you only want to enter a single date, fill in the firest field.
+          If you only want to enter a single date, fill in the first field.
         </p>
         <div style="display:flex;">
           <span class="input-group" style="width:25%;">
@@ -221,7 +221,7 @@
                       uib-datepicker-popup="MM-dd-yyyy"
                       ng-model="$ctrl.editExpForm.end"
                       is-open="isEndOpen"
-                      placeholder="{{$ctrl.editExpForm.end | date:'MM-dd-yyyy'}}"
+                      placeholder="{{$ctrl.editExpForm.end ? ($ctrl.editExpForm.end | date:'MM-dd-yyyy') : 'mm-dd-yyyy'}}"
                       datepicker-options="dateOptions"
                       date-disabled="disabled(date, mode)"
                       ng-required="false"
@@ -350,7 +350,7 @@
                   </span><br>
                 </div>
               </td>
-              <td class="tg-0lax">
+              <td class="tg-0lax" ng-if="$ctrl.editExpForm.authors.length > 1">
                   <i class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderAuthors(true)"></i>
                   <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderAuthors(false)"></i>
               </td>

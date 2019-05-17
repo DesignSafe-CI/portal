@@ -54,6 +54,6 @@ def lookup_model(entity=None, name=None):
     if cls is None and ename.endswith('_project'):
         return Project
     elif cls is None:
-        raise AttributeError("Model '{model}' needed for '{name}' does not exists".format(model=name, name=ename))
+        raise AttributeError("Model '{model}' needed for '{name}' does not exist".format(model=name, name=ename))
 
     return cls
