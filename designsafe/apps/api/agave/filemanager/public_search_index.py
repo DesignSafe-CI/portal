@@ -589,7 +589,7 @@ class PublicationManager(object):
         )
         publication['project']['value']['awardNumber'] = ''
         publication['licenses'] = publication.pop('license', [])
-        project['license'] = ''
+        publication['license'] = ''
 
         pub = Publication(publication)
         pub.save()

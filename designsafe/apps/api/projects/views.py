@@ -304,17 +304,19 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         cls = project_lookup_model(meta_obj)
         logger.info('post_data: %s', post_data)
         p = cls(value=post_data, uuid=project_id)
+        p.save(ag)
 
         new_pi = post_data.get('pi', p.pi)
-        new_co_pis = post_data.get('copi', p.co_pis)
+        new_co_pis = post_data.get('coPis', p.co_pis)
         new_team_members = post_data.get('teamMembers', p.team_members)
 
-        if new_pi and new_pi != 'null' and p.pi != new_pi:
-            names = list(set(p.team_members + p.co_pis + [p.pi]))
+        # we need to compare the existing project data with the updated project data
+        if new_pi and new_pi != 'null' and meta_obj.value['pi'] != new_pi:
+            names = list(set(meta_obj.value['teamMembers'] + meta_obj.value['coPis'] + [meta_obj.value['pi']]))
             updatednames = list(set(new_team_members + new_co_pis + [new_pi]))
-            p.pi = new_pi
+            meta_obj.value['pi'] = new_pi
         else:
-            names = list(set(p.team_members + p.co_pis))
+            names = list(set(meta_obj.value['teamMembers']  + meta_obj.value['coPis']))
             updatednames = list(set(new_team_members + new_co_pis))
 
         add_perm_usrs = [u for u in updatednames if u not in names]
