@@ -119,6 +119,7 @@
                                     typeahead-loading="searching"
                                     typeahead-input-formatter="$ctrl.formatSelection(usr)"
                                     typeahead-template-url="itemTmpl.html"
+                                    ng-hide="$ctrl.form.creator.username === usr.username"
                             >
                         </div>
                         <div>

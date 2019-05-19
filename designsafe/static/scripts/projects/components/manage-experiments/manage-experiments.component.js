@@ -18,17 +18,18 @@ class ManageExperimentsCtrl {
         this.efs = this.resolve.efs;
         this.experimentTypes = this.resolve.experimentTypes;
         this.equipmentTypes = this.resolve.equipmentTypes;
-        
-        var members = [this.options.project.value.pi].concat(
+
+        let members = [this.options.project.value.pi].concat(
             this.options.project.value.coPis,
             this.options.project.value.teamMembers,
-            this.options.project.value.guestMembers.map(g => g.user)
+            this.options.project.value.guestMembers.map((g) => g.user)
         );
+        members = [...new Set(members)];
         members.forEach((m, i) => {
             if (typeof m == 'string') {
                 // if user is guest append their data
-                if(m.slice(0,5) === 'guest') {
-                    var guestData = this.options.project.value.guestMembers.find(x => x.user === m);
+                if (m.slice(0, 5) === 'guest') {
+                    let guestData = this.options.project.value.guestMembers.find((x) => x.user === m);
                     members[i] = {
                         name: m,
                         order: i,
@@ -49,8 +50,8 @@ class ManageExperimentsCtrl {
             busy: false,
             experiments: this.options.experiments,
             project: this.options.project,
-            users: [... new Set(members)],
-            form: {}
+            users: [...new Set(members)],
+            form: {},
         };
 
         this.ui = {
@@ -67,7 +68,7 @@ class ManageExperimentsCtrl {
             addExperiments: [{}],
             deleteExperiments: [],
             addGuest: [{}],
-            entitiesToAdd: []
+            entitiesToAdd: [],
         };
 
         this.form.curExperiments = this.data.project.experiment_set;
@@ -78,7 +79,7 @@ class ManageExperimentsCtrl {
     }
 
     isValid(ent) {
-        if (ent && ent != "" && ent != "None") {
+        if (ent && ent != '' && ent != 'None') {
             return true;
         }
         return false;
@@ -105,7 +106,7 @@ class ManageExperimentsCtrl {
 
     getEF(str) {
         let efs = this.ui.efs[this.data.project.value.projectType];
-        let ef = _.find(efs, function (ef) {
+        let ef = _.find(efs, function(ef) {
             return ef.name === str;
         });
         return ef.label;
@@ -205,11 +206,11 @@ class ManageExperimentsCtrl {
     }
 
     editExp(experiment) {
-        var exp = jQuery.extend(true, {}, experiment);
-        var auths = this.configureAuthors(exp);
+        let exp = jQuery.extend(true, {}, experiment);
+        let auths = this.configureAuthors(exp);
 
         exp.value.procedureStart = new Date(exp.value.procedureStart);
-        exp.value.procedureEnd = new Date(exp.value.procedureEnd);
+        exp.value.procedureEnd = (exp.value.procedureEnd && exp.value.procedureEnd !== 'None') ? new Date(exp.value.procedureEnd) : null;
 
         this.editExpForm = {
             exp: exp,
@@ -223,10 +224,10 @@ class ManageExperimentsCtrl {
             equipment: exp.value.equipmentType,
             equipmentOther: exp.value.equipmentTypeOther,
             equipmentList: this.equipmentTypes[exp.value.experimentalFacility],
-            description: exp.value.description
+            description: exp.value.description,
         };
         this.ui.showEditExperimentForm = true;
-        document.getElementById("form-top").scrollIntoView({behavior: "smooth"});
+        document.getElementById('form-top').scrollIntoView({ behavior: 'smooth' });
     }
 
     editAuthors(user, i) {

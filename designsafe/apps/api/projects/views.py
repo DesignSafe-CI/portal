@@ -304,17 +304,15 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         cls = project_lookup_model(meta_obj)
         logger.info('post_data: %s', post_data)
         p = cls(value=post_data, uuid=project_id)
-        p.save(ag)
 
-        new_pi = post_data.get('pi', p.pi)
-        new_co_pis = post_data.get('coPis', p.co_pis)
-        new_team_members = post_data.get('teamMembers', p.team_members)
+        new_pi = post_data.get('pi', meta_obj.value['pi'])
+        new_co_pis = post_data.get('coPis', meta_obj.value['coPis'])
+        new_team_members = post_data.get('teamMembers', meta_obj.value['teamMembers'])
 
         # we need to compare the existing project data with the updated project data
         if new_pi and new_pi != 'null' and meta_obj.value['pi'] != new_pi:
             names = list(set(meta_obj.value['teamMembers'] + meta_obj.value['coPis'] + [meta_obj.value['pi']]))
             updatednames = list(set(new_team_members + new_co_pis + [new_pi]))
-            meta_obj.value['pi'] = new_pi
         else:
             names = list(set(meta_obj.value['teamMembers']  + meta_obj.value['coPis']))
             updatednames = list(set(new_team_members + new_co_pis))
@@ -322,11 +320,8 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         add_perm_usrs = [u for u in updatednames if u not in names]
         rm_perm_usrs = [u for u in names if u not in updatednames]
 
-        # set new members on project metadata
-        p.co_pis = new_co_pis
-        p.team_members = new_team_members
-
         # remove permissions for users not on project and add permissions for new members
+        p.manager().set_client(ag)
         if rm_perm_usrs:
             if p.pi not in rm_perm_usrs:
                 p._remove_team_members_pems(rm_perm_usrs)

@@ -278,7 +278,16 @@ class EditProjectCtrl {
                 this.form.teamPrune.push(this.form.team[i]);
             }
         }
-        
+        i = this.form.guests.length;
+        this.form.guestsPrune = [];
+        while (i--) {
+            if (typeof this.form.team[i] != 'object') {
+                this.form.guests.splice(i, 1);
+            } else {
+                this.form.guestsPrune.push(this.form.guests[i]);
+            }
+        }
+
         if (this.form.uuid) {
             i = this.form.awardNumber.length;
             this.form.awardPrune = [];
