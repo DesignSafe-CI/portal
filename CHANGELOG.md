@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.7-20190514
+
+Fixes:
+
+- Fix null date bug when editing an experiment.
+- Fix bug preventing new experiments from being added.
+- Fixes issue where new user permissions and ACLs were not being set when editing a project.
+- Fixes to Edit Project Modal in Pipeline
+
 ## v4.3.7-20190513
 
 Improvements:
