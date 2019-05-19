@@ -241,9 +241,13 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
 
       modalInstance.result.then((experiment) => {
         $state.reload();
+      }, (err) => {
+        if (err !== 'backdrop click') {
+          $q.reject(err);
+        }
       });
     };
-    
+
     /**
      * @param {Project} [project]
      * @return {Promise}
