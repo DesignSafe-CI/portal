@@ -210,7 +210,7 @@ class ManageExperimentsCtrl {
         let auths = this.configureAuthors(exp);
 
         exp.value.procedureStart = new Date(exp.value.procedureStart);
-        exp.value.procedureEnd = exp.value.procedureEnd ? new Date(exp.value.procedureEnd) : null;
+        exp.value.procedureEnd = (exp.value.procedureEnd && exp.value.procedureEnd !== 'None') ? new Date(exp.value.procedureEnd) : null;
 
         this.editExpForm = {
             exp: exp,
