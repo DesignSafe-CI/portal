@@ -351,18 +351,24 @@ class EditProjectCtrl {
         if (typeof this.form.keywords !== 'undefined') {
             projectData.keywords = this.form.keywords;
         }
+
         this.savePrj(projectData).then((project) => {
+            if (this.project) {
+                this.project.value = project.value;
+            }
+            if (!this.form.uuid) {
+                this.$state.go(
+                    'projects.view.data',	
+                    {	
+                        projectId: project.uuid,	
+                        filePath: '/',	
+                        projectTitle: project.value.title	
+                    },	
+                    {reload: true}	
+                );
+            }
             this.close({$value: project});
             this.ui.busy = false;
-            this.$state.go(
-                'projects.view.data',
-                {
-                    projectId: project.uuid,
-                    filePath: '/',
-                    projectTitle: project.value.title
-                },
-                {reload: true}
-            );
         });
     }
 }
