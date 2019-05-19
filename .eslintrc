@@ -1,5 +1,5 @@
 {
-    "extends": ["eslint:recommended", "google"],
+    "extends": ["eslint:recommended"],
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
@@ -26,8 +26,6 @@
         "one-var"               : [0, "consecutive"],
         "brace-style"           : [1, "1tbs", { "allowSingleLine": true }],
         "object-curly-spacing"  : [1, "always"],
-        "valid-jsdoc"           : 0,
-        "padded-blocks"         : 0,
     },
     "globals": {
         "moment": false,
