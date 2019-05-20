@@ -22,7 +22,7 @@ class ManageExperimentsCtrl {
         let members = [this.options.project.value.pi].concat(
             this.options.project.value.coPis,
             this.options.project.value.teamMembers,
-            this.options.project.value.guestMembers.filter((g) => typeof g === 'object').map((g) => g.user)
+            this.options.project.value.guestMembers.filter((g) => (g && (typeof g === 'object'))).map((g) => g.user)
         );
         members = [...new Set(members)];
         members.forEach((m, i) => {
