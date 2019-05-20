@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.9
+
+Fixes:
+
+- Hotfix to filter null guests from experiment addition.
+
 ## v4.3.8
 
 Improvements:
@@ -17,7 +23,7 @@ Fixes:
 - Fixes issue where new user permissions and ACLs were not being set when editing a project.
 - Fixes to Edit Project Modal in Pipeline
 - Added icon to FAQ.
-- Update experiement on deletion.
+- Update experiment on deletion.
 - Fix license deselect option.
 - Add event file tags
 - Various cosmetic publication fixes.
