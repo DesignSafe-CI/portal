@@ -8,12 +8,8 @@
           </a>
         </div>
         <div ng-switch-when="publicData">
-<<<<<<< HEAD
-          <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ng-class="{active: $ctrl.$state.includes('publicData') || $ctrl.$state.includes('publishedData') || $ctrl.$state.includes('neesPublished')}">
-=======
           <hr>
           <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ng-class="{active: $ctrl.$state.includes('publicData') || $ctrl.$state.includes('publishedData') || $ctrl.$state.includes('neesPublishedData')}">
->>>>>>> underlines added to Data Depot seperating Shared with me, and published
             {{ childItem.name }}
           </a>
         </div>
@@ -47,3 +43,4 @@
       </a>
     </div>
   </div>
+  
