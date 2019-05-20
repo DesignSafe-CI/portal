@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.7-20190515
+
+Fixes:
+
+- Fix bug where null guests prevented new experiments.
+- Disable download project zip button.
+
 ## v4.3.7-20190514
 
 Fixes:
