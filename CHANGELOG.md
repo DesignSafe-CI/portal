@@ -1,5 +1,34 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.8
+
+Improvements:
+
+- Added FAQ link to side nav.
+- Update project icons and change field recon description.
+- Render PI/author names in published when not logged in.
+- Add links to license websites for project publications.
+
+Fixes:
+
+- Fix bug where null guests prevented new experiments.
+- Fix null date bug when editing an experiment.
+- Fix bug preventing new experiments from being added.
+- Fixes issue where new user permissions and ACLs were not being set when editing a project.
+- Fixes to Edit Project Modal in Pipeline
+- Added icon to FAQ.
+- Update experiement on deletion.
+- Fix license deselect option.
+- Add event file tags
+- Various cosmetic publication fixes.
+- Add publication subdirectory navigation.
+- Format experiment details in published and project areas.
+- Fix copis not saving to project
+- Removed 'tag files' button from file upload.
+- Allow selections of multiple licenses in project publication.
+- Fix experiment links in NEES projects.
+- Fix issue causing new project entities to 500.
+
 ## v4.3.7-20190515
 
 Fixes:
