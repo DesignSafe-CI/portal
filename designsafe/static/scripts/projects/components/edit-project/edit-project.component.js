@@ -152,7 +152,7 @@ class EditProjectCtrl {
                     this.form.guests.push(usr);
                 });
             } else {
-                this.form.associatedProjects = new Array (1);
+                this.form.guestMembers = new Array (1);
             }
             if (this.project.value.projectType === 'field_recon') {
                 this.form.nhEvent = this.project.value.nhEvent;
@@ -281,7 +281,7 @@ class EditProjectCtrl {
         i = this.form.guests.length;
         this.form.guestsPrune = [];
         while (i--) {
-            if (typeof this.form.team[i] != 'object') {
+            if (typeof this.form.guests[i] != 'object') {
                 this.form.guests.splice(i, 1);
             } else {
                 this.form.guestsPrune.push(this.form.guests[i]);
