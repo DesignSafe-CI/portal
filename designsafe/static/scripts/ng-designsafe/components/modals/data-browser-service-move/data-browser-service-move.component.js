@@ -19,14 +19,8 @@ class DataBrowserServiceMoveCtrl {
         this.data = {
             files: this.files
         };
-        //$scope.data = data;
 
         this.listing = this.initialDestination;
-        this.position = this.$scope.currentOption = null;
-        let dbState = this.DataBrowserService.currentState;
-        if (dbState.listing.system == 'designsafe.storage.default') {
-          this.$scope.currentOption = this.options[2];
-        }
 
         this.state = {
             busy: false,
@@ -37,7 +31,7 @@ class DataBrowserServiceMoveCtrl {
         this.$scope.currentOption = null;
         let dbState = this.DataBrowserService.currentState;
         if (dbState.listing.system == 'designsafe.storage.default') { 
-          this.$scope.currentOption = this.options[2];
+            this.$scope.currentOption = this.options[2];
         }
         else if (dbState.listing.system == 'projects') {
             this.$scope.currentOption = find(opt => opt.label === 'My Projects');

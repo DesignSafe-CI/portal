@@ -4,7 +4,7 @@
       <div ng-switch="childItem.state">
         <div ng-switch-when="projects.list">
           <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ng-class="{active: $ctrl.$state.includes('projects')}">
-            {{ childItem.name }} 
+            {{ childItem.name }}
           </a>
         </div>
         <div ng-switch-when="publicData">
@@ -43,4 +43,3 @@
       </a>
     </div>
   </div>
-  
