@@ -8,10 +8,16 @@
 </div>
 <div class="modal-body">
     <p>
-    {{$ctrl.citation}}
-    </p>
-    <p>
-    DOI: <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
+        <span ng-repeat="author in $ctrl.entity.authors | orderBy: 'order'" ng-if="author.authorship">
+            <span ng-if="!author.guest">
+                <ds-user username="author.name" format="hname">{{ author.name }}</ds-user><span>, </span>
+            </span>
+            <span ng-if="author.guest">{{ author.lname }}, {{ author.fname[0] }}., </span>
+        </span>
+        <span>
+            ({{ $ctrl.citationDate }}) "{{ $ctrl.entity.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
+            <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.
+        </span>
     </p>
     <button type="button"
             data-ng-click="$ctrl.downloadCitation()"
