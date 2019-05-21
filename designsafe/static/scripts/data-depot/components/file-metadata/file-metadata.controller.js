@@ -10,7 +10,12 @@ class FileMetadataComponentCtrl {
         this.show = false;
         this.loading = true;
         this.file.getAssociatedMetadata().then( (resp)=>{
-            this.metadata = resp[0];
+            //
+            try {
+                this.metadata = resp[1];
+            } catch(err) {
+                this.metadata = null;
+            }
         }, (err)=>{
             this.errorMessage = err.message;
         }).finally( ()=> {
