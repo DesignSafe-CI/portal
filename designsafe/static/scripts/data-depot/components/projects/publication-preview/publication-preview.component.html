@@ -216,14 +216,22 @@
                             data-ng-if="$ctrl.readOnly">
                         {{ experiment.doi }}
                     </strong>
-                    <div style="display:inline-block; width:20%;">License</div>
+                    <div style="display:inline-block; width:20%;">License(s)</div>
                     <strong style="display:inline-block; width:78%;"
                             data-ng-if="!$ctrl.readOnly">
                         (Appears when published)
                     </strong>
                     <strong style="display:inline-block; width:78%;"
                             data-ng-if="$ctrl.readOnly">
-                        {{ $ctrl.browser.publication.licenses }}
+                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
+                                {{ $ctrl.browser.publication.licenses.datasets }}
+                            </div>
+                            <div data-ng-if="$ctrl.browser.publication.licenses.works">
+                                {{ $ctrl.browser.publication.licenses.works }}
+                            </div>
+                            <div data-ng-if="$ctrl.browser.publication.licenses.software">
+                                {{ $ctrl.browser.publication.licenses.software }}
+                            </div>
                     </strong>
                     <p>
                         <br>{{ experiment.value.description }}
