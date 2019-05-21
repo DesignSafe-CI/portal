@@ -24,11 +24,11 @@ class PipelineSelectionCtrl {
         this.ui = {
             efs: experimentalData.experimentalFacility,
             equipmentTypes: experimentalData.equipmentTypes,
-            experimentTypes: experimentalData.experimentTypes
+            experimentTypes: experimentalData.experimentTypes,
         };
         // this.selectedFiles = {};
         this.loading = true;
-        
+
         if (!this.projectId) {
             this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
         }
@@ -39,7 +39,7 @@ class PipelineSelectionCtrl {
         FilesListing service if we start using it in
         multiple places...
         */
-        
+
         this.ProjectService.get({ uuid: this.projectId }
         ).then((project) => {
             this.browser.project = project;
@@ -137,7 +137,6 @@ class PipelineSelectionCtrl {
             };
             this.setFilesDetails(allFilePaths);
         });
-
     }
 
     getEF(str) {
@@ -178,14 +177,13 @@ class PipelineSelectionCtrl {
                 return true;
             }
             return false;
-        } else {
-            // if the category is related to the experiment level
-            // match appropriate data to corresponding experiment
-            if(model.associationIds.indexOf(exp.uuid) > -1) {
-                return true;
-            }
-            return false;
         }
+        // if the category is related to the experiment level
+        // match appropriate data to corresponding experiment
+        if (model.associationIds.indexOf(exp.uuid) > -1) {
+            return true;
+        }
+        return false;
     }
 
     singleExperiment() {
@@ -197,11 +195,11 @@ class PipelineSelectionCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.projectId}, {reload: true});
+        this.$state.go('projects.view.data', { projectId: this.projectId }, { reload: true });
     }
 
     goPreview() {
-        this.$state.go('projects.preview', {projectId: this.projectId}, {reload: true});
+        this.$state.go('projects.preview', { projectId: this.projectId }, { reload: true });
     }
 
     goProject() {
@@ -210,28 +208,29 @@ class PipelineSelectionCtrl {
 
         if (this.missing.length) {
             return;
-        } else {
-            window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
-            this.$state.go('projects.pipelineProject', {
-                projectId: this.projectId,
-                project: this.browser.project,
-                experiment: this.selectedExp,
-                selectedListings: this.selectedListings,
-            }, {reload: true});
         }
+        window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
+        this.$state.go('projects.pipelineProject', {
+            projectId: this.projectId,
+            project: this.browser.project,
+            experiment: this.selectedExp,
+            selectedListings: this.selectedListings,
+        }, { reload: true });
     }
 
     selectExperiment(exp) {
         this.selectedExp = exp;
-        var sets = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
+        let sets = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
         sets.forEach((set) => {
-            this.browser.project[set].forEach((s) => {
-                if (s.associationIds.indexOf(exp.uuid) > -1) {
-                    this.DataBrowserService.select(this.browser.listings[s.uuid].children);
-                } else {
-                    this.DataBrowserService.deselect(this.browser.listings[s.uuid].children);
-                }
-            });
+            if (set in this.browser.project) {
+                this.browser.project[set].forEach((s) => {
+                    if (s.associationIds.indexOf(exp.uuid) > -1) {
+                        this.DataBrowserService.select(this.browser.listings[s.uuid].children);
+                    } else {
+                        this.DataBrowserService.deselect(this.browser.listings[s.uuid].children);
+                    }
+                });
+            }
         });
     }
 
@@ -254,10 +253,8 @@ class PipelineSelectionCtrl {
             if (!this.selectedListings[key].children.length) {
                 delete this.selectedListings[key];
             }
-
         });
     }
-
 }
 
 PipelineSelectionCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$uibModal', '$state', '$q'];
@@ -269,6 +266,6 @@ export const PipelineSelectionComponent = {
     bindings: {
         resolve: '<',
         close: '&',
-        dismiss: '&'
+        dismiss: '&',
     },
 };
