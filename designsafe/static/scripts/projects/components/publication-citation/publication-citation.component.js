@@ -21,14 +21,7 @@ class PublicationCitationCtrl {
                 }
             }
         );
-        let citationDate = this.publication.created.split('T')[0];
-        this.citation = this.$sce.trustAsHtml(
-            authors  +
-            '(' + citationDate + ')' +
-            '" ' + this.entity.value.title + ' ", ' +
-            'Designsafe-CI [publisher], Dataset, ' +
-            this.entity.doi
-        );
+        this.citationDate = this.publication.created.split('T')[0];
         this.citationUrl = 'https://doi.org/' + this.entity.doi.slice(4);
         this.doiCitation = this.entity.doi.slice(4);
     }
