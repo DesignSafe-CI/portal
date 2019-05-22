@@ -111,7 +111,7 @@ def index_level(client, path, folders, files, systemId, username, reindex=False,
     children_paths = [_file.path for _file in folders + files]
     es_root = BaseESFile(username, systemId, path, reindex=reindex)
     for doc in es_root.children():
-        if doc is not None and doc.path not in children_paths:
+        if doc is not None and doc.path not in children_paths and doc.path != path:
             doc.delete()
 
 @python_2_unicode_compatible
