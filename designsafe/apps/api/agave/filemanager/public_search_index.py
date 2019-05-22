@@ -72,7 +72,7 @@ class Publication(object):
         elif project_id is not None:
             s = PublicationIndexed.search()
             s.query = Q({"term": {"projectId.keyword": project_id }})
-            logger.debug('p serach query: {}'.format(s.to_dict()))
+            logger.debug('p search query: {}'.format(s.to_dict()))
             try:
                 res = s.execute()
             except (TransportError, ConnectionTimeout) as e:

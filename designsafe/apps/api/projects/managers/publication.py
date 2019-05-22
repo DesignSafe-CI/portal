@@ -832,8 +832,7 @@ def publish_project(doi, xml_obj):
         logger.exception(res['error'])
         raise Exception(res['error'])
 
-def get_or_craete_authors(publication):
-    # we can probably remove this if authors return authors business
+def get_or_create_authors(publication):
     authors = publication.get('authors', [])
     if authors:
         return authors
@@ -873,7 +872,7 @@ def reserve_publication(publication):
     proj_doi, proj_ark, proj_xml = project_reserve_xml(
         publication,
         project,
-        get_or_craete_authors(publication)
+        get_or_create_authors(publication)
     )
     logger.debug('proj_doi: %s', proj_doi)
     logger.debug('proj_ark: %s', proj_ark)
