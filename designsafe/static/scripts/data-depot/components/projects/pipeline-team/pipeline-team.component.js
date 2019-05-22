@@ -3,12 +3,11 @@ import _ from 'underscore';
 
 class PipelineTeamCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, ProjectModel, DataBrowserService, httpi, $state) {
+    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, httpi, $state) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.ProjectModel = ProjectModel;
         this.DataBrowserService = DataBrowserService;
         this.browser = this.DataBrowserService.state();
         this.httpi = httpi;
@@ -81,7 +80,7 @@ class PipelineTeamCtrl {
         var prj = this.data();
         this.projectResource.post({ data: prj }).then((resp) => {
             this.saved = true;
-            return new this.ProjectModel(resp.data);
+            this.project = resp.data;
         });
     }
 
