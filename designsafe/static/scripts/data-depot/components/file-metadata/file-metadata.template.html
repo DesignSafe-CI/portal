@@ -23,10 +23,10 @@
                     <th>Last modified</th>
                     <td>{{ $ctrl.file.lastModified|date:"short" }}</td>
                 </tr>
-                <tr ng-repeat="(key, val) in $ctrl.metadata" ng-if="val">
-                    <td> <b> {{ key }} </b> </td>
-                    <td ng-if="key === 'geolocation'"> ({{ val[0].latitude }}, {{ val[0].longitude }}) </td>
-                    <td ng-if="key !== 'geolocation'"> {{ val }} </td>
+                <tr ng-repeat="rec in $ctrl.metadata | orderBy: rec[0]">
+                    <td> <b> {{ rec[0] }} </b> </td>
+                    <td ng-if="rec[0] === 'geolocation'"> ({{ rec[1][0].latitude }}, {{ rec[1][0].longitude }}) </td>
+                    <td ng-if="rec[0] !== 'geolocation'"> {{ rec[1] }} </td>
                 </tr>
             </tbody>
         </table>
