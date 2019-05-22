@@ -16,6 +16,7 @@ class DataBrowserServiceMoveCtrl {
     $onInit() {
         this.files = this.resolve.files
         this.initialDestination = this.resolve.initialDestination
+        console.log(this.initialDestination)
         this.data = {
             files: this.files
         };
@@ -30,15 +31,15 @@ class DataBrowserServiceMoveCtrl {
 
         this.$scope.currentOption = null;
         let dbState = this.DataBrowserService.currentState;
+        console.log(dbState)
         if (dbState.listing.system == 'designsafe.storage.default') { 
-            this.$scope.currentOption = this.options[2];
-        }
-        else if (dbState.listing.system == 'projects') {
-            this.$scope.currentOption = find(opt => opt.label === 'My Projects');
-        }
-        else if (dbState.listing.system == 'My Data') {
             this.$scope.currentOption = find(opt => opt.label === 'My Data');
-    }
+        } else if (dbState.listing.system == 'projects') {
+            this.$scope.currentOption = find(opt => opt.label === 'My Projects');
+        } else if (dbState.listing.path == '$Share') {
+            this.$scope.currentOption = find(opt => opt.label === 'Shared with me');
+        }
+
 
         
 

@@ -544,7 +544,8 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     if (! Array.isArray(files)) {
       files = [files];
     }
-
+    console.log(initialDestination)
+    console.log('TEST')
     var modal = $uibModal.open({
       component: 'move',
       resolve: {
