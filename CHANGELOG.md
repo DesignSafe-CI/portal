@@ -1,5 +1,21 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.9-20190517
+
+Fixes:
+
+- Format authors for other projects.
+- Changed Tree Diagram to Related Data in Experimental Overview.
+- Use agave prod tokens.
+
+## v4.3.9-20190516
+
+Fixes:
+
+- Fix template for multiple publication licenses.
+- Update Publication Citation popup.
+- Rapid/RApp metadata preview bug fix.
+
 ## v4.3.9
 
 Fixes:
