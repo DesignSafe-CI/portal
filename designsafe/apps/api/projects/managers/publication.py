@@ -833,6 +833,7 @@ def publish_project(doi, xml_obj):
         raise Exception(res['error'])
 
 def get_or_craete_authors(publication):
+    # we can probably remove this if authors return authors business
     authors = publication.get('authors', [])
     if authors:
         return authors
@@ -845,6 +846,8 @@ def get_or_craete_authors(publication):
         authors = publication['hybrid_simulations'][-1].get('authors')
     elif publication['project']['value']['projectType'] == 'field_recon':
         authors = publication['missions'][-1].get('authors')
+    elif publication['project']['value']['projectType'] == 'other':
+        authors = publication['project']['value'].get('teamOrder')
 
     for author in authors:
         if not author.get('lname'):
