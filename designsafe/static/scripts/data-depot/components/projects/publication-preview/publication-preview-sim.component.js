@@ -20,11 +20,15 @@ class PublicationPreviewSimCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
-        this.project = this.ProjectService.resolveParams.project;
-        this.listings = this.ProjectService.resolveParams.selectedListings;
+        // this.project = this.ProjectService.resolveParams.project;
+        // this.listings = this.ProjectService.resolveParams.selectedListings;
         this.loading = true;
+        this.fileNav = true;
         window.sessionStorage.clear();
 
+        if (this.filePath.replace('/',  '') === '') {
+            this.fileNav = false;
+        }
 
         if (this.project || this.listings) {
             this.browser.project = this.project;
@@ -52,7 +56,6 @@ class PublicationPreviewSimCtrl {
                     filePath: this.browser.listing.path,
                     projectTitle: this.browser.project.value.projectTitle,
                 });
-                this.browser.showMainListing = true;
                 return this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' });
             }).then((ents) => {
                 this.browser.project.appendEntitiesRel(ents);
@@ -81,6 +84,15 @@ class PublicationPreviewSimCtrl {
                         trail: this.browser.listing.trail,
                         children: [],
                     };
+                    if (this.fileNav) {
+                        entity._filePaths.forEach((path) => {
+                            // if navigating into a category directory update the children
+                            if (this.browser.listing.path.startsWith(path)) {
+                                this.browser.listings[entity.uuid].children = angular.copy(this.browser.listing.children);
+                                this.browser.listings[entity.uuid].nav = true;
+                            }
+                        });
+                    }
                     allFilePaths = allFilePaths.concat(entity._filePaths);
                 });
 
@@ -102,7 +114,10 @@ class PublicationPreviewSimCtrl {
                                     return _.contains(entity._filePaths, resp.path);
                                 });
                                 _.each(entities, (entity) => {
-                                    this.browser.listings[entity.uuid].children.push(resp);
+                                    // do not update children for categories not being navigated.
+                                    if (!this.browser.listings[entity.uuid].nav) {
+                                        this.browser.listings[entity.uuid].children.push(resp);
+                                    }
                                 });
                                 return resp;
                             });

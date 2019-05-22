@@ -8,7 +8,7 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl){
+    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, $state, djangoUrl){
         'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
@@ -16,6 +16,7 @@ class PublishedViewCtrl {
         this.FileListing = FileListing;
         this.$uibModal = $uibModal;
         this.$http = $http;
+        this.$state = $state;
         this.djangoUrl = djangoUrl;
     }
 
@@ -31,27 +32,45 @@ class PublishedViewCtrl {
         this.browser.listings = {};
         var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.ui.loading = true;
+        this.ui.fileNav = true;
+
+        if (this.$stateParams.filePath.replace('/',  '') === projId) {
+            this.ui.fileNav = false;
+        }
 
         this.getFileObjs = (evt) => {
+            this.browser.listings[evt.uuid] = {
+                name: this.browser.listing.name,
+                path: this.browser.listing.path,
+                system: this.browser.listing.system,
+                trail: this.browser.listing.trail,
+                children: [],
+            };
             evt.files = _.map(evt.fileObjs, (f) => {
                 f.system = 'designsafe.storage.published';
                 f.path = this.browser.publication.projectId + f.path;
                 f.permissions = 'READ';
                 return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
             });
-            evt.files.forEach( (file) => {
-                if (!this.browser.listings[evt.uuid]) {
-                    this.browser.listings[evt.uuid] = { children: [] };
-                }
-                this.browser.listings[evt.uuid].children.push(file);
-            });
-        };
 
-        if (this.$stateParams.filePath.replace('/',  '') === projId) {
-            this.fileNav = false;
-        } else {
-            this.fileNav = true;
-        }
+            for (var file of evt.files) {
+                // when navigating entity set the children of the entity
+                if (this.ui.fileNav) {
+                    if (this.browser.listing.path.replace(/\//g, '').startsWith(file.path.replace(/\//g, ''))) {
+                        this.browser.listings[evt.uuid].children = angular.copy(this.browser.listing.children);
+                        break;
+                    } else {
+                        this.browser.listings[evt.uuid].children.push(file);
+                    }
+                } else {
+                    if (!this.browser.listings[evt.uuid]) {
+                        this.browser.listings[evt.uuid] = { children: [] };
+                    }
+                    this.browser.listings[evt.uuid].children.push(file);
+                }
+            }
+
+        };
 
         if (projId) {
             this.PublishedService.getPublished(projId)

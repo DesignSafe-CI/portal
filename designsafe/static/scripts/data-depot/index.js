@@ -258,7 +258,7 @@ function config(
             }
         })
         .state('projects.preview', {
-            url: '/projects/{projectId}/preview',
+            url: '/projects/{projectId}/preview{filePath:any}',
             component: 'publicationPreview',
             params: {
                 filePath: '/',
