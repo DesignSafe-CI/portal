@@ -166,42 +166,40 @@ class ManageExperimentsCtrl {
                     auth.order = i;
                 }
             });
-            usersToClean = _.uniq(usersToClean, 'name');
-        } else {
-            usersToClean = _.uniq(usersToClean, 'name');
         }
-        /*
-        Restore previous authorship status if any
-        */
-        if (auths.length) {
-            auths.forEach((a) => {
-                usersToClean.forEach((u, i) => {
-                    if (a.name === u.name) {
-                        usersToClean[i] = a;
-                    }
-                });
-            });
-        }
+        usersToClean = _.uniq(usersToClean, 'name');
+
         /*
         It is possible that a user added to an experiment may no longer be on a project
         Remove any users on the experiment that are not on the project
         */
-        let rmList = [];
-        usersToClean.forEach((m) => {
-            let person = this.data.users.find((u) => u.name === m.name);
-            if (!person) {
-                rmList.push(m);
-            }
+        usersToClean = usersToClean.filter((m) => this.data.users.find((u) => u.name === m.name));
+
+        /*
+        Restore previous authorship status and order if any
+        */
+        usersToClean = usersToClean.map((u) => auths.find((a) => u.name == a.name) || u);
+
+        /*
+        Remove duplicate orders
+        */
+        usersToClean.forEach((u) => {
+            let sameOrder = usersToClean.filter((d) => u.order == d.order);
+            sameOrder.forEach((o, i) => {
+                if (i !== 0) {
+                    o.order = null;
+                }
+            });
         });
-        rmList.forEach((m) => {
-            let index = usersToClean.indexOf(m);
-            if (index > -1) {
-                usersToClean.splice(index, 1);
-            }
-        });
+
+        /*
+        Reorder to accomodate blank spots in order and give order to users with no order
+        */
+        usersToClean = usersToClean.sort((a, b) => a.order - b.order);
         usersToClean.forEach((u, i) => {
             u.order = i;
         });
+
         return usersToClean;
     }
 
@@ -210,7 +208,7 @@ class ManageExperimentsCtrl {
         let auths = this.configureAuthors(exp);
 
         exp.value.procedureStart = new Date(exp.value.procedureStart);
-        exp.value.procedureEnd = (exp.value.procedureEnd && exp.value.procedureEnd !== 'None') ? new Date(exp.value.procedureEnd) : null;
+        exp.value.procedureEnd = (exp.value.procedureEnd && exp.value.procedureEnd !== 'None') ? new Date(exp.value.procedureEnd) : '';
 
         this.editExpForm = {
             exp: exp,
