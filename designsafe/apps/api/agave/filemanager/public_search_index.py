@@ -594,8 +594,8 @@ class PublicationManager(object):
         if 'experiment_set' in publication['project'] and type(publication['project']['experiment_set']) == list:
             for exp in publication['project']['experiment_set']:
                 try:
-                    if exp['value']['procedureEnd'] == 'None' or exp['value']['procedureEnd'] == '':
-                        exp['value']['procedureEnd'] = None
+                    if ('procedureEnd' not in exp['value']) or (exp['value']['procedureEnd'] == 'None'):
+                        exp['value']['procedureEnd'] = ''
                 except KeyError:
                     pass
 
