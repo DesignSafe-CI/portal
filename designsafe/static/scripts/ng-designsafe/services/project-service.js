@@ -5,30 +5,30 @@ import experimentalData from "../../projects/components/manage-experiments/exper
 export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Logging, ProjectModel, ProjectEntitiesService) {
     'ngInject';
 
-    var logger = Logging.getLogger('DataDepot.ProjectService');
+    let logger = Logging.getLogger('DataDepot.ProjectService');
 
-    var efs = experimentalData.experimentalFacility;
-    var equipmentTypes = experimentalData.equipmentTypes;
-    var experimentTypes = experimentalData.experimentTypes;
+    let efs = experimentalData.experimentalFacility;
+    let equipmentTypes = experimentalData.equipmentTypes;
+    let experimentTypes = experimentalData.experimentTypes;
 
-    var service = {};
+    let service = {};
 
-    var projectResource = httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
-    var collabResource = httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
-    var dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
-   //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
-   //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
-    
+    let projectResource = httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
+    let collabResource = httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
+    let dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
+    //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
+    //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
+
     service.data = {
-      navItems: [],
-      projects: []
+        navItems: [],
+        projects: [],
     };
 
     service.resolveParams = {
-      projectId: null,
-      filePath: null,
-      projectTitle: null,
-      query_string: null
+        projectId: null,
+        filePath: null,
+        projectTitle: null,
+        query_string: null,
     };
 
     /**
@@ -37,9 +37,9 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @returns {Project[]}
      */
     service.list = function(options) {
-      return projectResource.get({params:options}).then(function(resp) {
-        return _.map(resp.data.projects, function(p) { return new ProjectModel(p); });
-      });
+        return projectResource.get({ params: options }).then(function(resp) {
+            return _.map(resp.data.projects, function(p) { return new ProjectModel(p); });
+        });
     };
 
     /**
@@ -49,9 +49,9 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @returns {Promise}
      */
     service.get = function(options) {
-      return projectResource.get({params: options}).then(function(resp) {
-        return new ProjectModel(resp.data);
-      });
+        return projectResource.get({ params: options }).then(function(resp) {
+            return new ProjectModel(resp.data);
+        });
     };
 
     /**
@@ -64,9 +64,9 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @returns {Promise}
      */
     service.save = function(options) {
-      return projectResource.post({data: options}).then(function (resp) {
-        return new ProjectModel(resp.data);
-      });
+        return projectResource.post({ data: options }).then(function(resp) {
+            return new ProjectModel(resp.data);
+        });
     };
 
     /**
@@ -76,12 +76,12 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @returns {Promise}
      */
     service.getCollaborators = function(options) {
-      return collabResource.get({params: options}).then(function(resp){
-        if (typeof resp.data.teamMembers !== 'undefined'){
-          resp.data.teamMembers = _.without(resp.data.teamMembers, 'ds_admin', 'prjadmin');
-        }
-        return resp;
-      });
+        return collabResource.get({ params: options }).then(function(resp) {
+            if (typeof resp.data.teamMembers !== 'undefined') {
+                resp.data.teamMembers = _.without(resp.data.teamMembers, 'ds_admin', 'prjadmin');
+            }
+            return resp;
+        });
     };
 
     /**
@@ -92,7 +92,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @returns {Promise}
      */
     service.addCollaborator = function(options) {
-      return collabResource.post({data: options});
+        return collabResource.post({ data: options });
     };
 
     /**
@@ -103,7 +103,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @returns {Promise}
      */
     service.removeCollaborator = function(options) {
-      return collabResource.delete({data: options});
+        return collabResource.delete({ data: options });
     };
 
     /**
@@ -114,7 +114,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @returns {Promise}
      */
     service.projectData = function(options) {
-      return dataResource.get({params: options});
+        return dataResource.get({ params: options });
     };
 
     /**
@@ -125,85 +125,86 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @returns {Message} Returns an error message to be displayed to the user
      */
     service.checkSelectedFiles = function(project, experiment, selections) {
-      var errMsg = {
-        modelconfig_set: 'Model Configuration',
-        sensorlist_set: 'Sensor Information',
-        event_set: 'Event',
-        model_set: 'Model',
-        input_set: 'Input',
-        output_set: 'Output',
-        globalmodel_set: 'Global Model',
-        coordinator_set: 'Coordinator',
-        simsubstructure_set: 'Simulation Substructure',
-        expsubstructure_set: 'Experimental Substructure',
-      };
-      var requiredSets = [];
-      var expSets = [];
-      var selectedSets = [];
-      var missingData = [];
-      if (project.value.projectType === 'experimental') {
-        requiredSets = ['modelconfig_set', 'sensorlist_set', 'event_set'];
-      } else if (project.value.projectType === 'simulation') {
-        requiredSets = ['model_set', 'input_set', 'output_set'];
-      } else if (project.value.projectType === 'hybrid_simulation') {
-        requiredSets = [
-          'globalmodel_set',
-          'coordinator_set',
-          'simsubstructure_set',
-          'expsubstructure_set',
-        ];
-      }
-
-      requiredSets.forEach((set) => {
-        project[set].forEach((s) => {
-          if (s.associationIds.indexOf(experiment.uuid) > -1) {
-            var data = {
-              'type': set,
-              'prjEnt': s
-            };
-            expSets.push(data);
-          }
-        });
-      });
-      expSets.forEach((set) => {
-        if (Object.keys(selections).indexOf(set.prjEnt.uuid) > -1) {
-          selectedSets.push(set.type);
+        let errMsg = {
+            modelconfig_set: 'Model Configuration',
+            sensorlist_set: 'Sensor Information',
+            event_set: 'Event',
+            model_set: 'Model',
+            input_set: 'Input',
+            output_set: 'Output',
+            globalmodel_set: 'Global Model',
+            coordinator_set: 'Coordinator',
+            simsubstructure_set: 'Simulation Substructure',
+            expsubstructure_set: 'Experimental Substructure',
+        };
+        let requiredSets = [];
+        let expSets = [];
+        let selectedSets = [];
+        let missingData = [];
+        if (project.value.projectType === 'experimental') {
+            requiredSets = ['modelconfig_set', 'sensorlist_set', 'event_set'];
+        } else if (project.value.projectType === 'simulation') {
+            requiredSets = ['model_set', 'input_set', 'output_set'];
+        } else if (project.value.projectType === 'hybrid_simulation') {
+            requiredSets = [
+                'globalmodel_set',
+                'coordinator_set',
+                'simsubstructure_set',
+                'expsubstructure_set',
+            ];
         }
-      });
-      _.difference(requiredSets, selectedSets).forEach((ent) => {
-        missingData.push(errMsg[ent]);
-      });
-      return missingData;
+        requiredSets.forEach((set) => {
+            if (set in project) {
+                project[set].forEach((s) => {
+                    if (s.associationIds.indexOf(experiment.uuid) > -1) {
+                        let data = {
+                            type: set,
+                            prjEnt: s,
+                        };
+                        expSets.push(data);
+                    }
+                });
+            }
+        });
+        expSets.forEach((set) => {
+            if (Object.keys(selections).indexOf(set.prjEnt.uuid) > -1) {
+                selectedSets.push(set.type);
+            }
+        });
+        _.difference(requiredSets, selectedSets).forEach((ent) => {
+            missingData.push(errMsg[ent]);
+        });
+        return missingData;
     };
 
     service.manageCategories = (options) => {
-      $uibModal.open({
-        component: 'manageCategories',
-        resolve: {
-          options: () => options,
-        },
-        size: 'lg'
-      });
+        $uibModal.open({
+            component: 'manageCategories',
+            resolve: {
+                options: () => options,
+            },
+            size: 'lg',
+        });
     };
 
     service.manageProjectType = (options) => {
-      $uibModal.open({
-        component: 'manageProjectType',
-        resolve: {
-          options: () => options,
-        },
-        size: 'lg'
-      });
+        $uibModal.open({
+            component: 'manageProjectType',
+            resolve: {
+                options: () => options,
+            },
+            size: 'lg',
+        });
     };
-        
+
     service.manageHybridSimulations = (options) => {
-      $uibModal.open({
-        component: 'manageHybridSimulations',
-        resolve: {
-          options: () => options,
-        },
-        size: 'lg'
-      });
+        $uibModal.open({
+            component: 'manageHybridSimulations',
+            resolve: {
+                options: () => options,
+            },
+            size: 'lg',
+        });
     };
 
     /**
@@ -213,13 +214,13 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @returns {Promise}
      */
     service.manageSimulations = (options) => {
-      $uibModal.open({
-        component: 'manageSimulations',
-        resolve: {
-          options: () => options,
-        },
-        size: 'lg'
-      });
+        $uibModal.open({
+            component: 'manageSimulations',
+            resolve: {
+                options: () => options,
+            },
+            size: 'lg',
+        });
     };
 
     /**
@@ -228,24 +229,24 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
     * @return {Promise}
     */
     service.manageExperiments = (options) => {
-      var modalInstance = $uibModal.open({
-        component: 'manageExperiments',
-        resolve: {
-          options: () => options,
-          efs: () => efs,
-          experimentTypes: () => experimentTypes,
-          equipmentTypes: () => equipmentTypes,
-        },
-        size: 'lg'
-      });
+        let modalInstance = $uibModal.open({
+            component: 'manageExperiments',
+            resolve: {
+                options: () => options,
+                efs: () => efs,
+                experimentTypes: () => experimentTypes,
+                equipmentTypes: () => equipmentTypes,
+            },
+            size: 'lg',
+        });
 
-      modalInstance.result.then((experiment) => {
-        $state.reload();
-      }, (err) => {
-        if (err !== 'backdrop click') {
-          $q.reject(err);
-        }
-      });
+        modalInstance.result.then((experiment) => {
+            $state.reload();
+        }, (err) => {
+            if (err !== 'backdrop click') {
+                $q.reject(err);
+            }
+        });
     };
 
     /**
@@ -253,18 +254,18 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @return {Promise}
      */
     service.editProject = (project) => {
-      var modalInstance = $uibModal.open({
-        component: 'editProject',
-        resolve: {
-          project: () => project,
-          efs: () => efs,
-        },
-        size: 'lg'
-      });
-      return modalInstance;
+        let modalInstance = $uibModal.open({
+            component: 'editProject',
+            resolve: {
+                project: () => project,
+                efs: () => efs,
+            },
+            size: 'lg',
+        });
+        return modalInstance;
     };
 
-    
+
     return service;
 
-  }
+}

@@ -107,7 +107,7 @@ class Object(object):
             # set filter
             query.filter = nested_filter
             s = s.query(query)
-            logger.debug('serach query: %s', json.dumps(s.to_dict(), indent=4))
+            logger.debug('search query: %s', json.dumps(s.to_dict(), indent=4))
             try:
                 res = s.execute()
             except (TransportError, ConnectionTimeout) as e:

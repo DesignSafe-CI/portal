@@ -55,18 +55,18 @@ class PipelinePublishCtrl {
                         name: child.name,
                         path: child.path,
                         system: child.system,
-                        type: child.type
+                        type: child.type,
                     };
                 });
                 if (!publication[attr] ||
                     _.isEmpty(publication[attr]) ||
-                    typeof publication[attr] === 'undefined'){
+                    typeof publication[attr] === 'undefined') {
                     publication[attr] = [];
                 }
                 publication[attr].push(pubEntity);
             });
-    
-            if (this.project.value.projectType === 'experimental'){
+
+            if (this.project.value.projectType === 'experimental') {
                 publication.experimentsList = [{
                     uuid: this.resolve.resolveParams.experiment.uuid,
                     authors: this.resolve.resolveParams.experiment.value.authors || [],
@@ -111,7 +111,7 @@ class PipelinePublishCtrl {
             '/api/projects/publication/',
             {
                 publication: this.publication,
-                status: 'publishing'
+                status: 'publishing',
             }
         ).then((resp) => {
             this.DataBrowserService.state().publicationStatus = resp.data.response.status;

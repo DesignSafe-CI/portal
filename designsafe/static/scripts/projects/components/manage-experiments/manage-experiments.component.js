@@ -130,9 +130,9 @@ class ManageExperimentsCtrl {
 
     configureAuthors(exp) {
         // combine project and experiment users then check if any authors need to be built into objects
-        var usersToClean = [...new Set([...this.data.users, ...exp.value.authors.slice()])];
-        var modAuths = false;
-        var auths = [];
+        let usersToClean = [...new Set([...this.data.users, ...exp.value.authors.slice()])];
+        let modAuths = false;
+        let auths = [];
 
         usersToClean.forEach((a) => {
             if (typeof a == 'string') {
@@ -147,8 +147,8 @@ class ManageExperimentsCtrl {
             usersToClean.forEach((auth, i) => {
                 if (typeof auth == 'string') {
                     // if user is guest append their data
-                    if(auth.slice(0,5) === 'guest') {
-                        var guestData = this.options.project.value.guestMembers.find(x => x.user === auth);
+                    if (auth.slice(0, 5) === 'guest') {
+                        let guestData = this.options.project.value.guestMembers.find((x) => x.user === auth);
                         usersToClean[i] = {
                             name: auth,
                             order: i,
@@ -160,48 +160,34 @@ class ManageExperimentsCtrl {
                             inst: guestData.inst,
                         };
                     } else {
-                        usersToClean[i] = {name: auth, order: i, authorship: false};
+                        usersToClean[i] = { name: auth, order: i, authorship: false };
                     }
                 } else {
                     auth.order = i;
                 }
             });
-            usersToClean = _.uniq(usersToClean, 'name');
-        } else {
-            usersToClean = _.uniq(usersToClean, 'name');
         }
-        /*
-        Restore previous authorship status if any
-        */
-        if (auths.length) {
-            auths.forEach((a) => {
-                usersToClean.forEach((u, i) => {
-                    if (a.name === u.name) {
-                        usersToClean[i] = a;
-                    }
-                });
-            });
-        }
+        usersToClean = _.uniq(usersToClean, 'name');
+
         /*
         It is possible that a user added to an experiment may no longer be on a project
         Remove any users on the experiment that are not on the project
         */
-        var rmList = [];
-        usersToClean.forEach((m) => {
-          var person = this.data.users.find(u => u.name === m.name);
-          if (!person) {
-            rmList.push(m);
-          }
-        });
-        rmList.forEach((m) => {
-          var index = usersToClean.indexOf(m);
-          if (index > -1) {
-            usersToClean.splice(index, 1);
-          }
-        });
+        usersToClean = usersToClean.filter((m) => this.data.users.find((u) => u.name === m.name));
+
+        /*
+        Restore previous authorship status and order if any
+        */
+        usersToClean = usersToClean.map((u) => auths.find((a) => u.name == a.name) || u);
+
+        /*
+        Reorder to accomodate blank spots in order and give order to users with no order
+        */
+        usersToClean = usersToClean.sort((a, b) => a.order - b.order);
         usersToClean.forEach((u, i) => {
             u.order = i;
         });
+
         return usersToClean;
     }
 
@@ -210,7 +196,7 @@ class ManageExperimentsCtrl {
         let auths = this.configureAuthors(exp);
 
         exp.value.procedureStart = new Date(exp.value.procedureStart);
-        exp.value.procedureEnd = (exp.value.procedureEnd && exp.value.procedureEnd !== 'None') ? new Date(exp.value.procedureEnd) : null;
+        exp.value.procedureEnd = (exp.value.procedureEnd && exp.value.procedureEnd !== 'None') ? new Date(exp.value.procedureEnd) : '';
 
         this.editExpForm = {
             exp: exp,
@@ -247,15 +233,18 @@ class ManageExperimentsCtrl {
     }
 
     orderAuthors(up) {
-        var a;
-        var b;
+        if (!this.editExpForm.selectedAuthor) {
+            return;
+        }
+        let a,
+            b;
         if (up) {
             if (this.editExpForm.selectedAuthor.order <= 0) {
                 return;
             }
             // move up
-            a = this.editExpForm.authors.find(x => x.order === this.editExpForm.selectedAuthor.order - 1);
-            b = this.editExpForm.authors.find(x => x.order === this.editExpForm.selectedAuthor.order);
+            a = this.editExpForm.authors.find((x) => x.order === this.editExpForm.selectedAuthor.order - 1);
+            b = this.editExpForm.authors.find((x) => x.order === this.editExpForm.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
@@ -264,8 +253,8 @@ class ManageExperimentsCtrl {
                 return;
             }
             // move down
-            a = this.editExpForm.authors.find(x => x.order === this.editExpForm.selectedAuthor.order + 1);
-            b = this.editExpForm.authors.find(x => x.order === this.editExpForm.selectedAuthor.order);
+            a = this.editExpForm.authors.find((x) => x.order === this.editExpForm.selectedAuthor.order + 1);
+            b = this.editExpForm.authors.find((x) => x.order === this.editExpForm.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
@@ -273,7 +262,7 @@ class ManageExperimentsCtrl {
     }
 
     saveEditExperiment() {
-        var exp = this.editExpForm.exp;
+        let exp = this.editExpForm.exp;
         exp.value.title = this.editExpForm.title;
         exp.value.description = this.editExpForm.description;
         exp.value.procedureStart = this.editExpForm.start;
@@ -286,16 +275,16 @@ class ManageExperimentsCtrl {
         this.ProjectEntitiesService.update({
             data: {
                 uuid: exp.uuid,
-                entity: exp
-            }
+                entity: exp,
+            },
         }).then((e) => {
-            var ent = this.data.project.getRelatedByUuid(e.uuid);
+            let ent = this.data.project.getRelatedByUuid(e.uuid);
             ent.update(e);
             this.ui.savingEditExp = false;
             this.data.experiments = this.data.project.experiment_set;
             this.ui.showEditExperimentForm = false;
             if (window.sessionStorage.experimentData) {
-                this.close({$value: e});
+                this.close({ $value: e });
             }
             return e;
         });
@@ -306,13 +295,13 @@ class ManageExperimentsCtrl {
             this.editExpForm = {};
             this.ui.showEditExperimentForm = false;
         }
-        var confirmDelete = (options) => {
-            var modalInstance = this.$uibModal.open({
+        let confirmDelete = (options) => {
+            let modalInstance = this.$uibModal.open({
                 component: 'confirmDelete',
                 resolve: {
                     options: () => options,
                 },
-                size: 'sm'
+                size: 'sm',
             });
 
             modalInstance.result.then((res) => {
@@ -320,7 +309,7 @@ class ManageExperimentsCtrl {
                     this.ProjectEntitiesService.delete({
                         data: {
                             uuid: ent.uuid,
-                        }
+                        },
                     }).then((entity) => {
                         this.data.project.removeEntity(entity);
                         this.data.experiments = this.data.project.experiment_set;
@@ -328,26 +317,24 @@ class ManageExperimentsCtrl {
                 }
             });
         };
-        confirmDelete({'entity': ent});
+        confirmDelete({ entity: ent });
     }
 
     saveExperiment($event) {
         $event.preventDefault();
         this.data.busy = true;
         this.form.addExperiments[0].authors = this.data.users;
-        var addActions = _.map(this.form.addExperiments, (exp) => {
+        let addActions = this.form.addExperiments.filter((exp) => (exp.title && exp.experimentalFacility && exp.experimentType)).map((exp) => {
             exp.description = exp.description || '';
-            if (exp.title && exp.experimentalFacility && exp.experimentType) {
-                return this.ProjectEntitiesService.create({
-                    data: {
-                        uuid: this.data.project.uuid,
-                        name: 'designsafe.project.experiment',
-                        entity: exp
-                    }
-                }).then((res) => {
-                    this.data.project.addEntity(res);
-                });
-            }
+            return this.ProjectEntitiesService.create({
+                data: {
+                    uuid: this.data.project.uuid,
+                    name: 'designsafe.project.experiment',
+                    entity: exp,
+                },
+            }).then((res) => {
+                this.data.project.addEntity(res);
+            });
         });
 
         this.$q.all(addActions).then(
@@ -369,6 +356,6 @@ export const ManageExperimentsComponent = {
     bindings: {
         resolve: '<',
         close: '&',
-        dismiss: '&'
+        dismiss: '&',
     },
-}
+};
