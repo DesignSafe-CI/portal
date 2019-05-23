@@ -108,11 +108,31 @@
             </tr>
             <tr class="prj-row" ng-hide="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
                 <td>Project Type</td>
-                <td class="prj-data">{{ $ctrl.project.value.projectType.replace('_', ' ') }}</td>
+                <td class="prj-data" ng-if="$ctrl.project.value.projectType !== 'field_recon'">
+                    {{ $ctrl.project.value.projectType.replace('_', ' ') }}
+                </td>
+                <!-- FR -->
+                <td class="prj-data" ng-if="$ctrl.project.value.projectType === 'field_recon'">Field Research</td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.project.value.dataType }}</td>
+            </tr>
+            <tr class="prj-row"
+                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
+                <td>Natural Hazard</td>
+                <td class="prj-data">
+                    {{ $ctrl.browser.project.value.nhEvent }} | {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
+                </td>
+            </tr>
+            <tr class="prj-row"
+                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhType">
+                <td>Natural Hazard Type</td>
+                <td class="prj-data">
+                    <span ng-if="!$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhType }}</span>
+                    <span ng-if="$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhTypeOther }}</span>
+                </td>
             </tr>
             <!-- older projects will have awards listed as strings -->
             <tr ng-if="$ctrl.isSingle($ctrl.project.value.awardNumber) && $ctrl.project.value.awardNumber.length">

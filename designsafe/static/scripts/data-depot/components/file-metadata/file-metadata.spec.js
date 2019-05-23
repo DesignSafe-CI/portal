@@ -1,6 +1,6 @@
 
 
-fdescribe("FileMetadataComponent", ()=> {
+describe("FileMetadataComponent", ()=> {
     var FileListing,
         $rootScope,
         $compile,
@@ -28,10 +28,12 @@ fdescribe("FileMetadataComponent", ()=> {
             lastModified: new Date('2018-01-01T12:00:00-06:00'),
             queryString: '',
         };
-        let meta = [{
+        let meta = [{},{
             key1: 'val1',
             key2: 'val2',
-            geolocation: [{ latitude: 0, longitude: 0 }]
+            geolocation: [{ latitude: 0, longitude: 0 }],
+            key3: '',
+            _key5: 'val5'
         }];
         fl = FileListing.init(options);
         spyOn(fl, 'getAssociatedMetadata').and.returnValue($q.when(meta));
@@ -62,12 +64,20 @@ fdescribe("FileMetadataComponent", ()=> {
         expect(element.find('table').html()).toContain('test/test.txt');
     });
 
-    it('FileMetadata component should correcly parse the geolocation tag', ()=>{
+    it('FileMetadata component should correctly parse the geolocation tag', ()=>{
         let el = angular.element("<file-metadata file='fl'></file-metadata>");
         element = $compile(el)(scope);
         scope.$digest();
         expect(element.find('table').html()).toContain('geolocation');
         expect(element.find('table').html()).toContain('(0, 0)');
+    });
+
+    it('FileMetadata component should not show nulls or keys that start with _', ()=>{
+        let el = angular.element("<file-metadata file='fl'></file-metadata>");
+        element = $compile(el)(scope);
+        scope.$digest();
+        expect(element.find('table').html()).not.toContain('key3');
+        expect(element.find('table').html()).not.toContain('val5');
     });
 
 

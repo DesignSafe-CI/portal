@@ -26,11 +26,29 @@
         </tr>
         <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
           <td>Project Type</td>
-          <td class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</td>
+          <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
+              {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}
+          </td>
+          <!-- FR -->
+          <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>
         </tr>
         <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
           <td>Data Type</td>
           <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
+        </tr>
+        <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
+          <td>Natural Hazard</td>
+          <td class="prj-data">
+            {{ $ctrl.browser.project.value.nhEvent }} | {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+            <span ng-if="$ctrl.browser.project.value.nhEventEnd">― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
+          </td>
+        </tr>
+        <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhType">
+          <td>Natural Hazard Type</td>
+          <td class="prj-data">
+            <span ng-if="!$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhType }}</span>
+            <span ng-if="$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhTypeOther }}</span>
+          </td>
         </tr>
         <!-- older projects will have awards listed as strings -->
         <tr ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
@@ -50,25 +68,6 @@
         <tr class="prj-row">
           <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
           <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
-        </tr>
-        <tr class="prj-row" data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
-          <td ng-if="$ctrl.browser.project.value.nhEvent">Natural Hazard Event</td>
-          <td class="prj-data">{{ $ctrl.browser.project.value.nhEvent }}</td>
-        </tr>
-        <tr class="prj-row" data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
-          <td ng-if="$ctrl.browser.project.value.nhEventStart">Natural Hazard Date</td>
-          <td class="prj-data">
-              <span>{{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}</span>
-              <span data-ng-if="mission.value.dateEnd">
-                  &#8213; {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy' }}
-              </span>
-          </td>
-        </tr>
-        <tr class="prj-row" data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
-          <td ng-if="$ctrl.browser.project.value.nhType">Natural Hazard Type</td>
-          <td class="prj-data">
-              {{ $ctrl.browser.project.value.nhType }}
-          </td>
         </tr>
       </table>
       <div ng-if="$ctrl.browser.project.value.description">

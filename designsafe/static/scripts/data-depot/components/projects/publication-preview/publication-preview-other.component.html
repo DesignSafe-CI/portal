@@ -12,9 +12,19 @@
                 <col style="width: 84%">
             </colgroup>
             <tr class="prj-row">
-                <td>PI</td>
-                <td>
+                <td>Author</td>
+                <td ng-if="!$ctrl.readOnly">
                     <ds-user-list class="prj-data" usernames="$ctrl.browser.project.value.pi"></ds-user-list>
+                </td>
+                <td ng-if="$ctrl.readOnly">
+                    <span ng-repeat="member in $ctrl.browser.publication.project.value.teamOrder | orderBy: 'order'">
+                        <strong>
+                            <span ng-if="!member.guest">
+                                <ds-user username="member.name" format="lname">{{ member.name }}</ds-user><span>; </span>
+                            </span>
+                            <span ng-if="member.guest">{{ member.lname }}, {{ member.fname }}; </span>
+                        </strong>
+                    </span>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
@@ -53,6 +63,34 @@
             <tr class="prj-row">
                 <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
+            </tr>
+            <tr class="prj-row" ng-if="$ctrl.readOnly">
+                <td ng-if="$ctrl.browser.project.value.keywords">Date of Publication</td>
+                <td class="prj-data">{{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}</td>
+            </tr>
+            <tr class="prj-row" ng-if="$ctrl.readOnly">
+                <td ng-if="$ctrl.browser.project.value.keywords">DOI</td>
+                <td class="prj-data">
+                    <button class="btn btn-info btn-sm" data-ng-click="$ctrl.showCitation()">
+                        Citation
+                    </button>
+                </td>
+            </tr>
+            <tr class="prj-row" ng-if="$ctrl.readOnly">
+                <td ng-if="$ctrl.browser.project.value.keywords">License(s)</td>
+                <td class="prj-data">
+                    <strong>
+                        <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
+                            {{ $ctrl.browser.publication.licenses.datasets }}
+                        </div>
+                        <div data-ng-if="$ctrl.browser.publication.licenses.works">
+                            {{ $ctrl.browser.publication.licenses.works }}
+                        </div>
+                        <div data-ng-if="$ctrl.browser.publication.licenses.software">
+                            {{ $ctrl.browser.publication.licenses.software }}
+                        </div>
+                    </strong>
+                </td>
             </tr>
         </table>
         <div ng-if="$ctrl.browser.project.value.description">
@@ -94,9 +132,11 @@
         </tr>
     </table>
     <br>
-    <p ng-if="!$ctrl.readOnly">
-        <h3 style="text-align: center;">You will select the data to be published in the next step</h3>
-    </p>
+    <div ng-if="!$ctrl.readOnly">
+        <p>
+            <h3 style="text-align: center;">You will select the data to be published in the next step</h3>
+        </p>
+    </div>
     <div ng-if="$ctrl.readOnly">
         <div ng-show="this.ui.loading">
             <h3 class="text-center">

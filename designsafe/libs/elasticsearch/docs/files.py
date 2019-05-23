@@ -99,5 +99,6 @@ class BaseESFile(BaseESResource):
         if self.format == 'folder':
             children = self.children()
             for child in children:
-                child.delete()
+                if child.path != self.path:
+                    child.delete()
         self._wrapped.delete()

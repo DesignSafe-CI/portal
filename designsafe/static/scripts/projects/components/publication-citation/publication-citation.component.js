@@ -10,11 +10,22 @@ class PublicationCitationCtrl {
     $onInit() {
         this.entity = this.resolve.entity;
         this.publication = this.resolve.publication;
+        this.auths = [];
+        this.doi = '';
+
+        if (!this.entity) {
+            this.auths = angular.copy(this.publication.project.value.teamOrder);
+            this.doi = this.publication.project.doi;
+        } else {
+            this.auths = angular.copy(this.entity.authors);
+            this.doi = this.entity.doi;
+        }
+
         let authors = '';
-        this.entity.authors.sort((a, b) => {
+        this.auths.sort((a, b) => {
             return a.order - b.order;
         });
-        this.entity.authors.forEach(
+        this.auths.forEach(
             (a) => {
                 if (a && a.lname && a.fname && a.authorship) {
                     authors += a.lname + ', ' + a.fname + ', ';
@@ -22,8 +33,8 @@ class PublicationCitationCtrl {
             }
         );
         this.citationDate = this.publication.created.split('T')[0];
-        this.citationUrl = 'https://doi.org/' + this.entity.doi.slice(4);
-        this.doiCitation = this.entity.doi.slice(4);
+        this.citationUrl = 'https://doi.org/' + this.doi.slice(4);
+        this.doiCitation = this.doi.slice(4);
     }
 
     downloadCitation() {

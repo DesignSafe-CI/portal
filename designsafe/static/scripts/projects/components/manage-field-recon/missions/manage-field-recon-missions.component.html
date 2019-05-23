@@ -150,87 +150,16 @@
                     &nbsp;
                 </textarea>
             </div>
-            <!-- Edit Authors -->
-            <div class="expAuthors form-group"
-                 data-ng-if="$ctrl.data.editMission">
-              <label>Assign Authorship</label>
-              <div class="form-group">
-                <div data-ng-repeat="author in $ctrl.form.authors
-                                     track by $index"
-                     style="width:46%; display:inline-block;">
-                  <input type="checkbox"
-                         data-format="lname"
-                         id="{{ 'editAuthor' + $index }}"
-                         data-ng-checked="author.authorship"
-                         data-ng-click="$ctrl.editAuthors(author, $index)">
-                  <ds-user data-ng-if="!author.guest"
-                           data-username="author.name"
-                           data-format="lname">
-                      {{ author.name }}
-                  </ds-user>
-                  <span data-ng-if="author.guest">
-                      {{ author.lname }}, {{ author.fname }}
-                  </span>
-                  <br>
-                </div>
-              </div>
-              <!-- Sort Authors  -->
-              <strong>Order of Authors</strong>
-              <p>
-                You can adjust the order of authors for your experiment by
-                selecting an author and using the arrows to change their
-                position.
-              </p>
-              <table class="tg" style="table-layout: fixed; width: 100%;">
-                <colgroup>
-                  <col style="width: 35%">
-                  <col style="width: 64%">
-                </colgroup>
-                <tr>
-                  <td class="tg-0lax">
-                    <div data-ng-repeat="author in $ctrl.form.authors
-                                         | orderBy: 'order'">
-                      <input type="radio"
-                             name="author"
-                             data-format="lname"
-                             data-ng-model="$ctrl.form.selectedAuthor"
-                             data-ng-value="author"
-                             data-ng-if="author.authorship"
-                      >
-                      <ds-user data-ng-if="!author.guest"
-                               data-username="author.name"
-                               data-format="lname"
-                               data-ng-style="!author.authorship &&
-                                              {'text-decoration':
-                                               'line-through'}">
-                        {{ author.name }}
-                      </ds-user>
-                      <span data-ng-if="author.guest"
-                            data-ng-style="!author.authorship &&
-                                           {'text-decoration':'line-through'}">
-                        {{ author.lname }}, {{ author.fname }}
-                      </span>
-                      <br>
-                    </div>
-                  </td>
-                  <td class="tg-0lax">
-                      <i class="fa fa-arrow-circle-up fa-2x"
-                         data-ng-click="$ctrl.orderAuthors(true)">&nbsp;</i>
-                      <i class="fa fa-arrow-circle-down fa-2x"
-                         data-ng-click="$ctrl.orderAuthors(false)">&nbsp;</i>
-                  </td>
-                </tr>
-              </table>
-              <!-- Update Exp Btn -->
-              <div class="text-right">
-                <button class="btn btn-add"
-                        type="submit"
-                        data-ng-click="addForm.$valid &&
-                                       $ctrl.updateMission($event)"
-                        style="width:18%;">Update</button>
-              </div>
-            </div>
         </form>
+        <!-- Update Exp Btn -->
+        <div class="text-right">
+            <button class="btn btn-add"
+                    type="submit"
+                    data-ng-if="$ctrl.data.editMission"
+                    data-ng-click="addForm.$valid && $ctrl.updateMission($event)"
+                    style="width:18%;">Update</button>
+        </div>
+        <!-- </form> -->
         <div class="text-right">
           <button class="btn btn-add"
                   data-ng-click="addForm.$valid && $ctrl.saveMission($event)"
