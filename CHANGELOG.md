@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.9-20190520
+
+Fix:
+
+- Hotfix to reenable Publish button in pipeline.
+
 ## v4.3.9-20190519
 
 Fixes:
