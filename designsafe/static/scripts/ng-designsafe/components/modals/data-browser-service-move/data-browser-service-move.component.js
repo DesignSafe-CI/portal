@@ -28,19 +28,6 @@ class DataBrowserServiceMoveCtrl {
             error: null,
             listingProjects: false
         };
-
-        this.$scope.currentOption = null;
-        let dbState = this.DataBrowserService.currentState;
-        console.log(dbState)
-        if (dbState.listing.system == 'designsafe.storage.default') { 
-            this.$scope.currentOption = find(opt => opt.label === 'My Data');
-        } else if (dbState.listing.system == 'projects') {
-            this.$scope.currentOption = find(opt => opt.label === 'My Projects');
-        } else if (dbState.listing.path == '$Share') {
-            this.$scope.currentOption = find(opt => opt.label === 'Shared with me');
-        }
-
-
         
 
         this.options = [
@@ -59,6 +46,18 @@ class DataBrowserServiceMoveCtrl {
         ];
 
       
+        this.$scope.currentOption = null;
+        let dbState = this.DataBrowserService.currentState;
+        console.log(dbState)
+        if (dbState.listing.system == 'designsafe.storage.default') { 
+            this.$scope.currentOption = this.options.find((opt) => opt.label === 'My Data');
+        } else if (dbState.listing.system == 'projects') {
+            this.$scope.currentOption = this.options.find((opt) => opt.label === 'My Projects');
+        } else if (dbState.listing.path == '$Share') {
+            this.$scope.currentOption = this.options.find((opt) => opt.label === 'Shared with me');
+        }
+        console.log(this.$scope.currentOption)
+
 
         this.$scope.$watch('currentOption', () => {
             this.state.busy = true;
