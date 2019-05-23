@@ -181,18 +181,6 @@ class ManageExperimentsCtrl {
         usersToClean = usersToClean.map((u) => auths.find((a) => u.name == a.name) || u);
 
         /*
-        Remove duplicate orders
-        */
-        usersToClean.forEach((u) => {
-            let sameOrder = usersToClean.filter((d) => u.order == d.order);
-            sameOrder.forEach((o, i) => {
-                if (i !== 0) {
-                    o.order = null;
-                }
-            });
-        });
-
-        /*
         Reorder to accomodate blank spots in order and give order to users with no order
         */
         usersToClean = usersToClean.sort((a, b) => a.order - b.order);
