@@ -67,7 +67,7 @@ class EditProjectCtrl {
             label: 'Other'
         }, {
             id: 'field_recon',
-            lable: 'Field Reconnaissance',
+            lable: 'Field Research',
         }];
         if (this.project) {
             // project metadata for edit form
