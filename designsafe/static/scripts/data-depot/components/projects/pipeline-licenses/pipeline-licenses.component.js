@@ -64,6 +64,10 @@ class PipelineLicensesCtrl {
     }
 
     validSelection() {
+        if (typeof this.projectType === 'undefined' ||
+            this.projectType === 'field_recon') {
+                return false;
+        }
         if (this.license.datasets ||
             this.license.works ||
             this.license.software) {
