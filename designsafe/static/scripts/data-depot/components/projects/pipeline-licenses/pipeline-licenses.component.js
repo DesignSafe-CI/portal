@@ -19,7 +19,7 @@ class PipelineLicensesCtrl {
         this.license = {
             datasets: '',
             works: '',
-            software: ''
+            software: '',
         };
 
         if (!this.project) {
@@ -64,26 +64,25 @@ class PipelineLicensesCtrl {
     }
 
     validSelection() {
-        if (typeof this.projectType === 'undefined' ||
-            this.projectType === 'field_recon') {
-                return false;
+        if (typeof this.projType === 'undefined' ||
+            this.projType === 'field_recon') {
+            return false;
         }
         if (this.license.datasets ||
             this.license.works ||
             this.license.software) {
-                return true;
-        } else {
-            return false;
+            return true;
         }
+        return false;
     }
 
     reset() {
-        var ids = [
-        'odca',
-        'odcpdd',
-        'ccasa',
-        'ccpdd',
-        'gnu'
+        let ids = [
+            'odca',
+            'odcpdd',
+            'ccasa',
+            'ccpdd',
+            'gnu',
         ];
         ids.forEach((id) => {
             document.getElementById(id).checked = false;
@@ -91,7 +90,7 @@ class PipelineLicensesCtrl {
         this.license = {
             datasets: '',
             works: '',
-            software: ''
+            software: '',
         };
     }
 
@@ -126,7 +125,7 @@ class PipelineLicensesCtrl {
             projectId: this.projectId,
             project: this.project,
             selectedListings: this.selectedListings,
-        }, {reload: true});
+        }, { reload: true });
     }
 
     // Modal for accept and publish...
@@ -152,6 +151,6 @@ export const PipelineLicensesComponent = {
     bindings: {
         resolve: '<',
         close: '&',
-        dismiss: '&'
+        dismiss: '&',
     },
 };
