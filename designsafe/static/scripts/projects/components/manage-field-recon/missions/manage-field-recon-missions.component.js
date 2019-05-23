@@ -26,7 +26,7 @@ class ManageFieldReconMissionsCtrl {
             if (typeof m == 'string') {
                 // if user is guest append their data
                 if(m.slice(0,5) === 'guest') {
-                    let guestData = this.options.project.value.guestMembers.find(
+                    let guestData = this.project.value.guestMembers.find(
                         (x) => x.user === m
                     );
                     members[i] = {

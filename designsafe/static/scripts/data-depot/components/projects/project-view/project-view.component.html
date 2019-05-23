@@ -26,7 +26,11 @@
         </tr>
         <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
           <td>Project Type</td>
-          <td class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</td>
+          <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
+              {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}
+          </td>
+          <!-- FR -->
+          <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>
         </tr>
         <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
           <td>Data Type</td>
