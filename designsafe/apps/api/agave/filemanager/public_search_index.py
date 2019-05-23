@@ -591,6 +591,11 @@ class PublicationManager(object):
         publication['licenses'] = publication.pop('license', [])
         publication['license'] = ''
 
+        if 'experiment_set' in publication['project']:
+            for exp in publication['project']['experiment_set']:
+                if exp['value']['procedureEnd'] == 'None' or exp['value']['procedureEnd'] == '':
+                    exp['value']['procedureEnd'] = None
+
         pub = Publication(publication)
         pub.save()
         return pub
