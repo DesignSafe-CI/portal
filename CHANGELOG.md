@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.9-20190521
+
+Fixes:
+
+- Hotfix to give published experiments an empty Procedure End date if none given
+
+## v4.3.9-20190520
+
+Fixes:
+
+- Hotfix to reenable Publish button in pipeline.
+
 ## v4.3.9-20190519
 
 Fixes:
