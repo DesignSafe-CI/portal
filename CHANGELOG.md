@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.9-20190518
+
+Fixes:
+
+- Add published details to 'Other' type project template.
+- Rapid metadata in preview window hotfix.
+- Infinite recursive indexing fix.
+- Fix views not showing in 'Other' and 'Field Recon type projects.
+
 ## v4.3.9-20190517
 
 Fixes:
