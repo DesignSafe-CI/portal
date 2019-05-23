@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.3.9-20190519
+
+Fixes:
+
+- Preserve ordering of experiment authors when editing.
+- Fix 'None' string publication end date.
+- Reformat email to new project collaborators.
+- Change display of Field Recon to Field Research.
+- Disable publish button for Field Recon.
+- Add natural hazard metadata to project header for field recon.
+- Fixed linux/windows file category css.
+
 ## v4.3.9-20190518
 
 Fixes:
