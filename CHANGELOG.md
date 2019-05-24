@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.0-20190523
+
+Fixes:
+
+- Allow blank or null procedure end dates for experiment publications.
+- Fix navigation/preview in search listings.
+- Changed Tree Diagram to Related Data Diagram.
+- Move data relation tree in publication and preview areas.
+
 ## v4.4.0
 
 Fixes:
