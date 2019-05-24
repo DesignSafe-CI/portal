@@ -1,10 +1,36 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.0
+
+Fixes:
+
+- Preserve ordering of experiment authors when editing.
+- Reformat email to new project collaborators.
+- Change display of Field Recon to Field Research.
+- Disable publish button for Field Recon.
+- Add natural hazard metadata to project header for field recon.
+- Fixed linux/windows file category css.
+- Add published details to 'Other' type project template.
+- Rapid metadata in preview window hotfix.
+- Infinite recursive indexing fix.
+- Fix views not showing in 'Other' and 'Field Recon type projects.
+- Format authors for other projects.
+- Changed Tree Diagram to Related Data in Experimental Overview.
+- Fix template for multiple publication licenses.
+- Update Publication Citation popup.
+- Rapid/RApp metadata preview bug fix.
+
+## v4.3.9-20190522
+
+Fixes:
+
+- Roll back hotfix.
+
 ## v4.3.9-20190521
 
 Fixes:
 
-- Hotfix to give published experiments an empty Procedure End date if none given
+- Hotfix to give published experiments an empty Procedure End date if none given.
 
 ## v4.3.9-20190520
 

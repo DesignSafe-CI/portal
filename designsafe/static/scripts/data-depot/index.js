@@ -53,7 +53,7 @@ function config(
     $stateProvider
         /* Private */
         .state('myData', {
-            url: '/agave/{systemId}/{filePath:any}/',
+            url: '/agave/{systemId}/{filePath:any}/?query_string&offset&limit',
             component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.default',
@@ -64,7 +64,7 @@ function config(
                     return {
                         fileMgr: 'agave',
                         baseUrl: '/api/agave/files',
-                        searchState: 'dataSearch',
+                        searchState: 'myData',
                     };
                 },
                 path: ($stateParams, Django) => {
@@ -863,7 +863,7 @@ function config(
             },
         })
         .state('communityData', {
-            url: '/public/designsafe.storage.community/{filePath:any}',
+            url: '/public/designsafe.storage.community/{filePath:any}?query_string&offset&limit',
             component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.community',
@@ -874,7 +874,7 @@ function config(
                     return {
                         fileMgr: 'community',
                         baseUrl: '/api/public/files',
-                        searchState: 'communityDataSearch',
+                        searchState: 'communityData',
                     };
                 },
                 path: ($stateParams)=>{

@@ -102,7 +102,8 @@ class FilesListingCtrl {
         }
         return this.$state.go(
             this.$state.current.name,
-            { systemId: systemId, filePath: filePath }, { reload: true }
+            { systemId: systemId, filePath: filePath }, 
+            { reload: true,  inherit: false}
         );
     }
 
@@ -140,7 +141,8 @@ class FilesListingCtrl {
                 filePath: filePath,
                 version: version
             },
-            { reload: true }
+            { reload: true,
+              inherit: false }
         );
     }
 

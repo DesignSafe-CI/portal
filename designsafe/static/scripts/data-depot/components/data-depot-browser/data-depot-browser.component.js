@@ -36,7 +36,8 @@ class DataDepotBrowserCtrl {
                 }
                 child.href = this.$state.href(
                     stateName,
-                    { systemId: child.system, filePath: child.path.replace(/^\/+/, '') }
+                    { systemId: child.system, filePath: child.path.replace(/^\/+/, '') },
+                    {inherit: false}
                 );
             });
             this.data = {
@@ -55,7 +56,7 @@ class DataDepotBrowserCtrl {
                 query_string: this.$stateParams.query_string,
                 offset: this.$stateParams.offset,
                 limit: this.$stateParams.limit,
-                shared: this.$stateParams.shared || false,
+                shared: this.$stateParams.shared || null,
             }).then(setupListing);
         }
     }
