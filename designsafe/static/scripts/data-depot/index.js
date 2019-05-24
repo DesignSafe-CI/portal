@@ -528,7 +528,7 @@ function config(
             params: {
                 project: '',
                 selectedListings: '',
-                mission: '',
+                experiment: '',
             },
             resolve: {
                 params: ($stateParams, ProjectService) => {
@@ -536,7 +536,7 @@ function config(
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
                     ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
-                    ProjectService.resolveParams.mission = $stateParams.mission;
+                    ProjectService.resolveParams.experiment = $stateParams.experiment;
                 }
             }
         })
@@ -608,7 +608,7 @@ function config(
             component: 'pipelineCategoriesFieldRecon',
             params: {
                 project: '',
-                mission: '',
+                experiment: '',
                 selectedListings: '',
             },
             resolve: {
@@ -618,7 +618,7 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.mission = $stateParams.mission;
+                        ProjectService.resolveParams.experiment = $stateParams.experiment;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],

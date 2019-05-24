@@ -60,6 +60,15 @@ class PipelineLicensesCtrl {
             });
         } else {
             this.projType = this.project.value.projectType;
+            if (this.projType === 'experimental') {
+                this.placeholder = 'Experiment';
+            } else if (this.projType === 'simulation') {
+                this.placeholder = 'Simulation';
+            } else if (this.projType === 'hybrid_simulation') {
+                this.placeholder = 'Hybrid Simulation';
+            } else if (this.projType === 'field_recon') {
+                this.placeholder = 'Mission';
+            }
         }
     }
 

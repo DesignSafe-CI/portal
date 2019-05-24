@@ -15,7 +15,7 @@ class PipelineFieldReconCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
-        this.mission = this.ProjectService.resolveParams.mission;
+        this.mission = this.ProjectService.resolveParams.experiment;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
 
         if (!this.project) {
@@ -42,10 +42,10 @@ class PipelineFieldReconCtrl {
     }
 
     goProject() {
-        this.$state.go('projects.pipelineFieldRecon', {
+        this.$state.go('projects.pipelineProject', {
             projectId: this.projectId,
             project: this.project,
-            mission: this.mission,
+            experiment: this.mission,
             selectedListings: this.selectedListings,
         }, {reload: true});
     }

@@ -73,7 +73,7 @@
     </div>
     <!-- Categories Start -->
     <!-- Reports -->
-    <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+    <div ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'"
          ng-if="$ctrl.matchingGroup($ctrl.mission, report) && $ctrl.browser.listings[report.uuid]"
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
@@ -101,12 +101,10 @@
             </div>
         </div>
     </div>
-    <!-- Models -->
-    <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'"
-         ng-if="$ctrl.matchingGroup($ctrl.mission, collection)"
-    >
+    <!-- Collections -->
+    <div ng-repeat="collection in $ctrl.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup($ctrl.mission, collection)">
         <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-            <button class="btn tab-model-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+            <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                 style="width:100%;">
                 <table style="width:100%">
                     <tr>
@@ -122,73 +120,74 @@
             <div id="files-{{collection.uuid}}" class="collapse in">
                 <div class="well">
                     <div style="display: inline-block; width:20%;">Observation Type</div>
-                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                            <ul style="list-style: none; padding-left: 0;">
-                                <li data-ng-repeat="ot in collection.value.observationTypes">
-                                    {{li}}
-                                </li>
-                            </ul>
-                        </div>
-                        <div style="display: inline-block; width:20%;">Date of Collection</div>
-                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                            <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                            <span data-ng-if="mission.value.dateEnd">
-                                &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                    <div style="display: inline-block; width: 78%; font-weight:bold;">
+                        <ul style="list-style: none; padding-left: 0;">
+                            <li data-ng-repeat="ot in collection.value.observationTypes">
+                                {{ot}}
+                            </li>
+                        </ul>
+                    </div>
+                    <div style="display: inline-block; width:20%;">Date of Collection</div>
+                    <div style="display: inline-block; width: 78%; font-weight:bold;">
+                        <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                        <span data-ng-if="$ctrl.mission.value.dateEnd">
+                            &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                        </span>
+                    </div>
+                    <div style="display: inline-block; width:20%; vertical-align: top;">
+                        Authors
+                    </div>
+                    <div style="display: inline-block; width:78%; font-weight: bold;">
+                        <div data-ng-repeat="author in collection.value.dataCollectors | orderBy: 'order'"
+                            data-ng-if="!author.length && author.authorship">
+                            <span data-ng-if="!author.guest">
+                                <ds-user data-username="author.name" data-format="lname">
+                                    {{author}}
+                                </ds-user>
+                            </span>
+                            <span data-ng-if="author.guest">
+                                {{author.lname}}, {{author.fname}}
                             </span>
                         </div>
-                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                            Authors
-                        </div>
-                        <div style="display: inline-block; width:78%; font-weight: bold;">
-                            <div data-ng-repeat="author in collection.value.dataCollectors | orderBy: 'order'"
-                                 data-ng-if="!author.length && author.authorship">
-                                <span data-ng-if="!author.guest">
-                                    <ds-user data-username="author.name" data-format="lname">
-                                        {{author}}
-                                    </ds-user>
-                                </span>
-                                <span data-ng-if="author.guest">
-                                    {{author.lname}}, {{author.fname}}
-                                </span>
-                            </div>
-                        </div>
-                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                            Site Location
-                        </div>
-                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                            <ul style="list-style:none; padding-left:0;">
-                                <li> Place: {{collection.value.location}} </li>
-                                <li> Lat: {{collection.value.latitude}} </li>
-                                <li> Lon: {{collection.value.longitude}} </li>
-                                <li> Elevation: {{collection.value.elevation}} </li>
-                            </ul>
-                        </div>
-                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                            Instrument
-                        </div>
-                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                            <ul style="list-style:none; padding-left:0;">
-                                <li data-ng-repeat="instrument in collection.value.instruments">
-                                    {{instrument.name}} | {{instrument.model}}
-                                </li>
-                            </ul>
-                        </div>
-                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                            Referenced Data
-                        </div>
-                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                            <ul style="list-style:none; padding-left:0;">
-                                <li data-ng-repeat="data in collection.value.referencedDatas">
-                                    {{data.title}} | {{data.doiUrl}}
-                                </li>
-                            </ul>
-                        </div>
-
-
-                    <p ng-if="model.value.description">{{ collection.value.description }}</p>
-                    <span ng-click="$ctrl.editCollection(collection)"><a>Edit</a></span>
+                    </div>
+                    <div style="display: inline-block; width:20%; vertical-align: top;">
+                        Site Location
+                    </div>
+                    <div style="display: inline-block; width: 78%; font-weight:bold;">
+                        <ul style="list-style:none; padding-left:0;">
+                            <li> Place: {{collection.value.location}} </li>
+                            <li> Lat: {{collection.value.latitude}} </li>
+                            <li> Lon: {{collection.value.longitude}} </li>
+                            <li> Elevation: {{collection.value.elevation}} </li>
+                        </ul>
+                    </div>
+                    <div style="display: inline-block; width:20%; vertical-align: top;">
+                        Instrument
+                    </div>
+                    <div style="display: inline-block; width: 78%; font-weight:bold;">
+                        <ul style="list-style:none; padding-left:0;">
+                            <li data-ng-repeat="instrument in collection.value.instruments">
+                                {{instrument.name}} | {{instrument.model}}
+                            </li>
+                        </ul>
+                    </div>
+                    <div style="display: inline-block; width:20%; vertical-align: top;">
+                        Referenced Data
+                    </div>
+                    <div style="display: inline-block; width: 78%; font-weight:bold;">
+                        <ul style="list-style:none; padding-left:0;">
+                            <li data-ng-repeat="data in collection.value.referencedDatas">
+                                {{data.title}} |
+                                <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div ng-if="collection.value.description">
+                        <p>{{ collection.value.description }}</p>
+                        <span ng-click="$ctrl.editCollection(collection)"><a>Edit</a></span>
+                    </div>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="true"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-listing="true"></files-listing>
             </div>
         </div>
     </div>

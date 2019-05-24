@@ -20,16 +20,15 @@
                 </div>
             </td>
             <td class="tg-0lax" ng-hide="$ctrl.projType === 'other'">
-                <strong ng-if="$ctrl.projType === 'experimental'">Proofread Experiment</strong>
-                <strong ng-if="$ctrl.projType === 'simulation'">Proofread Simulation</strong>
-                <strong ng-if="$ctrl.projType === 'hybrid_simulation'">Proofread Hybrid Sim</strong>
+                <strong>Proofread {{$ctrl.placeholder}}</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td class="tg-0lax">
                 <strong ng-if="$ctrl.projType === 'other'">Proofread Data</strong>
-                <strong ng-if="$ctrl.projType != 'other'">Proofread Categories</strong>
+                <strong ng-if="$ctrl.projType === 'field_recon'">Proofread Collections</strong>
+                <strong ng-if="$ctrl.projType != 'other' && $ctrl.projType != 'field_recon'">Proofread Categories</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
                 </div>
@@ -62,19 +61,9 @@
             <h3 style="text-align: center; color: orange;">
                 <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
             </h3>
-            <div ng-if="$ctrl.projType === 'experimental'">
-                <li>Project metadata is published alongside your first experiment with its own DOI.</li>
-                <li>If you publish additional experiments later, you will skip this step.</li>
-                <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
-            </div>
-            <div ng-if="$ctrl.projType === 'simulation'">
-                <li>Project metadata is published alongside your first simulation with its own DOI.</li>
-                <li>If you publish additional simulations later, you will skip this step.</li>
-                <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
-            </div>
-            <div ng-if="$ctrl.projType === 'hybrid_simulation'">
-                <li>Project metadata is published alongside your first hybrid simulation with its own DOI.</li>
-                <li>If you publish additional hybrid simulations later, you will skip this step.</li>
+            <div>
+                <li>Project metadata is published alongside your first {{$ctrl.placeholder}} with its own DOI.</li>
+                <li>If you publish additional {{$ctrl.placeholder}}s later, you will skip this step.</li>
                 <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
             </div>
         </p>
@@ -119,19 +108,19 @@
                 <td class="prj-data">{{ $ctrl.project.value.dataType }}</td>
             </tr>
             <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
+                ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhEvent">
                 <td>Natural Hazard</td>
                 <td class="prj-data">
-                    {{ $ctrl.browser.project.value.nhEvent }} | {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
+                    {{ $ctrl.project.value.nhEvent }} | {{$ctrl.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+                    <span ng-if="$ctrl.project.value.nhEventEnd">― {{$ctrl.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
                 </td>
             </tr>
             <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhType">
+                ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhType">
                 <td>Natural Hazard Type</td>
                 <td class="prj-data">
-                    <span ng-if="!$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhType }}</span>
-                    <span ng-if="$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhTypeOther }}</span>
+                    <span ng-if="!$ctrl.project.value.nhTypeOther">{{ $ctrl.project.value.nhType }}</span>
+                    <span ng-if="$ctrl.project.value.nhTypeOther">{{ $ctrl.project.value.nhTypeOther }}</span>
                 </td>
             </tr>
             <!-- older projects will have awards listed as strings -->
