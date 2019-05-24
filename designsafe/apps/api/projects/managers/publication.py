@@ -910,6 +910,12 @@ def reserve_publication(publication):
             for key in keys_to_drop:
                 exp_dict.pop(key)
 
+            try:
+                if (not exp['value']['procedureEnd']) or (exp['value']['procedureEnd'] == 'None'):
+                    exp['value'].pop('procedureEnd')
+            except KeyError:
+                pass
+
             pexp.update(exp_dict)
             pexp['doi'] = exp_doi
             xmls[exp_doi] = exp_xml
