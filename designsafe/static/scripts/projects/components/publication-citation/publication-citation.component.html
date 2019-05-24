@@ -11,7 +11,7 @@
         <div ng-if="$ctrl.entity">
             <span ng-repeat="author in $ctrl.auths | orderBy: 'order'" ng-if="author.authorship">
                 <span ng-if="!author.guest">
-                    <ds-user username="author.name" format="hname">{{ author.name }}</ds-user><span>, </span>
+                    <ds-user-list usernames="author.name" format="hname"></ds-user-list><span>, </span>
                 </span>
                 <span ng-if="author.guest">{{ author.lname }}, {{ author.fname[0] }}., </span>
             </span>
@@ -23,7 +23,7 @@
         <div ng-if="!$ctrl.entity">
             <span ng-repeat="member in $ctrl.auths | orderBy: 'order'">
                 <span ng-if="!member.guest">
-                    <ds-user username="member.name" format="hname">{{ member.name }}</ds-user><span>, </span>
+                    <ds-user-list usernames="member.name" format="hname"></ds-user-list><span>, </span>
                 </span>
                 <span ng-if="member.guest">{{ member.lname }}, {{ member.fname[0] }}., </span>
             </span>

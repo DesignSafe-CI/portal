@@ -20,7 +20,7 @@
                     <span ng-repeat="member in $ctrl.browser.publication.project.value.teamOrder | orderBy: 'order'">
                         <strong>
                             <span ng-if="!member.guest">
-                                <ds-user username="member.name" format="lname">{{ member.name }}</ds-user><span>; </span>
+                                <ds-user-list class="prj-data" usernames="member.name"></ds-user-list><span>; </span>
                             </span>
                             <span ng-if="member.guest">{{ member.lname }}, {{ member.fname }}; </span>
                         </strong>
