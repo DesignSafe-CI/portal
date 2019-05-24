@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.0-20190524
+
+Fixes:
+
+- Allow blank or null procedure end dates for experiment publications, v2.
+
 ## v4.4.0-20190523
 
 Fixes:
