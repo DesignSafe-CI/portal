@@ -182,6 +182,11 @@
             </div>
         </div>
         <div ng-hide="$ctrl.loading" ng-repeat="mission in $ctrl.browser.project.mission_set">
+            <div style="margin-bottom: 2px;">
+                <a data-ng-click="$ctrl.treeDiagram(mission)">
+                    <strong>View Data Diagram</strong>
+                </a>
+            </div>
             <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
                 <button class="btn tab-experiment"
                         ng-class="{'collapsed': !$ctrl.singleExperiment()}"
@@ -271,12 +276,6 @@
                         <p>
                             <br>{{ mission.value.description }}
                         </p>
-                        <div class="preview-tree-btn-wrapper">
-                            <button class="btn btn-link"
-                                    data-ng-click="$ctrl.treeDiagram(mission)">
-                                View Related Diagram
-                            </button>
-                        </div>
                 <!-- Hybrid Reports -->
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
                             ng-if="$ctrl.matchingGroup(mission, report)"

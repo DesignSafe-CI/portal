@@ -126,6 +126,11 @@
         </div>
     </div>
     <div ng-hide="$ctrl.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
+        <div style="margin-bottom: 2px;">
+            <a data-ng-click="$ctrl.treeDiagram(experiment)">
+                <strong>View Data Diagram</strong>
+            </a>
+        </div>
         <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
             <button class="btn tab-experiment" ng-class="{'collapsed': !$ctrl.singleExperiment()}" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                 <table style="width:100%">
@@ -238,12 +243,6 @@
                     </p>
                     <div ng-if="$ctrl.fileNav">
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
-                    </div>
-                    <div class="preview-tree-btn-wrapper">
-                        <button class="btn btn-link"
-                                data-ng-click="$ctrl.treeDiagram(experiment)">
-                            View Related Diagram
-                        </button>
                     </div>
                     <div ng-if="!$ctrl.fileNav">
                         <!-- Experiment Reports -->
