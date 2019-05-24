@@ -911,8 +911,8 @@ def reserve_publication(publication):
                 exp_dict.pop(key)
 
             try:
-                if (not exp['value']['procedureEnd']) or (exp['value']['procedureEnd'] == 'None'):
-                    exp['value'].pop('procedureEnd')
+                if (not exp_dict['value']['procedureEnd']) or (exp_dict['value']['procedureEnd'] == 'None'):
+                    exp_dict['value'].pop('procedureEnd')
             except KeyError:
                 pass
 
