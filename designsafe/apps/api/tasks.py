@@ -1006,14 +1006,6 @@ def email_collaborator_added_to_project(self, project, team_members_to_add, co_p
                         """.format(name=collab_user.get_full_name(), title=project.title, url=request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project.uuid)))
                 try:
                     collab_user.profile.send_mail("You have been added to a DesignSafe project!", email_body)
-                    # """
-                    #     Hi {},\r\n\r\n
-                    #     You have been added to the project {}.\r\n\r\n
-                    #     You can now start working on the project. Please use your TACC account to access the DesignSafe-CI website or to ask for help.\r\n\r\n
-                    #     Thanks,\r\n
-                    #     The DesignSafe-CI Team.\r\n\r\n
-                    #     This is a programmatically generated message. Do NOT reply to this message.
-                    #     """.format(collab_user.get_full_name(), project_title))
                 except DesignSafeProfile.DoesNotExist as err:
                     logger.info("Could not send email to user {}".format(collab_user))
                     send_mail(

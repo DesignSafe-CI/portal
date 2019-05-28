@@ -251,10 +251,11 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
             # Add creator to project as team member
             prj.add_team_members([request.user.username])
 
+        # Email collaborators
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
                 prj,
-                list(set(prj.co_pis + prj.team_members + [prj.pi])),
+                [u for u in list(set(prj.co_pis + prj.team_members + [prj.pi])) if u != request.user.username],
                 []
             ]
         )
