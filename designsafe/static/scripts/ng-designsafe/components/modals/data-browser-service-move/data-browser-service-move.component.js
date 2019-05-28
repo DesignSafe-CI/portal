@@ -1,25 +1,24 @@
 import DataBrowserServiceMoveTemplate from './data-browser-service-move.component.html';
 import _ from 'underscore';
-
+import { DataBrowserService } from '../../../services/data-browser-service';
 
 class DataBrowserServiceMoveCtrl {
 
-    constructor($scope, $state, FileListing, ProjectService) {
+    constructor($scope, $state, FileListing, ProjectService, DataBrowserService) {
         'ngInject';
         this.$scope = $scope
         this.$state = $state
         this.FileListing = FileListing
         this.ProjectService = ProjectService
+        this.DataBrowserService = DataBrowserService
     }
 
     $onInit() {
         this.files = this.resolve.files
         this.initialDestination = this.resolve.initialDestination
-    
         this.data = {
             files: this.files
         };
-        //$scope.data = data;
 
         this.listing = this.initialDestination;
 
@@ -28,6 +27,7 @@ class DataBrowserServiceMoveCtrl {
             error: null,
             listingProjects: false
         };
+        
 
         this.options = [
             {
@@ -44,8 +44,17 @@ class DataBrowserServiceMoveCtrl {
             }
         ];
 
+      
         this.$scope.currentOption = null;
-
+        let dbState = this.DataBrowserService.currentState;
+        if (dbState.listing.system == 'designsafe.storage.default') { 
+            this.$scope.currentOption = this.options.find((opt) => opt.label === 'My Data');
+        } else if (dbState.listing.system == 'projects') {
+            this.$scope.currentOption = this.options.find((opt) => opt.label === 'My Projects');
+        }
+         else if (dbState.listing.path == '$Share') {
+            this.$scope.currentOption = this.options.find((opt) => opt.label === 'Shared with me');
+         }
 
         this.$scope.$watch('currentOption', () => {
             this.state.busy = true;
@@ -54,7 +63,6 @@ class DataBrowserServiceMoveCtrl {
                 this.state.listingProjects = false;
                 this.FileListing.get(conf)
                     .then(listing => {
-                        console.log(listing)
                         this.listing = listing;
                         this.state.busy = false;
                     });
@@ -64,7 +72,6 @@ class DataBrowserServiceMoveCtrl {
                     .then(projects => {
                         this.projects = _.map(projects, (p) => {
                             p.href = this.$state.href('projects.view', { projectId: p.uuid });
-                            console.log(p)
                             return p;
                         });
                         this.state.busy = false;
@@ -82,7 +89,6 @@ class DataBrowserServiceMoveCtrl {
             }
         });
 
-        this.$scope.currentOption = this.options[0];
 
     }
 
@@ -119,8 +125,6 @@ class DataBrowserServiceMoveCtrl {
     };
 
     chooseDestination(fileListing) {
-        //$uibModalInstance.close(fileListing);
-        console.log(fileListing)
         this.close({$value: fileListing})
     };
 
