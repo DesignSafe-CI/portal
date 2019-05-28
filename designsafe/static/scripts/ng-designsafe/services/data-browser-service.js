@@ -544,8 +544,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     if (! Array.isArray(files)) {
       files = [files];
     }
-    console.log(initialDestination)
-    console.log('TEST')
     var modal = $uibModal.open({
       component: 'move',
       resolve: {
@@ -1771,13 +1769,11 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
             try { citationDate = ent.created.split('T')[0]; }
             catch(err) {
               citationDate = '[publication date]';
-              console.error(err);
             }
           } else {
             try { citationDate = ent[0].meta.dateOfPublication.split('T')[0]; }
             catch(err) {
               citationDate = '[publication date]';
-              console.error(err);
             }
           }
 
