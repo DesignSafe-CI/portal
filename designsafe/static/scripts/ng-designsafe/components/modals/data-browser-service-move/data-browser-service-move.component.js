@@ -1,21 +1,20 @@
 import DataBrowserServiceMoveTemplate from './data-browser-service-move.component.html';
 import _ from 'underscore';
-import { DataBrowserService } from '../../../services/data-browser-service';
 
 class DataBrowserServiceMoveCtrl {
 
     constructor($scope, $state, FileListing, ProjectService, DataBrowserService) {
         'ngInject';
-        this.$scope = $scope
-        this.$state = $state
-        this.FileListing = FileListing
-        this.ProjectService = ProjectService
-        this.DataBrowserService = DataBrowserService
+        this.$scope = $scope;
+        this.$state = $state;
+        this.FileListing = FileListing;
+        this.ProjectService = ProjectService;
+        this.DataBrowserService = DataBrowserService;
     }
 
     $onInit() {
-        this.files = this.resolve.files
-        this.initialDestination = this.resolve.initialDestination
+        this.files = this.resolve.files;
+        this.initialDestination = this.resolve.initialDestination;
         this.data = {
             files: this.files
         };
@@ -31,45 +30,43 @@ class DataBrowserServiceMoveCtrl {
 
         this.options = [
             {
+                label: 'My Data',
+                conf: { system: 'designsafe.storage.default', path: '' }
+            },
+            {
                 label: 'My Projects',
                 conf: { system: 'projects', path: '' }
             },
             {
                 label: 'Shared with me',
                 conf: { system: 'designsafe.storage.default', path: '$SHARE' }
-            },
-            {
-                label: 'My Data',
-                conf: { system: 'designsafe.storage.default', path: ''  }
             }
         ];
 
-      
-        this.$scope.currentOption = null;
         let dbState = this.DataBrowserService.currentState;
         if (dbState.listing.system == 'designsafe.storage.default') { 
             this.$scope.currentOption = this.options.find((opt) => opt.label === 'My Data');
-        } else if (dbState.listing.system == 'projects') {
+        } else if (dbState.listing.system.startsWith('project-')) {
             this.$scope.currentOption = this.options.find((opt) => opt.label === 'My Projects');
-        }
-         else if (dbState.listing.path == '$Share') {
+        } else if (dbState.listing.path == '$Share') {
             this.$scope.currentOption = this.options.find((opt) => opt.label === 'Shared with me');
-         }
+        } else {
+            this.$scope.currentOption = this.options[0];
+        }
 
-        this.$scope.$watch('currentOption', () => {
-            this.state.busy = true;
-            var conf = this.$scope.currentOption.conf;
+        this.$scope.$watch('currentOption', (opt) => {
+            let conf = opt.conf;
             if (conf.system != 'projects') {
                 this.state.listingProjects = false;
                 this.FileListing.get(conf)
-                    .then(listing => {
+                    .then((listing) => {
                         this.listing = listing;
                         this.state.busy = false;
                     });
             } else {
                 this.state.listingProjects = true;
                 this.ProjectService.list()
-                    .then(projects => {
+                    .then((projects) => {
                         this.projects = _.map(projects, (p) => {
                             p.href = this.$state.href('projects.view', { projectId: p.uuid });
                             return p;
@@ -118,19 +115,19 @@ class DataBrowserServiceMoveCtrl {
                 this.state.error = error.data.message || error.data;
             }
         );
-    };
+    }
 
     validDestination(fileListing) {
         return fileListing && (fileListing.type === 'dir' || fileListing.type === 'folder') && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
-    };
+    }
 
     chooseDestination(fileListing) {
-        this.close({$value: fileListing})
-    };
+        this.close({ $value: fileListing });
+    }
 
     cancel() {
         this.dismiss();
-    };
+    }
 
 }
 
@@ -143,7 +140,7 @@ export const DataBrowserServiceMoveComponent = {
         close: '&',
         dismiss: '&'
     }
-}
+};
 
 
 
