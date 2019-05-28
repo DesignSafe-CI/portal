@@ -235,7 +235,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'initial_pems_create',
                             'info': {'collab': request.user.username, 'pi': prj.pi} })
-        prj.add_team_members([request.user.username])
+
         if getattr(prj, 'copi', None):
             prj.add_co_pis(prj.copi)
         elif getattr(prj, 'co_pis', None):
@@ -245,29 +245,31 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         elif getattr(prj, 'team_members', None):
             prj.add_team_members(prj.team_members)
 
-        tasks.set_facl_project.apply_async(args=[prj.uuid, [request.user.username]], queue='api')
-        if prj.pi and prj.pi != request.user.username:
-            tasks.set_facl_project.apply_async(args=[prj.uuid, [prj.pi]], queue='api')
-            collab_users = get_user_model().objects.filter(username=prj.pi)
-            if collab_users:
-                collab_user = collab_users[0]
-                try:
-                    collab_user.profile.send_mail(
-                        "[Designsafe-CI] You have been added to a project!",
-                        "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=prj.title,
-                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (prj.uuid,))))
-                except DesignSafeProfile.DoesNotExist as err:
-                    logger.info("Could not send email to user %s", collab_user)
-                    body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=prj.title,
-                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (prj.uuid,)))
-                    send_mail(
-                        "[Designsafe-CI] You have been added to a project!",
-                        body,
-                        settings.DEFAULT_FROM_EMAIL,
-                        [collab_user.email],
-                        html_message=body)
+        prj._add_team_members_pems([prj.pi])
+
+        if request.user.username not in list(set(prj.co_pis + prj.team_members + [prj.pi])):
+            # Add creator to project as team member
+            prj.add_team_members([request.user.username])
+
+        # Email collaborators
+        tasks.email_collaborator_added_to_project.apply_async(
+            args=[
+                prj,
+                [u for u in list(set(prj.co_pis + prj.team_members + [prj.pi])) if u != request.user.username],
+                []
+            ]
+        )
+
+        tasks.set_facl_project.apply_async(
+            args=[
+                prj.uuid,
+                list(set(prj.co_pis + prj.team_members + [prj.pi]))
+            ],
+            queue='api'
+        )
+
         prj.add_admin('prjadmin')
-        tasks.set_project_id.apply_async(args=[prj.uuid],queue="api")
+        tasks.set_project_id.apply_async(args=[prj.uuid], queue="api")
         return JsonResponse(prj.to_body_dict(), safe=False)
 
 class ProjectInstanceView(SecureMixin, BaseApiView):
@@ -331,14 +333,14 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         tasks.check_project_files_meta_pems.apply_async(args=[p.uuid], queue='api')
         tasks.set_facl_project.apply_async(
             args=[
-                p.project_id,
+                p.uuid,
                 add_perm_usrs
             ],
             queue='api'
         )
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
-                p.title,
+                p,
                 add_perm_usrs,
                 []
             ]
@@ -370,7 +372,6 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         
         ag = get_service_account_client()
         project = BaseProject.manager().get(ag, uuid=project_id)
-        project_title = project.title
         project.manager().set_client(ag)
         project.add_team_members(team_members_to_add)
         project.add_co_pis(co_pis_to_add)
@@ -385,7 +386,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
-                project_title,
+                project,
                 team_members_to_add,
                 co_pis_to_add
             ]
