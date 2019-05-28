@@ -7,7 +7,7 @@
         </a>
       </div>
       <div ng-switch-when="publicData">
-        <hr>
+        <hr style="margin: 0;">
         <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ng-class="{active: $ctrl.$state.includes('publicData') || $ctrl.$state.includes('publishedData') || $ctrl.$state.includes('neesPublishedData')}">
           {{ childItem.name }}
         </a>
@@ -16,7 +16,7 @@
         <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ui-sref-active="active">
           {{ childItem.name }}
         </a>
-        <div ng-If="childItem.name == 'Shared with Me'"> <hr> </div>
+        <div ng-If="childItem.name == 'Shared with Me'"> <hr style="margin: 0;"> </div>
       </div>
     </div>
   </div>
