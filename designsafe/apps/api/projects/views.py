@@ -254,7 +254,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         # Email collaborators
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
-                prj,
+                prj.title,
+                prj.uuid,
                 [u for u in list(set(prj.co_pis + prj.team_members + [prj.pi])) if u != request.user.username],
                 []
             ]
@@ -340,7 +341,8 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         )
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
-                p,
+                p.title,
+                p.uuid,
                 add_perm_usrs,
                 []
             ]
@@ -386,7 +388,8 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
-                project,
+                project.title,
+                project.uuid,
                 team_members_to_add,
                 co_pis_to_add
             ]

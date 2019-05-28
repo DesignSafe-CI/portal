@@ -989,7 +989,7 @@ def set_facl_project(self, project_uuid, usernames):
         logger.debug('set facl project: {}'.format(res))
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
-def email_collaborator_added_to_project(self, project, team_members_to_add, co_pis_to_add):
+def email_collaborator_added_to_project(self, project_title, project_uuid, team_members_to_add, co_pis_to_add):
 
     for username in team_members_to_add + co_pis_to_add:
         collab_users = get_user_model().objects.filter(username=username)
@@ -1003,7 +1003,7 @@ def email_collaborator_added_to_project(self, project, team_members_to_add, co_p
                         <p>Thanks,<br>
                         The DesignSafe-CI Team.<br><br>
                         This is a programmatically generated message. Do NOT reply to this message.
-                        """.format(name=collab_user.get_full_name(), title=project.title, url=request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project.uuid)))
+                        """.format(name=collab_user.get_full_name(), title=project_title, url=request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project_uuid)))
                 try:
                     collab_user.profile.send_mail("You have been added to a DesignSafe project!", email_body)
                 except DesignSafeProfile.DoesNotExist as err:
