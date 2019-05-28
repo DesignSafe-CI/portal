@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.0-20190526
+
+Fixes:
+
+- Hotfix error not sending emails on project creation.
+- Hotfix styling in curation.
+
 ## v4.4.0-20190525
 
 Fixes:
