@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.0-20190525
+
+Fixes:
+
+- Add PI to project upon project creation.
+- Set default move destination to be current location.
+- Add separators in Data Depot.
+- Fix PI display issue for published other type projects.
+- Disable "Preview Images" button until fixed.
+- Change category selector for appropriate project type.
+- Disable "Preview Citation" button in Data Depot Toolbar.
+
 ## v4.4.0-20190524
 
 Fixes:
