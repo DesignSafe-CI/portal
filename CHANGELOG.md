@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.0-20190527
+
+Fixes:
+
+- Hotfix moving within project folder error.
+
 ## v4.4.0-20190526
 
 Fixes:
