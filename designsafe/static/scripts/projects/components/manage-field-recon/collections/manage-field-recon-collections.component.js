@@ -122,7 +122,7 @@ class ManageFieldReconCollectionsCtrl {
             observationTypes: [null],
             instruments: [{}],
             referencedDatas: [{}],
-            dataCollectors: {},
+            dataCollectors: angular.copy(this.data.users),
         };
     }
 
@@ -284,8 +284,7 @@ class ManageFieldReconCollectionsCtrl {
             observationTypes: this.form.observationTypes,
             dateStart: this.form.dateStart,
             dateEnd: this.form.dateEnd,
-            dataCollectors: this.data.users,
-            guestDataCollectors: this.form.guestDataCollectors,
+            dataCollectors: this.form.dataCollectors,
             location: this.form.location,
             longitude: this.form.longitude,
             latitude: this.form.latitude,
@@ -326,7 +325,6 @@ class ManageFieldReconCollectionsCtrl {
             dateStart: this.data.editCollection.value.dateStart,
             dateEnd: this.data.editCollection.value.dateEnd,
             dataCollectors: auths,
-            guestDataCollectors: auths,
             location: this.data.editCollection.value.location,
             longitude: this.data.editCollection.value.longitude,
             latitude: this.data.editCollection.value.latitude,
@@ -391,8 +389,7 @@ class ManageFieldReconCollectionsCtrl {
                 }
             }).then( (entity) => {
                 this.project.removeEntity(entity);
-                let attrName = this.project.getRelatedAttrName(entity);
-                this.data.collections = this.project[attrName];
+                this.data.collections = this.project.collection_set;
             });
         });
     }
