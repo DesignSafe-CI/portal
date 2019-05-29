@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.2
+
+Fixes:
+
+- Hotfix for project file nav.
+
 ## v4.4.1
 
 Fixes:
