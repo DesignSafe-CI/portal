@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.2-20190528
+
+Fixes:
+
+- Enable Field Research Projects in project type.
+- FR pipeline fixes.
+
 ## v4.4.2
 
 Fixes:
