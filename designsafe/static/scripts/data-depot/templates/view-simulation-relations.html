@@ -13,25 +13,25 @@
             <div style="display:inline-block;">
               <div>
                 <div style="margin-left:5px; display:inline-block;"
-                     ng-if="getRelated('report_set', false, simulation.uuid).length">
+                     ng-if="$ctrl.getRelated('report_set', false, simulation.uuid).length">
                     <span class="label tag-black" 
-                          ng-class="{'selected': getRelated('reports', false, simulation.uuid)[0].uuid === $ctrl.data.selectedUuid}">
+                          ng-class="{'selected': $ctrl.getRelated('reports', false, simulation.uuid)[0].uuid === $ctrl.data.selectedUuid}">
                             Simulation Report
                     </span>
                     <span class="tab-title">
-                    {{getRelated('reports', false, simulation.uuid)[0].value.title}}
+                    {{$ctrl.getRelated('reports', false, simulation.uuid)[0].value.title}}
                     </span>
                 </div>
               </div>
               <div>
                 <div style="margin-left:5px; display:inline-block;"
-                     ng-if="getRelated('analysiss', false, simulation.uuid).length">
+                     ng-if="$ctrl.getRelated('analysiss', false, simulation.uuid).length">
                     <span class="label tag-light-blue"
-                          ng-class="{'selected': getRelated('analysiss', false, simulation.uuid)[0].uuid === $ctrl.data.selectedUuid}">
+                          ng-class="{'selected': $ctrl.getRelated('analysiss', false, simulation.uuid)[0].uuid === $ctrl.data.selectedUuid}">
                         Simulation Analysis
                     </span>
                     <span class="tab-title">
-                    {{getRelated('analysiss', false, simulation.uuid)[0].value.title}}
+                    {{$ctrl.getRelated('analysiss', false, simulation.uuid)[0].value.title}}
                     </span>
                 </div>
               </div>
@@ -39,7 +39,7 @@
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in getRelated('models', false, simulation.uuid) | orderBy: 'value.title'">
+                ng-repeat="modelConfig in $ctrl.getRelated('models', false, simulation.uuid) | orderBy: 'value.title'">
               <div class="tree-el">
               <span class="label tag-blue"
                     ng-class="{'selected': modelConfig.uuid === $ctrl.data.selectedUuid}">Simulation Model</span>
@@ -47,7 +47,7 @@
               </div>
               <ul class="sensor-list-ul">
                 <li class="tree-container"
-                    ng-repeat="simInput in getRelated('inputs', false, [simulation.uuid, modelConfig.uuid]) | orderBy: 'value.title'">
+                    ng-repeat="simInput in $ctrl.getRelated('inputs', false, [simulation.uuid, modelConfig.uuid]) | orderBy: 'value.title'">
                   <div class="tree-el">  
                   <span class="label tag-green"
                         ng-class="{'selected': simInput.uuid === $ctrl.data.selectedUuid}">Simulation Input</span>
@@ -55,7 +55,7 @@
                   </div>
                   <ul>
                     <li 
-                        ng-repeat="simOutput in getRelated('outputs', false, [simulation.uuid, modelConfig.uuid, simInput.uuid]) | orderBy: '_ui.order'">
+                        ng-repeat="simOutput in $ctrl.getRelated('outputs', false, [simulation.uuid, modelConfig.uuid, simInput.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-red tree-el"
                             ng-class="{'selected': simOutput.uuid === data.entityUuid}">Simulation Output</span>
@@ -63,25 +63,25 @@
                         <div style="display:inline-block;">
                           <div>
                             <div style="margin-left:5px; display:inline-block;"
-                                 ng-if="getRelated('reports', false, simOutput.uuid).length">
+                                 ng-if="$ctrl.getRelated('reports', false, simOutput.uuid).length">
                                 <span class="label tag-black"
-                                      ng-class="{'selected':getRelated('reports', false, simOutput.uuid)[0].uuid === $ctrl.data.selectedUuid}">
+                                      ng-class="{'selected':$ctrl.getRelated('reports', false, simOutput.uuid)[0].uuid === $ctrl.data.selectedUuid}">
                                         Integrated Report
                                 </span>
                                 <span class="tab-title">
-                                {{getRelated('reports', false, simOutput.uuid)[0].value.title}}
+                                {{$ctrl.getRelated('reports', false, simOutput.uuid)[0].value.title}}
                                 </span>
                             </div>
                           </div>
                           <div>
                             <div style="margin-left:5px; display:inline-block;"
-                                 ng-if="getRelated('analysiss', false, simOutput.uuid).length">
+                                 ng-if="$ctrl.getRelated('analysiss', false, simOutput.uuid).length">
                                 <span class="label tag-black"
-                                      ng-class="{'selected': getRelated('analysiss', false, simOutput.uuid)[0].uuid === $ctrl.data.selectedUuid}">
+                                      ng-class="{'selected': $ctrl.getRelated('analysiss', false, simOutput.uuid)[0].uuid === $ctrl.data.selectedUuid}">
                                         Integrated Analysis
                                 </span>
                                 <span class="tab-title">
-                                {{getRelated('analysiss', false, simOutput.uuid)[0].value.title}}
+                                {{$ctrl.getRelated('analysiss', false, simOutput.uuid)[0].value.title}}
                                 </span>
                             </div>
                           </div>

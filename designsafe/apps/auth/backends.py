@@ -6,6 +6,7 @@ from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from designsafe.apps.accounts.models import DesignSafeProfile, NotificationPreferences
+from designsafe.apps.api.agave import get_service_account_client
 from pytas.http import TASClient
 import logging
 import re
@@ -128,8 +129,8 @@ class AgaveOAuthBackend(ModelBackend):
             # TODO make this into an AgavePy call
             response = requests.get('%s/profiles/v2/me' % base_url,
                                     headers={'Authorization': 'Bearer %s' % token})
-            json_result = response.json()
-            if 'status' in json_result and json_result['status'] == 'success':
+            if response.status_code >= 200 and response.status_code <= 299:
+                json_result = response.json()
                 agave_user = json_result['result']
                 username = agave_user['username']
                 UserModel = get_user_model()
@@ -161,9 +162,9 @@ class AgaveOAuthBackend(ModelBackend):
                     prefs = NotificationPreferences(user=user)
                     prefs.save()
 
-                self.logger.info('Login successful for user "%s"' % username)
+                self.logger.error('Login successful for user "%s"' % username)
             else:
-                self.logger.info('Agave Authentication failed: %s' % json_result)
+                self.logger.error('Agave Authentication failed: %s' % response.text)
         return user
 
     def revoke(self, user):

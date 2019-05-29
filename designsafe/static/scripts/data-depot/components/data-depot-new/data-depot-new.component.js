@@ -30,9 +30,7 @@ export function DataDepotNewCtrl($scope, $state, $sce, Django, ProjectService, D
 
     $scope.createProject = function($event) {
       if ($scope.test.createProject) {
-        ProjectService.editProject().then(function (project) {
-          $state.go('projects.view.data', {projectId: project.uuid, filePath: '/'});
-        });
+        ProjectService.editProject();
       } else {
         $event.preventDefault();
         $event.stopPropagation();

@@ -245,6 +245,11 @@ STATICFILES_FINDERS = (
 MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
 
+#####
+#
+# CMS Settings
+#
+#####
 DJANGOCMS_PICTURE_TEMPLATES = [
     ('non_responsive', 'Non-Responsive Image'),
     ('responsive', 'Responsive Image'),
@@ -278,6 +283,10 @@ CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'MeetingFormPlugin',
     'ResponsiveEmbedPlugin',
 )
+
+# These settings enable iFrames in the CMS cktext-editor.
+TEXT_ADDITIONAL_TAGS = ('iframe',)
+TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'src', 'height', 'width')
 
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',

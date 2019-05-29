@@ -24,6 +24,8 @@ from django.http import (HttpResponseRedirect,
                          JsonResponse)
 from django.shortcuts import render
 from django.contrib.auth import get_user_model, login
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.agave import get_service_account_client
@@ -97,6 +99,10 @@ class PublicDataListView(BaseApiView):
 class PublicMediaView(FileMediaView):
     """Media view to render metadata"""
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(PublicMediaView, self).dispatch(*args, **kwargs)
+
     def get(self, request, *args, **kwargs):
         return super(PublicMediaView, self).get(request, *args, **kwargs)
     
@@ -128,7 +134,7 @@ class PublicSearchView(BaseApiView):
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string')
         logger.debug('offset: %s, limit: %s, query_string: %s' % (str(offset), str(limit), query_string))
-        if file_mgr_name != PublicElasticFileManager.NAME or not query_string:
+        if file_mgr_name not in (PublicElasticFileManager.NAME, 'community') or not query_string:
             return HttpResponseBadRequest()
 
         if system_id is None:

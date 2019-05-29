@@ -16,7 +16,7 @@ export default class MapProject {
     });
   }
 
-  get_bounds() {
+  getBounds() {
     let bounds = [];
     this.layer_groups.forEach( (lg) => {
       bounds.push(lg.feature_group.getBounds());
@@ -24,14 +24,14 @@ export default class MapProject {
     return bounds;
   }
 
-  num_features () {
+  numFeatures () {
     total = 0;
     this.layer_groups.forEach( (lg) => {
-      total += lg.num_features();
+      total += lg.numFeatures();
     });
   }
 
-  to_json() {
+  toJson() {
     let out = {
       "type": "FeatureCollection",
       "features": [],

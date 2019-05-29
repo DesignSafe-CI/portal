@@ -1,5 +1,280 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.1
+
+Fixes:
+
+- Add PI to project upon project creation.
+- Set default move destination to be current location.
+- Add separators in Data Depot.
+- Fix PI display issue for published other type projects.
+- Disable "Preview Images" button until fixed.
+- Change category selector for appropriate project type.
+- Disable "Preview Citation" button in Data Depot Toolbar.
+- Allow blank or null procedure end dates for experiment publications.
+- Fix navigation/preview in search listings.
+- Changed Tree Diagram to Related Data Diagram.
+- Move data relation tree in publication and preview areas.
+
+## v4.4.0-20190527
+
+Fixes:
+
+- Hotfix moving within project folder error.
+
+## v4.4.0-20190526
+
+Fixes:
+
+- Hotfix error not sending emails on project creation.
+- Hotfix styling in curation.
+
+## v4.4.0-20190525
+
+Fixes:
+
+- Add PI to project upon project creation.
+- Set default move destination to be current location.
+- Add separators in Data Depot.
+- Fix PI display issue for published other type projects.
+- Disable "Preview Images" button until fixed.
+- Change category selector for appropriate project type.
+- Disable "Preview Citation" button in Data Depot Toolbar.
+
+## v4.4.0-20190524
+
+Fixes:
+
+- Allow blank or null procedure end dates for experiment publications, v2.
+
+## v4.4.0-20190523
+
+Fixes:
+
+- Allow blank or null procedure end dates for experiment publications.
+- Fix navigation/preview in search listings.
+- Changed Tree Diagram to Related Data Diagram.
+- Move data relation tree in publication and preview areas.
+
+## v4.4.0
+
+Fixes:
+
+- Preserve ordering of experiment authors when editing.
+- Reformat email to new project collaborators.
+- Change display of Field Recon to Field Research.
+- Disable publish button for Field Recon.
+- Add natural hazard metadata to project header for field recon.
+- Fixed linux/windows file category css.
+- Add published details to 'Other' type project template.
+- Rapid metadata in preview window hotfix.
+- Infinite recursive indexing fix.
+- Fix views not showing in 'Other' and 'Field Recon type projects.
+- Format authors for other projects.
+- Changed Tree Diagram to Related Data in Experimental Overview.
+- Fix template for multiple publication licenses.
+- Update Publication Citation popup.
+- Rapid/RApp metadata preview bug fix.
+
+## v4.3.9-20190522
+
+Fixes:
+
+- Roll back hotfix.
+
+## v4.3.9-20190521
+
+Fixes:
+
+- Hotfix to give published experiments an empty Procedure End date if none given.
+
+## v4.3.9-20190520
+
+Fixes:
+
+- Hotfix to reenable Publish button in pipeline.
+
+## v4.3.9-20190519
+
+Fixes:
+
+- Preserve ordering of experiment authors when editing.
+- Fix 'None' string publication end date.
+- Reformat email to new project collaborators.
+- Change display of Field Recon to Field Research.
+- Disable publish button for Field Recon.
+- Add natural hazard metadata to project header for field recon.
+- Fixed linux/windows file category css.
+
+## v4.3.9-20190518
+
+Fixes:
+
+- Add published details to 'Other' type project template.
+- Rapid metadata in preview window hotfix.
+- Infinite recursive indexing fix.
+- Fix views not showing in 'Other' and 'Field Recon type projects.
+
+## v4.3.9-20190517
+
+Fixes:
+
+- Format authors for other projects.
+- Changed Tree Diagram to Related Data in Experimental Overview.
+- Use agave prod tokens.
+
+## v4.3.9-20190516
+
+Fixes:
+
+- Fix template for multiple publication licenses.
+- Update Publication Citation popup.
+- Rapid/RApp metadata preview bug fix.
+
+## v4.3.9
+
+Fixes:
+
+- Hotfix to filter null guests from experiment addition.
+
+## v4.3.8
+
+Improvements:
+
+- Added FAQ link to side nav.
+- Update project icons and change field recon description.
+- Render PI/author names in published when not logged in.
+- Add links to license websites for project publications.
+
+Fixes:
+
+- Fix bug where null guests prevented new experiments.
+- Fix null date bug when editing an experiment.
+- Fix bug preventing new experiments from being added.
+- Fixes issue where new user permissions and ACLs were not being set when editing a project.
+- Fixes to Edit Project Modal in Pipeline
+- Added icon to FAQ.
+- Update experiment on deletion.
+- Fix license deselect option.
+- Add event file tags
+- Various cosmetic publication fixes.
+- Add publication subdirectory navigation.
+- Format experiment details in published and project areas.
+- Fix copis not saving to project
+- Removed 'tag files' button from file upload.
+- Allow selections of multiple licenses in project publication.
+- Fix experiment links in NEES projects.
+- Fix issue causing new project entities to 500.
+
+## v4.3.7-20190515
+
+Fixes:
+
+- Fix bug where null guests prevented new experiments.
+- Disable download project zip button.
+
+## v4.3.7-20190514
+
+Fixes:
+
+- Fix null date bug when editing an experiment.
+- Fix bug preventing new experiments from being added.
+- Fixes issue where new user permissions and ACLs were not being set when editing a project.
+- Fixes to Edit Project Modal in Pipeline
+
+## v4.3.7-20190513
+
+Improvements:
+
+- Download published project files.
+
+Fixes:
+
+- Added icon to FAQ.
+- Update experiement on deletion.
+- Fix license deselect option.
+- Add event file tags
+- Various cosmetic publication fixes.
+
+## v4.3.7-20190512
+
+Improvements:
+
+- Added FAQ link to side nav.
+- Update project icons and change field recon description.
+- Render PI/author names in published when not logged in.
+
+Fixes:
+
+- Add publication subdirectory navigation.
+- Format experiment details in published and project areas.
+- Fix copis not saving to project
+- Removed 'tag files' button from file upload.
+
+## v4.3.7-20190511
+
+Improvements:
+
+- Add links to license websites for project publications.
+
+Fixes:
+
+- Allow selections of multiple licenses in project publication.
+- Fix experiment links in NEES projects.
+- Fix issue causing new project entities to 500.
+
+## v4.3.7
+
+Improvements:
+
+- Limits project indexer to once per day.
+- Enables iFrame embedding in CMS pages via ckeditor.
+
+Fixes:
+
+- Fixes a bug with user data views.
+- Fixes to publication templates and file tag formatting.
+- Fixes for published template and project type template.
+
+## v4.3.0-20190510
+
+Improvements:
+
+- Limits project indexer to once per day.
+- Enables iFrame embedding in CMS pages via ckeditor.
+
+## v4.3.0-20190509
+
+Fixes:
+
+- Fixes a bug where users could see other users' indexed data.
+- Fixes to publication templates and file tag formatting.
+
+## v4.3.0-20190508
+
+Fixes:
+
+- Fixes for published template and project type template.
+
+## v4.0.2
+
+Fixes:
+
+- Curation directory fixes.
+
+## v4.0.1
+
+Fixes:
+
+- Agave sandbox code.
+
+## v4.0.0
+
+Improvements:
+
+- Publication V2.
+- Updates on search and published views.
+
 ## v3.2.3
 
 Fixes:

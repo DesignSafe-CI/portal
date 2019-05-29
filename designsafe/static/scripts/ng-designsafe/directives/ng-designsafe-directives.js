@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import { $q } from '@uirouter/core';
 
 export function fileModel($parse) {
     'ngInject';
@@ -59,7 +61,6 @@ export function httpSrc($http) {
             var b64 = btoa(raw);
             attrs.$set('src', "data:image/jpeg;base64," + b64);
         }, function (error) {
-            console.log(error);
         });
       }
     };
@@ -193,45 +194,49 @@ export function dsDraggable() {
   }
 
 export function dsInfiniteScroll(){
-    return {
-      restrict: 'A',
-      scope: {
-        scrollBottom: '&',
-        scrollTop: '&',
-        bottomHeight: '='
-      },
-      link: function(scope, element, attrs){
-        var el = element[0];
-        el.addEventListener('scroll', function(e){
-          var pos = el.offsetHeight + el.scrollTop;
-          if (pos >= el.scrollHeight - scope.bottomHeight){
-            scope.scrollBottom(el, pos);
+  return {
+    restrict: 'A',
+    scope: {
+      scrollBottom: '&',
+      scrollTop: '&',
+      bottomHeight: '='
+    },
+    link: function(scope, element, attrs){
+      var el = element[0];
+      el.addEventListener('scroll', function(e){
+        var pos = el.offsetHeight + el.scrollTop;
+        if (pos >= el.scrollHeight - scope.bottomHeight){
+          scope.scrollBottom(el, pos);
+        }
+        if (pos <= el.offsetHeight){
+          if (scope.scrollTop){
+            scope.scrollTop(el, pos);
           }
-          if (pos <= el.offsetHeight){
-            if (scope.scrollTop){
-              scope.scrollTop(el, pos);
-            }
-          }
-        });
-      }
-    };
-  }
+        }
+      });
+    }
+  };
+}
 
-  export function dsUser(UserService) {
-    'ngInject';
-    return {
-      restrict: 'EA',
-      scope: {
-        username: '=',
-        format: '@'
-      },
-      link: function(scope, element) {
+export function dsUser(UserService) {
+  'ngInject';
+  return {
+    restrict: 'EA',
+    scope: {
+      username: '=',
+      format: '@'
+    },
+    link: function(scope, element) {
+      scope.$watch('username', function() {
         var format = scope.format || 'name';
 
-        UserService.get(scope.username).then(function (user) {
+        UserService.get(scope.username).then((user) => {
           switch (format) {
+            case 'hname':
+              element.text(user.last_name + ', ' + user.first_name[0] + '.');
+              break;
             case 'lname':
-              element.text(user.last_name + ', ' + user.first_name + ';');
+              element.text(user.last_name + ', ' + user.first_name);
               break;
             case 'name':
               element.text(user.first_name + ' ' + user.last_name);
@@ -252,9 +257,39 @@ export function dsInfiniteScroll(){
               element.text(user.username);
           }
         });
-      }
-    };
-  }
+      });
+    }
+  };
+}
+
+export function dsUserList(UserService) {
+  'ngInject';
+  return {
+    restrict: 'EA',
+    scope: {
+      usernames: '=',
+      format: '@'
+    },
+    link: function (scope, element) {
+      var format = scope.format || 'lname';
+      scope.$watch('usernames', function() {
+        UserService.getPublic(scope.usernames).then((user) => {
+          element.text(user.last_name + ', ' + user.first_name);
+          switch (format) {
+            case 'hname':
+              element.text(user.last_name + ', ' + user.first_name[0] + '.');
+              break;
+            case 'lname':
+              element.text(user.last_name + ', ' + user.first_name);
+              break;
+            default:
+              element.text(user.username);
+          }
+        });
+      });
+    }
+  };
+}
 
  export function dsFixTop($window) {
     'ngInject';

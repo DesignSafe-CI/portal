@@ -167,8 +167,29 @@
     width: 100%;
 }
 
-.ds-data-selected {
+.files-listing-table .unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.files-listing-table .highlight {
     background-color: #a1d2eb !important;
+}
+
+.files-listing-table tbody tr td div.checkbox {
+    vertical-align: middle !important;
+    display: inline-block;
+    margin: 0;
+}
+
+.authors-end {
+    margin-left: -8px;
+    background-color: #f5f5f5;
+    color: #f5f5f5;
 }
 
 /**
@@ -415,7 +436,11 @@ tr.experiment-deleted {
 }
 
 .ds-text-purple {
-    color: #865AA7;
+    color: #4B3181;
+}
+
+.ds-text-orange {
+    color: #BD5717;
 }
 
 span.label.tag-yellow {
@@ -429,15 +454,68 @@ span.label.tag-yellow.selected {
     color: white;
 }
 
+span.label.tag-yellow.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #ECE4BF;
+    border: 2px solid #B59300;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
+}
+
 span.label.tag-purple {
-    border: 2px solid #865AA7;
+    border: 2px solid #4B3181;
     color: black;
 }
 
 span.label.tag-purple.selected {
-    border: 2px solid #865AA7;
-    background: #865AA7;
+    border: 2px solid #4B3181;
+    background: #4B3181;
     color: white;
+}
+
+span.label.tag-purple.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #C8C0D9;
+    border: 2px solid #4B3181;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
+}
+
+span.label.tag-orange {
+    border: 2px solid #BD5717;
+    color: black;
+}
+
+span.label.tag-orange.selected {
+    border: 2px solid #BD5717;
+    background: #BD5717;
+    color: white;
+}
+
+span.label.tag-orange.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #EBCCB9;
+    border: 2px solid #BD5717;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
 }
 
 span.label.tag-light-blue {
@@ -451,6 +529,20 @@ span.label.tag-light-blue.selected {
     color: white;
 }
 
+span.label.tag-light-blue.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #CCECF6;
+    border: 2px solid #5BC0DE;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
+}
+
 span.label.tag-black {
     border: 2px solid #000;
     color: black;
@@ -460,6 +552,20 @@ span.label.tag-black.selected {
     border: 2px solid #000;
     background:#000;
     color: white;
+}
+
+span.label.tag-black.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #C4C4C4;
+    border: 2px solid #3E3E3E;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
 }
 
 span.label.tag-blue {
@@ -473,6 +579,20 @@ span.label.tag-blue.selected {
     color: white;
 }
 
+span.label.tag-blue.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #C4D9F2;
+    border: 2px solid #0567CC;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
+}
+
 span.label.tag-green {
     border: 2px solid #2EA89A;
     color: black;
@@ -482,6 +602,20 @@ span.label.tag-green.selected {
     border: 2px solid #2EA89A;
     background:#2EA89A;
     color: white;
+}
+
+span.label.tag-green.curation {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: normal;
+    background: #A8D3CE;
+    border: 2px solid #2EA89A;
+    border-radius: 5px;
+    padding: 3px;
+    width: 78%;
+    display: inline-flex;
+    align-items: center;
 }
 
 span.label.tag-red {
@@ -618,6 +752,7 @@ span.tag-title {
 
 .grayed-out {
     background-color:lightgray;
+    color:#3e3e3e;
 }
 
 .wizard-steps .active {
@@ -747,17 +882,21 @@ font-family: 'DesignSafe-Apps';
     text-rendering: optimizeLegibility;
 }
 
+.icon-ngl:before {
+    content: "\e900";
+    font-size: 4vw;
+}
 .icon-compress:before {
     content: "\e909";
 }
 .icon-extract:before {
-    content: "\e90a";
+    content: "\e90c";
 }
 .icon-matlab:before {
     content: "\e90b";
 }
 .icon-paraview:before {
-    content: "\e903";
+    content: "\e90a";
 }
 .icon-hazmapper:before {
     content: "\e904";
@@ -781,8 +920,72 @@ i[class^="icon-ls-pre/post"]:before,
     content: "\e902";
 }
 .icon-openfoam:before {
-    content: "\e900";
-}
-.icon-opensees:before {
     content: "\e901";
 }
+.icon-opensees:before {
+    content: "\e903";
+}
+
+@font-face {
+    font-family: 'Curation-Icons';
+        src: url('/static/fonts/Curation_Icons.ttf') format('truetype');        
+        font-weight: normal;
+        font-style: normal;
+    }
+        
+    [class^="curation-"]:before,
+    [class*=" curation-"]:before {
+        font-family: 'Curation-Icons';
+        font-style: normal;
+        /* font-size: 32px; */
+        /* speak: none; */
+        font-weight: normal;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+    
+    .curation-hybrid:before {
+        content: "\e907";
+    }
+    .curation-cc-zero:before {
+        content: "\e900";
+    }
+    .dropdown button.collapsed .curation-chevron:before {
+        content: "\e901";
+    }
+    .dropdown button .curation-chevron:before {
+        content: "\e902";
+    }
+    .curation-close-window:before {
+        content: "\e903";
+    }
+    .curation-cc-share:before {
+        content: "\e904";
+    }
+    .curation-experiment:before {
+        content: "\e905";
+    }
+    .curation-simulation:before {
+        content: "\e911";
+    }
+    .curation-gpl:before {
+        content: "\e906";
+    }
+    .curation-odc:before {
+        content: "\e90e";
+    }
+    .curation-other:before {
+        content: "\e90f";
+    }
+    .curation-req-doi:before {
+        content: "\e910";
+    }
+    .curation-recon:before {
+        content: "\e912";
+    }
+    .curation-download:before {
+        content: "\e913";
+        color:#1568C9;
+        font-size: 18px;
+        margin-left: 10px;
+    }

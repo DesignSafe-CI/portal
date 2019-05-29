@@ -172,10 +172,24 @@ def call_api(request, service):
 
                     if settings.DEBUG:
                         wh_base_url = settings.WEBHOOK_POST_URL.strip('/') + '/webhooks/'
+                        jobs_wh_url = settings.WEBHOOK_POST_URL + reverse('designsafe_api:jobs_wh_handler')
                     else:
                         wh_base_url = request.build_absolute_uri('/webhooks/')
+                        jobs_wh_url = request.build_absolute_uri(reverse('designsafe_api:jobs_wh_handler'))
 
                     job_post['parameters']['_webhook_base_url'] = wh_base_url
+
+                    # Remove any params from job_post that are not in appDef
+                    for param, _ in job_post['parameters'].items():
+                        if not any(p['id'] == param for p in job_post['appDefinition']['parameters']):
+                            del job_post['parameters'][param]
+
+                    del job_post['appDefinition']
+
+                    job_post['notifications'] = [
+                        {'url': jobs_wh_url,
+                        'event': e}
+                        for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
 
                     try:
                         data = submit_job(request, request.user.username, job_post)
@@ -235,18 +249,22 @@ def call_api(request, service):
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
     except HTTPError as e:
-        logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
-            service, e.message))
+        logger.exception(
+            'Failed to execute %s API call due to HTTPError=%s\n%s',
+            service,
+            e.message,
+            e.response.content
+        )
         return HttpResponse(json.dumps(e.message),
                             content_type='application/json',
                             status=400)
     except AgaveException as e:
-        logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
+        logger.exception('Failed to execute {0} API call due to AgaveException={1}'.format(
             service, e.message))
         return HttpResponse(json.dumps(e.message), content_type='application/json',
                             status=400)
     except Exception as e:
-        logger.error('Failed to execute {0} API call due to Exception={1}'.format(
+        logger.exception('Failed to execute {0} API call due to Exception={1}'.format(
             service, e))
         return HttpResponse(
             json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),

@@ -1,0 +1,191 @@
+<div style="background:white;">
+    <!-- Project Header Start -->
+    <div>
+        <div>
+            <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
+            <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
+        </div>
+        <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
+            <colgroup>
+                <col style="width: 15%">
+                <col style="width: 84%">
+            </colgroup>
+            <tr class="prj-row">
+                <td>PI</td>
+                <td>
+                    <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname">{{ $ctrl.browser.project.value.pi }}
+                    </ds-user>
+                </td>
+            </tr>
+            <tr ng-if="$ctrl.browser.project.value.coPis.length">
+                <td>CoPIs</td>
+                <td class="prj-data">
+                    <span ng-repeat="copi in $ctrl.browser.project.value.coPis">
+                        <span ng-if="!$last"><ds-user-list usernames="copi"></ds-user-list>; </span>
+                        <span ng-if="$last"><ds-user-list usernames="copi"></ds-user-list></span>
+                    </span>
+                </td>
+            </tr>
+            <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
+                <td>Project Type</td>
+                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
+                    {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}
+                </td>
+                <!-- FR -->
+                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>
+            </tr>
+            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
+                <td>Data Type</td>
+                <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
+            </tr>
+            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
+                <td>Natural Hazard</td>
+                <td class="prj-data">
+                    {{ $ctrl.browser.project.value.nhEvent }} | {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
+                </td>
+                </tr>
+                <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhType">
+                <td>Natural Hazard Type</td>
+                <td class="prj-data">
+                    <span ng-if="!$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhType }}</span>
+                    <span ng-if="$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhTypeOther }}</span>
+                </td>
+                </tr>
+            <!-- older projects will have awards listed as strings -->
+            <tr ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
+                <td>Awards</td>
+                <td><strong>{{ $ctrl.browser.project.value.awardNumber.join("") }}</strong></td>
+            </tr>
+            <tr ng-if="!$ctrl.isSingle($ctrl.browser.project.value.awardNumber)"
+                ng-repeat="award in $ctrl.browser.project.value.awardNumber track by $index">
+                <td ng-if="$first">Awards</td>
+                <td ng-if="!$first"></td>
+                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+            </tr>
+            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects">
+                <td ng-if="$first">Related Work</td>
+                <td ng-if="!$first"></td>
+                <td><strong>{{ work.title }} | <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.href }}</a></strong></td>
+            </tr>
+            <tr class="prj-row">
+                <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
+                <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
+            </tr>
+        </table>
+        <div ng-if="$ctrl.browser.project.value.description">
+            <p>{{ $ctrl.browser.project.value.description }}</p>
+        </div>
+    </div>
+    <!-- Project Header End -->
+    <table class="tg" style="table-layout: fixed; width: 100%;">
+        <colgroup>
+            <col style="width: 46%">
+            <col style="width: 50%">
+        </colgroup>
+        <tr>
+            <td class="tg-0lax">
+                <button class="btn btn-project-l grayed-out"
+                        ng-click="$ctrl.goWork()"
+                        ng-disabled="$ctrl.loading"
+                >
+                    Working Directory
+                </button>
+                <button class="btn btn-project-m"
+                        ng-click="$ctrl.goCuration()"
+                        ng-disabled="$ctrl.loading"
+                >
+                    Curation Directory
+                </button>
+                <button class="btn btn-project-r grayed-out"
+                        ng-click="$ctrl.goPreview()"
+                        ng-disabled="$ctrl.loading"
+                >
+                    Publication Preview
+                </button>
+            </td>
+            <td class="tg-0lax" ng-if="!$ctrl.loading">
+                <div ng-hide="$ctrl.browser.project.value.projectType === 'other'">                    
+                    <span style="padding:10px; font-weight:bold;">1
+                        <a  ng-click="$ctrl.manageExperiments()"
+                            ng-if="$ctrl.browser.project.value.projectType === 'experimental'"
+                            href="#">
+                            Add Experiments
+                        </a>
+                        <a  ng-click="$ctrl.manageSimulations()"
+                            ng-if="$ctrl.browser.project.value.projectType === 'simulation'"
+                            href="#">
+                            Add Simulations
+                        </a>
+                        <a  ng-click="$ctrl.manageHybridSimulations()"
+                            ng-if="$ctrl.browser.project.value.projectType === 'hybrid_simulation'"
+                            href="#">
+                            Add Hybrid Simulations
+                        </a>
+                        <a data-ng-click="$ctrl.manageFieldReconMissions()"
+                           data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"
+                           href="#">
+                            Add Missions
+                        </a>
+                    </span>
+                    <span style="padding:5px; font-weight:bold;">|</span>
+                    <span style="padding:10px; font-weight:bold;">2
+                        <a ng-click="$ctrl.manageCategories()"
+                           ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'"
+                           href="#">
+                            Add Categories
+                        </a>
+                        <a data-ng-click="$ctrl.manageFieldReconCollections()"
+                           data-ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"
+                           href="#">
+                            Add Collections
+                        </a>
+                    </span>
+                    <span style="padding:5px; font-weight:bold;">|</span>
+                    <span style="padding:10px; font-weight:bold;">3
+                        <a ng-click="$ctrl.relateData()"
+                            href="#">
+                            Relate Data
+                        </a>
+                    </span>
+                </div>
+            </td>
+            <td class="tg-0lax" ng-if="$ctrl.loading" style="opacity: 0.5;">
+                <div ng-hide="$ctrl.browser.project.value.projectType === 'other'">                    
+                    <span style="padding:10px; font-weight:bold;">1
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'experimental'">
+                            Add Experiments
+                        </strong>
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'simulation'">
+                            Add Simulations
+                        </strong>
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'hybrid_simulation'">
+                            Add Hybrid Simulations
+                        </strong>
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
+                            Add Missions
+                        </strong>
+                    </span>
+                    <span style="padding:5px; font-weight:bold;">|</span>
+                    <span style="padding:10px; font-weight:bold;">2
+                        <strong ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'"> Add Categories</strong>
+                        <strong ng-if="$ctrl.browser.project.value.projectType === 'field_recon'"> Add Collections</strong>
+                    </span>
+                    <span style="padding:5px; font-weight:bold;">|</span>
+                    <span style="padding:10px; font-weight:bold;">3
+                        <strong> Relate Data</strong>
+                    </span>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div ng-if="$ctrl.loading">
+        <h3 class="text-center">
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+        </h3>
+    </div>
+    <div ng-if="!$ctrl.loading">
+        <files-listing browser="$ctrl.browser"></files-listing>
+    </div>
+</div>

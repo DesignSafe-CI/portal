@@ -113,14 +113,7 @@
 
 <uib-tabset active="active">
     <uib-tab index="0" heading="Files">
-            <dd-listing
-            browser="$ctrl.browser"
-            on-browse="$ctrl.onBrowse"
-            on-select="$ctrl.onSelect"
-            on-detail="$ctrl.onDetail"
-            scroll-to-top="$ctrl.scrollToTop"
-            scroll-to-bottom="$ctrl.scrollToBottom">
-            </dd-listing>
+        <files-listing data-browser="$ctrl.browser">&nbsp;</files-listing>
     </uib-tab>
     <uib-tab index="1" heading="Experiments">
             <div class="modal-body">
@@ -263,7 +256,7 @@
                                                     <td>
                                                       <a 
                                                 
-                                                         ui-sref="neesPublishedData({filePath: '/'+experiment.path})"
+                                                         ui-sref="neesPublished({filePath: '/'+experiment.path})"
                                                          title="some title" class="file-folder">
                                                          <i class="glyphicon glyphicon-folder-close"></i>
                                                           /{{experiment.path}}

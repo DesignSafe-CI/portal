@@ -15,7 +15,9 @@ from requests.exceptions import HTTPError
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.projects.models.elasticsearch import IndexedProject
+from designsafe.apps.data.tasks import agave_indexer
 from elasticsearch_dsl.query import Q
+from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
 
@@ -880,11 +882,7 @@ def copy_publication_files_to_corral(self, project_id):
     os.chmod(prefix_dest, 0555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0555)
     save_to_fedora.apply_async(args=[project_id])
-    reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                        'file_id': '{}/{}'.format('designsafe.storage.published', project_id ),
-                                        'levels': 0
-                                        },
-                              queue='indexing')
+    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': '/' + project_id, 'recurse':True}, queue='indexing')
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
 def save_publication(self, project_id):
@@ -897,6 +895,36 @@ def save_publication(self, project_id):
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
+
+@shared_task(bind=True)
+def zip_project_files(self, project_uuid):
+    from designsafe.apps.projects.models.agave.base import Project
+    from designsafe.apps.api.agave import get_service_account_client
+
+    try:
+        ag = get_service_account_client()
+        proj = Project.manager().get(ag, uuid=project_uuid)
+        proj.archive()
+    except Exception as exc:
+        logger.error('Zip Proj UUID: %s. %s', project_uuid, exc, exc_info=True)
+        raise self.retry(exc=exc)
+
+@shared_task(bind=True)
+def zip_publication_files(self, project_id):
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
+
+    try:
+        pub = Publication(project_id=project_id)
+        pub.archive()
+    except Exception as exc:
+        logger.error('Zip Proj Id: %s. %s', project_id, exc, exc_info=True)
+        raise self.retry(exc=exc)
+
+@shared_task(bind=True)
+def set_publish_status(self, project_id):
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
+    pub = Publication(project_id=project_id)
+    pub.update(status='published')
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_to_fedora(self, project_id):
@@ -961,20 +989,28 @@ def set_facl_project(self, project_uuid, usernames):
         logger.debug('set facl project: {}'.format(res))
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
-def email_collaborator_added_to_project(self, project_title, team_members_to_add, co_pis_to_add):
+def email_collaborator_added_to_project(self, project_title, project_uuid, team_members_to_add, co_pis_to_add):
 
     for username in team_members_to_add + co_pis_to_add:
         collab_users = get_user_model().objects.filter(username=username)
         if collab_users:
             for collab_user in collab_users:
-                logger.debug('this is the user:'.format(collab_user))
+                email_body = """
+                        <p>Hi {name},</p><br>
+                        <p>You have been added to the project <b>{title}</b>.</p><br>
+                        <p>You can visit the project using the url <a href=\"{url}\">{url}</a></p>
+                        <p>You can now start working on the project. Please use your TACC account to access the DesignSafe-CI website or to ask for help.</p>
+                        <p>Thanks,<br>
+                        The DesignSafe-CI Team.<br><br>
+                        This is a programmatically generated message. Do NOT reply to this message.
+                        """.format(name=collab_user.get_full_name(), title=project_title, url=request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project_uuid)))
                 try:
-                    collab_user.profile.send_mail("You have been added to a DesignSafe project!", '''\
-                        Hi {},
-                        You have been added to the project {}.
-                        You can now start working on the project. Please use your TACC account to access the DesignSafe-CI website or to ask for help.
-                        <This is a programmatically generated message. Do NOT reply to this message.>
-                        Thanks, The DesignSafe-CI team"\
-                        '''.format(collab_user.get_full_name(), project_title))
+                    collab_user.profile.send_mail("You have been added to a DesignSafe project!", email_body)
                 except DesignSafeProfile.DoesNotExist as err:
-                    logger.info("Could not send email to user %s", collab_user)
+                    logger.info("Could not send email to user {}".format(collab_user))
+                    send_mail(
+                        "You have been added to a project!",
+                        email_body,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [collab_user.email],
+                        html_message=body)

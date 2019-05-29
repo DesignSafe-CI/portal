@@ -90,19 +90,34 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
         switch (system) {
             case 'designsafe.community.exec.stampede2.nores':
                 return $http.get('https://portal.tacc.utexas.edu/commnq/stampede2.tacc.utexas.edu/summary.json',
-                    {headers: {'X-Requested-With': undefined, Authorization: undefined}});
+                    { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
+                    .then((resp) => {
+                        return resp.data;
+                    }, (err) => {
+                        return $q.reject(err);
+                    });
 
             case 'designsafe.community.exec.maverick':
                 return $http.get('https://portal.tacc.utexas.edu/commnq/maverick.tacc.utexas.edu/summary.json',
-                    {headers: {'X-Requested-With': undefined, Authorization: undefined}});
+                    { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
+                    .then((resp) => {
+                        return resp.data;
+                    }, (err) => {
+                        return $q.reject(err);
+                    });
 
             case 'designsafe.community.exec.ls5':
                 return $http.get('https://portal.tacc.utexas.edu/commnq/lonestar5.tacc.utexas.edu/summary.json',
-                    {headers: {'X-Requested-With': undefined, Authorization: undefined}});
+                    { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
+                    .then((resp) => {
+                        return resp.data;
+                    }, (err) => {
+                        return $q.reject(err);
+                    });
 
             default: {
                 let deferred = $q.defer();
-                deferred.resolve({data: {heartbeat: {status: true}}});
+                deferred.resolve({ heartbeat: { status: true } });
                 return deferred.promise;
             }
         }

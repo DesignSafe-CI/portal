@@ -1,0 +1,232 @@
+<div style="background:white; padding-top: 20px">
+    <!-- progression map -->
+    <div class="pull-right" style="padding-bottom: 20px;">
+        <a ng-click="$ctrl.goWork()">
+            <i class="fa fa-times"></i> Exit Prepare to Publish
+        </a>
+    </div>
+    <table class="tg"
+           style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
+        <colgroup>
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+        </colgroup>
+        <tr style="text-align: center">
+            <td class="tg-0lax">
+                <strong>Selection</strong>
+                <div>
+                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Project</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Mission</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Collection</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Order Authors</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Licenses</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div>
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+            Preview</a>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedExp">Continue</button>
+    </div>
+    <!-- progression map -->
+    <div style="padding-top: 40px; padding-bottom: 40px;">
+        <!-- Error Messages -->
+        <div class="alert alert-danger" ng-if="$ctrl.missing.length">
+            <p class="lead" style="text-align:center;">Your Selection is Incomplete!</p>
+            <p>
+                The mission you have selected for publication is missing data or has incomplete requirements.
+                Please review the following fields:
+            </p>
+            <li ng-repeat="item in $ctrl.missing">The {{ item }} for this mission is missing or has no collection data.</li>
+        </div>
+        <p>
+            <h3 style="text-align: center">Select what you want to publish</h3>
+            <li>You can only publish one mission at a time.</li>
+            <li>Click "Select this Mission and all of its files"</li>
+            <li>If you want to deselect individual files, deselect the checkboxes.</li>
+            <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
+        </p>
+    </div>
+        <!-- Experiments -->
+        <div ng-show="$ctrl.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+        <!-- Reports -->
+        <div ng-hide="$ctrl.loading"
+             ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+             ng-if="$ctrl.matchingGroup(mission, report)"
+        >
+            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                    style="width:100%;">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: left;">
+                                <span>Report | <strong>{{report.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="files-{{report.uuid}}" class="collapse">
+                    <div class="well" ng-if="report.value.description">
+                        <p>{{ report.value.description }}</p>
+                    </div>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-selection="true"></files-listing>
+                </div>
+            </div>
+        </div>
+        <div ng-hide="$ctrl.loading" ng-repeat="mission in $ctrl.browser.project.mission_set">
+            <div class="dropdown dropdown-spacer-lg" id="details-{{experiment.uuid}}">
+                <a ng-click="$ctrl.selectExperiment(mission)">Select this Mission and all of its files</a>
+                <span ng-if="$ctrl.selectedExp.uuid === mission.uuid"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                <button class="btn tab-experiment" ng-class="{'collapsed': !$ctrl.singleExperiment()}" data-toggle="collapse" data-target="#data-{{mission.uuid}}"
+                    style="width:100%;">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: left;">
+                                <span>Mission | <strong>{{mission.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="data-{{mission.uuid}}" class="collapse" ng-class="{'in': $ctrl.singleExperiment()}">
+                    <div class="well">
+                        <div ng-show="mission.value.dateStart">
+                            <div style="display:inline-block; width:20%;">Date of Mission</div>
+                            <strong style="display:inline-block; width:78%;">
+                                {{ mission.value.dateStart | date:'MM-dd-yyyy' }}
+                            </strong>
+                            <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate(mission.value.dateStart)">
+                                &#8213;
+                                {{ mission.value.dateEnd | date:'MM-dd-yyyy' }}
+                            </strong>
+                        </div>
+                        <div ng-show="mission.value.location">
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li>
+                                    <strong>Location</strong> {{ mission.value.location }}
+                                </li>
+                                <li>
+                                    <strong>Latitude</strong> {{ mission.value.latitude }}
+                                </li>
+                                <li>
+                                    <strong>Longitude</strong> {{ mission.value.longitude }}
+                                </li>
+                                <li>
+                                    <strong>Elevation</strong> {{ mission.value.elevation }}
+                                </li>
+                            <ul>
+                        </div>
+                        <div style="display:inline-block; width:20%;">Date of Publication</div>
+                        <strong style="display:inline-block; width:78%;">
+                            (Appears when published)
+                        </strong>
+                        <div style="display:inline-block; width:20%;">DOI <button class="btn btn-info btn-sm">Citation</button></div>
+                        <strong style="display:inline-block; width:78%;">
+                            (Appears when published)
+                        </strong>
+                        <div style="display:inline-block; width:20%;">License</div>
+                        <strong style="display:inline-block; width:78%;">
+                            (Appears when published)
+                        </strong>
+                        <p>
+                            <br>{{ mission.value.description }}
+                        </p>
+                        <!-- Reports -->
+                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+                             ng-if="$ctrl.matchingGroup(mission, report)"
+                        >
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                                    style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Report | <strong>{{report.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{report.uuid}}" class="collapse">
+                                    <div class="well" ng-if="report.value.description">
+                                        <p>{{ report.value.description }}</p>
+                                    </div>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-selection="true"></files-listing>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Model Configs -->
+                        <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'"
+                             ng-if="$ctrl.matchingGroup(mission, collection)"
+                        >
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                    style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Collection | <strong>{{collection.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{collection.uuid}}" class="collapse">
+                                    <div class="well" ng-if="collection.value.description">
+                                        <p>{{ collection.value.description }}</p>
+                                    </div>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-selection="true"></files-listing>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

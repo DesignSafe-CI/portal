@@ -1,0 +1,205 @@
+{
+    "designsafe.project.model_config": {
+        "name": "Model Config",
+        "tags": {
+            "General": [
+                "Image",
+                "Model Drawing",
+                "Video"
+            ],
+            "Centrifuge": [
+                "Clay",
+                "Flexible Shear Beam Container",
+                "Gravel",
+                "Hinged Plate Container",
+                "Pit",
+                "Rigid Container",
+                "Sand",
+                "Silt",
+                "Soil Strength",
+                "Structural Model",
+                "Triaxial Test"
+            ],
+            "Shake Table": [
+                "Concrete",
+                "Loading Protocol Ground Motions",
+                "Loading Protocol Intensity",
+                "Masonry",
+                "Material Test",
+                "Numerical Model",
+                "Protective System Damping",
+                "Protective System Isolation",
+                "Protective System Rocking",
+                "Soil",
+                "Steel",
+                "Structural Model",
+                "Wood"
+            ],
+            "Wind": [
+                "Bridge",
+                "Building Low Rise",
+                "Building Tail",
+                "Chimney",
+                "Mast",
+                "Model Aeroelastic",
+                "Model Full",
+                "Model Rigid",
+                "Model Section",
+                "Scale Full",
+                "Scale Small",
+                "Scale Large",
+                "Tower"
+            ],
+            "Wave": [
+                "Board Displacement",
+                "Directional Wave Basin",
+                "Free Surface Height",
+                "Hydrodynamic Conditions",
+                "Large Wave Flume",
+                "Wavemaker Input file"
+            ]
+        }
+    },
+    "designsafe.project.event": {
+        "name": "Event",
+        "tags": {
+            "General": [
+                "Data Units",
+                "Image",
+                "Video"
+            ],
+            "Centrifuge": [
+                "Actuator",
+                "Bender Element Test",
+                "Calibrated",
+                "Cone Penetrometer",
+                "Fast Data",
+                "Raw Data",
+                "Shaking",
+                "Centrifuge Speed",
+                "T-bar Test"
+            ],
+            "Shake Table": [
+                "Shake Table Test"
+            ],
+            "Mobile Shaker": [
+                "Field Notes",
+                "Load"
+            ],
+            "Wave": [
+                "Bathymetric Survey Data",
+                "Channel Name",
+                "Experimental Conditions",
+                "Physical Units",
+                "Raw"
+            ],
+            "Wind": [
+                "Aerodynamic roughness",
+                "Flow Boundary Layer",
+                "Flow Gusting",
+                "Flow Profile",
+                "Flow Steady",
+                "Flow Uniform",
+                "Incident Flow",
+                "Reynolds Number",
+                "Reynolds Stress",
+                "Scale Integral Length",
+                "Terrain Open",
+                "Terrain Urban",
+                "Terrain Aerodynamic",
+                "Test Complex Topography",
+                "Test Destructive",
+                "Test Dispersion",
+                "Test Environmental",
+                "Test External Pressure",
+                "Test High Frequency Force Balance",
+                "Test Internal Pressure",
+                "Test Pedestrian Level Winds",
+                "Turbulence Profile",
+                "Turbulence Spectrum",
+                "Velocity Mean",
+                "Velocity Profile",
+                "Wind Direction",
+                "Wind Duration",
+                "Wind Speed",
+                "Wind Tunnel Open Circuit",
+                "Wind Tunnel Open Jet",
+                "Wind Tunnel closed Circuit",
+                "3 Sec Gust"
+            ]
+        }
+    },
+    "designsafe.project.sensor_list": {
+        "name": "Sensor Info",
+        "tags": {
+            "General": [
+                "Sensor Drawing",
+                "Sensor List"
+            ],
+            "Centrifuge": [
+                "Accelerometer",
+                "Bender Element",
+                "Linear Potentiometer",
+                "Linear Variable Differential Transformer",
+                "Load Cell",
+                "Pore Pressure Transducer",
+                "Sensor Calibration",
+                "Strain Gauge",
+                "Tactile Pressure"
+            ],
+            "Shake Table": [
+                "Accelerometer",
+                "Displacement Sensor",
+                "Load Cell",
+                "Linear Potentiometer",
+                "Soil Sensor",
+                "Strain Gauge"
+            ],
+            "Wind": [
+                "Accelerometer",
+                "Component Velocity & Statistic Pressure Probes",
+                "Inertial",
+                "Particle Image Velocimetry",
+                "Pilot Tube",
+                "Pressure Scanner",
+                "Laser",
+                "Linear Variable differential Transformer",
+                "Load Cells",
+                "String Potentiometer",
+                "Strain Gauge"
+            ],
+            "Wave": [
+                "Absolute Timing",
+                "Calibration Summary",
+                "Instrument Survey",
+                "Project Instrumentation Locations",
+                "Sample Synchronization",
+                "Self Calibrating",
+                "Synchronization",
+                "Wave Gauge Calibration",
+                "Wiring Details"
+            ]
+        }
+    },
+    "designsafe.project.analysis": {
+        "name": "Analysis",
+        "tags": {
+            "General": [
+                "Graph",
+                "Visualization",
+                "Table",
+                "Script",
+                "README"
+            ]
+        }
+    },
+    "designsafe.project.report": {
+        "name": "Report",
+        "tags": {
+            "General": [
+                "README",
+                "Data Report"
+            ]
+        }
+    }
+}

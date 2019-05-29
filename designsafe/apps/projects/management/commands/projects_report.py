@@ -58,8 +58,8 @@ class Command(BaseCommand):
                 username=username
             )
             return '{last_name}, {first_name}'.format(
-                last_name=user.last_name,
-                first_name=user.first_name
+                last_name=user.last_name.decode('utf-8'),
+                first_name=user.first_name.decode('utf-8')
             )
         except ObjectDoesNotExist:
             return username
@@ -86,14 +86,14 @@ class Command(BaseCommand):
                 row = []
                 row.append(project.value.get('projectType', 'N/A'))
                 row.append(project.value.get('projectId', '-'))
-                row.append(project.value.get('title', 'N/A'))
+                row.append(project.value.get('title', 'N/A').decode('utf-8'))
                 ascs = project.value.get('associatedProjects', [])
                 if len(ascs):
                     row.append(
                         ', '.join(
                            ['{title}:{href}'.format(
-                                title=asc.get('title', '-'),
-                                href=asc.get('href', '-')
+                                title=asc.get('title', '-').decode('utf-8'),
+                                href=asc.get('href', '-').decode('utf-8')
                             ) for asc in ascs]
                         )
                     )
@@ -124,6 +124,16 @@ class Command(BaseCommand):
                      ) for team_member in team_members]
                 )
                 row.append(team_members_str)
-                row.append(project.value.get('awardNumber', '-'))
+                award_numbers = project.value.get('awardNumber', '-')
+                award_number = ''
+                if isinstance(award_numbers, list):
+                    for number in award_numbers:
+                        award_number += '{name} - {number}'.format(
+                            name=number.get('name', '').decode('utf-8'),
+                            number=number.get('number', '').decode('utf-8')
+                        )
+                else:
+                    award_number = award_numbers
+                row.append(award_number)
                 row.append(project.created)
-                writer.writerow(row)
+                writer.writerow([data.encode('utf-8') for data in row])

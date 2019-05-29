@@ -107,7 +107,7 @@ class Object(object):
             # set filter
             query.filter = nested_filter
             s = s.query(query)
-            logger.debug('serach query: %s', json.dumps(s.to_dict(), indent=4))
+            logger.debug('search query: %s', json.dumps(s.to_dict(), indent=4))
             try:
                 res = s.execute()
             except (TransportError, ConnectionTimeout) as e:
@@ -205,7 +205,7 @@ class Object(object):
         file_dict['permissions'] = self.user_pems(user_context)
         #elif file_dict['system'] == 'designsafe.storage.community':
         #    file_dict['permissions'] = "ALL"
-        file_dict['path'] = os.path.join(self._wrap.path, self._wrap.name)
+        file_dict['path'] = self._wrap['path']
         file_dict['system'] = self._wrap['system']
         return file_dict
 
@@ -336,8 +336,7 @@ class ElasticFileManager(BaseFileManager):
 
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        
-        search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
+        search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': '/' + username}})]))
         search = search.filter("term", system=system)
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])

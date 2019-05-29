@@ -1,0 +1,219 @@
+<div class="modal-header" style="background: #$e6e6e6;">
+    <h4 class="modal-title" style="border: none;">
+        <span>Reports</span>
+        <span class="pull-right" data-ng-click="$ctrl.close()">
+            <i class="fa fa-times">&nbsp;</i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <div class="well">
+        <form name="addForm">
+            <div class="text-center">
+                <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                <span>Required for Curation & publication</span>
+            </div>
+            <div class="report-title form-group">
+                <label for="id-title">Report Title
+                    <span style="color: #D04348; font-size: 14px;">&#9679; </span>
+                    <span style="dispay: block; font-weight: normal;">
+                        Different from the Project Title. Make it focused on the methods used to obtain the data.
+                    </span>
+                </label>
+                <input type="text"
+                       id="id-title"
+                       data-ng-model="$ctrl.form.title"
+                       data-ng-required="true"
+                       class="form-control" />
+            </div>
+            <div class="data-collectors form-group">
+                <label>Data Collectors
+                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <span style="display: block; font-weight: normal;">
+                        Who, specifically, collected this data?
+                        You can order the data collectors later when you publish.
+                    </span>
+                </label>
+                <div data-ng-repeat="usr in $ctrl.data.users track by $index"
+                     style="width: 45%;
+                            display:inline-block;
+                            white-space: nowrap;
+                            margin-bottom:5px;">
+                    <input type="checkbox"
+                           data-format="lname"
+                           id="{{ 'collector-' + $index }}"
+                           data-ng-model="usr.authorship">
+                        <ds-user data-ng-if="!usr.guest"
+                                 data-username="usr.name"
+                                 data-format="lname">
+                            {{usr.name}}
+                        </ds-user>
+                        <span data-ng-if="usr.guest">
+                            {{ usr.lname }}, {{ usr.fname }}
+                        </span>
+                </div>
+            </div>
+            <div class="referenced-data form-group">
+                <div style="width:45%; display:inline-block;">
+                    <label>
+                        Referenced Data Title
+                        <span style="display:block; font-weight: normal;">
+                            Data from published projects or an
+                            external repository.
+                        </span>
+                    </label>
+                </div>
+                <div style="width:45%; display:inline-block;">
+                    <label>
+                        Referenced Data DOI or URL
+                    </label>
+                </div>
+                <div style="width:45%; display:inline-block; margin-bottom:5px"
+                     data-ng-repeat-start="referenced
+                                           in $ctrl.form.referencedDatas">
+                    <input type="text"
+                           data-ng-model="referenced.title"
+                           class="form-control"/>
+                </div>
+                <div style="width: 45%; display:inline-block;"
+                     data-ng-repeat-end>
+                    <input type="text"
+                           data-ng-model="referenced.url"
+                           class="form-control"/>
+                </div>
+                <button class="btn btn-link"
+                        data-ng-click="$ctrl.addReferenced()">
+                    <i class="fa fa-plus">&nbsp;</i>
+                    Add another Referenced Data
+                </button>
+            </div>
+            <div class="description form-group">
+                <label for="id-description">
+                    Report Description
+                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <span style="display:block; font-weight:normal;">
+                        Summarized the purpose of the collection and its files.
+                        What is it about? What are its features?
+                    </span>
+                </label>
+                <textarea style="width:100%; height:3em; resize: vertical;"
+                          id="id-description"
+                          data-ng-model="$ctrl.form.description"
+                          data-ng-required="true">
+                    &nbsp;
+                </textarea>
+            </div>
+            <div class="text-right">
+              <button class="btn btn-add"
+                      type="submit"
+                      data-ng-click="addForm.$valid &&
+                                     $ctrl.updateReport($event)"
+                      data-ng-if="$ctrl.data.editReport"
+                      style="width:18%;">Update</button>
+            </div>
+            <div class="text-right">
+              <button class="btn btn-add"
+                      data-ng-click="addForm.$valid &&
+                                     $ctrl.saveReport($event)"
+                      data-ng-if="!$ctrl.data.editReport"
+                      style="width:18%;"
+                      type="submit">
+                  <i class="fa fa-plus">&nbsp;</i>
+                  Add Report
+              </button>
+            </div>
+        </form>
+    </div>
+    <div class="reports-list">
+        <div class="collection-list-title">
+            <label> Reports Inventory <label>
+        </div>
+        <div class="dorpdown">
+            <div data-ng-repeat="report in $ctrl.data.reports">
+                <div class="dropdown dropdown-spacer-sm">
+                    <button class="btn collapsed tab-experiment"
+                            data-toggle="collapse"
+                            data-target="#files-{{report.uuid}}"
+                            style="width: 100%;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="text-align: left;">
+                                    <span>
+                                        Report | 
+                                        <strong>{{report.value.title}}</strong>
+                                    </span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="curation-chevron"
+                                          style="font-size: 18px;">
+                                        &nbsp;
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </button>
+                    <div id="files-{{report.uuid}}"
+                         class="collapse dropdown-spacer-lg">
+                        <div style="display: inline-block;
+                                    width:20%;
+                                    vertical-align: top;">
+                            Data Collectors
+                        </div>
+                        <div style="display: inline-block;
+                                    width:78%;
+                                    font-weight: bold;">
+                            <div data-ng-repeat="author in
+                                 report.value.authors |
+                                 orderBy: 'order'"
+                                 data-ng-if="!author.length &&
+                                 author.authorship">
+                                <span data-ng-if="!author.guest">
+                                    <ds-user data-username="author.name"
+                                             data-format="lname">
+                                        {{author}}
+                                    </ds-user>
+                                </span>
+                                <span data-ng-if="author.guest">
+                                    {{author.lname}}, {{author.fname}}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="display: inline-block;
+                                    width: 20%;
+                                    vertical-align: top;">
+                            Referenced Data
+                        </div>
+                        <div style="display: inline-block;
+                                    width: 78%;
+                                    font-weight: bold;">
+                            <ul style="list-style: none;
+                                       padding-left: 0;">
+                                <li data-ng-repeat="referencedData in
+                                    report.value.referencedDatas">
+                                    {{referencedData.title}} | {{referencedData.url}}
+                                </li>
+                            </ul>
+                        </div>
+                        <div style="margin-top:10px;">
+                            {{ report.value.description}}
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button type="button"
+                                    class="btn btn-link"
+                                    data-ng-click="$ctrl.editReport(report)">
+                                Edit
+                            </button>
+                            <span> | </span>
+                            <button type="button"
+                                    class="btn btn-link"
+                                    data-ng-click="$ctrl.deleteReport(report)">
+                                Delete
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

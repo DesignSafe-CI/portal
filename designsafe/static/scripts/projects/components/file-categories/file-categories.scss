@@ -1,0 +1,82 @@
+.file-categories-content {
+    margin:5px 0;
+
+    .file-tag-list {
+
+        .file-tag-item {
+            overflow: auto;
+            .file-category-label {
+                width: 100%;
+                display: inline-block;
+            }
+            .file-tag-label {
+                width: 100%;
+                margin-bottom: 2px;
+                span {
+                    background: white;
+                    border: 2px solid black;
+                    border-radius: 5px;
+                    padding: 0px 3px;
+                    font-style:italic;
+                    width: 78%;
+                    display: inline-block;
+                }
+            }
+            .file-tag-selector {
+                width: 100%;
+                display: inline-block;
+                float: right;
+                .project-file-tags-select {
+                    width: 78%;
+                    margin-bottom: 2px;
+                    display: inline-block;
+                    height: 30px;
+                }
+            }
+        }
+        .other-tag-item {
+            overflow: auto;
+            .other-tag-label {
+                width: 100%;
+                display: inline-block;
+                margin-bottom: 2px;
+                span {
+                    background: white;
+                    border: 2px solid black;
+                    border-radius: 5px;
+                    padding: 0px 3px;
+                    font-style:italic;
+                    width: 40%;
+                    display: inline-block;
+                }
+            }
+            .other-tag-selector {
+                width: 100%;
+                display: inline-block;
+                .project-other-tags-select {
+                    width: 40%;
+                    margin-bottom: 2px;
+                    display: inline-block;
+                    height: 30px;
+                }
+            }
+        }
+    }
+}
+
+.file-tag-table {
+    width:100%;
+    margin-bottom: 8px;
+}
+
+.input-tag {
+    background: white;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    margin-bottom: 2px;
+    padding: 1px 3px;
+    width: 78%;
+}
+.input-tag.other {
+    width: 40%;
+}

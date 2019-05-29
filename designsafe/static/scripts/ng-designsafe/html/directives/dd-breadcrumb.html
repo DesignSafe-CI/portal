@@ -1,8 +1,0 @@
-<ul class="breadcrumb">
-    <li ng-if="customRoot">
-        <a href="{{ customRoot.href }}" ng-click="onBrowse()($event, customRoot)">{{ customRoot.name }}</a>
-    </li>
-    <li ng-repeat="item in listing.trail | limitTo: (offset - listing.trail.length)">
-        <a href="{{ itemHref()(item) }}" ng-click="onBrowse()($event, item)">{{ item.name }}</a>
-    </li>
-</ul>

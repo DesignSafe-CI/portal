@@ -43,7 +43,7 @@
         <input type="text" ng-model="lg.label">
         <i class="fa fa-check" ng-click="lg.show_edit_label=false"></i>
       </div>
-      <span class="lg-count" ng-show="!lg.show_edit_label"> {{lg.num_features()}} features </span>
+      <span class="lg-count" ng-show="!lg.show_edit_label"> {{lg.numFeatures()}} features </span>
     </div>
     <div class="pull-right">
       <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
@@ -70,14 +70,14 @@
       drag="{idx:$index, pidx:$parent.$index, fid:feature._leaflet_id}"
       >
 
-      <div> <i class="fa" ng-class="{'fa-image': lg.get_feature_type(feature) === 'Image',
-                                     'fa-map-marker': lg.get_feature_type(feature) === 'Point',
-                                     'map-icon-polygon': lg.get_feature_type(feature) === 'Polygon',
-                                     'map-icon-point-to-point': lg.get_feature_type(feature) === 'Path'
+      <div> <i class="fa" ng-class="{'fa-image': lg.getFeatureType(feature) === 'Image',
+                                     'fa-map-marker': lg.getFeatureType(feature) === 'Point',
+                                     'map-icon-polygon': lg.getFeatureType(feature) === 'Polygon',
+                                     'map-icon-point-to-point': lg.getFeatureType(feature) === 'Path'
                                     }">
             </i>
       </div>
-      <div ng-if="!feature.options.label"> {{ lg.get_feature_type(feature) }} </div>
+      <div ng-if="!feature.options.label"> {{ lg.getFeatureType(feature) }} </div>
       <div ng-if="feature.options.label"> {{ feature.options.label }} </div>
       <div class="pull-right">
         <div class="pull-left">
@@ -106,7 +106,7 @@
     </div>
   </li>
   <li class="list-group-item menu clearfix"
-      ng-hide="vm.active_layer_group.get_feature_type(vm.current_layer) === 'Path'">
+      ng-hide="vm.active_layer_group.getFeatureType(vm.current_layer) === 'Path'">
     <div class="left"> Fill: </div>
     <div class="right">
       <input type="color"
@@ -117,9 +117,9 @@
 
   </li>
   <li class="list-group-item menu clearfix"
-      ng-hide="((vm.active_layer_group.get_feature_type(vm.current_layer) === 'Point')
+      ng-hide="((vm.active_layer_group.getFeatureType(vm.current_layer) === 'Point')
                   ||
-                 (vm.active_layer_group.get_feature_type(vm.current_layer) === 'Image'))">
+                 (vm.active_layer_group.getFeatureType(vm.current_layer) === 'Image'))">
     <div class="left"> Stroke: </div>
     <div class="right">
       <input type="color"
@@ -130,9 +130,9 @@
 
   </li>
   <li class="list-group-item menu clearfix"
-      ng-hide="((vm.active_layer_group.get_feature_type(vm.current_layer) === 'Point')
+      ng-hide="((vm.active_layer_group.getFeatureType(vm.current_layer) === 'Point')
               ||
-             (vm.active_layer_group.get_feature_type(vm.current_layer) === 'Image'))">
+             (vm.active_layer_group.getFeatureType(vm.current_layer) === 'Image'))">
     <div class="left"> Opacity: </div>
     <div class="right">
       <input type="number" min="0" max="1" step="0.01"
@@ -143,9 +143,9 @@
 
   </li>
   <li class="list-group-item menu clearfix"
-      ng-show="((vm.active_layer_group.get_feature_type(vm.current_layer) === 'Point')
+      ng-show="((vm.active_layer_group.getFeatureType(vm.current_layer) === 'Point')
           ||
-         (vm.active_layer_group.get_feature_type(vm.current_layer) === 'Image'))">
+         (vm.active_layer_group.getFeatureType(vm.current_layer) === 'Image'))">
     <div class="left"> Lat: </div>
     <div class="right">
       <input type="number"
@@ -156,9 +156,9 @@
     </div>
   </li>
   <li class="list-group-item menu clearfix" ng-show="vm.current_layer &&
-        ((vm.active_layer_group.get_feature_type(vm.current_layer) === 'Point')
+        ((vm.active_layer_group.getFeatureType(vm.current_layer) === 'Point')
           ||
-         (vm.active_layer_group.get_feature_type(vm.current_layer) === 'Image'))">
+         (vm.active_layer_group.getFeatureType(vm.current_layer) === 'Image'))">
     <div class="left"> Lon: </div>
     <div class="right">
       <input type="number"

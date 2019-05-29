@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.agave.filemanager.search_index import ElasticFileManager
-from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.agave import get_service_account_client, impersonate_service_account
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.systems import BaseSystemResource
@@ -63,8 +63,7 @@ class FileListingView(BaseApiView):
                 file_path = request.user.username
 
             if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and \
-                (file_path.strip('/') == '$SHARE' or
-                 file_path.strip('/').split('/')[0] != request.user.username):
+                (file_path.strip('/') == '$SHARE'):
 
                 listing = ElasticFileManager.listing(system=system_id,
                                                      file_path=file_path,

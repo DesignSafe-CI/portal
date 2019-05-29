@@ -16,10 +16,6 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         selectedApp: null,
     };
 
-    Jobs.getWebhookUrl().then(function(response) {
-        $scope.webhookUrl = response.data;
-    });
-
     $scope.$watch('data.selectedApp', function(app) {
         if (app) {
             $scope.$broadcast('launch-app', app);
@@ -28,6 +24,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
     $scope.$on('launch-app', function(e, app) {
         $scope.error = '';
+        $scope.data.messages = [];
+        $scope.data.submitting = false;
 
         if ($scope.data.app) {
             $rootScope.$broadcast('close-app', $scope.data.app.id);
@@ -78,11 +76,22 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
                     $scope.data.app = resp.data;
 
-                    Systems.getSystemStatus(resp.data.executionSystem).then(function(response) {
-                        let heartbeatStatus = response.data.heartbeat.status;
-                        $scope.data.systemDown = (heartbeatStatus == false);
-                        $scope.resetForm();
-                    });
+                    Systems.getSystemStatus(resp.data.executionSystem)
+                        .then((response) => {
+                            let heartbeatStatus = response.heartbeat.status;
+                            $scope.data.systemDown = (heartbeatStatus == false);
+                        }, (err) => {
+                            $scope.data.messages.push({
+                                type: 'warning',
+                                header: 'System status unknown',
+                                body: `Could not access system status for system ${resp.data.executionSystem}. 
+                                Jobs may fail.`,
+                            });
+                            $scope.data.systemDown = null;
+                        })
+                        .finally(() => {
+                            $scope.resetForm();
+                        });
                 });
         } else if (app.value.type === 'html') {
             $scope.data.type = app.value.type;
@@ -121,8 +130,14 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         } else {
             items.push('maxRunTime', 'name', 'archivePath');
         }
-        if ($scope.data.app.parallelism == 'PARALLEL' && !$scope.data.app.tags.includes('hideNodeCount')) {
-            items.push('nodeCount');
+        if ($scope.data.app.parallelism == 'PARALLEL') {
+            if (!$scope.data.app.tags.includes('hideNodeCount')) {
+                items.push('nodeCount');
+            }
+            if (!$scope.data.app.tags.includes('hideProcessorsPerNode')) {
+                items.push('processorsPerNode');
+            }
+
         }
         $scope.form.form.push({
             type: 'fieldset',
@@ -154,12 +169,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 archive: true,
                 inputs: {},
                 parameters: {},
-                notifications: ['PENDING', 'QUEUED', 'SUBMITTING', 'PROCESSING_INPUTS', 'STAGED', 'KILLED', 'FAILED', 'STOPPED', 'FINISHED'].map(
-                    (e) => ({
-                        url: $scope.webhookUrl,
-                        event: e,
-                    })
-                ),
+                appDefinition: $scope.data.app,
             };
 
             /* copy form model to disconnect from $scope */
@@ -183,13 +193,23 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 }
             });
 
+            /* To ensure that DCV server is alive, name of job
+            * needs to contain 'dcvserver' */
+            if ($scope.data.app.tags.includes('DCV')) {
+                jobData.name += '-dcvserver';
+            }
+
             // Calculate processorsPerNode if nodeCount parameter submitted
-            if (_.has(jobData, 'nodeCount')) {
+            if (('nodeCount' in jobData) && !('processorsPerNode' in jobData)) {
                 jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
+            } else if (('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
+                jobData.processorsPerNode = jobData.nodeCount * jobData.processorsPerNode;
+            } else if (!('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
+                jobData.processorsPerNode = jobData.defaultNodeCount * jobData.processorsPerNode;
             }
 
             $scope.jobReady = true;
-            if ($scope.data.app.tags.includes('VNC')) {
+            if ($scope.data.app.parameters.some((p) => p.id === '_userProjects')) {
                 $scope.jobReady = false;
                 ProjectService.list({ offset: 0, limit: 500 }).then(function(resp) {
                     if (resp.length > 0) {

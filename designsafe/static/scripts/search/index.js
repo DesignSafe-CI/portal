@@ -33,12 +33,11 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlMatcherFac
   
   $stateProvider
     .state('search', {
-      url: '/?{query_string}&{type_filter}&{switch_filter:bool}',
+      url: '/?{query_string}&{type_filter}',
       component: 'siteSearch',
       params: {
         query_string: null,
-        type_filter: 'cms', 
-        switch_filter: null,
+        type_filter: 'all', 
       }
     })
     /* Private */

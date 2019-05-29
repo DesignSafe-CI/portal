@@ -11,17 +11,17 @@
           <div class="tree-el">
           <span class="ul-title"> <strong>{{experiment.value.title}}</strong> </span>
             <div style="margin-left:5px; display:inline-block;"
-                 ng-if="getRelated('reportsList', false, experiment.uuid).length">
+                 ng-if="$ctrl.getRelated('reportsList', false, experiment.uuid).length">
                 <span class="label tag-black">Report</span>
                 <span class="tab-title">
-                {{getRelated('reportsList', false, experiment.uuid)[0].value.title}}
+                {{$ctrl.getRelated('reportsList', false, experiment.uuid)[0].value.title}}
                 </span>
                 </button>
             </div>
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in getRelated('modelConfigs', false, [experiment.uuid])">
+                ng-repeat="modelConfig in $ctrl.getRelated('modelConfigs', false, [experiment.uuid])">
               <div class="tree-el">
               <span class="label tag-blue"
                    ng-class="{'selected': modelConfig.uuid === $ctrl.data.selectedUuid}">
@@ -30,7 +30,7 @@
               </div>
               <ul class="sensor-list-ul">
                 <li class="tree-container"
-                    ng-repeat="sensorList in getRelated('sensorLists', false, [experiment.uuid, modelConfig.uuid])">
+                    ng-repeat="sensorList in $ctrl.getRelated('sensorLists', false, [experiment.uuid, modelConfig.uuid])">
                   <div class="tree-el">  
                   <span class="label tag-green"
                         ng-class="{'selected': sensorList.uuid === $ctrl.data.selectedUuid}">
@@ -38,7 +38,7 @@
                   <span class="tag-title">{{sensorList.value.title}}</span>
                   </div>
                   <ul class="event-ul">
-                    <li ng-repeat="event in getRelated('eventsList', false, [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: '_ui.order'">
+                    <li ng-repeat="event in $ctrl.getRelated('eventsList', false, [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-red tree-el"
                             ng-class="{'selected': event.uuid === $ctrl.data.selectedUuid}">
@@ -62,7 +62,7 @@
             </div> 
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="event in getRelated('analysisList', false, analysis.uuid)">
+                ng-repeat="event in $ctrl.getRelated('analysisList', false, analysis.uuid)">
               <div class="tree-el">
               <span class="label tag-red">Event</span>
               <span class="tag-title">{{event.value.title}}</span>
@@ -72,8 +72,7 @@
         </li>
       </ul>
     </div>
-
-
+  </div>
 </div>
 <div class="modal-footer">
   <button class="btn btn-info"
