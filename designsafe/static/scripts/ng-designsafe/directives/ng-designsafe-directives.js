@@ -267,12 +267,24 @@ export function dsUserList(UserService) {
   return {
     restrict: 'EA',
     scope: {
-      usernames: '='
+      usernames: '=',
+      format: '@'
     },
     link: function (scope, element) {
+      var format = scope.format || 'lname';
       scope.$watch('usernames', function() {
         UserService.getPublic(scope.usernames).then((user) => {
           element.text(user.last_name + ', ' + user.first_name);
+          switch (format) {
+            case 'hname':
+              element.text(user.last_name + ', ' + user.first_name[0] + '.');
+              break;
+            case 'lname':
+              element.text(user.last_name + ', ' + user.first_name);
+              break;
+            default:
+              element.text(user.username);
+          }
         });
       });
     }
