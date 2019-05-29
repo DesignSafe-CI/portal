@@ -2,7 +2,7 @@ import PipelineCategoriesFieldReconTemplate from './pipeline-categories-field-re
 
 class PipelineCategoriesFieldReconCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q) {
+    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
@@ -10,6 +10,7 @@ class PipelineCategoriesFieldReconCtrl {
         this.DataBrowserService = DataBrowserService;
         this.browser = this.DataBrowserService.state();
         this.FileListing = FileListing;
+        this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;
     }
@@ -30,7 +31,7 @@ class PipelineCategoriesFieldReconCtrl {
             for now we can send them back to the selection area
             */
             this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
-            this.$state.go('projects.pipelineSelectSim', {projectId: this.projectId}, {reload: true});
+            this.$state.go('projects.pipelineSelectFieldRecon', {projectId: this.projectId}, {reload: true});
         }
     }
 
@@ -43,7 +44,7 @@ class PipelineCategoriesFieldReconCtrl {
         this.$state.go('projects.pipelineFieldRecon', {
             projectId: this.projectId,
             project: this.project,
-            mission: this.mission,
+            experiment: this.mission,
             selectedListings: this.selectedListings,
         }, {reload: true});
     }
@@ -61,7 +62,7 @@ class PipelineCategoriesFieldReconCtrl {
         this.$uibModal.open({
             component: 'fieldReconCollectionsModal',
             resolve: {
-                project: () => { return this.browser.project; },
+                project: () => { return this.project; },
                 selectedListings: () => { return this.selectedListings; },
                 edit: () => { return selection; },
             },
@@ -74,8 +75,8 @@ class PipelineCategoriesFieldReconCtrl {
         if (model.associationIds.indexOf(this.projectId) > -1 && !model.value.missions.length) {
             return true;
         } else {
-            // if the category is related to the simulation level
-            // match appropriate data to corresponding simulation
+            // if the category is related to the mission level
+            // match appropriate data to corresponding mission
             if(model.associationIds.indexOf(sim.uuid) > -1) {
                 return true;
             }

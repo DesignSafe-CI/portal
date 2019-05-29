@@ -150,6 +150,24 @@
                     &nbsp;
                 </textarea>
             </div>
+            <div class="expAuthors form-group">
+                <label>Assign Authorship</label>
+                <p>
+                    You can order the authors during the publication process.
+                </p>
+                <div class="form-group">
+                    <div ng-repeat="usr in $ctrl.form.authors track by $index"
+                        style="width:46%; display:inline-block; white-space: nowrap;">
+                        <input type="checkbox"
+                               format="lname"
+                               ng-checked="usr.authorship"
+                               id="{{ 'newAuthor' + $index }}"
+                               ng-click="$ctrl.addAuthors(usr, $index)">
+                        <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
+                        <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
+                    </div>
+                </div>
+            </div>
         </form>
         <!-- Update Exp Btn -->
         <div class="text-right">
