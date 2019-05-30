@@ -177,7 +177,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
             description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 48:00:00 (48 hours).',
             type: 'string',
             pattern: '^(48:00:00)|([0-4][0-9]:[0-5][0-9]:[0-5][0-9])$',
-            validationMessage: 'Must be in format HH:MM:SS and be less than 48 hours (48:00:00)',
+            validationMessage: 'Must be in format HH:MM:SS and be less than 48 hours (48:00:00).',
             required: true,
             'x-schema-form': { placeholder: app.defaultMaxRunTime },
             default: app.defaultMaxRunTime || '06:00:00',
@@ -185,11 +185,11 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
 
         schema.properties.name = {
             title: 'Job name',
-            description: 'A recognizable name for this job',
+            description: 'A recognizable name for this job.',
             type: 'string',
             required: true,
             default: app.id + '_' + this.getDateString(),
-            maxLength: 64
+            maxLength: 64,
         };
 
         schema.properties.nodeCount = {
@@ -208,7 +208,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                 }),
             },
         };
-        
+
         schema.properties.processorsPerNode = {
             title: 'Processors Per Node',
             description: `Number of processors (cores) per node for the job. e.g. A selection of 16 processors per node along with 4 nodes
