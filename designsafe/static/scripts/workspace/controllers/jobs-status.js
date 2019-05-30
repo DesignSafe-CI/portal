@@ -42,10 +42,18 @@ export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djang
         //   return msg.extra['target_path'] // this will only be present when indexing is complete
         // }
     };
-    $controller('WorkspacePanelCtrl', {$scope: $scope});
+
     $scope.data = {
         hasMoreJobs: true,
         limit: 10,
+    };
+
+    $scope.panel = {
+        collapsed: false,
+    };
+
+    $scope.togglePanel = function togglePanel() {
+        $scope.panel.collapsed = !$scope.panel.collapsed;
     };
 
     $scope.jobDetails = function(job) {
@@ -90,6 +98,7 @@ export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djang
 
     $scope.$on('job-submitted', function(e, data) {
         logger.log(data);
+        $scope.panel.collapsed = false;
         $scope.refresh();
     });
 
