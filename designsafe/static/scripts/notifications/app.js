@@ -56,7 +56,6 @@ angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$root
             $scope.data.pagination.show = true;
             $scope.data.pagination.current = $scope.data.pagination.page + 1;
         }
-        console.log('$scope', $scope);
 
         $rootScope.$emit('notifications:read', 'all');
     });
