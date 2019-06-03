@@ -308,9 +308,9 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         logger.info('post_data: %s', post_data)
         p = cls(value=post_data, uuid=project_id)
 
-        new_pi = post_data.get('pi', meta_obj.value['pi'])
-        new_co_pis = post_data.get('coPis', meta_obj.value['coPis'])
-        new_team_members = post_data.get('teamMembers', meta_obj.value['teamMembers'])
+        new_pi = post_data.get('pi', p.pi)
+        new_co_pis = post_data.get('coPis', p.co_pis)
+        new_team_members = post_data.get('teamMembers', p.team_members)
 
         # we need to compare the existing project data with the updated project data
         if new_pi and new_pi != 'null' and meta_obj.value['pi'] != new_pi:
