@@ -2,6 +2,9 @@ import _ from 'underscore';
 
 function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataBrowserService) {
     'ngInject';
+    $scope.panel = {
+        collapsed: false,
+    };
     if ($(window).width() < 992) {
         $scope.panel.collapsed = true;
     }
@@ -219,6 +222,10 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
             $scope.data.wants = null;
         }
     });
+
+    $scope.togglePanel = function togglePanel() {
+        $scope.panel.collapsed = !$scope.panel.collapsed;
+    };
 
     /* Initialize... */
     Systems.list().then(function(systemList) {

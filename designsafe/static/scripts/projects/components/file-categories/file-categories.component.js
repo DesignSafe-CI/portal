@@ -10,6 +10,10 @@ import { values } from '@uirouter/core';
 
 const getFileUuid = (file) => {
     let promise;
+    if (file.apiParams.fileMgr === 'published') {
+        // change the params if for published files.
+        file.apiParams = {baseUrl: "/api/agave/files", fileMgr: "agave"};
+    }
     if (_.isEmpty(file.uuid())) {
         promise = file.getMeta();
     } else {

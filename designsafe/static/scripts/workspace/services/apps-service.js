@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-export function appsService($http, $q, $translate, djangoUrl) {
+export function appsService($http, $q, $translate, djangoUrl, Django) {
     'ngInject';
     let service = {};
 
@@ -60,6 +60,11 @@ export function appsService($http, $q, $translate, djangoUrl) {
         });
     };
 
+    service.getDateString = function() {
+        let result = new Date().toISOString();
+        return result.slice(0, result.indexOf('.'));
+    };
+
     service.formSchema = function(app) {
         /**
          * Generate a JSON.schema for the app ready for angular-schema-form
@@ -80,7 +85,7 @@ export function appsService($http, $q, $translate, djangoUrl) {
                 type: 'object',
                 properties: {},
             };
-            _.each(params, function(param) {
+            _.each(params, (param) => {
                 if (!param.value.visible || param.id.startsWith('_')) {
                     return;
                 }
@@ -88,6 +93,8 @@ export function appsService($http, $q, $translate, djangoUrl) {
                     title: param.details.label,
                     description: param.details.description,
                     required: param.value.required,
+                    default: param.value.default,
+                    pattern: param.value.validator,
                 };
                 switch (param.value.type) {
                     case 'bool':
@@ -116,6 +123,11 @@ export function appsService($http, $q, $translate, djangoUrl) {
                         break;
 
                     case 'string':
+                        field.type = 'string';
+                        if (('ontology' in param.semantics) && (param.semantics.ontology.includes('agaveFile'))) {
+                            field.format = 'agaveFile';
+                        }
+                        break;
                     default:
                         field.type = 'string';
                 }
@@ -128,16 +140,15 @@ export function appsService($http, $q, $translate, djangoUrl) {
                 type: 'object',
                 properties: {},
             };
-            _.each(inputs, function(input) {
-                if (!input.value.visible) {
-                    return;
-                }
-                if (input.id.startsWith('_')) {
+            _.each(inputs, (input) => {
+                if (input.id.startsWith('_') || !input.value.visible) {
                     return;
                 }
                 let field = {
                     title: input.details.label,
                     description: input.details.description,
+                    id: input.id,
+                    default: input.value.default,
                 };
                 if (input.semantics.maxCardinality === 1) {
                     field.type = 'string';
@@ -148,7 +159,10 @@ export function appsService($http, $q, $translate, djangoUrl) {
                     field.items = {
                         type: 'string',
                         format: 'agaveFile',
+                        required: input.value.required,
                         'x-schema-form': { notitle: true },
+                        title: input.details.label,
+                        description: input.details.description,
                     };
                     if (input.semantics.maxCardinality > 1) {
                         field.maxItems = input.semantics.maxCardinality;
@@ -162,10 +176,11 @@ export function appsService($http, $q, $translate, djangoUrl) {
             title: 'Maximum job runtime',
             description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 48:00:00 (48 hours).',
             type: 'string',
-            pattern: '^(48:00:00)|([0-4][0-7]:[0-5][0-9]:[0-5][0-9])$',
+            pattern: '^(48:00:00)|([0-4][0-9]:[0-5][0-9]:[0-5][0-9])$',
             validationMessage: 'Must be in format HH:MM:SS and be less than 48 hours (48:00:00).',
             required: true,
             'x-schema-form': { placeholder: app.defaultMaxRunTime },
+            default: app.defaultMaxRunTime || '06:00:00',
         };
 
         schema.properties.name = {
@@ -173,6 +188,8 @@ export function appsService($http, $q, $translate, djangoUrl) {
             description: 'A recognizable name for this job.',
             type: 'string',
             required: true,
+            default: app.id + '_' + this.getDateString(),
+            maxLength: 64,
         };
 
         schema.properties.nodeCount = {
@@ -191,7 +208,7 @@ export function appsService($http, $q, $translate, djangoUrl) {
                 }),
             },
         };
-        
+
         schema.properties.processorsPerNode = {
             title: 'Processors Per Node',
             description: `Number of processors (cores) per node for the job. e.g. A selection of 16 processors per node along with 4 nodes
@@ -204,10 +221,10 @@ export function appsService($http, $q, $translate, djangoUrl) {
 
         schema.properties.archivePath = {
             title: 'Job output archive location (optional)',
-            description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>&lt;username&gt;/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',
+            description: `Specify a location where the job output should be archived. By default, job output will be archived at: <code>${Django.user}/archive/jobs/\${YYYY-MM-DD}/\${JOB_NAME}-\${JOB_ID}</code>.`,
             type: 'string',
             format: 'agaveFile',
-            'x-schema-form': { placeholder: '<username>/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}' },
+            'x-schema-form': { placeholder: `${Django.user}/archive/jobs/\${YYYY-MM-DD}/\${JOB_NAME}-\${JOB_ID}` },
         };
 
         return schema;

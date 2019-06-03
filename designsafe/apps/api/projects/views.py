@@ -255,7 +255,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
                 prj.title,
-                prj.uuid,
+                request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), prj.uuid)),
                 [u for u in list(set(prj.co_pis + prj.team_members + [prj.pi])) if u != request.user.username],
                 []
             ]
@@ -342,7 +342,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
                 p.title,
-                p.uuid,
+                request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), p.uuid)),
                 add_perm_usrs,
                 []
             ]
@@ -389,7 +389,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
                 project.title,
-                project.uuid,
+                request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project.uuid)),
                 team_members_to_add,
                 co_pis_to_add
             ]
