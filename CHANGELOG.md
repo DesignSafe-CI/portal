@@ -1,14 +1,27 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.0-20190604
+
+Improvements:
+
+- Adds default fields to app form.
+- Adds validation to fields from app def.
+
+Fixes:
+
+- Fixes workspace data browser panel collapsability.
+- Fix onBrowse for projects and search.
+- Fix to allow project edits if meta_obj is missing certain fields.
+
 ## v4.4.0-20190603
 
 Fixes:
 
-- Fix file metadata request in published area
-- Updates to App Form in the workspace
-- Hotfix to allow project edits if meta_obj is missing
-- Fix email message sent to users invited to a project
-- Fix onBrowse method for projects and search
+- Fix file metadata request in published area.
+- Updates to App Form in the workspace.
+- Hotfix to allow project edits if meta_obj is missing.
+- Fix email message sent to users invited to a project.
+- Fix onBrowse method for projects and search.
 
 ## v4.4.2
 
