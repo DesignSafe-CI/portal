@@ -150,11 +150,11 @@ class Project(MetadataModel):
 
     def archive(self):
         ARCHIVE_NAME = str(self.project_id) + '_archive.zip'
-        proj_dir = '/corral-repl/tacc/NHERI/projects/{}'.format(self.uuid)
+        proj_dir = '/corral-repl/tacc/NHERI/published/{}'.format(self.project_id)
 
         # open directory permissions
         def open_perms(project_directory):
-            os.chmod('/corral-repl/tacc/NHERI/projects/', 0777)
+            os.chmod('/corral-repl/tacc/NHERI/published/', 0777)
             archive_path = os.path.join(project_directory)
             for root, dirs, files in os.walk(archive_path):
                 os.chmod(root, 0777)
@@ -165,7 +165,7 @@ class Project(MetadataModel):
 
         # close directory permissions
         def close_perms(project_directory):
-            os.chmod('/corral-repl/tacc/NHERI/projects/', 0555)
+            os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
             archive_path = os.path.join(project_directory)
             for root, dirs, files in os.walk(archive_path):
                 os.chmod(root, 0555)
