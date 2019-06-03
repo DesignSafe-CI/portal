@@ -1,5 +1,15 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.0-20190603
+
+Fixes:
+
+- Fix file metadata request in published area
+- Updates to App Form in the workspace
+- Hotfix to allow project edits if meta_obj is missing
+- Fix email message sent to users invited to a project
+- Fix onBrowse method for projects and search
+
 ## v4.4.2
 
 Fixes:
