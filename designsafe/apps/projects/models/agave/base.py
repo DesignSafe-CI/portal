@@ -150,7 +150,7 @@ class Project(MetadataModel):
 
     def archive(self):
         ARCHIVE_NAME = str(self.project_id) + '_archive.zip'
-        proj_dir = '/corral-repl/tacc/NHERI/published/{}'.format(self.uuid)
+        proj_dir = '/corral-repl/tacc/NHERI/published/{}'.format(self.project_id)
 
         # open directory permissions
         def open_perms(project_directory):
