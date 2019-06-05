@@ -20,9 +20,7 @@
                   </a>
               </td>
               <td>
-                  <ds-user username="project.value.pi" format="name-username">
-                      {{ project.value.pi }} 
-                  </ds-user>
+                {{data.names[project.value.pi]}}
               </td>
               <td>
                   {{ project.lastUpdated|date:"short" }}
