@@ -214,7 +214,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 ProjectService.list({ offset: 0, limit: 500 }).then(function(resp) {
                     if (resp.length > 0) {
                         angular.forEach(resp, function(project, key) {
-                            resp[key] = `${project.uuid},${project.value.projectId ? project.value.projectId : project.uuid}`;
+                            resp[key] = `${project.uuid},${(project.value.projectId && project.value.projectId !== 'None') ? project.value.projectId : project.uuid}`;
                         });
                         jobData.parameters._userProjects = resp;
                     }
