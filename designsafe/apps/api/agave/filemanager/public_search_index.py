@@ -198,12 +198,11 @@ class Publication(object):
     
     def archive(self):
         ARCHIVE_NAME = str(self.projectId) + '_archive.zip'
-        proj_dir = '/srv/www/designsafe/corral-repl/tacc/NHERI/published/{}'.format(self.projectId)
-        # proj_dir = '/corral-repl/tacc/NHERI/published/{}'.format(self.projectId)
+        proj_dir = '/corral-repl/tacc/NHERI/published/{}'.format(self.projectId)
 
         def set_perms(project_directory, octal):
             try:
-                os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', octal)
+                os.chmod('/corral-repl/tacc/NHERI/published/', octal)
                 archive_path = os.path.join(project_directory)
                 if not os.path.isdir(archive_path):
                     raise Exception('Archive path does not exist!')
@@ -216,7 +215,7 @@ class Publication(object):
             except Exception as e:
                 logger.exception("Failed to set permissions for %s", project_directory)
             finally:
-                os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0555)
+                os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
 
         def create_archive(project_directory):
             try:
@@ -236,7 +235,7 @@ class Publication(object):
             except Exception as e:
                 logger.exception("Archive creation failed for %s", project_directory)
             finally:
-                os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0555)
+                os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
 
         def update_archive(project_directory):
             try:
@@ -264,7 +263,7 @@ class Publication(object):
             except Exception as e:
                 logger.exception("Archive update failed for project directory %s", project_directory)
             finally:
-                os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0555)
+                os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
 
         try:
             if ARCHIVE_NAME not in os.listdir(proj_dir):
