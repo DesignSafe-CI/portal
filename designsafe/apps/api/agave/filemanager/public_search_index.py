@@ -214,7 +214,6 @@ class Publication(object):
                         os.chmod(os.path.join(root, f), octal)
             except Exception as e:
                 logger.exception("Failed to set permissions for %s", project_directory)
-            finally:
                 os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
 
         def create_archive(project_directory):
