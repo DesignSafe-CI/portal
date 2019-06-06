@@ -198,55 +198,49 @@ class Publication(object):
     
     def archive(self):
         ARCHIVE_NAME = str(self.projectId) + '_archive.zip'
-        proj_dir = '/corral-repl/tacc/NHERI/published/{}'.format(self.projectId)
+        proj_dir = '/srv/www/designsafe/corral-repl/tacc/NHERI/published/{}'.format(self.projectId)
+        # proj_dir = '/corral-repl/tacc/NHERI/published/{}'.format(self.projectId)
 
-        # open directory permissions
-        def open_perms(project_directory):
-            os.chmod('/corral-repl/tacc/NHERI/published/', 0777)
-            archive_path = os.path.join(project_directory)
-            for root, dirs, files in os.walk(archive_path):
-                os.chmod(root, 0777)
-                for d in dirs:
-                    os.chmod(os.path.join(root, d), 0777)
-                for f in files:
-                    os.chmod(os.path.join(root, f), 0777)
-
-        # close directory permissions
-        def close_perms(project_directory):
-            os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
-            archive_path = os.path.join(project_directory)
-            for root, dirs, files in os.walk(archive_path):
-                os.chmod(root, 0555)
-                for d in dirs:
-                    os.chmod(os.path.join(root, d), 0555)
-                for f in files:
-                    os.chmod(os.path.join(root, f), 0555)
+        def set_perms(project_directory, octal):
+            try:
+                os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', octal)
+                archive_path = os.path.join(project_directory)
+                if not os.path.isdir(archive_path):
+                    raise Exception('Archive path does not exist!')
+                for root, dirs, files in os.walk(archive_path):
+                    os.chmod(root, octal)
+                    for d in dirs:
+                        os.chmod(os.path.join(root, d), octal)
+                    for f in files:
+                        os.chmod(os.path.join(root, f), octal)
+            except Exception as e:
+                logger.exception("Failed to set permissions for %s", project_directory)
+            finally:
+                os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0555)
 
         def create_archive(project_directory):
             try:
-                logger.debug("Creating new archive for %s" % project_directory)
+                logger.debug("Creating new archive for %s", project_directory)
 
                 # create archive within the project directory
                 archive_path = os.path.join(project_directory, ARCHIVE_NAME)
                 abs_path = project_directory.rsplit('/',1)[0]
-
-                
 
                 zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
                 for dirs, _, files in os.walk(project_directory):
                     for f in files:
                         if f == ARCHIVE_NAME:
                             continue
-                        # write files without abs file path
                         zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path,''), f))
                 zf.close()
-            except:
-                logger.debug("Creating archive failed for " % 
-                    project_directory)
+            except Exception as e:
+                logger.exception("Archive creation failed for %s", project_directory)
+            finally:
+                os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0555)
 
         def update_archive(project_directory):
             try:
-                logger.debug("Updating archive for %s" % project_directory)
+                logger.debug("Updating archive for %s", project_directory)
 
                 archive_path = os.path.join(project_directory, ARCHIVE_NAME)
                 archive_timestamp = os.path.getmtime(archive_path)
@@ -262,21 +256,27 @@ class Publication(object):
                                 zf.close()
                                 logger.debug(
                                     "Modified file, deleting archive and " \
-                                    "re-archiving project directory %s" % 
+                                    "re-archiving project directory %s",
                                     project_directory)
                                 os.remove(archive_path)
                                 create_archive(project_directory)
                                 break
-            except:
-                logger.debug("Updating archive failed for project directory" % 
-                    project_directory)
-        
-        open_perms(proj_dir)
-        if ARCHIVE_NAME not in os.listdir(proj_dir):
-            create_archive(proj_dir)
-        else:
-            update_archive(proj_dir)
-        close_perms(proj_dir)
+            except Exception as e:
+                logger.exception("Archive update failed for project directory %s", project_directory)
+            finally:
+                os.chmod('/srv/www/designsafe/corral-repl/tacc/NHERI/published/', 0555)
+
+        try:
+            if ARCHIVE_NAME not in os.listdir(proj_dir):
+                set_perms(proj_dir, 0755)
+                create_archive(proj_dir)
+            else:
+                set_perms(proj_dir, 0755)
+                update_archive(proj_dir)
+            set_perms(proj_dir, 0555)
+        except Exception as e:
+            logger.exception('Failed to archive publication!')
+
 
 class LegacyPublicationIndexed(DocType):
    class Meta:
