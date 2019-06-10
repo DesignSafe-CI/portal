@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.2-20190603
+
+Fixes:
+
+- Hotfix reference to old indexer.
+
 ## v4.4.2-20190602
 
 Improvements:
