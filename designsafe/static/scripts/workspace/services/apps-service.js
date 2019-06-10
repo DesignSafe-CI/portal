@@ -89,6 +89,11 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                 if (!param.value.visible || param.id.startsWith('_')) {
                     return;
                 }
+                try {
+                    RegExp(param.value.validator);
+                } catch (e) {
+                    param.value.validator = null;
+                }
                 let field = {
                     title: param.details.label,
                     description: param.details.description,
