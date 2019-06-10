@@ -32,9 +32,9 @@ export default class MapSidebarCtrl {
         this.settings = this.GeoSettingsService.settings;
 
         //method binding for callback, sigh...
-        this.local_file_selected = this.local_file_selected.bind(this);
-        this.feature_click = this.feature_click.bind(this);
-        // this.open_db_modal = this.open_db_modal.bind(this);
+        this.localFileSelected = this.localFileSelected.bind(this);
+        this.featureClick = this.featureClick.bind(this);
+        // this.openDbModal = this.openDbModal.bind(this);
 
         let streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -64,11 +64,11 @@ export default class MapSidebarCtrl {
 
         // Load in a map project from the data service if one does exist, if not
         // create a new one from scratch
-        if (this.GeoDataService.current_project()) {
-            this.project = this.GeoDataService.current_project();
+        if (this.GeoDataService.currentProject()) {
+            this.project = this.GeoDataService.currentProject();
 
-            this._init_map_layers();
-            this.fit_map_to_project();
+            this._initMapLayers();
+            this.fitMapToProject();
 
         } else {
             this.project = new MapProject('New Map');
@@ -87,10 +87,10 @@ export default class MapSidebarCtrl {
         // Auto keep track of current project in the GeoDataService
         // so that if they switch states they will not lose work...
         $interval( () => {
-            this.GeoDataService.current_project(this.project);
+            this.GeoDataService.currentProject(this.project);
         }, 1000);
 
-        this.add_draw_controls(this.active_layer_group.feature_group);
+        this.addDrawControls(this.active_layer_group.feature_group);
 
         // This handles making sure that the features that get created with the draw tool
         // are styled with the default colors etc.
@@ -105,7 +105,7 @@ export default class MapSidebarCtrl {
                 object.options.fillColor = this.settings.default_marker_color;
 
             }
-            this._init_map_layers();
+            this._initMapLayers();
             this.$scope.$apply();
         });
 
@@ -125,15 +125,15 @@ export default class MapSidebarCtrl {
 
     } // end constructor
 
-    fit_map_to_project() {
+    fitMapToProject() {
         try {
-            this.map.fitBounds(this.project.get_bounds(), { maxZoom: 16 });
+            this.map.fitBounds(this.project.getBounds(), { maxZoom: 16 });
         } catch (e) {
-            console.log('get_bounds fail', e);
+            console.log('getBounds fail', e);
         }
     }
 
-    add_draw_controls (fg) {
+    addDrawControls (fg) {
         let dc = new L.Control.Draw({
             position: 'topright',
             draw: {
@@ -152,7 +152,7 @@ export default class MapSidebarCtrl {
         this.drawControl = dc;
     }
 
-    feature_click (e) {
+    featureClick (e) {
         let layer = e.target;
         this.current_layer = null;
         this.project.layer_groups.forEach( (lg)=>{
@@ -167,7 +167,7 @@ export default class MapSidebarCtrl {
         this.$scope.$apply();
     }
 
-    _init_map_layers() {
+    _initMapLayers() {
     // For some reason, need to readd the feature groups for markers to be displayed correctly???
         this.project.layer_groups.forEach( (lg)=>{
             // lg.feature_group.getLayers().forEach( (layer)=>{
@@ -181,7 +181,7 @@ export default class MapSidebarCtrl {
                     layer.getElement().style.color = layer.options.fillColor;
                 }
                 layer.on({
-                    click: this.feature_click
+                    click: this.featureClick
                 });
             });
         });
@@ -190,19 +190,19 @@ export default class MapSidebarCtrl {
         }
     }
 
-    create_layer_group () {
+    createLayerGroup () {
         let lg = new LayerGroup('New Group', new L.FeatureGroup());
         this.project.layer_groups.push(lg);
         this.active_layer_group = this.project.layer_groups[this.project.layer_groups.length -1];
         this.map.addLayer(lg.feature_group);
-        this.select_active_layer_group(this.active_layer_group);
+        this.selectActiveLayerGroup(this.active_layer_group);
     }
 
-    delete_layer_group (lg, i) {
+    deleteLayerGroup (lg, i) {
         this.map.removeLayer(lg.feature_group);
         this.project.layer_groups.splice(i, 1);
         if (this.project.layer_groups.length === 0) {
-            this.create_layer_group();
+            this.createLayerGroup();
         }
         this.active_layer_group = this.project.layer_groups[0];
     }
@@ -212,19 +212,19 @@ export default class MapSidebarCtrl {
         lg.feature_group.removeLayer(f);
     }
 
-    show_hide_layer_group (lg) {
+    showHideLayerGroup (lg) {
         lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
     }
 
-    select_active_layer_group(lg) {
+    selectActiveLayerGroup(lg) {
         this.map.removeControl(this.drawControl);
-        this.add_draw_controls(lg.feature_group);
+        this.addDrawControls(lg.feature_group);
         this.active_layer_group = lg;
         lg.active = true;
         lg.show = true;
     }
 
-    _deactivate_all_features() {
+    _deactivateAllFeatures() {
         this.project.layer_groups.forEach( (lg)=>{
             lg.feature_group.getLayers().forEach( (layer) => {
                 layer.active = false;
@@ -232,8 +232,8 @@ export default class MapSidebarCtrl {
         });
     }
 
-    select_feature(lg, feature) {
-        this._deactivate_all_features();
+    selectFeature(lg, feature) {
+        this._deactivateAllFeatures();
         this.active_layer_group = lg;
         if (this.current_layer == feature) {
             feature.active = false;
@@ -244,7 +244,7 @@ export default class MapSidebarCtrl {
         }
     }
 
-    create_new_project () {
+    createNewProject () {
         let modal = this.$uibModal.open({
             template: confirmNewModalTmpl,
             controller: 'ConfirmClearModalCtrl as vm',
@@ -259,7 +259,7 @@ export default class MapSidebarCtrl {
         });
     }
 
-    zoom_to(feature) {
+    zoomTo(feature) {
         if (feature instanceof L.Marker) {
             let latLngs = [ feature.getLatLng() ];
             let markerBounds = L.latLngBounds(latLngs);
@@ -278,15 +278,15 @@ export default class MapSidebarCtrl {
         }
     }
 
-    on_drop (ev, data, lg) {
+    onDrop (ev, data, lg) {
         let src_lg = this.project.layer_groups[data.pidx];
         let feature = src_lg.feature_group.getLayers()[data.idx];
         src_lg.feature_group.removeLayer(feature);
         lg.feature_group.addLayer(feature);
-        this._init_map_layers();
+        this._initMapLayers();
     }
 
-    update_layer_style (prop) {
+    updateLayerStyle (prop) {
         let tmp = this.current_layer;
         let styles = {};
         styles[prop] = this.current_layer.options[prop];
@@ -297,11 +297,11 @@ export default class MapSidebarCtrl {
         }
     }
 
-    update_feature(layer){
+    updateFeature(layer){
         layer.update();
     }
 
-    metadata_save(k, v, layer) {
+    metadataSave(k, v, layer) {
         if (!(layer.options.metadata)) {
             layer.options.metadata = [];
         }
@@ -314,15 +314,15 @@ export default class MapSidebarCtrl {
         this.metadata_value = null;
     }
 
-    metadata_delete(idx, layer) {
+    metadataDelete(idx, layer) {
         layer.options.metadata.splice(idx, 1);
     }
 
-    drop_feature_success (ev, data, lg) {
+    dropFeatureSuccess (ev, data, lg) {
 
     }
 
-    _load_data_success (retval) {
+    _loadDataSuccess (retval) {
         if (this.open_existing) {
             if (retval instanceof MapProject) {
                 //clear off all the layers from the map
@@ -332,8 +332,8 @@ export default class MapSidebarCtrl {
 
                 // set the project to be the return value
                 this.project = retval;
-                this._init_map_layers();
-                this.fit_map_to_project();
+                this._initMapLayers();
+                this.fitMapToProject();
             } else {
                 this.toastr.error('Load failed! File was not compatible');
             }
@@ -344,7 +344,7 @@ export default class MapSidebarCtrl {
                 this.map.addLayer(lg.feature_group);
             });
             this.active_layer_group = this.project.layer_groups[0];
-            this.fit_map_to_project();
+            this.fitMapToProject();
         } else {
 
             if (this.project.layer_groups.length == 0) {
@@ -356,22 +356,22 @@ export default class MapSidebarCtrl {
             retval.forEach( (f) => {
                 this.active_layer_group.feature_group.addLayer(f);
             });
-            this.fit_map_to_project();
-            this._init_map_layers();
+            this.fitMapToProject();
+            this._initMapLayers();
         }
     }
 
-    open_existing_locally () {
+    openExistingLocally () {
         this.open_existing = true;
-        this.open_file_dialog();
+        this.openFileDialog();
     }
 
-    open_existing_from_depot() {
+    openExistingFromDepot() {
         this.open_existing = true;
-        this.open_db_modal({ single:true });
+        this.openDbModal({ single:true });
     }
 
-    open_db_modal (opts) {
+    openDbModal (opts) {
         let modal = this.$uibModal.open({
             component: 'ddfilepicker',
             resolve: {
@@ -379,10 +379,10 @@ export default class MapSidebarCtrl {
                 single: opts.single
             }
         });
-        modal.result.then( (files, saveas) => {this.load_from_data_depot(files.selected);});
+        modal.result.then( (files, saveas) => {this.loadFromDataDepot(files.selected);});
     }
 
-    open_image_preview_modal (href) {
+    openImagePreviewModal (href) {
         let modal = this.$uibModal.open({
             template: imagePreviewTempalte,
             controller: 'ImagePreviewModal as vm',
@@ -391,10 +391,10 @@ export default class MapSidebarCtrl {
                 marker: ()=> {return this.active_image_marker;}
             }
         });
-        modal.result.then( (f, saveas) => {this.load_from_data_depot(f);});
+        modal.result.then( (f, saveas) => {this.loadFromDataDepot(f);});
     }
 
-    open_settings_modal () {
+    openSettingsModal () {
         let modal = this.$uibModal.open({
             template: settingsModalTmpl,
             controller: 'SettingsModalCtrl as vm',
@@ -405,7 +405,7 @@ export default class MapSidebarCtrl {
         });
     }
 
-    open_image_overlay_modal () {
+    openImageOverlayModal () {
         let modal = this.$uibModal.open({
             template: imageOverlayTmpl,
             controller: 'ImageOverlayModalCtrl as vm',
@@ -417,7 +417,7 @@ export default class MapSidebarCtrl {
                 [res.max_lat, res.max_lon]
             ];
             if (res.file) {
-                this.GeoDataService.read_file_as_data_url(res.file).then( (data) => {
+                this.GeoDataService.readFileAsDataUrl(res.file).then( (data) => {
                     console.log(data);
                 });
             }
@@ -425,20 +425,20 @@ export default class MapSidebarCtrl {
         });
     }
 
-    open_file_dialog () {
+    openFileDialog () {
         this.$timeout(() => {
             $('#file_picker').click();
         }, 0);
     }
 
-    load_from_data_depot(files) {
+    loadFromDataDepot (files) {
 
         files.forEach( (f) => {
             this.loading = true;
-            this.GeoDataService.load_from_data_depot(f)
+            this.GeoDataService.loadFromDataDepot(f)
                 .then(
                     (retval) =>{
-                        this._load_data_success(retval);
+                        this._loadDataSuccess(retval);
                         this.loading = false;
                     },
                     (err)=> {
@@ -449,13 +449,13 @@ export default class MapSidebarCtrl {
         });
     }
 
-    local_file_selected (ev) {
+    localFileSelected (ev) {
         this.loading = true;
         let reqs = [];
         for (let i=0; i<ev.target.files.length; i++) {
             // debugger
             let file = ev.target.files[i];
-            let prom = this.GeoDataService.load_from_local_file(file).then( (retval) =>{return this._load_data_success(retval);});
+            let prom = this.GeoDataService.loadFromLocalFile(file).then( (retval) =>{return this._loadDataSuccess(retval);});
             reqs.push(prom);
             // this.loading = false;
         }
@@ -472,11 +472,11 @@ export default class MapSidebarCtrl {
         });
     }
 
-    save_locally () {
-        this.GeoDataService.save_locally(this.project);
+    saveLocally () {
+        this.GeoDataService.saveLocally(this.project);
     }
 
-    save_to_depot () {
+    saveToDepot () {
         let modal = this.$uibModal.open({
             component: 'ddfilepicker',
             resolve: {
@@ -489,7 +489,7 @@ export default class MapSidebarCtrl {
             this.project.name = newname.split('.')[0];
             res.location.name = res.saveas;
             this.loading = true;
-            this.GeoDataService.save_to_depot(this.project, res.location).then( (resp) => {
+            this.GeoDataService.saveToDepot(this.project, res.location).then( (resp) => {
                 this.loading = false;
                 this.toastr.success('Saved to data depot');
             }, (err) => {

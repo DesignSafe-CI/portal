@@ -15,7 +15,7 @@ class DataBrowserServicePreviewCtrl {
     $onInit() {
         this.file = this.resolve.file;
         this.listing = this.resolve.listing;
-
+        
         const file = this.file;
         const listing = this.listing;
 
@@ -49,8 +49,8 @@ class DataBrowserServicePreviewCtrl {
                             oReq.responseType = 'blob';
 
                             oReq.onload = () => {
-                                if (this.status === 200) {
-                                    var videoBlob = this.response;
+                                if (oReq.status === 200) {
+                                    var videoBlob = oReq.response;
                                     var vid = URL.createObjectURL(videoBlob);
 
                                     // set video source and mimetype
@@ -183,8 +183,11 @@ class DataBrowserServicePreviewCtrl {
         } else if (specificLocation.includes('projects')) {
             const prjNumber = this.DataBrowserService.state().project.value.projectId;
             specificLocation = 'projects/' + prjNumber;
-        } else if (specificLocation === 'publishedData') {
+        } else if (specificLocation === 'publishedData.view') {
             specificLocation = 'Published';
+        }
+        if (this.file.system === 'designsafe.storage.published') { 
+            specificLocation = 'NHERI-Published';
         }
         const fileLocation = specificLocation + "/" + pathToFile;
         const jupyterPath = `http://jupyter.designsafe-ci.org/user/${this.Django.user}/notebooks/${fileLocation}`;

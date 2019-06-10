@@ -29,7 +29,7 @@ app.conf.update(
         },
         'reindex_projects': {
             'task': 'designsafe.apps.api.tasks.reindex_projects',
-            'schedule': crontab(hour="*/24")
+            'schedule': crontab(hour="*/24", minute=0)
         }
     }
 )

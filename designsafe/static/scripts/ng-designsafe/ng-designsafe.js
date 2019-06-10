@@ -2,6 +2,9 @@
 // they will stomp on eachother
 import '../../styles/base.scss';
 import '../../styles/main.css';
+import '../projects/components/file-categories/file-categories.scss';
+import '../projects/components/file-category-selector/file-category-selector.scss';
+import '../data-depot/components/projects/publication-preview/publication-preview.scss';
 
 import $ from 'jquery';
 import angular from 'angular';
@@ -68,7 +71,7 @@ export const ngDesignsafe = angular.module('designsafe',
 ])
 .constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Partner Data Apps', 'Utilities'])
 // Current list of icons for apps
-.constant('appIcons', ['Compress', 'Extract', 'MATLAB', 'Paraview', 'Hazmapper', 'Jupyter', 'ADCIRC', 'QGIS', 'LS-DYNA', 'LS-Pre/Post', 'VisIt', 'OpenFOAM', 'OpenSees'])
+.constant('appIcons', ['Compress', 'Extract', 'MATLAB', 'Paraview', 'Hazmapper', 'Jupyter', 'ADCIRC', 'QGIS', 'LS-DYNA', 'LS-Pre/Post', 'VisIt', 'OpenFOAM', 'OpenSees', 'NGL'])
 
 ngDesignsafe.requires.push('django.context',
                            'httpi',

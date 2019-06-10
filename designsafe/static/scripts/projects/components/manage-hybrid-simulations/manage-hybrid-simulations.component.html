@@ -1,0 +1,245 @@
+<div class="modal-header" style="background: #e6e6e6;">
+  <h4 class="modal-title" style="border:none;">
+    <span>Add Hybrid Simulations</span>
+    <span class="pull-right" ng-click="$ctrl.cancel()">
+      <i class="fa fa-times"></i>
+    </span>
+  </h4>
+</div>
+<div class="modal-body">
+  <div class="well" id="form-top">
+    <form name='addForm' ng-hide="$ctrl.ui.showEditSimulationForm">
+      <div class="text-center">
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+        <span>Required for Curation & Publication</span>
+      </div>
+      <!-- Hybrid Simulation Title -->
+      <div class="simTitle form-group">
+        <label>Hybrid Simulation Title
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+        </label>
+        <p>
+          Different from the Project Title. Make it focused on the methods used to obtain the data in this Hyrbid Simulation.
+        </p>
+        <div>
+          <input type="text" id="add-sim-title" style="width:100%;" ng-model="$ctrl.form.addSimulation[0].title" ng-required="true"><br>
+        </div>
+      </div>
+      <!-- Hybrid Simulation Type -->
+      <div class="simType form-group">
+        <label>Hybrid Simulation Type</label>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+        <div>
+          <select ng-options="type.name as type.label for type in $ctrl.ui.simulationTypes"
+                  style="background:white; width:100%"
+                  ng-model="$ctrl.form.addSimulation[0].simulationType"
+                  id="add-sim-type"
+                  ng-required="true">
+          </select>
+          <input  type="text"
+                  style="background:white; width:100%"
+                  id="add-sim-type-other"
+                  placeholder="Custom Hybrid Simulation Type"
+                  ng-model="$ctrl.form.addSimulation[0].simulationTypeOther"
+                  ng-if="$ctrl.form.addSimulation[0].simulationType == 'Other'"
+                  ng-required="true" />
+        </div>
+      </div>
+      <!-- Hybrid Simulation Description -->
+      <div class="simDescription form-group">
+        <label>Hybrid Simulation Description</label>
+        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+        <p>
+          What was under investigation? How was it tested? What was the outcome? How can the data be reused?
+        </p>
+        <div>
+          <textarea type="text"
+                    style="width:100%; height:3em; resize: vertical;"
+                    id="add-sim-desc"
+                    ng-model="$ctrl.form.addSimulation[0].description"
+                    ng-required="true">
+          </textarea>
+        </div>
+      </div>
+      <!-- Authors -->
+      <div class="simAuthors form-group">
+        <label>Assign Authorship</label>
+        <p>
+            You can order the authors after creating the hybrid simulation.
+        </p>
+        <div class="form-group">
+          <div ng-repeat="usr in $ctrl.data.users track by $index" style="width:46%; display:inline-block; white-space: nowrap;">
+            <input type="checkbox" format="lname" id="{{ 'newAuthor' + $index }}" ng-click="$ctrl.addAuthors(usr, $index)">
+            <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
+            <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
+          </div>
+        </div>
+        <!-- Add HybSim Btn -->
+        <div class="text-right">
+          <button class="btn btn-add" type="submit" ng-click="addForm.$valid && $ctrl.saveSimulation($event)" style="width:18%;"><i class="fa fa-plus"></i> Add Hybrid Sim</button>
+        </div>
+      </div>
+    </form>
+    <form name='editForm' ng-if="$ctrl.ui.showEditSimulationForm">
+        <div class="text-center">
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          <span>Required for Curation & Publication</span>
+        </div>
+        <!-- Edit Hybrid Simulation Title -->
+        <div class="simTitle form-group">
+          <label>Hybrid Simulation Title
+            <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          </label>
+          <p>
+            Different from the Project Title. Make it focused on the methods used to obtain the data in this Hybrid Simulation.
+          </p>
+          <div>
+            <input type="text" name="sim-title" id="edit-sim-title" style="width:100%;" ng-model="$ctrl.editSimForm.title" ng-required="true"><br>
+          </div>
+        </div>
+        <!-- Edit Hybrid Simulation Type -->
+        <div class="simType form-group">
+          <label>Hybrid Simulation Type</label>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          <div>
+            <select style="background:white; width:100%"
+                    id="edit-sim-type"
+                    readonly>
+              <option value="$ctrl.editSimForm.simulationType">{{ $ctrl.editSimForm.simulationType }}</option>
+            </select>
+          </div>
+        </div>
+        <!-- Edit Hybrid Simulation Description -->
+        <div class="simDescription form-group">
+          <label>Hybrid Simulation Description</label>
+          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          <p>
+            What was under investigation? How was it tested? What was the outcome? How can the data be reused?
+          </p>
+          <div>
+            <textarea type="text"
+                      style="width:100%; height:3em; resize: vertical;"
+                      id="edit-sim-desc"
+                      ng-model="$ctrl.editSimForm.description"
+                      ng-required="true">
+            </textarea>
+          </div>
+        </div>
+        <!-- Edit Authors -->
+        <div class="simAuthors form-group">
+          <label>Assign Authorship</label>
+          <div>
+            You can order the authors later when you publish
+          </div>
+          <div class="form-group">
+            <div ng-repeat="author in $ctrl.editSimForm.authors track by $index" style="width:46%; display:inline-block;">
+              <input  type="checkbox"
+                      format="lname"
+                      id="{{ 'editAuthor' + $index }}"
+                      ng-checked="author.authorship"
+                      ng-click="$ctrl.editAuthors(author, $index)"
+              >
+              <ds-user ng-if="!author.guest" username="author.name" format="lname">{{ author.name }}</ds-user>
+              <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }}</span><br>
+            </div>
+          </div>
+          <!-- Sort Authors  -->
+          <strong>Order of Authors</strong>
+          <p>
+            You can adjust the order of authors for your hybrid simulation by selecting an author and using the arrows to change their position.
+          </p>
+          <table class="tg" style="table-layout: fixed; width: 100%;">
+            <colgroup>
+              <col style="width: 35%">
+              <col style="width: 64%">
+            </colgroup>
+            <tr>
+              <td class="tg-0lax">
+                <div ng-repeat="author in $ctrl.editSimForm.authors | orderBy: 'order'">
+                  <input  type="radio"
+                          name="author"
+                          format="lname"
+                          ng-model="$ctrl.editSimForm.selectedAuthor"
+                          ng-value="author"
+                          ng-if="author.authorship"
+                  >
+                  <ds-user  ng-if="!author.guest"
+                            username="author.name"
+                            format="lname"
+                            ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                  >
+                    {{ author.name }}
+                  </ds-user>
+                  <span ng-if="author.guest"
+                        ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                  >
+                    {{ author.lname }}, {{ author.fname }}
+                  </span><br>
+                </div>
+              </td>
+              <td class="tg-0lax">
+                  <i class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderAuthors(true)"></i>
+                  <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderAuthors(false)"></i>
+              </td>
+            </tr>
+          </table>
+          <!-- Update HybSim Btn -->
+          <div class="text-right">
+            <button class="btn btn-add" type="submit" ng-click="editForm.$valid && $ctrl.saveEditSimulation($event)" style="width:18%;">Update</button>
+          </div>
+        </div>
+      </form>
+  </div>
+  <!-- HYBRID SIMULATION LIST -->
+  <div class="hybsimlist">
+    <div>
+      <label>Hybrid Simulation Inventory</label>
+    </div>
+    <div class="dropdown">
+      <div ng-repeat="simulation in $ctrl.data.simulations">
+        <div class="dropdown dropdown-spacer-sm">
+          <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{simulation.uuid}}" style="width:100%;">
+            <table style="width:100%">
+                <tr>
+                    <td style="text-align: left;">
+                        <span>Hybrid Simulation | <strong>{{simulation.value.title}}</strong></span>
+                    </td>
+                    <td style="text-align: right;">
+                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                    </td>
+                </tr>
+            </table>
+          </button>
+          <div id="files-{{simulation.uuid}}" class="collapse dropdown-spacer-lg">
+            <div class="well">
+              <div style="display:inline-block; width:20%;">Hybrid Simulation Type</div>
+              <strong ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationType }}</strong>
+              <strong ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationTypeOther }}</strong>
+              <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
+              <div style="display:inline-block; width:78%; font-weight: bold;">
+                <span ng-repeat="author in simulation.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
+                  <span ng-if="!author.guest">
+                    <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>;
+                  </span>
+                  <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }};</span>
+                </span>
+                <span class="authors-end">__</span>
+                <!-- older author list -->
+                <div ng-repeat="author in simulation.value.authors" ng-if="author.length">
+                  <ds-user username="author" format="lname">{{ author }}</ds-user>
+                </div>
+              </div>
+              <div>
+                <br>{{ simulation.value.description }}
+              </div>
+              <div><br>
+                <span ng-click="$ctrl.editSim(simulation)"><a>Edit</a></span> | 
+                <span ng-click="$ctrl.deleteSimulation(simulation)"><a>Delete </a></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

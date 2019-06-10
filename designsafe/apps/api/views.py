@@ -27,18 +27,23 @@ class BaseApiView(View):
             extra = e.extra
             logger.error('{}'.format(message), exc_info=True, extra=extra)
         except (ConnectionError, HTTPError) as e:
-            status = e.response.status_code
-            message = e.response.reason
-            if status not in [403, 404]:
-                logger.error('%s: %s', message, e.response.text,
-                             exc_info=True,
-                             extra={'username': request.user.username,
-                                    'sessionId': request.session.session_key})
+            if e.response:
+                status = e.response.status_code
+                message = e.response.reason
+                if status not in [403, 404]:
+                    logger.error('%s: %s', message, e.response.text,
+                                 exc_info=True,
+                                 extra={'username': request.user.username,
+                                        'sessionId': request.session.session_key})
+                else:
+                    logger.warning('%s: %s', message, e.response.text,
+                                   exc_info=True,
+                                   extra={'username': request.user.username,
+                                          'sessionId': request.session.session_key})
             else:
-                logger.warning('%s: %s', message, e.response.text,
-                               exc_info=True,
-                               extra={'username': request.user.username,
-                                      'sessionId': request.session.session_key})
+                logger.error('%s', e, exc_info=True)
+                message = unicode(e)
+                status = 500
         
         resp = {'message': message}
                                       

@@ -1,26 +1,46 @@
 {% extends "base.html" %}
 {% load cms_tags staticfiles sekizai_tags%}
-{% block title %}Data Depot{% endblock %}
+
+{% block google_ciation_meta %}
+    <!--data/data_depot.html-->
+    <meta name="citation_title" content="{{citation_title}}">
+    <meta name="citation_publication_date" content="{{citation_date}}">
+    <meta name="citation_doi" content="{{doi}}">
+    <meta name="citation_publisher" content="DesignSafe-CI">
+    <meta name="citation_language" content="en">
+    {% for keyword in keywords %}
+    <meta name="citation_keywords" content="{{keyword}}">
+    {% endfor %}
+    {% for author in authors %}
+        <meta name="citation_author" content="{{author.full_name}}">
+        <meta name="citation_author_institution" content="{{author.institution}}">
+    {% endfor %}
+    <meta name="citation_abstract_html_url" content="">
+    <!--data/data_depot.html-->
+{% endblock %}
+{% block title %}
+Data Depot {% if citation_title %} - {{citation_title}} {% endif %}
+{% endblock %}
 {% block head_extra %}
     <base href="{% url 'designsafe_data:data_depot' %}">
 {% endblock %}
 {% block content %}
     <div class="container">
-        <div>
-            <ddmain style="position: relative;">
-                <ddtoolbar></ddtoolbar>
-                <div class="row">
-                    <div class="col-sm-3 col-md-2">
-                        
-                        <ddnew></ddnew> 
-                        <ddnav></ddnav>
-                    </div>
-                    <div class="col-sm-9 col-md-10">
-                        <ui-view></ui-view>
-                    </div>
+        <ddmain style="position: relative;">    
+            <div class="row">
+                <div class="col-sm-3 col-md-2">
+                    <h1 class="headline headline-research" id="headline-data-depot">
+                        <span class="hl hl-research">Data Depot</span>
+                    </h1>
+                    <ddnew></ddnew> 
+                    <ddnav></ddnav>
                 </div>
-            </div>
-        </ddmain>
+                <div class="col-sm-9 col-md-10">
+                    <ddtoolbar></ddtoolbar>
+                    <ui-view></ui-view>
+                </div>
+            </ddmain>
+        </div>
     </div>
 
     {% addtoblock "css" %}

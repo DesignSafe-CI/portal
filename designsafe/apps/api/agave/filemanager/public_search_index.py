@@ -13,7 +13,11 @@ import os
 import re
 import datetime
 import itertools
+import zipfile
+import shutil
+import os
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from elasticsearch import TransportError, ConnectionTimeout
 from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
@@ -26,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 class PublicationIndexed(DocType):
     class Meta:
-        index = settings.ES_INDICES['publications']['alias'][0]
+        index = settings.ES_INDICES['publications']['alias']
         doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
 
 class Publication(object):
@@ -48,7 +52,7 @@ class Publication(object):
                 if res.hits.total:
                     self._wrap = res[0]
                     for exp in getattr(self._wrap, 'experimentsList', []):
-                        doi = getattr(exp, 'doi')
+                        doi = getattr(exp, 'doi', None)
                         if not doi:
                             continue
 
@@ -68,7 +72,7 @@ class Publication(object):
         elif project_id is not None:
             s = PublicationIndexed.search()
             s.query = Q({"term": {"projectId.keyword": project_id }})
-            logger.debug('p serach query: {}'.format(s.to_dict()))
+            logger.debug('p search query: {}'.format(s.to_dict()))
             try:
                 res = s.execute()
             except (TransportError, ConnectionTimeout) as e:
@@ -121,7 +125,9 @@ class Publication(object):
                          'pi': self.project['value']['pi'],
                          'dateOfPublication': self.created,
                          'type': self.project['value']['projectType'],
-                         'projectId': self.project['value']['projectId']
+                         'projectId': self.project['value']['projectId'],
+                         'keywords': self.project['value']['keywords'],
+                         'description': self.project['value']['description']
                          },
                      'name': self.project.value.projectId,
                      'path': '/{}'.format(self.project.value.projectId),
@@ -129,13 +135,18 @@ class Publication(object):
                      'project': self.project.value.projectId,
                      'system': 'designsafe.storage.published',
                      'systemId': 'designsafe.storage.published',
-                     'type': 'dir'}
+                     'type': 'dir',
+                     'version': getattr(self, 'version', 1)}
         pi = self.project['value']['pi']
-        pi_user = filter(lambda x: x['username'] == pi, self.users)
+        pi_user = filter(lambda x: x['username'] == pi, getattr(self, 'users', []))
         if pi_user:
             pi_user = pi_user[0]
             dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
                 last_name=pi_user['last_name'], first_name=pi_user['first_name'])
+        else:
+            pi_username = get_user_model().objects.get(username=self.project['value']['pi'])
+            dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
+                last_name=pi_username.last_name, first_name=pi_username.first_name)
         return dict_obj
 
     def related_file_paths(self):
@@ -157,11 +168,24 @@ class Publication(object):
                 dict_obj.get('analysiss', []) +
                 dict_obj.get('reports', [])
             )
+        elif dict_obj['project']['value']['projectType'] == 'hybrid_simulation':
+            related_objs = (
+                dict_obj.get('global_models', []) +
+                dict_obj.get('coordinators', []) +
+                dict_obj.get('sim_substructures', []) +
+                dict_obj.get('exp_substructures', []) +
+                dict_obj.get('coordinator_outputs', []) +
+                dict_obj.get('sim_outputs', []) +
+                dict_obj.get('exp_outputs', []) +
+                dict_obj.get('reports', []) +
+                dict_obj.get('analysiss', [])
+            )
 
         file_paths = []
         proj_sys = 'project-{}'.format(dict_obj['project']['uuid'])
         for obj in related_objs:
-            file_paths += obj['_filePaths']
+            for file_dict in obj['fileObjs']:
+                file_paths.append(file_dict['path'])
 
         return file_paths
 
@@ -171,19 +195,102 @@ class Publication(object):
             return val
         else:
             raise AttributeError('\'Publication\' has no attribute \'{}\''.format(name))
+    
+    def archive(self):
+        ARCHIVE_NAME = str(self.projectId) + '_archive.zip'
+        proj_dir = '/corral-repl/tacc/NHERI/published/{}'.format(self.projectId)
+
+        # open directory permissions
+        def open_perms(project_directory):
+            os.chmod('/corral-repl/tacc/NHERI/published/', 0777)
+            archive_path = os.path.join(project_directory)
+            for root, dirs, files in os.walk(archive_path):
+                os.chmod(root, 0777)
+                for d in dirs:
+                    os.chmod(os.path.join(root, d), 0777)
+                for f in files:
+                    os.chmod(os.path.join(root, f), 0777)
+
+        # close directory permissions
+        def close_perms(project_directory):
+            os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
+            archive_path = os.path.join(project_directory)
+            for root, dirs, files in os.walk(archive_path):
+                os.chmod(root, 0555)
+                for d in dirs:
+                    os.chmod(os.path.join(root, d), 0555)
+                for f in files:
+                    os.chmod(os.path.join(root, f), 0555)
+
+        def create_archive(project_directory):
+            try:
+                logger.debug("Creating new archive for %s" % project_directory)
+
+                # create archive within the project directory
+                archive_path = os.path.join(project_directory, ARCHIVE_NAME)
+                abs_path = project_directory.rsplit('/',1)[0]
+
+                
+
+                zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
+                for dirs, _, files in os.walk(project_directory):
+                    for f in files:
+                        if f == ARCHIVE_NAME:
+                            continue
+                        # write files without abs file path
+                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path,''), f))
+                zf.close()
+            except:
+                logger.debug("Creating archive failed for " % 
+                    project_directory)
+
+        def update_archive(project_directory):
+            try:
+                logger.debug("Updating archive for %s" % project_directory)
+
+                archive_path = os.path.join(project_directory, ARCHIVE_NAME)
+                archive_timestamp = os.path.getmtime(archive_path)
+                zf = zipfile.ZipFile(archive_path, mode='a', allowZip64=True)
+                for dirs, _, files in os.walk(project_directory):
+                    for f in files:
+                        if f == ARCHIVE_NAME:
+                            continue
+                        file_path = os.path.join(dirs, f)
+                        file_timestamp = os.path.getmtime(file_path)
+                        if file_timestamp > archive_timestamp:
+                            if file_path in zf.namelist():
+                                zf.close()
+                                logger.debug(
+                                    "Modified file, deleting archive and " \
+                                    "re-archiving project directory %s" % 
+                                    project_directory)
+                                os.remove(archive_path)
+                                create_archive(project_directory)
+                                break
+            except:
+                logger.debug("Updating archive failed for project directory" % 
+                    project_directory)
+        
+        open_perms(proj_dir)
+        if ARCHIVE_NAME not in os.listdir(proj_dir):
+            create_archive(proj_dir)
+        else:
+            update_archive(proj_dir)
+        close_perms(proj_dir)
 
 class LegacyPublicationIndexed(DocType):
    class Meta:
-        index = settings.ES_INDICES['publications_legacy']['alias'][0]
+        index = settings.ES_INDICES['publications_legacy']['alias']
         doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name'] 
 
 class LegacyPublication(object):
 
     def __init__(self, wrap=None, nees_id=None, *args, **kwargs):
-        if wrap is not None:
-            if isinstance(wrap, LegacyPublicationIndexed):
-                self._wrap = wrap
-        else:
+        self._wrap = LegacyPublicationIndexed()
+        if wrap is not None and isinstance(wrap, LegacyPublicationIndexed):
+            self._wrap = wrap
+
+        if nees_id is not None:
             s = LegacyPublicationIndexed.search()
             s.query = Q({"term": {"name._exact": nees_id}})
             try:
@@ -248,7 +355,6 @@ class LegacyPublication(object):
             return val
         else:
             return 'N/A'
-            # raise AttributeError('\'LegacyPublication\' has no attribute \'{}\''.format(name))
     
 class CMSIndexed(DocType):
     class Meta:
@@ -444,7 +550,9 @@ class PublicElasticFileManager(BaseFileManager):
         nees_published_res = nees_published_search.execute()
         des_published_res = des_published_search.execute()
 
-        logger.debug(nees_published_res.hits.total)
+        for res in des_published_res:
+            new_desc = re.sub(query_string, lambda x: '<b>{}</b>'.format(x.group(0)), res.project.value.description)
+            res.project.value.description = new_desc
 
         children = [Publication(res).to_file() for res in des_published_res]
         children += [LegacyPublication(res).to_file() for res in nees_published_res]
@@ -462,9 +570,27 @@ class PublicElasticFileManager(BaseFileManager):
 
 class PublicationManager(object):
     def save_publication(self, publication, status='publishing'):
+        keys_to_delete = []
+        for key in publication['project']:
+            if key.endswith('_set'):
+                keys_to_delete.append(key)
+            if key.startswith('_'):
+                keys_to_delete.append(key)
+
+        for key in keys_to_delete:
+            publication['project'].pop(key, '')
+
         publication['projectId'] = publication['project']['value']['projectId']
         publication['created'] = datetime.datetime.now().isoformat()
         publication['status'] = status
+        publication['version'] = 2
+        publication['project']['value']['awardNumbers'] = publication['project']['value'].pop(
+            'awardNumber', []
+        )
+        publication['project']['value']['awardNumber'] = ''
+        publication['licenses'] = publication.pop('license', [])
+        publication['license'] = ''
+
         pub = Publication(publication)
         pub.save()
         return pub

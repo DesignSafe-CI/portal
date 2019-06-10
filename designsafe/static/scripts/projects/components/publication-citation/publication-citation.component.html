@@ -1,0 +1,40 @@
+<div class="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        Citation
+        <span class="pull-right" ng-click="$ctrl.close()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <p>
+        <div ng-if="$ctrl.entity">
+            <span ng-repeat="author in $ctrl.auths | orderBy: 'order'" ng-if="author.authorship">
+                <span ng-if="!author.guest">
+                    <ds-user-list usernames="author.name" format="hname"></ds-user-list><span>, </span>
+                </span>
+                <span ng-if="author.guest">{{ author.lname }}, {{ author.fname[0] }}., </span>
+            </span>
+            <span>
+                ({{ $ctrl.citationDate }}) "{{ $ctrl.entity.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
+                <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.
+            </span>
+        </div>
+        <div ng-if="!$ctrl.entity">
+            <span ng-repeat="member in $ctrl.auths | orderBy: 'order'">
+                <span ng-if="!member.guest">
+                    <ds-user-list usernames="member.name" format="hname"></ds-user-list><span>, </span>
+                </span>
+                <span ng-if="member.guest">{{ member.lname }}, {{ member.fname[0] }}., </span>
+            </span>
+            <span>
+                ({{ $ctrl.citationDate }}) “{{ $ctrl.publication.project.value.title }}.” DesignSafe-CI. <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.
+            </span>
+        </div>
+    </p>
+    <button type="button"
+            data-ng-click="$ctrl.downloadCitation()"
+            class="btn btn-info">
+        Download Citation
+    </button>
+</div>

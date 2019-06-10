@@ -58,7 +58,7 @@ class SearchView(SecureMixin, View):
             try:
                 user = model.objects.get(username=q)
             except ObjectDoesNotExist as err:
-                return HttpResponseNotFound();
+                return HttpResponseNotFound()
             res_dict = {
                 'first_name': user.first_name,
                 'last_name': user.last_name,
@@ -92,3 +92,22 @@ class SearchView(SecureMixin, View):
             return JsonResponse(resp, safe=False)
         else:
             return HttpResponseNotFound()
+
+
+class PublicView(View):
+
+    def get(self, request):
+        model = get_user_model()
+        q = request.GET.get('username')
+
+        try:
+            user = model.objects.get(username=q)
+        except ObjectDoesNotExist as err:
+            return HttpResponseNotFound()
+    
+        res_dict = {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+        }
+
+        return JsonResponse(res_dict)

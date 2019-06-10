@@ -2,9 +2,11 @@ from __future__ import absolute_import
 
 import os
 import json
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from designsafe.apps.api.agave import impersonate_service_account
 from designsafe.apps.api.notifications.models import Notification
 from django.db import transaction
 from agavepy.agave import AgaveException
@@ -12,7 +14,7 @@ from celery import shared_task
 from requests import ConnectionError, HTTPError
 import logging
 
-from designsafe.apps.data.tasks import reindex_agave
+from designsafe.apps.data.tasks import agave_indexer
 
 logger = logging.getLogger(__name__)
 
@@ -45,24 +47,36 @@ def submit_job(request, username, job_post):
     logger.info('Submitting job for user=%s: %s' % (username, job_post))
 
     try:
-        user = get_user_model().objects.get(username=username)
-        agave = user.agave_oauth.client
+        use_sandbox = getattr(settings, 'AGAVE_USE_SANDBOX', False)
+        logger.info('Using Sandbox: %s', use_sandbox)
+        if use_sandbox:
+            agave = impersonate_service_account(username)
+        else:
+            user = get_user_model().objects.get(username=username)
+            agave = user.agave_oauth.client
         response = agave.jobs.submit(body=job_post)
         logger.debug('Job Submission Response: {}'.format(response))
 
         return response
 
     except ConnectionError as e:
-        logger.error('ConnectionError while submitting job: %s' % e.message,
-                     extra={'job': job_post})
+        logger.exception(
+            'ConnectionError while submitting job: %s',
+            e.message,
+            extra={'job': job_post}
+        )
         raise JobSubmitError(status='error',
                              status_code=500,
                              message='We were unable to submit your job at this time due '
                                      'to a Job Service Interruption. Please try again later.')
 
     except HTTPError as e:
-        logger.error('HTTPError while submitting job: %s' % e.message,
-                       extra={'job': job_post})
+        logger.exception(
+            'HTTPError while submitting job: %s\n%s',
+            e.message,
+            e.response.content,
+            extra={'job': job_post}
+        )
         if e.response.status_code >= 500:
             raise JobSubmitError(
                 status='error',
@@ -172,7 +186,7 @@ def handle_webhook_request(job):
                         logger.debug('Preparing to Index Job Output job=%s', job_name)
 
                         archivePath = '/'.join([job['archiveSystem'], job['archivePath']])
-                        reindex_agave.delay(username, archivePath, levels=0)
+                        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': job['archiveSystem'], 'filePath': job['archivePath'], 'recurse':True}, queue='indexing')
                         logger.debug('Finished Indexing Job Output job=%s', job_name)
                     except Exception as e:
                         logger.exception('Error indexing job output')

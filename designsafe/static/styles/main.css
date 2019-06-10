@@ -250,6 +250,11 @@ h4 {
   margin-bottom: 20px;
 }
 
+#headline-data-depot {
+  font-size:28px;
+  margin-top:16px;
+}
+
 .headline::after {
   content: "___";
   color: #333;
@@ -482,6 +487,9 @@ label.required:after,
     margin-left: -2px;
 }
 
+.btn-toolbar > .btn-group-data-depot-toolbar {
+  margin-left:0px;
+}
 
 .callout {
   padding: 1em;

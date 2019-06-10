@@ -2,11 +2,11 @@
         <div class="col-sm-3">
             <h3> Refine By: </h3>
             <div class="list-group">
-                <a class="list-group-item"
-                    ng-show="$ctrl.user !== 'AnonymousUser'"
-                    uib-tooltip="Search for files in My Data."
-                    ng-class='{"active": $ctrl.data.type_filter == "private_files"}' ng-click='$ctrl.filter("private_files")'> My Data
-                    <span class="badge" ng-show='$ctrl.data.search_results.private_files_total'> {{ $ctrl.data.search_results.private_files_total }}</span>
+                <a class="list-group-item" 
+                    uib-tooltip="Search in Published Projects, Community Data, and Web Content."
+                    ng-class='{"active": $ctrl.data.type_filter == "all"}' 
+                    ng-click='$ctrl.filter("all")'> All Results
+                    <span class="badge" ng-show='$ctrl.data.search_results.all_total'> {{ $ctrl.data.search_results.all_total }}</span>
                 </a>
                 <a class="list-group-item" 
                     uib-tooltip="Search projects published on DesignSafe."
@@ -25,14 +25,14 @@
                     <span class="badge" ng-show='$ctrl.data.search_results.cms_total'> {{ $ctrl.data.search_results.cms_total }}</span>
                 </a>
             </div>
-            <div>
+            <div style="text-align:center;">
                 <a ng-click="$ctrl.help()">
-                    <i class="fa fa-question-circle"></i> Help
+                    <i class="fa fa-question-circle"></i> Help with Search
                 </a>
             </div>
         </div>
         <div class="col-sm-9">
-            <form ng-submit='$ctrl.search_browse(true)'>
+            <form ng-submit='$ctrl.search_browse()'>
                 <div class="input-group input-group-lg">
                     <span class="input-group-addon">
                     <span ng-show="!$ctrl.searching"><i class="fa fa-search" ng-show="!$ctrl.searching"> </i></span>
@@ -65,8 +65,8 @@
               </div>
             </div>
             <div ng-show = '$ctrl.data.search_results.hits.length'>
-                <div ng-repeat = "d in $ctrl.data.search_results.hits">
-                    <search-listing data="d"></search-listing>
+                <div ng-repeat = "hit in $ctrl.data.search_results.hits">
+                    <search-listing data="hit"></search-listing>
                 </div>
             </div>
             <div class="row" ng-if="$ctrl.data.search_results.total_hits > $ctrl.results_per_page">

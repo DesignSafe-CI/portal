@@ -23,11 +23,11 @@ class DataDepotToolbarCtrl {
             'boxData': 'Box',
             'dropboxData': 'Dropbox',
             'googledriveData': 'Google Drive',
-            'publicData': 'Public Data',
+            'publicData': 'Published Projects',
             'communityData': 'Community Data',
             'projects.view': 'Project View',
             'projects.view.data': 'Project Data View',
-            'neesPublishedData': 'NEES Published'
+            'neesPublished': 'NEES Published'
         };
 
         if (stateNames[this.$state.current.name]) {
@@ -87,7 +87,6 @@ class DataDepotToolbarCtrl {
         this.$state.go(state, {
             'query_string': this.search.queryString,
             'systemId': this.browser.listing.system,
-            'filePath': '$SEARCH'
         });
     }
 }

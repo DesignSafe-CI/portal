@@ -3,7 +3,7 @@ import os
 import re
 import sys
 import logging
-from designsafe.apps.data.tasks import reindex_agave
+from designsafe.apps.data.tasks import agave_indexer
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.external_resources.box.models.files import BoxFile
 from designsafe.apps.api.notifications.models import Notification
@@ -215,12 +215,12 @@ class FileManager(object):
                 agave_file_path = downloaded_file_path.replace(project_dir, '', 1).strip('/')
             else:
                 agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
-
-            reindex_agave.apply_async(kwargs={
-                                      'username': user.username,
-                                      'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
-                                      },
-                                      queue='indexing')
+            
+            if not agave_file_path.startswith('/'):
+                agave_file_path = '/' + agave_file_path
+                
+            agave_indexer.apply_async(kwargs={'username': user.username, 'systemId': agave_system_id, 'filePath': os.path.dirname(agave_file_path), 'recurse':False}, queue='indexing')
+            agave_indexer.apply_async(kwargs={'systemId': agave_system_id, 'filePath': agave_file_path, 'recurse': True}, routing_key='indexing')
         except:
             logger.exception('Unexpected task failure: box_download', extra={
                 'username': username,

@@ -117,8 +117,8 @@ class FileManager(object):
 
         """
         if debug_mode == True:
+            # In local dev, corral isn't mounted so we have to download the file to get its mimetype.
             return file_object.mimeType
-
         else:
             # In dev/prod, Corral is mounted and we can use the absolute path to get the mimetype.
             SYSTEM_ID_PATHS = [

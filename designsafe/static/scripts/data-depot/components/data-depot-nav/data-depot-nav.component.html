@@ -1,37 +1,43 @@
 <div class="list-group list-group-root well">
-
-    <div class="list-group collapse" ng-class="{'in': !routerItem.collapse}" ng-repeat="childItem in $ctrl.routerItems" ng-click="$ctrl.stateReload(childItem.state)">
-      <div ng-switch="childItem.state">
-        
-        <div ng-switch-when="projects.list">
-          <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ng-class="{active: $ctrl.$state.includes('projects')}">
-            {{ childItem.name }}
-          </a>
-        </div>
-        <div ng-switch-when="publicData">
-          <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ng-class="{active: $ctrl.$state.includes('publicData') || $ctrl.$state.includes('publishedData') || $ctrl.$state.includes('neesPublishedData')}">
-            {{ childItem.name }}
-          </a>
-        </div>
-        <div ng-switch-default>
-          <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ui-sref-active="active">
-            {{ childItem.name }}
-          </a>
-        </div>
-  
+  <div class="list-group collapse" ng-class="{'in': !routerItem.collapse}" ng-repeat="childItem in $ctrl.routerItems" ng-click="$ctrl.stateReload(childItem.state)">
+    <div ng-switch="childItem.state">
+      <div ng-switch-when="projects.list">
+        <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ng-class="{active: $ctrl.$state.includes('projects')}">
+          {{ childItem.name }}
+        </a>
+      </div>
+      <div ng-switch-when="publicData">
+        <hr style="margin: 0;">
+        <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ng-class="{active: $ctrl.$state.includes('publicData') || $ctrl.$state.includes('publishedData') || $ctrl.$state.includes('neesPublishedData')}">
+          {{ childItem.name }}
+        </a>
+      </div>
+      <div ng-switch-default>
+        <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ui-sref-active="active">
+          {{ childItem.name }}
+        </a>
+        <div ng-If="childItem.name == 'Shared with Me'"> <hr style="margin: 0;"> </div>
       </div>
     </div>
   </div>
-  
-  <div style="text-align:center;">
-    <div>
-      <a class="" href="https://www.youtube.com/playlist?list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
-        <i class="fa fa-youtube-play"></i> Curation Tutorials
-      </a>
-    </div>
-    <div>
-      <a class="" href="https://www.designsafe-ci.org/rw/user-guides/data-publication-guidelines/" target="_blank">
-        <i class="fa fa-info-circle"></i> Curation Guidelines
-      </a>
-    </div>
+</div>
+<div style="text-align:center;">
+  <div>
+    <a class="" href="https://www.youtube.com/playlist?list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-youtube-play"></i> Curation Tutorials
+    </a>
   </div>
+  <div>
+    <a class="" href="/rw/user-guides/data-publication-guidelines/" target="_blank">
+      <i class="fa fa-info-circle"></i> Curation Guidelines
+    </a>
+  </div>
+  <div>
+      <a href="/rw/user-guide/data-depot" target="_blank"><i class="fa fa-info-circle"></i> Learn About the <br/>Data Depot</a>
+  </div>
+  <div>
+    <a href="/faq" target="_blank">
+      <i class="fa fa-question-circle" aria-hidden="true"></i>FAQ
+    </a>
+  </div>
+</div>

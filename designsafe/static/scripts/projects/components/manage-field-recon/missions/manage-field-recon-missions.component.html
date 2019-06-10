@@ -1,0 +1,258 @@
+<div class="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        <span>Add Missions</span>
+        <span class="pull-right" data-ng-click="$ctrl.close()">
+            <i class="fa fa-times">&nbsp;</i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <div class="error" data-ng-if="$ctrl.data.error">
+        {{$ctrl.data.error}}
+    </div>
+    <div class="well">
+        <form name="addForm" data-ng-hide="$ctrl.ui.showEditMissionForm">
+            <div class="text-center">
+                <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                <span>Required for Curation & Publication</span>
+            </div>
+            <div class="expTitle form-group">
+                <label for="id-title">Mission Title
+                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <span style="display: block; font-weight:normal;">
+                        Different from the Project Title. Make it focused on the methods used to obtain the data.
+                    </span>
+                </label>
+                <input type="text"
+                       id="id-title"
+                       data-ng-model="$ctrl.form.title"
+                       data-ng-required="true"
+                       class="form-control"/>
+            </div>
+            <div class="expDate form-group">
+                <label for="id-date-start">
+                    Date(s) of Mission
+                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <span style="display: block; font-weight:normal;">
+                        The entire time spent deployed on the mission.
+                        If you only want to enter a single date, fill in the first field.
+                    </span>
+                </label>
+                <div style="display: flex;">
+                    <input type="text"
+                           id="id-date-start"
+                           data-uib-datepicker-popup="MM-dd-yyyy"
+                           data-ng-model="$ctrl.form.dateStart"
+                           data-is-open="isStartOpen"
+                           placeholder="mm-dd-yyyy"
+                           data-date-picker-options="dateOptions"
+                           data-date-disabled="disabled(date, mode)"
+                           data-ng-required="true"
+                           data-close-text="Close"
+                           class="form-control"
+                           style="width: 25%; display:inline-block;" />
+                    <span class="input-group-btn">
+                        <button type="button"
+                                class="btn btn-default"
+                                data-ng-click="isStartOpen = !isStartOpen">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                    <span style="padding:6px; margin-left:30px;">
+                        &#8213;
+                    </span>
+                    <input type="text"
+                           id="id-date-end"
+                           data-uib-datepicker-popup="MM-dd-yyyy"
+                           data-ng-model="$ctrl.form.dateEnd"
+                           data-is-open="isEndOpen"
+                           placeholder="mm-dd-yyyy"
+                           data-date-picker-options="dateOptions"
+                           data-date-disabled="disabled(date, mode)"
+                           data-ng-required="true"
+                           data-close-text="Close"
+                           class="form-control"
+                           style="width: 25%; display:inline-block;" />
+                    <span class="input-group-btn">
+                        <button type="button"
+                                class="btn btn-default"
+                                data-ng-click="isEndOpen = !isEndOpen">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="mission-site-location form-group">
+                <label for="id-location">
+                    Mission Site Location
+                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                </label>
+                <div>
+                    <div style="width: 55%; display:inline-block;">
+                        <label for="id-location">
+                            Geolocation Place
+                        </label>
+                        <input type="text"
+                               id="id-location"
+                               placeholder="Geolocaton Place"
+                               data-ng-model="$ctrl.form.location"
+                               data-ng-required="true"
+                               class="form-control"/>
+                    </div>
+                    <div style="width: 13%; display:inline-block; margin-left:5px;">
+                        <label for="id-location">
+                            Latitude
+                        </label>
+                        <input type="text"
+                               id="id-latitude"
+                               placeholder="Latitude"
+                               data-ng-model="$ctrl.form.latitude"
+                               data-ng-required="true"
+                               class="form-control"/>
+                    </div>
+                    <div style="width: 13%; display:inline-block; margin-left:5px;">
+                        <label for="id-location">
+                            Longitude
+                        </label>
+                        <input type="text"
+                               id="id-longitude"
+                               placeholder="Longitude"
+                               data-ng-model="$ctrl.form.longitude"
+                               data-ng-required="true"
+                               class="form-control" />
+                    </div>
+                    <div style="width: 13%; display:inline-block; margin-left:5px;">
+                        <label for="id-elevation">
+                            Elevation
+                        </label>
+                        <input type="text"
+                               id="id-elevation"
+                               placeholder="Elevation"
+                               data-ng-model="$ctrl.form.elevation"
+                               data-ng-required="true"
+                               class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="mission-description form-group">
+                <label for="id-description">
+                    Mission Description
+                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <span style="display:block; font-weight:normal;">
+                        What types of damages and structures/natural features were observed?
+                        What methods were used to gather the data?
+                    </span>
+                </label>
+                <textarea style="width:100%; height:3em; resize: vertical;"
+                          id="id-description"
+                          data-ng-model="$ctrl.form.description"
+                          data-ng-required="true">
+                    &nbsp;
+                </textarea>
+            </div>
+        </form>
+        <!-- Update Exp Btn -->
+        <div class="text-right">
+            <button class="btn btn-add"
+                    type="submit"
+                    data-ng-if="$ctrl.data.editMission"
+                    data-ng-click="addForm.$valid && $ctrl.updateMission($event)"
+                    style="width:18%;">Update</button>
+        </div>
+        <!-- </form> -->
+        <div class="text-right">
+          <button class="btn btn-add"
+                  data-ng-click="addForm.$valid && $ctrl.saveMission($event)"
+                  data-ng-if="!$ctrl.data.editMission"
+                  style="width:18%;"
+                  type="submit">
+              <i class="fa fa-plus">&nbsp;</i>
+              Add Mission
+          </button>
+        </div>
+    </div>
+    <div class="mission-list">
+        <div class="mission-list-title">
+            <label>Mission Inventory</label>
+        </div>
+        <div class="dropdown">
+            <div data-ng-repeat="mission in $ctrl.data.missions">
+                <div class="dropdown dropdown-spacer-sm">
+                    <button class="btn collapsed tab-experiment"
+                            data-toggle="collapse"
+                            data-target="#files-{{mission.uuid}}"
+                            style="width: 100%;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="text-align: left;">
+                                    <span>
+                                        Mission | <strong>{{mission.value.title}}</strong>
+                                    </span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="curation-chevron" style="font-size: 18px;">
+                                        &nbsp;
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </button>
+                    <div id="files-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
+                        <div class="well">
+                            <div style="display: inline-block; width:20%; vertical-align: top;">
+                                Authors
+                            </div>
+                            <div style="display: inline-block; width:78%; font-weight: bold;">
+                                <div data-ng-repeat="author in mission.value.authors | orderBy: 'order'"
+                                     data-ng-if="!author.length && author.authorship">
+                                    <span data-ng-if="!author.guest">
+                                        <ds-user data-username="author.name" data-format="lname">
+                                            {{author}}
+                                        </ds-user>
+                                    </span>
+                                    <span data-ng-if="author.guest">
+                                        {{author.lname}}, {{author.fname}}
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="display: inline-block; width:20%;">Date of Mission</div>
+                            <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                <span data-ng-if="mission.value.dateEnd">
+                                    &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
+                                </span>
+                            </div>
+                            <div style="display: inline-block; width:20%; vertical-align: top;">
+                                Site Location
+                            </div>
+                            <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                <ul style="list-style:none; padding-left:0;">
+                                    <li> Place: {{mission.value.location}} </li>
+                                    <li> Lat: {{mission.value.latitude}} </li>
+                                    <li> Lon: {{mission.value.longitude}} </li>
+                                    <li> Elevation: {{mission.value.elevation}} </li>
+                                </ul>
+                            </div>
+                            <div style="margin-top:10px;">
+                                {{ mission.value.description}}
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <button type="button"
+                                        class="btn btn-link"
+                                        data-ng-click="$ctrl.editMission(mission)">
+                                    Edit
+                                </button>
+                                <span> | </span>
+                                <button type="button"
+                                        class="btn btn-link"
+                                        data-ng-click="$ctrl.deleteMission(mission)">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

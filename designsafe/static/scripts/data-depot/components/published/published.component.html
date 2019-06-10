@@ -1,4 +1,8 @@
 <dd-breadcrumb listing="$ctrl.browser.listing" skip-root="true" custom-root="$ctrl.data.customRoot" on-browse="$ctrl.onBrowse" item-href="$ctrl.resolveBreadcrumbHref"></dd-breadcrumb>
+<breadcrumb data-browser="$ctrl.browser"
+            data-skip-root="true"
+            data-custom-root="$ctrl.data.customRoot"
+></breadcrumb>
 <!-- Published View -->
 <div class="project">
   <div class="project-detail" style="background:white;" ng-if="!$ctrl.ui.loadingProjectMeta">
@@ -18,7 +22,8 @@
                 <tbody>
                   <tr>
                     <th style="border-top:none; width:25%">PI</th>
-                    <td style="border-top:none; width:75%">{{$ctrl.project.piLabel}}
+                    <td style="border-top:none; width:75%">
+                      <ds-user-list usernames="$ctrl.browser.publication.project.value.pi"></ds-user-list>
                       <button class="btn btn-sm btn-default pull-right"
                               ng-click="$ctrl.viewCollabs($event)">View Team Members</button>
                     </td>
@@ -377,7 +382,7 @@
                 <p style="font-weight:bold;">Description</p>
                 <p>{{experiment.value.description}}</p>
               </div>
-              <div style="width:100%; paddin-left:10px;">
+              <div style="width:100%; padding-left:10px;">
                 <div>
                 </div>
               </div>
@@ -436,7 +441,7 @@
                         {{file.name}}
                       </a>
                     </td>
-                    <td ng-if="item.type == 'dir'">--</td>
+                    <td ng-if="file.type == 'dir'">--</td>
                     <td ng-if="file.type == 'file'">{{file.length|bytes}}</td>
                     <td>{{file.lastModified|date:"short"}}</td>
                   </tr>
@@ -473,7 +478,7 @@
                     {{file.name}}
                   </a>
                 </td>
-                    <td ng-if="item.type == 'dir'">--</td>
+                <td ng-if="file.type == 'dir'">--</td>
                 <td ng-if="file.type=='file'">{{file.length|bytes}}</td>
                 <td>{{file.lastModified|date:"short"}}</td>
               </tr>
@@ -504,7 +509,7 @@
                     {{file.name}}
                   </a>
                 </td>
-                    <td ng-if="item.type == 'dir'">--</td>
+                <td ng-if="file.type == 'dir'">--</td>
                 <td ng-if="file.type == 'file'">{{file.length|bytes}}</td>
                 <td>{{file.lastModified|date:"short"}}</td>
               </tr>
@@ -532,7 +537,7 @@
                 </button>
               </div>
             </div>
-            <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; width:50%; display:inline-block; float:right;">
+            <div ng-if="analysis.doi" style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; width:50%; display:inline-block; float:right;">
               <p style="overflow:hidden; display:block; height:20px;">
                 <span style="font-weight:bold;">DOI: </span>{{analysis.doi}}
               </p>
@@ -557,8 +562,8 @@
                       {{file.name}}
                     </a>
                   </td>
-                    <td ng-if="item.type == 'dir'">--</td>
-                  <td ng-if="file.type=='file'">{{file.length|bytes}}</td>
+                  <td ng-if="file.type == 'dir'">--</td>
+                  <td ng-if="file.type == 'file'">{{file.length|bytes}}</td>
                   <td>{{file.lastModified|date:"short"}}</td>
                 </tr>
               </tbody>
@@ -607,7 +612,7 @@
                       {{file.name}}
                     </a>
                   </td>
-                    <td ng-if="item.type == 'dir'">--</td>
+                  <td ng-if="file.type == 'dir'">--</td>
                   <td ng-if="file.type=='file'">{{file.length|bytes}}</td>
                   <td>{{file.lastModified|date:"short"}}</td>
                 </tr>
@@ -798,7 +803,7 @@
                                     <tr ng-repeat="file in analysis.files | orderBy: ['type', 'path']">
                                       <td>
                                         <i class="fa {{file.icon()}}"></i>
-                                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                                        <a ng-href="{{file.href}}" ng-click="$ctrl.onBrowse($event, file)">
                                           {{file.name}}
                                         </a>
                                       </td>
@@ -822,7 +827,7 @@
                                     <tr ng-repeat="file in report.files | orderBy: ['type', 'path']">
                                       <td>
                                         <i class="fa {{file.icon()}}"></i>
-                                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                                        <a ng-href="{{file.href}}" ng-click="$ctrl.onBrowse($event, file)">
                                           {{file.name}}
                                         </a>
                                       </td>
@@ -873,7 +878,7 @@
                   <tr ng-repeat="file in analysis.files | orderBy: ['type', 'path']">
                     <td>
                       <i class="fa {{file.icon()}}"></i>
-                      <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                      <a ng-href="{{file.href}}" ng-click="$ctrl.onBrowse($event, file)">
                         {{file.name}}
                       </a>
                     </td>
@@ -913,7 +918,7 @@
                   <tr ng-repeat="file in report.files | orderBy: ['type', 'path']">
                     <td>
                       <i class="fa {{file.icon()}}"></i>
-                      <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                      <a ng-href="{{file.href}}" ng-click="$ctrl.onBrowse($event, file)">
                         {{file.name}}
                       </a>
                     </td>
@@ -929,7 +934,7 @@
   </div>
 </div> <!-- Simulation published view close -->
 
-<div ng-if="$ctrl.project.value.projectType == 'hybrid_simulation' && filePathComps.length <= 1">  <!-- hybrid simulation publishe dview -->
+<div ng-if="$ctrl.project.value.projectType == 'hybrid_simulation' && $ctrl.filePathComps.length <= 1">  <!-- hybrid simulation published view -->
 
 <div ng-repeat="simulation in $ctrl.browser.publication.hybrid_simulations | orderBy: 'value.title'">
 
@@ -1014,7 +1019,7 @@
                   </a>
                   <div style="display:inline-block" ng-repeat="output in $ctrl.getRelated('coordinator_outputs', false,
                                                                [simulation.uuid, model.uuid, coordinator.uuid])">
-                    <a class="ds-text-red" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
+                    <a class="ds-text-yellow" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
                       {{output.value.title}}
                     </a>
                   </div>
@@ -1024,14 +1029,14 @@
                        style="margin-top:10px;">
                     <div style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
                     padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
-                      <a class="ds-text-yellow"
+                      <a class="ds-text-orange"
                          href=""
                          ng-click="$ctrl.viewHybridSimulationRelations(substructure.uuid)">
                           {{substructure.value.title}}
                       </a>
                       <div style="display:inline-block" ng-repeat="output in $ctrl.getRelated('sim_outputs', false,
                                                                    [simulation.uuid, model.uuid, substructure.uuid])">
-                        <a class="ds-text-red" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
+                        <a class="ds-text-yellow" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
                         {{output.value.title}}
                         </a>
                       </div>
@@ -1049,7 +1054,7 @@
                       </a>
                       <div style="display:inline-block" ng-repeat="output in $ctrl.getRelated('exp_outputs', false,
                                                                    [simulation.uuid, model.uuid, substructure.uuid])">
-                        <a class="ds-text-red" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
+                        <a class="ds-text-yellow" href="" ng-click="$ctrl.viewHybridSimulationRelations(output.uuid)">
                         {{output.value.title}}
                         </a>
                       </div>
@@ -1103,7 +1108,7 @@
 
                            <td colspan="4">
                             <div class="entity-preview-header" id="details-{{output.uuid}}">
-                              <button class="btn btn-default btn-sm ds-text-red"
+                              <button class="btn btn-default btn-sm ds-text-yellow"
                                       style="width:100%">Coordinator Output {{output.value.title}}</button>
                             </div>
                             <table class="table table-bordered table-striped">
@@ -1127,7 +1132,7 @@
                             ng-repeat="substructure in $ctrl.getRelated('sim_substructures', false, [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: 'value.title'">
                             <td colspan="6">
                                 <div class="entity-preview-header" id="details-{{substructure.uuid}}">
-                                  <button class="btn btn-default btn-sm ds-text-yellow"
+                                  <button class="btn btn-default btn-sm ds-text-orange"
                                           style="width:100%">Numerical (Simulation) Substructure {{substructure.value.title}}</button>
                                 </div>
                                 <table class="table table-bordered table-striped">
@@ -1147,7 +1152,7 @@
 
                                        <td colspan="4">
                                         <div class="entity-preview-header" id="details-{{output.uuid}}">
-                                          <button class="btn btn-default btn-sm ds-text-red"
+                                          <button class="btn btn-default btn-sm ds-text-yellow"
                                                   style="width:100%">Simulation Output {{output.value.title}}</button>
                                         </div>
                                         <table class="table table-bordered table-striped">
@@ -1195,7 +1200,7 @@
 
                                        <td colspan="4">
                                         <div class="entity-preview-header" id="details-{{output.uuid}}">
-                                          <button class="btn btn-default btn-sm ds-text-red"
+                                          <button class="btn btn-default btn-sm ds-text-yellow"
                                                   style="width:100%">Event Output {{output.value.title}}</button>
                                         </div>
                                         <table class="table table-bordered table-striped">

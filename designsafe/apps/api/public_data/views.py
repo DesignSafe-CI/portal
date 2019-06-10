@@ -24,6 +24,8 @@ from django.http import (HttpResponseRedirect,
                          JsonResponse)
 from django.shortcuts import render
 from django.contrib.auth import get_user_model, login
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.agave import get_service_account_client
@@ -42,6 +44,11 @@ class PublicDataListView(BaseApiView):
     def get(self, request, file_mgr_name,
             system_id=None, file_path=None):
         """GET handler."""
+        query_string = request.GET.get('queryString')
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 100))
+        status = request.GET.get('status', 'published')
+        
         if file_mgr_name not in [PublicElasticFileManager.NAME,
                                  'community',
                                  'published']:
@@ -57,6 +64,11 @@ class PublicDataListView(BaseApiView):
                 system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
 
             file_mgr = PublicElasticFileManager(ag)
+            search_mgr = PublicElasticFileManager(ag)
+            if query_string:
+                listing = search_mgr.search(system_id, query_string, 
+                                        offset=offset, limit=limit)
+                
         elif file_mgr_name == 'community':
             if not request.user.is_authenticated:
                 ag = get_user_model().objects.get(username='envision').agave_oauth.client
@@ -71,17 +83,25 @@ class PublicDataListView(BaseApiView):
                 ag = request.user.agave_oauth.client
 
             file_mgr = PublishedFileManager(ag)
-
-        offset = int(request.GET.get('offset', 0))
-        limit = int(request.GET.get('limit', 100))
-        status = request.GET.get('status', 'published')
-        listing = file_mgr.listing(system_id, file_path,
-                                   offset=offset, limit=limit, status=status)
+            search_mgr = ElasticFileManager()
+            if query_string:
+                project_id = file_path.split('/')[1]
+                listing = search_mgr.search_published_view(system_id, query_string,
+                                    project_id=project_id, offset=offset, limit=limit)
+        if query_string is None:
+            listing = file_mgr.listing(system_id, file_path,
+                                    offset=offset, limit=limit, status=status)
+            listing = listing.to_dict()
+        
         # logger.debug(listing.to_dict()['children'][0])
-        return JsonResponse(listing.to_dict())
+        return JsonResponse(listing)
 
 class PublicMediaView(FileMediaView):
     """Media view to render metadata"""
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(PublicMediaView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         return super(PublicMediaView, self).get(request, *args, **kwargs)
@@ -110,12 +130,11 @@ class PublicSearchView(BaseApiView):
     def get(self, request, file_mgr_name,
             system_id=None, file_path=None):
         """GET handler"""
-        logger.debug(system_id)
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string')
         logger.debug('offset: %s, limit: %s, query_string: %s' % (str(offset), str(limit), query_string))
-        if file_mgr_name != PublicElasticFileManager.NAME or not query_string:
+        if file_mgr_name not in (PublicElasticFileManager.NAME, 'community') or not query_string:
             return HttpResponseBadRequest()
 
         if system_id is None:

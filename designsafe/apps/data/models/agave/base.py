@@ -6,6 +6,7 @@ import re
 import logging
 import datetime
 from designsafe.apps.api import tasks
+from designsafe.apps.projects.models import Category
 
 logger = logging.getLogger(__name__)
 
@@ -433,7 +434,9 @@ class Model(object):
 
         if ('lastUpdated' in dict_obj and isinstance(dict_obj['lastUpdated'], datetime.datetime)):
             dict_obj['lastUpdated'] = dict_obj['lastUpdated'].isoformat()
-
+        if self.uuid:
+            category, _ = Category.objects.get_or_create(uuid=self.uuid)
+            dict_obj['_ui'] = category.to_dict()
         return dict_obj
 
     def save(self, agave_client):
@@ -448,8 +451,6 @@ class Model(object):
         else:
             logger.debug('Updating Metadata: %s, with: %s', self.uuid, body)
             ret = agave_client.meta.updateMetadata(uuid=self.uuid, body=body)
-            logger.debug(ret)
-            logger.debug(type(ret))
             tasks.index_or_update_project.apply_async(args=[self.uuid], queue='api')
         
         self.update(**ret)
