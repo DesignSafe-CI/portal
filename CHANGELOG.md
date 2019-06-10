@@ -1,5 +1,18 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.2-20190602
+
+Improvements:
+
+- Remove old unused code.
+- Enables Field Recon selection in dev.
+
+Fixes:
+
+- Only use regex form validation if regex is valid.
+- Fix project mounting in app containers where projectId is None.
+
+
 ## v4.4.2-20190601
 
 Improvements:
