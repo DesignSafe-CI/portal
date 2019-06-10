@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.mail import send_mail
 from agavepy.agave import Agave, AgaveException
-from designsafe.apps.api.data.agave.filemanager import FileManager
+from designsafe.apps.data.tasks import reindex_agave
 from celery import shared_task
 
 from requests import HTTPError
@@ -62,12 +62,18 @@ def check_or_create_agave_home_dir(username):
                 logger.info('setfacl response: {}'.format(response))
 
                 # add dir to index
-                fm = FileManager(user)
-                fm.indexer.index(
-                    settings.AGAVE_STORAGE_SYSTEM,
-                    username, username,
-                    levels=1
-                )
+
+                reindex_agave.apply_async(kwargs={
+                                      'username': username,
+                                      'file_id': '{}/'.format(settings.AGAVE_STORAGE_SYSTEM)
+                                      },
+                                      queue='indexing')
+                #fm = FileManager(user)
+                #fm.indexer.index(
+                #    settings.AGAVE_STORAGE_SYSTEM,
+                #    username, username,
+                #    levels=1
+                #)
 
     except(AgaveException):
     #except (HTTPError, AgaveException):
