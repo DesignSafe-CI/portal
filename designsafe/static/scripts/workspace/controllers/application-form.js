@@ -108,6 +108,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         // reset formValid, var is used for invalid form msg
         $scope.data.formValid = [];
 
+        let readOnly = $scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown;
+
         /* inputs */
         let items = [];
         if ($scope.form.schema.properties.inputs) {
@@ -118,7 +120,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         }
         $scope.form.form.push({
             type: 'fieldset',
-            readonly: ($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown),
+            readonly: readOnly,
             title: 'Inputs',
             items: items,
         });
@@ -141,14 +143,14 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         }
         $scope.form.form.push({
             type: 'fieldset',
-            readonly: ($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown),
+            readonly: readOnly,
             title: 'Job details',
             items: items,
         });
 
         /* buttons */
         items = [];
-        if (!($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown)) {
+        if (!readOnly) {
             items.push({ type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary' });
         }
         items.push({ type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()' });
