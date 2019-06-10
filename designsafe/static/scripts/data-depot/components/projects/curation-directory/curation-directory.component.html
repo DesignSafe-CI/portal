@@ -38,20 +38,23 @@
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
+            <tr class="prj-row"
+                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
                 <td>Natural Hazard</td>
                 <td class="prj-data">
                     {{ $ctrl.browser.project.value.nhEvent }} | {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
+                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">―
+                        {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
                 </td>
-                </tr>
-                <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhType">
+            </tr>
+            <tr class="prj-row"
+                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhType">
                 <td>Natural Hazard Type</td>
                 <td class="prj-data">
                     <span ng-if="!$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhType }}</span>
                     <span ng-if="$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhTypeOther }}</span>
                 </td>
-                </tr>
+            </tr>
             <!-- older projects will have awards listed as strings -->
             <tr ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
                 <td>Awards</td>

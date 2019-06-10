@@ -56,12 +56,11 @@ class ManageFieldReconMissionsCtrl {
             users: [... new Set(members)],
             form: {}
         };
-
-        this.form = {};
+        this.cleanForm();
     }
 
     cleanForm() {
-        this.form = {};
+        this.form = angular.copy(this.data.users);
     }
 
     configureAuthors(mission) {
@@ -220,6 +219,7 @@ class ManageFieldReconMissionsCtrl {
             title: this.form.title,
             dateStart: this.form.dateStart,
             dateEnd: this.form.dateEnd,
+            authors: this.form.authors,
             location: this.form.location,
             longitude: this.form.longitude,
             latitude: this.form.latitude,
@@ -317,8 +317,7 @@ class ManageFieldReconMissionsCtrl {
                 }
             }).then( (entity) => {
                 this.project.removeEntity(entity);
-                let attrName = this.project.getRelatedAttrName(entity);
-                this.data.missions = this.project[attrName];
+                this.data.missions = this.project.mission_set;
             });
         });
     }
