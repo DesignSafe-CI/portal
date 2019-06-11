@@ -1,4 +1,5 @@
 import logging
+import json
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.users import utils as users_utils
 from django.contrib.auth import get_user_model
@@ -98,10 +99,7 @@ class PublicView(View):
 
     def get(self, request):
         model = get_user_model()
-        q = request.GET.get('username')
-
-        nl = q.split('/')
-        nl.pop()
+        nl = json.loads(request.GET.get('username'))
 
         res_list = []
 

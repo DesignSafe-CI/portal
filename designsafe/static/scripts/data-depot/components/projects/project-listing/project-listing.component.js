@@ -31,8 +31,7 @@ function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectS
           piList.push(proj.value.pi);
         }
       });
-      var reqString = piList.join('/') + '/';
-      UserService.getPublic(reqString).then((resp) => {
+      UserService.getPublic(piList).then((resp) => {
         var data = resp.userData;
         data.forEach((user) => {
           $scope.data.names[user.username] = user.fname + ' ' + user.lname;

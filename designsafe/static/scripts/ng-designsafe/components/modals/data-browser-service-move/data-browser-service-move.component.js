@@ -100,8 +100,7 @@ class DataBrowserServiceMoveCtrl {
                 piList.push(proj.value.pi);
             }
         });
-        var reqString = piList.join('/') + '/';
-        this.UserService.getPublic(reqString).then((resp) => {
+        this.UserService.getPublic(piList).then((resp) => {
             var data = resp.userData;
             data.forEach((user) => {
                 this.data.names[user.username] = user.fname + ' ' + user.lname;

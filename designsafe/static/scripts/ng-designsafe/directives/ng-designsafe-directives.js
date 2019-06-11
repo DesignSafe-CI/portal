@@ -275,20 +275,20 @@ export function dsUserList(UserService) {
         if (typeof scope.usernames === 'undefined') {
           return;
         }
+        let userReq = [];
         let guests = [];
-        let userstring = '';
 
         scope.usernames.forEach((user) => {
           if (typeof user === 'undefined') {
             return;
           } else if (typeof user === 'string') {
-            userstring = userstring.concat(user + '/');
+            userReq.push(user);
           } else if (user.guest) {
             guests.push(user);
           }
         });
 
-        UserService.getPublic(userstring).then((res) => {
+        UserService.getPublic(userReq).then((res) => {
           let userData = res.userData;
           let formattedNames = '';
 
@@ -319,18 +319,18 @@ export function dsAuthorList(UserService) {
         if (!scope.authors){
           return;
         }
-        let userstring = '';
+        let userReq = [];
         let guests = [];
 
         scope.authors.forEach((user) => {
           if (user.authorship && !user.guest) {
-            userstring = userstring.concat(user.name + '/');
+            userReq.push(user.name);
           } else if (user.authorship && user.guest) {
             guests.push(user);
           }
         });
 
-        UserService.getPublic(userstring).then((res) => {
+        UserService.getPublic(userReq).then((res) => {
           let userData = res.userData;
           let authorData;
           let formattedNames = '';
