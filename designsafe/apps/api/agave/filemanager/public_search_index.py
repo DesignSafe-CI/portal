@@ -213,12 +213,12 @@ class Publication(object):
                     for f in files:
                         os.chmod(os.path.join(root, f), octal)
             except Exception as e:
-                logger.exception("Failed to set permissions for %s", project_directory)
+                logger.exception("Failed to set permissions for {}".format(project_directory))
                 os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
 
         def create_archive(project_directory):
             try:
-                logger.debug("Creating new archive for %s", project_directory)
+                logger.debug("Creating new archive for {}".format(project_directory))
 
                 # create archive within the project directory
                 archive_path = os.path.join(project_directory, ARCHIVE_NAME)
@@ -232,13 +232,13 @@ class Publication(object):
                         zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path,''), f))
                 zf.close()
             except Exception as e:
-                logger.exception("Archive creation failed for %s", project_directory)
+                logger.exception("Archive creation failed for {}".format(project_directory))
             finally:
                 os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
 
         def update_archive(project_directory):
             try:
-                logger.debug("Updating archive for %s", project_directory)
+                logger.debug("Updating archive for {}".format(project_directory))
 
                 archive_path = os.path.join(project_directory, ARCHIVE_NAME)
                 archive_timestamp = os.path.getmtime(archive_path)
@@ -254,13 +254,12 @@ class Publication(object):
                                 zf.close()
                                 logger.debug(
                                     "Modified file, deleting archive and " \
-                                    "re-archiving project directory %s",
-                                    project_directory)
+                                    "re-archiving project directory {}".format(project_directory))
                                 os.remove(archive_path)
                                 create_archive(project_directory)
                                 break
             except Exception as e:
-                logger.exception("Archive update failed for project directory %s", project_directory)
+                logger.exception("Archive update failed for project directory {}".format(project_directory))
             finally:
                 os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
 
@@ -497,7 +496,7 @@ class PublicElasticFileManager(BaseFileManager):
 
     def listing(self, system, file_path, offset=0, limit=100, status='published'):
         file_path = file_path or '/'
-        logger.debug('file_path: %s', file_path)
+        logger.debug('file_path: {}'.format(file_path))
         if file_path == '/':
             # listing = PublicObject.listing(system, file_path,
             #                                offset=offset, limit=limit)
