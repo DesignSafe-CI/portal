@@ -234,15 +234,17 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
             return regStr;
         }
 
+        let maxRunTime = app.defaultMaxRunTime || '06:00:00';
+
         schema.properties.maxRunTime = {
             title: 'Maximum job runtime',
-            description: `In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is ${app.defaultMaxRunTime} (hrs:min:sec).`,
+            description: `In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is ${maxRunTime} (hrs:min:sec).`,
             type: 'string',
-            pattern: createMaxRunTimeRegex(app.defaultMaxRunTime),
-            validationMessage: `Must be in format HH:MM:SS and be less than ${app.defaultMaxRunTime} (hrs:min:sec).`,
+            pattern: createMaxRunTimeRegex(maxRunTime),
+            validationMessage: `Must be in format HH:MM:SS and be less than ${maxRunTime} (hrs:min:sec).`,
             required: true,
-            'x-schema-form': { placeholder: app.defaultMaxRunTime },
-            default: app.defaultMaxRunTime || '06:00:00',
+            'x-schema-form': { placeholder: maxRunTime },
+            default: maxRunTime,
         };
 
         schema.properties.name = {
@@ -274,11 +276,11 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
         schema.properties.processorsPerNode = {
             title: 'Processors Per Node',
             description: `Number of processors (cores) per node for the job. e.g. A selection of 16 processors per node along with 4 nodes
-            will result in 16 processors on 4 nodes, with 64 processors total. Default number of processors per node is ${Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount)}.`,
+            will result in 16 processors on 4 nodes, with 64 processors total. Default number of processors per node is ${Math.floor(app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)}.`,
             type: 'integer',
-            default: Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount),
+            default: Math.floor((app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)),
             minimum: 1,
-            maximum: Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount),
+            maximum: Math.floor(app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1),
         };
 
         schema.properties.archivePath = {
