@@ -99,7 +99,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                     description: param.details.description,
                     required: param.value.required,
                     default: param.value.default,
-                    pattern: param.value.validator ? param.value.validator : undefined,
+                    pattern: param.value.validator || undefined,
                 };
                 switch (param.value.type) {
                     case 'bool':
@@ -159,7 +159,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                     description: input.details.description,
                     id: input.id,
                     default: input.value.default,
-                    pattern: input.value.validator ? input.value.validator : undefined,
+                    pattern: input.value.validator || undefined,
                 };
                 if (input.semantics.maxCardinality === 1) {
                     field.type = 'string';
@@ -174,7 +174,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                         'x-schema-form': { notitle: true },
                         title: input.details.label,
                         description: input.details.description,
-                        pattern: input.value.validator ? input.value.validator : undefined,
+                        pattern: input.value.validator || undefined,
                     };
                     if (input.semantics.maxCardinality > 1) {
                         field.maxItems = input.semantics.maxCardinality;
