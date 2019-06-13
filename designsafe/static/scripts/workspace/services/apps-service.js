@@ -276,7 +276,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
         schema.properties.processorsPerNode = {
             title: 'Processors Per Node',
             description: `Number of processors (cores) per node for the job. e.g. A selection of 16 processors per node along with 4 nodes
-            will result in 16 processors on 4 nodes, with 64 processors total. Default number of processors per node is ${Math.floor(app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)}.`,
+            will result in 4 nodes with 16 processors each, 64 processors total. Default number of processors per node is ${Math.floor(app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)}.`,
             type: 'integer',
             default: Math.floor((app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)),
             minimum: 1,
