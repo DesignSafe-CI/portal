@@ -26,19 +26,19 @@ def check_or_create_agave_home_dir(username):
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                    token=settings.AGAVE_SUPER_TOKEN)
         try:
-            resp = ag.files.list(
+            listing_response = ag.files.list(
                 systemId=settings.AGAVE_STORAGE_SYSTEM,
                 filePath=username)
-            logger.info('check home dir response: {}'.format(resp))
+            logger.info('Check home dir response: {}'.format(listing_response))
                 
         except HTTPError as e:
             if e.response.status_code == 404:
-                logger.info("creating the home directory for user=%s then going to run setfacl", username)
+                logger.info("Creating the home directory for user=%s then going to run setfacl", username)
                 body = {'action': 'mkdir', 'path': username}
-                response1 = ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM, 
+                fm_response = ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM, 
                                 filePath='', 
                                 body=body)
-                logger.info('mkdir response: {}'.format(response1))
+                logger.info('mkdir response: {}'.format(fm_response))
 
                 ds_admin_client = Agave(
                     api_server=getattr(
@@ -58,16 +58,19 @@ def check_or_create_agave_home_dir(username):
                     'name': 'setfacl',
                     'appId': 'setfacl_corral3-0.1'
                 }
-                response = ds_admin_client.jobs.submit(body=job_body)
-                logger.info('setfacl response: {}'.format(response))
+                jobs_response = ds_admin_client.jobs.submit(body=job_body)
+                logger.info('setfacl response: {}'.format(jobs_response))
 
-                # add dir to index
-                fm = FileManager(user)
-                fm.indexer.index(
-                    settings.AGAVE_STORAGE_SYSTEM,
-                    username, username,
-                    levels=1
-                )
+                try:   
+                    logger.info("Indexing the home directory for user=%s", username)
+                    fm = FileManager(user)
+                    fm.indexer.index(
+                        settings.AGAVE_STORAGE_SYSTEM,
+                        username, username,
+                        levels=1
+                    )
+                except Exception as e:
+                    logger.info("Error indexing the home directory for user= %s: %s", username, str(e))
 
     except(AgaveException):
     #except (HTTPError, AgaveException):
