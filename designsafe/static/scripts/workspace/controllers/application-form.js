@@ -207,7 +207,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
             } else if (('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
                 jobData.processorsPerNode = jobData.nodeCount * jobData.processorsPerNode;
             } else if (!('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
-                jobData.processorsPerNode = jobData.defaultNodeCount * jobData.processorsPerNode;
+                jobData.processorsPerNode = $scope.data.app.defaultNodeCount * jobData.processorsPerNode;
             }
 
             $scope.jobReady = true;
