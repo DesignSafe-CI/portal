@@ -383,6 +383,7 @@ class ElasticFileManager(BaseFileManager):
         search = IndexedFile.search()\
             .query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])\
             .filter(filters)\
+            .exclude(Q({"prefix": {"path._exact": "/Trash"}}))\
             .extra(from_=offset, size=limit)
             #.filter("term", type="file")\
            
