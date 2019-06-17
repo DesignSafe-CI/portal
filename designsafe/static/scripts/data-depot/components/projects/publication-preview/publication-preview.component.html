@@ -26,6 +26,19 @@
                     </span>
                 </td>
             </tr>
+            <tr class="prj-row" ng-if="$ctrl.readOnly">
+                <td>
+                    <span>DOI</span>
+                    <button class="btn btn-info btn-sm"
+                            style="padding: 0px 8px; border-radius: 4px;"
+                            data-ng-click="$ctrl.showCitation()">
+                        Citation
+                    </button>
+                </td>
+                <td>
+                    <strong>{{ $ctrl.browser.project.doi }}</strong>
+                </td>
+            </tr>
             <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
                 <td>Project Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</td>
@@ -34,13 +47,14 @@
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
-            <!-- older projects will have awards listed as strings -->
-            <tr ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
-                <td>Awards</td>
-                <td><strong>{{ $ctrl.browser.project.value.awardNumber.join("") }}</strong></td>
+            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber track by $index"
+                ng-if="!$ctrl.readOnly">
+                <td ng-if="$first">Awards</td>
+                <td ng-if="!$first"></td>
+                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
-            <tr ng-if="!$ctrl.isSingle($ctrl.browser.project.value.awardNumber)"
-                ng-repeat="award in $ctrl.browser.project.value.awardNumber track by $index">
+            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumbers track by $index"
+                ng-if="$ctrl.readOnly">
                 <td ng-if="$first">Awards</td>
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
@@ -209,6 +223,8 @@
                     <div style="display:inline-block; width:20%;">
                         DOI
                         <button class="btn btn-info btn-sm"
+                                style="padding: 0px 8px; border-radius: 4px;"
+                                ng-disabled="!$ctrl.readOnly"
                                 data-ng-click="$ctrl.showCitation(experiment)">
                             Citation
                         </button>
