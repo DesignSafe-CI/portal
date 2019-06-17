@@ -28,7 +28,7 @@ class PublishedViewCtrl {
             experimentTypes: experimentalData.experimentTypes
         };
         this.browser = this.DataBrowserService.state();
-        this.browser.listings = {};
+        var entityListings = {};
         var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.ui.loading = true;
 
@@ -40,10 +40,10 @@ class PublishedViewCtrl {
                 return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
             });
             evt.files.forEach( (file) => {
-                if (!this.browser.listings[evt.uuid]) {
-                    this.browser.listings[evt.uuid] = { children: [] };
+                if (!entityListings[evt.uuid]) {
+                    entityListings[evt.uuid] = { children: [] };
                 }
-                this.browser.listings[evt.uuid].children.push(file);
+                entityListings[evt.uuid].children.push(file);
             });
         };
 
@@ -75,7 +75,6 @@ class PublishedViewCtrl {
                     } else if (this.browser.publication.project.value.projectType === 'hybrid_simulation') {
                         _.each(this.browser.publication.analysiss, this.getFileObjs);
                         _.each(this.browser.publication.reports, this.getFileObjs);
-
                         _.each(this.browser.publication.coordinators, this.getFileObjs);
                         _.each(this.browser.publication.coordinator_outputs, this.getFileObjs);
                         _.each(this.browser.publication.exp_substructures, this.getFileObjs);
@@ -93,6 +92,7 @@ class PublishedViewCtrl {
                     this.ui.loading = false;
                 }).then( () => {
                     this.prepProject();
+                    this.browser.listings = entityListings;
                 });
         }
     }
