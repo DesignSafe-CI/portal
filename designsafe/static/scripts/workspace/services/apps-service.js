@@ -211,7 +211,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                     if (!Object.is(arr.length - 1, i)) {
                         tmp = replaceAt(tmp, index, n - 1);
                         if (regStr !== '^') {
-                            regStr += '|';
+                            regStr += '|^';
                         }
                         regStr += tmp.slice(0, index + 1) + regBase.slice(index + 1);
                     }
@@ -234,17 +234,16 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
             return regStr;
         }
 
-        let maxRunTime = app.defaultMaxRunTime || '06:00:00';
+        let maxQueueRunTime = app.defaultQueue ? app.exec_sys.queues.find((q) => q.name === app.defaultQueue).maxRequestedTime : app.exec_sys.queues.find((q) => q.default === true).maxRequestedTime;
 
         schema.properties.maxRunTime = {
             title: 'Maximum job runtime',
-            description: `In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is ${maxRunTime} (hrs:min:sec).`,
+            description: `In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is ${maxQueueRunTime} (hrs:min:sec).`,
             type: 'string',
-            pattern: createMaxRunTimeRegex(maxRunTime),
-            validationMessage: `Must be in format HH:MM:SS and be less than ${maxRunTime} (hrs:min:sec).`,
+            pattern: createMaxRunTimeRegex(maxQueueRunTime),
+            validationMessage: `Must be in format HH:MM:SS and be less than ${maxQueueRunTime} (hrs:min:sec).`,
             required: true,
-            'x-schema-form': { placeholder: maxRunTime },
-            default: maxRunTime,
+            'x-schema-form': { placeholder: app.defaultMaxRunTime || '06:00:00' },
         };
 
         schema.properties.name = {
