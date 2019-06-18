@@ -158,7 +158,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                     title: input.details.label,
                     description: input.details.description,
                     id: input.id,
-                    default: input.value.default,
+                    // default: input.value.default,
                     pattern: input.value.validator || undefined,
                 };
                 if (input.semantics.maxCardinality === 1) {
