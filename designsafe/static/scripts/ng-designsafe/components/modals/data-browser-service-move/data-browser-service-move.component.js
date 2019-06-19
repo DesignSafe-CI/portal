@@ -3,20 +3,22 @@ import _ from 'underscore';
 
 class DataBrowserServiceMoveCtrl {
 
-    constructor($scope, $state, FileListing, ProjectService, DataBrowserService) {
+    constructor($scope, $state, FileListing, ProjectService, DataBrowserService, UserService) {
         'ngInject';
         this.$scope = $scope;
         this.$state = $state;
         this.FileListing = FileListing;
         this.ProjectService = ProjectService;
         this.DataBrowserService = DataBrowserService;
+        this.UserService = UserService;
     }
 
     $onInit() {
         this.files = this.resolve.files;
         this.initialDestination = this.resolve.initialDestination;
         this.data = {
-            files: this.files
+            files: this.files,
+            names: {},
         };
 
         this.listing = this.initialDestination;
@@ -71,6 +73,7 @@ class DataBrowserServiceMoveCtrl {
                             p.href = this.$state.href('projects.view', { projectId: p.uuid });
                             return p;
                         });
+                        this.getNames();
                         this.state.busy = false;
                     });
             }
@@ -87,6 +90,22 @@ class DataBrowserServiceMoveCtrl {
         });
 
 
+    }
+
+    getNames () {
+        // get user details in one request
+        var piList = [];
+        this.projects.forEach((proj) => {
+            if (!piList.includes(proj.value.pi)) {
+                piList.push(proj.value.pi);
+            }
+        });
+        this.UserService.getPublic(piList).then((resp) => {
+            var data = resp.userData;
+            data.forEach((user) => {
+                this.data.names[user.username] = user.fname + ' ' + user.lname;
+            });
+        });
     }
 
     onBrowse($event, fileListing) {

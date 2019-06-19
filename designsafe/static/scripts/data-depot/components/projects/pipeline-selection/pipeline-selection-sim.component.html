@@ -138,17 +138,7 @@
                         </strong>
                         <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
                         <div style="display:inline-block; width:78%; font-weight: bold;">
-                            <span ng-repeat="author in simulation.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
-                                <span ng-if="!author.guest">
-                                    <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>;
-                                </span>
-                                <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }};</span>
-                            </span>
-                            <span class="authors-end">__</span>
-                            <!-- support older author list -->
-                            <div ng-repeat="author in simulation.value.authors" ng-if="author.length">
-                                <ds-user username="author" format="lname">{{ author }}</ds-user>
-                            </div>
+                            <ds-author-list authors="simulation.value.authors"></ds-author-list>
                         </div>
                         <div style="display:inline-block; width:20%;">Date of Publication</div>
                         <strong style="display:inline-block; width:78%;">
