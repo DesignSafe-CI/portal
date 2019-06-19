@@ -13,17 +13,14 @@
             </colgroup>
             <tr class="prj-row">
                 <td>PI</td>
-                <td>
-                    <ds-user-list class="prj-data" usernames="$ctrl.browser.project.value.pi"></ds-user-list>
+                <td class="prj-data">
+                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <span ng-repeat="copi in $ctrl.browser.project.value.coPis">
-                        <span ng-if="!$last"><ds-user-list usernames="copi"></ds-user-list>; </span>
-                        <span ng-if="$last"><ds-user-list usernames="copi"></ds-user-list></span>
-                    </span>
+                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
             </tr>
             <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
@@ -159,23 +156,12 @@
                     </strong>
                     <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
                     <div style="display:inline-block; width:78%; font-weight: bold;">
-                        <span ng-repeat="author in hybsim.authors | orderBy: 'order'" ng-if="!author.length && author.authorship && $ctrl.readOnly">
-                            <span ng-if="!author.guest">
-                                    <ds-user-list usernames="author.name"></ds-user-list>;
-                            </span>
-                            <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }};</span>
+                        <span ng-if="$ctrl.readOnly">
+                            <ds-author-list authors="hybsim.authors"></ds-author-list>
                         </span>
-                        <span ng-repeat="author in hybsim.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship && !$ctrl.readOnly">
-                            <span ng-if="!author.guest">
-                                    <ds-user-list usernames="author.name"></ds-user-list>;
-                            </span>
-                            <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }};</span>
+                        <span ng-if="!$ctrl.readOnly">
+                            <ds-author-list authors="hybsim.value.authors"></ds-author-list>
                         </span>
-                        <span class="authors-end">__</span>
-                        <!-- support older author list -->
-                        <div ng-repeat="author in hybsim.value.authors" ng-if="author.length">
-                            <ds-user-list usernames="author"></ds-user-list>
-                        </div>
                     </div>
                     <div style="display:inline-block; width:20%;">Date of Publication</div>
                     <strong style="display:inline-block; width:78%;"
@@ -206,9 +192,16 @@
                             data-ng-if="!$ctrl.readOnly">
                         (Appears when published)
                     </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                        {{ $ctrl.browser.publication.licenses }}
+                    <strong style="display:inline-block; width:78%;" data-ng-if="$ctrl.readOnly">
+                        <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
+                            {{ $ctrl.browser.publication.licenses.datasets }}
+                        </div>
+                        <div data-ng-if="$ctrl.browser.publication.licenses.works">
+                            {{ $ctrl.browser.publication.licenses.works }}
+                        </div>
+                        <div data-ng-if="$ctrl.browser.publication.licenses.software">
+                            {{ $ctrl.browser.publication.licenses.software }}
+                        </div>
                     </strong>
                     <p>
                         <br>{{ hybsim.value.description }}

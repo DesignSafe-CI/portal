@@ -1,5 +1,18 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.2-20190604
+
+Improvements:
+
+- Show end date for published experiments.
+- App form validation improvements.
+
+Fixes:
+
+- Exclude trash from Community Data search.
+- Zip Publication task improvements.
+- Fix bad field validation.
+
 ## v4.4.2-20190603
 
 Fixes:

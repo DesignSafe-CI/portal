@@ -271,19 +271,94 @@ export function dsUserList(UserService) {
       format: '@'
     },
     link: function (scope, element) {
-      var format = scope.format || 'lname';
-      scope.$watch('usernames', function() {
-        UserService.getPublic(scope.usernames).then((user) => {
-          element.text(user.last_name + ', ' + user.first_name);
-          switch (format) {
-            case 'hname':
-              element.text(user.last_name + ', ' + user.first_name[0] + '.');
-              break;
-            case 'lname':
-              element.text(user.last_name + ', ' + user.first_name);
-              break;
-            default:
-              element.text(user.username);
+      scope.$watch('usernames', function () {
+        if (typeof scope.usernames === 'undefined') {
+          return;
+        }
+        let userReq = [];
+        let guests = [];
+
+        scope.usernames.forEach((user) => {
+          if (typeof user === 'undefined') {
+            return;
+          } else if (typeof user === 'string') {
+            userReq.push(user);
+          } else if (user.guest) {
+            guests.push(user);
+          }
+        });
+
+        UserService.getPublic(userReq).then((res) => {
+          let userData = res.userData;
+          let formattedNames = '';
+
+          userData.forEach((u, i, arr) => {
+            if (i === (arr.length -1)) {
+              formattedNames += u.lname + ', ' + u.fname;
+            } else {
+              formattedNames += u.lname + ', ' + u.fname + '; ';
+            }
+          });
+          element.text(formattedNames);
+        });
+      });
+    }
+  };
+}
+
+export function dsAuthorList(UserService) {
+  'ngInject';
+  return {
+    restrict: 'EA',
+    scope: {
+      authors: '=',
+      format: '@'
+    },
+    link: function (scope, element) {
+      scope.$watch('authors', function () {
+        if (!scope.authors){
+          return;
+        }
+        let userReq = [];
+        let guests = [];
+
+        scope.authors.forEach((user) => {
+          if (user.authorship && !user.guest) {
+            userReq.push(user.name);
+          } else if (user.authorship && user.guest) {
+            guests.push(user);
+          }
+        });
+
+        UserService.getPublic(userReq).then((res) => {
+          let userData = res.userData;
+          let authorData;
+          let formattedNames = '';
+
+          userData.forEach((user) => {
+            let relAuthor = scope.authors.find( author => author.name === user.username );
+            user.order = relAuthor.order;
+          });
+          authorData = userData.concat(guests);
+          authorData.sort((a, b) => {
+            return a.order - b.order;
+          });
+
+
+          if (scope.format === 'hname') {
+            authorData.forEach((u) => {
+              formattedNames += u.lname + ', ' + u.fname[0] + '. ';
+            });
+            element.text(formattedNames);
+          } else {
+            authorData.forEach((u, i, arr) => {
+              if (i === (arr.length - 1)) {
+                formattedNames += u.lname + ', ' + u.fname;
+              } else {
+                formattedNames += u.lname + ', ' + u.fname + '; ';
+              }
+            });
+            element.text(formattedNames);
           }
         });
       });

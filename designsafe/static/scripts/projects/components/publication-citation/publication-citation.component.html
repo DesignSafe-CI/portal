@@ -9,12 +9,7 @@
 <div class="modal-body">
     <p>
         <div ng-if="$ctrl.entity">
-            <span ng-repeat="author in $ctrl.auths | orderBy: 'order'" ng-if="author.authorship">
-                <span ng-if="!author.guest">
-                    <ds-user-list usernames="author.name" format="hname"></ds-user-list><span>, </span>
-                </span>
-                <span ng-if="author.guest">{{ author.lname }}, {{ author.fname[0] }}., </span>
-            </span>
+            <ds-author-list format="hname" authors="$ctrl.auths"></ds-author-list>
             <span>
                 ({{ $ctrl.citationDate }}) "{{ $ctrl.entity.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
                 <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.
@@ -22,10 +17,7 @@
         </div>
         <div ng-if="!$ctrl.entity">
             <span ng-repeat="member in $ctrl.auths | orderBy: 'order'">
-                <span ng-if="!member.guest">
-                    <ds-user-list usernames="member.name" format="hname"></ds-user-list><span>, </span>
-                </span>
-                <span ng-if="member.guest">{{ member.lname }}, {{ member.fname[0] }}., </span>
+                <span>{{ member.lname }}, {{ member.fname[0] }}. </span>
             </span>
             <span>
                 ({{ $ctrl.citationDate }}) “{{ $ctrl.publication.project.value.title }}.” DesignSafe-CI. <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.
