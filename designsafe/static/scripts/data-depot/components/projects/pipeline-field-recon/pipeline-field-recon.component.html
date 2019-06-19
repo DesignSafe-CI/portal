@@ -76,48 +76,78 @@
         <div class="prj-head" style="padding-bottom:20px">
             Mission | <strong>{{ $ctrl.mission.value.title }}</strong>
         </div>
-        <div style="display:inline-block; width:20%;">Date of Mission</div>
-            <strong style="display:inline-block; width:78%;">
-                {{ $ctrl.mission.value.dateStart | date:'MM-dd-yyyy' }}
-            </strong>
-            <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate($ctrl.mission.value.dateStart)">
-                &#8213;
-                {{ $ctrl.mission.value.dateEnd | date:'MM-dd-yyyy' }}
-            </strong>
-        </div>
-        <div ng-show="$ctrl.mission.value.location">
-            <ul style="list-style: none; padding-left: 0;">
-                <li>
-                    <strong>Location</strong> {{ $ctrl.mission.value.location }}
-                </li>
-                <li>
-                    <strong>Latitude</strong> {{ $ctrl.mission.value.latitude }}
-                </li>
-                <li>
-                    <strong>Longitude</strong> {{ $ctrl.mission.value.longitude }}
-                </li>
-                <li>
-                    <strong>Elevation</strong> {{ $ctrl.mission.value.elevation }}
-                </li>
-            <ul>
-        </div>
-        <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-        <div style="display:inline-block; width:78%; font-weight: bold;">
-            <span ng-repeat="author in $ctrl.mission.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship">
-                <span ng-if="!author.guest">
-                    <ds-user username="author.name" format="lname">{{ author.name }}</ds-user>;
-                </span>
-                <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }};</span>
-            </span>
-            <span class="authors-end">__</span>
-            <!-- older author list -->
-            <div ng-repeat="author in $ctrl.mission.value.authors" ng-if="author.length">
-                <ds-user username="author" format="lname">{{ author }}</ds-user>
+        <!-- TEST -->
+        <div style="display: inline-block; width:20%; vertical-align: top;">
+                Authors
             </div>
-        </div>
-        <div>
-            <br>{{ $ctrl.mission.value.description }}
-        </div>
+            <div style="display: inline-block; width:78%; font-weight: bold;">
+                <div data-ng-repeat="author in $ctrl.mission.value.authors | orderBy: 'order'"
+                    data-ng-if="!author.length && author.authorship">
+                    <span data-ng-if="!author.guest">
+                        <ds-user data-username="author.name" data-format="lname">
+                            {{author}}
+                        </ds-user>
+                    </span>
+                    <span data-ng-if="author.guest">
+                        {{author.lname}}, {{author.fname}}
+                    </span>
+                </div>
+            </div>
+            <div style="display: inline-block; width:20%;">Date of Mission</div>
+            <div style="display: inline-block; width: 78%; font-weight:bold;">
+                <span>{{$ctrl.mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                <span data-ng-if="$ctrl.mission.value.dateEnd">
+                    &#8213; {{$ctrl.mission.value.dateEnd | date:'MM-dd-yyyy' }}
+                </span>
+            </div>
+            <div style="display: inline-block; width:20%; vertical-align: top;">
+                Site Location
+            </div>
+            <div style="display: inline-block; width: 78%; font-weight:bold;">
+                <ul style="list-style:none; padding-left:0;">
+                    <li> Place: {{$ctrl.mission.value.location}} </li>
+                    <li> Lat: {{$ctrl.mission.value.latitude}} </li>
+                    <li> Lon: {{$ctrl.mission.value.longitude}} </li>
+                    <li> Elevation: {{$ctrl.mission.value.elevation}} </li>
+                </ul>
+            </div>
+            <div style="display:inline-block; width:20%;">Date of Publication</div>
+            <strong style="display:inline-block; width:78%;"
+                    data-ng-if="!$ctrl.readOnly">
+                (Appears when published)
+            </strong>
+            <strong style="display:inline-block; width:78%;"
+                    data-ng-if="$ctrl.readOnly">
+                {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
+            </strong>
+            <div style="display:inline-block; width:20%;">
+                DOI 
+                <button class="btn btn-info btn-sm"
+                        data-ng-click="$ctrl.showCitation($ctrl.mission)">
+                    Citation
+                </button>
+            </div>
+            <strong style="display:inline-block; width:78%;"
+                    data-ng-if="!$ctrl.readOnly">
+                (Appears when published)
+            </strong>
+            <strong style="display:inline-block; width:78%;"
+                    data-ng-if="$ctrl.readOnly">
+                {{ experiment.doi }}
+            </strong>
+            <div style="display:inline-block; width:20%;">License</div>
+            <strong style="display:inline-block; width:78%;"
+                    data-ng-if="!$ctrl.readOnly">
+                (Appears when published)
+            </strong>
+            <strong style="display:inline-block; width:78%;"
+                    data-ng-if="$ctrl.readOnly">
+                {{ $ctrl.browser.publication.licenses }}
+            </strong>
+            <p>
+                <br>{{ $ctrl.mission.value.description }}
+            </p>
+        <!-- TEST -->
         <div><br>
             <span class="prj-head" ng-click="$ctrl.editExp()"><a>Edit</a></span>
         </div>
