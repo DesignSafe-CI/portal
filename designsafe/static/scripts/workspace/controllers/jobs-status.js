@@ -144,7 +144,7 @@ export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job,
     };
 
     function jobIsFinished(job) {
-        let finishedStatus = ['FAILED', 'STOPPED', 'FINISHED', 'KILLED']
+        let finishedStatus = ['FAILED', 'STOPPED', 'FINISHED', 'KILLED'];
         return (finishedStatus.some((e) => e === job.status));
     }
 }
