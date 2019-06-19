@@ -219,7 +219,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                     tmp = replaceAt(tmp, index, n);
                     if (Object.is(arr.length - 1, i) || (arr[i + 1] == 0)) {
                         if (regStr !== '^') {
-                            regStr += '|';
+                            regStr += '|^';
                         }
                         regStr += tmp;
                     }

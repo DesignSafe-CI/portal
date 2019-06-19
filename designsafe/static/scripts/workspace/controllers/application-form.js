@@ -184,6 +184,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                     if (v.length === 0) {
                         delete jobData.inputs[k];
                     }
+                } else if (!v) {
+                    delete jobData.inputs[k];
                 }
             });
             _.each(jobData.parameters, function(v, k) {
@@ -192,6 +194,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                     if (v.length === 0) {
                         delete jobData.parameters[k];
                     }
+                } else if (!v) {
+                    delete jobData.parameters[k];
                 }
             });
 
