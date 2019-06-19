@@ -14,8 +14,13 @@ export function UserService($http, $q) {
         });
     };
 
-    this.getPublic = function (username) {
-      return $http.get("/api/users/public/", {params: {username: JSON.stringify(username)}})
+    /**
+     * Get users by usernames
+     * @param {array} users an array of usernames to look up
+     * @returns {Promise}
+     */
+    this.getPublic = function (users) {
+      return $http.get("/api/users/public/", {params: {usernames: JSON.stringify(users)}})
         .then(function (resp) {
           return resp.data;
         });

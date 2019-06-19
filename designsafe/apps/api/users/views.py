@@ -99,7 +99,7 @@ class PublicView(View):
 
     def get(self, request):
         model = get_user_model()
-        nl = json.loads(request.GET.get('username'))
+        nl = json.loads(request.GET.get('usernames'))
 
         res_list = []
 
