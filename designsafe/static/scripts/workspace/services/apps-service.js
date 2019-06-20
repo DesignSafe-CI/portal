@@ -191,24 +191,24 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
         /**
          * Create regex pattern for maxRunTime
          * @function
-         * @param {String} defaultMaxRunTime - defaultMaxRunTime defined in the app definition in the format of hh:mm:ss
+         * @param {String} maxRunTime - maxRunTime given in the format of hh:mm:ss, usually from the target queue's maxRequestedTime
          * Creates a multigrouped regex to accommodate several layers of timestamps.
          */
-        function createMaxRunTimeRegex(defaultMaxRunTime) {
-            let timeStr = defaultMaxRunTime.replace(/:/g, '');
-            let tmp = '([0-0][0-0]:[0-0][0-0]:[0-0][0-0])'; // procedurally populated max value regex
-            let regBase = '([0-4][0-9]:[0-5][0-9]:[0-5][0-9])'; // default max values
+        function createMaxRunTimeRegex(maxRunTime) {
+            let timeStr = maxRunTime.replace(/:/g, '');
+            let tmp = '[0-0][0-0]:[0-0][0-0]:[0-0][0-0]$'; // procedurally populated max value regex
+            const regBase = '[0-4][0-9]:[0-5][0-9]:[0-5][0-9]$'; // default max values
 
             let regStr = '^'; // procedurally generated regex string to be returned
 
-            let index = 4;
+            let index = 3;
 
-            // iterate through each value in the defaultMaxRunTime to generate a regex group
+            // iterate through each value in the maxRunTime to generate a regex group
             timeStr.split('').forEach((n, i, arr) => {
 
                 // only need to generate regex for nonzero values
                 if (n > 0) {
-                    if (!Object.is(arr.length - 1, i)) {
+                    if ((arr.length - 1) !== i) {
                         tmp = replaceAt(tmp, index, n - 1);
                         if (regStr !== '^') {
                             regStr += '|^';
@@ -217,16 +217,12 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                     }
 
                     tmp = replaceAt(tmp, index, n);
-                    if (Object.is(arr.length - 1, i) || (arr[i + 1] == 0)) {
+                    if ((arr.length - 1) === i || (arr[i + 1] == 0)) {
                         if (regStr !== '^') {
                             regStr += '|^';
                         }
                         regStr += tmp;
                     }
-                }
-
-                if (Object.is(arr.length - 1, i)) {
-                    regStr += '$';
                 }
 
                 index += (i % 2 == 0) ? 5 : 6;
