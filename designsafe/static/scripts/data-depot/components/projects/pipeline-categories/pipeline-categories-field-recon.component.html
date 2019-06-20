@@ -73,7 +73,7 @@
     </div>
     <!-- Categories Start -->
     <!-- Reports -->
-    <div ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'"
+    <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
          ng-if="$ctrl.matchingGroup($ctrl.mission, report) && $ctrl.browser.listings[report.uuid]"
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
@@ -102,7 +102,7 @@
         </div>
     </div>
     <!-- Collections -->
-    <div ng-repeat="collection in $ctrl.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup($ctrl.mission, collection)">
+    <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup($ctrl.mission, collection)">
         <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
             <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                 style="width:100%;">

@@ -17,14 +17,12 @@ class PipelineCategoriesFieldReconCtrl {
     
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
-        this.project = this.ProjectService.resolveParams.project;
         this.mission = this.ProjectService.resolveParams.experiment;
-        this.selectedListings = this.ProjectService.resolveParams.selectedListings;
+        this.browser.project = this.ProjectService.resolveParams.project;
+        this.browser.listings = this.ProjectService.resolveParams.selectedListings;
 
-        this.browser.project = this.project;
-        this.browser.listings = this.selectedListings;
 
-        if (!this.project) {
+        if (!this.browser.project) {
             /*
             Try to pass selected listings into a simple object so that we can
             rebuild the project and selected files if a refresh occurs...
@@ -37,24 +35,24 @@ class PipelineCategoriesFieldReconCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
     }
     
     goFieldRecon() {
         this.$state.go('projects.pipelineFieldRecon', {
             projectId: this.projectId,
-            project: this.project,
+            project: this.browser.project,
             experiment: this.mission,
-            selectedListings: this.selectedListings,
+            selectedListings: this.browser.listings,
         }, {reload: true});
     }
     
     goAuthors() {
         this.$state.go('projects.pipelineAuthors', {
             projectId: this.projectId,
-            project: this.project,
+            project: this.browser.project,
             experiment: this.mission,
-            selectedListings: this.selectedListings,
+            selectedListings: this.browser.listings,
         }, {reload: true});
     }
 
@@ -62,8 +60,8 @@ class PipelineCategoriesFieldReconCtrl {
         this.$uibModal.open({
             component: 'fieldReconCollectionsModal',
             resolve: {
-                project: () => { return this.project; },
-                selectedListings: () => { return this.selectedListings; },
+                project: () => { return this.browser.project; },
+                selectedListings: () => { return this.browser.listings; },
                 edit: () => { return selection; },
             },
             size: 'lg',
