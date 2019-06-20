@@ -34,12 +34,23 @@ class PipelineProjectCtrl {
                     this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'hybrid_simulation') {
                     this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
+                } else if (this.projType === 'field_recon') {
+                    this.$state.go('projects.pipelineSelectFieldRecon', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'other') {
                     this.$state.go('projects.pipelineSelectOther', {projectId: this.uuid}, {reload: true});
                 }
             });
         } else {
             this.projType = this.project.value.projectType;
+            if (this.projType === 'experimental') {
+                this.placeholder = 'Experiment';
+            } else if (this.projType === 'simulation') {
+                this.placeholder = 'Simulation';
+            } else if (this.projType === 'hybrid_simulation') {
+                this.placeholder = 'Hybrid Simulation';
+            } else if (this.projType === 'field_recon') {
+                this.placeholder = 'Mission';
+            }
         }
 
     }
@@ -66,6 +77,8 @@ class PipelineProjectCtrl {
             this.$state.go('projects.pipelineSelectSim', {projectId: this.project.uuid}, {reload: true});
         } else if (this.projType === 'hybrid_simulation') {
             this.$state.go('projects.pipelineSelectHybSim', {projectId: this.project.uuid}, {reload: true});
+        } else if (this.projType === 'field_recon') {
+            this.$state.go('projects.pipelineSelectFieldRecon', {projectId: this.project.uuid}, {reload: true});
         } else if (this.projType === 'other') {
             this.$state.go('projects.pipelineSelectOther', {projectId: this.project.uuid}, {reload: true});
         }
@@ -88,6 +101,13 @@ class PipelineProjectCtrl {
             }, {reload: true});
         } else if (this.projType === 'hybrid_simulation') {
             this.$state.go('projects.pipelineHybrid', {
+                projectId: this.projectId,
+                project: this.project,
+                experiment: this.experiment,
+                selectedListings: this.selectedListings,
+            }, {reload: true});
+        } else if (this.projType === 'field_recon') {
+            this.$state.go('projects.pipelineFieldRecon', {
                 projectId: this.projectId,
                 project: this.project,
                 experiment: this.experiment,

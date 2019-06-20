@@ -28,15 +28,14 @@
                 </div>
             </td>
             <td class="tg-0lax">
-                <strong ng-if="$ctrl.projType === 'experimental'">Proofread Experiment</strong>
-                <strong ng-if="$ctrl.projType === 'simulation'">Proofread Simulation</strong>
-                <strong ng-if="$ctrl.projType === 'hybrid_simulation'">Proofread Hybrid Sim</strong>
+                <strong>Proofread {{$ctrl.placeholder}}</strong>
                 <div>
                     <i class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td class="tg-0lax">
-                <strong>Proofread Categories</strong>
+                <strong ng-if="$ctrl.projType != 'field_recon'">Proofread Categories</strong>
+                <strong ng-if="$ctrl.projType === 'field_recon'">Proofread Collections</strong>
                 <div>
                     <i class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
@@ -65,11 +64,11 @@
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
         <p>
-            <h3 style="text-align: center">Order the Authors of the Experiment</h3>
+            <h3 style="text-align: center">Order the Authors of the {{$ctrl.placeholder}}</h3>
             <h3 style="text-align: center; color: orange;">
                 <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
             </h3>
-            <li>In order to add or remove authors, go back to Proofread Experiment and click Edit.</li>
+            <li>In order to add or remove authors, go back to Proofread {{$ctrl.placeholder}} and click Edit.</li>
             <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
@@ -85,17 +84,11 @@
     </div>
     <!-- Order Authors -->
     <div class="well">
-        <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'experimental'">
-            Experiment | <strong>{{ $ctrl.experiment.value.title }}</strong>
-        </div>
-        <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'simulation'">
-            Simulation | <strong>{{ $ctrl.experiment.value.title }}</strong>
-        </div>
-        <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'hybrid_simulation'">
-            Hybrid Simulation | <strong>{{ $ctrl.experiment.value.title }}</strong>
+        <div class="prj-head" style="padding-bottom:20px">
+            {{$ctrl.placeholder}} | <strong>{{ $ctrl.experiment.value.title }}</strong>
         </div>
         <div ng-hide="$ctrl.validAuths">
-            Your authors need to be updated. Edit your experiment and select which users are authors for the Experiment.
+            Your authors need to be updated. Edit your {{$ctrl.placeholder}} and select which users are authors for the {{$ctrl.placeholder}}.
         </div>
         <div ng-show="$ctrl.loading">
             <h3 class="text-center">

@@ -16,15 +16,14 @@ class PipelineCategoriesSimCtrl {
     }
     
     $onInit() {
+        // this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.projectId = this.ProjectService.resolveParams.projectId;
-        this.project = this.ProjectService.resolveParams.project;
         this.simulation = this.ProjectService.resolveParams.experiment;
-        this.selectedListings = this.ProjectService.resolveParams.selectedListings;
+        this.browser.project = this.ProjectService.resolveParams.project;
+        this.browser.listings = this.ProjectService.resolveParams.selectedListings;
 
-        this.browser.project = this.project;
-        this.browser.listings = this.selectedListings;
 
-        if (!this.project) {
+        if (!this.browser.project) {
             /*
             Try to pass selected listings into a simple object so that we can
             rebuild the project and selected files if a refresh occurs...
@@ -37,29 +36,29 @@ class PipelineCategoriesSimCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
     }
     
     goSimulation() {
         this.$state.go('projects.pipelineSimulation', {
             projectId: this.projectId,
-            project: this.project,
+            project: this.browser.project,
             experiment: this.simulation,
-            selectedListings: this.selectedListings,
+            selectedListings: this.browser.listings,
         }, {reload: true});
     }
     
     goAuthors() {
         this.$state.go('projects.pipelineAuthors', {
             projectId: this.projectId,
-            project: this.project,
+            project: this.browser.project,
             experiment: this.simulation,
-            selectedListings: this.selectedListings,
+            selectedListings: this.browser.listings,
         }, {reload: true});
     }
 
     editCategory(selection) {
-        this.ProjectService.manageCategories({'project': this.browser.project, 'selectedListings': this.selectedListings, 'edit': selection});
+        this.ProjectService.manageCategories({'project': this.browser.project, 'selectedListings': this.browser.listings, 'edit': selection});
     }
 
     matchingGroup(sim, model) {
