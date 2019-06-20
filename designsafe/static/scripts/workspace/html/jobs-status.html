@@ -14,13 +14,12 @@
         <ul class="list-group">
             <li ng-repeat="job in data.jobs" class="list-group-item" ng-class=
                 "{
-                    'list-group-item-danger': job.status==='FAILED' || job.status==='STOPPED' || job.status==='BLOCKED'
-                                                || job.status==='PAUSED',
+                    'list-group-item-danger': job.status==='FAILED' || job.status==='STOPPED' || job.status==='PAUSED',
                     'list-group-item-success': job.status==='FINISHED',
                     'list-group-item-warning': job.status==='ACCEPTED' || job.status==='PENDING' || job.status==='PROCESSING_INPUTS'
                                                 || job.status==='STAGING_INPUTS' || job.status==='STAGED' || job.status==='STAGING_JOB'
                                                 || job.status==='SUBMITTING' || job.status==='QUEUED' || job.status==='RUNNING'
-                                                || job.status==='CLEANING_UP' || job.status==='ARCHIVING'
+                                                || job.status==='CLEANING_UP' || job.status==='ARCHIVING' || job.status==='BLOCKED'
                 }">
                 <h4>{{job.name}}</h4>
                 <span>{{job.status}}</span>
