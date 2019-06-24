@@ -184,6 +184,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                     if (v.length === 0) {
                         delete jobData.inputs[k];
                     }
+                } else if (!v) {
+                    delete jobData.inputs[k];
                 }
             });
             _.each(jobData.parameters, function(v, k) {
@@ -192,6 +194,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                     if (v.length === 0) {
                         delete jobData.parameters[k];
                     }
+                } else if (!v) {
+                    delete jobData.parameters[k];
                 }
             });
 
@@ -203,11 +207,11 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
             // Calculate processorsPerNode if nodeCount parameter submitted
             if (('nodeCount' in jobData) && !('processorsPerNode' in jobData)) {
-                jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
+                jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode || 1) / ($scope.data.app.defaultNodeCount || 1);
             } else if (('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
                 jobData.processorsPerNode = jobData.nodeCount * jobData.processorsPerNode;
             } else if (!('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
-                jobData.processorsPerNode = jobData.defaultNodeCount * jobData.processorsPerNode;
+                jobData.processorsPerNode = ($scope.data.app.defaultNodeCount || 1) * jobData.processorsPerNode;
             }
 
             $scope.jobReady = true;

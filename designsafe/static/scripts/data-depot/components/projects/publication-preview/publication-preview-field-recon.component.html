@@ -13,17 +13,14 @@
             </colgroup>
             <tr class="prj-row">
                 <td>PI</td>
-                <td>
-                    <ds-user-list class="prj-data" usernames="$ctrl.browser.project.value.pi"></ds-user-list>
+                <td class="prj-data">
+                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <span ng-repeat="copi in $ctrl.browser.project.value.coPis">
-                        <span ng-if="!$last"><ds-user-list usernames="copi"></ds-user-list>; </span>
-                        <span ng-if="$last"><ds-user-list usernames="copi"></ds-user-list></span>
-                    </span>
+                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly">
@@ -156,7 +153,7 @@
                     <div style="display: inline-block;
                                 width:78%;
                                 font-weight: bold;">
-                        <div data-ng-repeat="author in
+                        <!-- <div data-ng-repeat="author in
                             report.value.authors |
                             orderBy: 'order'"
                             data-ng-if="!author.length &&
@@ -167,7 +164,9 @@
                             <span data-ng-if="author.guest">
                                 {{author.lname}}, {{author.fname}}
                             </span>
-                        </div>
+                        </div> -->
+                        <ds-user-list authors="report.value.authors"></ds-user-list>
+                        <ds-author-list authors="[$ctrl.browser.project.value.pi]"></ds-author-list>
                     </div>
                     <div style="display: inline-block;
                                 width: 20%;
@@ -221,7 +220,7 @@
                             Authors
                         </div>
                         <div style="display: inline-block; width:78%; font-weight: bold;">
-                            <div data-ng-repeat="author in mission.value.authors | orderBy: 'order'"
+                            <!-- <div data-ng-repeat="author in mission.value.authors | orderBy: 'order'"
                                 data-ng-if="!author.length && author.authorship">
                                 <span data-ng-if="!author.guest">
                                     <ds-user-list class="prj-data" usernames="author.name"></ds-user-list>
@@ -229,7 +228,8 @@
                                 <span data-ng-if="author.guest">
                                     {{author.lname}}, {{author.fname}}
                                 </span>
-                            </div>
+                            </div> -->
+                            <ds-user-list authors="mission.value.authors"></ds-user-list>
                         </div>
                         <div style="display: inline-block; width:20%;">Date of Mission</div>
                         <div style="display: inline-block; width: 78%; font-weight:bold;">
@@ -357,7 +357,7 @@
                                     <div style="display: inline-block; width:20%; vertical-align: top;">
                                         Authors
                                     </div>
-                                    <div style="display: inline-block; width:78%; font-weight: bold;">
+                                    <!-- <div style="display: inline-block; width:78%; font-weight: bold;">
                                         <div data-ng-repeat="author in collection.value.dataCollectors | orderBy: 'order'"
                                             data-ng-if="!author.length && author.authorship">
                                             <span data-ng-if="!author.guest">
@@ -367,7 +367,8 @@
                                                 {{author.lname}}, {{author.fname}}
                                             </span>
                                         </div>
-                                    </div>
+                                    </div> -->
+                                    <ds-user-list authors="collection.value.dataCollectors"></ds-user-list>
                                     <div style="display: inline-block; width:20%; vertical-align: top;">
                                         Site Location
                                     </div>

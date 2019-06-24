@@ -34,63 +34,64 @@ import './controllers';
 import './components';
 
 export const ngDesignsafe = angular.module('designsafe',
-                                           ['ng.modernizr',
-                                            'djng.urls',
-                                            'slickCarousel',
-                                            'designsafe.services',
-                                            'designsafe.directives',
-                                            'designsafe.filters',
-                                            'designsafe.models',
-                                            'designsafe.controllers',
-                                            'designsafe.components',
-                                            'ds.notifications',
-                                            'ds.wsBus',
-                                           ])
-.config(['$httpProvider', function($httpProvider) {
-  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-}])
-.config(['WSBusServiceProvider', '$httpProvider', 'toastrConfig',
-  function config(WSBusServiceProvider, $httpProvider, toastrConfig) {
-    /*
-    * https://github.com/Foxandxss/angular-toastr#toastr-customization
-    */
-    angular.extend(toastrConfig, {
-      positionClass: 'toast-bottom-left',
-      timeOut: 20000
-    });
+    ['ng.modernizr',
+        'djng.urls',
+        'slickCarousel',
+        'designsafe.services',
+        'designsafe.directives',
+        'designsafe.filters',
+        'designsafe.models',
+        'designsafe.controllers',
+        'designsafe.components',
+        'ds.notifications',
+        'ds.wsBus',
+    ])
+    .config(['$httpProvider', '$qProvider', function($httpProvider, $qProvider) {
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+        $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+        $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+        $qProvider.errorOnUnhandledRejections(false);
+    }])
+    .config(['WSBusServiceProvider', '$httpProvider', 'toastrConfig',
+        function config(WSBusServiceProvider, $httpProvider, toastrConfig) {
+            /*
+      * https://github.com/Foxandxss/angular-toastr#toastr-customization
+      */
+            angular.extend(toastrConfig, {
+                positionClass: 'toast-bottom-left',
+                timeOut: 20000
+            });
 
-    WSBusServiceProvider.setUrl(
-      (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-      window.location.hostname +
-      (window.location.port ? ':' + window.location.port : '') +
-      '/ws/websockets?subscribe-broadcast&subscribe-user'
-    );
-  }
-])
-.constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Partner Data Apps', 'Utilities'])
-// Current list of icons for apps
-.constant('appIcons', ['Compress', 'Extract', 'MATLAB', 'Paraview', 'Hazmapper', 'Jupyter', 'ADCIRC', 'QGIS', 'LS-DYNA', 'LS-Pre/Post', 'VisIt', 'OpenFOAM', 'OpenSees', 'NGL'])
+            WSBusServiceProvider.setUrl(
+                (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+                window.location.hostname +
+                (window.location.port ? ':' + window.location.port : '') +
+                '/ws/websockets?subscribe-broadcast&subscribe-user'
+            );
+        }
+    ])
+    .constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Partner Data Apps', 'Utilities'])
+    // Current list of icons for apps
+    .constant('appIcons', ['Compress', 'Extract', 'MATLAB', 'Paraview', 'Hazmapper', 'Jupyter', 'ADCIRC', 'QGIS', 'LS-DYNA', 'LS-Pre/Post', 'VisIt', 'OpenFOAM', 'OpenSees', 'NGL']);
 
 ngDesignsafe.requires.push('django.context',
-                           'httpi',
-                           'ngCookies',
-                           'djng.urls',  //TODO: djng
-                           'ui.bootstrap',
-                           'ds.notifications',
-                           'toastr',
-                           'logging',
-                           'ngMaterial');
+    'httpi',
+    'ngCookies',
+    'djng.urls',  //TODO: djng
+    'ui.bootstrap',
+    'ds.notifications',
+    'toastr',
+    'logging',
+    'ngMaterial');
 
 ngDesignsafe.run(['WSBusService', 'logger',
-  function init(WSBusService, logger) {
-    WSBusService.init(WSBusService.url);
-  }]);
+    function init(WSBusService, logger) {
+        WSBusService.init(WSBusService.url);
+    }]);
 ngDesignsafe.run(['NotificationService', 'logger',
-  function init(NotificationService, logger) {
-    NotificationService.init();
-  }]);
+    function init(NotificationService, logger) {
+        NotificationService.init();
+    }]);
 const portal = angular.module('designsafe.portal', []).config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';

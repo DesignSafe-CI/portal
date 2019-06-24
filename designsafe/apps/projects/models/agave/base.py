@@ -152,28 +152,6 @@ class Project(MetadataModel):
         ARCHIVE_NAME = str(self.project_id) + '_archive.zip'
         proj_dir = '/corral-repl/tacc/NHERI/projects/{}'.format(self.uuid)
 
-        # open directory permissions
-        def open_perms(project_directory):
-            os.chmod('/corral-repl/tacc/NHERI/projects/', 0777)
-            archive_path = os.path.join(project_directory)
-            for root, dirs, files in os.walk(archive_path):
-                os.chmod(root, 0777)
-                for d in dirs:
-                    os.chmod(os.path.join(root, d), 0777)
-                for f in files:
-                    os.chmod(os.path.join(root, f), 0777)
-
-        # close directory permissions
-        def close_perms(project_directory):
-            os.chmod('/corral-repl/tacc/NHERI/projects/', 0555)
-            archive_path = os.path.join(project_directory)
-            for root, dirs, files in os.walk(archive_path):
-                os.chmod(root, 0555)
-                for d in dirs:
-                    os.chmod(os.path.join(root, d), 0555)
-                for f in files:
-                    os.chmod(os.path.join(root, f), 0555)
-
         def create_archive(project_directory):
             try:
                 logger.debug("Creating new archive for %s" % project_directory)
@@ -223,9 +201,7 @@ class Project(MetadataModel):
                 logger.debug("Updating archive failed for project directory" % 
                     project_directory)
         
-        open_perms(proj_dir)
         if ARCHIVE_NAME not in os.listdir(proj_dir):
             create_archive(proj_dir)
         else:
             update_archive(proj_dir)
-        close_perms(proj_dir)
