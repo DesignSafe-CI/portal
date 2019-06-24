@@ -9,9 +9,9 @@ export function jobsService($http, djangoUrl) {
         options.offest = options.offest || 0;
         return $http.get(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
             params: options,
-        }).then(resp => {
+        }).then((resp) => {
             let data = resp.data;
-            data.forEach(d => {
+            data.forEach((d) => {
                 d.created = new Date(d.created);
             });
             return data;

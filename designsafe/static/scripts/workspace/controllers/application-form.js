@@ -108,6 +108,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         // reset formValid, var is used for invalid form msg
         $scope.data.formValid = [];
 
+        let readOnly = $scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown;
+
         /* inputs */
         let items = [];
         if ($scope.form.schema.properties.inputs) {
@@ -118,7 +120,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         }
         $scope.form.form.push({
             type: 'fieldset',
-            readonly: ($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown),
+            readonly: readOnly,
             title: 'Inputs',
             items: items,
         });
@@ -141,14 +143,14 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         }
         $scope.form.form.push({
             type: 'fieldset',
-            readonly: ($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown),
+            readonly: readOnly,
             title: 'Job details',
             items: items,
         });
 
         /* buttons */
         items = [];
-        if (!($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown)) {
+        if (!readOnly) {
             items.push({ type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary' });
         }
         items.push({ type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()' });
@@ -182,6 +184,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                     if (v.length === 0) {
                         delete jobData.inputs[k];
                     }
+                } else if (!v) {
+                    delete jobData.inputs[k];
                 }
             });
             _.each(jobData.parameters, function(v, k) {
@@ -190,6 +194,8 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                     if (v.length === 0) {
                         delete jobData.parameters[k];
                     }
+                } else if (!v) {
+                    delete jobData.parameters[k];
                 }
             });
 
@@ -201,11 +207,11 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
             // Calculate processorsPerNode if nodeCount parameter submitted
             if (('nodeCount' in jobData) && !('processorsPerNode' in jobData)) {
-                jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
+                jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode || 1) / ($scope.data.app.defaultNodeCount || 1);
             } else if (('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
                 jobData.processorsPerNode = jobData.nodeCount * jobData.processorsPerNode;
             } else if (!('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
-                jobData.processorsPerNode = jobData.defaultNodeCount * jobData.processorsPerNode;
+                jobData.processorsPerNode = ($scope.data.app.defaultNodeCount || 1) * jobData.processorsPerNode;
             }
 
             $scope.jobReady = true;
@@ -214,7 +220,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 ProjectService.list({ offset: 0, limit: 500 }).then(function(resp) {
                     if (resp.length > 0) {
                         angular.forEach(resp, function(project, key) {
-                            resp[key] = `${project.uuid},${project.value.projectId ? project.value.projectId : project.uuid}`;
+                            resp[key] = `${project.uuid},${(project.value.projectId && project.value.projectId !== 'None') ? project.value.projectId : project.uuid}`;
                         });
                         jobData.parameters._userProjects = resp;
                     }

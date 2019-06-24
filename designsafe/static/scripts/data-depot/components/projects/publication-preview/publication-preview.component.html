@@ -13,17 +13,14 @@
             </colgroup>
             <tr class="prj-row">
                 <td>PI</td>
-                <td>
-                    <ds-user-list class="prj-data" usernames="$ctrl.browser.project.value.pi"></ds-user-list>
+                <td class="prj-data">
+                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <span ng-repeat="copi in $ctrl.browser.project.value.coPis">
-                        <span ng-if="!$last"><ds-user-list usernames="copi"></ds-user-list>; </span>
-                        <span ng-if="$last"><ds-user-list usernames="copi"></ds-user-list></span>
-                    </span>
+                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
             </tr>
             <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
@@ -126,6 +123,11 @@
         </div>
     </div>
     <div ng-hide="$ctrl.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
+        <div style="margin-bottom: 2px;">
+            <a data-ng-click="$ctrl.treeDiagram(experiment)">
+                <strong>View Data Diagram</strong>
+            </a>
+        </div>
         <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
             <button class="btn tab-experiment" ng-class="{'collapsed': !$ctrl.singleExperiment()}" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                 <table style="width:100%">
@@ -150,23 +152,12 @@
                     </strong>
                     <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
                     <div style="display:inline-block; width:78%; font-weight: bold;">
-                        <span ng-repeat="author in experiment.authors | orderBy: 'order'" ng-if="!author.length && author.authorship && $ctrl.readOnly">
-                            <span ng-if="!author.guest">
-                                <ds-user-list usernames="author.name"></ds-user-list>;
-                            </span>
-                            <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }};</span>
+                        <span ng-if="$ctrl.readOnly">
+                            <ds-author-list authors="experiment.authors"></ds-author-list>
                         </span>
-                        <span ng-repeat="author in experiment.value.authors | orderBy: 'order'" ng-if="!author.length && author.authorship && !$ctrl.readOnly">
-                            <span ng-if="!author.guest">
-                                <ds-user-list usernames="author.name"></ds-user-list>;
-                            </span>
-                            <span ng-if="author.guest">{{ author.lname }}, {{ author.fname }};</span>
+                        <span ng-if="!$ctrl.readOnly">
+                            <ds-author-list authors="experiment.value.authors"></ds-author-list>
                         </span>
-                        <span class="authors-end">__</span>
-                        <!-- support older author list -->
-                        <div ng-repeat="author in experiment.value.authors" ng-if="author.length">
-                            <ds-user-list usernames="author"></ds-user-list>
-                        </div>
                     </div>
                     <div style="display:inline-block; width:20%;">Experimental Facility</div>
                     <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
@@ -238,12 +229,6 @@
                     </p>
                     <div ng-if="$ctrl.fileNav">
                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
-                    </div>
-                    <div class="preview-tree-btn-wrapper">
-                        <button class="btn btn-link"
-                                data-ng-click="$ctrl.treeDiagram(experiment)">
-                            View Related Diagram
-                        </button>
                     </div>
                     <div ng-if="!$ctrl.fileNav">
                         <!-- Experiment Reports -->

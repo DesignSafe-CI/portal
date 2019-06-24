@@ -1,5 +1,152 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.2-20190604
+
+Improvements:
+
+- Show end date for published experiments.
+- App form validation improvements.
+
+Fixes:
+
+- Exclude trash from Community Data search.
+- Zip Publication task improvements.
+- Fix bad field validation.
+
+## v4.4.2-20190603
+
+Fixes:
+
+- Hotfix reference to old indexer.
+
+## v4.4.2-20190602
+
+Improvements:
+
+- Remove old unused code.
+- Enables Field Recon selection in dev.
+
+Fixes:
+
+- Only use regex form validation if regex is valid.
+- Fix project mounting in app containers where projectId is None.
+
+
+## v4.4.2-20190601
+
+Improvements:
+
+- Adds default fields to app form in the workspace.
+- Adds validation to fields from app def.
+
+Fixes:
+
+- Fix file metadata request in published area.
+- Fixes workspace data browser panel collapsibility.
+- Fix to allow project edits if meta_obj is missing certain fields.
+- Fix email message sent to users invited to a project.
+- Fix onBrowse method for projects and search.
+
+## v4.4.2
+
+Fixes:
+
+- Hotfix for project file nav.
+
+## v4.4.1
+
+Fixes:
+
+- Add PI to project upon project creation.
+- Set default move destination to be current location.
+- Add separators in Data Depot.
+- Fix PI display issue for published other type projects.
+- Disable "Preview Images" button until fixed.
+- Change category selector for appropriate project type.
+- Disable "Preview Citation" button in Data Depot Toolbar.
+- Allow blank or null procedure end dates for experiment publications.
+- Fix navigation/preview in search listings.
+- Changed Tree Diagram to Related Data Diagram.
+- Move data relation tree in publication and preview areas.
+
+## v4.4.0-20190527
+
+Fixes:
+
+- Hotfix moving within project folder error.
+
+## v4.4.0-20190526
+
+Fixes:
+
+- Hotfix error not sending emails on project creation.
+- Hotfix styling in curation.
+
+## v4.4.0-20190525
+
+Fixes:
+
+- Add PI to project upon project creation.
+- Set default move destination to be current location.
+- Add separators in Data Depot.
+- Fix PI display issue for published other type projects.
+- Disable "Preview Images" button until fixed.
+- Change category selector for appropriate project type.
+- Disable "Preview Citation" button in Data Depot Toolbar.
+
+## v4.4.0-20190524
+
+Fixes:
+
+- Allow blank or null procedure end dates for experiment publications, v2.
+
+## v4.4.0-20190523
+
+Fixes:
+
+- Allow blank or null procedure end dates for experiment publications.
+- Fix navigation/preview in search listings.
+- Changed Tree Diagram to Related Data Diagram.
+- Move data relation tree in publication and preview areas.
+
+## v4.4.0
+
+Fixes:
+
+- Preserve ordering of experiment authors when editing.
+- Reformat email to new project collaborators.
+- Change display of Field Recon to Field Research.
+- Disable publish button for Field Recon.
+- Add natural hazard metadata to project header for field recon.
+- Fixed linux/windows file category css.
+- Add published details to 'Other' type project template.
+- Rapid metadata in preview window hotfix.
+- Infinite recursive indexing fix.
+- Fix views not showing in 'Other' and 'Field Recon type projects.
+- Format authors for other projects.
+- Changed Tree Diagram to Related Data in Experimental Overview.
+- Fix template for multiple publication licenses.
+- Update Publication Citation popup.
+- Rapid/RApp metadata preview bug fix.
+
+## v4.3.9-20190522
+
+Fixes:
+
+- Roll back hotfix.
+
+## v4.3.9-20190521
+
+Fixes:
+
+- Hotfix to give published experiments an empty Procedure End date if none given.
+
+## v4.3.9-20190520
+
+Fixes:
+
+- Hotfix to reenable Publish button in pipeline.
+
 ## v4.3.9-20190519
 
 Fixes:

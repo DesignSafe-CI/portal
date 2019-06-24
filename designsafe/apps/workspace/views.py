@@ -45,6 +45,7 @@ def call_api(request, service):
             app_id = request.GET.get('app_id')
             if app_id:
                 data = agave.apps.get(appId=app_id)
+                data['exec_sys'] = agave.systems.get(systemId=data['executionSystem'])
                 lic_type = _app_license_type(app_id)
                 data['license'] = {
                     'type': lic_type

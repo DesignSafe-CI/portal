@@ -1,7 +1,7 @@
 import ProjectListingTemplate from './project-listing.component.html';
 import _ from 'underscore';
 
-function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectService) {
+function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectService, UserService) {
     'ngInject';
     $scope.ui = {};
     $scope.ui.busy = true;
@@ -9,6 +9,7 @@ function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectS
     $scope.browser.error = null;  //clears any potential lingering error messages.
     $scope.data = ProjectService.data;
     $scope.data.projects = [];
+    $scope.data.names = {};
     var offset = 0;
     var limit = 100;
     var page = 0;
@@ -18,8 +19,25 @@ function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectS
     ProjectService.list({offset:offset, limit:limit}).then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
-      DataBrowserService.projectBreadcrumbSubject.next()
+      DataBrowserService.projectBreadcrumbSubject.next();
+      $scope.getNames();
     });
+
+    $scope.getNames = function () {
+      // get user details in one request
+      var piList = [];
+      $scope.data.projects.forEach((proj) => {
+        if (!piList.includes(proj.value.pi)) {
+          piList.push(proj.value.pi);
+        }
+      });
+      UserService.getPublic(piList).then((resp) => {
+        var data = resp.userData;
+        data.forEach((user) => {
+          $scope.data.names[user.username] = user.fname + ' ' + user.lname;
+        });
+      });
+    };
 
     $scope.onBrowse = function onBrowse($event, project) {
       $event.preventDefault();
@@ -86,4 +104,4 @@ export const ProjectListingComponent = {
     controller: ProjectListingCtrl,
     controllerAs: '$ctrl',
     template: ProjectListingTemplate
-}
+};

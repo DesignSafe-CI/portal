@@ -9,7 +9,6 @@ urlpatterns = [
                                namespace='ds_projects_api')),
     url(r'^external-resources/', include('designsafe.apps.api.external_resources.urls')),
 
-    url(r'^data/', include('designsafe.apps.api.data.urls')),
     url(r'^logger/$', LoggerApi.as_view(), name='logger'),
     url(r'^notifications/', include('designsafe.apps.api.notifications.urls')),
     url(r'^users/', include('designsafe.apps.api.users.urls')),

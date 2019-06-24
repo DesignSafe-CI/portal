@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-export function appsService($http, $q, $translate, djangoUrl) {
+export function appsService($http, $q, $translate, djangoUrl, Django) {
     'ngInject';
     let service = {};
 
@@ -60,6 +60,11 @@ export function appsService($http, $q, $translate, djangoUrl) {
         });
     };
 
+    service.getDateString = function() {
+        let result = new Date().toISOString();
+        return result.slice(0, result.indexOf('.'));
+    };
+
     service.formSchema = function(app) {
         /**
          * Generate a JSON.schema for the app ready for angular-schema-form
@@ -80,14 +85,21 @@ export function appsService($http, $q, $translate, djangoUrl) {
                 type: 'object',
                 properties: {},
             };
-            _.each(params, function(param) {
+            _.each(params, (param) => {
                 if (!param.value.visible || param.id.startsWith('_')) {
                     return;
+                }
+                try {
+                    RegExp(param.value.validator);
+                } catch (e) {
+                    param.value.validator = null;
                 }
                 let field = {
                     title: param.details.label,
                     description: param.details.description,
                     required: param.value.required,
+                    default: param.value.default,
+                    pattern: param.value.validator || undefined,
                 };
                 switch (param.value.type) {
                     case 'bool':
@@ -116,6 +128,11 @@ export function appsService($http, $q, $translate, djangoUrl) {
                         break;
 
                     case 'string':
+                        field.type = 'string';
+                        if (('ontology' in param.semantics) && (param.semantics.ontology.includes('agaveFile'))) {
+                            field.format = 'agaveFile';
+                        }
+                        break;
                     default:
                         field.type = 'string';
                 }
@@ -128,16 +145,21 @@ export function appsService($http, $q, $translate, djangoUrl) {
                 type: 'object',
                 properties: {},
             };
-            _.each(inputs, function(input) {
-                if (!input.value.visible) {
+            _.each(inputs, (input) => {
+                if (input.id.startsWith('_') || !input.value.visible) {
                     return;
                 }
-                if (input.id.startsWith('_')) {
-                    return;
+                try {
+                    RegExp(input.value.validator);
+                } catch (e) {
+                    input.value.validator = null;
                 }
                 let field = {
                     title: input.details.label,
                     description: input.details.description,
+                    id: input.id,
+                    // default: input.value.default,
+                    pattern: input.value.validator || undefined,
                 };
                 if (input.semantics.maxCardinality === 1) {
                     field.type = 'string';
@@ -148,7 +170,11 @@ export function appsService($http, $q, $translate, djangoUrl) {
                     field.items = {
                         type: 'string',
                         format: 'agaveFile',
+                        required: input.value.required,
                         'x-schema-form': { notitle: true },
+                        title: input.details.label,
+                        description: input.details.description,
+                        pattern: input.value.validator || undefined,
                     };
                     if (input.semantics.maxCardinality > 1) {
                         field.maxItems = input.semantics.maxCardinality;
@@ -158,14 +184,62 @@ export function appsService($http, $q, $translate, djangoUrl) {
             });
         }
 
+        function replaceAt(str, i, replace) {
+            return str.slice(0, i) + replace + str.slice(i + 1);
+        }
+
+        /**
+         * Create regex pattern for maxRunTime
+         * @function
+         * @param {String} maxRunTime - maxRunTime given in the format of hh:mm:ss, usually from the target queue's maxRequestedTime
+         * Creates a multigrouped regex to accommodate several layers of timestamps.
+         */
+        function createMaxRunTimeRegex(maxRunTime) {
+            let timeStr = maxRunTime.replace(/:/g, '');
+            let tmp = '[0-0][0-0]:[0-0][0-0]:[0-0][0-0]$'; // procedurally populated max value regex
+            const regBase = '[0-4][0-9]:[0-5][0-9]:[0-5][0-9]$'; // default max values
+
+            let regStr = '^'; // procedurally generated regex string to be returned
+
+            let index = 3;
+
+            // iterate through each value in the maxRunTime to generate a regex group
+            timeStr.split('').forEach((n, i, arr) => {
+
+                // only need to generate regex for nonzero values
+                if (n > 0) {
+                    if ((arr.length - 1) !== i) {
+                        tmp = replaceAt(tmp, index, n - 1);
+                        if (regStr !== '^') {
+                            regStr += '|^';
+                        }
+                        regStr += tmp.slice(0, index + 1) + regBase.slice(index + 1);
+                    }
+
+                    tmp = replaceAt(tmp, index, n);
+                    if ((arr.length - 1) === i || (arr[i + 1] == 0)) {
+                        if (regStr !== '^') {
+                            regStr += '|^';
+                        }
+                        regStr += tmp;
+                    }
+                }
+
+                index += (i % 2 == 0) ? 5 : 6;
+            });
+            return regStr;
+        }
+
+        let maxQueueRunTime = app.defaultQueue ? app.exec_sys.queues.find((q) => q.name === app.defaultQueue).maxRequestedTime : app.exec_sys.queues.find((q) => q.default === true).maxRequestedTime;
+
         schema.properties.maxRunTime = {
             title: 'Maximum job runtime',
-            description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 48:00:00 (48 hours).',
+            description: `In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is ${maxQueueRunTime} (hrs:min:sec).`,
             type: 'string',
-            pattern: '^(48:00:00)|([0-4][0-7]:[0-5][0-9]:[0-5][0-9])$',
-            validationMessage: 'Must be in format HH:MM:SS and be less than 48 hours (48:00:00).',
+            pattern: createMaxRunTimeRegex(maxQueueRunTime),
+            validationMessage: `Must be in format HH:MM:SS and be less than ${maxQueueRunTime} (hrs:min:sec).`,
             required: true,
-            'x-schema-form': { placeholder: app.defaultMaxRunTime },
+            'x-schema-form': { placeholder: app.defaultMaxRunTime || '06:00:00' },
         };
 
         schema.properties.name = {
@@ -173,6 +247,8 @@ export function appsService($http, $q, $translate, djangoUrl) {
             description: 'A recognizable name for this job.',
             type: 'string',
             required: true,
+            default: app.id + '_' + this.getDateString(),
+            maxLength: 64,
         };
 
         schema.properties.nodeCount = {
@@ -191,23 +267,23 @@ export function appsService($http, $q, $translate, djangoUrl) {
                 }),
             },
         };
-        
+
         schema.properties.processorsPerNode = {
             title: 'Processors Per Node',
             description: `Number of processors (cores) per node for the job. e.g. A selection of 16 processors per node along with 4 nodes
-            will result in 16 processors on 4 nodes, with 64 processors total. Default number of processors per node is ${Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount)}.`,
+            will result in 4 nodes with 16 processors each, 64 processors total. Default number of processors per node is ${Math.floor(app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)}.`,
             type: 'integer',
-            default: Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount),
+            default: Math.floor((app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)),
             minimum: 1,
-            maximum: Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount),
+            maximum: Math.floor(app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1),
         };
 
         schema.properties.archivePath = {
             title: 'Job output archive location (optional)',
-            description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>&lt;username&gt;/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',
+            description: `Specify a location where the job output should be archived. By default, job output will be archived at: <code>${Django.user}/archive/jobs/\${YYYY-MM-DD}/\${JOB_NAME}-\${JOB_ID}</code>.`,
             type: 'string',
             format: 'agaveFile',
-            'x-schema-form': { placeholder: '<username>/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}' },
+            'x-schema-form': { placeholder: `${Django.user}/archive/jobs/\${YYYY-MM-DD}/\${JOB_NAME}-\${JOB_ID}` },
         };
 
         return schema;

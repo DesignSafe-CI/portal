@@ -134,7 +134,7 @@ class PublicSearchView(BaseApiView):
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string')
         logger.debug('offset: %s, limit: %s, query_string: %s' % (str(offset), str(limit), query_string))
-        if file_mgr_name != PublicElasticFileManager.NAME or not query_string:
+        if file_mgr_name not in (PublicElasticFileManager.NAME, 'community') or not query_string:
             return HttpResponseBadRequest()
 
         if system_id is None:

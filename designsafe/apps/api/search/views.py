@@ -106,6 +106,7 @@ class SearchView(BaseApiView):
             .query("query_string", query=q, default_operator="and")\
             .filter(filters)\
             .filter("term", type="file")\
+            .exclude(Q({"prefix": {"path._exact": "/Trash"}}))\
             .extra(from_=offset, size=limit)
         logger.info(search.to_dict())
         return search
@@ -178,6 +179,9 @@ class SearchView(BaseApiView):
                 system_filters,
                 Q("query_string", query=file_q, default_operator="and"),
                 Q("term", type="file")
+            ],
+            must_not=[
+                Q({"prefix": {"path._exact": "/Trash"}})
             ]
         )
 

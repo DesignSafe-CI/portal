@@ -102,7 +102,8 @@ class FilesListingCtrl {
         }
         return this.$state.go(
             this.$state.current.name,
-            { systemId: systemId, filePath: filePath }, { reload: true }
+            { systemId: systemId, filePath: filePath, query_string: null }, 
+            { reload: true }
         );
     }
 
@@ -138,7 +139,8 @@ class FilesListingCtrl {
             { 
                 systemId: systemId,
                 filePath: filePath,
-                version: version
+                version: version,
+                query_string: null
             },
             { reload: true }
         );

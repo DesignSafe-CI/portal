@@ -284,10 +284,11 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
 
     var modal = $uibModal.open({
       template: require('../html/modals/data-browser-service-copy.html'),
-      controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', 'ProjectService',
-                    function ($scope, $uibModalInstance, FileListing, data, ProjectService) {
+      controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', 'ProjectService', 'UserService',
+                    function ($scope, $uibModalInstance, FileListing, data, ProjectService, UserService) {
 
         $scope.data = data;
+        $scope.data.names = {};
 
         $scope.state = {
           busy: false,
@@ -334,6 +335,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
                 $scope.projects = _.map(projects, function(p) {
                   p.href = $state.href('projects.view', {projectId: p.uuid});
                   return p;});
+                $scope.getNames();
                 $scope.state.busy = false;
             });
           }
@@ -350,6 +352,22 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
           }
         });
         $scope.currentOption = $scope.options[0];
+
+        $scope.getNames = function () {
+          // get user details in one request
+          var piList = [];
+          $scope.projects.forEach((proj) => {
+            if (!piList.includes(proj.value.pi)) {
+              piList.push(proj.value.pi);
+            }
+          });
+          UserService.getPublic(piList).then((resp) => {
+            var data = resp.userData;
+            data.forEach((user) => {
+              $scope.data.names[user.username] = user.fname + ' ' + user.lname;
+            });
+          });
+        };
 
         $scope.onBrowse = function ($event, fileListing) {
           $event.preventDefault();
@@ -544,7 +562,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     if (! Array.isArray(files)) {
       files = [files];
     }
-
     var modal = $uibModal.open({
       component: 'move',
       resolve: {
@@ -1770,13 +1787,11 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
             try { citationDate = ent.created.split('T')[0]; }
             catch(err) {
               citationDate = '[publication date]';
-              console.error(err);
             }
           } else {
             try { citationDate = ent[0].meta.dateOfPublication.split('T')[0]; }
             catch(err) {
               citationDate = '[publication date]';
-              console.error(err);
             }
           }
 

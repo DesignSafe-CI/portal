@@ -1,8 +1,6 @@
 import json
 import logging
 
-from designsafe.apps.api.data import lookup_file_manager
-from designsafe.apps.api.data.sources import SourcesApi
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from django.conf import settings
