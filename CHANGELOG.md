@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.2-20190605
+
+Fixes:
+
+- Switch to production Tapis tokens from Aloe sandbox in dev.
+
 ## v4.4.3
 
 Improvements:
