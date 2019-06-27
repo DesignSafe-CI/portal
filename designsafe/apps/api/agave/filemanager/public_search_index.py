@@ -144,9 +144,13 @@ class Publication(object):
             dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
                 last_name=pi_user['last_name'], first_name=pi_user['first_name'])
         else:
-            pi_username = get_user_model().objects.get(username=self.project['value']['pi'])
-            dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
-                last_name=pi_username.last_name, first_name=pi_username.first_name)
+            try:
+                pi_username = get_user_model().objects.get(username=self.project['value']['pi'])
+                dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
+                    last_name=pi_username.last_name, first_name=pi_username.first_name)
+            except:
+                dict_obj['meta']['piLabel'] = pi
+
         return dict_obj
 
     def related_file_paths(self):

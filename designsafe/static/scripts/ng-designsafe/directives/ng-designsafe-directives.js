@@ -277,30 +277,60 @@ export function dsUserList(UserService) {
         }
         let userReq = [];
         let guests = [];
-
+  
         scope.usernames.forEach((user) => {
           if (typeof user === 'undefined') {
             return;
           } else if (typeof user === 'string') {
             userReq.push(user);
+          } else if (typeof user === 'object' && !user.guest) {
+            userReq.push(user.name);
           } else if (user.guest) {
             guests.push(user);
           }
         });
 
-        UserService.getPublic(userReq).then((res) => {
-          let userData = res.userData;
-          let formattedNames = '';
+        if (scope.format === 'other') {
 
-          userData.forEach((u, i, arr) => {
-            if (i === (arr.length -1)) {
-              formattedNames += u.lname + ', ' + u.fname;
-            } else {
-              formattedNames += u.lname + ', ' + u.fname + '; ';
-            }
+          UserService.getPublic(userReq).then((res) => {
+            let userData = res.userData;
+            let otherData;
+            let formattedNames = '';
+  
+            userData.forEach((user) => {
+              let otherMember = scope.usernames.find( u => u.name === user.username );
+              user.order = otherMember.order;
+            });
+            otherData = userData.concat(guests);
+            otherData.sort((a, b) => {
+              return a.order - b.order;
+            });
+
+            otherData.forEach((u, i, arr) => {
+              if (i === (arr.length - 1)) {
+                formattedNames += u.lname + ', ' + u.fname;
+              } else {
+                formattedNames += u.lname + ', ' + u.fname + '; ';
+              }
+            });
+            element.text(formattedNames);
           });
-          element.text(formattedNames);
-        });
+
+        } else {
+          UserService.getPublic(userReq).then((res) => {
+            let userData = res.userData;
+            let formattedNames = '';
+  
+            userData.forEach((u, i, arr) => {
+              if (i === (arr.length -1)) {
+                formattedNames += u.lname + ', ' + u.fname;
+              } else {
+                formattedNames += u.lname + ', ' + u.fname + '; ';
+              }
+            });
+            element.text(formattedNames);
+          });
+        }
       });
     }
   };
