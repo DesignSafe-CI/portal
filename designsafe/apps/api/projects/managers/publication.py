@@ -166,13 +166,36 @@ def _project_required_xml(project, authors, created, doi=None):
         identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
 
-    for author in authors:
-        if not author.get('lname') and not author.get('fname'):
-            logger.error('Author in wrong format: %s', author)
-            continue
-        creator = ET.SubElement(creators, 'creator')
-        creator_name = ET.SubElement(creator, 'creatorName')
-        creator_name.text = '{}, {}'.format(author['lname'], author['fname'])
+    if project.value.projectType == 'other':
+        for author in sorted(authors, key=lambda x: x['order']):
+            if author.get('lname') and author.get('fname'):
+                _author = {
+                    'last_name': author['lname'],
+                    'first_name': author['fname']
+                }
+            else:
+                try:
+                    user = get_user_model().objects.get(username=author['name'])
+                except ObjectDoesNotExist:
+                    logger.error('User does not exists: %s', author['name'])
+                    continue
+
+                _author = {
+                    'last_name': user.last_name,
+                    'first_name': user.first_name
+                }
+
+            creator = ET.SubElement(creators, 'creator')
+            creator_name = ET.SubElement(creator, 'creatorName')
+            creator_name.text = '{}, {}'.format(_author['last_name'], _author['first_name'])
+    else:
+        for author in authors:
+            if not author.get('lname') and not author.get('fname'):
+                logger.error('Author in wrong format: %s', author)
+                continue
+            creator = ET.SubElement(creators, 'creator')
+            creator_name = ET.SubElement(creator, 'creatorName')
+            creator_name.text = '{}, {}'.format(author['lname'], author['fname'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
