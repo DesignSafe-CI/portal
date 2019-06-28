@@ -290,12 +290,12 @@ export function dsUserList(UserService) {
           }
         });
 
-        if (scope.format === 'other') {
+        let otherData;
+        let formattedNames = '';
 
+        if (scope.format === 'other') {
           UserService.getPublic(userReq).then((res) => {
             let userData = res.userData;
-            let otherData;
-            let formattedNames = '';
   
             userData.forEach((user) => {
               let otherMember = scope.usernames.find( u => u.name === user.username );
@@ -315,11 +315,9 @@ export function dsUserList(UserService) {
             });
             element.text(formattedNames);
           });
-
         } else {
           UserService.getPublic(userReq).then((res) => {
             let userData = res.userData;
-            let formattedNames = '';
   
             userData.forEach((u, i, arr) => {
               if (i === (arr.length -1)) {

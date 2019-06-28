@@ -145,11 +145,11 @@ class Publication(object):
                 last_name=pi_user['last_name'], first_name=pi_user['first_name'])
         else:
             try:
-                pi_username = get_user_model().objects.get(username=self.project['value']['pi'])
+                pi_user = get_user_model().objects.get(username=pi)
                 dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
-                    last_name=pi_username.last_name, first_name=pi_username.first_name)
+                    last_name=pi_user.last_name, first_name=pi_user.first_name)
             except:
-                dict_obj['meta']['piLabel'] = pi
+                dict_obj['meta']['piLabel'] = '({pi})'.format(pi=pi)
 
         return dict_obj
 
