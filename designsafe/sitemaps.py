@@ -53,12 +53,17 @@ from designsafe.apps.dashboard import urls as dashboard_urls
 from designsafe.apps.box_integration import urls as box_integration_urls
 from designsafe.apps.dropbox_integration import urls as dropbox_integration_urls
 from designsafe.apps.googledrive_integration import urls as googledrive_integration_urls
+from cms.sitemaps import CMSSitemap
 
 # Home
 class HomeSitemap(sitemaps.Sitemap):
     priority = 1.0
     changefreq = 'weekly'
 
+    def get_urls(self, site=None, **kwargs):
+        site = Site(domain='www.designsafe-ci.org')
+        return super(HomeSitemap, self).get_urls(site=site, **kwargs)
+    
     def items(self):
         return ['']
 
@@ -89,6 +94,10 @@ class SubSitemap(sitemaps.Sitemap):
 class StaticViewSitemap(sitemaps.Sitemap):
     priority = 0.7
     changefreq = 'weekly'
+
+    def get_urls(self, site=None, **kwargs):
+        site = Site(domain='www.designsafe-ci.org')
+        return super(StaticViewSitemap, self).get_urls(site=site, **kwargs)
 
     def items(self):
 
@@ -127,6 +136,10 @@ class DynamicViewSitemap(sitemaps.Sitemap):
     priority = 0.8
     changefreq = 'weekly'
 
+    def get_urls(self, site=None, **kwargs):
+        site = Site(domain='www.designsafe-ci.org')
+        return super(DynamicViewSitemap, self).get_urls(site=site, **kwargs)
+
     def items(self):
 
         names_list = []
@@ -149,6 +162,10 @@ class DynamicViewSitemap(sitemaps.Sitemap):
 class ProjectSitemap(sitemaps.Sitemap):
     priority = 0.6
     changefreq = 'weekly'
+
+    def get_urls(self, site=None, **kwargs):
+        site = Site(domain='www.designsafe-ci.org')
+        return super(ProjectSitemap, self).get_urls(site=site, **kwargs)
 
     def items(self):
         client = get_service_account_client()
@@ -184,3 +201,14 @@ class ProjectSitemap(sitemaps.Sitemap):
 
     def location(self, item):
         return item
+
+
+class CMSSitemap_modified(CMSSitemap):
+    priority = .7
+    changefreq = 'weekly'
+
+    def get_urls(self, site=None, **kwargs):
+        site = Site(domain='www.designsafe-ci.org')
+        return super(CMSSitemap, self).get_urls(site=site, **kwargs)
+
+
