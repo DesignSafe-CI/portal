@@ -18,7 +18,6 @@ class DataDepotBrowserCtrl {
         this.DataBrowserService.apiParams.fileMgr = this.apiParams.fileMgr;
         this.DataBrowserService.apiParams.baseUrl = this.apiParams.baseUrl;
         this.DataBrowserService.apiParams.searchState = this.apiParams.searchState;
-
         const setupListing = () => {
             this.browser.listing.href = this.$state.href(
                 this.$state.current.name,
@@ -45,20 +44,13 @@ class DataDepotBrowserCtrl {
             };
         };
 
-        if (!this.$stateParams.query_string){
-            this.DataBrowserService.browse({
-                system: this.$stateParams.systemId,
-                path: this.path,
-            }).then(setupListing);
-        } else {
-            this.DataBrowserService.search({
-                system: this.$stateParams.systemId,
-                query_string: this.$stateParams.query_string,
-                offset: this.$stateParams.offset,
-                limit: this.$stateParams.limit,
-                shared: this.$stateParams.shared || null,
-            }).then(setupListing);
-        }
+        this.DataBrowserService.browse({
+            system: this.$stateParams.systemId,
+            path: this.path}, {
+            query_string: this.$stateParams.query_string,
+            offset: this.$stateParams.offset,
+            limit: this.$stateParams.limit,
+        }).then(setupListing);
     }
 }
 
