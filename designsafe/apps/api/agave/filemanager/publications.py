@@ -64,7 +64,7 @@ class PublicationsManager(AgaveFileManager):
         children = []
         for hit in res:
             try:
-                pid = hit.projectId
+                getattr(hit, 'projectId')
                 children.append(BaseESPublication(**hit.to_dict()).to_file())
             except AttributeError:
                 children.append(BaseESPublicationLegacy(**hit.to_dict()).to_file())

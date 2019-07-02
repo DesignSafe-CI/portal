@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 @python_2_unicode_compatible
 class BaseESPublicationLegacy(BaseESResource):
-    """Wrapper class for Elastic Search indexed file.
+    """Wrapper class for Elastic Search indexed NEES publication.
 
     .. rubric:: Rationale
 

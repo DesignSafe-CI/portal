@@ -15,7 +15,7 @@ from designsafe.apps.api.exceptions import ApiException
 logger = logging.getLogger(__name__)
 
 class PublishedFileManager(AgaveFileManager):
-    NAME = 'community'
+    NAME = 'published_files'
     DEFAULT_SYSTEM_ID = 'designsafe.storage.published'
 
     @property

@@ -14,7 +14,7 @@ from designsafe.apps.api.exceptions import ApiException
 logger = logging.getLogger(__name__)
 
 class PrivateDataFileManager(AgaveFileManager):
-    NAME = 'myData'
+    NAME = 'my_data'
 
     @property
     def requires_auth(self):

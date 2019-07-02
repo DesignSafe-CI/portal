@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class SharedDataSearchManager(BaseSearchManager):
-    """ Search manager handling My Data.
+    """ Search manager handling Shared Data.
     """
 
     def __init__(self, request=None, **kwargs):
