@@ -499,7 +499,8 @@ def email_confirmation(request, code=None):
                 tas = TASClient()
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
-                    check_or_create_agave_home_dir.apply(args=(user["username"],))
+                    logger.info('TAS Account activation succeeded.')
+                    check_or_create_agave_home_dir.apply(args=(user["username"],)) # This will likely fail to index the homedir
                     return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
                 else:
                     messages.error(request,

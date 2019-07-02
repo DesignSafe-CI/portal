@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 def check_or_create_agave_home_dir(username):
     try:
         # TODO should use OS calls to create directory.
-        user = get_user_model().objects.get(username=username)
         logger.info(
             "Checking home directory for user=%s on "
             "default storage systemId=%s",
@@ -63,6 +62,7 @@ def check_or_create_agave_home_dir(username):
 
                 try:   
                     logger.info("Indexing the home directory for user=%s", username)
+                    user = get_user_model().objects.get(username=username)
                     fm = FileManager(user)
                     fm.indexer.index(
                         settings.AGAVE_STORAGE_SYSTEM,
