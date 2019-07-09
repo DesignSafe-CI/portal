@@ -167,7 +167,7 @@ class PublishedViewCtrl {
         var system = this.$stateParams.systemId;
         var projectId = this.project.value.projectId;
         
-        var url = this.djangoUrl.reverse('designsafe_api:public_files_media', ['published', system, `${projectId}/${projectId}_archive.zip`]);
+        var url = this.djangoUrl.reverse('designsafe_api:public_files_media', ['published', system, `archives/${projectId}_archive.zip`]);
 
         this.$http.put(url, body).then(function (resp) {
             var postit = resp.data.href;
