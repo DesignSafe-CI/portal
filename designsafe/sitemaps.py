@@ -203,7 +203,7 @@ class ProjectSitemap(sitemaps.Sitemap):
         return item
 
 
-class CMSSitemap_modified(CMSSitemap):
+class DesignSafeCMSSitemap(CMSSitemap):
     priority = .7
     changefreq = 'weekly'
 

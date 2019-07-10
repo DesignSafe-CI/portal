@@ -36,7 +36,7 @@ from designsafe.views import project_version as des_version
 
 # sitemap - classes must be imported and added to sitemap dictionary
 from django.contrib.sitemaps.views import sitemap
-from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, CMSSitemap_modified
+from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, DesignSafeCMSSitemap
 from designsafe import views
 
 sitemaps = {
@@ -45,7 +45,7 @@ sitemaps = {
     'static': StaticViewSitemap,
     'dynamic': DynamicViewSitemap,
     'projects': ProjectSitemap,
-    'cmspages': CMSSitemap_modified,
+    'cmspages': DesignSafeCMSSitemap,
 }
 
 urlpatterns = [
