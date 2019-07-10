@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 def check_or_create_agave_home_dir(username):
     try:
         # TODO should use OS calls to create directory.
-        user = get_user_model().objects.get(username=username)
         logger.info(
             "Checking home directory for user=%s on "
             "default storage systemId=%s",
@@ -26,19 +25,19 @@ def check_or_create_agave_home_dir(username):
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                    token=settings.AGAVE_SUPER_TOKEN)
         try:
-            resp = ag.files.list(
+            listing_response = ag.files.list(
                 systemId=settings.AGAVE_STORAGE_SYSTEM,
                 filePath=username)
-            logger.info('check home dir response: {}'.format(resp))
+            logger.info('check home dir response: {}'.format(listing_response))
 
         except HTTPError as e:
             if e.response.status_code == 404:
-                logger.info("creating the home directory for user=%s then going to run setfacl", username)
+                logger.info("Creating the home directory for user=%s then going to run setfacl", username)
                 body = {'action': 'mkdir', 'path': username}
-                response1 = ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
+                fm_response = ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
                                 filePath='',
                                 body=body)
-                logger.info('mkdir response: {}'.format(response1))
+                logger.info('mkdir response: {}'.format(fm_response))
 
                 ds_admin_client = Agave(
                     api_server=getattr(
@@ -58,11 +57,11 @@ def check_or_create_agave_home_dir(username):
                     'name': 'setfacl',
                     'appId': 'setfacl_corral3-0.1'
                 }
-                response = ds_admin_client.jobs.submit(body=job_body)
-                logger.info('setfacl response: {}'.format(response))
+                jobs_response = ds_admin_client.jobs.submit(body=job_body)
+                logger.info('setfacl response: {}'.format(jobs_response))
 
                 # add dir to index
-
+                logger.info("Indexing the home directory for user=%s", username)
                 agave_indexer.apply_async(kwargs={'username': username, 'systemId': settings.AGAVE_STORAGE_SYSTEM, 'filePath': username}, queue='indexing')
 
     except(AgaveException):
