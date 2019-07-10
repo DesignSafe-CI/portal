@@ -10,7 +10,7 @@
                          $ctrl.browser.publishPipeline == 'review'))"
     >
         <div>
-            <span ng-repeat="path in $ctrl.breadcrumbs">
+            <span ng-repeat="path in $ctrl.breadcrumbs track by $index">
                 <span ng-if="!$last"><a ng-click="$ctrl.breadcrumbBrowse($event, path)">{{ path || 'Main' }}</a> / </span>
                 <span ng-if="$last">{{ path || 'Main' }}</span>
             </span>
