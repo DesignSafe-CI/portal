@@ -1,5 +1,5 @@
 """
-.. module: portal.apps.search.api.managers.cms_search
+.. module: portal.apps.api.search.searchmanager.cms
    :synopsis: Manager handling CMS searches.
 """
 

@@ -1,5 +1,5 @@
 """
-.. module: portal.apps.search.api.managers.private_data_search
+.. module: portal.apps.api.search.searchmanager.private_data
    :synopsis: Manager handling My Data searches.
 """
 

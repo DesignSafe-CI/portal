@@ -1,6 +1,6 @@
 """
-.. module: portal.apps.search.api.managers.private_data_search
-   :synopsis: Manager handling My Data searches.
+.. module: portal.apps.api.search.searchmanager.published_files
+   :synopsis: Manager handling published file searches.
 """
 
 from __future__ import unicode_literals, absolute_import
