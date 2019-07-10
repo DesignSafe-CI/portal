@@ -143,79 +143,49 @@ class BaseESPublication(BaseESResource):
         return file_paths
 
     def archive(self):
-        ARCHIVE_NAME = str(self.projectId) + '_archive.zip'
-        proj_dir = '/corral-repl/tacc/NHERI/published/{}'.format(self.projectId)
+        archive_name = '{}_archive.zip'.format(self.projectId)
+        pub_dir = '/corral-repl/tacc/NHERI/published/'
+        arc_dir = os.path.join(pub_dir, 'archives/')
 
-        def set_perms(project_directory, octal):
+        def set_perms(dir, octal, subdir=None):
             try:
-                os.chmod('/corral-repl/tacc/NHERI/published/', octal)
-                archive_path = os.path.join(project_directory)
-                if not os.path.isdir(archive_path):
-                    raise Exception('Archive path does not exist!')
-                for root, dirs, files in os.walk(archive_path):
-                    os.chmod(root, octal)
-                    for d in dirs:
-                        os.chmod(os.path.join(root, d), octal)
-                    for f in files:
-                        os.chmod(os.path.join(root, f), octal)
+                os.chmod(dir, octal)
+                if subdir:
+                    if not os.path.isdir(subdir):
+                        raise Exception('subdirectory does not exist!')
+                    for root, dirs, files in os.walk(subdir):
+                        os.chmod(root, octal)
+                        for d in dirs:
+                            os.chmod(os.path.join(root, d), octal)
+                        for f in files:
+                            os.chmod(os.path.join(root, f), octal)
             except Exception as e:
-                logger.exception("Failed to set permissions for {}".format(project_directory))
-                os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
+                logger.exception("Failed to set permissions for {}".format(dir))
+                os.chmod(dir, 0555)
 
-        def create_archive(project_directory):
+        def create_archive():
+            arc_source = os.path.join(pub_dir, self.projectId)
+            archive_path = os.path.join(arc_dir, archive_name)
+
             try:
-                logger.debug("Creating new archive for {}".format(project_directory))
-
-                # create archive within the project directory
-                archive_path = os.path.join(project_directory, ARCHIVE_NAME)
-                abs_path = project_directory.rsplit('/',1)[0]
+                logger.debug("Creating archive for {}".format(self.projectId))
 
                 zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
-                for dirs, _, files in os.walk(project_directory):
+                for dirs, _, files in os.walk(arc_source):
                     for f in files:
-                        if f == ARCHIVE_NAME:
+                        if f == archive_name:
                             continue
-                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path,''), f))
+                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(pub_dir,''), f))
                 zf.close()
             except Exception as e:
-                logger.exception("Archive creation failed for {}".format(project_directory))
+                logger.exception("Archive creation failed for {}".format(arc_source))
             finally:
-                os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
-
-        def update_archive(project_directory):
-            try:
-                logger.debug("Updating archive for {}".format(project_directory))
-
-                archive_path = os.path.join(project_directory, ARCHIVE_NAME)
-                archive_timestamp = os.path.getmtime(archive_path)
-                zf = zipfile.ZipFile(archive_path, mode='a', allowZip64=True)
-                for dirs, _, files in os.walk(project_directory):
-                    for f in files:
-                        if f == ARCHIVE_NAME:
-                            continue
-                        file_path = os.path.join(dirs, f)
-                        file_timestamp = os.path.getmtime(file_path)
-                        if file_timestamp > archive_timestamp:
-                            if file_path in zf.namelist():
-                                zf.close()
-                                logger.debug(
-                                    "Modified file, deleting archive and " \
-                                    "re-archiving project directory {}".format(project_directory))
-                                os.remove(archive_path)
-                                create_archive(project_directory)
-                                break
-            except Exception as e:
-                logger.exception("Archive update failed for project directory {}".format(project_directory))
-            finally:
-                os.chmod('/corral-repl/tacc/NHERI/published/', 0555)
+                set_perms(pub_dir, 0555, arc_source)
+                set_perms(arc_dir, 0555)
 
         try:
-            if ARCHIVE_NAME not in os.listdir(proj_dir):
-                set_perms(proj_dir, 0755)
-                create_archive(proj_dir)
-            else:
-                set_perms(proj_dir, 0755)
-                update_archive(proj_dir)
-            set_perms(proj_dir, 0555)
+            set_perms(pub_dir, 0755, os.path.join(pub_dir, self.projectId))
+            set_perms(arc_dir, 0755)
+            create_archive()
         except Exception as e:
             logger.exception('Failed to archive publication!')
