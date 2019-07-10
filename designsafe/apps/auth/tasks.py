@@ -51,7 +51,7 @@ def check_or_create_agave_home_dir(username):
                     ),
                 )
                 job_body = {
-                    'inputs': {
+                    'parameters': {
                         'username': username,
                         'directory': 'shared/{}'.format(username)
                     },
