@@ -44,9 +44,9 @@
         <h3 class="modal-title">{{job.name}}</h3>
     </div>
     <div class="modal-body">
-        <div ng-if="job.message" class="alert alert-warning">
+        <div ng-if="job.lastStatusMessage" class="alert alert-warning">
             <h4>Job status: {{job.status}}</h4>
-            <p>{{job.message}}</p>
+            <p>{{job.lastStatusMessage}}</p>
         </div>
         <dl>
             <dt>Application</dt>
@@ -56,10 +56,10 @@
             <dd>{{job.status}}</dd>
 
             <dt>Submitted<dt>
-            <dd>{{job.submitTime | date:'medium'}}</dd>
+            <dd>{{job.remoteSubmitted | date:'medium'}}</dd>
 
             <dt>Finished<dt>
-            <dd>{{job.endTime | date:'medium'}}</dd>
+            <dd>{{job.remoteEnded | date:'medium'}}</dd>
 
             <dt ng-if="job.archiveSystem">Output</dt>
             <dd ng-if="jobFinished && job.archiveSystem">
