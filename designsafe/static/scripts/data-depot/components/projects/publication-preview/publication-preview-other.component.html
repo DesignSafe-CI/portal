@@ -12,23 +12,21 @@
                 <col style="width: 84%">
             </colgroup>
             <tr class="prj-row">
-                <td>Author</td>
+                <td ng-if="!$ctrl.readOnly">PI</td>
                 <td class="prj-data" ng-if="!$ctrl.readOnly">
-                    <ds-user-list usernames="[$ctrl.browser.publication.project.value.pi]"></ds-user-list>
+                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
                 </td>
+                <td ng-if="$ctrl.readOnly">Author</td>
                 <td ng-if="$ctrl.readOnly">
-                    <span ng-repeat="member in $ctrl.browser.publication.project.value.teamOrder | orderBy: 'order'">
-                        <strong>
-                            <span ng-if="!$last">{{ member.lname }}, {{ member.fname }}; </span>
-                            <span ng-if="$last">{{ member.lname }}, {{ member.fname }}</span>
-                        </strong>
-                    </span>
+                    <strong>
+                        <ds-user-list usernames="$ctrl.browser.publication.project.value.teamOrder" format="other"></ds-user-list>
+                    </strong>
                 </td>
             </tr>
-            <tr ng-if="$ctrl.browser.project.value.coPis.length">
+            <tr ng-if="$ctrl.browser.project.value.coPis.length && !$ctrl.readOnly">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <ds-user-list usernames="$ctrl.browser.publication.project.value.coPis"></ds-user-list>
+                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
             </tr>
             <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
