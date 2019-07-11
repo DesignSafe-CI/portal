@@ -1,5 +1,32 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.3-20190605
+
+Fixes:
+
+- Switch to production Tapis tokens from Aloe sandbox in dev.
+
+## v4.4.3
+
+Improvements:
+
+- Show end date for published experiments.
+- App form validation improvements.
+- Remove old unused code.
+- Adds default fields to app form in the workspace.
+- Adds validation to fields from app def.
+
+Fixes:
+
+- Exclude trash from Community Data search.
+- Zip Publication task improvements.
+- Fix project mounting in app containers where projectId is None.
+- Fix file metadata request in published area.
+- Fixes workspace data browser panel collapsibility.
+- Fix to allow project edits if meta_obj is missing certain fields.
+- Fix email message sent to users invited to a project.
+- Fix onBrowse method for projects and search.
+
 ## v4.4.2-20190604
 
 Improvements:
