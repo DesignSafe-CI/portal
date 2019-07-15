@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model, signals
 from django.contrib.auth.models import Permission
 from django.core.urlresolvers import reverse
-from designsafe.apps.api.agave.filemanager.search_index import IndexedFile
+from designsafe.apps.data.models.elasticsearch import IndexedFile
 
 logger = logging.getLogger(__name__)
 @skip("Need to mock Elasticsearch calls")

@@ -117,7 +117,7 @@ function config(
             },
         })
         .state('sharedData', {
-            url: '/shared/{systemId}/{filePath:any}/',
+            url: '/shared/{systemId}/{filePath:any}/?query_string',
             component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.default',
@@ -128,6 +128,7 @@ function config(
                     return {
                         fileMgr: 'agave',
                         baseUrl: '/api/agave/files',
+                        searchState: 'sharedData'
                     };
                 },
                 path: ($stateParams)=> {
@@ -147,40 +148,12 @@ function config(
                 },
             },
         })
-        .state('sharedDataSearch', {
-            url: '/shared-search/?query_string&offset&limit&shared',
-            component: 'dataDepotBrowser',
-            params: {
-                systemId: 'designsafe.storage.default',
-                filePath: '$SEARCHSHARED',
-                shared: 'true',
-            },
-            resolve: {
-                apiParams: ()=> {
-                    return {
-                        fileMgr: 'agave',
-                        baseUrl: '/api/agave/files',
-                        searchState: 'sharedDataSearch',
-                    };
-                },
-                auth: ($q, Django) => {
-                    'ngInject';
-                    if (Django.context.authenticated) {
-                        return true;
-                    }
-                    return $q.reject({
-                        type: 'authn',
-                        context: Django.context,
-                    });
-                },
-            },
-        })
         .state('projects', {
             abstract: true,
             component: 'projectRoot',
         })
         .state('projects.list', {
-            url: '/projects/',
+            url: '/projects/?query_string',
             component: 'projectListing',
             params: {
                 systemId: 'designsafe.storage.default',
@@ -190,7 +163,7 @@ function config(
                     '$stateParams',
                     'DataBrowserService',
                     function($stateParams, DataBrowserService) {
-                        DataBrowserService.apiParams.searchState = 'projects.search';
+                        DataBrowserService.apiParams.searchState = 'projects.list';
                         var options = {
                             system: $stateParams.systemId || 'designsafe.storage.default',
                             path: $stateParams.filePath || Django.user,
@@ -685,45 +658,6 @@ function config(
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
-            },
-        })
-        .state('projects.search', {
-            url: '/project-search/?query_string&offset&limit&projects',
-            component: 'projectSearch',
-            params: {
-                systemId: 'designsafe.storage.default',
-                filePath: '',
-            },
-            resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        DataBrowserService.apiParams.fileMgr = 'agave';
-                        DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-                        DataBrowserService.apiParams.searchState = 'projects.search';
-                        var queryString = $stateParams.query_string;
-
-                        var options = {
-                            system: $stateParams.systemId,
-                            query_string: queryString,
-                            offset: $stateParams.offset,
-                            limit: $stateParams.limit,
-                            projects: true,
-                        };
-                        return DataBrowserService.search(options);
-                    },
-                ],
-                auth: ($q, Django) => {
-                    'ngInject';
-                    if (Django.context.authenticated) {
-                        return true;
-                    }
-                    return $q.reject({
-                        type: 'authn',
-                        context: Django.context,
-                    });
-                },
             },
         })
         .state('boxData', {

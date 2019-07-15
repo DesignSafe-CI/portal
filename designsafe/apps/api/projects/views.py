@@ -25,9 +25,9 @@ from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 from designsafe.libs.common.decorators import profile as profile_fn
-from designsafe.apps.api.agave.filemanager.public_search_index import (PublicationManager,
-                                                                       Publication,
-                                                                       LegacyPublication)
+from designsafe.apps.api.agave.filemanager.publications import PublicationsManager
+from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
+from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
 
@@ -44,7 +44,7 @@ def template_project_storage_system(project):
 class PublicationView(BaseApiView):
     @profile_fn
     def get(self, request, project_id):
-        pub = Publication(project_id=project_id)
+        pub = BaseESPublication(project_id=project_id)
         if pub is not None and hasattr(pub, 'project'):
             return JsonResponse(pub.to_dict())
         else:
@@ -63,7 +63,7 @@ class PublicationView(BaseApiView):
 
         #logger.debug('publication: %s', json.dumps(data, indent=2))
         status = data.get('status', 'saved')
-        pub = PublicationManager().save_publication(
+        pub = PublicationsManager(None).save_publication(
             data['publication'], status)
         if data.get('status', 'save').startswith('publish'):
             (
@@ -101,7 +101,7 @@ class NeesPublicationView(BaseApiView):
         """
         Retrieve a NEES project using its ID and return its JSON representation.
         """
-        pub = LegacyPublication(nees_id=nees_id)
+        pub = BaseESPublicationLegacy(nees_id=nees_id)
         return JsonResponse(pub.to_file())
 
 class ProjectListingView(SecureMixin, BaseApiView):
@@ -136,7 +136,11 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         """
         #raise HTTPError('Custom Error')
         ag = request.user.agave_oauth.client
-
+        query_string = request.GET.get('query_string', None)
+        if query_string is not None:
+            projects = Project.ES_search(agave_client=ag, query_string=query_string, username = request.user.username)
+            data = {'projects': projects}
+            return JsonResponse(data, encoder=AgaveJSONEncoder)
         # Add metadata fields to project listings for workspace browser
         if system_id:
             projects = Project.list_projects(agave_client=ag, **{'path': '', 'type': 'dir', 'system': system_id})

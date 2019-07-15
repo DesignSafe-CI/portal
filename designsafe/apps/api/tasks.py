@@ -702,9 +702,9 @@ def reindex_projects(self):
 
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
-    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
+    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
     import shutil
-    publication = Publication(project_id=project_id)
+    publication = BaseESPublication(project_id=project_id)
     filepaths = publication.related_file_paths()
     if not len(filepaths):
         res = get_service_account_client().files.list(
@@ -772,10 +772,10 @@ def copy_publication_files_to_corral(self, project_id):
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
 def save_publication(self, project_id):
-    from designsafe.apps.api.agave.filemanager.public_search_index import Publication  
+    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication  
     from designsafe.apps.api.projects.managers import publication as PublicationManager
     try:
-        pub = Publication(project_id=project_id)
+        pub = BaseESPublication(project_id=project_id)
         publication = PublicationManager.reserve_publication(pub.to_dict())
         pub.update(**publication)
     except Exception as exc:
@@ -797,10 +797,10 @@ def zip_project_files(self, project_uuid):
 
 @shared_task(bind=True)
 def zip_publication_files(self, project_id):
-    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
+    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 
     try:
-        pub = Publication(project_id=project_id)
+        pub = BaseESPublication(project_id=project_id)
         pub.archive()
     except Exception as exc:
         logger.error('Zip Proj Id: %s. %s', project_id, exc, exc_info=True)
@@ -808,17 +808,17 @@ def zip_publication_files(self, project_id):
 
 @shared_task(bind=True)
 def set_publish_status(self, project_id):
-    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
-    pub = Publication(project_id=project_id)
+    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
+    pub = BaseESPublication(project_id=project_id)
     pub.update(status='published')
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_to_fedora(self, project_id):
     import requests
     import magic
-    from designsafe.apps.api.agave.filemanager.public_search_index import Publication  
+    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication 
     try:
-        pub = Publication(project_id=project_id)
+        pub = BaseESPublication(project_id=project_id)
         pub.update(status='published')
         _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
         fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'

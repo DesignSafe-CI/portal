@@ -173,7 +173,7 @@ class FilesListingCtrl {
     }
 
     scrollToBottom() {
-        return this.DataBrowserService.scrollToBottom();
+        return this.DataBrowserService.scrollToBottom({queryString: this.$stateParams.query_string});
     }
 
     renderName(file) {

@@ -37,6 +37,14 @@ class AgaveFileManager(BaseFileManager):
     def __init__(self, agave_client):
         self._ag = agave_client
 
+    @property
+    def requires_auth(self):
+        """Whether it should check for an authenticated user.
+
+        If this is a public data file manager, it should return False.
+        """
+        return True
+
     def base_mounted_path(self, string):
         path = None
         for mapping in self.SYSTEM_ID_PATHS:

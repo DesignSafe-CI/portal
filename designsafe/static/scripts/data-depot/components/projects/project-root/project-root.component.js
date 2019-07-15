@@ -6,7 +6,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-    DataBrowserService.apiParams.searchState = 'projects.search';
+    DataBrowserService.apiParams.searchState = 'projects.list';
 
     // DataBrowserService.currentListing = 'new listing thing.'
     // release selected files
