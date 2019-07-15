@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.5.-20190701
+
+Improvements:
+
+- Re-write of search backend.
+
 ## v4.4.4
 
 Improvements:
