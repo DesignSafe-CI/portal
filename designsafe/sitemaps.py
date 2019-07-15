@@ -209,6 +209,10 @@ class DesignSafeCMSSitemap(CMSSitemap):
 
     def get_urls(self, site=None, **kwargs):
         site = Site(domain='www.designsafe-ci.org')
+<<<<<<< HEAD
         return super(CMSSitemap, self).get_urls(site=site, **kwargs)
+=======
+        return super(DesignSafeCMSSitemap, self).get_urls(site=site, **kwargs)
+>>>>>>> task/DES-1143
 
 
