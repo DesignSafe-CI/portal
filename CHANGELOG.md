@@ -1,5 +1,20 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.4.4
+
+Improvements:
+
+- Sitemap enhancements.
+
+Fixes:
+
+- Fixes the setfacl app to adhere to aloe conventions.
+- Updates job status fields to aloe fields.
+- Fixes email confirmation message.
+- Fixes repeated file listing breadcrumbs.
+- Fixes 403 on published file listings.
+- Fixes user directive to support 'Other' type project authors.
+
 ## v4.4.3-20190605
 
 Fixes:
@@ -842,7 +857,7 @@ Fixes:
 - Project's ACLs when adding members
 - User creation error on table field
 
-## v2.6.5 
+## v2.6.5
 
 Fixes:
 
@@ -1483,7 +1498,7 @@ Enhancements:
   - Projects collaboration space.
 
 
-Fixes: 
+Fixes:
 
 - Improving system monitors
 - Added terms and conditions link to profile page.
@@ -1599,12 +1614,12 @@ Bug fixes:
 
 Improvements:
 
-- Added infinite scroll to data browser for directories with lots of files. The data 
+- Added infinite scroll to data browser for directories with lots of files. The data
   browser will load additional contents when scrolled to the bottom of the listing.
 - Added metadata interface to new data browser
-- Added "registration successful" page redirect to better inform new users of account 
+- Added "registration successful" page redirect to better inform new users of account
   activation steps.
-- When sharing files, only apply changes to permissions, instead of reapplying all 
+- When sharing files, only apply changes to permissions, instead of reapplying all
   permissions.
 
 
