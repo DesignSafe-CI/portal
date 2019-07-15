@@ -1,6 +1,6 @@
 <div style="background:white;">
     <!-- Project Header Start -->
-    <div>
+    <div ng-if="!$ctrl.loading">
         <div>
             <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
             <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
@@ -77,7 +77,7 @@
         </div>
     </div>
     <!-- Project Header End -->
-    <table class="tg" style="table-layout: fixed; width: 100%;">
+    <table class="tg" style="table-layout: fixed; width: 100%;" ng-if="!$ctrl.loading">
         <colgroup>
             <col style="width: 46%">
             <col style="width: 50%">

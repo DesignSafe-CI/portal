@@ -73,10 +73,7 @@ class FilesListingCtrl {
     }
 
     tagListing() {
-        return (
-            this.$state.current.name !== 'projects.view.data' &&
-            this.$state.current.name !== 'projects.curation'
-        );
+        return this.$state.current.name !== 'projects.curation';
     }
 
     showFileCategorySelector() {

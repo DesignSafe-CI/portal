@@ -19,103 +19,108 @@ class CurationDirectoryCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
+        this.data = this.ProjectService.resolveParams.data;
         this.loading = true;
 
-
-        this.$q.all([
-            this.ProjectService.get({ uuid: this.projectId }),
-            this.DataBrowserService.browse(
-                { system: 'project-' + this.projectId, path: this.filePath },
-                { query_string: this.$state.params.query_string }
-            ),
-            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
-        ]).then(([project, listing, entities]) => {
-            this.browser.project = project;
-            this.browser.project.appendEntitiesRel(entities);
-            this.browser.listing = listing;
-            this.browser.listing.href = this.$state.href('projects.view.data', {
-                projectId: this.projectId,
-                filePath: this.browser.listing.path,
-                projectTitle: this.browser.project.value.projectTitle,
-            });
-            _.each(this.browser.listing.children, (child) => {
-                child.href = this.$state.href('projects.view.data', {
+        if (!this.data || this.data.listing.path != this.filePath) {
+            this.$q.all([
+                this.ProjectService.get({ uuid: this.projectId }),
+                this.DataBrowserService.browse(
+                    { system: 'project-' + this.projectId, path: this.filePath },
+                    { query_string: this.$state.params.query_string }
+                ),
+                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
+            ]).then(([project, listing, entities]) => {
+                this.browser.project = project;
+                this.browser.project.appendEntitiesRel(entities);
+                this.browser.listing = listing;
+                this.browser.listing.href = this.$state.href('projects.view.data', {
                     projectId: this.projectId,
-                    filePath: child.path,
+                    filePath: this.browser.listing.path,
                     projectTitle: this.browser.project.value.projectTitle,
                 });
-                child.setEntities(this.projectId, entities);
-            });
-            var allFilePaths = [];
-            this.browser.listings = {};
-            var apiParams = {
-                fileMgr: 'agave',
-                baseUrl: '/api/agave/files',
-                searchState: 'projects.view.data',
-            };
-            _.each(entities, (entity) => {
-                this.browser.listings[entity.uuid] = {
-                    name: this.browser.listing.name,
-                    path: this.browser.listing.path,
-                    system: this.browser.listing.system,
-                    trail: this.browser.listing.trail,
-                    children: [],
-                };
-                allFilePaths = allFilePaths.concat(entity._filePaths);
-            });
-
-            this.setFilesDetails = (filePaths) => {
-                filePaths = _.uniq(filePaths);
-                var p = this.$q((resolve, reject) => {
-                    var results = [];
-                    var index = 0;
-                    var size = 5;
-                    var fileCalls = _.map(filePaths, (filePath) => {
-                        return this.FileListing.get(
-                            { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
-                        ).then((resp) => {
-                            if (!resp) {
-                                return;
-                            }
-                            var allEntities = this.browser.project.getAllRelatedObjects();
-                            var entities = _.filter(allEntities, (entity) => {
-                                return _.contains(entity._filePaths, resp.path);
-                            });
-                            _.each(entities, (entity) => {
-                                resp._entities.push(entity);
-                                this.browser.listings[entity.uuid].children.push(resp);
-                            });
-                            return resp;
-                        });
+                _.each(this.browser.listing.children, (child) => {
+                    child.href = this.$state.href('projects.view.data', {
+                        projectId: this.projectId,
+                        filePath: child.path,
+                        projectTitle: this.browser.project.value.projectTitle,
                     });
-
-                    var step = () => {
-                        var calls = fileCalls.slice(index, (index += size));
-                        if (calls.length) {
-                            this.$q.all(calls)
-                                .then((res) => {
-                                    results.concat(res);
-                                    step();
-                                    return res;
-                                })
-                                .catch(reject);
-                        } else {
-                            resolve(results);
-                        }
-                    };
-                    step();
+                    child.setEntities(this.projectId, entities);
                 });
-                return p.then(
-                    (results) => {
-                        this.loading = false;
-                        return results;
-                    },
-                    (err) => {
-                        this.browser.ui.error = err;
+                var allFilePaths = [];
+                this.browser.listings = {};
+                var apiParams = {
+                    fileMgr: 'agave',
+                    baseUrl: '/api/agave/files',
+                    searchState: 'projects.view.data',
+                };
+                _.each(entities, (entity) => {
+                    this.browser.listings[entity.uuid] = {
+                        name: this.browser.listing.name,
+                        path: this.browser.listing.path,
+                        system: this.browser.listing.system,
+                        trail: this.browser.listing.trail,
+                        children: [],
+                    };
+                    allFilePaths = allFilePaths.concat(entity._filePaths);
+                });
+    
+                this.setFilesDetails = (filePaths) => {
+                    filePaths = _.uniq(filePaths);
+                    var p = this.$q((resolve, reject) => {
+                        var results = [];
+                        var index = 0;
+                        var size = 5;
+                        var fileCalls = _.map(filePaths, (filePath) => {
+                            return this.FileListing.get(
+                                { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
+                            ).then((resp) => {
+                                if (!resp) {
+                                    return;
+                                }
+                                var allEntities = this.browser.project.getAllRelatedObjects();
+                                var entities = _.filter(allEntities, (entity) => {
+                                    return _.contains(entity._filePaths, resp.path);
+                                });
+                                _.each(entities, (entity) => {
+                                    resp._entities.push(entity);
+                                    this.browser.listings[entity.uuid].children.push(resp);
+                                });
+                                return resp;
+                            });
+                        });
+    
+                        var step = () => {
+                            var calls = fileCalls.slice(index, (index += size));
+                            if (calls.length) {
+                                this.$q.all(calls)
+                                    .then((res) => {
+                                        results.concat(res);
+                                        step();
+                                        return res;
+                                    })
+                                    .catch(reject);
+                            } else {
+                                resolve(results);
+                            }
+                        };
+                        step();
                     });
-            };
-            this.setFilesDetails(allFilePaths);
-        });
+                    return p.then(
+                        (results) => {
+                            this.loading = false;
+                            return results;
+                        },
+                        (err) => {
+                            this.browser.ui.error = err;
+                        });
+                };
+                this.setFilesDetails(allFilePaths);
+            });
+        } else {
+            this.browser = this.data;
+            this.loading = false;
+        }
     }
 
     isSingle(val) {
@@ -144,7 +149,7 @@ class CurationDirectoryCtrl {
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid});
+        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser});
     }
 
     goPreview() {

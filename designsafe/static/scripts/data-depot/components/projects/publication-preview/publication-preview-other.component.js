@@ -22,27 +22,34 @@ class PublicationPreviewOtherCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.project = this.ProjectService.resolveParams.project;
         this.listings = this.ProjectService.resolveParams.selectedListings;
+        this.data = this.ProjectService.resolveParams.data;
+
         this.ui = {
             loading: true,
         };
         window.sessionStorage.clear();
 
-        this.$q.all([
-            this.ProjectService.get({ uuid: this.projectId }),
-            this.DataBrowserService.browse(
-                { system: 'project-' + this.projectId, path: this.filePath },
-                { query_string: this.$state.params.query_string }
-            )
-        ]).then(([project, listing]) => {
-            this.browser.project = project;
-            this.browser.listing = listing;
-            this.browser.listing.href = this.$state.href('projects.view.data', {
-                projectId: this.projectId,
-                filePath: this.browser.listing.path,
-                projectTitle: this.browser.project.value.projectTitle,
+        if (!this.data || this.data.listing.path != this.filePath) {
+            this.$q.all([
+                this.ProjectService.get({ uuid: this.projectId }),
+                this.DataBrowserService.browse(
+                    { system: 'project-' + this.projectId, path: this.filePath },
+                    { query_string: this.$state.params.query_string }
+                )
+            ]).then(([project, listing]) => {
+                this.browser.project = project;
+                this.browser.listing = listing;
+                this.browser.listing.href = this.$state.href('projects.view.data', {
+                    projectId: this.projectId,
+                    filePath: this.browser.listing.path,
+                    projectTitle: this.browser.project.value.projectTitle,
+                });
+                this.ui.loading = false;
             });
+        } else {
+            this.browser = this.data;
             this.ui.loading = false;
-        });
+        }
     }
 
     matchingGroup(exp, model) {
@@ -63,12 +70,11 @@ class PublicationPreviewOtherCtrl {
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
     }
 
     goCuration() {
-        window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
-        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, project: this.browser.project, selectedListings: this.browser.listings}, {reload: true});
+        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
     }
 
     editProject() {

@@ -107,5 +107,13 @@
     </div>
     <br>
   </div>
-    <ui-view class="project-data"></ui-view>
+  <div ng-if="$ctrl.loading">
+      <h3 class="text-center">
+          <i class="fa fa-spinner fa-spin"></i> Loading...
+      </h3>
+  </div>
+  <div ng-if="!$ctrl.loading">
+    <files-listing browser="$ctrl.browser"></files-listing>
+  </div>
+    <!-- <ui-view class="project-data"></ui-view> -->
 </div>

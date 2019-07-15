@@ -1,6 +1,6 @@
 <div style="background:white;">
     <!-- Project Header Start -->
-    <div>
+    <div ng-if="!$ctrl.ui.loading">
         <div>
             <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
             <a class="edit-link" data-ng-if="!$ctrl.readOnly" ng-click="$ctrl.editProject($event)">Edit Project</a>
@@ -71,7 +71,7 @@
         </div>
     </div>
     <!-- Project Header End -->
-    <table class="tg" style="table-layout: fixed; width: 100%;" data-ng-if="!$ctrl.readOnly">
+    <table class="tg" style="table-layout: fixed; width: 100%;" ng-if="!$ctrl.readOnly && !$ctrl.ui.loading">
         <colgroup>
             <col style="width: 46%">
             <col style="width: 50%">
@@ -246,9 +246,6 @@
                     <p>
                         <br>{{ experiment.value.description }}
                     </p>
-                    <!-- <div ng-if="$ctrl.ui.fileNav">
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
-                    </div> -->
                     <div>
                         <!-- Experiment Reports -->
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">

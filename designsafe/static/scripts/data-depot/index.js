@@ -203,6 +203,7 @@ function config(
                 projectTitle: '',
                 query_string: '',
                 filePath: '/',
+                data: null,
             },
             resolve: {
                 params: [
@@ -213,6 +214,7 @@ function config(
                         ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                         ProjectService.resolveParams.projectTitle = $stateParams.projectTitle;
                         ProjectService.resolveParams.query_string = $stateParams.query_string || '';
+                        ProjectService.resolveParams.data = $stateParams.data;
                     },
                 ],
             },
@@ -222,11 +224,13 @@ function config(
             component: 'curationDirectory',
             params: {
                 filePath: '/',
+                data: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
                     ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                    ProjectService.resolveParams.data = $stateParams.data;
                 }]
             }
         })
@@ -258,6 +262,7 @@ function config(
                 filePath: '/',
                 project: null,
                 selectedListings: null,
+                data: null,
             },
             resolve: {
                 params: [
@@ -268,6 +273,7 @@ function config(
                         ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                        ProjectService.resolveParams.data = $stateParams.data;
                     },
                 ],
             },
