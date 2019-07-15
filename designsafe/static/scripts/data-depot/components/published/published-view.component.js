@@ -25,12 +25,13 @@ class PublishedViewCtrl {
         this.ui = {
             efs: experimentalData.experimentalFacility,
             equipmentTypes: experimentalData.equipmentTypes,
-            experimentTypes: experimentalData.experimentTypes
+            experimentTypes: experimentalData.experimentTypes,
+            fileNav: true,
+            loading: true,
         };
         this.browser = this.DataBrowserService.state();
         this.browser.listings = {};
         var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
-        this.ui.loading = true;
 
         this.getFileObjs = (evt) => {
             evt.files = _.map(evt.fileObjs, (f) => {
@@ -48,9 +49,7 @@ class PublishedViewCtrl {
         };
 
         if (this.$stateParams.filePath.replace('/',  '') === projId) {
-            this.fileNav = false;
-        } else {
-            this.fileNav = true;
+            this.ui.fileNav = false;
         }
 
         if (projId) {

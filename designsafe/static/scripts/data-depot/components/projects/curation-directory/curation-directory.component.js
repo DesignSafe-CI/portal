@@ -21,41 +21,31 @@ class CurationDirectoryCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.loading = true;
 
-        /*
-        update uniqe file listing
-        we might want to consider a adding this to the
-        FilesListing service if we start using it in
-        multiple places...
-        */
-        
-        this.ProjectService.get({ uuid: this.projectId }
-        ).then((project) => {
-            this.browser.project = project;
-            return this.DataBrowserService.browse(
+
+        this.$q.all([
+            this.ProjectService.get({ uuid: this.projectId }),
+            this.DataBrowserService.browse(
                 { system: 'project-' + this.projectId, path: this.filePath },
                 { query_string: this.$state.params.query_string }
-            );
-        }).then((listing) => {
+            ),
+            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
+        ]).then(([project, listing, entities]) => {
+            this.browser.project = project;
+            this.browser.project.appendEntitiesRel(entities);
             this.browser.listing = listing;
             this.browser.listing.href = this.$state.href('projects.view.data', {
                 projectId: this.projectId,
                 filePath: this.browser.listing.path,
                 projectTitle: this.browser.project.value.projectTitle,
             });
-            this.browser.showMainListing = true;
-            return this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' });
-        }).then((ents) => {
-            this.browser.project.appendEntitiesRel(ents);
             _.each(this.browser.listing.children, (child) => {
                 child.href = this.$state.href('projects.view.data', {
                     projectId: this.projectId,
                     filePath: child.path,
                     projectTitle: this.browser.project.value.projectTitle,
                 });
-                child.setEntities(this.projectId, ents);
+                child.setEntities(this.projectId, entities);
             });
-        }).then(() => {
-            var entities = this.browser.project.getAllRelatedObjects();
             var allFilePaths = [];
             this.browser.listings = {};
             var apiParams = {
@@ -91,8 +81,8 @@ class CurationDirectoryCtrl {
                             var entities = _.filter(allEntities, (entity) => {
                                 return _.contains(entity._filePaths, resp.path);
                             });
-                            resp.setEntities(this.projectId, entities);
                             _.each(entities, (entity) => {
+                                resp._entities.push(entity);
                                 this.browser.listings[entity.uuid].children.push(resp);
                             });
                             return resp;
@@ -122,12 +112,10 @@ class CurationDirectoryCtrl {
                     },
                     (err) => {
                         this.browser.ui.error = err;
-                        this.loading = false;
                     });
             };
             this.setFilesDetails(allFilePaths);
         });
-
     }
 
     isSingle(val) {
@@ -140,10 +128,14 @@ class CurationDirectoryCtrl {
         return false;
     }
 
-    matchingGroup(exp, model) {
-        // match appropriate data to corresponding experiment
+    matchingGroup(exp, entity) {
+        /*
+        Match appropriate entity to corresponding experiment, sim, hybsim, etc...
+        TODO: might be best to have this set up in ProjectEntitiesService.
+        Just want to grab entities related to primary entity
+        */
         var result = false;
-        model.associationIds.forEach((id) => {
+        entity.associationIds.forEach((id) => {
             if (id == exp.uuid) {
                 result = true;
             }
@@ -157,31 +149,23 @@ class CurationDirectoryCtrl {
 
     goPreview() {
         if (this.browser.project.value.projectType === 'experimental') {
-            this.$state.go('projects.preview', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
+            this.$state.go('projects.preview', {projectId: this.browser.project.uuid, data: this.browser});
         } else if (this.browser.project.value.projectType === 'simulation') {
-            this.$state.go('projects.previewSim', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
+            this.$state.go('projects.previewSim', {projectId: this.browser.project.uuid, data: this.browser});
         } else if (this.browser.project.value.projectType === 'hybrid_simulation') {
-            this.$state.go('projects.previewHybSim', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
+            this.$state.go('projects.previewHybSim', {projectId: this.browser.project.uuid, data: this.browser});
         } else if (this.browser.project.value.projectType === 'other') {
-            this.$state.go('projects.previewOther', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
+            this.$state.go('projects.previewOther', {projectId: this.browser.project.uuid, data: this.browser});
         } else if (this.browser.project.value.projectType === 'field_recon') {
-            this.$state.go('projects.previewFieldRecon',
-                {
-                    projectId: this.browser.project.uuid,
-                    selectedListings: this.browser.listings,
-                    project: this.browser.project 
-                }
-            );
+            this.$state.go('projects.previewFieldRecon', {projectId: this.browser.project.uuid, data: this.browser});
         }
     }
 
     editProject() {
-        // need to refresh project data when this is closed (not working atm)
         this.ProjectService.editProject(this.browser.project);
     }
 
     manageExperiments() {
-        // need to data when this is closed (not working atm)
         var experimentsAttr = this.browser.project.getRelatedAttrName('designsafe.project.experiment');
         var experiments = this.browser.project[experimentsAttr];
         if (typeof experiments === 'undefined') {
@@ -192,7 +176,6 @@ class CurationDirectoryCtrl {
     }
 
     manageSimulations() {
-        // need to data when this is closed (not working atm)
         var simulationAttr = this.browser.project.getRelatedAttrName('designsafe.project.simulation');
         var simulations = this.browser.project[simulationAttr];
         if (typeof simulations === 'undefined'){
@@ -203,7 +186,6 @@ class CurationDirectoryCtrl {
     }
 
     manageHybridSimulations() {
-        // need to data when this is closed (not working atm)
         var hybridSimulationAttr = this.browser.project.getRelatedAttrName(
             'designsafe.project.hybrid_simulation'
         );

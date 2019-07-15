@@ -30,14 +30,14 @@ class ProjectViewCtrl {
       }
     };
 
-    this.browser.projectServicePromise = this.ProjectService.get({ uuid: this.projectId }
-    ).then((project) => {
-      this.browser.project = project;
-      return this.DataBrowserService.browse(
+    this.browser.projectServicePromise = this.$q.all([
+      this.ProjectService.get({ uuid: this.projectId }),
+      this.DataBrowserService.browse(
         { system: 'project-' + this.projectId, path: this.filePath },
         { query_string: this.$state.params.query_string }
-      );
-    }).then((listing) => {
+      )
+    ]).then(([project, listing]) => {
+      this.browser.project = project;
       this.browser.listing = listing;
       this.browser.listing.href = this.$state.href('projects.view.data', {
         projectId: this.projectId,

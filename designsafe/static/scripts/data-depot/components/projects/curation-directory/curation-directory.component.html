@@ -62,7 +62,7 @@
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
-            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects">
+            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects track by $index">
                 <td ng-if="$first">Related Work</td>
                 <td ng-if="!$first"></td>
                 <td><strong>{{ work.title }} | <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.href }}</a></strong></td>

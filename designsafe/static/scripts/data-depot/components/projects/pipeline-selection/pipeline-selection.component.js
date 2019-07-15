@@ -25,49 +25,36 @@ class PipelineSelectionCtrl {
             efs: experimentalData.experimentalFacility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
+            loading: true,
         };
-        // this.selectedFiles = {};
-        this.loading = true;
 
-        if (!this.projectId) {
-            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
-        }
-
-        /*
-        update uniqe file listing
-        we might want to consider a adding this to the
-        FilesListing service if we start using it in
-        multiple places...
-        */
-
-        this.ProjectService.get({ uuid: this.projectId }
-        ).then((project) => {
-            this.browser.project = project;
-            return this.DataBrowserService.browse(
+        this.$q.all([
+            this.ProjectService.get({ uuid: this.projectId }),
+            this.DataBrowserService.browse(
                 { system: 'project-' + this.projectId, path: this.filePath },
                 { query_string: this.$state.params.query_string }
-            );
-        }).then((listing) => {
+            ),
+            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
+        ]).then(([project, listing, entities]) => {
+            this.browser.project = project;
+            this.browser.project.appendEntitiesRel(entities);
             this.browser.listing = listing;
+
             this.browser.listing.href = this.$state.href('projects.view.data', {
                 projectId: this.projectId,
                 filePath: this.browser.listing.path,
                 projectTitle: this.browser.project.value.projectTitle,
             });
-            this.browser.showMainListing = true;
-            return this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' });
-        }).then((ents) => {
-            this.browser.project.appendEntitiesRel(ents);
+
             _.each(this.browser.listing.children, (child) => {
                 child.href = this.$state.href('projects.view.data', {
                     projectId: this.projectId,
                     filePath: child.path,
                     projectTitle: this.browser.project.value.projectTitle,
                 });
-                child.setEntities(this.projectId, ents);
+                child.setEntities(this.projectId, entities);
             });
-        }).then(() => {
-            var entities = this.browser.project.getAllRelatedObjects();
+
             var allFilePaths = [];
             this.browser.listings = {};
             var apiParams = {
@@ -104,6 +91,7 @@ class PipelineSelectionCtrl {
                                 return _.contains(entity._filePaths, resp.path);
                             });
                             _.each(entities, (entity) => {
+                                resp._entities.push(entity);
                                 this.browser.listings[entity.uuid].children.push(resp);
                             });
                             return resp;
@@ -128,7 +116,7 @@ class PipelineSelectionCtrl {
                 });
                 return p.then(
                     (results) => {
-                        this.loading = false;
+                        this.ui.loading = false;
                         return results;
                     },
                     (err) => {

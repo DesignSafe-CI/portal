@@ -95,14 +95,21 @@ class FilesListingCtrl {
             $event.stopPropagation();
         }
         let systemId = this.browser.listing.system || this.browser.listing.systemId;
-        var filePath = '';
+        let stateName = this.$state.current.name;
+        let filePath = '/';
+        let version = 1;
         for (var i = 0; i < this.breadcrumbs.length; i++) {
-            filePath = filePath.concat(this.breadcrumbs[i] + '/');
+            filePath = filePath.concat(this.breadcrumbs[i]);
             if (this.breadcrumbs[i] === path) { break; }
         }
         return this.$state.go(
-            this.$state.current.name,
-            { systemId: systemId, filePath: filePath, query_string: null }, 
+            stateName,
+            {
+                systemId: systemId,
+                filePath: filePath,
+                version: version,
+                query_string: null
+            },
             { reload: true }
         );
     }
@@ -213,32 +220,32 @@ class FilesListingCtrl {
             description: () => description,
           },
           size: 'lg'
-        })
+        });
       }
       areFiltersEmpty() {
-          let noneToggled = true
+          let noneToggled = true;
           for (const key of Object.keys(this.state.type_filters)) {
               if (this.state.type_filters[key]) {
-                  noneToggled = false
+                  noneToggled = false;
               }
           }
           if (noneToggled) {
-              return true
+              return true;
           }
-          return false
+          return false;
       }
       typeFilter(item, x, y) {
           if (this.areFiltersEmpty()) {
-              return true
+              return true;
           }
           if (item.metadata && this.state.type_filters['nees']) {
-              return true
+              return true;
           }
           return this.state.type_filters[(item.meta || {}).type]; 
       }
       clearFilters() {
           for (const key of Object.keys(this.state.type_filters)) {
-              this.state.type_filters[key] = false
+              this.state.type_filters[key] = false;
           }
       }
 }

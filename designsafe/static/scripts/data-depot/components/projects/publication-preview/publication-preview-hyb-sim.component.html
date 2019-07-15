@@ -81,26 +81,26 @@
             <td class="tg-0lax">
                 <button class="btn btn-project-l grayed-out"
                         ng-click="$ctrl.goWork()"
-                        ng-disabled="$ctrl.loading"
+                        ng-disabled="$ctrl.ui.loading"
                 >
                     Working Directory
                 </button>
                 <button class="btn btn-project-m grayed-out"
                         ng-click="$ctrl.goCuration()"
-                        ng-disabled="$ctrl.loading"
+                        ng-disabled="$ctrl.ui.loading"
                 >
                     Curation Directory
                 </button>
                 <button class="btn btn-project-r"
                         ng-click="publicationPreview()"
-                        ng-disabled="$ctrl.loading"
+                        ng-disabled="$ctrl.ui.loading"
                 >
                     Publication Preview
                 </button>
             </td>
             <td class="tg-0lax">
                 <div class="btn-group pull-right" role="group" aria-label="Publish buttons">
-                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-disabled="$ctrl.loading">
+                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-disabled="$ctrl.ui.loading">
                         Prepare to Publish <i class="fa fa-arrow-right"></i>
                     </button>
                 </div>
@@ -109,13 +109,13 @@
     </table>
     <br>
     <!-- Hybrid Sims -->
-    <div ng-show="$ctrl.loading">
+    <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
             <i class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
     <!-- Project Reports -->
-    <div ng-hide="$ctrl.loading"
+    <div ng-hide="$ctrl.ui.loading"
          ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
          ng-if="$ctrl.matchingGroup(hybsim, report)"
     >
@@ -140,7 +140,10 @@
             </div>
         </div>
     </div>
-    <div ng-hide="$ctrl.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
+    <div ng-if="$ctrl.ui.fileNav">
+        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
+    </div>
+    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
         <div style="margin-bottom: 2px;">
             <a data-ng-click="$ctrl.treeDiagram(hybsim)">
                 <strong>View Data Diagram</strong>
@@ -223,10 +226,7 @@
                     <p>
                         <br>{{ hybsim.value.description }}
                     </p>
-                    <div ng-if="$ctrl.fileNav">
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
-                    </div>
-                    <div ng-if="!$ctrl.fileNav">
+                    <div>
                         <!-- Hybrid Reports -->
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
                             ng-if="$ctrl.matchingGroup(hybsim, report)"

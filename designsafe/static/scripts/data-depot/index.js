@@ -231,7 +231,7 @@ function config(
             }
         })
         .state('projects.preview', {
-            url: '/projects/{projectId}/preview',
+            url: '/projects/{projectId}/preview/exp{filePath:any}',
             component: 'publicationPreview',
             params: {
                 filePath: '/',
@@ -252,7 +252,7 @@ function config(
             },
         })
         .state('projects.previewSim', {
-            url: '/projects/{projectId}/previewSim',
+            url: '/projects/{projectId}/preview/sim{filePath:any}',
             component: 'publicationPreviewSim',
             params: {
                 filePath: '/',
@@ -273,7 +273,7 @@ function config(
             },
         })
         .state('projects.previewHybSim', {
-            url: '/projects/{projectId}/previewHybSim',
+            url: '/projects/{projectId}/preview/hybrid{filePath:any}',
             component: 'publicationPreviewHybSim',
             params: {
                 filePath: '/',
@@ -294,7 +294,7 @@ function config(
             },
         })
         .state('projects.previewOther', {
-            url: '/projects/{projectId}/previewOther',
+            url: '/projects/{projectId}/preview/other{filePath:any}',
             component: 'publicationPreviewOther',
             params: {
                 filePath: '/',
@@ -315,7 +315,7 @@ function config(
             },
         })
         .state('projects.previewFieldRecon', {
-            url: '/projects/{projectId}/previewFieldRecon',
+            url: '/projects/{projectId}/preview/recon{filePath:any}',
             component: 'publicationPreviewFieldRecon',
             params: {
                 filePath: '/',

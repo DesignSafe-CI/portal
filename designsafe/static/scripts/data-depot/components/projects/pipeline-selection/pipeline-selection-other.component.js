@@ -5,10 +5,9 @@ import { FileCategorySelectorComponent } from '../../../../projects/components/f
 
 class PipelineSelectionOtherCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $uibModal, $state, $q) {
+    constructor(ProjectService, DataBrowserService, FileListing, $uibModal, $state, $q) {
         'ngInject';
 
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.DataBrowserService = DataBrowserService;
         this.browser = this.DataBrowserService.state();
@@ -21,26 +20,18 @@ class PipelineSelectionOtherCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
-        this.loading = true;
-        this.fullTree = [this.filePath];
+        this.ui = {
+            loading: true,
+        };
         
-        if (!this.projectId) {
-            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
-        }
-
-        /*
-        Other projects will get a normal listing, from that we'll build a
-        selected listing containing files that the user has selected.
-        */
-        
-        this.ProjectService.get({ uuid: this.projectId }
-        ).then((project) => {
-            this.browser.project = project;
-            return this.DataBrowserService.browse(
+        this.$q.all([
+            this.ProjectService.get({ uuid: this.projectId }),
+            this.DataBrowserService.browse(
                 { system: 'project-' + this.projectId, path: this.filePath },
                 { query_string: this.$state.params.query_string }
-            );
-        }).then((listing) => {
+            )
+        ]).then(([project, listing]) => {
+            this.browser.project = project;
             this.browser.listing = listing;
             this.browser.listing.href = this.$state.href('projects.view.data', {
                 projectId: this.projectId,
@@ -54,10 +45,8 @@ class PipelineSelectionOtherCtrl {
                 trail: this.browser.listing.trail,
                 children: [],
             };
-            this.browser.showMainListing = true;
-            this.loading = false;
+            this.ui.loading = false;
         });
-
     }
 
     goWork() {
@@ -94,7 +83,7 @@ class PipelineSelectionOtherCtrl {
 
 }
 
-PipelineSelectionOtherCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$uibModal', '$state', '$q'];
+PipelineSelectionOtherCtrl.$inject = ['ProjectService', 'DataBrowserService', 'FileListing', '$uibModal', '$state', '$q'];
 
 export const PipelineSelectionOtherComponent = {
     template: PipelineSelectionOtherTemplate,

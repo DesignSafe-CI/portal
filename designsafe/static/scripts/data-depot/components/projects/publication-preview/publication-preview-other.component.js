@@ -22,41 +22,27 @@ class PublicationPreviewOtherCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.project = this.ProjectService.resolveParams.project;
         this.listings = this.ProjectService.resolveParams.selectedListings;
-        this.loading = true;
+        this.ui = {
+            loading: true,
+        };
         window.sessionStorage.clear();
 
-
-        if (this.project || this.listings) {
-            this.browser.project = this.project;
-            this.browser.listings = this.listings;
-            this.loading = false;
-        } else {
-            /*
-            update uniqe file listing
-            we might want to consider a adding this to the
-            FilesListing service if we start using it in
-            multiple places...
-            */
-            
-            this.ProjectService.get({ uuid: this.projectId }
-            ).then((project) => {
-                this.browser.project = project;
-                return this.DataBrowserService.browse(
-                    { system: 'project-' + this.projectId, path: this.filePath },
-                    { query_string: this.$state.params.query_string }
-                );
-            }).then((listing) => {
-                this.loading = false;
-                this.browser.listing = listing;
-                this.browser.listing.href = this.$state.href('projects.view.data', {
-                    projectId: this.projectId,
-                    filePath: this.browser.listing.path,
-                    projectTitle: this.browser.project.value.projectTitle,
-                });
-                this.browser.showMainListing = true;
+        this.$q.all([
+            this.ProjectService.get({ uuid: this.projectId }),
+            this.DataBrowserService.browse(
+                { system: 'project-' + this.projectId, path: this.filePath },
+                { query_string: this.$state.params.query_string }
+            )
+        ]).then(([project, listing]) => {
+            this.browser.project = project;
+            this.browser.listing = listing;
+            this.browser.listing.href = this.$state.href('projects.view.data', {
+                projectId: this.projectId,
+                filePath: this.browser.listing.path,
+                projectTitle: this.browser.project.value.projectTitle,
             });
-        }
-        
+            this.ui.loading = false;
+        });
     }
 
     matchingGroup(exp, model) {
