@@ -864,7 +864,7 @@ def set_facl_project(self, project_uuid, usernames):
     client = get_service_account_client()
     for username in usernames:
         job_body = {
-            'inputs': {
+            'parameters': {
                 'username': username,
                 'directory': 'projects/{}'.format(project_uuid)
             },
