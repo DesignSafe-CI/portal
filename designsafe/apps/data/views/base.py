@@ -192,6 +192,7 @@ class DataDepotPublishedView(TemplateView):
         logger.info('Get context Data')
         pub = Publication(project_id=kwargs['project_id'].strip('/'))
         logger.debug('pub: %s', pub.to_dict())
+        context['projectId'] = pub.projectId
         context['citation_title'] = pub.project.value.title
         context['citation_date'] = pub.created
         context['doi'] = pub.project.doi
