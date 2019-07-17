@@ -50,8 +50,12 @@ class PublicationPreviewCtrl {
                 this.browser.project = project;
                 this.browser.project.appendEntitiesRel(entities);
                 this.browser.listing = listing;
-    
-                _.each(this.browser.listing.children, (child) => {
+                this.browser.listing.href = this.$state.href('projects.view.data', {
+                    projectId: this.projectId,
+                    filePath: this.browser.listing.path,
+                    projectTitle: this.browser.project.value.projectTitle,
+                });
+                this.browser.listing.children.forEach((child) => {
                     child.href = this.$state.href('projects.view.data', {
                         projectId: this.projectId,
                         filePath: child.path,
@@ -59,12 +63,6 @@ class PublicationPreviewCtrl {
                     });
                     child.setEntities(this.projectId, entities);
                 });
-                this.browser.listing.href = this.$state.href('projects.view.data', {
-                    projectId: this.projectId,
-                    filePath: this.browser.listing.path,
-                    projectTitle: this.browser.project.value.projectTitle,
-                });
-    
                 var allFilePaths = [];
                 this.browser.listings = {};
                 var apiParams = {
@@ -72,7 +70,7 @@ class PublicationPreviewCtrl {
                     baseUrl: '/api/agave/files',
                     searchState: 'projects.view.data',
                 };
-                _.each(entities, (entity) => {
+                entities.forEach((entity) => {
                     this.browser.listings[entity.uuid] = {
                         name: this.browser.listing.name,
                         path: this.browser.listing.path,
@@ -83,13 +81,13 @@ class PublicationPreviewCtrl {
                     allFilePaths = allFilePaths.concat(entity._filePaths);
                 });
     
-                this.setFilesDetails = (filePaths) => {
-                    filePaths = _.uniq(filePaths);
+                this.setFilesDetails = (paths) => {
+                    let filePaths = [...new Set(paths)];
                     var p = this.$q((resolve, reject) => {
                         var results = [];
                         var index = 0;
                         var size = 5;
-                        var fileCalls = _.map(filePaths, (filePath) => {
+                        var fileCalls = filePaths.map(filePath => {
                             return this.FileListing.get(
                                 { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
                             ).then((resp) => {
@@ -97,10 +95,10 @@ class PublicationPreviewCtrl {
                                     return;
                                 }
                                 var allEntities = this.browser.project.getAllRelatedObjects();
-                                var entities = _.filter(allEntities, (entity) => {
-                                    return _.contains(entity._filePaths, resp.path);
+                                var entities = allEntities.filter((entity) => {
+                                    return entity._filePaths.includes(resp.path);
                                 });
-                                _.each(entities, (entity) => {
+                                entities.forEach((entity) => {
                                     resp._entities.push(entity);
                                     this.browser.listings[entity.uuid].children.push(resp);
                                 });
@@ -126,12 +124,12 @@ class PublicationPreviewCtrl {
                     });
                     return p.then(
                         (results) => {
-                            this.ui.loading = false;
+                            this.loading = false;
                             return results;
                         },
                         (err) => {
+                            this.loading = false;
                             this.browser.ui.error = err;
-                            this.ui.loading = false;
                         });
                 };
                 this.setFilesDetails(allFilePaths);

@@ -1,7 +1,4 @@
 import PipelineSelectionOtherTemplate from './pipeline-selection-other.component.html';
-import _ from 'underscore';
-import { deprecate } from 'util';
-import { FileCategorySelectorComponent } from '../../../../projects/components/file-category-selector/file-category-selector';
 
 class PipelineSelectionOtherCtrl {
 

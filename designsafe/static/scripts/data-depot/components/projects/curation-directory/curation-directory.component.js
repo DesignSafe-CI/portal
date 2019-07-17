@@ -1,5 +1,4 @@
 import CurationDirectoryTemplate from './curation-directory.component.html';
-import _ from 'underscore';
 
 class CurationDirectoryCtrl {
 
@@ -39,7 +38,7 @@ class CurationDirectoryCtrl {
                     filePath: this.browser.listing.path,
                     projectTitle: this.browser.project.value.projectTitle,
                 });
-                _.each(this.browser.listing.children, (child) => {
+                this.browser.listing.children.forEach((child) => {
                     child.href = this.$state.href('projects.view.data', {
                         projectId: this.projectId,
                         filePath: child.path,
@@ -54,7 +53,7 @@ class CurationDirectoryCtrl {
                     baseUrl: '/api/agave/files',
                     searchState: 'projects.view.data',
                 };
-                _.each(entities, (entity) => {
+                entities.forEach((entity) => {
                     this.browser.listings[entity.uuid] = {
                         name: this.browser.listing.name,
                         path: this.browser.listing.path,
@@ -65,13 +64,13 @@ class CurationDirectoryCtrl {
                     allFilePaths = allFilePaths.concat(entity._filePaths);
                 });
     
-                this.setFilesDetails = (filePaths) => {
-                    filePaths = _.uniq(filePaths);
+                this.setFilesDetails = (paths) => {
+                    let filePaths = [...new Set(paths)];
                     var p = this.$q((resolve, reject) => {
                         var results = [];
                         var index = 0;
                         var size = 5;
-                        var fileCalls = _.map(filePaths, (filePath) => {
+                        var fileCalls = filePaths.map(filePath => {
                             return this.FileListing.get(
                                 { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
                             ).then((resp) => {
@@ -79,10 +78,10 @@ class CurationDirectoryCtrl {
                                     return;
                                 }
                                 var allEntities = this.browser.project.getAllRelatedObjects();
-                                var entities = _.filter(allEntities, (entity) => {
-                                    return _.contains(entity._filePaths, resp.path);
+                                var entities = allEntities.filter((entity) => {
+                                    return entity._filePaths.includes(resp.path);
                                 });
-                                _.each(entities, (entity) => {
+                                entities.forEach((entity) => {
                                     resp._entities.push(entity);
                                     this.browser.listings[entity.uuid].children.push(resp);
                                 });
@@ -112,6 +111,7 @@ class CurationDirectoryCtrl {
                             return results;
                         },
                         (err) => {
+                            this.loading = false;
                             this.browser.ui.error = err;
                         });
                 };

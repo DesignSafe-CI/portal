@@ -1,6 +1,5 @@
 import PublicationPreviewOtherTemplate from './publication-preview-other.component.html';
 import PublicationPopupTemplate from './publication-popup.html';
-import _ from 'underscore';
 
 class PublicationPreviewOtherCtrl {
 
