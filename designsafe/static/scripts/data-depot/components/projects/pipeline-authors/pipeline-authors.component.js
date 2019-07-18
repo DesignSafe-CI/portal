@@ -40,6 +40,8 @@ class PipelineAuthorsCtrl {
                     this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'hybrid_simulation') {
                     this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
+                } else if (this.projType === 'field_recon') {
+                    this.$state.go('projects.pipelineSelectFieldRecon', {projectId: this.uuid}, {reload: true});
                 }
             });
         } else {
@@ -53,6 +55,15 @@ class PipelineAuthorsCtrl {
                 }
             };
             this.verifyAuthors(this.experiment.value.authors);    
+            if (this.projType === 'experimental') {
+                this.placeholder = 'Experiment';
+            } else if (this.projType === 'simulation') {
+                this.placeholder = 'Simulation';
+            } else if (this.projType === 'hybrid_simulation') {
+                this.placeholder = 'Hybrid Simulation';
+            } else if (this.projType === 'field_recon') {
+                this.placeholder = 'Mission';
+            }
         }
 
     }
@@ -79,6 +90,13 @@ class PipelineAuthorsCtrl {
             }, {reload: true});
         } else if (this.projType === 'hybrid_simulation') {
             this.$state.go('projects.pipelineCategoriesHybSim', {
+                projectId: this.projectId,
+                project: this.project,
+                experiment: this.experiment,
+                selectedListings: this.selectedListings,
+            }, {reload: true});
+        } else if (this.projType === 'field_recon') {
+            this.$state.go('projects.pipelineCategoriesFieldRecon', {
                 projectId: this.projectId,
                 project: this.project,
                 experiment: this.experiment,

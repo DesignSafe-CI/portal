@@ -188,10 +188,10 @@ class PipelineSelectionFieldReconCtrl {
             return;
         } else {
             window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
-            this.$state.go('projects.pipelineFieldRecon', {
+            this.$state.go('projects.pipelineProject', {
                 projectId: this.projectId,
                 project: this.browser.project,
-                mission: this.selectedExp,
+                experiment: this.selectedExp,
                 selectedListings: this.selectedListings,
             }, {reload: true});
         }
