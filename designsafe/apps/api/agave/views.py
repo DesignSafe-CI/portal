@@ -52,7 +52,7 @@ class FileListingView(BaseApiView):
     """Main File Listing View. Used to list agave resources."""
 
     @profile_fn
-    def get(self, request, file_mgr_name, system_id=None, file_path=None):
+    def get(self, request, file_mgr_name, system_id=None, file_path=''):
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string', None)
@@ -64,7 +64,7 @@ class FileListingView(BaseApiView):
 
         if system_id is None:
                 system_id = AgaveFileManager.DEFAULT_SYSTEM_ID
-        if file_path is None:
+        if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and not file_path:
             file_path = request.user.username
         if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and \
                 (file_path.strip('/') == '$SHARE'):
@@ -83,7 +83,7 @@ class FileListingView(BaseApiView):
         return JsonResponse(listing,
                                 encoder=AgaveJSONEncoder,
                                 safe=False)
-   
+
 
 class FileMediaView(View):
 
@@ -651,16 +651,16 @@ class FileMetaView(View):
             file_dict['keywords'] = file_obj.metadata.value['keywords']
             return JsonResponse(file_dict)
         elif file_mgr_name in ['public', 'community', 'published']:
-            pems = [{'username': 'AnonymousUser', 
+            pems = [{'username': 'AnonymousUser',
                     'permission': {'read': True,
                                 'write': False,
                                 'execute': False}}]
             if request.user.is_authenticated:
-                pems.append({'username': request.user.username, 
+                pems.append({'username': request.user.username,
                             'permission': {'read': True,
                                             'write': False,
                                             'execute': False}})
-                                
+
             return JsonResponse(pems, safe=False)
         return HttpResponseBadRequest('Unsupported file manager.')
 

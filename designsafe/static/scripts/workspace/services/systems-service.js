@@ -16,7 +16,6 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
                 rootDir: '/corral-repl/tacc/NHERI/shared',
             },
             type: 'STORAGE',
-            uuid: '5072762172135903717-242ac114-0001-006',
             fileMgr: 'agave',
             baseUrl: '/api/agave/files',
         },
@@ -28,7 +27,6 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
                 rootDir: '/corral-repl/tacc/NHERI/projects',
             },
             type: 'STORAGE',
-            uuid: '5762770863681049062-242ac117-0001-006', // UUID seems to be unused
             fileMgr: 'projects',
             baseUrl: '/api/projects/files',
         },
@@ -40,8 +38,18 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
                 rootDir: '/corral-repl/tacc/NHERI/public/projects',
             },
             type: 'STORAGE',
-            uuid: '8688297665752666597-242ac119-0001-006',
             fileMgr: 'public',
+            baseUrl: '/api/public/files',
+        },
+        {
+            id: 'designsafe.storage.community',
+            name: 'Community',
+            storage: {
+                homeDir: '/',
+                rootDir: '/corral-repl/tacc/NHERI/community',
+            },
+            type: 'STORAGE',
+            fileMgr: 'community',
             baseUrl: '/api/public/files',
         },
     ];
@@ -50,7 +58,7 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
         return $http({
             url: djangoUrl.reverse('designsafe_workspace:call_api', ['monitors']),
             method: 'GET',
-            params: {target: systemId},
+            params: { target: systemId },
             cache: false,
         });
     };
@@ -79,16 +87,17 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
     };
 
     /**
-     * 
-     * @param {string} system: The system to monitor.
-     * 
-     * Returns a promise which resolves to the response from the TACC monitoring 
-     * API if the execution system has monitoring set up, or a dummy that lets us grab
-     * data.heartbeat.status from the response (default to true).
-     */
+   *
+   * @param {string} system: The system to monitor.
+   *
+   * Returns a promise which resolves to the response from the TACC monitoring
+   * API if the execution system has monitoring set up, or a dummy that lets us grab
+   * data.heartbeat.status from the response (default to true).
+   */
     service.getSystemStatus = function(system) {
         switch (system) {
             case 'designsafe.community.exec.stampede2.nores':
+            case 'designsafe.community.exec.stampede2':
                 return $http.get('https://portal.tacc.utexas.edu/commnq/stampede2.tacc.utexas.edu/summary.json',
                     { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
                     .then((resp) => {
@@ -97,8 +106,8 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
                         return $q.reject(err);
                     });
 
-            case 'designsafe.community.exec.maverick':
-                return $http.get('https://portal.tacc.utexas.edu/commnq/maverick.tacc.utexas.edu/summary.json',
+            case 'designsafe.community.exec.maverick2':
+                return $http.get('https://portal.tacc.utexas.edu/commnq/maverick2.tacc.utexas.edu/summary.json',
                     { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
                     .then((resp) => {
                         return resp.data;
