@@ -701,7 +701,7 @@ def reindex_projects(self):
             in_loop = False
         else:
             for project in listing:
-                    index_or_update_project.apply_async(args=[project.uuid], queue='api')
+                index_or_update_project.apply_async(args=[project.uuid], queue='api')
    
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
