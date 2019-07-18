@@ -1,6 +1,6 @@
 <div style="background:white;">
     <!-- Project Header Start -->
-    <div>
+    <div ng-if="!$ctrl.ui.loading">
         <div>
             <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
             <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
@@ -90,12 +90,9 @@
         <div ng-if="$ctrl.browser.project.value.description">
             <p>{{ $ctrl.browser.project.value.description }}</p>
         </div>
-        <div ng-if="$ctrl.fileNav">
-            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
-        </div>
     </div>
     <!-- Project Header End -->
-    <table class="tg" style="table-layout: fixed; width: 100%;" data-ng-if="!$ctrl.readOnly">
+    <table class="tg" style="table-layout: fixed; width: 100%;" data-ng-if="!$ctrl.readOnly && !$ctrl.ui.loading">
         <colgroup>
             <col style="width: 46%">
             <col style="width: 50%">
@@ -120,14 +117,17 @@
     </table>
     <br>
     <!-- Missions -->
-    <div ng-show="$ctrl.loading">
+    <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
             <i class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
-    <div ng-if="!$ctrl.fileNav">
+    <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
+        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
+    </div>
+    <div ng-if="!$ctrl.ui.fileNav">
         <!-- Project Reports -->
-        <div ng-hide="$ctrl.loading"
+        <div ng-hide="$ctrl.ui.loading"
             ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
             ng-if="$ctrl.isProjectReport(report)"
         >
@@ -187,11 +187,11 @@
                     <div class="well" ng-if="report.value.description">
                         <p>{{ report.value.description }}</p>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                 </div>
             </div>
         </div>
-        <div ng-hide="$ctrl.loading" ng-repeat="mission in $ctrl.browser.project.mission_set">
+        <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="mission in $ctrl.browser.project.mission_set">
             <div style="margin-bottom: 2px;">
                 <a data-ng-click="$ctrl.treeDiagram(mission)">
                     <strong>View Data Diagram</strong>
@@ -320,7 +320,7 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                                 </div>
                             </div>
                         </div>
@@ -409,7 +409,7 @@
                                             <p>{{ collection.value.description }}</p>
                                         </div>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-listing="true"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
                                 </div>
                             </div>
                         </div>

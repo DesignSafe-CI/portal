@@ -112,11 +112,11 @@ class PipelineSelectionCtrl {
                 });
                 return p.then(
                     (results) => {
-                        this.loading = false;
+                        this.ui.loading = false;
                         return results;
                     },
                     (err) => {
-                        this.loading = false;
+                        this.ui.loading = false;
                         this.browser.ui.error = err;
                     });
             };

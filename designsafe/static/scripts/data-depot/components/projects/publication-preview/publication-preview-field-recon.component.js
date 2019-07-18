@@ -18,54 +18,47 @@ class PublicationPreviewFieldReconCtrl {
     }
     
     $onInit() {
+        this.readOnly = this.$state.current.name.indexOf('publishedData') === 0;
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
-        this.project = this.ProjectService.resolveParams.project;
-        this.listings = this.ProjectService.resolveParams.selectedListings;
-        this.loading = true;
+        this.data = this.ProjectService.resolveParams.data;
+
+        this.ui = {
+            fileNav: true,
+            loading: true
+        };
+
         window.sessionStorage.clear();
 
+        if (this.filePath === '/') {
+            this.ui.fileNav = false;
+        }
 
-        if (this.project || this.listings) {
-            this.browser.project = this.project;
-            this.browser.listings = this.listings;
-            this.loading = false;
-        } else {
-            /*
-            update uniqe file listing
-            we might want to consider a adding this to the
-            FilesListing service if we start using it in
-            multiple places...
-            */
-            
-            this.ProjectService.get({ uuid: this.projectId }
-            ).then((project) => {
-                this.browser.project = project;
-                return this.DataBrowserService.browse(
+        if (!this.data || this.data.listing.path != this.filePath) {
+            this.$q.all([
+                this.ProjectService.get({ uuid: this.projectId }),
+                this.DataBrowserService.browse(
                     { system: 'project-' + this.projectId, path: this.filePath },
                     { query_string: this.$state.params.query_string }
-                );
-            }).then((listing) => {
+                ),
+                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
+            ]).then(([project, listing, entities]) => {
+                this.browser.project = project;
+                this.browser.project.appendEntitiesRel(entities);
                 this.browser.listing = listing;
                 this.browser.listing.href = this.$state.href('projects.view.data', {
                     projectId: this.projectId,
                     filePath: this.browser.listing.path,
                     projectTitle: this.browser.project.value.projectTitle,
                 });
-                this.browser.showMainListing = true;
-                return this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' });
-            }).then((ents) => {
-                this.browser.project.appendEntitiesRel(ents);
-                _.each(this.browser.listing.children, (child) => {
+                this.browser.listing.children.forEach((child) => {
                     child.href = this.$state.href('projects.view.data', {
                         projectId: this.projectId,
                         filePath: child.path,
                         projectTitle: this.browser.project.value.projectTitle,
                     });
-                    child.setEntities(this.projectId, ents);
+                    child.setEntities(this.projectId, entities);
                 });
-            }).then(() => {
-                var entities = this.browser.project.getAllRelatedObjects();
                 var allFilePaths = [];
                 this.browser.listings = {};
                 var apiParams = {
@@ -73,7 +66,7 @@ class PublicationPreviewFieldReconCtrl {
                     baseUrl: '/api/agave/files',
                     searchState: 'projects.view.data',
                 };
-                _.each(entities, (entity) => {
+                entities.forEach((entity) => {
                     this.browser.listings[entity.uuid] = {
                         name: this.browser.listing.name,
                         path: this.browser.listing.path,
@@ -83,14 +76,14 @@ class PublicationPreviewFieldReconCtrl {
                     };
                     allFilePaths = allFilePaths.concat(entity._filePaths);
                 });
-
-                this.setFilesDetails = (filePaths) => {
-                    filePaths = _.uniq(filePaths);
+    
+                this.setFilesDetails = (paths) => {
+                    let filePaths = [...new Set(paths)];
                     var p = this.$q((resolve, reject) => {
                         var results = [];
                         var index = 0;
                         var size = 5;
-                        var fileCalls = _.map(filePaths, (filePath) => {
+                        var fileCalls = filePaths.map(filePath => {
                             return this.FileListing.get(
                                 { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
                             ).then((resp) => {
@@ -98,16 +91,17 @@ class PublicationPreviewFieldReconCtrl {
                                     return;
                                 }
                                 var allEntities = this.browser.project.getAllRelatedObjects();
-                                var entities = _.filter(allEntities, (entity) => {
-                                    return _.contains(entity._filePaths, resp.path);
+                                var entities = allEntities.filter((entity) => {
+                                    return entity._filePaths.includes(resp.path);
                                 });
-                                _.each(entities, (entity) => {
+                                entities.forEach((entity) => {
+                                    resp._entities.push(entity);
                                     this.browser.listings[entity.uuid].children.push(resp);
                                 });
                                 return resp;
                             });
                         });
-
+    
                         var step = () => {
                             var calls = fileCalls.slice(index, (index += size));
                             if (calls.length) {
@@ -126,17 +120,20 @@ class PublicationPreviewFieldReconCtrl {
                     });
                     return p.then(
                         (results) => {
-                            this.loading = false;
+                            this.ui.loading = false;
                             return results;
                         },
                         (err) => {
+                            this.ui.loading = false;
                             this.browser.ui.error = err;
                         });
                 };
                 this.setFilesDetails(allFilePaths);
-            });
+            });     
+        } else {
+            this.browser = this.data;
+            this.ui.loading = false;
         }
-        
     }
 
     matchingGroup(sim, model) {
@@ -164,12 +161,12 @@ class PublicationPreviewFieldReconCtrl {
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
     }
 
     goCuration() {
         window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
-        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, project: this.browser.project, selectedListings: this.browser.listings}, {reload: true});
+        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
     }
 
     editProject() {
