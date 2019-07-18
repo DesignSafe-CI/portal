@@ -27,13 +27,47 @@ class IndexedProject(DocType):
     name = Text(fields={'_exact': Keyword()})
     created = Date()
     owner = Text(fields={'_exact': Keyword()})
-    value = Nested(
+    value = Object(
         properties={
             'teamMembers': Text(fields={'_exact': Keyword()}, multi=True),
+            'guestMembers': Nested(properties={
+                'guest': Boolean(),
+                'lname': Text(fields={'_exact': Keyword()}),
+                'inst': Text(),
+                'user': Keyword(),
+                'fname': Text(fields={'_exact': Keyword()}),
+                'email': Text(fields={'_exact': Keyword()}), 
+                'order': Long()
+            }, multi=True),
+            'teamOrder': Nested(properties={
+                'guest': Boolean(),
+                'name': Text(fields={'_exact': Keyword()}),
+                'lname': Text(fields={'_exact': Keyword()}),
+                'inst': Text(),
+                'user': Keyword(),
+                'fname': Text(fields={'_exact': Keyword()}),
+                'email': Text(fields={'_exact': Keyword()}), 
+                'order': Long()
+            }, multi=True), 
+            'fileTags': Nested(properties={
+                'fileUuid': Keyword(),
+                'tagName': Keyword(),
+                'format': Keyword(),
+                'lastModified': Date(),
+        
+            }, multi=True),
+
+            'nhEventStart': Date(),
+            'nhEventEnd': Date(),
+            'nhType': Text(fields={'_exact': Keyword()}),
+            'nhTypeOther': Text(fields={'_exact': Keyword()}),
+            'nhEvent': Text(fields={'_exact': Keyword()}),
+
             'coPis': Text(fields={'_exact': Keyword()}, multi=True),
             'projectType': Text(fields={'_exact': Keyword()}, analyzer='english'),
             'description': Text(analyzer='english'),
             'projectId': Text(fields={'_exact': Keyword()}),
+            'dataType': Text(fields={'_exact': Keyword()}),
             'title': Text(analyzer='english'),
             'keywords': Text(analyzer='english'),
             'ef': Text(analyzer='english'),
@@ -43,7 +77,10 @@ class IndexedProject(DocType):
                 'delete': Boolean()
             }),
             'pi': Text(fields={'_exact': Keyword()}),
-            'awardNumber': Text(fields={'_exact': Keyword()})
+            'awardNumber': Nested(properties={
+                'number': Keyword(),
+                'name': Text(fields={'_exact': Keyword()}),
+            }, multi=True),
         })
 
     class Meta:

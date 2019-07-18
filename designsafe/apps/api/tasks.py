@@ -654,7 +654,10 @@ def index_or_update_project(self, uuid):
 
     to_index = {key: value for key, value in project_meta.iteritems() if key != '_links'}
     to_index['value'] = {key: value for key, value in project_meta['value'].iteritems() if key != 'teamMember'}
-
+    if not isinstance(to_index['value'].get('awardNumber', []), list):
+        to_index['value']['awardNumber'] = [{'number': to_index['value']['awardNumber'] }]
+    if to_index['value'].get('guestMembers', []) == [None]:
+        to_index['value']['guestMembers'] = []
     project_search = IndexedProject.search().filter(
         Q({'term': 
             {'uuid._exact': uuid}
@@ -698,8 +701,8 @@ def reindex_projects(self):
             in_loop = False
         else:
             for project in listing:
-                index_or_update_project.apply_async(args=[project.uuid], queue='api')
-
+                    index_or_update_project.apply_async(args=[project.uuid], queue='api')
+   
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication

@@ -59,15 +59,10 @@ class Project(BaseMetadataResource):
     def ES_search(cls, agave_client, query_string, username, **kwargs):
         from designsafe.apps.projects.models.elasticsearch import IndexedProject
         from elasticsearch_dsl import Q
-        pi_query = Q({'nested': {'path': 'value', 'query': {
-            'term': {'value.pi._exact': username}}
-        }})
-        copi_query = Q({'nested': {'path': 'value', 'query': {
-            'term': {'value.coPis._exact': username}}
-        }})
-        team_query = Q({'nested': {'path': 'value', 'query': {
-            'term': {'value.teamMembers._exact': username}}
-        }})
+   
+        pi_query = Q({'term': {'value.pi._exact': username}})
+        copi_query = Q({'term': {'value.coPis._exact': username}})
+        team_query = Q({'term': {'value.teamMembers._exact': username}})
         records = IndexedProject.search().query('query_string', query=query_string, default_operator='and')
         records = records.filter(pi_query | copi_query | team_query )
         records = records.extra(from_=kwargs.get('offset', 0), size=kwargs.get('limit',100))
