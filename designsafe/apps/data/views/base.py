@@ -229,6 +229,7 @@ class DataDepotLegacyPublishedView(TemplateView):
         nees_id = kwargs['project_id'].strip('.groups').strip('/')
         logger.debug('nees_id: %s', nees_id)
         pub = BaseESPublicationLegacy(nees_id=nees_id)
+        context['neesId'] = nees_id.split('/')[0]
         context['citation_title'] = pub.title
         context['citation_date'] = getattr(pub, 'startDate', '')
         experiments = getattr(pub, 'experiments')
