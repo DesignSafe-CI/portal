@@ -180,6 +180,7 @@ class ProjectSitemap(sitemaps.Sitemap):
             
             for proj in projects['children']:
                 if 'project' in proj:
+                    # designsafe projects
                     subpath = {
                         'root' : reverse('designsafe_data:data_depot'),
                         'project' : proj['project'],
@@ -193,7 +194,7 @@ class ProjectSitemap(sitemaps.Sitemap):
                         'project' : proj['path'],
                         'system' : proj['system']
                     }
-                    projPath.append('{root}public/{system}/{project}'.format(**subpath))
+                    projPath.append('{root}public/{system}{project}'.format(**subpath))
                 else:
                     continue
             count += 200
