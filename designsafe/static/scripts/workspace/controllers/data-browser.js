@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { FieldReconPublishedViewComponent } from '../../data-depot/components/published/published-view.component';
 
 function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataBrowserService) {
     'ngInject';
@@ -98,9 +99,8 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
         $scope.data.error = null;
 
         if (($scope.data.filesListing.system === 'designsafe.storage.published' ||
-            $scope.data.filesListing.system === 'nees.public') &&
-            $scope.data.dirPath.length === 1) {
-            $scope.data.dirPath = ['Published'];
+            $scope.data.filesListing.system === 'nees.public') && index == 0 ){
+            $scope.data.dirPath = ['/'];
 
         // Switch back to designsafe.storage.projects system when calling main projects listing
         } else if ($scope.data.filesListing.system.startsWith('project-') && index == 0) {
@@ -133,7 +133,12 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
                 file.path = file.path.replace('Published', '');
             }
         }
-
+        if (file.system === 'designsafe.storage.published' && file.path !== '/') {
+            DataBrowserService.apiParams.fileMgr = 'published'
+        }
+        if ( (file.system === 'designsafe.storage.published' || file.system === 'nees.public') && file.path === '/') {
+            DataBrowserService.apiParams.fileMgr = 'public'
+        }
         DataBrowserService.browse(file)
             .then(function(listing) {
                 $scope.data.filesListing = listing;
@@ -152,7 +157,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
                     // Trim path
                     $scope.data.filePath = $scope.data.filePath.replace(/^\/+/g, '');
                     if (file.system.includes('public') || file.system.includes('published')) {
-                        $scope.data.dirPath = $scope.data.dirPath.slice(0, 2).concat($scope.data.filePath.split('/'));
+                        $scope.data.dirPath = $scope.data.dirPath.slice(0, 1).concat($scope.data.filePath.split('/')).filter(x => x!== '');
                     } else {
                         $scope.data.dirPath = (file.name ? $scope.data.dirPath.concat(file.name) : $scope.data.filePath.split('/'));
                     }
@@ -184,6 +189,9 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
     };
 
     $scope.renderName = function(file) {
+        if (file.meta) {
+            return file.meta.title
+        }
         if (typeof file.metadata === 'undefined' ||
             file.metadata === null ||
             _.isEmpty(file.metadata)) {
