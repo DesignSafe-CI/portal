@@ -195,7 +195,7 @@ class ProjectSitemap(sitemaps.Sitemap):
                     'project' : proj['path'],
                     'system' : proj['systemId']
                 }
-                projPath.append('{root}public/{system}/{project}'.format(**subpath))
+                projPath.append('{root}public/{system}{project}'.format(**subpath))
 
         return projPath
 
