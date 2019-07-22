@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import { FieldReconPublishedViewComponent } from '../../data-depot/components/published/published-view.component';
 
 function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataBrowserService) {
     'ngInject';
