@@ -2,9 +2,10 @@
     <div class="ds-table-display-wrapper" ds-infinite-scroll data-scroll-bottom="scrollToBottom()()" data-scroll-top="scrollToTop()()" data-bottom-height="0">
       <table class="table table-bordered table-striped" style="background-color: #fff;">
           <thead>
-          <th>Project title</th>
+          <th>Project Title</th>
+          <th>Project ID</th>
           <th>PI</th>
-          <th>Last modified</th>
+          <th>Last Modified</th>
           </thead>
   
           <tbody>
@@ -14,10 +15,12 @@
               ng-class="{'ds-data-selected': project.selected}"
           >
               <td>
-                  <i class="fa fa-briefcase"></i>
                   <a ng-href="{{ project.href }}">
                       {{ project.value.title }}
                   </a>
+              </td>
+              <td>
+                {{project.value.projectId}}
               </td>
               <td>
                 {{data.names[project.value.pi]}}
