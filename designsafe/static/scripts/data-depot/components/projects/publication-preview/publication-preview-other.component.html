@@ -37,13 +37,14 @@
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
-            <!-- older projects will have awards listed as strings -->
-            <tr ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
-                <td>Awards</td>
-                <td><strong>{{ $ctrl.browser.project.value.awardNumber.join("") }}</strong></td>
+            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber track by $index"
+                ng-if="!$ctrl.readOnly">
+                <td ng-if="$first">Awards</td>
+                <td ng-if="!$first"></td>
+                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
-            <tr ng-if="!$ctrl.isSingle($ctrl.browser.project.value.awardNumber)"
-                ng-repeat="award in $ctrl.browser.project.value.awardNumber track by $index">
+            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumbers track by $index"
+                ng-if="$ctrl.readOnly">
                 <td ng-if="$first">Awards</td>
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>

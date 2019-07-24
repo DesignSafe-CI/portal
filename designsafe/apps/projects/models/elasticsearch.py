@@ -47,7 +47,7 @@ class IndexedProject(DocType):
         })
 
     class Meta:
-        index = settings.ES_INDICES['projects']['name']
+        index = settings.ES_INDICES['projects']['alias']
         doc_type = settings.ES_INDICES['projects']['documents'][0]['name']
         dynamic = MetaField('strict')
 

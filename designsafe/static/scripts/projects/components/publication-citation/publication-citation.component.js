@@ -13,12 +13,18 @@ class PublicationCitationCtrl {
         this.auths = [];
         this.doi = '';
 
-        if (!this.entity) {
-            this.auths = angular.copy(this.publication.project.value.teamOrder);
-            this.doi = this.publication.project.doi;
-        } else {
+        if (this.entity) {
+            // entity
             this.auths = angular.copy(this.entity.authors);
             this.doi = this.entity.doi;
+        } else if (this.publication.project.value.projectType !== 'other') {
+            // exp,hyb,sim,field
+            this.auths = angular.copy(this.publication.authors);
+            this.doi = this.publication.project.doi;
+        } else {
+            // other
+            this.auths = angular.copy(this.publication.project.value.teamOrder);
+            this.doi = this.publication.project.doi;
         }
 
         let authors = '';

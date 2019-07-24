@@ -4,60 +4,17 @@ from __future__ import unicode_literals
 from elasticsearch_dsl import Q
 from elasticsearch import TransportError
 from designsafe.libs.elasticsearch import docs as DocsManager
-from designsafe.apps.api.agave.filemanager.\
-    public_search_index import (PublicProjectIndexed,PublicExperimentIndexed)
-from designsafe.apps.data.models.elasticsearch import IndexedPublicationLegacy
 
 from django.db import migrations
 
 def reindex_files(*args):
-    script = {}
-    DocsManager.reindex(
-        'designsafe_a', 'objects', 'des-files_a', 'file', script=script)
+    pass
 
 def reindex_publications(*args):
-    try:
-        DocsManager.reindex(
-            'published', 'publication', 'des-publications_a', 'publication')
-    except TransportError as exc:
-        if exc.status_code != 404:
-            raise
+    pass
 
 def reindex_nees_projects(*args):
-    try:
-        srch = IndexedPublicationLegacy.search()
-        res = srch.execute()
-        if res.hits.total > 0:
-            return
-
-        search = PublicProjectIndexed.search()
-        res = search.execute()
-        esrch = PublicExperimentIndexed.search()
-        for pub in search.scan():
-            pub_dict = pub.to_dict()
-            pub_dict['path'] = pub_dict['projectPath']
-            pub_dict.pop('projectPath', '')
-            pub_dict['system'] = pub_dict['systemId']
-            pub_dict.pop('systemId', '')
-            pub_doc = IndexedPublicationLegacy(**pub_dict)
-            esrch.query = Q(
-                'bool',
-                must=Q({'term': {'project._exact':pub.name}})
-                )
-            esrch.execute()
-            experiments = []
-            for exp in esrch.scan():
-                exp_dict = exp.to_dict()
-                exp_dict['path'] = exp_dict['experimentPath']
-                exp_dict.pop('systemId')
-                exp_dict.pop('experimentPath', '')
-                exp_dict.pop('project')
-                experiments.append(exp_dict)
-            pub_doc.experiments = experiments
-            pub_doc.save()
-    except TransportError as exc:
-        if exc.status_code != 404:
-            raise
+    pass
 
 class Migration(migrations.Migration):
 

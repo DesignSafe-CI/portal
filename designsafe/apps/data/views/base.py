@@ -12,10 +12,9 @@ from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView, View
 from django.views.decorators.csrf import ensure_csrf_cookie
 from designsafe.libs.common.decorators import profile
-from designsafe.apps.api.agave.filemanager.public_search_index import (
-    Publication,
-    LegacyPublication
-)
+
+from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
+from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 
 logger = logging.getLogger(__name__)
 
@@ -190,7 +189,7 @@ class DataDepotPublishedView(TemplateView):
         """Update context data to add publication."""
         context = super(DataDepotPublishedView, self).get_context_data(**kwargs)
         logger.info('Get context Data')
-        pub = Publication(project_id=kwargs['project_id'].strip('/'))
+        pub = BaseESPublication(project_id=kwargs['project_id'].strip('/'))
         logger.debug('pub: %s', pub.to_dict())
         context['citation_title'] = pub.project.value.title
         context['citation_date'] = pub.created
@@ -228,7 +227,7 @@ class DataDepotLegacyPublishedView(TemplateView):
         logger.info('Get context Data')
         nees_id = kwargs['project_id'].strip('.groups').strip('/')
         logger.debug('nees_id: %s', nees_id)
-        pub = LegacyPublication(nees_id=nees_id)
+        pub = BaseESPublicationLegacy(nees_id=nees_id)
         context['citation_title'] = pub.title
         context['citation_date'] = getattr(pub, 'startDate', '')
         experiments = getattr(pub, 'experiments')

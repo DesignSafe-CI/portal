@@ -231,7 +231,7 @@ class IndexedPublication(DocType):
             'projectType': String(fields={'_exact': Keyword()}),
         })
     })
-    projectId = String(fields={'_exact': Keyword()}),
+    projectId = String(fields={'_exact': Keyword()})
     reportsList = Nested(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
@@ -288,6 +288,28 @@ class IndexedPublication(DocType):
         }),
         'username': String(fields={'_exact': Keyword()}),
     })
+
+    @classmethod
+    def from_id(cls, project_id):
+        if project_id is None:
+            raise DocumentNotFound()
+            
+        search = cls.search().query(Q({"term":
+                                         {"projectId.keyword": project_id}
+                                         }))
+        try:
+            res = search.execute()
+        except Exception as e:
+            raise e
+        if res.hits.total > 1:
+            for doc in res[1:res.hits.total]:
+                doc.delete()
+            return res[0]
+        elif res.hits.total == 1:
+            return res[0]
+        else:
+            raise DocumentNotFound("No document found for "
+                                   "{}".format(project_id))
 
     class Meta:
         index = settings.ES_INDICES['publications']['alias']
@@ -395,6 +417,29 @@ class IndexedPublicationLegacy(DocType):
                 'firstName': Text(analyzer='english')
             })
         })
+
+    @classmethod
+    def from_id(cls, project_id):
+
+        if project_id is None:
+            raise DocumentNotFound()
+
+        search = cls.search().query(Q({"term":
+                                         {"name._exact": project_id}
+                                         }))
+        try:
+            res = search.execute()
+        except Exception as e:
+            raise e
+        if res.hits.total > 1:
+            for doc in res[1:res.hits.total]:
+                doc.delete()
+            return res[0]
+        elif res.hits.total == 1:
+            return res[0]
+        else:
+            raise DocumentNotFound("No document found for "
+                                   "{}".format(project_id))
 
     class Meta:
         index = settings.ES_INDICES['publications_legacy']['alias']

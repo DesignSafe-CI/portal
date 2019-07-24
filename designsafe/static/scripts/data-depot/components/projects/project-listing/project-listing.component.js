@@ -1,7 +1,7 @@
 import ProjectListingTemplate from './project-listing.component.html';
 import _ from 'underscore';
 
-function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectService, UserService) {
+function ProjectListingCtrl($scope, $state, $stateParams, DataBrowserService, Django, ProjectService, UserService) {
     'ngInject';
     $scope.ui = {};
     $scope.ui.busy = true;
@@ -16,7 +16,7 @@ function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectS
 
     // release selected files on load
     DataBrowserService.deselect(DataBrowserService.state().selected);
-    ProjectService.list({offset:offset, limit:limit}).then(function(projects) {
+    ProjectService.list({offset:offset, limit:limit, query_string: $stateParams.query_string}).then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
       DataBrowserService.projectBreadcrumbSubject.next();

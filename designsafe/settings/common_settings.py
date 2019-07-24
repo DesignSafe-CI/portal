@@ -608,3 +608,21 @@ from external_resource_settings import *
 from elasticsearch_settings import *
 from rt_settings import *
 from external_resource_secrets import *
+
+PORTAL_DATA_DEPOT_MANAGERS = {
+    'agave': 'designsafe.apps.api.agave.filemanager.private_data.PrivateDataFileManager',
+    'shared': 'designsafe.apps.api.agave.filemanager.shared_data.SharedDataFileManager',
+    'my-projects': 'designsafe.apps.api.agave.filemanager.private_data.PrivateDataFileManager',
+    'public': 'designsafe.apps.api.agave.filemanager.publications.PublicationsManager',
+    'published': 'designsafe.apps.api.agave.filemanager.published_files.PublishedFileManager',
+    'community': 'designsafe.apps.api.agave.filemanager.community.CommunityFileManager'
+}
+
+PORTAL_DATA_DEPOT_SEARCH_MANAGERS = {
+    'agave': 'designsafe.apps.api.search.searchmanager.private_data.PrivateDataSearchManager',
+    'shared': 'designsafe.apps.api.search.searchmanager.shared_data.SharedDataSearchManager',
+    'my-projects': 'designsafe.apps.api.search.searchmanager.private_data.PrivateDataSearchManager',
+    'public': 'designsafe.apps.api.search.searchmanager.publications.PublicationsSearchManager',
+    'published': 'designsafe.apps.api.search.searchmanager.published_files.PublishedDataSearchManager',
+    'community': 'designsafe.apps.api.search.searchmanager.community.CommunityDataSearchManager'
+}

@@ -258,7 +258,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     if (options.page){
       offset += limit * options.page;
     }
-    var params = {limit: limit, offset: offset, queryString: options.queryString};
+    var params = {limit: limit, offset: offset, query_string: options.queryString};
     return FileListing.get(options, apiParams, params).then(function (listing) {
       select([], true);
       currentState.busy = false;
