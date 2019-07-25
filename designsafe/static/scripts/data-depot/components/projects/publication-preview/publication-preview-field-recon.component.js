@@ -1,6 +1,5 @@
 import PublicationPreviewFieldReconTemplate from './publication-preview-field-recon.component.html';
 import PublicationPopupTemplate from './publication-popup.html';
-import _ from 'underscore';
 
 class PublicationPreviewFieldReconCtrl {
 

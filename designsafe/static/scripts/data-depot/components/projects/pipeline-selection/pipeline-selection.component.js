@@ -1,6 +1,5 @@
 import PipelineSelectionTemplate from './pipeline-selection.component.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
-import _ from 'underscore';
 
 class PipelineSelectionCtrl {
 
@@ -126,7 +125,7 @@ class PipelineSelectionCtrl {
 
     getEF(str) {
         let efs = this.ui.efs[this.browser.project.value.projectType];
-        let ef = _.find(efs, (ef) => {
+        let ef = efs.find((ef) => {
             return ef.name === str;
         });
         return ef.label;
@@ -134,7 +133,7 @@ class PipelineSelectionCtrl {
 
     getET(exp) {
         let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
-        let et = _.find(ets, (x) => {
+        let et = ets.find((x) => {
             return x.name === exp.value.experimentType;
         });
         return et.label;
@@ -142,7 +141,7 @@ class PipelineSelectionCtrl {
 
     getEQ(exp) {
         let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
-        let eqt = _.find(eqts, (x) => {
+        let eqt = eqts.find((x) => {
             return x.name === exp.value.equipmentType;
         });
         return eqt.label;

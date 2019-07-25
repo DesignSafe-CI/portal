@@ -1,6 +1,5 @@
 import PublicationPreviewHybSimTemplate from './publication-preview-hyb-sim.component.html';
 import PublicationPopupTemplate from './publication-popup.html';
-import _ from 'underscore';
 
 class PublicationPreviewHybSimCtrl {
 

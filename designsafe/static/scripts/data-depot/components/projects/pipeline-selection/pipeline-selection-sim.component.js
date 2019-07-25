@@ -1,5 +1,4 @@
 import PipelineSelectionSimTemplate from './pipeline-selection-sim.component.html';
-import _ from 'underscore';
 
 class PipelineSelectionSimCtrl {
 

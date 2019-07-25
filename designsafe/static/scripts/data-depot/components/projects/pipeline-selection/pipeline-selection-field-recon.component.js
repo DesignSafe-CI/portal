@@ -1,5 +1,4 @@
 import PipelineSelectionFieldReconTemplate from './pipeline-selection-field-recon.component.html';
-import _ from 'underscore';
 
 class PipelineSelectionFieldReconCtrl {
     constructor(
