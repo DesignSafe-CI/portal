@@ -140,7 +140,7 @@
             </div>
         </div>
     </div>
-    <div ng-if="$ctrl.ui.fileNav">
+    <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
     </div>
     <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">

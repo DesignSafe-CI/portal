@@ -130,7 +130,7 @@ class FileCategoriesCtrl {
                 tagName: tagName
             });
         }).then(() => {
-            var projectData = {};
+            let projectData = {};
             projectData.uuid = this.project.uuid;
             projectData.fileTags = this.project.value.fileTags;
             projectData.title = this.project.value.title;
@@ -143,13 +143,10 @@ class FileCategoriesCtrl {
             projectData.teamMembers = this.project.value.teamMembers;
             projectData.associatedProjects = this.project.value.associatedProjects;
             projectData.awardNumber = this.project.value.awardNumber;
-    
-            return this.savePrj(projectData);
-        }).then(() => {
-            this.selectedFileTag[this.project.uuid] = null;
-            this.$scope.$apply();
-        }).finally( ()=> {
-            this._ui.busy = false;
+            this.savePrj(projectData).finally(() => {
+                this.selectedFileTag[this.project.uuid] = null;
+                this._ui.busy = false;
+            });
         });
     }
 

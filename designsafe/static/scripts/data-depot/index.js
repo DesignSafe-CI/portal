@@ -241,6 +241,7 @@ function config(
                 filePath: '/',
                 project: null,
                 selectedListings: null,
+                data: null,
             },
             resolve: {
                 params: [
@@ -251,6 +252,7 @@ function config(
                         ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                        ProjectService.resolveParams.data = $stateParams.data;
                     },
                 ],
             },

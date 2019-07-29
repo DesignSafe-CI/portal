@@ -20,40 +20,8 @@ class ProjectViewCtrl {
     this.data = this.ProjectService.resolveParams.data;
     this.loading = true;
 
-    this.checkState = () => {
-      this.workingDir = false;
-      var broken = this.$state.current.name.split('.');
-      var last = broken.pop();
-      if (last == 'data') {
-        this.workingDir = true;
-      }
-    };
-
-    if (!this.data || this.data.listing.path != this.filePath) {
-      this.$q.all([
-        this.ProjectService.get({ uuid: this.projectId }),
-        this.DataBrowserService.browse(
-          { system: 'project-' + this.projectId, path: this.filePath },
-          { query_string: this.$state.params.query_string }
-        ),
-        this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
-      ]).then(([project, listing, entities]) => {
-        this.browser.project = project;
-        this.browser.project.appendEntitiesRel(entities);
-        this.browser.listing = listing;
-        this.browser.listing.href = this.$state.href('projects.view.data', {
-          projectId: this.projectId,
-          filePath: this.browser.listing.path,
-          projectTitle: this.browser.project.value.projectTitle,
-        });
-        this.browser.listing.children.forEach((child) => {
-          child.href = this.$state.href('projects.view.data', {
-            projectId: this.projectId,
-            filePath: child.path,
-            projectTitle: this.browser.project.value.projectTitle,
-          });
-          child.setEntities(this.projectId, entities);
-        });
+    this.createListings = () => {
+      this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }).then((entities) => {
         var allFilePaths = [];
         this.browser.listings = {};
         var apiParams = {
@@ -71,7 +39,6 @@ class ProjectViewCtrl {
           };
           allFilePaths = allFilePaths.concat(entity._filePaths);
         });
-
         this.setFilesDetails = (paths) => {
           let filePaths = [...new Set(paths)];
           var p = this.$q((resolve, reject) => {
@@ -125,9 +92,46 @@ class ProjectViewCtrl {
         };
         this.setFilesDetails(allFilePaths);
       });
-    } else {
+    };
+
+    if (this.data) {
       this.browser = this.data;
-      this.loading = false;
+      if (typeof this.browser.listings === 'undefined') {
+        this.createListings();
+      } else {
+        this.loading = false;
+      }
+    } else {
+      this.$q.all([
+        this.ProjectService.get({ uuid: this.projectId }),
+        this.DataBrowserService.browse(
+          { system: 'project-' + this.projectId, path: this.filePath },
+          { query_string: this.$state.params.query_string }
+        ),
+        this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
+      ]).then(([project, listing, entities]) => {
+        this.browser.project = project;
+        this.browser.project.appendEntitiesRel(entities);
+        this.browser.listing = listing;
+        this.browser.listing.href = this.$state.href('projects.view.data', {
+          projectId: this.projectId,
+          filePath: this.browser.listing.path,
+          projectTitle: this.browser.project.value.projectTitle,
+        });
+        this.browser.listing.children.forEach((child) => {
+          child.href = this.$state.href('projects.view.data', {
+            projectId: this.projectId,
+            filePath: child.path,
+            projectTitle: this.browser.project.value.projectTitle,
+          });
+          child.setEntities(this.projectId, entities);
+        });
+        if (this.browser.project.value.projectType != 'other') {
+          this.createListings();
+        } else {
+          this.loading = false;
+        }
+      });
     }
   }
 
@@ -164,29 +168,29 @@ class ProjectViewCtrl {
     if (this.browser.project.value.projectType === 'None') {
       this.manageProjectType();
     } else {
-      this.$state.go('projects.curation', { projectId: this.projectId, data: this.browser }, { reload: true });
+      this.$state.go('projects.curation', { projectId: this.projectId, data: this.browser, filePath: this.filePath});
     }
   }
 
   publicationPreview() {
     if (this.browser.project.value.projectType === 'experimental') {
-      this.$state.go('projects.preview', { projectId: this.browser.project.uuid, data: this.browser }).then(() => {
+      this.$state.go('projects.preview', { projectId: this.browser.project.uuid, data: this.browser}).then(() => {
         this.checkState();
       });
     } else if (this.browser.project.value.projectType === 'simulation') {
-      this.$state.go('projects.previewSim', { projectId: this.browser.project.uuid, data: this.browser }).then(() => {
+      this.$state.go('projects.previewSim', { projectId: this.browser.project.uuid, data: this.browser}).then(() => {
         this.checkState();
       });
     } else if (this.browser.project.value.projectType === 'hybrid_simulation') {
-      this.$state.go('projects.previewHybSim', { projectId: this.browser.project.uuid, data: this.browser }).then(() => {
+      this.$state.go('projects.previewHybSim', { projectId: this.browser.project.uuid, data: this.browser}).then(() => {
         this.checkState();
       });
     } else if (this.browser.project.value.projectType === 'other') {
-      this.$state.go('projects.previewOther', { projectId: this.browser.project.uuid, data: this.browser }).then(() => {
+      this.$state.go('projects.previewOther', { projectId: this.browser.project.uuid, data: this.browser}).then(() => {
         this.checkState();
       });
     } else if (this.browser.project.value.projectType === 'field_recon') {
-      this.$state.go('projects.previewFieldRecon', { projectId: this.browser.project.uuid, data: this.browser }).then(() => {
+      this.$state.go('projects.previewFieldRecon', { projectId: this.browser.project.uuid, data: this.browser}).then(() => {
         this.checkState();
       });
     }
