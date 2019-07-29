@@ -42,11 +42,15 @@
           </div>
         </div>
       </li>
-    </div>
-    <div ng-if="data.notifications.length == 0">
-      <li>
+      <li ng-if="data.notifications.length == 0">
         <div class="notification-item">You have no notifications.</div>
       </li>
+    </div>
+    <div ng-if="data.notifications.length > 0">
+      <li class="divider"></li>
+      <h3 class="clear-notifs" ng-click="delete('all')">
+        Clear all notifications
+      </h3>
     </div>
   </ul>
 </div>
