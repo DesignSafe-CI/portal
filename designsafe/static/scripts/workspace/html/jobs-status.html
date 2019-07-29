@@ -44,22 +44,31 @@
         <h3 class="modal-title">{{job.name}}</h3>
     </div>
     <div class="modal-body">
-        <div ng-if="job.lastStatusMessage" class="alert alert-warning">
-            <h4>Job status: {{job.status}}</h4>
+        <div ng-if="job.lastStatusMessage && job.status !== 'FINISHED'" class="alert" ng-class="{
+            'alert-danger': job.status==='FAILED' || job.status==='STOPPED' || job.status==='PAUSED',
+            'alert-warning' : job.status==='ACCEPTED' || job.status==='PENDING' || job.status==='PROCESSING_INPUTS'
+                            || job.status==='STAGING_INPUTS' || job.status==='STAGED' || job.status==='STAGING_JOB'
+                            || job.status==='SUBMITTING' || job.status==='QUEUED' || job.status==='RUNNING'
+                            || job.status==='CLEANING_UP' || job.status==='ARCHIVING' || job.status==='BLOCKED'
+        }">
+            <h4>Job Status: {{job.status}}</h4>
             <p>{{job.lastStatusMessage}}</p>
         </div>
         <dl>
             <dt>Application</dt>
             <dd>{{job.appId}}</dd>
 
+            <dt>Job ID</dt>
+            <dd>{{job.id}}</dd>
+
             <dt>Status</dt>
             <dd>{{job.status}}</dd>
 
             <dt>Submitted<dt>
-            <dd>{{job.remoteSubmitted | date:'medium'}}</dd>
+            <dd>{{job.created | date:'medium'}}</dd>
 
-            <dt>Finished<dt>
-            <dd>{{job.remoteEnded | date:'medium'}}</dd>
+            <dt>Finished</dt>
+            <dd>{{job.ended | date:'medium'}}</dd>
 
             <dt ng-if="job.archiveSystem">Output</dt>
             <dd ng-if="jobFinished && job.archiveSystem">
