@@ -64,7 +64,7 @@ export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djang
                     if (resp.data._embedded.metadata[i].name === 'interactiveJobDetails') {
                         const meta = resp.data._embedded.metadata[i];
                         $scope.data.interactive = true;
-                        $scope.data.connection_address = meta.value.extra.target_uri;
+                        $scope.data.connection_address = meta.value.action_link;
                         break;
                     }
                 }

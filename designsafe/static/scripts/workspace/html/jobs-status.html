@@ -92,12 +92,12 @@
     <div class="modal-body">
         <div class="alert">
             <p>To connect to your interactive session, click the button below.</p>
-            <p>To end the job, quit the application (e.g. MATLAB) within the session.</p>
+            <p>To end the job, quit the application within the session.</p>
             <p>Your files may take some time to appear in your archive directory after the job has completed.</p>
         </div>
     </div>
     <div class="modal-footer">
-        <a href="{{msg.extra.target_uri}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
+        <a href="{{msg.action_link}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
         <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
     </div>
 </script>
@@ -112,7 +112,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a href="{{msg.extra.address}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
+        <a href="{{msg.action_link}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
         <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
     </div>
 </script>

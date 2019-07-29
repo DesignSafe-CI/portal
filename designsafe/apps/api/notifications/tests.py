@@ -18,13 +18,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-FILEDIR_PENDING = os.path.join(os.path.dirname(__file__), './json/pending.json') 
+FILEDIR_PENDING = os.path.join(os.path.dirname(__file__), './json/pending.json')
 FILEDIR_SUBMITTING = os.path.join(os.path.dirname(__file__), './json/submitting.json')
-FILEDIR_PENDING2 = os.path.join(os.path.dirname(__file__), './json/pending2.json') 
+FILEDIR_PENDING2 = os.path.join(os.path.dirname(__file__), './json/pending2.json')
 
-webhook_body_pending = json.dumps(json.load(open(FILEDIR_PENDING))) 
-webhook_body_pending2 = json.dumps(json.load(open(FILEDIR_PENDING2))) 
-webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING))) 
+webhook_body_pending = json.dumps(json.load(open(FILEDIR_PENDING)))
+webhook_body_pending2 = json.dumps(json.load(open(FILEDIR_PENDING2)))
+webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING)))
 
 wh_url = reverse('designsafe_api:jobs_wh_handler')
 
@@ -71,7 +71,7 @@ class NotificationsTestCase(TestCase):
 
     def test_2_webhooks_same_status_same_jobId_should_give_1_notification(self):
         r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
-    
+
         #assert that sending the same status twice doesn't trigger a second notification.
         r2 = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
         self.assertEqual(Notification.objects.count(), 1)
@@ -80,7 +80,7 @@ class NotificationsTestCase(TestCase):
         r1 = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
 
         r2 = self.client.post(wh_url, webhook_body_submitting, content_type='application/json')
-        self.assertEqual(Notification.objects.count(), 2) 
+        self.assertEqual(Notification.objects.count(), 2)
 
     def test_2_webhooks_same_status_different_jobId_should_give_2_notifications(self):
 
@@ -146,7 +146,7 @@ class TestJobsWebhookView(TestCase):
         action_link = n.to_dict()['action_link']
         self.assertTrue(self.mock_agave.meta.addMetadata.called)
         self.assertEqual(action_link, link_from_event)
-        self.assertEqual(n.operation, 'vnc_session_start')
+        self.assertEqual(n.operation, 'web_link')
         self.assertEqual(response.status_code, 200)
 
     @patch('designsafe.apps.api.notifications.receivers.send_notification_ws')

@@ -20,7 +20,7 @@
     <div class="notifications-wrapper">
       <li ng-repeat="x in data.notifications">
         <div class="notification-item">
-          <a class="content" href="{{x.action_link}}">
+          <a class="content" href="{{x.action_link}}" ng-attr-target="{{ x.operation === 'web_link' ? '_blank' : undefined }}">
               <dl class="dl-horizontal">
                 <dt>{{x.datetime| date:'MMM dd, yyyy'}}<br>
                     {{x.datetime| date:'h:mm a'}}
