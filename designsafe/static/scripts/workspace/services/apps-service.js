@@ -173,7 +173,6 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
                         required: input.value.required,
                         'x-schema-form': { notitle: true },
                         title: input.details.label,
-                        description: input.details.description,
                         pattern: input.value.validator || undefined,
                     };
                     if (input.semantics.maxCardinality > 1) {

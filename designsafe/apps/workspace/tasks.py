@@ -111,8 +111,8 @@ def handle_webhook_request(job):
         # ag_job = ag.jobs.get(jobId=job_id)
 
         try:
-            job['submitTime'] = str(job['submitTime'])
-            job['endTime'] = str(job['endTime'])
+            job['remoteSubmitted'] = str(job['remoteSubmitted'])
+            job['ended'] = str(job['ended'])
         except KeyError as e:
             pass
 
@@ -200,7 +200,7 @@ def handle_webhook_request(job):
 
             with transaction.atomic():
                 last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
-            
+
                 should_notify = True
 
                 if last_notification:
@@ -215,8 +215,8 @@ def handle_webhook_request(job):
                     n = Notification.objects.select_for_update().create(**event_data)
                     n.save()
 
-                    logger.debug(n.pk)   
-            
+                    logger.debug(n.pk)
+
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
 
