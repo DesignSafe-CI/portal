@@ -141,11 +141,7 @@ class PublicationPreviewCtrl {
                     });
                     child.setEntities(this.projectId, entities);
                 });
-                if (this.browser.project.value.projectType != 'other') {
-                    this.createListings();
-                } else {
-                    this.loading = false;
-                }
+                this.createListings();
             });
         }
     }
