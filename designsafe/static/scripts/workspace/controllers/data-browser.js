@@ -23,6 +23,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
     };
 
     $scope.dataSourceUpdated = function dataSourceUpdated() {
+        $scope.data.error = null;
         $scope.data.filesListing = null;
         $scope.data.loading = true;
         $scope.data.filePath = '';
@@ -32,23 +33,19 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
 
         DataBrowserService.apiParams.fileMgr = $scope.data.system.fileMgr;
         DataBrowserService.apiParams.baseUrl = $scope.data.system.baseUrl;
-        DataBrowserService.browse({system: $scope.data.system.id, path: $scope.data.filePath})
+        DataBrowserService.browse({ system: $scope.data.system.id, path: $scope.data.filePath })
             .then(function(listing) {
                 $scope.data.filesListing = listing;
-
-                if ($scope.data.filesListing.children.length > 0) {
-                    if (listing.system === 'designsafe.storage.published' || listing.system === 'nees.public') {
-                        $scope.data.filePath = 'Published';
-                        $scope.data.dirPath = ['', 'Published'];
-                    } else {
-                        $scope.data.filePath = $scope.data.filesListing.path;
-                        $scope.data.dirPath = $scope.data.filePath.split('/');
-                    }
+                if ($scope.data.filesListing.path == '/') {
+                    $scope.data.dirPath = ['/'];
+                } else {
+                    $scope.data.filePath = $scope.data.filesListing.path;
+                    $scope.data.dirPath = $scope.data.filePath.split('/');
                 }
                 $scope.data.loading = false;
             }, function(err) {
                 logger.log(err);
-                $scope.data.error = 'Unable to list the selected data source: ' + err.statusText;
+                $scope.data.error = 'Unable to list the selected data source: ' + err.config.url;
                 $scope.data.loading = false;
             });
     };
@@ -98,15 +95,13 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
     $scope.browseTrail = function($event, index) {
         $event.stopPropagation();
         $event.preventDefault();
-        if ($scope.data.dirPath.length <= index + 1) {
-            return;
-        }
-        if (($scope.data.filesListing.system === 'designsafe.storage.published' ||
-            $scope.data.filesListing.system === 'nees.public') &&
-            $scope.data.dirPath.length === 1) {
-            $scope.data.dirPath = ['Published'];
+        $scope.data.error = null;
 
-            // Switch back to designsafe.storage.projects system when calling main projects listing
+        if (($scope.data.filesListing.system === 'designsafe.storage.published' ||
+            $scope.data.filesListing.system === 'nees.public') && index == 0 ){
+            $scope.data.dirPath = ['/'];
+
+        // Switch back to designsafe.storage.projects system when calling main projects listing
         } else if ($scope.data.filesListing.system.startsWith('project-') && index == 0) {
             $scope.data.filesListing.system = 'designsafe.storage.projects';
         }
@@ -124,7 +119,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
         }
         $scope.data.filesListing = null;
         $scope.data.loading = true;
-
+        $scope.data.error = null;
         // Fixes file object when created through 'browseTrail' for project dirs
         if (file.system.startsWith('project-')) {
             file.path = file.path.replace(/^(Projects\/([^/]+)[/]*)/, '');
@@ -137,10 +132,14 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
                 file.path = file.path.replace('Published', '');
             }
         }
-
+        if (file.system === 'designsafe.storage.published' && file.path !== '/') {
+            DataBrowserService.apiParams.fileMgr = 'published'
+        }
+        if ( (file.system === 'designsafe.storage.published' || file.system === 'nees.public') && file.path === '/') {
+            DataBrowserService.apiParams.fileMgr = 'public'
+        }
         DataBrowserService.browse(file)
             .then(function(listing) {
-                listing.path = listing.path.replace(/^\/*/, '');
                 $scope.data.filesListing = listing;
                 $scope.data.filePath = $scope.data.filesListing.path;
 
@@ -149,14 +148,20 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
                     if ($scope.data.dirPath.length == 1) {
                         $scope.data.dirPath = $scope.data.dirPath.concat([(file.name ? file.name : file.uuid)]);
                     } else {
+                        // Trim path
+                        $scope.data.filePath = $scope.data.filePath.replace(/^\/+/g, '');
                         $scope.data.dirPath = $scope.data.dirPath.slice(0, 2).concat($scope.data.filePath.split('/'));
                     }
                 } else if ($scope.data.system.id === 'designsafe.storage.published' || $scope.data.system.id === 'nees.public') {
+                    // Trim path
+                    $scope.data.filePath = $scope.data.filePath.replace(/^\/+/g, '');
                     if (file.system.includes('public') || file.system.includes('published')) {
-                        $scope.data.dirPath = $scope.data.dirPath.slice(0, 2).concat($scope.data.filePath.split('/'));
+                        $scope.data.dirPath = $scope.data.dirPath.slice(0, 1).concat($scope.data.filePath.split('/')).filter(x => x!== '');
                     } else {
                         $scope.data.dirPath = (file.name ? $scope.data.dirPath.concat(file.name) : $scope.data.filePath.split('/'));
                     }
+                } else if ($scope.data.filesListing.path == '/') {
+                    $scope.data.dirPath = ['/'];
                 } else {
                     $scope.data.dirPath = $scope.data.filePath.split('/');
                 }
@@ -164,7 +169,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
                 $scope.data.loading = false;
             }, function(error) {
                 logger.log(error);
-                $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
+                $scope.data.error = 'Unable to list the selected data source: ' + error.config.url;
                 $scope.data.loading = false;
             });
     };
@@ -183,6 +188,9 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
     };
 
     $scope.renderName = function(file) {
+        if (file.meta) {
+            return file.meta.title
+        }
         if (typeof file.metadata === 'undefined' ||
             file.metadata === null ||
             _.isEmpty(file.metadata)) {
@@ -202,7 +210,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
 
     $scope.chooseFile = function(file) {
         if ($scope.data.wants) {
-            $rootScope.$broadcast('provides-file', {requestKey: $scope.data.wants.requestKey, file: file});
+            $rootScope.$broadcast('provides-file', { requestKey: $scope.data.wants.requestKey, file: file });
         }
     };
 

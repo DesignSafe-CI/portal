@@ -33,9 +33,12 @@
                       ng-repeat-start="dirElem in data.dirPath track by $index"
                       class="text text-info">
                         <a href="#"
+                           ng-if="dirElem != '/' "
                            ng-click="browseTrail($event, $index)">{{dirElem}}</a>
+                        <a ng-if="(dirElem == '/' || dirElem == '') && data.system.id != 'designsafe.storage.default' && $first"
+                            ng-click="browseTrail($event, $index)">{{data.system.name}}</a>
                      </span>
-                     <span ng-if="dirElem!=='' && $first">/</span>
+                     <span ng-if="data.system.id != 'designsafe.storage.default' && $first">/</span>
                       <span ng-repeat-end
                             ng-if="!$last && !$first">/</span>
                 </caption>
