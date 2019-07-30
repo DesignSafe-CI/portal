@@ -191,6 +191,7 @@ class DataDepotPublishedView(TemplateView):
         logger.info('Get context Data')
         pub = BaseESPublication(project_id=kwargs['project_id'].strip('/'))
         logger.debug('pub: %s', pub.to_dict())
+        context['projectId'] = pub.projectId
         context['citation_title'] = pub.project.value.title
         context['citation_date'] = pub.created
         context['doi'] = pub.project.doi
@@ -228,6 +229,7 @@ class DataDepotLegacyPublishedView(TemplateView):
         nees_id = kwargs['project_id'].strip('.groups').strip('/')
         logger.debug('nees_id: %s', nees_id)
         pub = BaseESPublicationLegacy(nees_id=nees_id)
+        context['neesId'] = nees_id.split('/')[0]
         context['citation_title'] = pub.title
         context['citation_date'] = getattr(pub, 'startDate', '')
         experiments = getattr(pub, 'experiments')
