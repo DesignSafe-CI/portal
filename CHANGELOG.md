@@ -1,6 +1,30 @@
 # DesignSafe-CI Portal Release Notes
 
-## v4.5.-20190701
+## v4.5.-20190703
+
+Improvements:
+
+- Field Recon publishing pipeline.
+- Show published project's citations and awards.
+- Add community data to workspace.
+- Add PRJ column and removing icon from project name listing.
+- Add interactive webhook security.
+
+Fixes:
+
+- Various template bug fixes.
+- Fix formatting and rendering issues on edit project modal.
+- Update project mapping for ES.
+- Update canonical URL for sitemap.
+- Improve job notification implementation.
+
+## v4.5.2-20190702
+
+Improvements:
+
+- Field recon model UI improvements.
+
+## v4.5.0-20190701
 
 Improvements:
 
