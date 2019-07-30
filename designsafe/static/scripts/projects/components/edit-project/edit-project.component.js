@@ -333,8 +333,10 @@ class EditProjectCtrl {
                 if (!g.user) {
                     g.user = "guest" + g.fname + g.lname.charAt(0) + i;
                 }
+                if (g.lname && g.fname) {
+                    projectData.guestMembers.push(g);
+                }
             });
-            projectData.guestMembers = this.form.guests;
         }
         if (this.form.awardPrune) {
             projectData.awardNumber = this.form.awardPrune;

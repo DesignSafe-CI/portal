@@ -2679,8 +2679,16 @@ input[type="search"] {
     line-height: 46px;
   }
 }
+.project-form-input {
+  height: 32px;
+  margin-bottom: 2px;
+  padding-left: 5px;
+}
+.project-form-name {
+  width:49%;
+}
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 .radio,
 .checkbox {
