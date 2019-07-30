@@ -720,6 +720,20 @@ table td {
   margin: 0 auto;
 }
 
+.clear-notifs {
+  cursor: pointer;
+  padding: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color:#337ab7;
+  margin: 0;
+}
+
+.clear-notifs:hover {
+  background:#f7f7f7;
+}
+
 @media (max-width: 767px) {
   .notifications {
     left: -6.5em;
@@ -848,7 +862,7 @@ li .popover.right {
   position:absolute;
   z-index: 1;
   top: -.1em;
-  right: -.5em;  
+  right: -.5em;
   bottom: 0;
   width: 3em;
   background: #303030;

@@ -190,7 +190,7 @@ def call_api(request, service):
                     job_post['notifications'] = [
                         {'url': jobs_wh_url,
                         'event': e}
-                        for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
+                        for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED", "BLOCKED"]]
 
                     try:
                         data = submit_job(request, request.user.username, job_post)
