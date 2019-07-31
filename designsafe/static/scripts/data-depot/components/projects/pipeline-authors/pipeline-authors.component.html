@@ -72,6 +72,11 @@
             <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
+    <!-- Success Alert -->
+    <div class="alert alert-success text-center" ng-if="$ctrl.saved">
+        <h4>Success</h4>
+        Your author order has been saved.
+    </div>
     <!-- Citation Preview -->
     <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
     <div class="well" style="margin-bottom:20px">
@@ -126,8 +131,7 @@
                     <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderAuthors(false)"></i>
                 </td>
                 <td>
-                    <button class="btn btn-small btn-add" ng-if="!$ctrl.saved" ng-click="$ctrl.saveAuthors()">Save</button>
-                    <button class="btn btn-small btn-add" ng-if="$ctrl.saved" disabled>Authors Saved</button>
+                    <button class="btn btn-small btn-add" ng-click="$ctrl.saveAuthors()">Save</button>
                 </td>
             </tr>
         </table>
