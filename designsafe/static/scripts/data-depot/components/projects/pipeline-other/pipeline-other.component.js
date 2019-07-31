@@ -22,6 +22,12 @@ class PipelineOtherCtrl {
 
         this.browser.project = this.project;
         this.browser.listing = this.selectedListings;
+        this.fl = {
+            showSelect: false,
+            showHeader: true,
+            showTags: true,
+            editTags: false,
+        };
 
         if (!this.project) {
             /*

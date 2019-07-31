@@ -19,88 +19,20 @@ class ProjectViewCtrl {
     this.filePath = this.ProjectService.resolveParams.filePath;
     this.data = this.ProjectService.resolveParams.data;
     this.loading = true;
-
-    this.createListings = () => {
-      this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }).then((entities) => {
-        var allFilePaths = [];
-        this.browser.listings = {};
-        var apiParams = {
-          fileMgr: 'agave',
-          baseUrl: '/api/agave/files',
-          searchState: 'projects.view.data',
-        };
-        entities.forEach((entity) => {
-          this.browser.listings[entity.uuid] = {
-            name: this.browser.listing.name,
-            path: this.browser.listing.path,
-            system: this.browser.listing.system,
-            trail: this.browser.listing.trail,
-            children: [],
-          };
-          allFilePaths = allFilePaths.concat(entity._filePaths);
-        });
-        this.setFilesDetails = (paths) => {
-          let filePaths = [...new Set(paths)];
-          var p = this.$q((resolve, reject) => {
-            var results = [];
-            var index = 0;
-            var size = 5;
-            var fileCalls = filePaths.map(filePath => {
-              return this.FileListing.get(
-                { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
-              ).then((resp) => {
-                if (!resp) {
-                  return;
-                }
-                var allEntities = this.browser.project.getAllRelatedObjects();
-                var entities = allEntities.filter((entity) => {
-                  return entity._filePaths.includes(resp.path);
-                });
-                entities.forEach((entity) => {
-                  resp._entities.push(entity);
-                  this.browser.listings[entity.uuid].children.push(resp);
-                });
-                return resp;
-              });
-            });
-
-            var step = () => {
-              var calls = fileCalls.slice(index, (index += size));
-              if (calls.length) {
-                this.$q.all(calls)
-                  .then((res) => {
-                    results.concat(res);
-                    step();
-                    return res;
-                  })
-                  .catch(reject);
-              } else {
-                resolve(results);
-              }
-            };
-            step();
-          });
-          return p.then(
-            (results) => {
-              this.loading = false;
-              return results;
-            },
-            (err) => {
-              this.loading = false;
-              this.browser.ui.error = err;
-            });
-        };
-        this.setFilesDetails(allFilePaths);
-      });
+    this.fl = {
+      showSelect: true,
+      showHeader: true,
+      showTags: true,
+      editTags: false,
     };
 
-    if (this.data) {
+    if (typeof this.browser.listings != 'undefined') {
+      delete this.browser.listings;
+    }
+
+    if (this.data && this.data.listing.path == this.filePath) {
       this.browser = this.data;
-      if (typeof this.browser.listings === 'undefined') {
-        this.createListings();
-      } else {
-        this.loading = false;
-      }
+      this.loading = false;
     } else {
       this.$q.all([
         this.ProjectService.get({ uuid: this.projectId }),
@@ -126,11 +58,7 @@ class ProjectViewCtrl {
           });
           child.setEntities(this.projectId, entities);
         });
-        if (this.browser.project.value.projectType != 'other') {
-          this.createListings();
-        } else {
-          this.loading = false;
-        }
+        this.loading = false;
       });
     }
   }

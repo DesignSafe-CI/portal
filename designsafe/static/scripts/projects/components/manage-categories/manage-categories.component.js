@@ -16,8 +16,8 @@ class ManageCategoriesCtrl {
 
     $onInit() {
         this.browser = this.resolve.browser;
+        this.edit = this.resolve.edit;
         this.browser.categories = [];
-
         this.form = {
             tagSelected: '',
             projectTagToAdd: {
@@ -35,8 +35,18 @@ class ManageCategoriesCtrl {
             hybridSim: false,
             showEditCategory: false,
         };
+        this.fl = {
+            showSelect: false,
+            showHeader: false,
+            showTags: true,
+            editTags: false,
+        };
 
-        this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }).then((entities) => {
+        if (this.edit) {
+            this.editCategory(this.edit);
+            this.ui.loading = false;
+        } else {
+            let entities = this.browser.project.getAllRelatedObjects();
             var allFilePaths = [];
             this.browser.listings = {};
             var apiParams = {
@@ -97,16 +107,16 @@ class ManageCategoriesCtrl {
                 });
                 return p.then(
                     (results) => {
-                        this.loading = false;
+                        this.ui.loading = false;
                         return results;
                     },
                     (err) => {
-                        this.loading = false;
+                        this.ui.loading = false;
                         this.browser.ui.error = err;
                     });
             };
             this.setFilesDetails(allFilePaths);
-        });
+        }
 
         if (this.browser.project.value.projectType === 'experimental') {
             this.ui.experimental = true;
@@ -222,10 +232,9 @@ class ManageCategoriesCtrl {
             ];
         }
 
-        if (this.browser.edit) {
-            this.editCategory(this.browser.edit);
-        }
-        this.ui.loading = false;
+        // if (this.edit) {
+        //     this.editCategory(this.edit);
+        // }
     }
 
     dropEntity(group) {

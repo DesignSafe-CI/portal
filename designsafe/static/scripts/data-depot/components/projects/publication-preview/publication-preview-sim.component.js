@@ -21,13 +21,16 @@ class PublicationPreviewSimCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.data = this.ProjectService.resolveParams.data;
-
         this.ui = {
             fileNav: true,
             loading: true
         };
-
-        window.sessionStorage.clear();
+        this.fl = {
+            showSelect: false,
+            showHeader: false,
+            showTags: true,
+            editTags: false,
+        };
 
         if (this.filePath === '/') {
             this.ui.fileNav = false;
@@ -107,7 +110,7 @@ class PublicationPreviewSimCtrl {
             });
         };
 
-        if (this.data) {
+        if (this.data && this.data.listing.path == this.filePath) {
             this.browser = this.data;
             if (typeof this.browser.listings === 'undefined') {
                 this.createListings();
@@ -139,7 +142,11 @@ class PublicationPreviewSimCtrl {
                     });
                     child.setEntities(this.projectId, entities);
                 });
-                this.createListings();
+                if (typeof this.browser.listings == 'undefined') {
+                    this.createListings();
+                } else {
+                    this.ui.loading = false;
+                }
             });
         }
     }

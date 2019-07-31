@@ -63,13 +63,13 @@
         </div>
         <div class="well" style="margin-bottom: 20px;" ng-hide="$ctrl.ui.loading || !$ctrl.selectedFiles.children.length">
             <h4>These files will be published:</h4>
-            <files-listing browser="$ctrl.browser" files-list="$ctrl.selectedFiles" category-listing="true"></files-listing>
+            <files-listing browser="$ctrl.browser" files-list="$ctrl.selectedFiles" params="$ctrl.flSelected"></files-listing>
         </div>
         <div ng-hide="$ctrl.ui.loading" style="text-align: center;">
             <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
         </div>
         <div ng-hide="$ctrl.ui.loading">
-            <files-listing browser="$ctrl.browser"></files-listing>
+            <files-listing browser="$ctrl.browser" params="$ctrl.fl"></files-listing>
         </div>
     </div>
 </div>

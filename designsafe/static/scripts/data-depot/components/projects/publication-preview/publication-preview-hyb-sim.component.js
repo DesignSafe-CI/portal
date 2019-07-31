@@ -21,10 +21,15 @@ class PublicationPreviewHybSimCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.data = this.ProjectService.resolveParams.data;
-
         this.ui = {
             fileNav: true,
             loading: true
+        };
+        this.fl = {
+            showSelect: false,
+            showHeader: false,
+            showTags: true,
+            editTags: false,
         };
 
         window.sessionStorage.clear();
@@ -107,7 +112,7 @@ class PublicationPreviewHybSimCtrl {
             });
         };
 
-        if (this.data) {
+        if (this.data && this.data.listing.path == this.filePath) {
             this.browser = this.data;
             if (typeof this.browser.listings === 'undefined') {
                 this.createListings();
@@ -139,7 +144,11 @@ class PublicationPreviewHybSimCtrl {
                     });
                     child.setEntities(this.projectId, entities);
                 });
-                this.createListings();
+                if (typeof this.browser.listings == 'undefined') {
+                    this.createListings();
+                } else {
+                    this.ui.loading = false;
+                }
             });
         }
     }

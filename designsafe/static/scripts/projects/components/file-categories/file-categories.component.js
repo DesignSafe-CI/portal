@@ -41,6 +41,8 @@ class FileCategoriesCtrl {
             busy: true,
             error: false,
             isOther: this.project.value.projectType === 'other',
+            showTags: this.showTags || false,
+            editTags: this.editTags || false,
         };
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
         getFileUuid(this.file).finally( ()=>{
@@ -241,7 +243,7 @@ export const FileCategoriesComponent = {
     bindings: {
         project: '=',
         file: '=',
-        categoryListing: '=',
-        tagListing: '=',
+        showTags: '=',
+        editTags: '=',
     },
 };

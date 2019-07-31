@@ -22,11 +22,15 @@ class PublicationPreviewOtherCtrl {
         this.project = this.ProjectService.resolveParams.project;
         this.listings = this.ProjectService.resolveParams.selectedListings;
         this.data = this.ProjectService.resolveParams.data;
-
         this.ui = {
             loading: true,
         };
-        window.sessionStorage.clear();
+        this.fl = {
+            showSelect: false,
+            showHeader: false,
+            showTags: true,
+            editTags: false,
+        };
 
         if (!this.data || this.data.listing.path != this.filePath) {
             this.$q.all([

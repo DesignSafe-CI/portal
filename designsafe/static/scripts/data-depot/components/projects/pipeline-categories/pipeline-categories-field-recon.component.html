@@ -97,7 +97,7 @@
                         <span ng-click="$ctrl.editCategory(report)"><a>Edit</a></span>
                     </div>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
     </div>
@@ -187,7 +187,7 @@
                         <span ng-click="$ctrl.editCollection(collection)"><a>Edit</a></span>
                     </div>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-listing="true"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
     </div>

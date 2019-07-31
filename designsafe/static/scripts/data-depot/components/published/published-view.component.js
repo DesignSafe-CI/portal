@@ -56,6 +56,12 @@ class PublishedViewCtrl {
                     this.browser.publication = resp.data;
                     this.browser.project = resp.data.project;
                     this.project = resp.data.project;
+                    this.fl = {
+                        showSelect: false,
+                        showHeader: this.browser.project.value.projectType === 'other',
+                        showTags: true,
+                        editTags: false,
+                    };
 
                     if (this.browser.publication.project.value.projectType === 'experimental') {
                         if (typeof this.browser.publication.analysisList != 'undefined') {

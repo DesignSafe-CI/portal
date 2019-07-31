@@ -123,7 +123,7 @@
         </h3>
     </div>
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
-        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
+        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" params="$ctrl.fl"></files-listing>
     </div>
     <div ng-if="!$ctrl.ui.fileNav">
         <!-- Project Reports -->
@@ -187,7 +187,7 @@
                     <div class="well" ng-if="report.value.description">
                         <p>{{ report.value.description }}</p>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
                 </div>
             </div>
         </div>
@@ -320,7 +320,7 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
                                 </div>
                             </div>
                         </div>
@@ -409,7 +409,7 @@
                                             <p>{{ collection.value.description }}</p>
                                         </div>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
                                 </div>
                             </div>
                         </div>

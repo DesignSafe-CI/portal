@@ -17,7 +17,22 @@ class FilesListingCtrl {
     }
 
     $onInit() {
-        this._ui = { loading: false, error: false };
+        if (typeof this.params === 'undefined') {
+            this.params = {
+                showSelect: true,
+                showHeader: true,
+                showTags: false,
+                editTags: false,
+            };
+        }
+        this._ui = {
+            loading: false,
+            error: false,
+            showSelect: this.params.showSelect,
+            showHeader: this.params.showHeader,
+            showTags: this.params.showTags,
+            editTags: this.params.editTags,
+        };
         this.state = this.DataBrowserService.state();
         this.bread = (path, system) => {
             if (!path) {
@@ -35,55 +50,15 @@ class FilesListingCtrl {
                 this.breadcrumbs.shift();
             }
         };
-        this.allowSelect = true;
-        this.previewMode = () => {
-            return this.$state.current.name.indexOf('projects.preview') === 0;
-        };
-        this.curationMode = () => {
-            return this.$state.current.name === 'projects.curation';
-        };
-        this.categoryList = () => {
-            return (typeof this.categoryListing != 'undefined' && this.categoryListing);
-        };
-        this.categorySelect = () => {
-            return (typeof this.categorySelection != 'undefined' && this.categorySelection);
-        };
         this.listing = () => {
-            if (this.categoryList() && (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList))) {
-                return;
-            }
-            if (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList)){
-                if (typeof this.browser.listing !== 'undefined' && this.browser.listing !== null) {
-                    this.bread(this.browser.listing.path, this.browser.listing.system);
-                }
-                this.allowSelect = true;
+            if (this.filesList != null && typeof this.filesList != 'undefined') {
+                this.bread(this.filesList.path, this.filesList.system);
+                return this.filesList;
+            } else if (this.browser.listing != null && typeof this.browser.listing != 'undefined') {
+                this.bread(this.browser.listing.path, this.browser.listing.system);
                 return this.browser.listing;
             }
-            this.allowSelect = false;
-            this.bread(this.filesList.path, this.filesList.system);
-            return this.filesList;
         };
-    }
-
-    showFileCategories() {
-        return (
-            this.browser.project &&
-            !this.browser.loadingEntities
-        );
-    }
-
-    tagListing() {
-        return this.$state.current.name !== 'projects.curation';
-    }
-
-    showFileCategorySelector() {
-        return (
-            this.browser.project &&
-            this.browser.project.value.projectType != 'other' &&
-            !this.browser.loadingEntities &&
-            !this.categoryList() &&
-            this.curationMode()
-        );
     }
 
     breadcrumbBrowse($event, path) {
@@ -254,8 +229,7 @@ export const FilesListingComponent = {
     bindings: {
         browser: '=',
         filesList: '=',
-        categoryListing: '=',
-        categorySelection: '=',
+        params: '<',
     },
 };
 

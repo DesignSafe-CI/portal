@@ -20,6 +20,18 @@ class PipelineSelectionOtherCtrl {
         this.ui = {
             loading: true,
         };
+        this.fl = {
+            showSelect: true,
+            showHeader: true,
+            showTags: true,
+            editTags: false,
+        };
+        this.flSelected = {
+            showSelect: false,
+            showHeader: true,
+            showTags: true,
+            editTags: false,
+        };
         
         this.$q.all([
             this.ProjectService.get({ uuid: this.projectId }),

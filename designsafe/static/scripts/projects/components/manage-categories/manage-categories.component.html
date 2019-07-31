@@ -391,7 +391,7 @@
                                 <span ng-click="$ctrl.deleteCategory(modelConf)"><a>Delete </a></span>
                             </div>
                         </div>
-                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConf.uuid]"></files-listing>
+                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConf.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -419,7 +419,7 @@
                                 <span ng-click="$ctrl.deleteCategory(sensorInfo)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorInfo.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorInfo.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -447,7 +447,7 @@
                                 <span ng-click="$ctrl.deleteCategory(event)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -475,7 +475,7 @@
                                 <span ng-click="$ctrl.deleteCategory(model)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -503,7 +503,7 @@
                                 <span ng-click="$ctrl.deleteCategory(input)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -531,7 +531,7 @@
                                 <span ng-click="$ctrl.deleteCategory(output)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -559,7 +559,7 @@
                                 <span ng-click="$ctrl.deleteCategory(gm)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[gm.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[gm.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -587,7 +587,7 @@
                                 <span ng-click="$ctrl.deleteCategory(coordinator)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -615,7 +615,7 @@
                                 <span ng-click="$ctrl.deleteCategory(simsub)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -643,7 +643,7 @@
                                 <span ng-click="$ctrl.deleteCategory(expsub)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -671,7 +671,7 @@
                                 <span ng-click="$ctrl.deleteCategory(cout)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -699,7 +699,7 @@
                                 <span ng-click="$ctrl.deleteCategory(eout)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -727,7 +727,7 @@
                                 <span ng-click="$ctrl.deleteCategory(sout)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -766,7 +766,7 @@
                                 <span ng-click="$ctrl.deleteCategory(analysis)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
@@ -794,7 +794,7 @@
                                 <span ng-click="$ctrl.deleteCategory(report)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
