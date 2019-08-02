@@ -207,7 +207,7 @@
                         <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
                     </td>
                     <td style="width: 10%; text-align: center;">
-                        <a ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                        <a ng-if="!$ctrl.preview" ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
                     </td>
                     <td style="width: 20%;">
                         <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('experiment')">
@@ -400,7 +400,7 @@
                         <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
                     </td>
                     <td style="width: 10%; text-align: center;">
-                        <a ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                        <a ng-if="!$ctrl.preview" ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
                     </td>
                     <td style="width: 20%;">
                         <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('simulation')">

@@ -16,9 +16,14 @@ class ManageProjectTypeCtrl {
     $onInit() {
         this.project = this.resolve.options.project;
         this.warning = this.resolve.options.warning;
+        this.preview = this.resolve.options.preview;
         this.prjType = '';
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
         this.slide = 'type';
+        if (this.preview) {
+            this.prjType = this.project.value.projectType;
+            this.slide = 'overview';
+        }
     }
 
     continue(slide) {
@@ -26,7 +31,9 @@ class ManageProjectTypeCtrl {
     }
 
     finish() {
-        if (this.prjType) {
+        if (this.preview) {
+            this.close();
+        } else if (this.prjType) {
             this.loading = true;
             var projectData = {};
             projectData.projectType = this.prjType;

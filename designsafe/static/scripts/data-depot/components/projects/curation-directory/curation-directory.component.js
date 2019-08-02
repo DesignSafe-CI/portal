@@ -180,6 +180,16 @@ class CurationDirectoryCtrl {
         this.ProjectService.editProject(this.browser.project);
     }
 
+    overview() {
+        this.$uibModal.open({
+            component: 'manageProjectType',
+            resolve: {
+                options: () => { return {'project': this.browser.project, 'preview': true, 'warning': false}; },
+            },
+            size: 'lg',
+        });
+    }
+
     manageExperiments() {
         // need to data when this is closed (not working atm)
         var experimentsAttr = this.browser.project.getRelatedAttrName('designsafe.project.experiment');
