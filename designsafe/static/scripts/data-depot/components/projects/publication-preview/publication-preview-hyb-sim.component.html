@@ -1,6 +1,6 @@
 <div style="background:white;">
     <!-- Project Header Start -->
-    <div>
+    <div ng-if="!$ctrl.ui.loading">
         <div>
             <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
             <a class="edit-link" data-ng-if="!$ctrl.readOnly" ng-click="$ctrl.editProject($event)">Edit Project</a>
@@ -59,7 +59,7 @@
             <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects">
                 <td ng-if="$first">Related Work</td>
                 <td ng-if="!$first"></td>
-                <td><strong>{{ work.title }} | <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.href }}</a></strong></td>
+                <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
             </tr>
             <tr class="prj-row">
                 <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
@@ -72,7 +72,7 @@
     </div>
     <!-- Project Header End -->
     <table class="tg" style="table-layout: fixed; width: 100%;"
-           data-ng-if="!$ctrl.readOnly">
+           data-ng-if="!$ctrl.readOnly && !$ctrl.ui.loading">
         <colgroup>
             <col style="width: 46%">
             <col style="width: 50%">
@@ -81,26 +81,26 @@
             <td class="tg-0lax">
                 <button class="btn btn-project-l grayed-out"
                         ng-click="$ctrl.goWork()"
-                        ng-disabled="$ctrl.loading"
+                        ng-disabled="$ctrl.ui.loading"
                 >
                     Working Directory
                 </button>
                 <button class="btn btn-project-m grayed-out"
                         ng-click="$ctrl.goCuration()"
-                        ng-disabled="$ctrl.loading"
+                        ng-disabled="$ctrl.ui.loading"
                 >
                     Curation Directory
                 </button>
                 <button class="btn btn-project-r"
                         ng-click="publicationPreview()"
-                        ng-disabled="$ctrl.loading"
+                        ng-disabled="$ctrl.ui.loading"
                 >
                     Publication Preview
                 </button>
             </td>
             <td class="tg-0lax">
                 <div class="btn-group pull-right" role="group" aria-label="Publish buttons">
-                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-disabled="$ctrl.loading">
+                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-disabled="$ctrl.ui.loading">
                         Prepare to Publish <i class="fa fa-arrow-right"></i>
                     </button>
                 </div>
@@ -109,13 +109,13 @@
     </table>
     <br>
     <!-- Hybrid Sims -->
-    <div ng-show="$ctrl.loading">
+    <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
             <i class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
     <!-- Project Reports -->
-    <div ng-hide="$ctrl.loading"
+    <div ng-hide="$ctrl.ui.loading"
          ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
          ng-if="$ctrl.matchingGroup(hybsim, report)"
     >
@@ -136,11 +136,14 @@
                 <div class="well" ng-if="report.value.description">
                     <p>{{ report.value.description }}</p>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
     </div>
-    <div ng-hide="$ctrl.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
+    <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
+        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" params="$ctrl.fl"></files-listing>
+    </div>
+    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
         <div style="margin-bottom: 2px;">
             <a data-ng-click="$ctrl.treeDiagram(hybsim)">
                 <strong>View Data Diagram</strong>
@@ -223,10 +226,7 @@
                     <p>
                         <br>{{ hybsim.value.description }}
                     </p>
-                    <div ng-if="$ctrl.fileNav">
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" category-listing="!$ctrl.readOnly"></files-listing>
-                    </div>
-                    <div ng-if="!$ctrl.fileNav">
+                    <div>
                         <!-- Hybrid Reports -->
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
                             ng-if="$ctrl.matchingGroup(hybsim, report)"
@@ -248,7 +248,7 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
                                 </div>
                             </div>
                         </div>
@@ -274,7 +274,7 @@
                                     <div class="well" ng-if="model.value.description">
                                         <p>{{ model.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl"></files-listing>
                                 </div>
                             </div>
                             <!-- Coordinator -->
@@ -310,7 +310,7 @@
                                                 <div class="well" ng-if="coordinator.value.description">
                                                     <p>{{ coordinator.value.description }}</p>
                                                 </div>
-                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" params="$ctrl.fl"></files-listing>
                                             </div>
                                             </td>
                                         </tr>
@@ -347,7 +347,7 @@
                                                             <div class="well" ng-if="cout.value.description">
                                                                 <p>{{ cout.value.description }}</p>
                                                             </div>
-                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" params="$ctrl.fl"></files-listing>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -391,7 +391,7 @@
                                                             <div class="well" ng-if="simsub.value.description">
                                                                 <p>{{ simsub.value.description }}</p>
                                                             </div>
-                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" params="$ctrl.fl"></files-listing>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -435,7 +435,7 @@
                                                                     <div class="well" ng-if="sout.value.description">
                                                                         <p>{{ sout.value.description }}</p>
                                                                     </div>
-                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" params="$ctrl.fl"></files-listing>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -482,7 +482,7 @@
                                                             <div class="well" ng-if="expsub.value.description">
                                                                 <p>{{ expsub.value.description }}</p>
                                                             </div>
-                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]"></files-listing>
+                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" params="$ctrl.fl"></files-listing>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -526,7 +526,7 @@
                                                                     <div class="well" ng-if="eout.value.description">
                                                                         <p>{{ eout.value.description }}</p>
                                                                     </div>
-                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]"></files-listing>
+                                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" params="$ctrl.fl"></files-listing>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -570,12 +570,12 @@
                                             <tr ng-repeat="ref in analysis.value.refs">
                                                 <td class="tg-0lax" ng-if="$first">Referenced Work</td>
                                                 <td class="tg-0lax" ng-if="!$first"></td>
-                                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.referencedoi }}</a></strong></td>
+                                                <td class="tg-0lax"><strong><a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.reference }}</a></strong></td>
                                             </tr>
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-listing="!$ctrl.readOnly"></files-listing>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>
                                 </div>
                             </div>
                         </div>

@@ -177,16 +177,6 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
         return missingData;
     };
 
-    service.manageCategories = (options) => {
-        $uibModal.open({
-            component: 'manageCategories',
-            resolve: {
-                options: () => options,
-            },
-            size: 'lg',
-        });
-    };
-
     service.manageHybridSimulations = (options) => {
         $uibModal.open({
             component: 'manageHybridSimulations',

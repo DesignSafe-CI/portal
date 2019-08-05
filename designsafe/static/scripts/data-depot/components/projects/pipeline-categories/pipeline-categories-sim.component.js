@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 class PipelineCategoriesSimCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q) {
+    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
@@ -11,6 +11,7 @@ class PipelineCategoriesSimCtrl {
         this.DataBrowserService = DataBrowserService;
         this.browser = this.DataBrowserService.state();
         this.FileListing = FileListing;
+        this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;
     }
@@ -21,7 +22,12 @@ class PipelineCategoriesSimCtrl {
         this.simulation = this.ProjectService.resolveParams.experiment;
         this.browser.project = this.ProjectService.resolveParams.project;
         this.browser.listings = this.ProjectService.resolveParams.selectedListings;
-
+        this.fl = {
+            showSelect: false,
+            showHeader: false,
+            showTags: true,
+            editTags: false,
+        };
 
         if (!this.browser.project) {
             /*
@@ -58,7 +64,14 @@ class PipelineCategoriesSimCtrl {
     }
 
     editCategory(selection) {
-        this.ProjectService.manageCategories({'project': this.browser.project, 'selectedListings': this.browser.listings, 'edit': selection});
+        this.$uibModal.open({
+            component: 'manageCategories',
+            resolve: {
+                browser: () => this.browser,
+                edit: () => selection,
+            },
+            size: 'lg',
+        });
     }
 
     matchingGroup(sim, model) {
@@ -75,8 +88,6 @@ class PipelineCategoriesSimCtrl {
         }
     }
 }
-
-PipelineCategoriesSimCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$state', '$q'];
 
 export const PipelineCategoriesSimComponent = {
     template: PipelineCategoriesSimTemplate,

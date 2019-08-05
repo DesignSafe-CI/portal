@@ -79,13 +79,13 @@
         </p>
     </div>
         <!-- Experiments -->
-        <div ng-show="$ctrl.loading">
+        <div ng-show="$ctrl.ui.loading">
             <h3 class="text-center">
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
         <!-- Reports -->
-        <div ng-hide="$ctrl.loading"
+        <div ng-hide="$ctrl.ui.loading"
              ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
              ng-if="$ctrl.matchingGroup(experiment, report)"
         >
@@ -111,7 +111,7 @@
                 </div>
             </div>
         </div>
-        <div ng-hide="$ctrl.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
+        <div ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
             <div class="dropdown dropdown-spacer-lg" id="details-{{experiment.uuid}}">
                 <a ng-click="$ctrl.selectExperiment(experiment)">Select this Experiment and all of its files</a>
                 <span ng-if="$ctrl.selectedExp.uuid === experiment.uuid"><i class="fa fa-check" style="color: #1CB500;"></i></span>
@@ -353,7 +353,7 @@
                                             <tr ng-repeat="ref in analysis.value.refs">
                                                 <td class="tg-0lax" ng-if="$first">Referenced Work</td>
                                                 <td class="tg-0lax" ng-if="!$first"></td>
-                                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.referencedoi }}</a></strong></td>
+                                                <td class="tg-0lax"><strong><a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.reference }}</a></strong></td>
                                             </tr>
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
