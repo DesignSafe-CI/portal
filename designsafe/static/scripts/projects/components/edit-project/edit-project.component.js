@@ -3,12 +3,13 @@ import _ from 'underscore';
 
 class EditProjectCtrl {
 
-    constructor(ProjectService, UserService, httpi, ProjectModel, $state) {
+    constructor(ProjectService, UserService, httpi, ProjectModel, $uibModal, $state) {
         'ngInject';
         this.ProjectService = ProjectService;
         this.UserService = UserService;
         this.httpi = httpi;
         this.ProjectModel = ProjectModel;
+        this.$uibModal = $uibModal;
         this.$state = $state;
     }
 
@@ -225,7 +226,13 @@ class EditProjectCtrl {
     }
 
     type (warn) {
-        this.ProjectService.manageProjectType({'project': this.project, 'warning': warn});
+        this.$uibModal.open({
+            component: 'manageProjectType',
+            resolve: {
+                options: () => { return {'project': this.project, 'warning': warn}; },
+            },
+            size: 'lg',
+        });
         this.close();
     }
 
