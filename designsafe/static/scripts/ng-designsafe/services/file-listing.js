@@ -27,6 +27,12 @@ export function FileListing($http, $q) {
         if (typeof this._entityTags === 'undefined'){
             this._entityTags = [];
         }
+        if (this.name && this.type == 'file'){
+            let nameComps = this.name.split('.');
+            this.ext = nameComps[nameComps.length - 1];
+        } else {
+            this.ext = '';
+        }
     }
 
     FileListing.prototype.setEntities = function(projectId, entities){

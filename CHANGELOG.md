@@ -1,6 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
-## v4.5.-20190703
+## v4.5.0-20190801
+
+Fixes:
+
+- Change 'This category is empty' legend (DES-436)
+
+## v4.5.0-20190703
 
 Improvements:
 

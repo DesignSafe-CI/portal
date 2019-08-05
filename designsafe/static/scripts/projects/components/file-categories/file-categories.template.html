@@ -35,7 +35,10 @@
                                 <select name="project-file-tags"
                                         data-ng-model="$ctrl.selectedFileTag[entity.uuid]"
                                         class="form-control project-file-tags-select">
-                                    <option value="">
+                                    <option value="" data-ng-if="$ctrl.fileTagsForEntity(entity).name == 'Analysis'">
+                                        -- Select an {{$ctrl.fileTagsForEntity(entity).name}} File Tag --
+                                    </option>
+                                    <option value="" data-ng-if="$ctrl.fileTagsForEntity(entity).name != 'Analysis'">
                                         -- Select a {{$ctrl.fileTagsForEntity(entity).name}} File Tag --
                                     </option>
                                     <optgroup data-ng-repeat="(tagName, tags) in $ctrl.fileTagsForEntity(entity).tags"
