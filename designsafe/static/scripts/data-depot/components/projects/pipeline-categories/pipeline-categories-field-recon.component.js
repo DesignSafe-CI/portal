@@ -20,7 +20,12 @@ class PipelineCategoriesFieldReconCtrl {
         this.mission = this.ProjectService.resolveParams.experiment;
         this.browser.project = this.ProjectService.resolveParams.project;
         this.browser.listings = this.ProjectService.resolveParams.selectedListings;
-
+        this.fl = {
+            showSelect: false,
+            showHeader: false,
+            showTags: true,
+            editTags: false,
+        };
 
         if (!this.browser.project) {
             /*

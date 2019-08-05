@@ -203,6 +203,7 @@ function config(
                 projectTitle: '',
                 query_string: '',
                 filePath: '/',
+                data: null,
             },
             resolve: {
                 params: [
@@ -213,6 +214,7 @@ function config(
                         ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                         ProjectService.resolveParams.projectTitle = $stateParams.projectTitle;
                         ProjectService.resolveParams.query_string = $stateParams.query_string || '';
+                        ProjectService.resolveParams.data = $stateParams.data;
                     },
                 ],
             },
@@ -222,21 +224,24 @@ function config(
             component: 'curationDirectory',
             params: {
                 filePath: '/',
+                data: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
                     ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                    ProjectService.resolveParams.data = $stateParams.data;
                 }]
             }
         })
         .state('projects.preview', {
-            url: '/projects/{projectId}/preview',
+            url: '/projects/{projectId}/preview/exp{filePath:any}',
             component: 'publicationPreview',
             params: {
                 filePath: '/',
                 project: null,
                 selectedListings: null,
+                data: null,
             },
             resolve: {
                 params: [
@@ -247,17 +252,19 @@ function config(
                         ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                        ProjectService.resolveParams.data = $stateParams.data;
                     },
                 ],
             },
         })
         .state('projects.previewSim', {
-            url: '/projects/{projectId}/previewSim',
+            url: '/projects/{projectId}/preview/sim{filePath:any}',
             component: 'publicationPreviewSim',
             params: {
                 filePath: '/',
                 project: null,
                 selectedListings: null,
+                data: null,
             },
             resolve: {
                 params: [
@@ -268,12 +275,13 @@ function config(
                         ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                        ProjectService.resolveParams.data = $stateParams.data;
                     },
                 ],
             },
         })
         .state('projects.previewHybSim', {
-            url: '/projects/{projectId}/previewHybSim',
+            url: '/projects/{projectId}/preview/hybrid{filePath:any}',
             component: 'publicationPreviewHybSim',
             params: {
                 filePath: '/',
@@ -294,7 +302,7 @@ function config(
             },
         })
         .state('projects.previewOther', {
-            url: '/projects/{projectId}/previewOther',
+            url: '/projects/{projectId}/preview/other{filePath:any}',
             component: 'publicationPreviewOther',
             params: {
                 filePath: '/',
@@ -315,7 +323,7 @@ function config(
             },
         })
         .state('projects.previewFieldRecon', {
-            url: '/projects/{projectId}/previewFieldRecon',
+            url: '/projects/{projectId}/preview/recon{filePath:any}',
             component: 'publicationPreviewFieldRecon',
             params: {
                 filePath: '/',

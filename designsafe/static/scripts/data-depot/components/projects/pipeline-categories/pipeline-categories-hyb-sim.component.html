@@ -97,7 +97,7 @@
                         <span ng-click="$ctrl.editCategory(report)"><a>Edit</a></span>
                     </div>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
     </div>
@@ -124,7 +124,7 @@
                     <p ng-if="model.value.description">{{ model.value.description }}</p>
                     <span ng-click="$ctrl.editCategory(model)"><a>Edit</a></span>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="true"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
         <!-- Coordinator -->
@@ -161,7 +161,7 @@
                                 <p ng-if="coordinator.value.description">{{ coordinator.value.description }}</p>
                                 <span ng-click="$ctrl.editCategory(coordinator)"><a>Edit</a></span>
                             </div>
-                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" category-listing="true"></files-listing>
+                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" params="$ctrl.fl"></files-listing>
                         </div>
                         </td>
                     </tr>
@@ -199,7 +199,7 @@
                                             <p ng-if="cout.value.description">{{ cout.value.description }}</p>
                                             <span ng-click="$ctrl.editCategory(cout)"><a>Edit</a></span>
                                         </div>
-                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" category-listing="true"></files-listing>
+                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" params="$ctrl.fl"></files-listing>
                                     </div>
                                 </td>
                             </tr>
@@ -244,7 +244,7 @@
                                             <p ng-if="simsub.value.description">{{ simsub.value.description }}</p>
                                             <span ng-click="$ctrl.editCategory(simsub)"><a>Edit</a></span>
                                         </div>
-                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" category-listing="true"></files-listing>
+                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" params="$ctrl.fl"></files-listing>
                                     </div>
                                 </td>
                             </tr>
@@ -289,7 +289,7 @@
                                                     <p ng-if="sout.value.description">{{ sout.value.description }}</p>
                                                     <span ng-click="$ctrl.editCategory(sout)"><a>Edit</a></span>
                                                 </div>
-                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" category-listing="true"></files-listing>
+                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" params="$ctrl.fl"></files-listing>
                                             </div>
                                         </td>
                                     </tr>
@@ -337,7 +337,7 @@
                                             <p ng-if="expsub.value.description">{{ expsub.value.description }}</p>
                                             <span ng-click="$ctrl.editCategory(expsub)"><a>Edit</a></span>
                                         </div>
-                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" category-listing="true"></files-listing>
+                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" params="$ctrl.fl"></files-listing>
                                     </div>
                                 </td>
                             </tr>
@@ -382,7 +382,7 @@
                                                     <p ng-if="eout.value.description">{{ eout.value.description }}</p>
                                                     <span ng-click="$ctrl.editCategory(eout)"><a>Edit</a></span>
                                                 </div>
-                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" category-listing="true"></files-listing>
+                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" params="$ctrl.fl"></files-listing>
                                             </div>
                                         </td>
                                     </tr>
@@ -434,7 +434,7 @@
                         <span ng-click="$ctrl.editCategory(analysis)"><a>Edit</a></span>
                     </div>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-listing="true"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
     </div>

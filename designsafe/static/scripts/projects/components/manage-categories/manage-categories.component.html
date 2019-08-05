@@ -368,7 +368,7 @@
         </div>
         <div class="dropdown">
             <!-- Model Config -->
-            <div ng-repeat="modelConf in $ctrl.data.project.modelconfig_set | orderBy: ['value.title']">
+            <div ng-repeat="modelConf in $ctrl.browser.project.modelconfig_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{modelConf.uuid}}"
                         style="width:100%;">
@@ -391,12 +391,12 @@
                                 <span ng-click="$ctrl.deleteCategory(modelConf)"><a>Delete </a></span>
                             </div>
                         </div>
-                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConf.uuid]" category-listing="true"></files-listing>
+                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConf.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Sensor Info -->
-            <div ng-repeat="sensorInfo in $ctrl.data.project.sensorlist_set | orderBy: ['value.title']">
+            <div ng-repeat="sensorInfo in $ctrl.browser.project.sensorlist_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{sensorInfo.uuid}}"
                         style="width:100%;">
@@ -419,12 +419,12 @@
                                 <span ng-click="$ctrl.deleteCategory(sensorInfo)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorInfo.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorInfo.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Events -->
-            <div ng-repeat="event in $ctrl.data.project.event_set | orderBy: ['value.title']">
+            <div ng-repeat="event in $ctrl.browser.project.event_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}"
                         style="width:100%;">
@@ -447,12 +447,12 @@
                                 <span ng-click="$ctrl.deleteCategory(event)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Simulation Model -->
-            <div ng-repeat="model in $ctrl.data.project.model_set | orderBy: ['value.title']">
+            <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                         style="width:100%;">
@@ -475,12 +475,12 @@
                                 <span ng-click="$ctrl.deleteCategory(model)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Simulation Input -->
-            <div ng-repeat="input in $ctrl.data.project.input_set | orderBy: ['value.title']">
+            <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{input.uuid}}"
                         style="width:100%;">
@@ -503,12 +503,12 @@
                                 <span ng-click="$ctrl.deleteCategory(input)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Simulation Output -->
-            <div ng-repeat="output in $ctrl.data.project.output_set | orderBy: ['value.title']">
+            <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{output.uuid}}"
                         style="width:100%;">
@@ -531,12 +531,12 @@
                                 <span ng-click="$ctrl.deleteCategory(output)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Global Model -->
-            <div ng-repeat="gm in $ctrl.data.project.globalmodel_set | orderBy: ['value.title']">
+            <div ng-repeat="gm in $ctrl.browser.project.globalmodel_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{gm.uuid}}"
                         style="width:100%;">
@@ -559,12 +559,12 @@
                                 <span ng-click="$ctrl.deleteCategory(gm)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[gm.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[gm.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Coordinator -->
-            <div ng-repeat="coordinator in $ctrl.data.project.coordinator_set | orderBy: ['value.title']">
+            <div ng-repeat="coordinator in $ctrl.browser.project.coordinator_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}"
                         style="width:100%;">
@@ -587,12 +587,12 @@
                                 <span ng-click="$ctrl.deleteCategory(coordinator)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Simulation Substructure -->
-            <div ng-repeat="simsub in $ctrl.data.project.simsubstructure_set | orderBy: ['value.title']">
+            <div ng-repeat="simsub in $ctrl.browser.project.simsubstructure_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-sim-subst" data-toggle="collapse" data-target="#files-{{simsub.uuid}}"
                         style="width:100%;">
@@ -615,12 +615,12 @@
                                 <span ng-click="$ctrl.deleteCategory(simsub)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Experimental Substructure -->
-            <div ng-repeat="expsub in $ctrl.data.project.expsubstructure_set | orderBy: ['value.title']">
+            <div ng-repeat="expsub in $ctrl.browser.project.expsubstructure_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-exp-subst" data-toggle="collapse" data-target="#files-{{expsub.uuid}}"
                         style="width:100%;">
@@ -643,12 +643,12 @@
                                 <span ng-click="$ctrl.deleteCategory(expsub)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Coordinator Output -->
-            <div ng-repeat="cout in $ctrl.data.project.coordinatoroutput_set | orderBy: ['value.title']">
+            <div ng-repeat="cout in $ctrl.browser.project.coordinatoroutput_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{cout.uuid}}"
                         style="width:100%;">
@@ -671,12 +671,12 @@
                                 <span ng-click="$ctrl.deleteCategory(cout)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Experiment Output -->
-            <div ng-repeat="eout in $ctrl.data.project.expoutput_set | orderBy: ['value.title']">
+            <div ng-repeat="eout in $ctrl.browser.project.expoutput_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{eout.uuid}}"
                         style="width:100%;">
@@ -699,12 +699,12 @@
                                 <span ng-click="$ctrl.deleteCategory(eout)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Simulation Output -->
-            <div ng-repeat="sout in $ctrl.data.project.simoutput_set | orderBy: ['value.title']">
+            <div ng-repeat="sout in $ctrl.browser.project.simoutput_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{sout.uuid}}"
                         style="width:100%;">
@@ -727,12 +727,12 @@
                                 <span ng-click="$ctrl.deleteCategory(sout)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Analysis -->
-            <div ng-repeat="analysis in $ctrl.data.project.analysis_set | orderBy: ['value.title']">
+            <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                         style="width:100%;">
@@ -766,12 +766,12 @@
                                 <span ng-click="$ctrl.deleteCategory(analysis)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Reports -->
-            <div ng-repeat="report in $ctrl.data.project.report_set | orderBy: ['value.title']">
+            <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                         style="width:100%;">
@@ -794,7 +794,7 @@
                                 <span ng-click="$ctrl.deleteCategory(report)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
                     </div>
                 </div>
             </div>

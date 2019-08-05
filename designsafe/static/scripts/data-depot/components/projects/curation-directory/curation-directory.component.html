@@ -1,6 +1,6 @@
 <div style="background:white;">
     <!-- Project Header Start -->
-    <div>
+    <div ng-if="!$ctrl.loading">
         <div>
             <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
             <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
@@ -62,7 +62,7 @@
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
-            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects">
+            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects track by $index">
                 <td ng-if="$first">Related Work</td>
                 <td ng-if="!$first"></td>
                 <td><strong>{{ work.title }} | <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.href }}</a></strong></td>
@@ -77,7 +77,7 @@
         </div>
     </div>
     <!-- Project Header End -->
-    <table class="tg" style="table-layout: fixed; width: 100%;">
+    <table class="tg" style="table-layout: fixed; width: 100%;" ng-if="!$ctrl.loading">
         <colgroup>
             <col style="width: 46%">
             <col style="width: 50%">
@@ -185,6 +185,6 @@
         </h3>
     </div>
     <div ng-if="!$ctrl.loading">
-        <files-listing browser="$ctrl.browser"></files-listing>
+        <files-listing browser="$ctrl.browser" params="$ctrl.fl"></files-listing>
     </div>
 </div>
