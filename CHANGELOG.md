@@ -2,9 +2,23 @@
 
 ## v4.5.0-20190801
 
+Improvements:
+
+- Metadata rendering speed in publication preview (DES-1158).
+- Related works improved rendering (DES-1117).
+- Better file ordering in listings (DES-1100).
+- Merge Help documentation (DES-1028).
+
 Fixes:
 
-- Change 'This category is empty' legend (DES-436)
+- Change 'This category is empty' legend (DES-436).
+- Allow authors to be re-ordered (DES-987).
+- Fix links in publish agreement modal (DES-989).
+- Update "this category is empty" message (DES-967).
+- Show "Simulation Model File Tags" for file tags (DES-1073).
+- Fix "An Analysis File Tag" string (DES-1096).
+- Not show trashed files in category listings (DES-1099).
+- Field Recon Collection Modal fixes (DES-1106).
 
 ## v4.5.0-20190703
 
