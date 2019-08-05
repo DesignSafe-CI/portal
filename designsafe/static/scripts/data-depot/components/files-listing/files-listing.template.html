@@ -26,7 +26,7 @@
             </thead>
             <tbody>
                 <tr data-ng-if="!$ctrl.browser.busyListing"
-                    data-ng-repeat="item in $ctrl.listing().children"
+                    data-ng-repeat="item in $ctrl.listing().children | orderBy: ['type', 'ext', 'name']"
                     ng-class="{highlight: item._ui.selected}"
                 >
                     <td class="unselectable">
@@ -117,8 +117,8 @@
                             Learn how to move files to a project
                         </a>
                     </p>
-                    <p class="lead" style="margin-top:20px" ng-if="$ctrl._ui.showHeader">
-                        This category is empty <br />
+                    <p class="lead" style="margin-top:20px" ng-if="$ctrl.categorySelect() || $ctrl.categoryList()">
+                        There are no files under this category. <br />
                         <i class="fa fa-file-text-o">&nbsp;</i><br/>
                     </p>
                 </div>
