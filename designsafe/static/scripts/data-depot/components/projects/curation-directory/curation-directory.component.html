@@ -65,7 +65,7 @@
             <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects track by $index">
                 <td ng-if="$first">Related Work</td>
                 <td ng-if="!$first"></td>
-                <td><strong>{{ work.title }} | <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.href }}</a></strong></td>
+                <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
             </tr>
             <tr class="prj-row">
                 <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
