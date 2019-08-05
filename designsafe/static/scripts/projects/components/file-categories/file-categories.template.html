@@ -3,7 +3,7 @@
         <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </div>
     <div ng-if="!$ctrl._ui.isOther">
-        <div ng-if="!$ctrl.tagListing">
+        <div ng-if="$ctrl._ui.editTags">
             <div class="tag-item" data-ng-repeat="entityTag in $ctrl.file._entityTags">
                 {{entityTag}}
             </div>
@@ -35,7 +35,10 @@
                                 <select name="project-file-tags"
                                         data-ng-model="$ctrl.selectedFileTag[entity.uuid]"
                                         class="form-control project-file-tags-select">
-                                    <option value="">
+                                    <option value="" data-ng-if="$ctrl.fileTagsForEntity(entity).name == 'Analysis'">
+                                        -- Select an {{$ctrl.fileTagsForEntity(entity).name}} File Tag --
+                                    </option>
+                                    <option value="" data-ng-if="$ctrl.fileTagsForEntity(entity).name != 'Analysis'">
                                         -- Select a {{$ctrl.fileTagsForEntity(entity).name}} File Tag --
                                     </option>
                                     <optgroup data-ng-repeat="(tagName, tags) in $ctrl.fileTagsForEntity(entity).tags"
@@ -75,7 +78,7 @@
             </div>
         </div>
         <!-- preview/published tags -->
-        <span data-ng-repeat="entity in $ctrl.file._entities" ng-if="$ctrl.tagListing">
+        <span data-ng-repeat="entity in $ctrl.file._entities" ng-if="$ctrl._ui.showTags">
             <span data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags)">
                 <strong>
                     <span ng-if="!$last">{{tag.tagName}}, </span>
@@ -86,7 +89,7 @@
     </div>
     <!-- Other Projects -->
     <div ng-if="$ctrl._ui.isOther">
-        <div class="file-tag-list" ng-if="!$ctrl.tagListing">
+        <div class="file-tag-list" ng-if="$ctrl._ui.editTags">
             <div class="other-tag-item">
                 <div class="other-tag-label" data-ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags)">
                     <span>{{tag.tagName}}</span>
@@ -127,7 +130,7 @@
                 </div>
             </div>
         </div>
-        <span ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags)" ng-if="$ctrl.tagListing">
+        <span ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags)" ng-if="$ctrl._ui.showTags">
             <strong>
                 <span ng-if="!$last">{{tag.tagName}}, </span>
                 <span ng-if="$last">{{tag.tagName}}</span>

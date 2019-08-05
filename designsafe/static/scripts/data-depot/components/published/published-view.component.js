@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 import ExpPublicationTemplate from '../projects/publication-preview/publication-preview.component.html';
 import SimPublicationTemplate from '../projects/publication-preview/publication-preview-sim.component.html';
 import HybSimPublicationTemplate from '../projects/publication-preview/publication-preview-hyb-sim.component.html';
@@ -25,21 +23,22 @@ class PublishedViewCtrl {
         this.ui = {
             efs: experimentalData.experimentalFacility,
             equipmentTypes: experimentalData.equipmentTypes,
-            experimentTypes: experimentalData.experimentTypes
+            experimentTypes: experimentalData.experimentTypes,
+            fileNav: true,
+            loading: true,
         };
         this.browser = this.DataBrowserService.state();
         this.browser.listings = {};
         var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
-        this.ui.loading = true;
 
         this.getFileObjs = (evt) => {
-            evt.files = _.map(evt.fileObjs, (f) => {
+            evt.files = evt.fileObjs.map((f) => {
                 f.system = 'designsafe.storage.published';
                 f.path = this.browser.publication.projectId + f.path;
                 f.permissions = 'READ';
                 return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
             });
-            evt.files.forEach( (file) => {
+            evt.files.forEach((file) => {
                 if (!this.browser.listings[evt.uuid]) {
                     this.browser.listings[evt.uuid] = { children: [] };
                 }
@@ -48,9 +47,7 @@ class PublishedViewCtrl {
         };
 
         if (this.$stateParams.filePath.replace('/',  '') === projId) {
-            this.fileNav = false;
-        } else {
-            this.fileNav = true;
+            this.ui.fileNav = false;
         }
 
         if (projId) {
@@ -59,31 +56,49 @@ class PublishedViewCtrl {
                     this.browser.publication = resp.data;
                     this.browser.project = resp.data.project;
                     this.project = resp.data.project;
+                    this.fl = {
+                        showSelect: false,
+                        showHeader: this.browser.project.value.projectType === 'other',
+                        showTags: true,
+                        editTags: false,
+                    };
 
                     if (this.browser.publication.project.value.projectType === 'experimental') {
-                        _.each(this.browser.publication.eventsList, this.getFileObjs);
-                        _.each(this.browser.publication.modelConfigs, this.getFileObjs);
-                        _.each(this.browser.publication.sensorLists, this.getFileObjs);
-                        _.each(this.browser.publication.analysisList, this.getFileObjs);
-                        _.each(this.browser.publication.reportsList, this.getFileObjs);
+                        if (typeof this.browser.publication.analysisList != 'undefined') {
+                            this.browser.publication.analysisList.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.reportsList != 'undefined') {
+                            this.browser.publication.reportsList.forEach(this.getFileObjs);
+                        }
+                        this.browser.publication.modelConfigs.forEach(this.getFileObjs);
+                        this.browser.publication.sensorLists.forEach(this.getFileObjs);
+                        this.browser.publication.eventsList.forEach(this.getFileObjs);
                     } else if (this.browser.publication.project.value.projectType === 'simulation') {
-                        _.each(this.browser.publication.analysiss, this.getFileObjs);
-                        _.each(this.browser.publication.inputs, this.getFileObjs);
-                        _.each(this.browser.publication.models, this.getFileObjs);
-                        _.each(this.browser.publication.outputs, this.getFileObjs);
-                        _.each(this.browser.publication.reports, this.getFileObjs);
+                        if (typeof this.browser.publication.analysiss != 'undefined') {
+                            this.browser.publication.analysiss.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.reports != 'undefined') {
+                            this.browser.publication.reports.forEach(this.getFileObjs);
+                        }
+                        this.browser.publication.models.forEach(this.getFileObjs);
+                        this.browser.publication.inputs.forEach(this.getFileObjs);
+                        this.browser.publication.outputs.forEach(this.getFileObjs);
                     } else if (this.browser.publication.project.value.projectType === 'hybrid_simulation') {
-                        _.each(this.browser.publication.analysiss, this.getFileObjs);
-                        _.each(this.browser.publication.reports, this.getFileObjs);
+                        if (typeof this.browser.publication.analysiss != 'undefined') {
+                            this.browser.publication.analysiss.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.reports != 'undefined') {
+                            this.browser.publication.reports.forEach(this.getFileObjs);
+                        }
 
-                        _.each(this.browser.publication.coordinators, this.getFileObjs);
-                        _.each(this.browser.publication.coordinator_outputs, this.getFileObjs);
-                        _.each(this.browser.publication.exp_substructures, this.getFileObjs);
-                        _.each(this.browser.publication.exp_outputs, this.getFileObjs);
-                        _.each(this.browser.publication.sim_substructures, this.getFileObjs);
-                        _.each(this.browser.publication.sim_outputs, this.getFileObjs);
-                        _.each(this.browser.publication.global_models, this.getFileObjs);
-                        _.each(this.browser.publication.hybrid_simulations, this.getFileObjs);
+                        this.browser.publication.hybrid_simulations.forEach(this.getFileObjs);
+                        this.browser.publication.global_models.forEach(this.getFileObjs);
+                        this.browser.publication.coordinators.forEach(this.getFileObjs);
+                        this.browser.publication.coordinator_outputs.forEach(this.getFileObjs);
+                        this.browser.publication.exp_substructures.forEach(this.getFileObjs);
+                        this.browser.publication.exp_outputs.forEach(this.getFileObjs);
+                        this.browser.publication.sim_substructures.forEach(this.getFileObjs);
+                        this.browser.publication.sim_outputs.forEach(this.getFileObjs);
                     }
 
                     //add metadata to header
@@ -131,7 +146,7 @@ class PublishedViewCtrl {
 
     getEF(str) {
         let efs = this.ui.efs[this.browser.project.value.projectType];
-        let ef = _.find(efs, (ef) => {
+        let ef = efs.find((ef) => {
             return ef.name === str;
         });
         return ef.label;
@@ -139,7 +154,7 @@ class PublishedViewCtrl {
 
     getET(exp) {
         let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
-        let et = _.find(ets, (x) => {
+        let et = ets.find((x) => {
             return x.name === exp.value.experimentType;
         });
         return et.label;
@@ -147,7 +162,7 @@ class PublishedViewCtrl {
 
     getEQ(exp) {
         let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
-        let eqt = _.find(eqts, (x) => {
+        let eqt = eqts.find((x) => {
             return x.name === exp.value.equipmentType;
         });
         return eqt.label;

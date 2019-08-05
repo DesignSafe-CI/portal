@@ -62,7 +62,7 @@
         <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects">
           <td ng-if="$first">Related Work</td>
           <td ng-if="!$first"></td>
-          <td><strong>{{ work.title }} | <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.href }}</a></strong></td>
+          <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
         </tr>
         <tr class="prj-row">
           <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
@@ -107,5 +107,12 @@
     </div>
     <br>
   </div>
-    <ui-view class="project-data"></ui-view>
+  <div ng-if="$ctrl.loading">
+      <h3 class="text-center">
+          <i class="fa fa-spinner fa-spin"></i> Loading...
+      </h3>
+  </div>
+  <div ng-if="!$ctrl.loading">
+    <files-listing browser="$ctrl.browser" params="$ctrl.fl"></files-listing>
+  </div>
 </div>

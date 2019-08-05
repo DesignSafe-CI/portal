@@ -97,7 +97,7 @@
                         <span ng-click="$ctrl.editCategory(report)"><a>Edit</a></span>
                     </div>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
     </div>
@@ -124,7 +124,7 @@
                     <p ng-if="model.value.description">{{ model.value.description }}</p>
                     <span ng-click="$ctrl.editCategory(model)"><a>Edit</a></span>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" category-listing="true"></files-listing>
+                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
         <!-- Inputs -->
@@ -161,7 +161,7 @@
                                 <p ng-if="input.value.description">{{ input.value.description }}</p>
                                 <span ng-click="$ctrl.editCategory(input)"><a>Edit</a></span>
                             </div>
-                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]" category-listing="true"></files-listing>
+                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]" params="$ctrl.fl"></files-listing>
                         </div>
                         </td>
                     </tr>
@@ -199,7 +199,7 @@
                                             <p ng-if="output.value.description">{{ output.value.description }}</p>
                                             <span ng-click="$ctrl.editCategory(output)"><a>Edit</a></span>
                                         </div>
-                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]" category-listing="true"></files-listing>
+                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]" params="$ctrl.fl"></files-listing>
                                     </div>
                                 </td>
                             </tr>
@@ -240,7 +240,7 @@
                             <tr ng-repeat="ref in analysis.value.refs">
                                 <td class="tg-0lax" ng-if="$first">Referenced Work</td>
                                 <td class="tg-0lax" ng-if="!$first"></td>
-                                <td class="tg-0lax"><strong>{{ ref.reference }} | <a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.referencedoi }}</a></strong></td>
+                                <td class="tg-0lax"><strong><a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.reference }}</a></strong></td>
                             </tr>
                         </table>
                         <p>{{ analysis.value.description }}</p>
@@ -248,7 +248,7 @@
                             <span ng-click="$ctrl.editCategory(analysis)"><a>Edit</a></span>
                         </div>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-listing="true"></files-listing>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>
                 </div>
             </div>
         </div>

@@ -280,7 +280,11 @@ export function ProjectEntityModel() {
                         var hrefComps = asc.href.split('system');
                         if (hrefComps.length === 2) {
                             var comps = hrefComps[1].split('/').splice(2);
-                            filePaths.push(comps.join('/'));
+                            let filePath = comps.join('/');
+                            if (comps.length >= 2 && comps[1].toLowerCase() != '.trash' &&
+                                comps[1].toLowerCase() != 'trash') {
+                                filePaths.push(filePath);
+                            }
                         }
                     }
                 });

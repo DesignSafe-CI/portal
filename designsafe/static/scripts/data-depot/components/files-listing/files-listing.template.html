@@ -2,12 +2,6 @@
     <div data-ds-infinite-scroll
          data-scroll-bottom="$ctrl.scrollToBottom()"
          data-bottom-height="0"
-         data-ng-if="$ctrl.browser.showMainListing ||
-                     ($ctrl.browser.showPreviewListing &&
-                       $ctrl.browser.project.value.projectType == 'other' &&
-                       (!$ctrl.browser.publishPipeline ||
-                         $ctrl.browser.publishPipeline == 'select' ||
-                         $ctrl.browser.publishPipeline == 'review'))"
     >
         <div>
             <span ng-repeat="path in $ctrl.breadcrumbs track by $index">
@@ -17,14 +11,14 @@
         </div>
         <table class="files-listing-table table table-bordered table-striped"
                style="background-color: #fff;">
-            <thead ng-hide="$ctrl.categoryList()">
+            <thead ng-if="$ctrl._ui.showHeader">
                 <tr>
                     <th>
-                        <span ng-if="$ctrl.allowSelect">
+                        <span ng-if="$ctrl._ui.showSelect">
                             <i class="fa fa-lg fa-check-square" style="color:#337ab7;" ng-click="$ctrl.selectAll()"></i>
                             <span>Name</span>
                         </span>
-                        <span ng-if="!$ctrl.allowSelect">Name</span>
+                        <span ng-if="!$ctrl._ui.showSelect">Name</span>
                     </th>
                     <th>Size</th>
                     <th>Last modified</th>
@@ -32,11 +26,11 @@
             </thead>
             <tbody>
                 <tr data-ng-if="!$ctrl.browser.busyListing"
-                    data-ng-repeat="item in $ctrl.listing().children"
+                    data-ng-repeat="item in $ctrl.listing().children | orderBy: ['type', 'ext', 'name']"
                     ng-class="{highlight: item._ui.selected}"
                 >
                     <td class="unselectable">
-                        <span ng-if="!$ctrl.categoryList()">
+                        <span ng-if="$ctrl._ui.showSelect">
                             <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="item._ui.selected" data-ng-click="$ctrl.onSelect($event, item)">
                                 <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
                                 <i class="fa fa-check-square fa-stack-1x" style="color:#1CB500;"></i>
@@ -52,16 +46,16 @@
                         </a>
                         <div class="project-categories">
                             <div class="file-categories"
-                                 data-ng-if="$ctrl.showFileCategories()">
+                                 data-ng-if="$ctrl._ui.editTags || $ctrl._ui.showTags">
                                 <file-categories data-project="$ctrl.browser.project"
                                                  data-file="item"
-                                                 data-category-listing="$ctrl.categoryList()"
-                                                 data-tag-listing="$ctrl.tagListing()"
+                                                 data-show-tags="$ctrl._ui.showTags"
+                                                 data-edit-tags="$ctrl._ui.editTags"
                                 >
                                 </file-categories>
                             </div>
                             <div class="file-categories-selector"
-                                 data-ng-if="$ctrl.showFileCategorySelector()">
+                                 data-ng-if="$ctrl._ui.editTags">
                                 <file-category-selector data-project="$ctrl.browser.project"
                                                         data-file="item"
                                 >
@@ -74,7 +68,7 @@
                     </td>
                     <td data-ng-if="item.format== 'folder'">--</td>
                     <td data-ng-if="item.format== 'raw'">{{ item.length|bytes }}</td>
-                    <td ng-hide="$ctrl.categoryList()">{{ item.lastModified|date:"short" }}</td>
+                    <td ng-hide="!$ctrl._ui.showHeader">{{ item.lastModified|date:"short" }}</td>
                 </tr>
                 <tr data-ng-if="$ctrl.browser.busyListingPage">
                     <td>
@@ -112,7 +106,7 @@
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"
                 >
-                    <p class="lead" style="margin-top:20px" ng-if="!$ctrl.categorySelect() && !$ctrl.categoryList()">
+                    <p class="lead" style="margin-top:20px" ng-if="$ctrl._ui.showSelect">
                         This folder is empty! <br />
                         <i class="fa fa-folder-open-o">&nbsp;</i><br/>
                         <a data-ng-if="$ctrl.listing().system.indexOf('project-') == 0"
@@ -124,7 +118,7 @@
                         </a>
                     </p>
                     <p class="lead" style="margin-top:20px" ng-if="$ctrl.categorySelect() || $ctrl.categoryList()">
-                        This category is empty <br />
+                        There are no files under this category. <br />
                         <i class="fa fa-file-text-o">&nbsp;</i><br/>
                     </p>
                 </div>
