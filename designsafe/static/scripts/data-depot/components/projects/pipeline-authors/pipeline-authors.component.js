@@ -115,6 +115,7 @@ class PipelineAuthorsCtrl {
     }
 
     orderAuthors(up) {
+        this.saved = false;
         var a;
         var b;
         if (up) {
@@ -142,6 +143,8 @@ class PipelineAuthorsCtrl {
 
     saveAuthors() {
         var exp = this.experiment;
+        this.saved = false;
+        this.loading = true;
         exp.value.authors = this.experiment.value.authors;
         exp.value.guests = this.experiment.value.guests;
         this.ProjectEntitiesService.update({
@@ -153,6 +156,7 @@ class PipelineAuthorsCtrl {
             var ent = this.project.getRelatedByUuid(e.uuid);
             ent.update(e);
             this.saved = true;
+            this.loading = false;
         });
     }
 

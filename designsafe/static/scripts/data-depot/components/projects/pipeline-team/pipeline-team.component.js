@@ -77,14 +77,16 @@ class PipelineTeamCtrl {
     }
 
     saveTeam() {
+        this.saved = false;
         var prj = this.data();
         this.projectResource.post({ data: prj }).then((resp) => {
-            this.saved = true;
             this.project = resp.data;
+            this.saved = true;
         });
     }
 
     orderMembers(up) {
+        this.saved = false;
         var a;
         var b;
         if (up) {
