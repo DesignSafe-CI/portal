@@ -7,7 +7,8 @@
       <meta name="google-site-verification" content="GIow5qfMulVcOVKJqGss0mSkxwycFBzgCk2aouypsfo" />
       <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} | DesignSafe-CI</title>
       <meta name="viewport" content="width=device-width">
-      <meta name="description" content="{{ site.description }}">
+      <meta name="description" content="{{description}}">
+
       <link rel="icon" href="{% static 'favicon.ico' %}">
       {% if 'designsafe.storage.published' in request.get_full_path %}
       <link rel="canonical" href="https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{{projectId}}">
@@ -41,7 +42,7 @@
       <meta name="author" content=""> <!-- author names -->
 
       <!-- used in google citation -->
-      {% block google_ciation_meta %}
+      {% block google_citation_meta %}
       <meta name="citation_title" content=""> <!-- project title -->
       <meta name="citation_author" content=""> <!-- author; can have multiple lines -->
       <meta name="citation_author_institution" content=""> <!-- example: University of Texas at Austin-->
