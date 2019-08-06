@@ -163,13 +163,16 @@ class EditProjectCtrl {
                 if (this.project.value.nhEventEnd) {
                     this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                 }
-                this.form.nhEventType = this.project.value.nhType;
+                this.form.nhTypes = this.project.value.nhTypes;
             }
         }
         this.UserService.authenticate().then((u) => {
             this.form.creator = u;
         });
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
+        if (this.form.projectType == 'field_recon' && !this.form.nhTypes) {
+            this.form.nhTypes = [null];
+        }
     }
 
     searchUsers(q) {
@@ -261,8 +264,8 @@ class EditProjectCtrl {
         if (this.form.nhEventDateEnd) {
             projectData.nhEventEnd = this.form.nhEventDateEnd;
         }
-        if (this.form.nhEventType) {
-            projectData.nhType = this.form.nhEventType;
+        if (this.form.nhTypes) {
+            projectData.nhTypes = this.form.nhTypes;
         }
 
         // move this to the back end ------------------------------------------------------->
@@ -388,6 +391,35 @@ class EditProjectCtrl {
             this.close({$value: project});
             this.ui.busy = false;
         });
+    }
+
+    isNhTypeInDropdown($index) {
+        return this.rapidEventTypes.includes(
+            this.form.nhTypes[$index]
+        );
+    }
+
+    showNhTypesDropdown($index) {
+        return (this.isNhTypeInDropdown($index) ||
+                !this.form.nhTypes[$index]);
+    }
+
+    showNhTypesInput($index) {
+        return (this.form.nhTypes[$index] === 'Other' ||
+                (!this.isNhTypeInDropdown($index) &&
+                 this.form.nhTypes[$index]));
+    }
+
+    addNhType() {
+        let last = this.form.nhTypes.length - 1;
+        if (this.form.nhTypes[last]) {
+            this.form.nhTypes.push(null);
+        }
+    }
+
+    addInputNhType(value) {
+        this.form.nhTypes[this.form.nhTypes.length - 1] = value;
+        this.form.nhTypeInput = '';
     }
 }
 

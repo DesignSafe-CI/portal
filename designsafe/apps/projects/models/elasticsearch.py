@@ -36,7 +36,7 @@ class IndexedProject(DocType):
                 'inst': Text(),
                 'user': Keyword(),
                 'fname': Text(fields={'_exact': Keyword()}),
-                'email': Text(fields={'_exact': Keyword()}), 
+                'email': Text(fields={'_exact': Keyword()}),
                 'order': Long()
             }, multi=True),
             'teamOrder': Nested(properties={
@@ -46,21 +46,20 @@ class IndexedProject(DocType):
                 'inst': Text(),
                 'user': Keyword(),
                 'fname': Text(fields={'_exact': Keyword()}),
-                'email': Text(fields={'_exact': Keyword()}), 
+                'email': Text(fields={'_exact': Keyword()}),
                 'order': Long()
-            }, multi=True), 
+            }, multi=True),
             'fileTags': Nested(properties={
                 'fileUuid': Keyword(),
                 'tagName': Keyword(),
                 'format': Keyword(),
                 'lastModified': Date(),
-        
+
             }, multi=True),
 
             'nhEventStart': Date(),
             'nhEventEnd': Date(),
-            'nhType': Text(fields={'_exact': Keyword()}),
-            'nhTypeOther': Text(fields={'_exact': Keyword()}),
+            'nhTypes': Text(fields={'_exact': Keyword()}),
             'nhEvent': Text(fields={'_exact': Keyword()}),
 
             'coPis': Text(fields={'_exact': Keyword()}, multi=True),
