@@ -90,11 +90,10 @@
                 <div>
                     <div style="width: 55%; display:inline-block;">
                         <label for="id-location">
-                            Geolocation Place
+                            Geolocation
                         </label>
                         <input type="text"
                                id="id-location"
-                               placeholder="Geolocaton Place"
                                data-ng-model="$ctrl.form.location"
                                data-ng-required="true"
                                class="form-control"/>
@@ -105,7 +104,6 @@
                         </label>
                         <input type="text"
                                id="id-latitude"
-                               placeholder="Latitude"
                                data-ng-model="$ctrl.form.latitude"
                                data-ng-required="true"
                                class="form-control"/>
@@ -116,7 +114,6 @@
                         </label>
                         <input type="text"
                                id="id-longitude"
-                               placeholder="Longitude"
                                data-ng-model="$ctrl.form.longitude"
                                data-ng-required="true"
                                class="form-control" />
@@ -127,7 +124,6 @@
                         </label>
                         <input type="text"
                                id="id-elevation"
-                               placeholder="Elevation"
                                data-ng-model="$ctrl.form.elevation"
                                data-ng-required="true"
                                class="form-control" />
@@ -240,15 +236,25 @@
                                     &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                 </span>
                             </div>
-                            <div style="display: inline-block; width:20%; vertical-align: top;">
+                            <div style="display: inline-block; width:20%; vertical-align: top;"
+                                 data-ng-if="mission.value.location">
                                 Site Location
                             </div>
-                            <div style="display: inline-block; width: 78%; font-weight:bold;">
+                            <div style="display: inline-block; width: 78%; font-weight:bold;"
+                                 data-ng-if="mission.value.location">
                                 <ul style="list-style:none; padding-left:0;">
-                                    <li> Place: {{mission.value.location}} </li>
-                                    <li> Lat: {{mission.value.latitude}} </li>
-                                    <li> Lon: {{mission.value.longitude}} </li>
-                                    <li> Elevation: {{mission.value.elevation}} </li>
+                                    <li data-ng-if="mission.value.location">
+                                        Place: {{mission.value.location}}
+                                    </li>
+                                    <li data-ng-if="mission.value.latitude">
+                                        Lat: {{mission.value.latitude}}
+                                    </li>
+                                    <li data-ng-if="mission.value.longitude">
+                                        Lon: {{mission.value.longitude}}
+                                    </li>
+                                    <li data-ng-if="mission.value.elevation">
+                                        Elevation: {{mission.value.elevation}}
+                                    </li>
                                 </ul>
                             </div>
                             <div style="margin-top:10px;">

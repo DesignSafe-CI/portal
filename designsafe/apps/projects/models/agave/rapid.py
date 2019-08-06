@@ -1,6 +1,6 @@
 """Rapid project models"""
 import logging
-import six
+import json
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
 from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
@@ -8,6 +8,19 @@ from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
 logger = logging.getLogger(__name__)
 
 class FieldReconProject(Project):
+    def __init__(self, *args, **kwargs):
+        """Override init to move nh_type to nh_types list.
+
+        We should be able to remove this after a few months in prod.
+        """
+        nh_type = kwargs.get('value', {}).get('nhType')
+        nh_type_other = kwargs.get('value', {}).get('nhTypeOther')
+        if nh_type:
+            kwargs['value']['nhTypes'] = [nh_type]
+        if nh_type_other:
+            kwargs['value']['nhTypes'] = [nh_type_other]
+        super(FieldReconProject, self).__init__(*args, **kwargs)
+
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
     co_pis = fields.ListField('Co PIs')
@@ -24,8 +37,7 @@ class FieldReconProject(Project):
     nh_event = fields.CharField('Natural Hazard Event')
     nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
     nh_event_end = fields.CharField('Date End', max_length=1024, default='')
-    nh_type = fields.CharField('Natural Hazard Type', max_length=1024, default='')
-    nh_type_other = fields.CharField('Natural Hazard Type', max_length=1024, default='')
+    nh_types = fields.ListField('Natural Hazard Type')
 
 
 class FileModel(MetadataModel):

@@ -451,15 +451,29 @@
                             The hazards occurring from an event. An event can have multiple hazard types (Hurricanes also have storm surge and floods).
                         </span>
                     </label>
-                    <select data-ng-model="$ctrl.form.nhEventType"
-                            data-ng-options="type for type in $ctrl.rapidEventTypes">
-                        <option value="">Select Natural Hazard Type</option>
-                    </select>
-                    <input type="text"
-                           style="width:100%"
-                           placeholder="Natural Hazard Type"
-                           data-ng-model="$ctrl.form.nhEventTypeOther"
-                           data-ng-if="$ctrl.form.rapidEventType === 'Other'"/>
+                    <div data-ng-repeat="nhType in $ctrl.form.nhTypes track by $index">
+                        <select id="id-nh-event-type"
+                                style="margin-bottom: 5px;"
+                                data-ng-options="item for item in $ctrl.rapidEventTypes"
+                                data-ng-model="$ctrl.form.nhTypes[$index]"
+                                data-ng-required="true"
+                                class="form-control"
+                                data-ng-if="$ctrl.showNhTypesDropdown($index)">
+                            <option value="">-- Select Natural Hazard Type --</option>
+                        </select>
+                        <div class="nh-types-input-wrapper"
+                             data-ng-if="$ctrl.showNhTypesInput($index)">
+                            <input type="text"
+                                   data-ng-model="$ctrl.form.nhTypes[$index]"
+                                   class="form-control"
+                               />
+                        </div>
+                    </div>
+                    <button type="button"
+                            class="btn btn-link"
+                            data-ng-click="$ctrl.addNhType()">
+                        <i class="fa fa-plus">&nbsp;</i> Add another Natural Hazard Event Type
+                    </button>
                 </div>
             </div>
             <!-- Project Keywords -->

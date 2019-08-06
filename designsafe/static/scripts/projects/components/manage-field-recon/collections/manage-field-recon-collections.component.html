@@ -145,11 +145,10 @@
                 <div>
                     <div style="width: 55%; display:inline-block;">
                         <label for="id-location">
-                            Geolocation Place
+                            Geolocation
                         </label>
                         <input type="text"
                                id="id-location"
-                               placeholder="Geolocaton Place"
                                data-ng-model="$ctrl.form.location"
                                data-ng-required="true"
                                class="form-control"/>
@@ -160,7 +159,6 @@
                         </label>
                         <input type="text"
                                id="id-latitude"
-                               placeholder="Latitude"
                                data-ng-model="$ctrl.form.latitude"
                                data-ng-required="true"
                                class="form-control"/>
@@ -171,7 +169,6 @@
                         </label>
                         <input type="text"
                                id="id-longitude"
-                               placeholder="Longitude"
                                data-ng-model="$ctrl.form.longitude"
                                data-ng-required="true"
                                class="form-control" />
@@ -182,7 +179,6 @@
                         </label>
                         <input type="text"
                                id="id-elevation"
-                               placeholder="Elevation"
                                data-ng-model="$ctrl.form.elevation"
                                data-ng-required="true"
                                class="form-control" />
@@ -204,6 +200,9 @@
                         Instrument Manufacturer and Model
                         <span style="color: #D04348; font-size:14px;">
                             &#9679;
+                        </span>
+                        <span style="display: block; font-weight: normal;">
+                            &nbsp;
                         </span>
                     </label>
                 </div>
@@ -255,6 +254,9 @@
                     <label>
                         Referenced Data DOI or URL
                     </label>
+                    <span style="display: block; font-weight: normal;">
+                        &nbsp;
+                    </span>
                 </div>
                 <div style="width:45%; display:inline-block; margin-bottom:5px"
                      data-ng-repeat-start="referenced
@@ -345,13 +347,15 @@
                         <div style="display: inline-block; width: 78%; font-weight:bold;">
                             <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
                             <span data-ng-if="mission.value.dateEnd">
-                                &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                               &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                             </span>
                         </div>
-                        <div style="display: inline-block; width:20%; vertical-align: top;">
+                        <div style="display: inline-block; width:20%; vertical-align: top;"
+                             data-ng-if="collection.value.dataCollectors.length">
                             Data Collectors
                         </div>
-                        <div style="display: inline-block; width:78%; font-weight: bold;">
+                        <div style="display: inline-block; width:78%; font-weight: bold;"
+                             data-ng-if="collection.value.dataCollectors.length">
                             <div data-ng-repeat="collector in collection.value.dataCollectors | orderBy: 'order'"
                                 data-ng-if="!collector.length && collector.authorship">
                                 <span data-ng-if="!collector.guest">
@@ -364,21 +368,33 @@
                                 </span>
                             </div>
                         </div>
-                        <div style="display: inline-block; width:20%; vertical-align: top;">
+                        <div style="display: inline-block; width:20%; vertical-align: top;"
+                             data-ng-if="collection.value.location">
                             Site Location
                         </div>
-                        <div style="display: inline-block; width: 78%; font-weight:bold;">
+                        <div style="display: inline-block; width: 78%; font-weight:bold;"
+                             data-ng-if="collection.value.location">
                             <ul style="list-style:none; padding-left:0;">
-                                <li> Place: {{collection.value.location}} </li>
-                                <li> Lat: {{collection.value.latitude}} </li>
-                                <li> Lon: {{collection.value.longitude}} </li>
-                                <li> Elevation: {{collection.value.elevation}} </li>
+                                <li data-ng-if="collection.value.location">
+                                    Place: {{collection.value.location}}
+                                </li>
+                                <li data-ng-if="collection.value.latitude">
+                                    Lat: {{collection.value.latitude}}
+                                </li>
+                                <li data-ng-if="collection.value.longitude">
+                                    Lon: {{collection.value.longitude}}
+                                </li>
+                                <li data-ng-if="collection.value.elevation">
+                                    Elevation: {{collection.value.elevation}}
+                                </li>
                             </ul>
                         </div>
-                        <div style="display: inline-block; width:20%; vertical-align: top;">
+                        <div style="display: inline-block; width:20%; vertical-align: top;"
+                             data-ng-if="collection.value.instruments.length">
                             Instrument
                         </div>
-                        <div style="display: inline-block; width: 78%; font-weight:bold;">
+                        <div style="display: inline-block; width: 78%; font-weight:bold;"
+                             data-ng-if="collection.value.instruments.length">
                             <ul style="list-style:none; padding-left:0;">
                                 <li data-ng-repeat="instrument in collection.value.instruments">
                                     {{instrument.name}} | {{instrument.model}}
