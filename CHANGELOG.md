@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.5.0-20190802
+
+Fixes: 
+
+- Remove placeholder text (DES-976).
+- Allow for more than one Natural Hazard Type (DES-974).
+- Don't show empty metadata values (DES-1004).
+- Vertical align of input titles in Collections and Missions (DES-977).
+
 ## v4.5.0-20190801
 
 Improvements:
