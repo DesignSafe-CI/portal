@@ -167,13 +167,6 @@ class PublicationPreviewSimCtrl {
             return false;
         }
     }
-
-    singleExperiment() {
-        if (this.browser.project.simulation_set.length === 1) {
-            return true;
-        }
-        return false;
-    }
     
     goWork() {
         this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser});

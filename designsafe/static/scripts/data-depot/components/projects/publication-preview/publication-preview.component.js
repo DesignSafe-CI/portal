@@ -185,13 +185,6 @@ class PublicationPreviewCtrl {
         }
     }
 
-    singleExperiment() {
-        if (this.browser.project.experiment_set.length === 1) {
-            return true;
-        }
-        return false;
-    }
-
     getEF(str) {
         let efs = this.ui.efs[this.browser.project.value.projectType];
         let ef = efs.find((ef) => {
