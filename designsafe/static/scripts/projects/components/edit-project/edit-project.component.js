@@ -70,6 +70,23 @@ class EditProjectCtrl {
             id: 'field_recon',
             lable: 'Field Research',
         }];
+
+        this.hasOrder = (items) => {
+            for (let i = 0; i < items.length; i++) {
+                if (typeof items[i].order == 'undefined') {
+                    return false;
+                }
+            }
+            return true;
+        };
+        this.setOrder = (items) => {
+            let inc = 0;
+            for (let i = 0; i < items.length; i++) {
+                items[i].order = inc;
+                inc ++;
+            }
+        };
+
         if (this.project) {
             // project metadata for edit form
             this.form.uuid = this.project.uuid;
@@ -93,30 +110,36 @@ class EditProjectCtrl {
             // awards
             if (this.project.value.awardNumber.length && typeof this.project.value.awardNumber != 'string') {
                 this.form.awardNumber = [];
-                this.project.value.awardNumber.forEach((exp) => {
-                    if (typeof exp != 'object') {                        
-                        if (exp) {
-                            this.form.awardNumber = [{name: '', number: exp}];
+                this.project.value.awardNumber.forEach((awrd) => {
+                    if (typeof awrd != 'object') {
+                        if (awrd) {
+                            this.form.awardNumber = [{name: '', number: awrd}];
                         }
                     } else {
-                        this.form.awardNumber.push(exp);
+                        this.form.awardNumber.push(awrd);
                     }
                 });
+                if (!this.hasOrder(this.form.awardNumber)) {
+                    this.setOrder(this.form.awardNumber);
+                }
             } else {
                 this.form.awardNumber = [{name: this.project.value.awardNumber, number: ''}];
             }
             // related work
             if (this.project.value.associatedProjects.length && typeof this.project.value.associatedProjects != 'string') {
                 this.form.associatedProjects = [];
-                this.project.value.associatedProjects.forEach((exp) => {
-                    if (typeof exp != 'object') {                        
-                        if (exp) {
-                            this.form.associatedProjects = [{name: '', number: exp}];
+                this.project.value.associatedProjects.forEach((aprj) => {
+                    if (typeof aprj != 'object') {
+                        if (aprj) {
+                            this.form.associatedProjects = [{name: '', number: aprj}];
                         }
                     } else {
-                        this.form.associatedProjects.push(exp);
+                        this.form.associatedProjects.push(aprj);
                     }
                 });
+                if (!this.hasOrder(this.form.associatedProjects)) {
+                    this.setOrder(this.form.associatedProjects);
+                }
             } else {
                 this.form.associatedProjects = new Array (1);
             }
@@ -206,12 +229,33 @@ class EditProjectCtrl {
         return typeof award === 'string';
     }
 
-    dropEntity(group) {
-        group.pop();
+    dropField(group, ordered) {
+        if (ordered) {
+            group.sort((a, b) => (a.order > b.order) ? 1 : -1);
+            group.pop();
+        } else {
+            group.pop();
+        }
     }
 
-    addEntity(group) {
+    addField(group) {
         group.push(undefined);
+    }
+
+    addAwardField(group) {
+        group.push({
+            "name": undefined,
+            "number": undefined,
+            "order": group.length + 1
+        });
+    }
+
+    addWorkField(group) {
+        group.push({
+            "title": undefined,
+            "href": undefined,
+            "order": group.length + 1
+        });
     }
 
     addGuests() {

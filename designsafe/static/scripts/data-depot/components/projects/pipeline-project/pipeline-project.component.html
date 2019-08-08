@@ -125,12 +125,12 @@
                 <td><strong>{{ $ctrl.project.value.awardNumber.join("") }}</strong></td>
             </tr>
             <tr ng-if="!$ctrl.isSingle($ctrl.project.value.awardNumber)"
-                ng-repeat="award in $ctrl.project.value.awardNumber track by $index">
+                ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
                 <td ng-if="$first">Awards</td>
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
-            <tr ng-repeat="work in $ctrl.project.value.associatedProjects">
+            <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
                 <td ng-if="$first">Related Work</td>
                 <td ng-if="!$first"></td>
                 <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>

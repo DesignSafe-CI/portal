@@ -73,12 +73,14 @@ class IndexedProject(DocType):
             'associatedProjects': Nested(properties={
                 'title': Text(analyzer='english'),
                 'href': Text(fields={'_exact':Keyword()}),
+                'order': Long(),
                 'delete': Boolean()
             }),
             'pi': Text(fields={'_exact': Keyword()}),
             'awardNumber': Nested(properties={
                 'number': Keyword(),
                 'name': Text(fields={'_exact': Keyword()}),
+                'order': Long(),
             }, multi=True),
         })
 
