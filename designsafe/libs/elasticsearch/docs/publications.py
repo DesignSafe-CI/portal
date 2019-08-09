@@ -87,6 +87,8 @@ class BaseESPublication(BaseESResource):
                      'systemId': 'designsafe.storage.published',
                      'type': 'dir',
                      'version': getattr(self, 'version', 1)}
+        if 'dataType' in self.project['value']:
+            dict_obj['meta']['dataType'] = self.project['value']['dataType']
         pi = self.project['value']['pi']
         pi_user = filter(lambda x: x['username'] == pi, getattr(self, 'users', []))
         if pi_user:
