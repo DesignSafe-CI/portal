@@ -35,7 +35,6 @@
                   <a ng-href="{{ item.href }}" ng-click="$ctrl.onBrowse($event, item)">
                       {{ $ctrl.renderName(item) }}
                   </a>
-                  <!-- get meta type... -->
                   <span style="text-transform:capitalize;">({{ $ctrl.getType(item.meta) || 'NEES' }})</span>
               </td>
               <td ng-if="item.meta.piLabel">
