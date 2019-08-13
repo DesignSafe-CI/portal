@@ -36,8 +36,42 @@ class PublicationPreviewFieldReconCtrl {
             this.ui.fileNav = false;
         }
 
-        this.createListings = () => {
-            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }).then((entities) => {
+        if (this.data && this.data.listing.path == this.filePath) {
+            this.browser = this.data;
+            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }).then((ents) => {
+                this.createListing(ents);
+            });
+        } else {
+            this.$q.all([
+                this.ProjectService.get({ uuid: this.projectId }),
+                this.DataBrowserService.browse(
+                    { system: 'project-' + this.projectId, path: this.filePath },
+                    { query_string: this.$state.params.query_string }
+                ),
+                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
+            ]).then(([project, listing, ents]) => {
+                this.browser.project = project;
+                this.browser.project.appendEntitiesRel(ents);
+                this.browser.listing = listing;
+                this.createListing(ents);
+            });
+        }
+
+        this.createListing = (entities) => {
+            this.browser.listing.href = this.$state.href('projects.view.data', {
+                projectId: this.projectId,
+                filePath: this.browser.listing.path,
+                projectTitle: this.browser.project.value.projectTitle,
+            });
+            this.browser.listing.children.forEach((child) => {
+                child.href = this.$state.href('projects.view.data', {
+                    projectId: this.projectId,
+                    filePath: child.path,
+                    projectTitle: this.browser.project.value.projectTitle,
+                });
+                child.setEntities(this.projectId, entities);
+            });
+            if (typeof this.browser.listings === 'undefined') {
                 var allFilePaths = [];
                 this.browser.listings = {};
                 var apiParams = {
@@ -79,7 +113,7 @@ class PublicationPreviewFieldReconCtrl {
                                 return resp;
                             });
                         });
-        
+
                         var step = () => {
                             var calls = fileCalls.slice(index, (index += size));
                             if (calls.length) {
@@ -107,48 +141,10 @@ class PublicationPreviewFieldReconCtrl {
                         });
                 };
                 this.setFilesDetails(allFilePaths);
-            });
-        };
-
-        if (this.data && this.data.listing.path == this.filePath) {
-            this.browser = this.data;
-            if (typeof this.browser.listings === 'undefined') {
-                this.createListings();
             } else {
                 this.ui.loading = false;
             }
-        } else {
-            this.$q.all([
-                this.ProjectService.get({ uuid: this.projectId }),
-                this.DataBrowserService.browse(
-                    { system: 'project-' + this.projectId, path: this.filePath },
-                    { query_string: this.$state.params.query_string }
-                ),
-                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
-            ]).then(([project, listing, entities]) => {
-                this.browser.project = project;
-                this.browser.project.appendEntitiesRel(entities);
-                this.browser.listing = listing;
-                this.browser.listing.href = this.$state.href('projects.view.data', {
-                    projectId: this.projectId,
-                    filePath: this.browser.listing.path,
-                    projectTitle: this.browser.project.value.projectTitle,
-                });
-                this.browser.listing.children.forEach((child) => {
-                    child.href = this.$state.href('projects.view.data', {
-                        projectId: this.projectId,
-                        filePath: child.path,
-                        projectTitle: this.browser.project.value.projectTitle,
-                    });
-                    child.setEntities(this.projectId, entities);
-                });
-                if (typeof this.browser.listings == 'undefined') {
-                    this.createListings();
-                } else {
-                    this.ui.loading = false;
-                }
-            });
-        }
+        };
     }
 
     matchingGroup(sim, model) {
