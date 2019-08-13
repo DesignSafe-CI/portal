@@ -143,7 +143,7 @@
             </a>
         </div>
         <div class="dropdown dropdown-spacer-sm" id="details-{{simulation.uuid}}">
-            <button class="btn tab-experiment" ng-class="{'collapsed': !$ctrl.singleExperiment()}" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
+            <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
                 <table style="width:100%">
                     <tr>
                         <td style="text-align: left;">
@@ -155,7 +155,7 @@
                     </tr>
                 </table>
             </button>
-            <div id="data-{{simulation.uuid}}" class="collapse dropdown-spacer-lg" ng-class="{'in': $ctrl.singleExperiment() || $ctrl.readOnly}">
+            <div id="data-{{simulation.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
                     <div style="display:inline-block; width:20%;">Simulation Type</div>
                     <strong ng-if="!$ctrl.isValid(simulation.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">

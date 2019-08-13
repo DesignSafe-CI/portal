@@ -169,13 +169,6 @@ class PublicationPreviewHybSimCtrl {
             return false;
         }
     }
-
-    singleExperiment() {
-        if (this.browser.project.hybridsimulation_set.length === 1) {
-            return true;
-        }
-        return false;
-    }
     
     goWork() {
         this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser});

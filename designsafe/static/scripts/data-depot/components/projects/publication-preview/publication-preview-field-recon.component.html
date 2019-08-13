@@ -192,11 +192,7 @@
                 </a>
             </div>
             <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
-                <button class="btn tab-experiment"
-                        ng-class="{'collapsed': !$ctrl.singleExperiment()}"
-                        data-toggle="collapse"
-                        data-target="#data-{{mission.uuid}}"
-                        style="width:100%;">
+                <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
                     <table style="width:100%">
                         <tr>
                             <td style="text-align: left;">
@@ -208,7 +204,7 @@
                         </tr>
                     </table>
                 </button>
-                <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg" ng-class="{'in': $ctrl.singleExperiment()}">
+                <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                     <div class="well">
                         <div style="display: inline-block; width:20%; vertical-align: top;">
                             Authors
@@ -334,7 +330,7 @@
                                         </tr>
                                     </table>
                                 </button>
-                                <div id="files-{{collection.uuid}}" class="collapse" ng-class="{'in': $ctrl.singleExperiment() || $ctrl.readOnly}">
+                                <div id="files-{{collection.uuid}}" class="collapse dropdown-spacer-lg">
                                     <div class="well">
                                         <div style="display: inline-block; width:20%;">Observation Type</div>
                                         <div style="display: inline-block; width: 78%; font-weight:bold;">
