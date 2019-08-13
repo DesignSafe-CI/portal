@@ -203,6 +203,7 @@ class DataDepotPublishedView(TemplateView):
             'institution': getattr(getattr(user, 'profile'), 'institution', '')
         } for user in getattr(pub, 'users', [])]
         context['publication'] = pub
+        context['description'] = pub.project.value.description
         
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
@@ -245,6 +246,7 @@ class DataDepotLegacyPublishedView(TemplateView):
                 'institution': ''
             } for user in users]
         context['publication'] = pub
+        context['description'] = pub.description
         
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({

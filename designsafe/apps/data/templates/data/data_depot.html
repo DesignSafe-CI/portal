@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load cms_tags staticfiles sekizai_tags%}
 
-{% block google_ciation_meta %}
+{% block google_citation_meta %}
     <!--data/data_depot.html-->
     <meta name="citation_title" content="{{citation_title}}">
     <meta name="citation_publication_date" content="{{citation_date}}">
@@ -19,7 +19,7 @@
     <!--data/data_depot.html-->
 {% endblock %}
 {% block title %}
-Data Depot {% if citation_title %} - {{citation_title}} {% endif %}
+{% if citation_title %}{{citation_title}} {% endif %}
 {% endblock %}
 {% block head_extra %}
     <base href="{% url 'designsafe_data:data_depot' %}">
