@@ -186,9 +186,9 @@ class FilesListingCtrl {
     }
 
     getType(meta) {
-        if (typeof meta.dataType != 'undefined' && meta.dataType != 'None') {
+        if (meta && typeof meta.dataType != 'undefined' && meta.dataType != 'None') {
             return meta.dataType;
-        } else {
+        } else if (meta && meta.type) {
             return meta.type;
         }
     }
