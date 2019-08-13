@@ -173,6 +173,7 @@ class FilesListingCtrl {
                  experiment_re.test(file.name.toLowerCase())){
             return file.metadata.experiments[0].title;
         }
+        console.log(file.name);
         return file.name;
     }
 
@@ -182,6 +183,14 @@ class FilesListingCtrl {
             [file],
             this.browser.listing
         );
+    }
+
+    getType(meta) {
+        if (typeof meta.dataType != 'undefined' && meta.dataType != 'None') {
+            return meta.dataType;
+        } else {
+            return meta.type;
+        }
     }
 
     showDescription(title, description) {
