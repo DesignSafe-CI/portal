@@ -175,9 +175,6 @@ class ProjectSitemap(sitemaps.Sitemap):
         count = 0
         while True:
             projects = PublicationsManager(None).listing(system=None, offset=count, limit=200)
-            if len(projects['children']) < count:
-                break
-            
             for proj in projects['children']:
                 if 'project' in proj:
                     # designsafe projects
@@ -197,6 +194,9 @@ class ProjectSitemap(sitemaps.Sitemap):
                     projPath.append('{root}public/{system}{project}'.format(**subpath))
                 else:
                     continue
+
+            if len(projects['children']) < 200:
+                break
             count += 200
 
         return projPath
