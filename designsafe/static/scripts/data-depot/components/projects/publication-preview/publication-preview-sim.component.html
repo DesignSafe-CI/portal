@@ -125,7 +125,7 @@
                     </tr>
                 </table>
             </button>
-            <div id="files-{{report.uuid}}" class="collapse" ng-class="{'in': $ctrl.readOnly}">
+            <div id="files-{{report.uuid}}" class="collapse">
                 <div class="well" ng-if="report.value.description">
                     <p>{{ report.value.description }}</p>
                 </div>
@@ -237,7 +237,7 @@
                                         </tr>
                                     </table>
                                 </button>
-                                <div id="files-{{report.uuid}}" class="collapse" ng-class="{'in': $ctrl.readOnly}">
+                                <div id="files-{{report.uuid}}" class="collapse">
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
@@ -261,7 +261,7 @@
                                         </tr>
                                     </table>
                                 </button>
-                                <div id="files-{{model.uuid}}" class="collapse" ng-class="{'in': $ctrl.readOnly}">
+                                <div id="files-{{model.uuid}}" class="collapse">
                                     <div class="well" ng-if="model.value.description">
                                         <p>{{ model.value.description }}</p>
                                     </div>
@@ -297,7 +297,7 @@
                                                     </tr>
                                                 </table>
                                             </button>
-                                            <div id="files-{{input.uuid}}{{model.uuid}}" class="collapse" ng-class="{'in': $ctrl.readOnly}">
+                                            <div id="files-{{input.uuid}}{{model.uuid}}" class="collapse">
                                                 <div class="well" ng-if="input.value.description">
                                                     <p>{{ input.value.description }}</p>
                                                 </div>
@@ -334,7 +334,7 @@
                                                                 </tr>
                                                             </table>
                                                         </button>
-                                                        <div id="files-{{output.uuid}}{{model.uuid}}" class="collapse" ng-class="{'in': $ctrl.readOnly}">
+                                                        <div id="files-{{output.uuid}}{{model.uuid}}" class="collapse">
                                                             <div class="well" ng-if="output.value.description">
                                                                 <p>{{ output.value.description }}</p>
                                                             </div>
@@ -367,7 +367,7 @@
                                         </tr>
                                     </table>
                                 </button>
-                                <div id="files-{{analysis.uuid}}" class="collapse" ng-class="{'in': $ctrl.readOnly}">
+                                <div id="files-{{analysis.uuid}}" class="collapse">
                                     <div class="well" ng-if="analysis.value.refs && analysis.value.description">
                                         <table class="tg" style="table-layout: fixed; width: 100%;">
                                             <colgroup>
