@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.5.0
+
+* task/DES-866 keep order of awards and related work.
+* task/DES-1200 minimize all entity fields in publication preview by default.
+* Task/DES-1179 - Replace (other) with datatype if provided in published listing.
+* task/DES-818 fix sitemap to catch all publications.
+* bug/Des-1201 fix bug causing publication preview to make redundant listings.
+* task/DES-1187 - Update Meta Tags on Published Projects.
+
 ## v4.5.0-20190802
 
 Fixes: 
