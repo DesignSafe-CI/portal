@@ -1,5 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.5.1
+
+* bug/DES-1205 NEES tag rendering bug fix.
+* task/DES-1207 minimize entity tabs in published area.
+
 ## v4.5.0
 
 * task/DES-866 keep order of awards and related work.
