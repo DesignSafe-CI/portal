@@ -229,8 +229,7 @@
                   style="width:100%;">
             Experiment {{experiment.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
-          <div id="data-{{experiment.uuid}}" class="collapse"
-               ng-class="{'in': $index == 0}">
+          <div id="data-{{experiment.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; margin-bottom:15px;">
               <div style= "padding:5px;">
                 <h3 style="margin-top:0">{{experiment.value.title}}</h3>
@@ -526,7 +525,7 @@
                   style="width:100%;">
             Analysis {{analysis.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
-          <div id="files-{{analysis.uuid}}" class="collapse in">
+          <div id="files-{{analysis.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
               <div style= "width:50%; display:inline-block;">
                 <h3 style="margin-top:0;">{{analysis.value.title}}</h3>
@@ -581,7 +580,7 @@
                   style="width:100%;">
             Report {{report.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
-          <div id="files-{{report.uuid}}" class="collapse in">
+          <div id="files-{{report.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
               <div style= "display:inline-block; width:100%;">
                 <h3 style="margin-top:0;">{{report.value.title}}</h3>
@@ -636,8 +635,7 @@
               style="width:100%">
         Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
       </button>
-      <div id="data-{{simulation.uuid}}" class="collapse"
-           ng-class="{'in': $index==0}">
+      <div id="data-{{simulation.uuid}}" class="collapse">
 
         <div style="border:1px solid black; background:white; margin-bottom:15px;">
           <div style="padding:5px;">
@@ -865,7 +863,7 @@
         <span ng-if="analysis.value.simulations.length">Simulation Analysis {{analysis.value.title}} </span>
         <i class="fa dropdown-caret"></i>
       </button>
-          <div id="data-{{analysis.uuid}}" class="collapse in">
+          <div id="data-{{analysis.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
               <table  class="table table-bordered table-striped"
                       style="background-color: #fff;">
@@ -890,8 +888,7 @@
               </table>
             </div>
           </div>
-      <div id="data-{{analysis.uuid}}" class="collapse"
-           ng-class="{'in': $index==0}">
+      <div id="data-{{analysis.uuid}}" class="collapse">
       </div>
     </div>
   </div>
@@ -905,7 +902,7 @@
         <span ng-if="report.value.simulations.length">Simulation Report {{report.value.title}} </span>
         <i class="fa dropdown-caret"></i>
       </button>
-          <div id="data-{{report.uuid}}" class="collapse in">
+          <div id="data-{{report.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
               <table  class="table table-bordered table-striped"
                       style="background-color: #fff;">
@@ -943,8 +940,7 @@
               style="width:100%">
         Hybrid Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
       </button>
-      <div id="data-{{simulation.uuid}}" class="collapse"
-           ng-class="{'in': $index==0}">
+      <div id="data-{{simulation.uuid}}" class="collapse">
 
         <div style="border:1px solid black; background:white; margin-bottom:15px;">
           <div style="padding:5px;">
@@ -1249,7 +1245,7 @@
         <span ng-if="analysis.value.simulations.length">Simulation Analysis {{analysis.value.title}} </span>
         <i class="fa dropdown-caret"></i>
       </button>
-          <div id="data-{{analysis.uuid}}" class="collapse in">
+          <div id="data-{{analysis.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
               <table  class="table table-bordered table-striped table-meta"
                       style="background-color: #fff;">
@@ -1274,8 +1270,7 @@
               </table>
             </div>
           </div>
-      <div id="data-{{analysis.uuid}}" class="collapse"
-           ng-class="{'in': $index==0}">
+      <div id="data-{{analysis.uuid}}" class="collapse">
       </div>
     </div>
   </div>
@@ -1289,7 +1284,7 @@
         <span ng-if="report.value.simulations.length">Simulation Report {{report.value.title}} </span>
         <i class="fa dropdown-caret"></i>
       </button>
-          <div id="data-{{report.uuid}}" class="collapse in">
+          <div id="data-{{report.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
               <table  class="table table-bordered table-striped table-meta"
                       style="background-color: #fff;">
