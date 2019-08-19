@@ -94,8 +94,6 @@ module.exports = function(env, arg) {
             jquery: 'jQuery',
             Modernizr: 'Modernizr',
             angular: 'angular',
-            // d3: 'd3',
-            // d3plus: 'd3plus',
             moment: 'moment',
             _: '_',
             window: 'window',
