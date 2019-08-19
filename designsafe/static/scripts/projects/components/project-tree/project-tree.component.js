@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import * as d3plus from 'd3plus';
 import _ from 'underscore';
 import ProjectTreeTemplate from './project-tree.template.html';
 
@@ -1430,6 +1431,7 @@ class ProjectTreeCtrl {
                 return 'translate(' + d.x + ',' + d.y + ')';
             });
         nodes.append('rect')
+            .attr('id', 'entityTag')
             .attr('width', 100)
             .attr('height', 25)
             .attr('rx', 5)
@@ -1443,6 +1445,7 @@ class ProjectTreeCtrl {
             .text( (d) => {
                 return d.data.display;
             })
+            .attr('class', 'entity-label')
             .attr('style', (d) => {
                 if (!d.data.uuid) {
                     return 'display: none';
@@ -1450,8 +1453,7 @@ class ProjectTreeCtrl {
                 return '';
             })
             .attr('y', 5)
-            .attr('x', 5)
-            .attr('class', 'entity-label');
+            .attr('x', 5);
 
         svg.selectAll('text.entity-label')
             .each((d, i, nds) => {
@@ -1468,18 +1470,38 @@ class ProjectTreeCtrl {
                     }
                 }
             });
+        
+        nodes.append('rect')
+            .attr('width', 600)
+            .attr('height', 45)
+            .attr('fill', 'none')
+            .attr('style', (d) => {
+                if (!d.data.uuid) {
+                    return 'display: none';
+                }
+                return `fill: #eee; stroke: #ccc;`;
+            })
+            .attr('y', (d) => { if (d.depth) { return -10; } return 0; })
+            .attr('x', (d) => {
+                if (d.data.uuid && d.depth) {
+                    let left = bboxes[d.data.uuid].width;
+                    return left + 15;
+                }
+                return 0;
+            });
 
         nodes.append('text')
             .text( (d) => {
                 return d.data.name;
             })
+            .attr('class', 'entity-name')
             .attr('style', (d) => {
                 if (!d.data.uuid) {
                     return 'display: none;';
                 }
                 return '';
             })
-            .attr('y', (d) => { if (d.depth) { return 5; } return 0; })
+            .attr('y', (d) => { if (d.depth) { return -10; } return 0; })
             .attr('x', (d) => {
                 if (d.data.uuid && d.depth) {
                     let left = bboxes[d.data.uuid].width;
@@ -1487,7 +1509,12 @@ class ProjectTreeCtrl {
                 }
                 return 0;
             })
-            .attr('class', 'entity-name');
+            .attr('id', (d) => {
+                if (!d.data.uuid) {
+                    return 'none';
+                }
+                return 'entity-name' + d.data.uuid;
+            });
 
         svg.selectAll('text.entity-name')
             .each( (d, i, nds) => {
@@ -1504,9 +1531,12 @@ class ProjectTreeCtrl {
                         btn.data.visited = true;
                     });
                 }
+                if (d.data.uuid) {
+                    d3plus.textwrap().container("#entity-name" + d.data.uuid).draw();
+                }
             });
 
-        svg.selectAll('rect')
+        svg.selectAll('#entityTag')
             .attr('width', (d) => {
                 if (d.data.uuid){
                     let width = bboxes[d.data.uuid].width;
