@@ -1397,7 +1397,7 @@ class ProjectTreeCtrl {
         this.trees[treeIndex].maxY = maxY;
         this.trees[treeIndex].maxX = maxX;
         let svg = canvas.append('svg')
-            .attr('width', '100%')
+            .attr('width', 868)
             .attr('height', maxY + 50)
             .attr('class', 'tree-svg');
         let group = svg.append('g')
@@ -1472,16 +1472,15 @@ class ProjectTreeCtrl {
             });
         
         nodes.append('rect')
-            .attr('width', 600)
+            .attr('width', (d) => {
+                if (d.data.uuid && d.depth) {
+                    let left = bboxes[d.data.uuid].width;
+                    return 668 - left - (50 * d.depth);
+                }
+            })
             .attr('height', 45)
             .attr('fill', 'none')
-            .attr('style', (d) => {
-                if (!d.data.uuid) {
-                    return 'display: none';
-                }
-                return `fill: #eee; stroke: #ccc;`;
-            })
-            .attr('y', (d) => { if (d.depth) { return -10; } return 0; })
+            .attr('y', (d) => { if (d.depth) { return -7; } return 0; })
             .attr('x', (d) => {
                 if (d.data.uuid && d.depth) {
                     let left = bboxes[d.data.uuid].width;
@@ -1501,8 +1500,11 @@ class ProjectTreeCtrl {
                 }
                 return '';
             })
-            .attr('y', (d) => { if (d.depth) { return -10; } return 0; })
+            .attr('y', (d) => { if (d.depth) { return -7; } return 0; })
             .attr('x', (d) => {
+                if (d.data.uuid && d.depth === 0) {
+                    return 10;
+                }
                 if (d.data.uuid && d.depth) {
                     let left = bboxes[d.data.uuid].width;
                     return left + 15;
@@ -1528,10 +1530,13 @@ class ProjectTreeCtrl {
                 if (btns.length) {
                     _.each(btns, (btn) => {
                         btn.data.btnStyle.left += bbox.width + 10;
+                        if (btn.data.btnStyle.left > 700) {
+                            btn.data.btnStyle.left = 700;
+                        }
                         btn.data.visited = true;
                     });
                 }
-                if (d.data.uuid) {
+                if (d.data.uuid && d.depth) {
                     d3plus.textwrap().container("#entity-name" + d.data.uuid).draw();
                 }
             });
