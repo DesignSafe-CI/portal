@@ -65,6 +65,14 @@ class Mission(RelatedEntity):
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(FieldReconProject)
 
+    def to_datacite_json(self):
+        """Serialize object to datacite JSON."""
+        attributes = super(self, Mission).to_datacite_json()
+        attributes['resourceType'] = "Mission/{location}".format(
+            location=self.location.title()
+        )
+        return attributes
+
 
 class Instrument(MetadataModel):
     _is_nested = True

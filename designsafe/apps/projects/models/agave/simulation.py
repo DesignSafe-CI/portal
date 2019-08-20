@@ -43,6 +43,19 @@ class Simulation(RelatedEntity):
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(SimulationProject)
 
+    def to_datacite_json(self):
+        """Serialize object to datacite JSON."""
+        attributes = super(self, Simulation).to_datacite_json()
+        if self.simulation_type_other:
+            attributes['resourceType'] = "Simulation/{simulation_type}".format(
+                simulation_type=self.simulation_type_other.title()
+            )
+        else:
+            attributes['resourceType'] = "Simulation/{simulation_type}".format(
+                simulation_type=self.simulation_type.title()
+            )
+        return attributes
+
 
 class Model(RelatedEntity):
     model_name = 'designsafe.project.simulation.model'

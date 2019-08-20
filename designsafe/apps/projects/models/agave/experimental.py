@@ -48,6 +48,24 @@ class Experiment(RelatedEntity):
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(ExperimentalProject)
 
+    def to_datacite_json(self):
+        """Serialize object to datacite JSON."""
+        attributes = super(self, Experiment).to_datacite_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.experimental_facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "contributorName": self.experimental_facility,
+            }
+        ]
+        attributes['resourceType'] = "Experiment/{experiment_type}".format(
+            experiment_type=self.experiment_type.title()
+        )
+        return attributes
+
+
 class Analysis(RelatedEntity):
     model_name = 'designsafe.project.analysis'
     analysis_type = fields.CharField('Analysis Type', max_length=255, default='other')

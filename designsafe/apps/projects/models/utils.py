@@ -43,7 +43,6 @@ def lookup_model(entity=None, name=None):
         if not comp:
             continue
         name += comp[0].upper() + comp[1:]
-    logger.debug('name: %s', name)
     cls = None
     for module in modules:
         try:
