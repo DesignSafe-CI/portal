@@ -41,8 +41,8 @@ class CommunityDataSearchManager(BaseSearchManager):
             must=[
                 Q({'term': {'_index': files_index_name}}),
                 Q('term', system="designsafe.storage.community"),
-                Q("query_string", query=self.query_string, default_operator="and"),
-                Q("term", type="file")
+                Q("query_string", query=self.query_string, default_operator="and", fields=['name', 'name._exact']),
+                Q("term", type="file") | Q("term", type="dir") 
             ],
             must_not=[
                 Q({"prefix": {"path._exact": "/Trash"}})

@@ -626,3 +626,5 @@ PORTAL_DATA_DEPOT_SEARCH_MANAGERS = {
     'published': 'designsafe.apps.api.search.searchmanager.published_files.PublishedDataSearchManager',
     'community': 'designsafe.apps.api.search.searchmanager.community.CommunityDataSearchManager'
 }
+
+COMMUNITY_INDEX_SCHEDULE = os.environ.get('COMMUNITY_INDEX_SCHEDULE', {})
