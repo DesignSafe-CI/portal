@@ -71,7 +71,8 @@ class FilesListingCtrl {
         let filePath = '/';
         let version = 1;
         for (var i = 0; i < this.breadcrumbs.length; i++) {
-            filePath = filePath.concat(this.breadcrumbs[i]);
+            filePath = filePath.concat(this.breadcrumbs[i] + '/');
+            console.log(filePath);
             if (this.breadcrumbs[i] === path) { break; }
         }
         return this.$state.go(
