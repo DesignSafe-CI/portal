@@ -188,8 +188,7 @@ def _project_required_xml(project, authors, created, doi=None):
             now = dateutil.parser.parse(created)
             publication_year.text = str(now.year)
     except:
-        logger.exception('Error formatting creation date (value): %s', created)
-        logger.exception('Error formatting creation date (type): %s', type(created))
+        logger.exception('Error formatting creation date:', extra={'value': created, 'type': type(created)})
 
     resource_type = ET.SubElement(resource, 'resourceType')
     resource_type.text = "Project/{}".format(project.project_type.title())
@@ -250,8 +249,7 @@ def _experiment_required_xml(authors_details, experiment, created, exp_doi=None)
             now = dateutil.parser.parse(created)
             publication_year.text = str(now.year)
     except:
-        logger.exception('Error formatting creation date (value): %s', created)
-        logger.exception('Error formatting creation date (type): %s', type(created))
+        logger.exception('Error formatting creation date:', extra={'value': created, 'type': type(created)})
 
     resource_type = ET.SubElement(resource, 'resourceType')
     resource_type.text = "Experiment/{}".format(experiment.experiment_type.title())
@@ -298,8 +296,7 @@ def _analysis_required_xml(users, analysis, created):
             now = dateutil.parser.parse(created)
             publication_year.text = str(now.year)
     except:
-        logger.exception('Error formatting creation date (value): %s', created)
-        logger.exception('Error formatting creation date (type): %s', type(created))
+        logger.exception('Error formatting creation date:', extra={'value': created, 'type': type(created)})
 
     resource_type = ET.SubElement(resource, 'resourceType')
     resource_type.text = 'Analysis'
@@ -360,8 +357,7 @@ def _simulation_required_xml(authors_details, simulation, created, sim_doi=None)
             now = dateutil.parser.parse(created)
             publication_year.text = str(now.year)
     except:
-        logger.exception('Error formatting creation date (value): %s', created)
-        logger.exception('Error formatting creation date (type): %s', type(created))
+        logger.exception('Error formatting creation date:', extra={'value': created, 'type': type(created)})
 
     resource_type = ET.SubElement(resource, 'resourceType')
     resource_type.text = "Simulation/{}".format(
@@ -424,8 +420,7 @@ def _mission_required_xml(authors_details, mission, created, mis_doi=None):
             now = dateutil.parser.parse(created)
             publication_year.text = str(now.year)
     except:
-        logger.exception('Error formatting creation date (value): %s', created)
-        logger.exception('Error formatting creation date (type): %s', type(created))
+        logger.exception('Error formatting creation date:', extra={'value': created, 'type': type(created)})
 
     resource_type = ET.SubElement(resource, 'resourceType')
     resource_type.text = "Mission/{}".format(
@@ -787,8 +782,8 @@ def project_reserve_xml(publication, project, authors_details=None):
         elif isinstance(publication['created'], basestring):
             now = dateutil.parser.parse(publication['created'])
     except:
-        logger.exception('Error formatting creation date (value): %s', publication['created'])
-        logger.exception('Error formatting creation date (type): %s', type(publication['created']))
+        logger.exception('Error formatting creation date:',
+                extra={'value': publication['created'], 'type': type(publication['created'])})
     
     if not publication['project'].get('doi', ''):
         reserve_resp = _reserve_doi(xml_obj, TARGET_BASE.format(project_id=project.project_id))
