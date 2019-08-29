@@ -1,5 +1,18 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.6.0-20190803
+
+* moved prj id column, added styles for column widths - DES-1203
+* Add text wrap to long names in Data Diagram - DES-1142
+* Close dropdowns by default in older publication template - DES-1210
+* Add recurring task for community data indexing - DES-1211
+* Enable selection boxes for published area - DES-1219
+* Fix breadcrumbs href creation - DES-1218 
+* Check for datetime obj or date string when setting creation date - DES-1253
+* Update node-sass version for compatibility with Node 12 - DES-1206
+* Add field recon to publication filter checklist - DES-1209
+* Update DOI workflow to fix bugs and use Datacite DOI - DES-1183
+
 ## v4.5.1
 
 * bug/DES-1205 NEES tag rendering bug fix.
