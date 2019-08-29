@@ -68,10 +68,10 @@ class FilesListingCtrl {
         }
         let systemId = this.browser.listing.system || this.browser.listing.systemId;
         let stateName = this.$state.current.name;
-        let filePath = '/';
+        let filePath = '';
         let version = 1;
         for (var i = 0; i < this.breadcrumbs.length; i++) {
-            filePath = filePath.concat(this.breadcrumbs[i]);
+            filePath = filePath.concat(this.breadcrumbs[i] + '/');
             if (this.breadcrumbs[i] === path) { break; }
         }
         return this.$state.go(
