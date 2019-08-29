@@ -57,7 +57,7 @@ class PublishedViewCtrl {
                     this.browser.project = resp.data.project;
                     this.project = resp.data.project;
                     this.fl = {
-                        showSelect: false,
+                        showSelect: true,
                         showHeader: this.browser.project.value.projectType === 'other',
                         showTags: true,
                         editTags: false,
