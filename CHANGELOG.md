@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.6.1-20190804
+
+* Fix d3plus bundling with webpack - DES-1259
+
 ## v4.6.0-20190803
 
 * moved prj id column, added styles for column widths - DES-1203
