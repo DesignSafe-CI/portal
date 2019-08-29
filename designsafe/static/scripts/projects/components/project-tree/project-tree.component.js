@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import * as d3plus from 'd3plus';
 import _ from 'underscore';
 import ProjectTreeTemplate from './project-tree.template.html';
 
@@ -1396,7 +1397,7 @@ class ProjectTreeCtrl {
         this.trees[treeIndex].maxY = maxY;
         this.trees[treeIndex].maxX = maxX;
         let svg = canvas.append('svg')
-            .attr('width', '100%')
+            .attr('width', 868)
             .attr('height', maxY + 50)
             .attr('class', 'tree-svg');
         let group = svg.append('g')
@@ -1430,6 +1431,7 @@ class ProjectTreeCtrl {
                 return 'translate(' + d.x + ',' + d.y + ')';
             });
         nodes.append('rect')
+            .attr('id', 'entityTag')
             .attr('width', 100)
             .attr('height', 25)
             .attr('rx', 5)
@@ -1443,6 +1445,7 @@ class ProjectTreeCtrl {
             .text( (d) => {
                 return d.data.display;
             })
+            .attr('class', 'entity-label')
             .attr('style', (d) => {
                 if (!d.data.uuid) {
                     return 'display: none';
@@ -1450,8 +1453,7 @@ class ProjectTreeCtrl {
                 return '';
             })
             .attr('y', 5)
-            .attr('x', 5)
-            .attr('class', 'entity-label');
+            .attr('x', 5);
 
         svg.selectAll('text.entity-label')
             .each((d, i, nds) => {
@@ -1468,26 +1470,53 @@ class ProjectTreeCtrl {
                     }
                 }
             });
-
-        nodes.append('text')
-            .text( (d) => {
-                return d.data.name;
-            })
-            .attr('style', (d) => {
-                if (!d.data.uuid) {
-                    return 'display: none;';
+        
+        nodes.append('rect')
+            .attr('width', (d) => {
+                if (d.data.uuid && d.depth) {
+                    let left = bboxes[d.data.uuid].width;
+                    return 668 - left - (50 * d.depth);
                 }
-                return '';
             })
-            .attr('y', (d) => { if (d.depth) { return 5; } return 0; })
+            .attr('height', 45)
+            .attr('fill', 'none')
+            .attr('y', (d) => { if (d.depth) { return -7; } return 0; })
             .attr('x', (d) => {
                 if (d.data.uuid && d.depth) {
                     let left = bboxes[d.data.uuid].width;
                     return left + 15;
                 }
                 return 0;
+            });
+
+        nodes.append('text')
+            .text( (d) => {
+                return d.data.name;
             })
-            .attr('class', 'entity-name');
+            .attr('class', 'entity-name')
+            .attr('style', (d) => {
+                if (!d.data.uuid) {
+                    return 'display: none;';
+                }
+                return '';
+            })
+            .attr('y', (d) => { if (d.depth) { return -7; } return 0; })
+            .attr('x', (d) => {
+                if (d.data.uuid && d.depth === 0) {
+                    return 10;
+                }
+                if (d.data.uuid && d.depth) {
+                    let left = bboxes[d.data.uuid].width;
+                    return left + 15;
+                }
+                return 0;
+            })
+            .attr('id', (d) => {
+                if (!d.data.uuid) {
+                    return 'none';
+                }
+                return 'entity-name' + d.data.uuid;
+            });
 
         svg.selectAll('text.entity-name')
             .each( (d, i, nds) => {
@@ -1501,12 +1530,18 @@ class ProjectTreeCtrl {
                 if (btns.length) {
                     _.each(btns, (btn) => {
                         btn.data.btnStyle.left += bbox.width + 10;
+                        if (btn.data.btnStyle.left > 700) {
+                            btn.data.btnStyle.left = 700;
+                        }
                         btn.data.visited = true;
                     });
                 }
+                if (d.data.uuid && d.depth) {
+                    d3plus.textwrap().container("#entity-name" + d.data.uuid).draw();
+                }
             });
 
-        svg.selectAll('rect')
+        svg.selectAll('#entityTag')
             .attr('width', (d) => {
                 if (d.data.uuid){
                     let width = bboxes[d.data.uuid].width;

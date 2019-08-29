@@ -69,6 +69,12 @@ module.exports = function(env, arg) {
                         }]
                     })
                 },
+                {
+                    test: /\.coffee$/,
+                    use: [{
+                        loader: 'coffee-loader'
+                    }]
+                },
             ]
         },
         plugins: [
@@ -77,7 +83,9 @@ module.exports = function(env, arg) {
             new webpack.ProvidePlugin({
                 jQuery: 'jquery',
                 $: 'jquery',
-                jquery: 'jquery'
+                jquery: 'jquery',
+                d3: 'd3',
+                d3plus: 'd3plus',
             })
         ],
         externals: {
@@ -86,7 +94,6 @@ module.exports = function(env, arg) {
             jquery: 'jQuery',
             Modernizr: 'Modernizr',
             angular: 'angular',
-            d3: 'd3',
             moment: 'moment',
             _: '_',
             window: 'window',

@@ -46,7 +46,7 @@
             <div class="dropdown"
                  data-ng-repeat="leaf in $ctrl.dropdownsData"
                  data-ng-style="leaf.data.style">
-                <select data-ng-model="$ctrl.treeRelation[$index]">
+                <select data-ng-model="$ctrl.treeRelation[$index]" style="width: 300px;">
                     <option value="">{{leaf.data.name}}</option>
                     <option data-ng-repeat="option in $ctrl.entitiesList(leaf.data.attr)"
                             value="{{option.uuid}}">{{option.value.title}}
