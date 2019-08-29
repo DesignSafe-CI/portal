@@ -19,7 +19,10 @@
     <!--data/data_depot.html-->
 {% endblock %}
 {% block title %}
-{% if citation_title %}{{citation_title}} {% endif %}
+{% if citation_title %}{{citation_title}} 
+{% else %}
+Data Depot
+{% endif %}
 {% endblock %}
 {% block head_extra %}
     <base href="{% url 'designsafe_data:data_depot' %}">
