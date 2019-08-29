@@ -37,8 +37,6 @@ WORKDIR /srv/www/designsafe
 
 RUN chown -R tg458981:G-816877 /srv/www/designsafe
 
-RUN su tg458981 -c "bower install"
-
 RUN npm install
 
 RUN mkdir -p  designsafe/static/cascade/css/fonts/ && cp -R designsafe/static/vendor/bootstrap/fonts/* designsafe/static/cascade/css/fonts/.
