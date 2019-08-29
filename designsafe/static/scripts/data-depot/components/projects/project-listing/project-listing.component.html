@@ -2,12 +2,12 @@
     <div class="ds-table-display-wrapper" ds-infinite-scroll data-scroll-bottom="scrollToBottom()()" data-scroll-top="scrollToTop()()" data-bottom-height="0">
       <table class="table table-bordered table-striped" style="background-color: #fff;">
           <thead>
-          <th>Project Title</th>
-          <th>Project ID</th>
-          <th>PI</th>
-          <th>Last Modified</th>
+            <th style="width:10%">Project ID</th>
+            <th style="width:55%">Project Title</th>
+            <th style="width:20%">PI</th>
+            <th style="width:15%">Last Modified</th>
           </thead>
-  
+
           <tbody>
           <tr ng-repeat="project in data.projects"
               ng-if="data.projects && ! browser.busyListing"
@@ -15,12 +15,12 @@
               ng-class="{'ds-data-selected': project.selected}"
           >
               <td>
+                {{project.value.projectId}}
+              </td>
+              <td>
                   <a ng-href="{{ project.href }}">
                       {{ project.value.title }}
                   </a>
-              </td>
-              <td>
-                {{project.value.projectId}}
               </td>
               <td>
                 {{data.names[project.value.pi]}}
