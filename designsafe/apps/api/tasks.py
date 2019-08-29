@@ -773,14 +773,45 @@ def copy_publication_files_to_corral(self, project_id):
     save_to_fedora.apply_async(args=[project_id])
     agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': '/' + project_id, 'recurse':True}, queue='indexing')
 
+
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def save_publication(self, project_id):
-    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication  
-    from designsafe.apps.api.projects.managers import publication as PublicationManager
+def freeze_publication_meta(self, project_id, entity_uuid):
+    """Freeze publication meta.
+
+    :param str project_id: Project Id.
+    :param str entity_uuid: Entity uuid.
+    """
+    from designsafe.apps.projects.managers import publication as PublicationManager
     try:
-        pub = BaseESPublication(project_id=project_id)
-        publication = PublicationManager.reserve_publication(pub.to_dict())
-        pub.update(**publication)
+        PublicationManager.freeze_project_and_entity_metadata(
+            project_id,
+            entity_uuid
+        )
+    except Exception as exc:
+        logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
+        raise self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=1, default_retry_delay=60)
+def save_publication(self, project_id, entity_uuid=None):
+    """Save publication.
+
+    This task will create a draft DOI and copy all metadata to ES.
+    For project types other than 'Other' a main entity uuid *must* be given.
+
+    :param str project_id: Project Id.
+    :param str entity_uuid: Main entity uuid.
+    """
+    from designsafe.apps.projects.managers import publication as PublicationManager
+    try:
+        PublicationManager.draft_publication(
+            project_id,
+            entity_uuid
+        )
+        PublicationManager.freeze_project_and_entity_metadata(
+            project_id,
+            entity_uuid
+        )
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
@@ -810,10 +841,12 @@ def zip_publication_files(self, project_id):
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
-def set_publish_status(self, project_id):
-    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
-    pub = BaseESPublication(project_id=project_id)
-    pub.update(status='published')
+def set_publish_status(self, project_id, entity_uuid):
+    from designsafe.apps.projects.managers import publication as PublicationManager
+    PublicationManager.publish_resource(
+        project_id,
+        entity_uuid
+    )
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_to_fedora(self, project_id):

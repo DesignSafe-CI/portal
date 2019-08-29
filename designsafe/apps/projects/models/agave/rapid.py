@@ -38,6 +38,7 @@ class FieldReconProject(Project):
     nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
     nh_event_end = fields.CharField('Date End', max_length=1024, default='')
     nh_types = fields.ListField('Natural Hazard Type')
+    dois = fields.ListField('Dois')
 
 
 class FileModel(MetadataModel):
@@ -64,11 +65,12 @@ class Mission(RelatedEntity):
     authors = fields.ListField('Authors')
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(FieldReconProject)
+    dois = fields.ListField('Dois')
 
     def to_datacite_json(self):
         """Serialize object to datacite JSON."""
-        attributes = super(self, Mission).to_datacite_json()
-        attributes['resourceType'] = "Mission/{location}".format(
+        attributes = super(Mission, self).to_datacite_json()
+        attributes['types']['resourceType'] = "Mission/{location}".format(
             location=self.location.title()
         )
         return attributes

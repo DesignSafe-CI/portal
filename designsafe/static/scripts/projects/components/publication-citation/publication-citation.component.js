@@ -38,7 +38,7 @@ class PublicationCitationCtrl {
                 }
             }
         );
-        this.citationDate = this.publication.created.split('T')[0];
+        this.citationDate = this.publication.created.split('T')[0].split('-')[0];
         this.citationUrl = 'https://doi.org/' + this.doi.slice(4);
         this.doiCitation = this.doi.slice(4);
     }

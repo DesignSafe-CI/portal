@@ -21,6 +21,7 @@ class ExperimentalProject(Project):
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512)
     keywords = fields.CharField('Keywords')
+    dois = fields.ListField('Dois')
 
 class FileModel(MetadataModel):
     model_name = 'designsafe.file'
@@ -47,20 +48,22 @@ class Experiment(RelatedEntity):
     procedure_end = fields.CharField('Procedure End', max_length=1024, default='')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(ExperimentalProject)
+    dois = fields.ListField('Dois')
 
     def to_datacite_json(self):
         """Serialize object to datacite JSON."""
-        attributes = super(self, Experiment).to_datacite_json()
+        attributes = super(Experiment, self).to_datacite_json()
         attributes["subjects"] = attributes.get("subjects", []) + [
             {"subject": self.experimental_facility.title(), }
         ]
         attributes["contributors"] = attributes.get("contributors", []) + [
             {
                 "contributorType": "HostingInstitution",
-                "contributorName": self.experimental_facility,
+                "nameType": "Organizational",
+                "name": self.experimental_facility,
             }
         ]
-        attributes['resourceType'] = "Experiment/{experiment_type}".format(
+        attributes['types']['resourceType'] = "Experiment/{experiment_type}".format(
             experiment_type=self.experiment_type.title()
         )
         return attributes

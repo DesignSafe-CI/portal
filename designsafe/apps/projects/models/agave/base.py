@@ -29,8 +29,8 @@ class RelatedEntity(MetadataModel):
     def to_datacite_json(self):
         """Serialize object to datacite JSON.
 
-        Every entity subclassing this class should add a `attributes['resourceType']`
-        e.g. ``attributes['resourceType'] = Experiment/{}.format(experiment.experiment_type``
+        Every entity subclassing this class should add a `attributes['types']['resourceType']`
+        e.g. ``attributes['types']['resourceType'] = Experiment/{}.format(experiment.experiment_type``
         as well as any specific subjects.
         """
         attributes = {}
@@ -42,7 +42,8 @@ class RelatedEntity(MetadataModel):
         attributes['contributors'] = [
             {
                 'contributorType': 'HostingInstitution',
-                'contributorName': institution,
+                'nameType': 'Organizational',
+                'name': institution,
             } for institution in institutions
         ]
         attributes['titles'] = [
@@ -51,7 +52,8 @@ class RelatedEntity(MetadataModel):
         attributes['publisher'] = 'Designsafe-CI'
         utc_now = datetime.datetime.utcnow()
         attributes['publicationYear'] = utc_now.year
-        attributes['resourceTypeGeneral'] = 'Dataset'
+        attributes['types'] = {}
+        attributes['types']['resourceTypeGeneral'] = 'Dataset'
         attributes['descriptions'] = [
             {
                 'descriptionType': 'Abstract',
@@ -88,6 +90,7 @@ class Project(MetadataModel):
     ef = fields.CharField('Experimental Facility', max_length=512)
     keywords = fields.CharField('Keywords')
     file_tags = fields.ListField('File Tags')
+    dois = fields.ListField('Dois')
 
     @property
     def system(self):
@@ -271,7 +274,8 @@ class Project(MetadataModel):
         attributes['contributors'] = [
             {
                 'contributorType': 'HostingInstitution',
-                'contributorName': institution,
+                'nameType': 'Organizational',
+                'name': institution,
             } for institution in institutions
         ]
         attributes['titles'] = [
@@ -280,14 +284,15 @@ class Project(MetadataModel):
         attributes['publisher'] = 'Designsafe-CI'
         utc_now = datetime.datetime.utcnow()
         attributes['publicationYear'] = utc_now.year
-        attributes['resourceType'] = 'Project/{}'.format(
+        attributes['types'] = {}
+        attributes['types']['resourceType'] = 'Project/{}'.format(
             self.project_type.title().replace('_', ' ')
         )
 
         if getattr(self, 'data_type', False):
-            attributes['resourceType'] += '/{}'.format(self.data_type)
+            attributes['types']['resourceType'] += '/{}'.format(self.data_type)
 
-        attributes['resourceTypeGeneral'] = 'Dataset'
+        attributes['types']['resourceTypeGeneral'] = 'Dataset'
         attributes['descriptions'] = [
             {
                 'descriptionType': 'Abstract',

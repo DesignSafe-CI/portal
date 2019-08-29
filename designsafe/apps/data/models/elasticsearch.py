@@ -294,9 +294,15 @@ class IndexedPublication(DocType):
         if project_id is None:
             raise DocumentNotFound()
             
-        search = cls.search().query(Q({"term":
-                                         {"projectId.keyword": project_id}
-                                         }))
+        search = cls.search().query(
+            Q(
+                {"term":
+                    {
+                        "projectId._exact": project_id
+                    }
+                }
+            )
+        )
         try:
             res = search.execute()
         except Exception as e:

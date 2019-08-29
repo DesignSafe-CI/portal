@@ -64,24 +64,34 @@ class PublicationView(BaseApiView):
         #logger.debug('publication: %s', json.dumps(data, indent=2))
         status = data.get('status', 'saved')
         pub = PublicationsManager(None).save_publication(
-            data['publication'], status)
+            data['publication'],
+            status
+        )
         if data.get('status', 'save').startswith('publish'):
             (
+                tasks.freeze_publication_meta.s(
+                    pub.projectId,
+                    data['mainEntityUuid']
+                ).set(queue='api') |
                 group(
-                    tasks.save_publication.s(
-                        pub.projectId
+                    tasks.save_publication.si(
+                        pub.projectId,
+                        data['mainEntityUuid']
                     ).set(
                         queue='files',
                         countdown=60
                     ),
-                    tasks.copy_publication_files_to_corral.s(
+                    tasks.copy_publication_files_to_corral.si(
                         pub.projectId
                     ).set(
                         queue='files',
                         countdown=60
                     )
                 ) |
-                tasks.set_publish_status.si(pub.projectId) |
+                tasks.set_publish_status.si(
+                    pub.projectId,
+                    data['mainEntityUuid']
+                ) |
                 tasks.zip_publication_files.si(pub.projectId)
             ).apply_async()
 

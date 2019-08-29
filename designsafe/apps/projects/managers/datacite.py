@@ -17,8 +17,6 @@ DATACITE_USER = settings.DATACITE_USER
 DATACITE_PASS = settings.DATACITE_PASS
 DATACITE_URL = settings.DATACITE_URI
 SHOULDER = getattr(settings, 'DATACITE_SHOULDER', '').strip('doi:')
-TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}'
-ENTITY_TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}/#details-{entity_uuid}'
 DOIS_URL = '{base_url}/dois'.format(base_url=DATACITE_URL.strip('/'))
 
 
@@ -39,7 +37,7 @@ def get_doi(doi):
     return res.json()
 
 
-def crate_or_update_doi(attributes=None, doi=None):
+def create_or_update_doi(attributes=None, doi=None):
     """Create or updates a DOI.
 
     There are three main use cases for this function:
@@ -118,8 +116,7 @@ def crate_or_update_doi(attributes=None, doi=None):
         res.raise_for_status()
     except HTTPError as exc:
         LOGGER.exception(
-            "Error creating or updating a DOI: %s (%s) - %s - %s: %s \n %s",
-            json.dumps(payload, indent=2),
+            "Error creating or updating a DOI: (%s) - %s - %s: %s \n %s",
             exc.response.status_code,
             exc.request.method,
             exc.response.reason,
@@ -138,7 +135,7 @@ def publish_doi(doi):
     :param str doi: Doi to publish.
     """
     attributes = {'event': 'publish'}
-    return crate_or_update_doi(attributes, doi)
+    return create_or_update_doi(attributes, doi)
 
 
 def register_doi(doi):
@@ -149,7 +146,7 @@ def register_doi(doi):
     :param str doi: Doi to register.
     """
     attributes = {'event': 'register'}
-    return crate_or_update_doi(attributes, doi)
+    return create_or_update_doi(attributes, doi)
 
 
 def hide_doi(doi):
@@ -160,7 +157,7 @@ def hide_doi(doi):
     :param str doi: Doi to hide.
     """
     attributes = {'event': 'hide'}
-    return crate_or_update_doi(attributes, doi)
+    return create_or_update_doi(attributes, doi)
 
 
 def delete_doi(doi):

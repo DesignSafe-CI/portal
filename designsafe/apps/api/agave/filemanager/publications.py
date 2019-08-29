@@ -81,24 +81,11 @@ class PublicationsManager(AgaveFileManager):
         return result
 
     def save_publication(self, publication, status='publishing'):
-        keys_to_delete = []
-        for key in publication['project']:
-            if key.endswith('_set'):
-                keys_to_delete.append(key)
-            if key.startswith('_'):
-                keys_to_delete.append(key)
-
-        for key in keys_to_delete:
-            publication['project'].pop(key, '')
 
         publication['projectId'] = publication['project']['value']['projectId']
         publication['created'] = datetime.datetime.now().isoformat()
         publication['status'] = status
         publication['version'] = 2
-        publication['project']['value']['awardNumbers'] = publication['project']['value'].pop(
-            'awardNumber', []
-        )
-        publication['project']['value']['awardNumber'] = ''
         publication['licenses'] = publication.pop('license', [])
         publication['license'] = ''
 
