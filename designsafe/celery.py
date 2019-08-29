@@ -34,6 +34,12 @@ app.conf.update(
     }
 )
 
+if settings.COMMUNITY_INDEX_SCHEDULE:
+    app.conf.beat_schedule['index_community'] = {
+        'task': 'designsafe.apps.search.tasks.index_community_data',
+        'schedule': crontab(**settings.COMMUNITY_INDEX_SCHEDULE)
+    }
+
 @app.task(bind=True)
 def debug_task(self):
     print('Request: {0!r}'.format(self.request))

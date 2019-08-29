@@ -49,7 +49,7 @@ class PrivateDataSearchManager(BaseSearchManager):
                 Q({'term': {'_index': files_index_name}}),
                 Q({'term': {'system._exact': system}}),
                 storage_prefix_query,
-                Q("query_string", query=self.query_string, default_operator="and")
+                Q("query_string", query=self.query_string, default_operator="and", fields=['name', 'name._exact'])
             ],
             must_not=[
                 Q({"prefix": {"path._exact": "/.Trash"}})

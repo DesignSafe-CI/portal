@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 # pylint: disable=too-many-locals
 @python_2_unicode_compatible
-def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
+def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False, paths_to_ignore=[]):
     """Walk a pth in an Agave storgae system.
 
     This generator will walk an agave storage system and return a tuple with
@@ -60,7 +60,7 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
     for json_file in listing:
         if json_file['name'] == '.':
             continue
-        if ignore_hidden and json_file['name'][0] == '.':
+        if (ignore_hidden and json_file['name'][0] == '.') or (json_file['name'] in paths_to_ignore):
             continue
         _file = BaseFileResource(client, **json_file)
         if _file.format == 'folder':
