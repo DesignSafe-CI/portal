@@ -36,10 +36,10 @@ module.exports = function(env, arg) {
             rules: [
                 {
                     test: /\.js$/,
-                    exclude: /node_modules/,
+                    exclude: /(node_modules|bower_components)/,
                     loader: 'babel-loader',
                     options: {
-                        presets: ['es2015'],
+                        presets: ['babel-preset-env'],
                         plugins: ["angularjs-annotate"]
                     }
                 },
@@ -85,7 +85,6 @@ module.exports = function(env, arg) {
                 $: 'jquery',
                 jquery: 'jquery',
                 d3: 'd3',
-                d3plus: 'd3plus',
             })
         ],
         externals: {
@@ -97,7 +96,8 @@ module.exports = function(env, arg) {
             moment: 'moment',
             _: '_',
             window: 'window',
-            djng: 'djng'
+            djng: 'djng',
+            d3plus: 'd3plus',
         }
     };
 };

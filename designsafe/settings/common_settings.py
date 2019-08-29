@@ -261,6 +261,7 @@ STATICFILES_DIRS = [
     ('vendor/leaflet-measure', os.path.join(BASE_DIR, 'node_modules', 'leaflet-measure')),
     ('vendor/exif-js', os.path.join(BASE_DIR, 'node_modules', 'exif-js')),
     ('vendor/angular-native-dragdrop', os.path.join(BASE_DIR, 'node_modules', 'angular-native-dragdrop')),
+    ('vendor/d3plus', os.path.join(BASE_DIR, 'node_modules', 'd3plus')),
 ]
 STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
 #STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'

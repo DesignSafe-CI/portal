@@ -10,10 +10,8 @@ ENV TERM xterm
 RUN apt-get update && \
     apt-get upgrade -y && \
     curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - && \
-    apt-get install -y build-essential python python-dev gettext nodejs xvfb chromium-browser ruby-sass && \
+    apt-get install -y build-essential python python-dev gettext nodejs xvfb chromium-browser ruby-sass vim && \
     curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python
-
-RUN npm install -g bower
 
 RUN pip install --upgrade pip && pip install uwsgi uwsgitop
 
