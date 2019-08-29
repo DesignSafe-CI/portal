@@ -24,7 +24,10 @@ class RelatedQuery(object):
 
     def __call__(self, agave_client):
         metas = agave_client.meta.listMetadata(q=json.dumps(self.query))
-        return  [self.rel_cls(**meta) for meta in metas]
+        ents = [self.rel_cls(**meta) for meta in metas]
+        for ent in ents:
+            ent.manager().set_client(agave_client)
+        return ents
 
     def add(self, uuid):
         self.uuids.append(uuid)
@@ -127,7 +130,9 @@ class Manager(object):
             raise ValueError('No UUID or Project ID given')
 
         self.set_client(agave_client)
-        return self.model_cls(**meta)
+        ret = self.model_cls(**meta)
+        ret.manager().set_client(agave_client)
+        return ret
 
     def list(self, agave_client, association_id=None):
         if association_id is None:

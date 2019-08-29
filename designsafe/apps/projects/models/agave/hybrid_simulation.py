@@ -30,6 +30,7 @@ class HybridSimulationProject(Project):
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512)
     keywords = fields.CharField('Keywords')
+    dois = fields.ListField('Dois')
 
 class FileModel(MetadataModel):
     model_name = 'designsafe.file'
@@ -58,6 +59,20 @@ class HybridSimulation(RelatedEntity):
     )
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(HybridSimulationProject)
+    dois = fields.ListField('Dois')
+
+    def to_datacite_json(self):
+        """Serialize object to datacite JSON."""
+        attributes = super(HybridSimulation, self).to_datacite_json()
+        if self.simulation_type_other:
+            attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
+                simulation_type=self.simulation_type_other.title()
+            )
+        else:
+            attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
+                simulation_type=self.simulation_type.title()
+            )
+        return attributes
 
 
 class GlobalModel(RelatedEntity):

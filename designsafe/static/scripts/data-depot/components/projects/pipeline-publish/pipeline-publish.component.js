@@ -39,7 +39,7 @@ class PipelinePublishCtrl {
         this.selectedListings = this.resolve.resolveParams.selectedListings;
 
         let publication = {
-            project: this.project,
+            project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
             license: this.resolve.license,
         };
 
@@ -69,28 +69,21 @@ class PipelinePublishCtrl {
             if (this.project.value.projectType === 'experimental') {
                 publication.experimentsList = [{
                     uuid: this.resolve.resolveParams.experiment.uuid,
-                    authors: this.resolve.resolveParams.experiment.value.authors || [],
-                    guests: this.resolve.resolveParams.experiment.value.guests || [],
                 }];
             } else if (this.project.value.projectType === 'simulation') {
                 publication.simulations = [{
                     uuid: this.resolve.resolveParams.experiment.uuid,
-                    authors: this.resolve.resolveParams.experiment.value.authors || [],
-                    guests: this.resolve.resolveParams.experiment.value.guests || [],
                 }];
             } else if (this.project.value.projectType === 'hybrid_simulation') {
                 publication.hybrid_simulations = [{
                     uuid: this.resolve.resolveParams.experiment.uuid,
-                    authors: this.resolve.resolveParams.experiment.value.authors || [],
-                    guests: this.resolve.resolveParams.experiment.value.guests || [],
                 }];
             } else if (this.project.value.projectType === 'field_recon') {
                 publication.missions = [{
                     uuid: this.resolve.resolveParams.experiment.uuid,
-                    authors: this.resolve.resolveParams.experiment.value.authors || [],
-                    guests: this.resolve.resolveParams.experiment.value.guests || [],
                 }];
             }
+            this.mainEntityUuid = this.resolve.resolveParams.experiment.uuid;
         }
         this.publication = publication;
     }
@@ -111,6 +104,7 @@ class PipelinePublishCtrl {
             '/api/projects/publication/',
             {
                 publication: this.publication,
+                mainEntityUuid: this.mainEntityUuid,
                 status: 'publishing',
             }
         ).then((resp) => {

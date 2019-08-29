@@ -1,22 +1,77 @@
 """Base"""
+import datetime
 import logging
 import six
 import json
 import zipfile
-import shutil
 import os
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
+from pytas.http import TASClient
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
 
+
 logger = logging.getLogger(__name__)
 
+
 class RelatedEntity(MetadataModel):
+    """Model for entities related to projects."""
+
     def to_body_dict(self):
+        """Serialize to Agave's REST API payload JSON."""
         body_dict = super(RelatedEntity, self).to_body_dict()
         body_dict['_relatedFields'] = []
         for attrname, field in six.iteritems(self._meta._related_fields):
             body_dict['_relatedFields'].append(attrname)
         return body_dict
+
+    def to_datacite_json(self):
+        """Serialize object to datacite JSON.
+
+        Every entity subclassing this class should add a `attributes['types']['resourceType']`
+        e.g. ``attributes['types']['resourceType'] = Experiment/{}.format(experiment.experiment_type``
+        as well as any specific subjects.
+        """
+        attributes = {}
+        authors = [author for author in getattr(self, 'authors', [])
+                   if author.get('authorship', False)]
+        authors = sorted(authors, key=lambda x: x['order'])
+        creators_details, institutions = _process_authors(authors)
+        attributes['creators'] = creators_details
+        attributes['contributors'] = [
+            {
+                'contributorType': 'HostingInstitution',
+                'nameType': 'Organizational',
+                'name': institution,
+            } for institution in institutions
+        ]
+        attributes['titles'] = [
+            {'title': self.title}
+        ]
+        attributes['publisher'] = 'Designsafe-CI'
+        utc_now = datetime.datetime.utcnow()
+        attributes['publicationYear'] = utc_now.year
+        attributes['types'] = {}
+        attributes['types']['resourceTypeGeneral'] = 'Dataset'
+        attributes['descriptions'] = [
+            {
+                'descriptionType': 'Abstract',
+                'description': self.description,
+                'lang': 'en-Us',
+            }
+        ]
+        attributes['language'] = 'English'
+        entities = []
+        for attrname in self._meta._reverse_fields:
+            field = getattr(self, attrname, False)
+            if not field:
+                continue
+            entities += field(self._meta.agave_client)
+        attributes['subjects'] = [
+            {'subject': entity.title} for entity in entities
+        ]
+        return attributes
 
 class Project(MetadataModel):
     model_name = 'designsafe.project'
@@ -35,6 +90,7 @@ class Project(MetadataModel):
     ef = fields.CharField('Experimental Facility', max_length=512)
     keywords = fields.CharField('Keywords')
     file_tags = fields.ListField('File Tags')
+    dois = fields.ListField('Dois')
 
     @property
     def system(self):
@@ -205,3 +261,122 @@ class Project(MetadataModel):
             create_archive(proj_dir)
         else:
             update_archive(proj_dir)
+
+    def to_datacite_json(self):
+        """Serialize project to datacite json."""
+        attributes = {}
+        if getattr(self, 'team_order', False):
+            authors = sorted(self.team_order, key=lambda x: x['order'])
+        else:
+            authors = [{'name': username} for username in [self.pi] + self.co_pis]
+        creators_details, institutions = _process_authors(authors)
+        attributes['creators'] = creators_details
+        attributes['contributors'] = [
+            {
+                'contributorType': 'HostingInstitution',
+                'nameType': 'Organizational',
+                'name': institution,
+            } for institution in institutions
+        ]
+        attributes['titles'] = [
+            {'title': self.title}
+        ]
+        attributes['publisher'] = 'Designsafe-CI'
+        utc_now = datetime.datetime.utcnow()
+        attributes['publicationYear'] = utc_now.year
+        attributes['types'] = {}
+        attributes['types']['resourceType'] = 'Project/{}'.format(
+            self.project_type.title().replace('_', ' ')
+        )
+
+        if getattr(self, 'data_type', False):
+            attributes['types']['resourceType'] += '/{}'.format(self.data_type)
+
+        attributes['types']['resourceTypeGeneral'] = 'Dataset'
+        attributes['descriptions'] = [
+            {
+                'descriptionType': 'Abstract',
+                'description': self.description,
+                'lang': 'en-Us',
+            }
+        ]
+        attributes['subjects'] = [
+            {'subject': keyword} for keyword in self.keywords.split(',')
+        ]
+        attributes['dates'] = [{
+            'dateType': 'Accepted',
+            'date': '{}-{}-{}'.format(
+                utc_now.year,
+                utc_now.month,
+                utc_now.day
+            )
+        }]
+        attributes['language'] = 'English'
+        attributes['alternateIdentifiers'] = [
+            {
+                'alternateIdentifierType': 'Project ID',
+                'alternateIdentifier': self.project_id,
+            }
+        ]
+        awards = sorted(
+            self.award_number,
+            key=lambda x: (x.get('order', 0), x.get('name', ''))
+        )
+        attributes['alternateIdentifiers'] += [
+            {
+                'alternateIdentifierType': 'NSF Award Number',
+                'alternateIdentifier': '{name} - {number}'.format(
+                    name=award['name'],
+                    number=award['number']
+                ),
+            } for award in awards
+            if award.get('name') and award.get('number')
+        ]
+        return attributes
+
+
+def _process_authors(authors):
+    """Process authors.
+
+    This function transforms the author's details into
+    an list of first name and last name and a list
+    of unique institutions. This is necessary to create
+    the JSON payload for the Datacite API.
+
+    .. warning:: Authors should be sorted when passed to this
+        function.
+
+    :param list[dict] authors: List of dict with author's details.
+        Each dictionary must have at least a ``'name'`` key with
+        the author's username.
+    """
+    creators_details = []
+    institutions = []
+    for author in authors:
+        user_obj = None
+        user_tas = None
+        if not author.get('guest'):
+            try:
+                user_obj = get_user_model().objects.get(username=author['name'])
+            except ObjectDoesNotExist:
+                pass
+
+        if user_obj:
+            user_tas = TASClient().get_user(username=user_obj.username)
+
+        if user_obj and user_tas:
+            creators_details.append({
+                'nameType': 'Personal',
+                'givenName': user_obj.first_name,
+                'familyName': user_obj.last_name,
+            })
+            institutions.append(user_tas['institution'])
+        elif author.get('fname') and author.get('lname'):
+            creators_details.append({
+                'nameType': 'Personal',
+                'givenName': author['fname'],
+                'familyName': author['lname'],
+            })
+            institutions.append(author['inst'])
+    institutions = set(institutions)
+    return creators_details, institutions
