@@ -28,7 +28,6 @@ class PipelineLicensesCtrl {
             rebuild the project and selected files if a refresh occurs...
             for now we can send them back to the selection area
             */
-            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
             this.ProjectService.get({ uuid: this.projectId }).then((project) => {
                 this.projType = project.value.projectType;
                 this.uuid = project.uuid;
@@ -47,6 +46,12 @@ class PipelineLicensesCtrl {
                 } else if (this.projType === 'hybrid_simulation') {
                     this.$state.go(
                         'projects.pipelineSelectHybSim',
+                        { projectId: this.uuid },
+                        { reload: true }
+                    );
+                } else if (this.projType === 'field_recon') {
+                    this.$state.go(
+                        'projects.pipelineSelectFieldRecon',
                         { projectId: this.uuid },
                         { reload: true }
                     );
@@ -73,8 +78,7 @@ class PipelineLicensesCtrl {
     }
 
     validSelection() {
-        if (typeof this.projType === 'undefined' ||
-            this.projType === 'field_recon') {
+        if (typeof this.projType === 'undefined') {
             return false;
         }
         if (this.license.datasets ||
