@@ -48,6 +48,8 @@ class Command(BaseCommand):
                 raise SystemExit
             # Set up a fresh reindexing alias.
             setup_index(index_config, force=True, reindex=True)
+            if index == 'publications':
+                Index(reindex_index_alias).put_settings(body={"index.mapping.total_fields.limit": 2000})
 
         try:
             default_index_name = Index(default_index_alias).get_alias().keys()[0]
