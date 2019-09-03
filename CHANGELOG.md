@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.6.1-20190901
+
+* Setup mongo lib to load NCO projects and setup nco app. - task/DES-1224
+* Added conditional statement to title block that fills in 'Data Depot' when the page has no citation title. - task/DES-1260
+* increase field limit for publications on reindex - task/DES-1262
+
 ## v4.6.1-20190804
 
 * Fix d3plus bundling with webpack - DES-1259

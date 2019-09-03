@@ -1,3 +1,7 @@
+"""Desingsafe.
+"""
+__version__ = "v4.6.1-20190901"
+
 from __future__ import absolute_import
 
 # This will make sure the app is always imported when
