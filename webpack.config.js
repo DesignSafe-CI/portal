@@ -1,32 +1,29 @@
 // webpack plugins
-const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 const webpack = require('webpack');
-const path = require('path');
-const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-module.exports = function(env, arg) {
+module.exports = function(env) {
     var smap = false;
     env == 'prod' ? smap = false : smap='cheap-module-eval-source-map';
     return {
         devtool: smap,
         entry: {
-          "rapid" : "./designsafe/static/scripts/rapid/index.js",
-          "geo" : "./designsafe/static/scripts/geo/index.js",
-          "base": "./designsafe/static/scripts/ng-designsafe/ng-designsafe.js",
-          "dd": "./designsafe/static/scripts/data-depot/index.js",
-          "workspace": "./designsafe/static/scripts/workspace/app.js",
-          "search": "./designsafe/static/scripts/search/index.js",
-          "dashboard": "./designsafe/static/scripts/dashboard/index.js",
-          "applications": "./designsafe/static/scripts/applications/app.js",
-          "notifications": "./designsafe/static/scripts/notifications/app.js"
+            rapid : './designsafe/static/scripts/rapid/index.js',
+            geo : './designsafe/static/scripts/geo/index.js',
+            base: './designsafe/static/scripts/ng-designsafe/ng-designsafe.js',
+            dd: './designsafe/static/scripts/data-depot/index.js',
+            workspace: './designsafe/static/scripts/workspace/app.js',
+            search: './designsafe/static/scripts/search/index.js',
+            dashboard: './designsafe/static/scripts/dashboard/index.js',
+            applications: './designsafe/static/scripts/applications/app.js',
+            notifications: './designsafe/static/scripts/notifications/app.js',
+            nco: './designsafe/static/scripts/nco/app.js',
         },
         output: {
-            publicPath: "/static/build/",
-            path: __dirname + "/designsafe/static/build/",
-            filename: "[name].bundle.js"
+            publicPath: '/static/build/',
+            path: __dirname + '/designsafe/static/build/',
+            filename: '[name].bundle.js'
         },
         resolve: {
             extensions: ['.js'],
@@ -40,7 +37,7 @@ module.exports = function(env, arg) {
                     loader: 'babel-loader',
                     options: {
                         presets: ['babel-preset-env'],
-                        plugins: ["angularjs-annotate"]
+                        plugins: ['angularjs-annotate']
                     }
                 },
                 {
@@ -51,8 +48,8 @@ module.exports = function(env, arg) {
                     }]
                 },
                 {
-                  test: /\.(ttf|woff|eot|svg|png|jpg)(\?[\s\S]+)?$/,
-                  loader: 'file-loader'
+                    test: /\.(ttf|woff|eot|svg|png|jpg)(\?[\s\S]+)?$/,
+                    loader: 'file-loader'
                 },
                 {
                     test: /\.(s?)css$/,
@@ -64,7 +61,7 @@ module.exports = function(env, arg) {
                             loader: 'sass-loader',
                             options: {
                                 sourceMap: true,
-                                includePaths: ["./designsafe/static/styles"]
+                                includePaths: ['./designsafe/static/styles']
                             }
                         }]
                     })
@@ -78,7 +75,7 @@ module.exports = function(env, arg) {
             ]
         },
         plugins: [
-            new ExtractTextPlugin("[name].bundle.css"),
+            new ExtractTextPlugin('[name].bundle.css'),
             new LiveReloadPlugin(),
             new webpack.ProvidePlugin({
                 jQuery: 'jquery',
