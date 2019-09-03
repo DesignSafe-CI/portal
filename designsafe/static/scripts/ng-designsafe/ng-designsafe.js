@@ -5,6 +5,7 @@ import '../../styles/main.css';
 import '../projects/components/file-categories/file-categories.scss';
 import '../projects/components/file-category-selector/file-category-selector.scss';
 import '../data-depot/components/projects/publication-preview/publication-preview.scss';
+import '../nco/components/nco-scheduler-list/nco-scheduler-list.css';
 
 import $ from 'jquery';
 import angular from 'angular';

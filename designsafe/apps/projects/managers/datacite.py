@@ -78,6 +78,14 @@ def create_or_update_doi(attributes=None, doi=None):
     payload = {
         "data": {
             "type": "dois",
+            "relationships": {
+                "client": {
+                    "data": {
+                        "type": "clients",
+                        "id": "tdl.tacc"
+                    }
+                }
+            }
         }
     }
     if doi:

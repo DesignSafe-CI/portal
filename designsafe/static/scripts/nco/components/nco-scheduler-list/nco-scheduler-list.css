@@ -1,0 +1,22 @@
+.nco-scheduler-component {
+    .nco-scheduler-list {
+        dl dt{
+            font-size:2em;
+            border: 1px solid gray;
+            border-bottom: none;
+            padding:5px;
+            background: white;
+            .date-range {
+                display: block;
+                font-size: .8em;
+            }
+        }
+        dl dd {
+            border: 1px solid gray;
+            border-top: none;
+            padding: 5px;
+            margin-bottom: 5px;
+            background: #eee;
+        }
+    }
+}

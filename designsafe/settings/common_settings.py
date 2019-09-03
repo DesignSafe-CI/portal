@@ -95,6 +95,7 @@ INSTALLED_APPS = (
     'designsafe.apps.googledrive_integration',
     'designsafe.apps.licenses',
     'designsafe.apps.dashboard',
+    'designsafe.apps.nco',
 
     # signals
     'designsafe.apps.signals',
@@ -609,6 +610,7 @@ from external_resource_settings import *
 from elasticsearch_settings import *
 from rt_settings import *
 from external_resource_secrets import *
+from .nco_mongo import *
 
 PORTAL_DATA_DEPOT_MANAGERS = {
     'agave': 'designsafe.apps.api.agave.filemanager.private_data.PrivateDataFileManager',
