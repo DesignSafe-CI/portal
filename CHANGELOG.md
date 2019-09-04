@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.6.1-20190903
+
+* Add 'publishing' to the publications filter - task/DES-1267
+
 ## v4.6.1-20190901
 
 * Setup mongo lib to load NCO projects and setup nco app. - task/DES-1224
