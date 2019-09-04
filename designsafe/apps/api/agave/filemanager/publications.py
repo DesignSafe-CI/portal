@@ -1,24 +1,23 @@
-"""
-.. module: portal.apps.api.agave.managers.publications
+"""Publication file manager.
+
+.. module:: portal.apps.api.agave.managers.publications
    :synopsis: Manager handling Publications searches.
 """
 
 from __future__ import unicode_literals, absolute_import
 import logging
 import datetime
-from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
-from designsafe.apps.data.models.elasticsearch import IndexedFile
 from elasticsearch_dsl import Q, Search, Index
-from django.conf import settings
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
-from designsafe.apps.api.agave.filemanager.agave import  AgaveFileManager
-logger = logging.getLogger(__name__)
+from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
+
+
+LOG = logging.getLogger(__name__)
 
 
 class PublicationsManager(AgaveFileManager):
-    """ File manager for listing publications.
-    """
+    """File manager for listing publications."""
 
     @property
     def requires_auth(self):
@@ -28,8 +27,8 @@ class PublicationsManager(AgaveFileManager):
         """
         return False
 
-    def construct_query(self, system=None, file_path=None):
-
+    def construct_query(self):  # pylint: disable=no-self-use
+        """Construct ES query."""
         published_index_name = Index('des-publications').get_alias().keys()[0]
         legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
 
@@ -43,6 +42,7 @@ class PublicationsManager(AgaveFileManager):
             ],
             must_not=[
                 Q('term', status='unpublished'),
+                Q('term', status='publishing'),
                 Q('term', status='saved')
             ]
         )
@@ -50,12 +50,12 @@ class PublicationsManager(AgaveFileManager):
         return published_query
 
     def listing(self, system=None, file_path=None, offset=0, limit=100, **kwargs):
-        """Wraps the search result in a BaseFile object for serializtion."""
-        query = self.construct_query(system, file_path)
+        """Wrap the search result in a BaseFile object for serializtion."""
+        query = self.construct_query()
         listing_search = Search()
         listing_search = listing_search.query(query).sort(
             '_index',
-            {'project._exact': {'order':'asc', 'unmapped_type': 'keyword'}},
+            {'project._exact': {'order': 'asc', 'unmapped_type': 'keyword'}},
             {'created': {'order': 'desc', 'unmapped_type': 'long'}}
         )
         listing_search = listing_search.extra(from_=offset, size=limit)
@@ -80,8 +80,12 @@ class PublicationsManager(AgaveFileManager):
         }
         return result
 
-    def save_publication(self, publication, status='publishing'):
-
+    def save_publication(
+            self,
+            publication,
+            status='publishing'
+    ):  # pylint: disable=no-self-use
+        """Save publication."""
         publication['projectId'] = publication['project']['value']['projectId']
         publication['created'] = datetime.datetime.now().isoformat()
         publication['status'] = status
