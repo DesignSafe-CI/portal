@@ -1,21 +1,22 @@
-"""
-.. module: portal.libs.elasticsearch.docs.files
+"""ES publication doc.
+
+.. module:: portal.libs.elasticsearch.docs.files
    :synopsis: Wrapper classes for ES ``files`` doc type.
 """
 from __future__ import unicode_literals, absolute_import
-from future.utils import python_2_unicode_compatible
 import logging
 import os
 import zipfile
-from django.conf import settings
-from designsafe.apps.data.models.elasticsearch import IndexedFile, IndexedPublication
+from future.utils import python_2_unicode_compatible
+from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.libs.elasticsearch.docs.base import BaseESResource
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 from django.contrib.auth import get_user_model
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 @python_2_unicode_compatible
 class BaseESPublication(BaseESResource):
@@ -31,6 +32,7 @@ class BaseESPublication(BaseESResource):
     we avoid the use of ``AttrDict`` and ``AttrList``.
 
     """
+
     def __init__(self, wrapped_doc=None, project_id=None, **kwargs):
         """Elastic Search File representation.
 
@@ -48,45 +50,52 @@ class BaseESPublication(BaseESResource):
             wrapped_doc = self._index_cls.from_id(project_id)
             self._wrap(wrapped_doc, **kwargs)
         except DocumentNotFound:
-            self._wrapped = self._index_cls(project_id=project_id,
-                                            **dict(kwargs))
+            self._wrapped = self._index_cls(
+                project_id=project_id,
+                **dict(kwargs)
+            )
+
     @property
     def _index_cls(self):
         return IndexedPublication
 
-
-    def save(self, using=None, index=None, validate=True, **kwargs):
-        """Save document
-        """
+    def save(self, using=None, index=None, validate=True,
+             **kwargs):  # pylint: disable=unused-argument
+        """Save document."""
         self._wrapped.save()
 
     def delete(self):
+        """Delete."""
         self._wrapped.delete()
 
     def to_file(self):
-        dict_obj = {'agavePath': 'agave://designsafe.storage.published/{}'.\
-                                 format(self.project.value.projectId),
-                     'children': [],
-                     'deleted': False,
-                     'format': 'folder',
-                     'length': 24731027,
-                     'meta': {
-                         'title': self.project['value']['title'],
-                         'pi': self.project['value']['pi'],
-                         'dateOfPublication': self.created,
-                         'type': self.project['value']['projectType'],
-                         'projectId': self.project['value']['projectId'],
-                         'keywords': self.project['value']['keywords'],
-                         'description': self.project['value']['description']
-                         },
-                     'name': self.project.value.projectId,
-                     'path': '/{}'.format(self.project.value.projectId),
-                     'permissions': 'READ',
-                     'project': self.project.value.projectId,
-                     'system': 'designsafe.storage.published',
-                     'systemId': 'designsafe.storage.published',
-                     'type': 'dir',
-                     'version': getattr(self, 'version', 1)}
+        """To file."""
+        dict_obj = {
+            'agavePath': 'agave://designsafe.storage.published/{}'.format(
+                self.project.value.projectId
+            ),
+            'children': [],
+            'deleted': False,
+            'format': 'folder',
+            'length': 24731027,
+            'meta': {
+                'title': self.project['value']['title'],
+                'pi': self.project['value']['pi'],
+                'dateOfPublication': self.created,
+                'type': self.project['value']['projectType'],
+                'projectId': self.project['value']['projectId'],
+                'keywords': self.project['value']['keywords'],
+                'description': self.project['value']['description']
+            },
+            'name': self.project.value.projectId,
+            'path': '/{}'.format(self.project.value.projectId),
+            'permissions': 'READ',
+            'project': self.project.value.projectId,
+            'system': 'designsafe.storage.published',
+            'systemId': 'designsafe.storage.published',
+            'type': 'dir',
+            'version': getattr(self, 'version', 1)
+        }
         if 'dataType' in self.project['value']:
             dict_obj['meta']['dataType'] = self.project['value']['dataType']
         pi = self.project['value']['pi']
@@ -136,7 +145,7 @@ class BaseESPublication(BaseESResource):
                 dict_obj.get('analysiss', [])
             )
 
-        file_paths = []
+            file_paths = []
         proj_sys = 'project-{}'.format(dict_obj['project']['uuid'])
         for obj in related_objs:
             for file_dict in obj['fileObjs']:
@@ -177,7 +186,7 @@ class BaseESPublication(BaseESResource):
                     for f in files:
                         if f == archive_name:
                             continue
-                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(pub_dir,''), f))
+                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(pub_dir, ''), f))
                 zf.close()
             except Exception as e:
                 logger.exception("Archive creation failed for {}".format(arc_source))
