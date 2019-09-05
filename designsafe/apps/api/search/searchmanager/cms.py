@@ -2,8 +2,6 @@
 .. module: portal.apps.api.search.searchmanager.cms
    :synopsis: Manager handling CMS searches.
 """
-
-from __future__ import unicode_literals, absolute_import
 import logging
 from future.utils import python_2_unicode_compatible
 from elasticsearch_dsl import Q, Index

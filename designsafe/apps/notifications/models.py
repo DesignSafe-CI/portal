@@ -38,7 +38,7 @@ def receive_notification(sender, **kwargs):
     d = []
     if 'html' in event_data:
         for item in event_data['html']:
-            for key, value in item.items():
+            for key, value in list(item.items()):
                 if key != 'action_link':
                     key= cgi.escape(key)
                     value= cgi.escape(value)

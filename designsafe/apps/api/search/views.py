@@ -74,7 +74,7 @@ class SearchView(BaseApiView):
             if r.meta.doc_type == 'publication' and hasattr(r, 'users'):
                 users = r.users
                 pi = r.project.value.pi
-                pi_user = filter(lambda x: x.username==pi, users)[0]
+                pi_user = [x for x in users if x.username==pi][0]
                 d["piLabel"] = "{}, {}".format(pi_user.last_name, pi_user.first_name)
             hits.append(d)
 

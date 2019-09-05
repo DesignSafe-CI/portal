@@ -2,8 +2,6 @@
 .. module: portal.apps.api.search.searchmanager.shared_data
    :synopsis: Manager handling Shared Data searches.
 """
-
-from __future__ import unicode_literals, absolute_import
 import logging
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedFile
@@ -36,7 +34,7 @@ class SharedDataSearchManager(BaseSearchManager):
 
     def construct_query(self, system, file_path=None):
 
-        files_index_name = Index('des-files').get_alias().keys()[0]
+        files_index_name = list(Index('des-files').get_alias().keys())[0]
 
         if system == settings.AGAVE_STORAGE_SYSTEM:
             storage_prefix_query = Q({'prefix': {'path._exact': '/' + self.username}})

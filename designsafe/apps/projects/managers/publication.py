@@ -4,7 +4,6 @@
     :synopsis: Python interface to Datacite's rest API.
         Visit: https://support.datacite.org/docs/api for more info.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist

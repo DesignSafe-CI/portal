@@ -31,7 +31,7 @@ class NEESUser(object):
                 cursor.execute(cls._lookup_sql, [email])
                 columns = [col[0] for col in cursor.description]
                 return [
-                    cls(**dict(zip(columns, row)))
+                    cls(**dict(list(zip(columns, row))))
                     for row in cursor.fetchall()
                 ]
             finally:

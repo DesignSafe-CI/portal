@@ -122,9 +122,9 @@ class FileMediaView(View):
                                              extra={'file_mgr_name': file_mgr_name,
                                                     'system_id': system_id,
                                                     'file_path': file_path})
-                            encoded = u'Sorry! We were unable to preview this file due ' \
-                                      u'to an unrecognized content encoding. Please ' \
-                                      u'download the file to view its contents.'
+                            encoded = ("Sorry! We were unable to preview this file due "
+                                      "to an unrecognized content encoding. Please " 
+                                      "download the file to view its contents.")
                     context['text_preview'] = encoded
                 elif f.ext in BaseFileResource.SUPPORTED_OBJECT_PREVIEW_EXTS:
                     context['object_preview'] = f.download_postit(force=False, lifetime=360)

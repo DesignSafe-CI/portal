@@ -33,7 +33,5 @@ class SearchViewTests(TestCase):
         self.assertEqual(res_dict['published_total'], 0)
         self.assertEqual(res_dict['cms_total'], 0)
 
-        print json.loads(res.content)['all_total']
-
 
 

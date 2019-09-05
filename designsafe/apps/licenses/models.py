@@ -32,10 +32,10 @@ class BaseLicense(models.Model):
         abstract = True
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
     def __unicode__(self):
-        return u"%s: %s" % (self.license_type, self.user.username)
+        return "%s: %s" % (self.license_type, self.user.username)
 
     def license_as_str(self):
         self.license_file_content = self.license_file_content.replace('\r\n', '\n')

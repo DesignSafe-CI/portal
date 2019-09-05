@@ -2,8 +2,6 @@
 .. module: portal.libs.elasticsearch.exceptions
    :synopsis: Exceptions used when handling ES documents.
 """
-from __future__ import unicode_literals, absolute_import
-
 class ESException(Exception):
     """Custom exception base ES exception.
 

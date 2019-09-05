@@ -1,7 +1,7 @@
 import logging
 import datetime
 import os
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.data.managers.elasticsearch import FileManager as ESFileManager
 
@@ -192,7 +192,7 @@ class AgaveIndexer(object):
 
         """
 
-        resp = self.ag.files.list(systemId=system_id, filePath=urllib2.quote(path))
+        resp = self.ag.files.list(systemId=system_id, filePath=urllib.parse.quote(path))
         folders = []
         files = []
         for _file in resp:
@@ -354,7 +354,7 @@ class AgaveIndexer(object):
             objs_to_index, docs_to_delete = self._dedup_and_discover(system_id,
                                                 username, root, files, folders)
             for d in docs_to_delete:
-                logger.debug(u'delete_recursive: %s', os.path.join(d.path, d.name))
+                logger.debug("delete_recursive: %s", os.path.join(d.path, d.name))
                 res, search = mgr.listing_recursive(d.system, d.path)
                 if res.hits.total:
                     for doc in search.scan():
@@ -365,7 +365,7 @@ class AgaveIndexer(object):
 
             if not full_indexing:
                 for o in objs_to_index:
-                    logger.debug(u'Indexing: {}'.format(o.path))
+                    logger.debug("Indexing: {}".format(o.path))
                     pems = None
                     if pems_indexing:
                         pems = self.ag.files.listPermissions(
@@ -375,7 +375,7 @@ class AgaveIndexer(object):
             else:
                 folders_and_files = folders + files
                 for o in folders_and_files:
-                    logger.debug(u'Get or create file: {}'.format(o.path))
+                    logger.debug("Get or create file: {}".format(o.path))
                     pems = None
                     if pems_indexing:
                         pems = self.ag.files.listPermissions(
@@ -393,7 +393,7 @@ class AgaveIndexer(object):
                 path, name = os.path.split(path)
                 afs = self.ag.files.list(systemId=system_id, filePath=file_path)
                 af = afs[0]
-                logger.debug(u'Get or create file: {}'.format(af.path))
+                logger.debug("Get or create file: {}".format(af.path))
                 pems = None
                 if pems_indexing:
                     pems = self.ag.files.listPermissions(
@@ -435,13 +435,13 @@ class AgaveIndexer(object):
             of their paths. This is not necessarily correct but it is good enough
             for updating permissions.
         """
-        import urllib
+        import urllib.request, urllib.parse, urllib.error
         cnt = 0
         mgr = ESFileManager(username=username)
         r, s = mgr.listing_recursive(system_id, path)
         objs = sorted(s.scan(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
         if levels:
-            objs = filter(lambda x: len(x.path.split('/')) <= levels, objs)
+            objs = [x for x in objs if len(x.path.split('/')) <= levels]
         p, n = os.path.split(path)
         if p == '':
             p = '/'
@@ -450,7 +450,7 @@ class AgaveIndexer(object):
             if len(o.path.split('/')) == 1 and o.name == 'Shared with me':
                 continue
             pems = self.ag.files.listPermissions(
-                filePath=urllib.quote(os.path.join(o.path, o.name)),
+                filePath=urllib.parse.quote(os.path.join(o.path, o.name)),
                 systemId=system_id)
             o.update(permissions = pems)
             cnt += 1

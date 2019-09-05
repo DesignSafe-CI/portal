@@ -3,7 +3,6 @@
 .. :module: designsafe.apps.projects.managers.base
     :synopsis: Base manager for projects.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import json
 from future.utils import python_2_unicode_compatible

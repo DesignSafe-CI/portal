@@ -43,7 +43,7 @@ class Command(BaseCommand):
         reindex_index_alias = default_index_alias + '_reindex'
 
         if not swap_only:
-            confirm = input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias))
+            confirm = eval(input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias)))
             if confirm != 'Y':
                 raise SystemExit
             # Set up a fresh reindexing alias.
@@ -52,8 +52,8 @@ class Command(BaseCommand):
                 Index(reindex_index_alias).put_settings(body={"index.mapping.total_fields.limit": 2000})
 
         try:
-            default_index_name = Index(default_index_alias).get_alias().keys()[0]
-            reindex_index_name = Index(reindex_index_alias).get_alias().keys()[0]
+            default_index_name = list(Index(default_index_alias).get_alias().keys())[0]
+            reindex_index_name = list(Index(reindex_index_alias).get_alias().keys())[0]
         except Exception as e:
             self.stdout.write('Unable to lookup required indices by alias. Have you set up both a default and a reindexing index?')
             raise SystemExit

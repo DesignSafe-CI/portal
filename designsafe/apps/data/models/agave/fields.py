@@ -81,7 +81,7 @@ class CharField(BaseField):
         super(CharField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
-        return unicode(value)
+        return str(value)
 
     def serialize(self, value):
         return self.to_python(value)

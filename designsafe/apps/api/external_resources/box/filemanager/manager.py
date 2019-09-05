@@ -48,7 +48,7 @@ class FileManager(object):
                 file_type = box_object._item_type
                 file_id = box_object.object_id
         else:
-            file_type, file_id = u'folder', u'0'
+            file_type, file_id = "folder", "0"
 
         return file_type, file_id
 
@@ -66,7 +66,7 @@ class FileManager(object):
             The BoxObject
 
         """
-        box_object = self.box_api.folder(u'0')
+        box_object = self.box_api.folder("0")
         if file_path is None or file_path == '' or file_path == 'All Files':
             return box_object
         path_c = file_path.split('/')

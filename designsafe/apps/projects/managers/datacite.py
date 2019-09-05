@@ -4,7 +4,6 @@
     :synopsis: Python interface to Datacite's rest API.
         Visit: https://support.datacite.org/docs/api for more info.
 """
-from __future__ import unicode_literals, absolute_import
 import json
 import logging
 # from future.utils import python_2_unicode_compatible

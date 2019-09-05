@@ -1,5 +1,5 @@
 from django.contrib import admin
-import models
+from . import models
 
 
 @admin.register(models.MATLABLicense)

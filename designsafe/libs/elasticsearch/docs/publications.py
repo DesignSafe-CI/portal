@@ -3,7 +3,6 @@
 .. module:: portal.libs.elasticsearch.docs.files
    :synopsis: Wrapper classes for ES ``files`` doc type.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import os
 import zipfile
@@ -99,7 +98,7 @@ class BaseESPublication(BaseESResource):
         if 'dataType' in self.project['value']:
             dict_obj['meta']['dataType'] = self.project['value']['dataType']
         pi = self.project['value']['pi']
-        pi_user = filter(lambda x: x['username'] == pi, getattr(self, 'users', []))
+        pi_user = [x for x in getattr(self, 'users', []) if x['username'] == pi]
         if pi_user:
             pi_user = pi_user[0]
             dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
@@ -171,7 +170,7 @@ class BaseESPublication(BaseESResource):
                             os.chmod(os.path.join(root, f), octal)
             except Exception as e:
                 logger.exception("Failed to set permissions for {}".format(dir))
-                os.chmod(dir, 0555)
+                os.chmod(dir, 0o555)
 
         def create_archive():
             arc_source = os.path.join(pub_dir, self.projectId)
@@ -190,12 +189,12 @@ class BaseESPublication(BaseESResource):
             except Exception as e:
                 logger.exception("Archive creation failed for {}".format(arc_source))
             finally:
-                set_perms(pub_dir, 0555, arc_source)
-                set_perms(arc_dir, 0555)
+                set_perms(pub_dir, 0o555, arc_source)
+                set_perms(arc_dir, 0o555)
 
         try:
-            set_perms(pub_dir, 0755, os.path.join(pub_dir, self.projectId))
-            set_perms(arc_dir, 0755)
+            set_perms(pub_dir, 0o755, os.path.join(pub_dir, self.projectId))
+            set_perms(arc_dir, 0o755)
             create_archive()
         except Exception as e:
             logger.exception('Failed to archive publication!')

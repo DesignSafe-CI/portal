@@ -2,8 +2,6 @@
 .. module: portal.apps.api.search.searchmanager.community
    :synopsis: Manager handling Community Data searches.
 """
-
-from __future__ import unicode_literals, absolute_import
 import logging
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedFile
@@ -34,7 +32,7 @@ class CommunityDataSearchManager(BaseSearchManager):
 
     def construct_query(self, system=None, file_path=None):
 
-        files_index_name = Index('des-files').get_alias().keys()[0]
+        files_index_name = list(Index('des-files').get_alias().keys())[0]
 
         community_files_query = Q(
             'bool',
@@ -61,7 +59,6 @@ class CommunityDataSearchManager(BaseSearchManager):
         res = listing_search.execute()
         
         children = []
-        print res.hits.total
         if res.hits.total:
             children = [o.to_dict() for o in res]
 

@@ -39,7 +39,7 @@ from designsafe.apps.api.agave.filemanager.publications import PublicationsManag
 from designsafe.apps.api.agave import get_service_account_client
 
 # imported urlpatterns from apps
-import urls     # from designsafe import urls not working?
+from . import urls     # from designsafe import urls not working?
 from designsafe.apps.accounts import urls as accounts_urls
 from designsafe.apps.api import urls as api_urls
 from designsafe.apps.data import urls as data_urls

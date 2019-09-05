@@ -4,7 +4,7 @@
    :synopsis: Manager handling Publications searches.
 """
 
-from __future__ import unicode_literals, absolute_import
+
 import logging
 import datetime
 from elasticsearch_dsl import Q, Search, Index
@@ -29,8 +29,8 @@ class PublicationsManager(AgaveFileManager):
 
     def construct_query(self):  # pylint: disable=no-self-use
         """Construct ES query."""
-        published_index_name = Index('des-publications').get_alias().keys()[0]
-        legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
+        published_index_name = list(Index('des-publications').get_alias().keys())[0]
+        legacy_index_name = list(Index('des-publications_legacy').get_alias().keys())[0]
 
         published_query = Q(
             'bool',

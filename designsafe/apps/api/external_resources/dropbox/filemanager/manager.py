@@ -46,7 +46,7 @@ class FileManager(object):
 
     def parse_file_id(self, path):
         if path == '/' or path == '':
-            file_type, path = u'folder', u''
+            file_type, path = "folder", ""
         else:
             try:
                 file_type, path = DropboxFile.parse_file_id(path)
@@ -415,7 +415,7 @@ class FileManager(object):
 
                 while f.tell() < file_size:
                     if ((file_size - f.tell()) <= CHUNK_SIZE):
-                        print self.dropbox_api.files_upload_session_finish(f.read(CHUNK_SIZE), cursor, commit)
+                        print(self.dropbox_api.files_upload_session_finish(f.read(CHUNK_SIZE), cursor, commit))
                     else:
                         self.dropbox_api.files_upload_session_append(f.read(CHUNK_SIZE), cursor.session_id, cursor.offset)
                         cursor.offset = f.tell()

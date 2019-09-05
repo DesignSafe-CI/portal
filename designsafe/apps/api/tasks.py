@@ -4,7 +4,7 @@ import re
 import os
 import sys
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from datetime import datetime
 from celery import shared_task
 from django.core.urlresolvers import reverse
@@ -652,8 +652,8 @@ def index_or_update_project(self, uuid):
     project = project_model.search({'uuid': uuid}, client)[0]
     project_meta = project.to_dict()
 
-    to_index = {key: value for key, value in project_meta.iteritems() if key != '_links'}
-    to_index['value'] = {key: value for key, value in project_meta['value'].iteritems() if key != 'teamMember'}
+    to_index = {key: value for key, value in project_meta.items() if key != '_links'}
+    to_index['value'] = {key: value for key, value in project_meta['value'].items() if key != 'teamMember'}
     if not isinstance(to_index['value'].get('awardNumber', []), list):
         to_index['value']['awardNumber'] = [{'number': to_index['value']['awardNumber'] }]
     if to_index['value'].get('guestMembers', []) == [None]:
@@ -729,7 +729,7 @@ def copy_publication_files_to_corral(self, project_id):
     filepaths = list(set(filepaths))
     filepaths = sorted(filepaths)
     base_path = ''.join(['/', publication.projectId])
-    os.chmod('/corral-repl/tacc/NHERI/published', 0755)
+    os.chmod('/corral-repl/tacc/NHERI/published', 0o755)
     prefix_dest = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
     if not os.path.isdir(prefix_dest):
         os.mkdir(prefix_dest)
@@ -747,10 +747,10 @@ def copy_publication_files_to_corral(self, project_id):
                 shutil.copytree(local_src_path, local_dst_path)
                 for root, dirs, files in os.walk(local_dst_path):
                     for d in dirs:
-                        os.chmod(os.path.join(root, d), 0555)
+                        os.chmod(os.path.join(root, d), 0o555)
                     for f in files:
-                        os.chmod(os.path.join(root, f), 0444)
-                os.chmod(local_dst_path, 0555)
+                        os.chmod(os.path.join(root, f), 0o444)
+                os.chmod(local_dst_path, 0o555)
             except OSError as exc:
                 logger.info(exc)
             except IOError as exc:
@@ -761,19 +761,19 @@ def copy_publication_files_to_corral(self, project_id):
                     os.makedirs(os.path.dirname(local_dst_path))
                 for root, dirs, files in os.walk(os.path.dirname(local_dst_path)):
                     for d in dirs:
-                        os.chmod(os.path.join(root, d), 0555)
+                        os.chmod(os.path.join(root, d), 0o555)
                     for f in files:
-                        os.chmod(os.path.join(root, f), 0444)
+                        os.chmod(os.path.join(root, f), 0o444)
 
                 shutil.copy(local_src_path, local_dst_path)
-                os.chmod(local_dst_path, 0444)
+                os.chmod(local_dst_path, 0o444)
             except OSError as exc:
                 logger.info(exc)
             except IOError as exc:
                 logger.info(exc)
 
-    os.chmod(prefix_dest, 0555)
-    os.chmod('/corral-repl/tacc/NHERI/published', 0555)
+    os.chmod(prefix_dest, 0o555)
+    os.chmod('/corral-repl/tacc/NHERI/published', 0o555)
     save_to_fedora.apply_async(args=[project_id])
     agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': '/' + project_id, 'recurse':True}, queue='indexing')
 
@@ -882,7 +882,7 @@ def save_to_fedora(self, project_id):
                 _path = full_path.replace(_root, '', 1)
                 _path = _path.replace('[', '-')
                 _path = _path.replace(']', '-')
-                url = ''.join([fedora_project_base, urllib.quote(_path)])
+                url = ''.join([fedora_project_base, urllib.parse.quote(_path)])
                 #logger.debug('uploading: %s', url)
                 with open(os.path.join(root, name), 'rb') as _file:
                     requests.put(url, data=_file, headers=headers)

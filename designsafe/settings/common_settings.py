@@ -216,7 +216,7 @@ HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
-from nees_settings import NEES_USER_DATABASE
+from .nees_settings import NEES_USER_DATABASE
 #if NEES_USER_DATABASE['NAME']:
 #    DATABASES['nees_users'] = NEES_USER_DATABASE
 
@@ -605,11 +605,11 @@ if os.environ.get('PORTAL_PROFILE') == 'True':
 else:
     PORTAL_PROFILE = False
 
-from celery_settings import *
-from external_resource_settings import *
-from elasticsearch_settings import *
-from rt_settings import *
-from external_resource_secrets import *
+from .celery_settings import *
+from .external_resource_settings import *
+from .elasticsearch_settings import *
+from .rt_settings import *
+from .external_resource_secrets import *
 from .nco_mongo import *
 
 PORTAL_DATA_DEPOT_MANAGERS = {

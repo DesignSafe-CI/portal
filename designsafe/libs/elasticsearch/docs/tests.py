@@ -107,7 +107,7 @@ class TestBaseESFile(TestCase):
         ])
 
         # Check that iteration ends after all children have been listed.
-        self.assertRaises(StopIteration, child_generator.next)
+        self.assertRaises(StopIteration, child_generator.__next__)
 
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.save')
     def test_save(self, mock_save):

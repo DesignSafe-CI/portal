@@ -61,7 +61,7 @@ class BoxInitializationTestCase(TestCase):
 
         # patch return_values
         m_box_oauth_authenticate.return_value = ('asdf', 'asdf1234')
-        m_user_get.return_value = User(None, u'me', {
+        m_user_get.return_value = User(None, "me", {
             'id': '200000000',
             'name': 'DS User',
             'login': 'ds_user@designsafe-ci.org'

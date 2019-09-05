@@ -90,7 +90,7 @@ class TestAppsApiViews(TestCase):
         with open('designsafe/apps/workspace/fixtures/job-submission.json') as f:
             job_data = json.load(f)
         # the spaces should get quoted out
-        job_data["inputs"]["workingDirectory"] = u"agave://test.system/name with spaces"
+        job_data["inputs"]["workingDirectory"] = "agave://test.system/name with spaces"
 
         self.mock_client.jobs.submit.return_value = {"status": "ok"}
         self.client.login(username='ds_user', password='user/password')

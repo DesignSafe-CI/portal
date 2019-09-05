@@ -1,5 +1,5 @@
 import csv
-import StringIO
+import io
 import logging
 from django.conf import settings
 from agavepy.agave import Agave, AgaveException
@@ -32,7 +32,7 @@ def create_report(username, list_name):
             username,
             settings.AGAVE_STORAGE_SYSTEM
         )
-        csv_file = StringIO.StringIO()
+        csv_file = io.StringIO()
         writer = csv.writer(csv_file)
         writer.writerow(["Last Name","First Name","Email","Phone Number","Institution",\
             "Title", "Professional Level","Bio","NH_interests","Research Activities","Username",\
