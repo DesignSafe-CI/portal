@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.6.0
+
+* Fix Published view.
+
 ## v4.6.1-20190903
 
 * Add 'publishing' to the publications filter - task/DES-1267
