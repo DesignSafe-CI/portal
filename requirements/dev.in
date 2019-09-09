@@ -1,0 +1,11 @@
+codecov
+coverage
+docutils
+flake8
+ipdb
+isort
+pylint
+pytest
+Sphinx
+sphinx-rtd-theme
+pip-tools
