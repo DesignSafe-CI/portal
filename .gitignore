@@ -58,6 +58,7 @@ __pycache__/
 *.so
 .Python
 env/
+.env/
 *.egg-info/
 .installed.cfg
 *.egg
