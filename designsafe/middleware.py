@@ -42,19 +42,16 @@ class DesignsafeProfileUpdateMiddleware:
     """
 
     def process_request(self, request):
-        blocked_path = request.path.startswith('/data')\
-            or request.path.startswith('/applications')\
-            or request.path.startswith('/rw/workspace')\
-            or request.path.startswith('/recon-portal')\
-            or request.path.startswith('/dashboard')
-        if request.user.is_authenticated:
-            if request.user.profile.update_required and blocked_path:
-                messages.warning(
-                    request, '<h4>Profile Update Required</h4>'
-                                'You are required to update your user profile in \
-                                 order to continue using this feature of Designsafe.' )
-                return redirect(reverse('designsafe_accounts:profile_edit'))
-            return None
+        blocked_path = request.path.startswith(
+            ("/data", "/applications", "/rw/workspace", "/recon-portal", "/dashboard")
+        )
+        if request.user.is_authenticated and request.user.profile.update_required and blocked_path:
+            messages.warning(
+                request, '<h4>Profile Update Required</h4>'
+                            'You are required to update your user profile in \
+                            order to continue using this feature of Designsafe.' )
+            return redirect(reverse('designsafe_accounts:profile_edit'))
+        return None
 
 
 class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
