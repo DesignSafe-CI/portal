@@ -1,22 +1,19 @@
 <div class="nco-scheduler-list">
-    <span class="bg-info text-info" data-ng-if="$ctrl.loading">
-        <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
-    </span>
     <dl>
-        <dt data-ng-repeat-start="project in $ctrl.projects">
-            {{project.event_title}} ({{project.id}})
+        <dt data-ng-repeat-start="event in $ctrl.events">
+            {{event.eventTitle}} ({{event.projectId}})
             <span class="date-range">
                 <i class="fa fa-calendar">&nbsp;</i>
                 <span>
-                    {{project.date_start|date:"short"}}
+                    {{event.dateStart|date:"short"}}
                 </span>
-                <span data-ng-if="project.date_end">
-                    - {{project.date_end|date:"short"}}
+                <span data-ng-if="event.dateEnd">
+                    - {{event.dateEnd|date:"short"}}
                 </span>
             </span>
         </dt>
         <dd data-ng-repeat-end>
-            {{project.event_desc}}
+            {{event.eventDesc}}
         </dd>
     </dl>
 </div>

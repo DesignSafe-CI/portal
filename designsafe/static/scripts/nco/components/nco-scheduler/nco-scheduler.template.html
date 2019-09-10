@@ -1,4 +1,18 @@
 <div class="nco-scheduler-component">
-    <nco-scheduler-filters>&nbsp;</nco-scheduler-filters>
-    <nco-scheduler-list>&nbsp;</nco-scheduler-list>
+    <span class="bg-info text-info" data-ng-if="$ctrl._ui.loading">
+        <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+    </span>
+    <nco-scheduler-filters
+        data-filter-and-sort="$ctrl.filterAndSort(filters, sort)">&nbsp;</nco-scheduler-filters>
+    <nco-scheduler-list
+        data-events="$ctrl.events"
+        data-ng-if="!$ctrl._ui.loading">&nbsp;</nco-scheduler-list>
+    <nco-scheduler-pagination
+        data-filter-and-sort="$ctrl.filterAndSort()"
+        data-total="$ctrl._ui.total"
+        data-page-number="$ctrl._ui.pageNumber"
+        data-page-size="$ctrl._ui.pageSize"
+        data-on-next-page="$ctrl.nextPage()"
+        data-on-prev-page="$ctrl.prevPage()"
+        data-ng-if="!$ctrl._ui.loading">&nbsp;</nco-scheduler-pagination>
 </div>
