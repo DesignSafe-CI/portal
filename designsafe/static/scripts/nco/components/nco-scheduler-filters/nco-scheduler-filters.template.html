@@ -1,2 +1,35 @@
 <div class="nco-scheduler-filters">
+    <h3>Filters:</h3>
+    <div class="filter form-group"
+         data-ng-repeat="filter in $ctrl.filterValues">
+        <select name="{{filter.name}}"
+                id="filter-{{filter.name}}"
+                data-ng-model="$ctrl.filterSel[filter.name]"
+                data-ng-options="name for name in filter.value"
+                data-ng-change="$ctrl.applyFilterAndSort()"
+                class="form-control">
+            <option value="">-- Filter by "{{filter.name}}" --</option>
+        </select>
+    </div>
+    <div class="filter form-group">
+        <select name="time"
+                id="filter-time"
+                data-ng-model="$ctrl.filterSel.time"
+                data-ng-options="name for name in $ctrl._ui.timeFilters"
+                data-ng-change="$ctrl.applyFilterAndSort()"
+                class="form-control">
+            <option value="">-- Filter by "date start" --</option>
+        </select>
+    </div>
+    <h3 class="sort-title">Sort by:</h3>
+    <div class="sort form-group">
+        <select name="sort-by"
+                id="sort-by"
+                data-ng-model="$ctrl.sortby"
+                data-ng-options="name for name in $ctrl._ui.sortBy"
+                data-ng-change="$ctrl.applyFilterAndSort()"
+                class="form-control">
+            <option value="">-- Select a sorting option --</option>
+        </select>
+    </div>
 </div>

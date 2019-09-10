@@ -5,7 +5,10 @@ import '../../styles/main.css';
 import '../projects/components/file-categories/file-categories.scss';
 import '../projects/components/file-category-selector/file-category-selector.scss';
 import '../data-depot/components/projects/publication-preview/publication-preview.scss';
-import '../nco/components/nco-scheduler-list/nco-scheduler-list.css';
+import '../nco/components/nco-scheduler/nco-scheduler.component.scss';
+import '../nco/components/nco-scheduler-list/nco-scheduler-list.scss';
+import '../nco/components/nco-scheduler-pagination/nco-scheduler-pagination.component.scss';
+import '../nco/components/nco-scheduler-filters/nco-scheduler-filters.component.scss';
 
 import $ from 'jquery';
 import angular from 'angular';
