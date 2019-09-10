@@ -35,6 +35,11 @@ def manage_profile(request):
     """
     django_user = request.user
     user_profile = TASUser(username=request.user.username)
+    try:
+        ds_profile = DesignSafeProfile.objects.get(user__id=django_user.id)
+    except DesignSafeProfile.DoesNotExist:
+        logout(request)
+        return HttpResponseRedirect(reverse('designsafe_auth:login'))
 
     try:
         demographics = django_user.profile
@@ -45,40 +50,11 @@ def manage_profile(request):
     context = {
         'title': 'Account Profile',
         'profile': user_profile,
-        'demographics': demographics
+        'ds_profile': ds_profile,
+        'demographics': demographics,
+        'user': django_user,
     }
     return render(request, 'designsafe/apps/accounts/profile.html', context)
-
-
-@login_required
-def manage_pro_profile(request):
-    user = request.user
-    try:
-        ds_profile = DesignSafeProfile.objects.get(user__id=user.id)
-    except DesignSafeProfile.DoesNotExist:
-        logout(request)
-        return HttpResponseRedirect(reverse('designsafe_auth:login'))
-    context = {
-        'title': 'Professional Profile',
-        'user': user,
-        'profile': ds_profile
-    }
-    return render(request, 'designsafe/apps/accounts/professional_profile.html', context)
-
-
-@login_required
-def pro_profile_edit(request):
-    context = {}
-    user = request.user
-    ds_profile = DesignSafeProfile.objects.get(user_id=user.id)
-    form = forms.ProfessionalProfileForm(request.POST or None, instance=ds_profile)
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('designsafe_accounts:manage_pro_profile'))
-    context["form"] = form
-    return render(request, 'designsafe/apps/accounts/professional_profile_edit.html', context)
-
 
 @login_required
 def manage_authentication(request):
@@ -349,9 +325,15 @@ def profile_edit(request):
     user = request.user
     tas_user = tas.get_user(username=user.username)
 
+    user = request.user
+    ds_profile = DesignSafeProfile.objects.get(user_id=user.id)
+    pro_form = forms.ProfessionalProfileForm(request.POST or None, instance=ds_profile)
+
     if request.method == 'POST':
         form = forms.UserProfileForm(request.POST, initial=tas_user)
-        if form.is_valid():
+        if form.is_valid() and pro_form.is_valid():
+            pro_form.save()
+
             data = form.cleaned_data
             # punt on PI Eligibility for now
             data['piEligibility'] = tas_user['piEligibility']
@@ -366,7 +348,7 @@ def profile_edit(request):
                 ds_profile = user.profile
                 ds_profile.ethnicity = data['ethnicity']
                 ds_profile.gender = data['gender']
-                ds_profile.save()
+                
             except ObjectDoesNotExist as e:
                 logger.info('exception e: {} {}'.format(type(e), e ))
                 ds_profile = DesignSafeProfile(
@@ -374,7 +356,9 @@ def profile_edit(request):
                     ethnicity=data['ethnicity'],
                     gender=data['gender']
                     )
-                ds_profile.save()
+
+            ds_profile.update_required = False
+            ds_profile.save()
 
             return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
     else:
@@ -389,6 +373,7 @@ def profile_edit(request):
     context = {
         'title': 'Account Profile',
         'form': form,
+        'pro_form': pro_form
     }
     return render(request, 'designsafe/apps/accounts/profile_edit.html', context)
 

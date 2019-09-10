@@ -4,20 +4,24 @@
 
 {% block panel_content %}
 <div class="panel panel-default">
-    <div class="panel-body">
-      <h2>Edit Profile</h2>
+  <div class="panel-body">
+    <h2>Personal Profile</h2>
+    <hr>
+    <form method="post" action="">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+
+      <h2>Professional Profile</h2>
       <hr>
-      <form method="post" action="">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <div class="form-group">
-          <button type="submit" class="btn btn-success">Save Profile</button>
-          <a href="{% url 'designsafe_accounts:manage_profile' %}" class="btn btn-default">Cancel</a>
-        </div>
-      </form>
-    </div>
+      {% bootstrap_form pro_form %}
+      <div class="form-group">
+        <button type="submit" class="btn btn-success">Save Profile</button>
+        <a href="{% url 'designsafe_accounts:manage_profile' %}" class="btn btn-default">Cancel</a>
+      </div>
+    </form>
   </div>
 </div>
+
 
 {% addtoblock 'js' %}
 <script type="text/javascript" src="{% static 'designsafe/apps/accounts/js/institution_departments.js' %}"></script>

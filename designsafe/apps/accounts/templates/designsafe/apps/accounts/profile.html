@@ -47,6 +47,54 @@
                 </dl>
             </div>
         </div>
+        <hr>
+        <div class="row">
+                
+            <div class="col-md-6">
+                <h3>Professional information</h3>
+                <dt>Professional and Research Interests</dt>
+                {% if ds_profile.bio %}
+                <dd> {{ds_profile.bio}} </dd>
+                {% else %}
+                <dd class='text-warning'> Please add a bio </dd>
+                {% endif %}
+
+                <dt> My website </dt>
+                {% if ds_profile.website %}
+                <dd> <a href={{ds_profile.website}}> {{ ds_profile.website }} </a> </dd>
+                {% else %}
+                <dd class='text-warning'> No website given </dd>
+                {% endif %}
+               
+                <dt> Orcid ID </dt>
+                {% if ds_profile.orcid_id %}
+                <dd> {{ ds_profile.orcid_id }} </a> </dd>
+                {% else %}
+                <dd class='text-warning'> Not given </dd>
+                {% endif %} 
+                
+                <dt> Professional Level </dt>
+                {% if ds_profile.professional_level %}
+                <dd> {{ ds_profile.professional_level }}
+                {% else %}
+                <dd class='text-warning'> Please provide </dd>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6">
+                    <h3>Research Interests</h3>
+                <dt> Natural Hazards Interests </dt>
+                {% for interest in ds_profile.nh_interests.all %}
+                    <dd> {{ interest.description }} </dd>
+                {% endfor %}
+
+                <dt> Research Activities </dt>
+                {% for ra in ds_profile.research_activities.all %}
+                    <dd> {{ ra.description }} </dd>
+                {% endfor %}
+
+            </div>
+        </div>
 
         <hr>
 

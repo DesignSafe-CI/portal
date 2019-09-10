@@ -66,6 +66,7 @@ class DesignSafeProfile(models.Model):
     nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
+    update_required = models.BooleanField(default=True)
 
     def send_mail(self, subject, body=None):
         send_mail(subject,
