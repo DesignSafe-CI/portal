@@ -1,5 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.7.0-20190904
+
+* feat(nco scheduler): :star: NCO scheduler updates.
+* fix(data-depot): license selection clear button and remove unused session storage lines
+
 ## v4.6.0
 
 * Fix Published view.
