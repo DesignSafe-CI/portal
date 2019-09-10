@@ -94,7 +94,6 @@ class MongoProjectsHelper(object):
         mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
         mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects')]
         offset = page_size * page_number
-        LOG.debug("%s, %s, %s, %s", query, sort, offset, page_size)
         cursor = mongo_collection.find(query).sort(sort).skip(offset).limit(page_size)
         for event in cursor:
             yield event

@@ -41,8 +41,6 @@ class ProjectsListView(BaseApiView):
         page_number = int(request.GET.get('pageNumber', "0"))
         sorts = request.GET.getlist("sorts")
         page_size = int(request.GET.get("pageSize", "5"))
-        LOG.debug("filters: %s, page_number: %s, sorts: %s, page_size: %s",
-                  filters, page_number, sorts, page_size)
         total, prjs = mgr.projects(
             page_number=page_number,
             filters=filters,

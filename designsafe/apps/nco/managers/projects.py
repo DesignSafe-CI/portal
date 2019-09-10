@@ -98,7 +98,6 @@ class NcoProjectsManager(object):
             elif fil["name"] == "time":
                 query.update(self._process_time_filter(fil["value"]))
 
-        LOG.debug(query)
         return query
 
     def _process_sort(self, sorts):
