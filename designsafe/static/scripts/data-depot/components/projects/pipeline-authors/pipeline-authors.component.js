@@ -30,7 +30,6 @@ class PipelineAuthorsCtrl {
             rebuild the project and selected files if a refresh occurs...
             for now we can send them back to the selection area
             */
-            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
             this.ProjectService.get({ uuid: this.projectId }).then((project) => {
                 this.projType = project.value.projectType;
                 this.uuid = project.uuid;
@@ -46,7 +45,6 @@ class PipelineAuthorsCtrl {
             });
         } else {
             this.projType = this.project.value.projectType;
-            // this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
             this.verifyAuthors = (expAuthors) => {
                 if (typeof expAuthors != 'undefined' && typeof expAuthors[0] != 'string') {
                     this.validAuths = true;

@@ -27,7 +27,6 @@ class PipelineTeamCtrl {
             rebuild the project and selected files if a refresh occurs...
             for now we can send them back to the selection area
             */
-            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
             this.$state.go('projects.pipelineSelectOther', {projectId: this.projectId}, {reload: true});
         } else {
             // create a sortable list of team members if none exists...

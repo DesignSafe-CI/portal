@@ -24,7 +24,6 @@ class PipelineProjectCtrl {
             rebuild the project and selected files if a refresh occurs...
             for now we can send them back to the selection area
             */
-            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
             this.ProjectService.get({ uuid: this.projectId }).then((project) => {
                 this.projType = project.value.projectType;
                 this.uuid = project.uuid;

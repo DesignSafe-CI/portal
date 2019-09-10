@@ -24,7 +24,6 @@ class PipelineFieldReconCtrl {
             rebuild the project and selected files if a refresh occurs...
             for now we can send them back to the selection area
             */
-            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
             this.$state.go('projects.pipelineSelectFieldRecon', {projectId: this.projectId}, {reload: true});
         }
     }
