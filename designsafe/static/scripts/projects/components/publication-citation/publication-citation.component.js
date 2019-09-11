@@ -20,10 +20,14 @@ class PublicationCitationCtrl {
         } else if (this.publication.project.value.projectType !== 'other') {
             // exp,hyb,sim,field
             this.auths = angular.copy(this.publication.authors);
-            this.doi = this.publication.project.doi;
         } else {
             // other
             this.auths = angular.copy(this.publication.project.value.teamOrder);
+        }
+
+        if (!this.entity && !this.publication.project.doi && this.publication.project.values.dois.length){
+            this.doi = this.publication.project.values.dois[0];
+        } else if (!this.entity && this.publication.project.doi) {
             this.doi = this.publication.project.doi;
         }
 
