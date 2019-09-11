@@ -82,6 +82,7 @@ class IndexedProject(DocType):
                 'name': Text(fields={'_exact': Keyword()}),
                 'order': Long(),
             }, multi=True),
+            'dois': Text(fields={'_exact': Keyword()}, multi=True),
         })
 
     class Meta:

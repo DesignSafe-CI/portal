@@ -312,20 +312,20 @@ class Project(MetadataModel):
             )
         }]
         attributes['language'] = 'English'
-        attributes['alternateIdentifiers'] = [
+        attributes['identifiers'] = [
             {
-                'alternateIdentifierType': 'Project ID',
-                'alternateIdentifier': self.project_id,
+                'identifierType': 'Project ID',
+                'identifier': self.project_id,
             }
         ]
         awards = sorted(
             self.award_number,
             key=lambda x: (x.get('order', 0), x.get('name', ''))
         )
-        attributes['alternateIdentifiers'] += [
+        attributes['identifiers'] += [
             {
-                'alternateIdentifierType': 'NSF Award Number',
-                'alternateIdentifier': '{name} - {number}'.format(
+                'identifierType': 'NSF Award Number',
+                'identifier': '{name} - {number}'.format(
                     name=award['name'],
                     number=award['number']
                 ),
