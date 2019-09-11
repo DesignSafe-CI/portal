@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.6.4 [2019-09-12]
+
+* Fix typo in Fownload citation button.
+
 ## v4.6.3 [2019-09-11]
 
 * Download citation button and award numbers serialization.
