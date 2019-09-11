@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.6.1 [2019-09-11]
+
+* fix(publication): :fire: Indentation bug when getting publication's file paths.
+
 ## v4.7.0-20190904
 
 * feat(nco scheduler): :star: NCO scheduler updates.
