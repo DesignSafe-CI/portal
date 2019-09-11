@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.6.3 [2019-09-11]
+
+* Download citation button and award numbers serialization.
+
 ## v4.6.2 [2019-09-11]
 
 * fix: :fire: Other project type publications identifiers.
