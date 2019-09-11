@@ -122,7 +122,7 @@ def draft_publication(
                 doi
             )
             responses.append(prj_res)
-    elif upsert_project_doi and not prj.dois:
+    elif (upsert_project_doi and not prj.dois) or (not entity and prj):
         prj_res = DataciteManager.create_or_update_doi(prj_datacite_json)
         prj.dois += [prj_res['data']['id']]
         prj.save(service_account())

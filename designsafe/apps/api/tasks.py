@@ -705,6 +705,10 @@ def reindex_projects(self):
    
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
+    # Don't copy files if we're in dev.
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+        return
+
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
     import shutil
     publication = BaseESPublication(project_id=project_id)

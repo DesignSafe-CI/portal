@@ -71,12 +71,12 @@ class PublicationView(BaseApiView):
             (
                 tasks.freeze_publication_meta.s(
                     pub.projectId,
-                    data['mainEntityUuid']
+                    data.get('mainEntityUuid')
                 ).set(queue='api') |
                 group(
                     tasks.save_publication.si(
                         pub.projectId,
-                        data['mainEntityUuid']
+                        data.get('mainEntityUuid')
                     ).set(
                         queue='files',
                         countdown=60
@@ -90,7 +90,7 @@ class PublicationView(BaseApiView):
                 ) |
                 tasks.set_publish_status.si(
                     pub.projectId,
-                    data['mainEntityUuid']
+                    data.get('mainEntityUuid')
                 ) |
                 tasks.zip_publication_files.si(pub.projectId)
             ).apply_async()
