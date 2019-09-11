@@ -145,8 +145,7 @@ class BaseESPublication(BaseESResource):
                 dict_obj.get('analysiss', [])
             )
 
-            file_paths = []
-        proj_sys = 'project-{}'.format(dict_obj['project']['uuid'])
+        file_paths = []
         for obj in related_objs:
             for file_dict in obj['fileObjs']:
                 file_paths.append(file_dict['path'])
