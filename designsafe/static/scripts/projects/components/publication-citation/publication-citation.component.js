@@ -25,8 +25,8 @@ class PublicationCitationCtrl {
             this.auths = angular.copy(this.publication.project.value.teamOrder);
         }
 
-        if (!this.entity && !this.publication.project.doi && this.publication.project.values.dois.length){
-            this.doi = this.publication.project.values.dois[0];
+        if (!this.entity && !this.publication.project.doi && this.publication.project.values.doi.length){
+            this.doi = this.publication.project.value.dois[0];
         } else if (!this.entity && this.publication.project.doi) {
             this.doi = this.publication.project.doi;
         }
