@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.6.2 [2019-09-11]
+
+* fix: :fire: Other project type publications identifiers.
+
 ## v4.6.1 [2019-09-11]
 
 * fix(publication): :fire: Indentation bug when getting publication's file paths.
