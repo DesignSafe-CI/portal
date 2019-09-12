@@ -1,17 +1,21 @@
-# pylint: disable=missing-docstring
-from django.conf.urls import url, include
+"""Designsafe REST API urls."""
+from django.conf.urls import path, include
 from designsafe.apps.api.views import LoggerApi
 
 urlpatterns = [
-    url(r'^agave/', include('designsafe.apps.api.agave.urls')),
-    url(r'^public/', include('designsafe.apps.api.agave.urls')),
-    url(r'^projects/', include('designsafe.apps.api.projects.urls',
-                               namespace='ds_projects_api')),
-    url(r'^external-resources/', include('designsafe.apps.api.external_resources.urls')),
-
-    url(r'^logger/$', LoggerApi.as_view(), name='logger'),
-    url(r'^notifications/', include('designsafe.apps.api.notifications.urls')),
-    url(r'^users/', include('designsafe.apps.api.users.urls')),
-    url(r'^search/', include('designsafe.apps.api.search.urls', namespace="ds_search_api")),
+    path('logger/', LoggerApi.as_view(), name='logger'),
+    path('agave/', include('designsafe.apps.api.agave.urls',
+                           namespace="ds_agave_api")),
+    path('public/', include('designsafe.apps.api.agave.urls',
+                            namespace="ds_public_api")),
+    path('projects/', include('designsafe.apps.api.projects.urls',
+                              namespace='ds_projects_api')),
+    path('external-resources/', include('designsafe.apps.api.external_resources.urls',
+                                        namespace="ds_external_resources_api")),
+    path('notifications/', include('designsafe.apps.api.notifications.urls',
+                                   namespace="ds_notifications_api")),
+    path('users/', include('designsafe.apps.api.users.urls',
+                           namespace="ds_users_api")),
+    path('search/', include('designsafe.apps.api.search.urls', namespace="ds_search_api")),
 
 ]

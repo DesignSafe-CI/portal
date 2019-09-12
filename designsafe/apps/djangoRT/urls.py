@@ -1,14 +1,15 @@
-from django.conf.urls import url
+"""DjangoRT urls."""
+from django.conf.urls import path, re_path
 
 from designsafe.apps.djangoRT import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^new-ticket/$', views.ticketcreate, name='ticketcreate'),
-    # url(r'^new-ticket/guest/$', views.ticketcreateguest, name='ticketcreateguest'),
-    url(r'^tickets/$', views.mytickets, name='mytickets'),
-    url(r'^tickets/(?P<ticketId>\d+)/$', views.ticketdetail, name='ticketdetail'),
-    url(r'^tickets/(?P<ticketId>\d+)/reply/$', views.ticketreply, name='ticketreply'),
-    url(r'^tickets/(?P<ticketId>\d+)/close/$', views.ticketclose, name='ticketclose'),
-    url(r'^tickets/(?P<ticketId>\d+)/attachment/(?P<attachmentId>\d+)/$', views.ticketattachment, name='ticketattachment'),
+    path('new-ticket/', views.ticketcreate, name='ticketcreate'),
+    path('tickets/', views.mytickets, name='mytickets'),
+    re_path(r'^tickets/(?P<ticketId>\d+)/$', views.ticketdetail, name='ticketdetail'),
+    re_path(r'^tickets/(?P<ticketId>\d+)/reply/$', views.ticketreply, name='ticketreply'),
+    re_path(r'^tickets/(?P<ticketId>\d+)/close/$', views.ticketclose, name='ticketclose'),
+    re_path(r'^tickets/(?P<ticketId>\d+)/attachment/(?P<attachmentId>\d+)/$',
+            views.ticketattachment, name='ticketattachment'),
+    path('', views.index, name='index'),
 ]

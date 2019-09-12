@@ -1,8 +1,8 @@
-from django.conf.urls import url
+"""api search urls."""
+from django.conf.urls import path
 from designsafe.apps.api.search.views import SearchView
 
-"""
-"""
+
 urlpatterns = [
-    url(r'^/?$', SearchView.as_view(), name='search'),
+    path('', SearchView.as_view(), name='search'),
 ]

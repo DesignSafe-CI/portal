@@ -1,26 +1,10 @@
-from django.conf.urls import include, url
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _
+"""Notifications urls."""
+
+from django.conf.urls import path
 from designsafe.apps.notifications import views
 
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^notifications/$', views.notifications, name='notifications'),
-
-    # url(r'^apps-list/$', 'apps_list', name='apps_list'),
-    # url(r'^files-list/$', 'files_list', name='files_list'),
-    # url(r'^jobs-list/$', 'jobs_list', name='jobs_list'),
-    # url(r'^jobs-details/$', 'jobs_details', name='jobs_details'),
+    path('notifications/', views.notifications, name='notifications'),
+    path('', views.index, name='index'),
 ]
-
-
-def menu_items(**kwargs):
-    if 'type' in kwargs and kwargs['type'] == 'account':
-        return [
-            {
-                'label': _('Notifications'),
-                'url': reverse('designsafe_notifications:index'),
-                'children': []
-            }
-        ]

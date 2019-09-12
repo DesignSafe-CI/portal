@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/opt/app-root/bin/dumb-init /bin/sh
 
 ###
 # Run front-end tests

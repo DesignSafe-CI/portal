@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## [Python 3 update]
+
+- Update Dockerfile to use centos python 3
+- Use python3 compatible pytas: https://bitbucket.org/taccaci/pytas/pull-requests/2/py3-compatibility/diff
+- Update url to path: https://docs.djangoproject.com/en/2.2/topics/http/urls/
+- Add `on_delete` required argument on `ForeignKey` and `ManyToMany`: https://docs.djangoproject.com/en/2.2/topics/db/examples/many_to_one/
+
 ## v4.7.0-20190905
 
 * Make sure to get project DOI if no entity uuid is given.

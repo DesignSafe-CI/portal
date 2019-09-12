@@ -1,11 +1,8 @@
-from django.conf.urls import url
+"""Nco API urls."""
+from django.conf.urls import path
 from designsafe.apps.nco.views import ProjectsListView, FiltersListView
 
-"""
-REST API URLS.
-"""
-
 urlpatterns = [
-    url(r'projects', ProjectsListView.as_view(), name='projects_list'),
-    url(r'filters', FiltersListView.as_view(), name='filters_list')
+    path('projects', ProjectsListView.as_view(), name='projects_list'),
+    path('filters', FiltersListView.as_view(), name='filters_list'),
 ]

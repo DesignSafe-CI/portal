@@ -1,9 +1,10 @@
-from django.conf.urls import url
+"""Dropbox Integration urls."""
+from django.conf.urls import path
 from designsafe.apps.dropbox_integration import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^initialize/$', views.initialize_token, name='initialize_token'),
-    url(r'^oauth2/$', views.oauth2_callback, name='oauth2_callback'),
-    url(r'^disconnect/$', views.disconnect, name='disconnect'),
+    path('initialize/', views.initialize_token, name='initialize_token'),
+    path('oauth2/', views.oauth2_callback, name='oauth2_callback'),
+    path('disconnect/', views.disconnect, name='disconnect'),
+    path('', views.index, name='index'),
 ]

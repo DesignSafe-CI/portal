@@ -1,49 +1,62 @@
-FROM buildpack-deps:trusty
+FROM centos/python-36-centos7
 
 MAINTAINER DesignSafe-CI <designsafe-ci@tacc.utexas.edu>
 
 EXPOSE 8000
 
-ENV DEBIAN_FRONTEND noninteractive
 ENV TERM xterm
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - && \
-    apt-get install -y build-essential python python-dev gettext nodejs xvfb chromium-browser ruby-sass vim && \
-    curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python
+USER root
 
-RUN npm install -g bower
+RUN yum upgrade -y
+# add EPEL repo
+RUN yum install -y epel-release
+RUN yum install -y python-pip \
+    python-setuptools \
+    gcc \
+    python-devel \
+    unzip \
+    wget \
+    git \
+    mysql-devel \
+    vim \
+    nfs-utils \
+    libsemanage-python \
+    postgresql-devel --enablerepo=epel \
+    openssl-devel \
+    bzip2-devel \
+    libffi-devel
+RUN yum groupinstall -y 'Development Tools'
 
-RUN pip install --upgrade pip && pip install uwsgi uwsgitop
+# install node 12.x
+RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash -
+RUN yum -y install nodejs
 
-RUN mkdir -p /opt/uwsgi && \
-    curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
-    tar -xvzf /opt/uwsgi/uwsgi-2.0.15.tar.gz -C /opt/uwsgi && \
-    uwsgi --build-plugin /opt/uwsgi/uwsgi-2.0.15/plugins/zabbix && \
-    mkdir -p /usr/lib/uwsgi/plugins && \
-    mv zabbix_plugin.so /usr/lib/uwsgi/plugins/.
+# install uwsgi
+RUN pip install uwsgi
 
-COPY requirements.txt /tmp/requirements.txt
+# RUN pip install --upgrade pip && pip install uwsgitop
+RUN pip install --upgrade pip
+RUN pip install uwsgitop pip-tools
 
-RUN pip install -r /tmp/requirements.txt
+COPY requirements/prod.txt /tmp/requirements.txt
+
+RUN pip-sync /tmp/requirements.txt
 
 RUN groupadd --gid 816877 G-816877 && \
-    useradd --uid 458981 --gid G-816877 --groups staff -m --shell /bin/bash tg458981
+    useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
 
-COPY . /srv/www/designsafe
+RUN mkdir -p /srv/www/designsafe &&\
+    chown -R tg458981:G-816877 /srv/www/designsafe
 
-#COPY bin/* /usr/local/bin/
+RUN chown -fR tg458981:G-816877 "/opt/app-root/src/.npm" || true
+
+COPY package*.json /srv/www/designsafe/
+
+RUN cd /srv/www/designsafe npm install
+
+USER tg458981
 
 WORKDIR /srv/www/designsafe
 
-RUN chown -R tg458981:G-816877 /srv/www/designsafe
-
-RUN su tg458981 -c "bower install"
-
-RUN npm install
-
-RUN mkdir -p  designsafe/static/cascade/css/fonts/ && cp -R designsafe/static/vendor/bootstrap/fonts/* designsafe/static/cascade/css/fonts/.
-
-RUN python manage.py collectstatic -c --traceback --noinput --ignore=demo
-
+# RUN mkdir -p  designsafe/static/cascade/css/fonts/ && cp -R designsafe/static/vendor/bootstrap/fonts/* designsafe/static/cascade/css/fonts/.

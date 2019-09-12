@@ -1,8 +1,8 @@
-from django.conf.urls import include, url
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _
+"""Search urls."""
+
+from django.conf.urls import path
 from designsafe.apps.search import views
 
 urlpatterns = [
-    url(r'', views.index, name='index'),
+    path('', views.index, name='index'),
 ]
