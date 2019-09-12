@@ -148,6 +148,7 @@
             </div>
             <div class="expAuthors form-group">
                 <label>Assign Authorship</label>
+                <span style="color: #D04348; font-size:14px;">&#9679; </span>
                 <p>
                     You can order the authors during the publication process.
                 </p>
@@ -158,32 +159,32 @@
                                format="lname"
                                ng-checked="usr.authorship"
                                id="{{ 'newAuthor' + $index }}"
-                               ng-click="$ctrl.addAuthors(usr, $index)">
+                               data-ng-model="usr.authorship"
+                               data-ng-required="$ctrl.validAuthors()">
                         <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
                         <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
                     </div>
                 </div>
             </div>
-        </form>
         <!-- Update Exp Btn -->
-        <div class="text-right">
+            <div class="text-right">
+                <button class="btn btn-add"
+                        type="submit"
+                        data-ng-if="$ctrl.data.editMission"
+                        data-ng-click="addForm.$valid && $ctrl.updateMission($event)"
+                        style="width:18%;">Update</button>
+            </div>
+            <div class="text-right">
             <button class="btn btn-add"
-                    type="submit"
-                    data-ng-if="$ctrl.data.editMission"
-                    data-ng-click="addForm.$valid && $ctrl.updateMission($event)"
-                    style="width:18%;">Update</button>
-        </div>
-        <!-- </form> -->
-        <div class="text-right">
-          <button class="btn btn-add"
-                  data-ng-click="addForm.$valid && $ctrl.saveMission($event)"
-                  data-ng-if="!$ctrl.data.editMission"
-                  style="width:18%;"
-                  type="submit">
-              <i class="fa fa-plus">&nbsp;</i>
-              Add Mission
-          </button>
-        </div>
+                    data-ng-click="addForm.$valid && $ctrl.saveMission($event)"
+                    data-ng-if="!$ctrl.data.editMission"
+                    style="width:18%;"
+                    type="submit">
+                <i class="fa fa-plus">&nbsp;</i>
+                Add Mission
+            </button>
+            </div>
+        </form>
     </div>
     <div class="mission-list">
         <div class="mission-list-title">

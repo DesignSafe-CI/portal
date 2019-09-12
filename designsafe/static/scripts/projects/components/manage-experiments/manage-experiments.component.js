@@ -1,4 +1,5 @@
 import ManageExperimentsTemplate from './manage-experiments.component.html';
+import experimentalData from "../../../projects/components/manage-experiments/experimental-data.json";
 import _ from 'underscore';
 
 class ManageExperimentsCtrl {
@@ -13,23 +14,24 @@ class ManageExperimentsCtrl {
     }
 
     $onInit() {
-        this.options = this.resolve.options;
+        this.project = this.resolve.project;
+        this.edit = this.resolve.edit;
+        
+        this.efs = experimentalData.experimentalFacility;
+        this.experimentTypes = experimentalData.experimentTypes;
+        this.equipmentTypes = experimentalData.equipmentTypes;
 
-        this.efs = this.resolve.efs;
-        this.experimentTypes = this.resolve.experimentTypes;
-        this.equipmentTypes = this.resolve.equipmentTypes;
-
-        let members = [this.options.project.value.pi].concat(
-            this.options.project.value.coPis,
-            this.options.project.value.teamMembers,
-            this.options.project.value.guestMembers.filter((g) => (g && (typeof g === 'object'))).map((g) => g.user)
+        var members = [this.project.value.pi].concat(
+            this.project.value.coPis,
+            this.project.value.teamMembers,
+            this.project.value.guestMembers.filter((g) => (g && (typeof g === 'object'))).map((g) => g.user)
         );
         members = [...new Set(members)];
         members.forEach((m, i) => {
             if (typeof m == 'string') {
                 // if user is guest append their data
                 if (m.slice(0, 5) === 'guest') {
-                    let guestData = this.options.project.value.guestMembers.find((x) => x.user === m);
+                    let guestData = this.project.value.guestMembers.find((x) => x.user === m);
                     members[i] = {
                         name: m,
                         order: i,
@@ -48,8 +50,8 @@ class ManageExperimentsCtrl {
 
         this.data = {
             busy: false,
-            experiments: this.options.experiments,
-            project: this.options.project,
+            experiments: this.project.experiment_set,
+            project: this.project,
             users: [...new Set(members)],
             form: {},
         };
@@ -73,8 +75,8 @@ class ManageExperimentsCtrl {
 
         this.form.curExperiments = this.data.project.experiment_set;
 
-        if (this.options.edit) {
-            this.editExp(this.options.edit);
+        if (this.edit) {
+            this.editExp(this.edit);
         }
     }
 
@@ -148,7 +150,7 @@ class ManageExperimentsCtrl {
                 if (typeof auth == 'string') {
                     // if user is guest append their data
                     if (auth.slice(0, 5) === 'guest') {
-                        let guestData = this.options.project.value.guestMembers.find((x) => x.user === auth);
+                        let guestData = this.project.value.guestMembers.find((x) => x.user === auth);
                         usersToClean[i] = {
                             name: auth,
                             order: i,

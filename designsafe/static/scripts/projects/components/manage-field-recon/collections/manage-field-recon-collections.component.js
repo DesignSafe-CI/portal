@@ -160,6 +160,15 @@ class ManageFieldReconCollectionsCtrl {
         return false;
     }
 
+    validCollector(){
+        for(var i = 0; i < this.form.dataCollectors.length; i++) {
+            if (this.form.dataCollectors[i].authorship === true) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     showInstrumentDropdown($index) {
         let instrument = this.form.instruments[$index];
         return (this.isInstrumentInDropdown($index) ||

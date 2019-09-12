@@ -204,32 +204,6 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
     };
 
     /**
-    *
-    * @param {FileListing} file
-    * @return {Promise}
-    */
-    service.manageExperiments = (options) => {
-        let modalInstance = $uibModal.open({
-            component: 'manageExperiments',
-            resolve: {
-                options: () => options,
-                efs: () => efs,
-                experimentTypes: () => experimentTypes,
-                equipmentTypes: () => equipmentTypes,
-            },
-            size: 'lg',
-        });
-
-        modalInstance.result.then((experiment) => {
-            $state.reload();
-        }, (err) => {
-            if (err !== 'backdrop click') {
-                $q.reject(err);
-            }
-        });
-    };
-
-    /**
      * @param {Project} [project]
      * @return {Promise}
      */
