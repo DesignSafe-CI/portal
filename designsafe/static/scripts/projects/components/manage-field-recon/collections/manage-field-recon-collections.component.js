@@ -57,14 +57,14 @@ class ManageFieldReconCollectionsCtrl {
             project: this.project,
             users: [... new Set(members)],
             observationTypes: [
-                'Other',
-                'Coastal',
-                'Field Sensors',
-                'Geotechnical',
-                'Social Science',
-                'Storm Surge / Coastal',
+                'Wind',
                 'Structural',
-                'Wind'
+                'Storm Surge / Coastal',
+                'Social Science',
+                'Geotechnical',
+                'Field Sensors',
+                'Coastal',
+                'Other',
             ],
             instruments: { 
                 General: [
