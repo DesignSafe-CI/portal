@@ -67,6 +67,8 @@ def draft_publication(
     set to `True` then any saved DOIs will be updated (even if there's multiple
     unless a specific DOI is given). If there are no saved DOIs then a new DOI
     will be created. Meaning, it will act as update or insert.
+    - If :param:`project_id` is given **but** :param:`main_entity_uuid` is ``None``
+    then a project DOI will be created or updated.
 
     .. warning:: This funciton only creates a *Draft* DOI and not a public one.
 
@@ -93,6 +95,9 @@ def draft_publication(
     entity = None
     if main_entity_uuid:
         entity = mgr.get_entity_by_uuid(main_entity_uuid)
+    else:
+        upsert_project_doi = True
+
     responses = []
     prj_url = TARGET_BASE.format(project_id=project_id)
     if entity:
@@ -122,7 +127,7 @@ def draft_publication(
                 doi
             )
             responses.append(prj_res)
-    elif (upsert_project_doi and not prj.dois) or (not entity and prj):
+    elif upsert_project_doi and not prj.dois:
         prj_res = DataciteManager.create_or_update_doi(prj_datacite_json)
         prj.dois += [prj_res['data']['id']]
         prj.save(service_account())
@@ -294,32 +299,39 @@ def freeze_project_and_entity_metadata(project_id, entity_uuid=None):
     publication = pub_doc.to_dict()
 
     if entity:
+        pub_entities_field_name = FIELD_MAP[entity.name]
         publication['authors'] = entity_json['value']['authors'][:]
         entity_json['authors'] = []
 
         _populate_entities_in_publication(entity, publication)
         _transform_authors(entity_json, publication)
 
-        publication[FIELD_MAP[entity.name]] = [
-            sobj for sobj in publication[FIELD_MAP[entity.name]]
+        publication[pub_entities_field_name] = [
+            sobj for sobj in publication[pub_entities_field_name]
             if sobj['uuid'] != entity.uuid
         ]
         if entity_json['value']['dois']:
             entity_json['doi'] = entity_json['value']['dois'][-1]
 
         _delete_unused_fields(entity_json)
-        publication[FIELD_MAP[entity.name]].append(entity_json)
+        publication[pub_entities_field_name].append(entity_json)
 
     prj_json = prj.to_body_dict()
     _delete_unused_fields(prj_json)
 
-    award_number = publication['project']['value'].pop(
+    award_number = publication.get('project', {}).get('value', {}).pop(
         'awardNumber', []
     ) or []
+
     if not isinstance(award_number, list):
         award_number = []
 
     prj_json['value']['awardNumbers'] = award_number
     prj_json['value'].pop('awardNumber', None)
-    publication['project'].update(prj_json)
+    if publication.get('project'):
+        publication['project'].update(prj_json)
+    else:
+        publication['project'] = prj_json
+
     pub_doc.update(**publication)
+    return pub_doc
