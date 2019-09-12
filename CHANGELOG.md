@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.7.0-20190905
+
+* Make sure to get project DOI if no entity uuid is given.
+
 ## v4.6.4 [2019-09-12]
 
 * Fix typo in Fownload citation button.
