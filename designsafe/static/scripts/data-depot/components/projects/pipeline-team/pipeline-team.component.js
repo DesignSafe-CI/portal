@@ -3,12 +3,13 @@ import _ from 'underscore';
 
 class PipelineTeamCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, httpi, $state) {
+    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, UserService, httpi, $state) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.DataBrowserService = DataBrowserService;
+        this.UserService = UserService;
         this.browser = this.DataBrowserService.state();
         this.httpi = httpi;
         this.$state = $state;
@@ -32,22 +33,29 @@ class PipelineTeamCtrl {
             // create a sortable list of team members if none exists...
             this.selectedMember = '';
             this.team = [];
-            this.team.push({'name': this.project.value.pi, 'order': 0, 'guest': false});
-            this.project.value.coPis.forEach((c) => {
-                this.team.push({'name': c, 'order': 0, 'guest': false});
-            });
-            this.project.value.teamMembers.forEach((c) => {
-                this.team.push({'name': c, 'order': 0, 'guest': false});
-            });
-            this.project.value.guestMembers.forEach((g) => {
-                if (g) {
-                    g.order = 0;
-                    g.guest = true;
-                    this.team.push(g);
-                }
-            });
-            this.team.forEach((t, index) => {
-                t.order = index;
+            let userNames = [this.project.value.pi].concat(this.project.value.coPis, this.project.value.teamMembers);
+            
+            this.UserService.getPublic(userNames).then((res) => {
+                res.userData.forEach((u) => {
+                    let member = {};
+                    member.order = 0;
+                    member.guest = false;
+                    member.name = u.username;
+                    member.fname = u.fname;
+                    member.lname = u.lname;
+                    this.team.push(member);
+                });
+
+                this.project.value.guestMembers.forEach((g) => {
+                    if (g) {
+                        g.order = 0;
+                        g.guest = true;
+                        this.team.push(g);
+                    }
+                });
+                this.team.forEach((t, index) => {
+                    t.order = index;
+                });
             });
 
             this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
