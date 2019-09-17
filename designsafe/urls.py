@@ -114,10 +114,6 @@ urlpatterns = [
     # version check
     path('version/', des_version),
 
-    # cms handles everything else
-    path('', include('djangocms_forms.urls')),
-    path('', include('cms.urls')),
-
 ]
 if settings.DEBUG:
     urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
