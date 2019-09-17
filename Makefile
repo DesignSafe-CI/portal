@@ -52,7 +52,7 @@ docker.bash.%: ## Usage: docker.logs.<service_name>. This target uses docker-com
 	@if [ "$*" = "django" ] || [ "$*" = "workers" ]; then \
 		$(COMPOSE) exec django scl enable rh-python36 bash; \
 	else \
-		$(COMPOSE)
+		$(COMPOSE); \
 	fi
 
 docker.attach.%: ## Usage: docker.attach.<service_name>. Attach to service.
