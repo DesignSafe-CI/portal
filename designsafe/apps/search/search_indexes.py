@@ -11,8 +11,11 @@ from django.test import RequestFactory
 from django.utils.html import strip_tags
 from django.utils.encoding import force_unicode
 
-from cms.models import Title, CMSPlugin, Page
-# from cms.toolbar.toolbar import CMSToolbar
+try:
+    from cms.models import Title, CMSPlugin, Page
+except ImportError:
+    pass
+
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -46,8 +49,6 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
             Q(redirect__exact='') | Q(redirect__isnull=True)
         ).select_related('page').distinct()
 
-        # queryset = Title.objects.public().all()
-        # queryset = Page.objects.published().filter(publisher_is_draft=False).distinct()
         return queryset
 
     def prepare(self, obj):

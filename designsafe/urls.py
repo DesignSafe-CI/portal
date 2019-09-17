@@ -13,7 +13,7 @@ from designsafe.views import project_version as des_version
 
 # sitemap - classes must be imported and added to sitemap dictionary
 from django.contrib.sitemaps.views import sitemap
-from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, DesignSafeCMSSitemap
+from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap
 
 sitemaps = {
     'home': HomeSitemap,
@@ -21,12 +21,11 @@ sitemaps = {
     'static': StaticViewSitemap,
     'dynamic': DynamicViewSitemap,
     'projects': ProjectSitemap,
-    'cmspages': DesignSafeCMSSitemap,
 }
 
 urlpatterns = [
     # admin
-    path('admin/', include(admin.site.urls)),
+    path('admin/', admin.site.urls),
     path('admin/impersonate/', include('impersonate.urls')),
 
     # sitemap

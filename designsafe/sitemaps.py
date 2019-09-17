@@ -53,7 +53,6 @@ from designsafe.apps.dashboard import urls as dashboard_urls
 from designsafe.apps.box_integration import urls as box_integration_urls
 from designsafe.apps.dropbox_integration import urls as dropbox_integration_urls
 from designsafe.apps.googledrive_integration import urls as googledrive_integration_urls
-from cms.sitemaps import CMSSitemap
 
 # Home
 class HomeSitemap(sitemaps.Sitemap):
@@ -203,14 +202,3 @@ class ProjectSitemap(sitemaps.Sitemap):
 
     def location(self, item):
         return item
-
-
-class DesignSafeCMSSitemap(CMSSitemap):
-    priority = .7
-    changefreq = 'weekly'
-
-    def get_urls(self, site=None, **kwargs):
-        site = Site(domain='www.designsafe-ci.org')
-        return super(DesignSafeCMSSitemap, self).get_urls(site=site, **kwargs)
-
-
