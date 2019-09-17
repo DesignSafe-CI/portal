@@ -1,5 +1,5 @@
 """Api agave urls."""
-from django.conf.urls import path, re_path
+from django.urls import path, re_path
 from designsafe.apps.api.agave.views import (FileManagersView,
                                              FileListingView,
                                              FileMediaView,

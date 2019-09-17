@@ -1,5 +1,5 @@
 """Googled drive URLS."""
-from django.conf.urls import path
+from django.urls import path
 from designsafe.apps.googledrive_integration import views
 
 urlpatterns = [

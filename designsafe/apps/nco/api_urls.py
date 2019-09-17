@@ -1,5 +1,5 @@
 """Nco API urls."""
-from django.conf.urls import path
+from django.urls import path
 from designsafe.apps.nco.views import ProjectsListView, FiltersListView
 
 urlpatterns = [

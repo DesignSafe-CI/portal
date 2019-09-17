@@ -1,5 +1,5 @@
 """Dropbox Integration urls."""
-from django.conf.urls import path
+from django.urls import path
 from designsafe.apps.dropbox_integration import views
 
 urlpatterns = [

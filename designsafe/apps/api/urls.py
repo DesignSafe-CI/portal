@@ -1,5 +1,5 @@
 """Designsafe REST API urls."""
-from django.conf.urls import path, include
+from django.urls import path, include
 from designsafe.apps.api.views import LoggerApi
 
 urlpatterns = [

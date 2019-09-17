@@ -1,5 +1,5 @@
 # pylint: disable=missing-docstring
-from django.conf.urls import url
+from django.urls import url
 from designsafe.apps.api.external_resources.views import FilesListView
 
 urlpatterns = [

@@ -1,5 +1,5 @@
 """Api notifications urls."""
-from django.conf.urls import path, re_path
+from django.urls import path, re_path
 
 from designsafe.apps.api.notifications.views.api import ManageNotificationsView, NotificationsBadgeView
 from designsafe.apps.api.notifications.views.webhooks import JobsWebhookView, FilesWebhookView

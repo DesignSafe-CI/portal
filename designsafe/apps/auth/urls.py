@@ -1,5 +1,5 @@
 """Auth urls."""
-from django.conf.urls import path
+from django.urls import path
 from designsafe.apps.auth import views
 
 urlpatterns = [

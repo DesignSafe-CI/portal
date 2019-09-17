@@ -1,5 +1,5 @@
 """Rapid URLS."""
-from django.conf.urls import path, re_path
+from django.urls import path, re_path
 from designsafe.apps.rapid import views
 
 urlpatterns = [
