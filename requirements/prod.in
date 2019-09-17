@@ -7,7 +7,6 @@ chardet
 codecov
 coverage
 cryptography
-Django
 django-angular
 django-appconf
 django-bootstrap3
@@ -54,6 +53,7 @@ pyOpenSSL
 -e git+https://bitbucket.org/taccaci/pytas.git@4eecc96e9423dbd4f2ea86e53cc3f401f7702e8d#egg=pytas
 pytz
 PyYAML
+pywatchman
 redis
 rt
 requests

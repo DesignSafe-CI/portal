@@ -59,12 +59,15 @@ docker.attach.%: ## Usage: docker.attach.<service_name>. Attach to service.
 	$(COMPOSE) attach $*
 
 pip.compile.dev: ## Compile dev requirements.
-	pip-compile $(PWD)/requirements/prod.in $(PWD)/requirements/dev.in -o $(PWD)/requirements/dev.txt
+	pip-compile $(PWD)/requirements/prod.in $(PWD)/requirements/dev.in $(PWD)/requirements/django2x.in -o $(PWD)/requirements/dev.txt
 
 pip.compile.prod: ## Compile prod requirements.
-	pip-compile $(PWD)/requirements/prod.in -o $(PWD)/requirements/prod.txt
+	pip-compile $(PWD)/requirements/prod.in $(PWD)/requirements/django2x.in -o $(PWD)/requirements/prod.txt
 
-pip.compile.all: pip.compile.dev pip.compile.prod ## Compile prod and dev requirements.
+pip.compile.cms: ## Compile prod requirements.
+	pip-compile $(PWD)/requirements/prod.in $(PWD)/requirements/django1.11.in $(PWD)/requirements/cms.in -o $(PWD)/requirements/cms.txt
+
+pip.compile.all: pip.compile.dev pip.compile.prod pip.compile.cms## Compile prod and dev requirements.
 
 pip.sync.prod: ## Sync pip using requirements/prod.txt
 	pip-sync $(PWD)/requirements/prod.txt

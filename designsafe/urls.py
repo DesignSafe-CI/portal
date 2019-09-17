@@ -4,18 +4,18 @@ from django.conf import settings
 from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import logout as des_logout
+from django.contrib.sitemaps.views import sitemap
+from django.contrib.sites.models import Site
 from django.views.generic import RedirectView, TemplateView
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from designsafe.apps.auth.views import login_options as des_login_options
-from django.contrib.auth import logout as des_logout
-from designsafe.views import project_version as des_version
 
-# sitemap - classes must be imported and added to sitemap dictionary
-from django.contrib.sitemaps.views import sitemap
+from designsafe.apps.auth.views import login_options as des_login_options
+from designsafe.views import project_version as des_version
 from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap
 
-sitemaps = {
+sitemaps = {  # pylint:disable=invalid-name
     'home': HomeSitemap,
     'subsite': SubSitemap,
     'static': StaticViewSitemap,
@@ -116,4 +116,27 @@ urlpatterns = [
 
 ]
 if settings.DEBUG:
-    urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DS_CMS:
+    from cms.sitemaps import CMSSitemap  # pylint:disable=import-error
+
+    class DesignsafeCMSSitemap(CMSSitemap):  # pylint:disable=too-few-public-methods
+        """Designsafe CMS site map class."""
+
+        priority = .7
+        changefreq = 'weekly'
+
+        def get_urls(self, site=None, **kwargs):
+            """Get urls override."""
+            site = Site(domain='www.designsafe-ci.org')
+            return super(DesignsafeCMSSitemap, self).get_urls(site=site, **kwargs)
+
+    urlpatterns += [
+        # cms sitemap
+        path('cms_sitemap.xml',
+             sitemap,
+             {'sitemaps': {'cmspages': DesignsafeCMSSitemap}}),
+        path('', include('djangocms_forms.urls')),
+        path('', include('cms.urls')),
+    ]

@@ -34,21 +34,29 @@ RUN yum install -y python-pip \
 
 RUN yum install -y rh-python36
 
-RUN gcc --version && python --version
-
 RUN yum groupinstall -y 'Development Tools'
 
 SHELL ["/usr/bin/scl", "enable", "rh-python36"]
 
-RUN gcc --version && python --version
-
 # Install python 3.7
-RUN curl --output /tmp/python3.7.4.tgz https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz && \
-    tar xzf /tmp/python3.7.4.tgz -C /opt/ && \
-    ls /opt && \
-    cd /opt/Python-3.7.4 && \
-    ./configure --enable-optimizations && \
-    make altinstall
+# CentOS supports 3.6 but not 3. yet. Although we can install it 
+# we should wait until everything works with python3.6
+
+# RUN curl --output /tmp/python3.7.4.tgz https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz && \
+#     tar xzf /tmp/python3.7.4.tgz -C /opt/ && \
+#     ls /opt && \
+#     cd /opt/Python-3.7.4 && \
+#     ./configure --enable-optimizations && \
+#     make altinstall
+
+# Install watchman
+RUN git clone https://github.com/facebook/watchman.git /opt/watchman && \
+    cd /opt/watchman && \
+    git checkout v4.9.0 && \
+    ./autogen.sh && \
+    ./configure && \
+    make && \
+    make install
 
 # install node 12.x
 RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash -
@@ -59,11 +67,7 @@ RUN pip install uwsgi
 
 # RUN pip install --upgrade pip && pip install uwsgitop
 RUN pip install --upgrade pip
-RUN pip install uwsgitop pip-tools
-
-COPY requirements/prod.txt /tmp/requirements.txt
-
-RUN pip-sync /tmp/requirements.txt
+RUN pip install uwsgitop virtualenv
 
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
@@ -73,10 +77,21 @@ RUN mkdir -p /srv/www/designsafe &&\
 
 RUN chown -fR tg458981:G-816877 "/opt/app-root/src/.npm" || true
 
+USER tg458981
+
+RUN virtualenv ~/portal_env
+
+COPY requirements/prod.txt /tmp/requirements.txt
+
+RUN source ~/portal_env/bin/activate && \
+    pip install --upgrade pip && \
+    pip install pip-tools && \
+    pip-sync /tmp/requirements.txt
+
 COPY package*.json /srv/www/designsafe/
 
 RUN cd /srv/www/designsafe npm install
 
-USER tg458981
+RUN echo "source ~/portal_env/bin/activate" >> ~/.bashrc
 
 WORKDIR /srv/www/designsafe

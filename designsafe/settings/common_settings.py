@@ -38,11 +38,12 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+DS_CMS = os.environ.get('DS_CMS')
 
 ALLOWED_HOSTS = ['*']
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,36 +60,59 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
     'ws4redis',
-
-    # custom
-    'designsafe.apps.auth',
-    'designsafe.apps.api',
-    'designsafe.apps.api.notifications',
-    'designsafe.apps.accounts',
-    'designsafe.apps.box_integration',
-    'designsafe.apps.dropbox_integration',
-    'designsafe.apps.googledrive_integration',
-    'designsafe.apps.licenses',
-    'designsafe.apps.dashboard',
-    'designsafe.apps.nco',
-
-    # signals
-    'designsafe.apps.signals',
-
-    # Designsafe apps
-    'designsafe.apps.applications',
-    'designsafe.apps.data',
-    'designsafe.apps.projects',
-    'designsafe.apps.djangoRT',
-    'designsafe.apps.notifications',
-    'designsafe.apps.workspace',
-    'designsafe.apps.token_access',
-    'designsafe.apps.search',
-    'designsafe.apps.geo',
-    'designsafe.apps.rapid',
-
     'haystack'
-)
+]
+
+if DS_CMS:  # If DS_CMS is set
+    INSTALLED_APPS += [
+        'cms',
+        'treebeard',
+        'menus',
+        'djangocms_admin_style',
+        'djangocms_text_ckeditor',
+        'cmsplugin_cascade',
+        'cmsplugin_cascade.extra_fields',
+        'djangocms_style',
+        'djangocms_file',
+        'djangocms_flash',
+        'djangocms_googlemap',
+        'djangocms_picture',
+        'djangocms_video',
+        'djangocms_forms',
+        'filer',
+        'easy_thumbnails',
+        'bootstrap3',
+    ]
+else:
+    INSTALLED_APPS += [
+        # custom
+        'designsafe.apps.auth',
+        'designsafe.apps.api',
+        'designsafe.apps.api.notifications',
+        'designsafe.apps.accounts',
+        'designsafe.apps.box_integration',
+        'designsafe.apps.dropbox_integration',
+        'designsafe.apps.googledrive_integration',
+        'designsafe.apps.licenses',
+        'designsafe.apps.dashboard',
+        'designsafe.apps.nco',
+
+        # signals
+        'designsafe.apps.signals',
+
+        # Designsafe apps
+        'designsafe.apps.applications',
+        'designsafe.apps.data',
+        'designsafe.apps.projects',
+        'designsafe.apps.djangoRT',
+        'designsafe.apps.notifications',
+        'designsafe.apps.workspace',
+        'designsafe.apps.token_access',
+        'designsafe.apps.search',
+        'designsafe.apps.geo',
+        'designsafe.apps.rapid',
+
+    ]
 
 MIDDLEWARE = [
     'designsafe.middleware.RequestProfilingMiddleware',
@@ -425,3 +449,87 @@ PORTAL_DATA_DEPOT_SEARCH_MANAGERS = {
 }
 
 COMMUNITY_INDEX_SCHEDULE = os.environ.get('COMMUNITY_INDEX_SCHEDULE', {})
+
+
+###
+# CMS specific config
+###
+if DS_CMS:
+    DJANGOCMS_PICTURE_TEMPLATES = [
+        ('non_responsive', 'Non-Responsive Image'),
+        ('responsive', 'Responsive Image'),
+    ]
+
+    CMS_PERMISSION = True
+    CMS_TEMPLATES = (
+        ('cms_homepage.html', 'Homepage Navigation'),
+        ('ef_cms_page.html', 'EF Site Page'),
+        ('cms_page.html', 'Main Site Page'),
+    )
+    CMSPLUGIN_CASCADE = {
+        'alien_plugins': (
+            'TextPlugin',
+            'StylePlugin',
+            'FilerImagePlugin',
+            'FormPlugin',
+            'MeetingFormPlugin',
+            'ResponsiveEmbedPlugin',
+        )
+    }
+    CMSPLUGIN_CASCADE_PLUGINS = (
+        'cmsplugin_cascade.bootstrap3',
+        'cmsplugin_cascade.link',
+    )
+    CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
+        'TextPlugin',
+        'StylePlugin',
+        'FilerImagePlugin',
+        'FormPlugin',
+        'MeetingFormPlugin',
+        'ResponsiveEmbedPlugin',
+    )
+
+    # These settings enable iFrames in the CMS cktext-editor.
+    TEXT_ADDITIONAL_TAGS = ('iframe',)
+    TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'src', 'height', 'width')
+
+    THUMBNAIL_PROCESSORS = (
+        'easy_thumbnails.processors.colorspace',
+        'easy_thumbnails.processors.autocrop',
+        'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+        'easy_thumbnails.processors.filters',
+    )
+
+    CKEDITOR_SETTINGS = {
+        'allowedContent': True
+    }
+
+    DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
+    DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
+    DJANGOCMS_FORMS_TEMPLATES = (
+        ('djangocms_forms/form_template/default.html', 'Default'),
+    )
+    DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
+    DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
+        'text': ('form-control', ),
+        'textarea': ('form-control', ),
+        'email': ('form-control', ),
+        'number': ('form-control', ),
+        'phone': ('form-control', ),
+        'url': ('form-control', ),
+        'select': ('form-control', ),
+        'file': ('form-control', ),
+        'date': ('form-control', ),
+        'time': ('form-control', ),
+        'password': ('form-control', ),
+    }
+    DJANGOCMS_FORMS_DATETIME_FORMAT = '%d-%b-%Y %H:%M'
+
+    #####
+    #
+    # Bootstrap3 Settings
+    #
+    #####
+    BOOTSTRAP3 = {
+        'required_css_class': 'required',
+    }
