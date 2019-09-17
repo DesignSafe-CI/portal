@@ -1,4 +1,4 @@
-#!/opt/app-root/bin/dumb-init /bin/sh
+#!/opt/rh/rh-python36/root/usr/bin/dumb-init /bin/sh
 
 ##
 # Run Celery task queue for development

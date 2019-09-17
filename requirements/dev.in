@@ -5,6 +5,7 @@ flake8
 ipdb
 isort
 pylint
+pylint-django
 pytest
 Sphinx
 sphinx-rtd-theme

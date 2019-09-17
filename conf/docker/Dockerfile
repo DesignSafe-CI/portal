@@ -1,4 +1,4 @@
-FROM centos/python-36-centos7
+FROM centos:7
 
 MAINTAINER DesignSafe-CI <designsafe-ci@tacc.utexas.edu>
 
@@ -6,11 +6,15 @@ EXPOSE 8000
 
 ENV TERM xterm
 
+ENV LC_ALL en_US.utf-8
+ENV LANG en_US.utf-8
+
 USER root
 
 RUN yum upgrade -y
 # add EPEL repo
 RUN yum install -y epel-release
+
 RUN yum install -y python-pip \
     python-setuptools \
     gcc \
@@ -25,8 +29,26 @@ RUN yum install -y python-pip \
     postgresql-devel --enablerepo=epel \
     openssl-devel \
     bzip2-devel \
-    libffi-devel
+    libffi-devel \
+    centos-release-scl
+
+RUN yum install -y rh-python36
+
+RUN gcc --version && python --version
+
 RUN yum groupinstall -y 'Development Tools'
+
+SHELL ["/usr/bin/scl", "enable", "rh-python36"]
+
+RUN gcc --version && python --version
+
+# Install python 3.7
+RUN curl --output /tmp/python3.7.4.tgz https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz && \
+    tar xzf /tmp/python3.7.4.tgz -C /opt/ && \
+    ls /opt && \
+    cd /opt/Python-3.7.4 && \
+    ./configure --enable-optimizations && \
+    make altinstall
 
 # install node 12.x
 RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash -
@@ -58,5 +80,3 @@ RUN cd /srv/www/designsafe npm install
 USER tg458981
 
 WORKDIR /srv/www/designsafe
-
-# RUN mkdir -p  designsafe/static/cascade/css/fonts/ && cp -R designsafe/static/vendor/bootstrap/fonts/* designsafe/static/cascade/css/fonts/.

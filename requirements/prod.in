@@ -23,13 +23,12 @@ django-redis-sessions
 django-reversion
 django-sekizai
 django-termsandconditions
-django-treebeard
 django-websocket-redis
 docutils
 dropbox
 dumb-init
-elasticsearch
-elasticsearch-dsl
+elasticsearch==5.4.0
+elasticsearch-dsl==5.3.0
 flake8
 flower
 futures
@@ -41,7 +40,9 @@ ipdb
 ipython
 isort
 Jinja2
+jsonpickle
 kombu
+mysqlclient
 newrelic
 pbr
 Pillow
@@ -54,6 +55,7 @@ pyOpenSSL
 pytz
 PyYAML
 redis
+rt
 requests
 Sphinx
 sphinx-rtd-theme

@@ -89,3 +89,6 @@ venv/
 
 # vscode
 .vscode/
+
+# Not track custom makefiles
+*.mk

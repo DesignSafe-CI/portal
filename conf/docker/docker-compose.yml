@@ -102,7 +102,13 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: /srv/www/designsafe/bin/run-django.sh
+    depends_on:
+        - mysql
+        - rabbitmq
+        - redis
+        - elasticsearch
+        - memcached
+    command: ["scl", "enable", "rh-python36", "/srv/www/designsafe/bin/run-django.sh"]
     container_name: des_django
     hostname: des_django
 
@@ -126,7 +132,13 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: /srv/www/designsafe/bin/run-celery-debug.sh
+    depends_on:
+        - mysql
+        - rabbitmq
+        - redis
+        - elasticsearch
+        - memcached
+    command: ["scl", "enable", "rh-python36", "/srv/www/designsafe/bin/run-celery-debug.sh"]
     container_name: des_workers
     hostname: des_workers
 

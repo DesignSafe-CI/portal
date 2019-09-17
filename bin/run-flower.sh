@@ -1,4 +1,5 @@
-#!/opt/app-root/bin/dumb-init /bin/sh
+#!/opt/rh/rh-python36/root/usr/bin/dumb-init /bin/sh
+source scl_source enable
 
 ##
 # Run Flower monitor UI
