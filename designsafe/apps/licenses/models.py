@@ -26,7 +26,8 @@ def get_license_info():
 
 
 class BaseLicense(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='%(class)s')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='%(class)s',
+                                on_delete=models.deletion.SET_NULL)
 
     class Meta:
         abstract = True
@@ -58,5 +59,5 @@ class LSDYNALicense(BaseLicense):
                                                       'Please ensure you paste the '
                                                       'license exactly as it is in the '
                                                       'license file.')
-                                                      
+
     license_type = 'LS-DYNA'

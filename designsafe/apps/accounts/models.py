@@ -56,7 +56,8 @@ class DesignSafeProfileResearchActivities(models.Model):
 
 
 class DesignSafeProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile',
+                                on_delete=models.deletion.SET_NULL)
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
     agree_to_account_limit = models.DateTimeField(auto_now_add=True, null=True)
@@ -74,9 +75,11 @@ class DesignSafeProfile(models.Model):
                   [self.user.email],
                   html_message=body)
 
+
 class NotificationPreferences(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                related_name='notification_preferences')
+                                related_name='notification_preferences',
+                                on_delete=models.deletion.SET_NULL)
     announcements = models.BooleanField(
         default=True,
         verbose_name=_('Announcements: to communicate EF Workshops, NHERI Newsletter, Student Opportunities, etc.'))

@@ -17,8 +17,10 @@ TOKEN_EXPIRY_THRESHOLD = 600
 
 AGAVE_RESOURCES = agave.load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
+
 class AgaveOAuthToken(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agave_oauth')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agave_oauth',
+                                on_delete=models.deletion.SET_NULL)
     token_type = models.CharField(max_length=255)
     scope = models.CharField(max_length=255)
     access_token = models.CharField(max_length=255)

@@ -78,3 +78,6 @@ django.migrate: ## Run migrate in django container.
 
 django.makemigrations: ## Run makemigrations in django container.
 	$(COMPOSE) run --rm django $(PYTHON) "$(DJMANAGE) makemigrations"
+
+django.check: ## Run django check..
+	$(COMPOSE) run --rm django $(PYTHON) "$(DJMANAGE) check"
