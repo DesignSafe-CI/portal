@@ -1,7 +1,7 @@
 """DesignSafe-CI URL Configuration."""
 
 from django.conf import settings
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView, TemplateView
@@ -29,7 +29,7 @@ urlpatterns = [
     path('admin/impersonate/', include('impersonate.urls')),
 
     # sitemap
-    path('sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
     # terms-and-conditions
     path('terms/', include('termsandconditions.urls')),
@@ -64,7 +64,7 @@ urlpatterns = [
     # auth
     path('account/', include('designsafe.apps.accounts.urls',
                              namespace='designsafe_accounts')),
-    path('register/$', RedirectView.as_view(
+    path('register/', RedirectView.as_view(
         pattern_name='designsafe_accounts:register', permanent=True), name='register'),
 
     # dashboard
@@ -72,16 +72,16 @@ urlpatterns = [
                                namespace='designsafe_dashboard')),
 
     # need a fancier redirect here to pass the code param along
-    path('activate/(?:(?P<code>.+)/)?$',
-         lambda x, code: HttpResponseRedirect(
-             reverse('designsafe_accounts:email_confirmation',
-                     args=[code] if code else None)
-         )),
-    path('password-reset/(?:(?P<code>.+)/)?$',
-         lambda x, code: HttpResponseRedirect(
-             reverse('designsafe_accounts:password_reset',
-                     args=[code] if code else None)
-         )),
+    re_path('activate/(?:(?P<code>.+)/)?$',
+            lambda x, code: HttpResponseRedirect(
+                reverse('designsafe_accounts:email_confirmation',
+                        args=[code] if code else None)
+            )),
+    re_path('password-reset/(?:(?P<code>.+)/)?$',
+            lambda x, code: HttpResponseRedirect(
+                reverse('designsafe_accounts:password_reset',
+                        args=[code] if code else None)
+            )),
 
     # box
     path('account/applications/box/', include('designsafe.apps.box_integration.urls',
@@ -101,9 +101,9 @@ urlpatterns = [
     # auth
     path('auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
 
-    path('login/$', des_login_options, name='login'),
-    path('logout/$', des_logout,
-         {'next_page': '/auth/logged-out/'}, name='logout'),
+    re_path('login/$', des_login_options, name='login'),
+    re_path('logout/$', des_logout,
+            {'next_page': '/auth/logged-out/'}, name='logout'),
 
     # help
     path('help/', include('designsafe.apps.djangoRT.urls', namespace='djangoRT')),
