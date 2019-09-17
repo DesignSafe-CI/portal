@@ -78,7 +78,7 @@ class GoogleDriveUserToken(models.Model):
     Represents an OAuth Token for a Google Drive user
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='googledrive_user_token',
-                                on_delete=models.deletion.SET_NULL)
+                                on_delete=models.deletion.CASCADE)
     credential = CredentialsField()
 
     @property

@@ -11,7 +11,7 @@ class Token(models.Model):
     """
     token = models.CharField(max_length=40, primary_key=True)
     nickname = models.CharField(max_length=255)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.deletion.SET_NULL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

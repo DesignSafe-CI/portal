@@ -27,7 +27,7 @@ def get_license_info():
 
 class BaseLicense(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='%(class)s',
-                                on_delete=models.deletion.SET_NULL)
+                                on_delete=models.deletion.CASCADE)
 
     class Meta:
         abstract = True
