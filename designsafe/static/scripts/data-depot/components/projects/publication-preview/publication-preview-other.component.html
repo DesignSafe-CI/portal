@@ -57,11 +57,16 @@
                 <td class="prj-data">{{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}</td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly">
-                <td ng-if="$ctrl.browser.project.value.keywords">DOI</td>
-                <td class="prj-data">
-                    <button class="btn btn-info btn-sm" data-ng-click="$ctrl.showCitation()">
+                <td>
+                    <span>DOI</span>
+                    <button class="btn btn-info btn-sm"
+                            style="padding: 0px 8px; border-radius: 4px;"
+                            data-ng-click="$ctrl.showCitation()">
                         Citation
                     </button>
+                </td>
+                <td>
+                    <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
                 </td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly">

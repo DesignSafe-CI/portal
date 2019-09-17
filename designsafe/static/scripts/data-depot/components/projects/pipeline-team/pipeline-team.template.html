@@ -69,10 +69,7 @@
             <div class="well" style="margin-bottom:20px">
                 <div>
                     <span ng-repeat="member in $ctrl.team | orderBy: 'order'">
-                        <span ng-if="!member.guest">
-                            <ds-user username="member.name" format="hname">{{ member.name }}</ds-user><span>, </span>
-                        </span>
-                        <span ng-if="member.guest">{{ member.lname }}, {{ member.fname[0] }}., </span>
+                        <span>{{ member.lname }}, {{ member.fname[0] }}., </span>
                     </span>
                     <span style="background: #f5f5f5;padding-left: 7px;margin-left: -9px;">
                         ({{ $ctrl.curDate }}) “{{ $ctrl.project.value.title }}.” DesignSafe-CI. <a>https://doi.org/10.12345/ABCDEF</a>.
@@ -94,14 +91,7 @@
                         <td class="tg-0lax">
                             <div ng-repeat="member in $ctrl.team | orderBy: 'order'">
                                 <input type="radio" name="member" format="lname" ng-model="$ctrl.selectedMember" ng-value="member">
-                                <span ng-if="!member.guest">
-                                    <ds-user username="member.name" format="lname">
-                                        {{ member.name }}
-                                    </ds-user>
-                                </span>
-                                <span ng-if="member.guest">
-                                    {{ member.lname }}, {{ member.fname }}
-                                </span>
+                                {{ member.lname }}, {{ member.fname }}
                             </div>
                         </td>
                         <td class="tg-0lax">
