@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -204,8 +204,8 @@ def nees_migration(request, step=None):
             email_address = request.POST.get('email_address')
             nees_user_match = NEESUser.lookup_user(email_address)
             countries = tas_api.countries()
-            country_residence = next((c for c in countries if c['abbrev'] == nees_user_match[0].countryresident), {'id':None})
-            country_origin = next((c for c in countries if c['abbrev'] == nees_user_match[0].countryorigin), {'id':None})
+            country_residence = next((c for c in countries if c['abbrev'] == nees_user_match[0].countryresident), {'id': None})
+            country_origin = next((c for c in countries if c['abbrev'] == nees_user_match[0].countryorigin), {'id': None})
             initial_data = {
                 'firstName': nees_user_match[0].givenName,
                 'lastName': nees_user_match[0].surname,
@@ -368,12 +368,12 @@ def profile_edit(request):
                 ds_profile.gender = data['gender']
                 ds_profile.save()
             except ObjectDoesNotExist as e:
-                logger.info('exception e: {} {}'.format(type(e), e ))
+                logger.info('exception e: {} {}'.format(type(e), e))
                 ds_profile = DesignSafeProfile(
                     user=user,
                     ethnicity=data['ethnicity'],
                     gender=data['gender']
-                    )
+                )
                 ds_profile.save()
 
             return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
@@ -544,7 +544,7 @@ def mailing_list_subscription(request, list_name):
             Q(notification_preferences__isnull=True) |
             Q(**{"notification_preferences__{}".format(list_name): True}))
         subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'),
-        u.email.encode('utf-8')) for u in su)
+                                                 u.email.encode('utf-8')) for u in su)
 
     except TypeError as e:
         logger.warning('Invalid list name: {}'.format(list_name))
@@ -557,10 +557,10 @@ def user_report(request, list_name):
     django_user = request.user
 
     create_report.apply_async(
-                args=(
-                    (django_user.username, list_name)
-                )
-            )
+        args=(
+            (django_user.username, list_name)
+        )
+    )
 
     context = {
         'title': 'Generating Report',

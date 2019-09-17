@@ -27,7 +27,7 @@ build: ## Build images needed for local dev
 	$(COMPOSE) build --compress --force-rm --no-cache django
 
 clean: ## Cleans env, e.g. remove *.pyc
-	find $(PWD)/designsafe/ '*.pyc'
+	find $(PWD)/designsafe/ -name '*.pyc' -delete
 
 dev.up: ## Start everything using docker-compose.
 	$(COMPOSE) up -d

@@ -1,11 +1,12 @@
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model, models, signals
 from designsafe.apps.rapid.models import RapidNHEvent
 from unittest import skip
 import mock
 import requests_mock
 from unittest import skip
+
 
 @skip("Need to mock calls to ES.")
 class RapidTests(TestCase):
@@ -35,7 +36,6 @@ class RapidTests(TestCase):
 
     def tearDown(self):
         pass
-
 
     def test_index(self):
         """

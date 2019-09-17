@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model, signals
 from unittest import skip
 import mock
@@ -213,7 +213,6 @@ class AuthenticatedViewTests(TestCase):
 
         resp = self.client.get(reverse('djangoRT:ticketclose', args=[ticket_id]))
         self.assertContains(resp, 'Close #{}'.format(ticket_id))
-
 
     @skip("TODO implement attachment test - @mrhanlon; 2016-08-10")
     def test_attachment(self):

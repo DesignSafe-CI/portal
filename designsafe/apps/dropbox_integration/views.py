@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
                          Http404)
 from django.views.decorators.csrf import csrf_exempt
@@ -20,6 +20,7 @@ import json
 
 logger = logging.getLogger(__name__)
 
+
 @login_required
 def index(request):
     context = {}
@@ -28,7 +29,7 @@ def index(request):
         context['dropbox_enabled'] = True
         try:
             dropbox = Dropbox(dropbox_token.access_token)
-            dropbox_user=dropbox.users_get_account(dropbox_token.account_id)
+            dropbox_user = dropbox.users_get_account(dropbox_token.account_id)
             context['dropbox_connection'] = dropbox_user
         except BadRequestException or AuthError:
             # authentication failed
@@ -46,17 +47,18 @@ def index(request):
 def get_dropbox_auth_flow(request):
     redirect_uri = reverse('dropbox_integration:oauth2_callback')
     return DropboxOAuth2Flow(
-        consumer_key = settings.DROPBOX_APP_KEY,
-        consumer_secret = settings.DROPBOX_APP_SECRET,
-        redirect_uri = request.build_absolute_uri(redirect_uri),
-        session = request.session['dropbox'],
-        csrf_token_session_key = 'state'
+        consumer_key=settings.DROPBOX_APP_KEY,
+        consumer_secret=settings.DROPBOX_APP_SECRET,
+        redirect_uri=request.build_absolute_uri(redirect_uri),
+        session=request.session['dropbox'],
+        csrf_token_session_key='state'
     )
+
 
 @csrf_exempt
 @login_required
 def initialize_token(request):
-    request.session['dropbox']={}
+    request.session['dropbox'] = {}
     logger.info('request.session["dropbox"]: {}'.format(request.session['dropbox']))
     auth_url = get_dropbox_auth_flow(request).start()
     logger.info('request.session["dropbox"]: {}'.format(request.session['dropbox']))

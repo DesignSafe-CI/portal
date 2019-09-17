@@ -5,7 +5,8 @@ import io
 from datetime import datetime
 from PIL import Image
 from elasticsearch import TransportError, ConnectionTimeout
-from django.core.urlresolvers import reverse
+from django.conf import settings
+from django.urls import reverse
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -19,11 +20,10 @@ from designsafe.apps.rapid import forms as rapid_forms
 logger = logging.getLogger(__name__)
 metrics_logger = logging.getLogger('metrics')
 
-from designsafe import settings
 
 def thumbnail_image(fobj, size=(400, 400)):
     im = Image.open(fobj)
-    im.thumbnail( (400, 400), Image.ANTIALIAS)
+    im.thumbnail((400, 400), Image.ANTIALIAS)
     file_buffer = io.StringIO()
     im.save(file_buffer, format='JPEG')
     return file_buffer
@@ -40,22 +40,22 @@ def rapid_admin_check(user):
 
 def index(request):
     metrics_logger.info('Rapid Index',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_index_view'
-                 })
+                        extra={
+                            'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'rapid_index_view'
+                        })
     return render(request, 'designsafe/apps/rapid/index.html')
 
 
 def get_event_types(request):
     s = RapidNHEventType.search()
     try:
-        results  = s.execute(ignore_cache=True)
+        results = s.execute(ignore_cache=True)
     except (TransportError, ConnectionTimeout) as err:
         if getattr(err, 'status_code', 500) == 404:
             raise
-        results  = s.execute(ignore_cache=True)
+        results = s.execute(ignore_cache=True)
 
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
@@ -74,11 +74,11 @@ def get_events(request):
 def admin(request):
 
     metrics_logger.info('Rapid Admin index',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_index_view'
-                 })
+                        extra={
+                            'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'rapid_admin_index_view'
+                        })
 
     s = RapidNHEvent.search()
     s = s.sort("-event_date")
@@ -105,11 +105,11 @@ def admin_create_event(request):
     form.fields["event_type"].choices = options
 
     metrics_logger.info('Rapid Admin create event',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_create_event'
-                 })
+                        extra={
+                            'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'rapid_admin_create_event'
+                        })
 
     if request.method == 'POST':
         if form.is_valid():
@@ -117,7 +117,7 @@ def admin_create_event(request):
             ev.location_description = form.cleaned_data["location_description"]
             ev.location = {
                 "lat": form.cleaned_data["lat"],
-                "lon":form.cleaned_data["lon"]
+                "lon": form.cleaned_data["lon"]
             }
             ev.event_date = form.cleaned_data["event_date"]
             ev.event_type = form.cleaned_data["event_type"]
@@ -159,11 +159,11 @@ def admin_edit_event(request, event_id):
         return HttpResponseNotFound()
 
     metrics_logger.info('Rapid Admin edit event',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_edit_event'
-                 })
+                        extra={
+                            'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'rapid_admin_edit_event'
+                        })
 
     data = event.to_dict()
     data["lat"] = event.location.lat
@@ -227,11 +227,11 @@ def admin_edit_event(request, event_id):
 def admin_delete_event(request, event_id):
 
     metrics_logger.info('Rapid Admin delete event',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_delete_event'
-                 })
+                        extra={
+                            'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'rapid_admin_delete_event'
+                        })
 
     try:
         event = RapidNHEvent.get(event_id)
@@ -366,12 +366,12 @@ def admin_user_permissions(request):
 
     """
     metrics_logger.info('Rapid Admin user perms',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_user_perms'
-                 })
-    if request.method=='POST':
+                        extra={
+                            'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'rapid_admin_user_perms'
+                        })
+    if request.method == 'POST':
         payload = json.loads(request.body.decode("utf-8"))
         logger.info(payload)
         username = payload["username"]

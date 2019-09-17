@@ -1,6 +1,6 @@
 from dropbox import DropboxOAuth2Flow, Dropbox
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 import json
 
@@ -43,10 +43,10 @@ class DropboxUserToken(models.Model):
     def client(self, request):
         redirect_uri = reverse('dropbox_integration:oauth2_callback')
         oauth = DropboxOAuth2Flow(
-                    consumer_key = settings.DROPBOX_APP_KEY,
-                    consumer_secret = settings.DROPBOX_APP_SECRET,
-                    redirect_uri = request.build_absolute_uri(redirect_uri),
-                    session = request.session['dropbox'],
-                    csrf_token_session_key = 'state'
-                )
+            consumer_key=settings.DROPBOX_APP_KEY,
+            consumer_secret=settings.DROPBOX_APP_SECRET,
+            redirect_uri=request.build_absolute_uri(redirect_uri),
+            session=request.session['dropbox'],
+            csrf_token_session_key='state'
+        )
         return Dropbox(oauth.access_token)

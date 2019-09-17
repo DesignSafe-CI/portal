@@ -6,7 +6,7 @@ import json
 import os
 import re
 import chardet
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import (HttpResponseRedirect, HttpResponseBadRequest,
                          HttpResponseForbidden, HttpResponseServerError)
 from django.shortcuts import render
@@ -48,6 +48,7 @@ class FileManagersView(View):
                 'public',
             ], safe=False)
 
+
 class FileListingView(BaseApiView):
     """Main File Listing View. Used to list agave resources."""
 
@@ -63,13 +64,13 @@ class FileListingView(BaseApiView):
             client = request.user.agave_oauth.client
 
         if system_id is None:
-                system_id = AgaveFileManager.DEFAULT_SYSTEM_ID
+            system_id = AgaveFileManager.DEFAULT_SYSTEM_ID
         if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and not file_path:
             file_path = request.user.username
         if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and \
                 (file_path.strip('/') == '$SHARE'):
-                file_mgr_name = 'shared'
-                kwargs = {'user_context': request.user.username}
+            file_mgr_name = 'shared'
+            kwargs = {'user_context': request.user.username}
 
         fm_cls = FileLookupManager(file_mgr_name)
         fm = fm_cls(agave_client=client)
@@ -79,10 +80,10 @@ class FileListingView(BaseApiView):
         if query_string:
             fm = SearchLookupManager(file_mgr_name)(request)
         listing = fm.listing(system=system_id, file_path=file_path,
-                                    offset=offset, limit=limit, **kwargs)
+                             offset=offset, limit=limit, **kwargs)
         return JsonResponse(listing,
-                                encoder=AgaveJSONEncoder,
-                                safe=False)
+                            encoder=AgaveJSONEncoder,
+                            safe=False)
 
 
 class FileMediaView(View):
@@ -90,9 +91,9 @@ class FileMediaView(View):
     @profile_fn
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
-            or file_mgr_name == 'public' \
-            or file_mgr_name == 'community' \
-            or file_mgr_name == 'published':
+                or file_mgr_name == 'public' \
+                or file_mgr_name == 'community' \
+                or file_mgr_name == 'published':
             if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
                     ag = get_user_model().objects.get(username='envision').agave_oauth.client
@@ -123,8 +124,8 @@ class FileMediaView(View):
                                                     'system_id': system_id,
                                                     'file_path': file_path})
                             encoded = ("Sorry! We were unable to preview this file due "
-                                      "to an unrecognized content encoding. Please " 
-                                      "download the file to view its contents.")
+                                       "to an unrecognized content encoding. Please "
+                                       "download the file to view its contents.")
                     context['text_preview'] = encoded
                 elif f.ext in BaseFileResource.SUPPORTED_OBJECT_PREVIEW_EXTS:
                     context['object_preview'] = f.download_postit(force=False, lifetime=360)
@@ -150,7 +151,7 @@ class FileMediaView(View):
     @profile_fn
     def post(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
-            or file_mgr_name == 'public':
+                or file_mgr_name == 'public':
             if not request.user.is_authenticated:
                 return HttpResponseForbidden('Login required')
 
@@ -166,7 +167,7 @@ class FileMediaView(View):
                     upload_dir = os.path.join(file_path, os.path.dirname(relative_path))
                     BaseFileResource.ensure_path(agave_client, system_id, upload_dir)
                     metrics.info('Data Depot',
-                                 extra = {
+                                 extra={
                                      'user': request.user.username,
                                      'sessionId': getattr(request.session, 'session_key', ''),
                                      'operation': 'data_depot_folder_upload',
@@ -179,7 +180,7 @@ class FileMediaView(View):
                 try:
                     result = fm.upload(system_id, upload_dir, upload_file)
                     metrics.info('Data Depot',
-                                 extra = {
+                                 extra={
                                      'user': request.user.username,
                                      'sessionId': getattr(request.session, 'session_key', ''),
                                      'operation': 'data_depot_file_upload',
@@ -224,9 +225,9 @@ class FileMediaView(View):
             body = request.POST.copy()
         action = body.get('action', '')
         if file_mgr_name == AgaveFileManager.NAME \
-            or file_mgr_name == 'public' \
-            or file_mgr_name == 'community' \
-            or file_mgr_name == 'published':
+                or file_mgr_name == 'public' \
+                or file_mgr_name == 'community' \
+                or file_mgr_name == 'published':
 
             if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
@@ -262,7 +263,7 @@ class FileMediaView(View):
                             'src_file_id': os.path.join(system_id, file_path.strip('/')),
                             'dest_file_id': dest_file_id
                         },
-                        queue='files')
+                            queue='files')
                         event_data[Notification.MESSAGE] = 'Data copy was scheduled. This may take a few minutes.'
                         event_data[Notification.EXTRA] = {
                             'resource': external,
@@ -277,7 +278,7 @@ class FileMediaView(View):
                         copied = fm.import_data(body.get('system'), path,
                                                 system_id, file_path)
                         metrics.info('Data Depot',
-                                     extra = {
+                                     extra={
                                          'user': request.user.username,
                                          'sessionId': getattr(request.session, 'session_key', ''),
                                          'operation': 'data_depot_copy',
@@ -291,7 +292,7 @@ class FileMediaView(View):
                     else:
                         copied = fm.copy(system_id, file_path, body.get('path'), body.get('name'))
                         metrics.info('Data Depot',
-                                     extra = {
+                                     extra={
                                          'user': request.user.username,
                                          'sessionId': getattr(request.session, 'session_key', ''),
                                          'operation': 'data_depot_copy',
@@ -321,7 +322,7 @@ class FileMediaView(View):
 
             elif action == 'download':
                 metrics.info('Data Depot',
-                             extra = {
+                             extra={
                                  'user': request.user.username,
                                  'sessionId': getattr(request.session, 'session_key', ''),
                                  'operation': 'agave_file_download',
@@ -338,7 +339,7 @@ class FileMediaView(View):
                     dir_name = body.get('name')
                     new_dir = fm.mkdir(system_id, file_path, dir_name)
                     metrics.info('Data Depot',
-                                 extra = {
+                                 extra={
                                      'user': request.user.username,
                                      'sessionId': getattr(request.session, 'session_key', ''),
                                      'operation': 'agave_file_mkdir',
@@ -376,7 +377,7 @@ class FileMediaView(View):
                         moved = fm.import_data(body.get('system'), body.get('path'), system_id, file_path)
                         fm.delete(system_id, file_path)
                         metrics.info('Data Depot',
-                                     extra = {
+                                     extra={
                                          'user': request.user.username,
                                          'sessionId': getattr(request.session, 'session_key', ''),
                                          'operation': 'agave_file_copy_move',
@@ -389,7 +390,7 @@ class FileMediaView(View):
                     else:
                         moved = fm.move(system_id, file_path, body.get('path'), body.get('name'))
                         metrics.info('Data Depot',
-                                     extra = {
+                                     extra={
                                          'user': request.user.username,
                                          'sessionId': getattr(request.session, 'session_key', ''),
                                          'operation': 'agave_file_copy',
@@ -440,7 +441,7 @@ class FileMediaView(View):
                 try:
                     renamed = fm.rename(system_id, file_path, body.get('name'))
                     metrics.info('Data Depot',
-                                 extra = {
+                                 extra={
                                      'user': request.user.username,
                                      'sessionId': getattr(request.session, 'session_key', ''),
                                      'operation': 'agave_file_rename',
@@ -465,7 +466,7 @@ class FileMediaView(View):
                         Notification.STATUS: Notification.ERROR,
                         Notification.USER: request.user.username,
                         Notification.MESSAGE: 'There was an error renaming a file/folder.',
-                        Notification.EXTRA: {'message': e.response.text }
+                        Notification.EXTRA: {'message': e.response.text}
                     }
                     Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
@@ -478,7 +479,7 @@ class FileMediaView(View):
                 try:
                     trashed = fm.trash(system_id, file_path, trash_path)
                     metrics.info('Data Depot',
-                                 extra = {
+                                 extra={
                                      'user': request.user.username,
                                      'sessionId': getattr(request.session, 'session_key', ''),
                                      'operation': 'agave_file_trash',
@@ -522,7 +523,7 @@ class FileMediaView(View):
             try:
                 fm.delete(system_id, file_path)
                 metrics.info('Data Depot',
-                             extra = {
+                             extra={
                                  'user': request.user.username,
                                  'sessionId': getattr(request.session, 'session_key', ''),
                                  'operation': 'agave_file_delete',
@@ -555,12 +556,13 @@ class FileMediaView(View):
 
         return HttpResponseBadRequest("Unsupported operation")
 
+
 class FilePermissionsView(View):
 
     @profile_fn
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
-            or file_mgr_name == 'public':
+                or file_mgr_name == 'public':
             if not request.user.is_authenticated:
                 return HttpResponseForbidden('Login required')
 
@@ -581,7 +583,7 @@ class FilePermissionsView(View):
             body = request.POST.copy()
 
         if file_mgr_name == AgaveFileManager.NAME \
-            or file_mgr_name == 'public':
+                or file_mgr_name == 'public':
             if not request.user.is_authenticated:
                 return HttpResponseForbidden('Login required')
 
@@ -591,7 +593,7 @@ class FilePermissionsView(View):
             try:
                 pem = fm.share(system_id, file_path, username, permission)
                 metrics.info('Data Depot',
-                             extra = {
+                             extra={
                                  'user': request.user.username,
                                  'sessionId': getattr(request.session, 'session_key', ''),
                                  'operation': 'data_depot_share',
@@ -652,12 +654,12 @@ class FileMetaView(View):
             return JsonResponse(file_dict)
         elif file_mgr_name in ['public', 'community', 'published']:
             pems = [{'username': 'AnonymousUser',
-                    'permission': {'read': True,
-                                'write': False,
-                                'execute': False}}]
+                     'permission': {'read': True,
+                                    'write': False,
+                                    'execute': False}}]
             if request.user.is_authenticated:
                 pems.append({'username': request.user.username,
-                            'permission': {'read': True,
+                             'permission': {'read': True,
                                             'write': False,
                                             'execute': False}})
 
@@ -681,7 +683,7 @@ class FileMetaView(View):
                 file_dict = file_obj.to_dict()
                 file_dict['keyword'] = file_obj.metadata.value['keywords']
                 metrics.info('Data Depot',
-                             extra = {
+                             extra={
                                  'user': request.user.username,
                                  'sessionId': getattr(request.session, 'session_key', ''),
                                  'operation': 'data_depot_metadata_update',
@@ -717,6 +719,7 @@ class FileMetaView(View):
             return JsonResponse(file_dict)
 
         return HttpResponseBadRequest('Unsupported file manager.')
+
 
 class SystemsView(View):
 

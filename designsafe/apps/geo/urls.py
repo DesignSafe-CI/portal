@@ -1,7 +1,7 @@
 """Geo urls."""
 
 from django.conf.urls import path
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from designsafe.apps.geo import views
 
 urlpatterns = [

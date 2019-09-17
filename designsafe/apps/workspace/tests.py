@@ -3,7 +3,7 @@ import os
 from mock import patch
 from django.test import TestCase
 from .models.app_descriptions import AppDescription
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 
@@ -60,8 +60,8 @@ class TestAppsApiViews(TestCase):
             }
         ]
 
-        #need to do a return_value on the mock_client because
-        #the calling signature is something like client = Agave(**kwargs).apps.list()
+        # need to do a return_value on the mock_client because
+        # the calling signature is something like client = Agave(**kwargs).apps.list()
         self.mock_client.apps.list.return_value = apps
         url = reverse('designsafe_workspace:call_api', args=('apps',))
         response = self.client.get(url, follow=True)
@@ -102,7 +102,7 @@ class TestAppsApiViews(TestCase):
         args, kwargs = self.mock_client.jobs.submit.call_args
         body = kwargs["body"]
         input = body["inputs"]["workingDirectory"]
-        #the spaces should have been quoted
+        # the spaces should have been quoted
         self.assertTrue("%20" in input)
 
     def test_licensed_apps(self):

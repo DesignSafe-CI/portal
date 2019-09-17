@@ -4,10 +4,12 @@ import re
 import os
 import sys
 import json
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 from datetime import datetime
 from celery import shared_task
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from requests.exceptions import HTTPError
@@ -20,6 +22,7 @@ from elasticsearch_dsl.query import Q
 from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
+
 
 @shared_task(bind=True)
 def box_download(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
@@ -102,7 +105,7 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                                 'id': dest_file_id,
                                 'src_file_id': src_file_id,
                                 'src_resource': src_resource
-                         })
+                                })
         n.save()
 
 
@@ -181,11 +184,11 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
         src_resource, src_file_id, username, dest_resource, dest_file_id))
 
     try:
-        n = Notification(event_type = 'data',
-                         status = Notification.INFO,
-                         operation = 'box_upload_start',
-                         message = 'Starting import of file %s into box.' % src_file_id,
-                         user = username,
+        n = Notification(event_type='data',
+                         status=Notification.INFO,
+                         operation='box_upload_start',
+                         message='Starting import of file %s into box.' % src_file_id,
+                         user=username,
                          # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), src_resource, src_file_id)})
                          extra={'id': src_file_id})
         n.save()
@@ -223,13 +226,13 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
 
         logger.debug('Box upload task complete.')
 
-        n = Notification(event_type = 'data',
-                         status = Notification.SUCCESS,
-                         operation = 'box_upload_end',
-                         message = 'File(s) %s succesfully uploaded into box!' % src_file_id,
-                         user = username,
+        n = Notification(event_type='data',
+                         status=Notification.SUCCESS,
+                         operation='box_upload_end',
+                         message='File(s) %s succesfully uploaded into box!' % src_file_id,
+                         user=username,
                          extra={'id': src_file_id})
-                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), dest_resource, dest_file_id)})
+        # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), dest_resource, dest_file_id)})
         n.save()
     except:
         logger.exception('Unexpected task failure: box_upload', extra={
@@ -239,18 +242,18 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
             'dest_resource': dest_resource,
             'dest_file_id': dest_file_id,
         })
-        n = Notification(event_type = 'data',
-                         status = Notification.ERROR,
-                         operation = 'box_download_error',
-                         message = 'We were unable to get the specified file from box. Please try again...',
-                         user = username,
+        n = Notification(event_type='data',
+                         status=Notification.ERROR,
+                         operation='box_download_error',
+                         message='We were unable to get the specified file from box. Please try again...',
+                         user=username,
                          extra={
-                                'src_resource': src_resource,
-                                'id': src_file_id,
-                                'dest_resource': dest_resource,
-                                'dest_file_id': dest_file_id,
-                            })
-                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), src_resource, src_file_id)})
+                             'src_resource': src_resource,
+                             'id': src_file_id,
+                             'dest_resource': dest_resource,
+                             'dest_file_id': dest_file_id,
+                         })
+        # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), src_resource, src_file_id)})
         n.save()
 
 
@@ -303,16 +306,16 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                  src_resource, src_file_id, dest_resource, dest_file_id)
 
     try:
-        n = Notification(event_type = 'data',
-                         status = 'INFO',
-                         operation = 'copy_public_to_mydata_start',
-                         message = 'Copying folder/files %s from public data to your private data. Please wait...' % (src_file_id, ),
-                         user = username,
+        n = Notification(event_type='data',
+                         status='INFO',
+                         operation='copy_public_to_mydata_start',
+                         message='Copying folder/files %s from public data to your private data. Please wait...' % (src_file_id, ),
+                         user=username,
                          extra={
-                                'system': dest_resource,
-                                'id': dest_file_id,
-                            })
-                         # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_depot'), src_file_id)})
+                             'system': dest_resource,
+                             'id': dest_file_id,
+                         })
+        # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_depot'), src_file_id)})
         n.save()
         notify_status = 'SUCCESS'
         from designsafe.apps.api.data import lookup_file_manager
@@ -336,50 +339,51 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                 logger.error('The request copy source=%s does not exist!', src_resource)
 
             system, username, path = dest_fm.parse_file_id(dest_file_id)
-            dest_fm.indexer.index(system, path, username, levels = 1)
+            dest_fm.indexer.index(system, path, username, levels=1)
 
-            n = Notification(event_type = 'data',
-                             status = notify_status,
-                             operation = 'copy_public_to_mydata_end',
-                             message = 'Files were copied to your private data.',
-                             user = username,
+            n = Notification(event_type='data',
+                             status=notify_status,
+                             operation='copy_public_to_mydata_end',
+                             message='Files were copied to your private data.',
+                             user=username,
                              extra={
-                                'system': dest_resource,
-                                'id': dest_file_id,
-                            })
-                             # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_depot'), dest_file_id)})
+                                 'system': dest_resource,
+                                 'id': dest_file_id,
+                             })
+            # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_depot'), dest_file_id)})
             n.save()
         else:
             logger.error('Unable to load file managers for both source=%s and destination=%s',
                          src_resource, dest_resource)
 
-            n = Notification(event_type = 'data',
-                             status = 'ERROR',
-                             operation = 'copy_public_to_mydata_error',
-                             message = '''There was an error copying the files to your public data.
+            n = Notification(event_type='data',
+                             status='ERROR',
+                             operation='copy_public_to_mydata_error',
+                             message='''There was an error copying the files to your public data.
                                           Plese try again.''',
-                             user = username,
+                             user=username,
                              extra={
-                                'system': dest_resource,
-                                'id': dest_file_id,
-                            })
-                             # extra = {})
+                                 'system': dest_resource,
+                                 'id': dest_file_id,
+                             })
+            # extra = {})
             n.save()
     except:
         logger.exception('Unexpected task failure')
 
-        n = Notification(event_type = 'data',
-                         status = 'ERROR',
-                         operation = 'copy_public_to_mydata_error',
-                         message = '''There was an error copying the files to your public data.
+        n = Notification(event_type='data',
+                         status='ERROR',
+                         operation='copy_public_to_mydata_error',
+                         message='''There was an error copying the files to your public data.
                                       Plese try again.''',
-                         user = username,
+                         user=username,
                          extra={
-                                'system': dest_resource,
-                                'id': dest_file_id,
-                        })
-                         # extra = {})
+                             'system': dest_resource,
+                             'id': dest_file_id,
+                         })
+        # extra = {})
         n.save()
+
 
 @shared_task(bind=True)
 def external_resource_upload(self, username, dest_resource, src_file_id, dest_file_id):
@@ -394,11 +398,11 @@ def external_resource_upload(self, username, dest_resource, src_file_id, dest_fi
     logger.debug('Initializing external_resource_upload. username: %s, src_file_id: %s, dest_resource: %s, dest_file_id: %s ', username, src_file_id, dest_resource, dest_file_id)
 
     from designsafe.apps.api.external_resources.box.filemanager.manager \
-            import FileManager as BoxFileManager
+        import FileManager as BoxFileManager
     from designsafe.apps.api.external_resources.dropbox.filemanager.manager \
-            import FileManager as DropboxFileManager
+        import FileManager as DropboxFileManager
     from designsafe.apps.api.external_resources.googledrive.filemanager.manager \
-            import FileManager as GoogleDriveFileManager
+        import FileManager as GoogleDriveFileManager
 
     user = get_user_model().objects.get(username=username)
 
@@ -478,6 +482,7 @@ def external_resource_upload(self, username, dest_resource, src_file_id, dest_fi
     #     n.save()
     #     raise
 
+
 @shared_task(bind=True)
 def external_resource_download(self, file_mgr_name, username, src_file_id, dest_file_id):
     """
@@ -491,11 +496,11 @@ def external_resource_download(self, file_mgr_name, username, src_file_id, dest_
                  file_mgr_name, src_file_id, username, dest_file_id)
 
     from designsafe.apps.api.external_resources.box.filemanager.manager \
-            import FileManager as BoxFileManager
+        import FileManager as BoxFileManager
     from designsafe.apps.api.external_resources.dropbox.filemanager.manager \
-            import FileManager as DropboxFileManager
+        import FileManager as DropboxFileManager
     from designsafe.apps.api.external_resources.googledrive.filemanager.manager \
-            import FileManager as GoogleDriveFileManager
+        import FileManager as GoogleDriveFileManager
 
     user = get_user_model().objects.get(username=username)
 
@@ -592,6 +597,7 @@ def external_resource_download(self, file_mgr_name, username, src_file_id, dest_
     #     n.save()
     #     raise
 
+
 @shared_task(bind=True)
 def check_project_files_meta_pems(self, project_uuid):
     from designsafe.apps.data.models.agave.files import BaseFileMetadata
@@ -602,6 +608,7 @@ def check_project_files_meta_pems(self, project_uuid):
         logger.debug('checking %s:%s', meta.uuid, meta.name)
         meta.match_pems_to_project(project_uuid)
 
+
 @shared_task(bind=True)
 def check_project_meta_pems(self, metadata_uuid):
     from designsafe.apps.data.models.agave.files import BaseFileMetadata
@@ -609,6 +616,7 @@ def check_project_meta_pems(self, metadata_uuid):
     service = get_service_account_client()
     bfm = BaseFileMetadata.from_uuid(service, metadata_uuid)
     bfm.match_pems_to_project()
+
 
 @shared_task(bind=True)
 def set_project_id(self, project_uuid):
@@ -628,7 +636,7 @@ def set_project_id(self, project_uuid):
         _projs = service.meta.listMetadata(q='{{"name": "designsafe.project", "value.projectId": {} }}'.format(project_id))
         if len(_projs):
             project_id = project_id + 1
-    
+
     project.project_id = 'PRJ-{}'.format(str(project_id))
     project.save(service)
     logger.debug('updated project id=%s', project.uuid)
@@ -637,6 +645,7 @@ def set_project_id(self, project_uuid):
     logger.debug('updated id record=%s', id_meta['uuid'])
 
     index_or_update_project.apply_async(args=[project.uuid], queue='api')
+
 
 @shared_task(bind=True)
 def index_or_update_project(self, uuid):
@@ -655,13 +664,13 @@ def index_or_update_project(self, uuid):
     to_index = {key: value for key, value in project_meta.items() if key != '_links'}
     to_index['value'] = {key: value for key, value in project_meta['value'].items() if key != 'teamMember'}
     if not isinstance(to_index['value'].get('awardNumber', []), list):
-        to_index['value']['awardNumber'] = [{'number': to_index['value']['awardNumber'] }]
+        to_index['value']['awardNumber'] = [{'number': to_index['value']['awardNumber']}]
     if to_index['value'].get('guestMembers', []) == [None]:
         to_index['value']['guestMembers'] = []
     project_search = IndexedProject.search().filter(
-        Q({'term': 
+        Q({'term':
             {'uuid._exact': uuid}
-        })
+           })
     )
     res = project_search.execute()
 
@@ -675,12 +684,13 @@ def index_or_update_project(self, uuid):
         doc = res[0]
         doc.update(**to_index)
     else:
-        # If we're here we've somehow indexed the same project multiple times. 
+        # If we're here we've somehow indexed the same project multiple times.
         # Delete all records and replace with the metadata passed to the task.
         for doc in res:
             doc.delete()
-        project_ES = IndexedProject(**to_index) 
+        project_ES = IndexedProject(**to_index)
         project_ES.save()
+
 
 @shared_task(bind=True)
 def reindex_projects(self):
@@ -702,7 +712,8 @@ def reindex_projects(self):
         else:
             for project in listing:
                 index_or_update_project.apply_async(args=[project.uuid], queue='api')
-   
+
+
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
     # Don't copy files if we're in dev.
@@ -741,7 +752,7 @@ def copy_publication_files_to_corral(self, project_id):
         logger.info('Trying to copy: %s to %s', local_src_path, local_dst_path)
         if os.path.isdir(local_src_path):
             try:
-                #os.mkdir(local_dst_path)
+                # os.mkdir(local_dst_path)
                 if not os.path.isdir(os.path.dirname(local_dst_path)):
                     os.makedirs(os.path.dirname(local_dst_path))
                 shutil.copytree(local_src_path, local_dst_path)
@@ -775,7 +786,7 @@ def copy_publication_files_to_corral(self, project_id):
     os.chmod(prefix_dest, 0o555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0o555)
     save_to_fedora.apply_async(args=[project_id])
-    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': '/' + project_id, 'recurse':True}, queue='indexing')
+    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': '/' + project_id, 'recurse': True}, queue='indexing')
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
@@ -820,6 +831,7 @@ def save_publication(self, project_id, entity_uuid=None):
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
 
+
 @shared_task(bind=True)
 def zip_project_files(self, project_uuid):
     from designsafe.apps.projects.models.agave.base import Project
@@ -833,6 +845,7 @@ def zip_project_files(self, project_uuid):
         logger.error('Zip Proj UUID: %s. %s', project_uuid, exc, exc_info=True)
         raise self.retry(exc=exc)
 
+
 @shared_task(bind=True)
 def zip_publication_files(self, project_id):
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
@@ -844,6 +857,7 @@ def zip_publication_files(self, project_id):
         logger.error('Zip Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
 
+
 @shared_task(bind=True)
 def set_publish_status(self, project_id, entity_uuid):
     from designsafe.apps.projects.managers import publication as PublicationManager
@@ -852,11 +866,12 @@ def set_publish_status(self, project_id, entity_uuid):
         entity_uuid
     )
 
+
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_to_fedora(self, project_id):
     import requests
     import magic
-    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication 
+    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
     try:
         pub = BaseESPublication(project_id=project_id)
         pub.update(status='published')
@@ -865,7 +880,7 @@ def save_to_fedora(self, project_id):
         res = requests.get(fedora_base)
         if res.status_code == 404 or res.status_code == 410:
             requests.put(fedora_base)
-        
+
         fedora_project_base = ''.join([fedora_base, '/', project_id])
         res = requests.get(fedora_project_base)
         if res.status_code == 404 or res.status_code == 410:
@@ -877,7 +892,7 @@ def save_to_fedora(self, project_id):
             for name in files:
                 mime = magic.Magic(mime=True)
                 headers['Content-Type'] = mime.from_file(os.path.join(root, name))
-                #files
+                # files
                 full_path = os.path.join(root, name)
                 _path = full_path.replace(_root, '', 1)
                 _path = _path.replace('[', '-')
@@ -888,7 +903,7 @@ def save_to_fedora(self, project_id):
                     requests.put(url, data=_file, headers=headers)
 
             for name in dirs:
-                #dirs
+                # dirs
                 full_path = os.path.join(root, name)
                 _path = full_path.replace(_root, '', 1)
                 url = ''.join([fedora_project_base, _path])
@@ -898,6 +913,7 @@ def save_to_fedora(self, project_id):
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc)
         raise self.retry(exc=exc)
+
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def set_facl_project(self, project_uuid, usernames):
@@ -913,6 +929,7 @@ def set_facl_project(self, project_uuid, usernames):
         }
         res = client.jobs.submit(body=job_body)
         logger.debug('set facl project: {}'.format(res))
+
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def email_collaborator_added_to_project(self, project_title, project_url, team_members_to_add, co_pis_to_add):

@@ -5,7 +5,7 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
@@ -19,9 +19,7 @@ from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicat
 logger = logging.getLogger(__name__)
 
 
-
-
-class  BasePublicTemplate(TemplateView):
+class BasePublicTemplate(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(BasePublicTemplate, self).get_context_data(**kwargs)
         context['unreadNotifications'] = 0
@@ -52,7 +50,7 @@ class DataDepotView(BasePublicTemplate):
     def get_context_data(self, **kwargs):
         context = super(DataDepotView, self).get_context_data(**kwargs)
         logger.info('Get context Data')
-        
+
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
                 'authenticated': True,
@@ -63,6 +61,7 @@ class DataDepotView(BasePublicTemplate):
             })
 
         return context
+
 
 class DataBrowserTestView(BasePublicTemplate):
 
@@ -165,9 +164,9 @@ class FileMediaView(View):
 
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name not in ['public', 'community'] and \
-            not request.user.is_authenticated:
+                not request.user.is_authenticated:
             raise Http404('Resource not Found')
-        
+
         filename = file_path.rsplit('/', 1)[1]
         filepath = '{corral}/{sys_dirname}/{file_path}'.format(
             corral=self.corral, sys_dirname=self.get_system_dirname(system_id),
@@ -204,7 +203,7 @@ class DataDepotPublishedView(TemplateView):
         } for user in getattr(pub, 'users', [])]
         context['publication'] = pub
         context['description'] = pub.project.value.description
-        
+
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
                 'authenticated': True,
@@ -237,7 +236,7 @@ class DataDepotLegacyPublishedView(TemplateView):
         if experiments and len(experiments):
             context['doi'] = getattr(pub.experiments[0], 'doi', '')
             exp_users = [getattr(exp, 'creators', []) for exp in experiments]
-            users  = [user for users in exp_users for user in users]
+            users = [user for users in exp_users for user in users]
             context['authors'] = [{
                 'full_name': '{last_name}, {first_name}'.format(
                     last_name=getattr(user, 'lastName', ''),
@@ -247,7 +246,7 @@ class DataDepotLegacyPublishedView(TemplateView):
             } for user in users]
         context['publication'] = pub
         context['description'] = pub.description
-        
+
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
                 'authenticated': True,

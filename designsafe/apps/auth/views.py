@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
@@ -14,7 +14,6 @@ import os
 import requests
 import time
 from requests import HTTPError
-
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +35,7 @@ def login_options(request):
         ds_oauth_svc_id = getattr(settings, 'AGAVE_DESIGNSAFE_OAUTH_STATUS_ID',
                                   '56bb6d92a216b873280008fd')
         designsafe_status = next((s for s in agave_status.status
-                             if s['id'] == ds_oauth_svc_id))
+                                  if s['id'] == ds_oauth_svc_id))
         if designsafe_status and 'status_code' in designsafe_status:
             if designsafe_status['status_code'] == 400:
                 message = {
@@ -108,7 +107,7 @@ def agave_oauth_callback(request):
     http://agaveapi.co/documentation/authorization-guide/#authorization_code_flow
     """
     state = request.GET.get('state')
-    
+
     if request.session['auth_state'] != state:
         msg = (
             'OAuth Authorization State mismatch!? auth_state=%s '
@@ -150,7 +149,7 @@ def agave_oauth_callback(request):
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
-        
+
         if user:
             try:
                 token = user.agave_oauth
@@ -170,8 +169,8 @@ def agave_oauth_callback(request):
                               filePath=user.username)
             except HTTPError as e:
                 if e.response.status_code == 404:
-                    check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')
-                    
+                    check_or_create_agave_home_dir.apply_async(args=(user.username,), queue='files')
+
         else:
             messages.error(
                 request,

@@ -10,7 +10,7 @@ from designsafe.apps.auth.models import AgaveOAuthToken
 from urllib.parse import urlencode
 from unittest import skip
 from django.dispatch import receiver
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from designsafe.apps.api.notifications.models import Notification
 
 import logging
@@ -72,7 +72,7 @@ class NotificationsTestCase(TestCase):
     def test_2_webhooks_same_status_same_jobId_should_give_1_notification(self):
         r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
 
-        #assert that sending the same status twice doesn't trigger a second notification.
+        # assert that sending the same status twice doesn't trigger a second notification.
         r2 = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
         self.assertEqual(Notification.objects.count(), 1)
 

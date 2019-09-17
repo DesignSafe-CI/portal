@@ -5,7 +5,7 @@ from elasticsearch_dsl import Q
 from django.test import TestCase
 from django.contrib.auth import get_user_model, signals
 from django.contrib.auth.models import Permission
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class DashboardTests(TestCase):
         s = IndexedFile.search()
         res = s.query('bool', must=[Q("match", **{"path._path": "ds_user"})]).extra(size=10000)
         res.execute()
-        #for doc in res:
+        # for doc in res:
         #    doc.delete(refresh=True, ignore=404)
 
     def test_dashboard_index(self):

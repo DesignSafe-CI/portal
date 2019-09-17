@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
@@ -8,7 +8,7 @@ from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from .models import (DesignSafeProfile, NotificationPreferences,
-    DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities)
+                     DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities)
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
 import re
@@ -78,7 +78,6 @@ PROFESSIONAL_LEVEL_OPTIONS = (
 )
 
 
-
 def get_institution_choices():
     tas = TASClient()
     institutions_list = tas.institutions()
@@ -99,20 +98,20 @@ def get_country_choices():
 
 class EmailConfirmationForm(forms.Form):
     code = forms.CharField(
-            label='Enter Your Activation Code',
-            required=True,
-            error_messages={
-                'required': 'Please enter the activation code you received via email.'
-            })
+        label='Enter Your Activation Code',
+        required=True,
+        error_messages={
+            'required': 'Please enter the activation code you received via email.'
+        })
 
     username = forms.CharField(
-            label='Enter Your TACC Username',
-            required=True)
+        label='Enter Your TACC Username',
+        required=True)
 
     password = forms.CharField(
-            widget=forms.PasswordInput,
-            label='Enter Your TACC Password',
-            required=True)
+        widget=forms.PasswordInput,
+        label='Enter Your TACC Password',
+        required=True)
 
 
 def check_password_policy(user, password, confirmPassword):
@@ -146,7 +145,7 @@ def check_password_policy(user, password, confirmPassword):
         return False, 'The password provided must not contain parts of your name or username.'
 
     if user['firstName'].lower() in pwd_without_case or \
-        user['lastName'].lower() in pwd_without_case:
+            user['lastName'].lower() in pwd_without_case:
         return False, 'The password provided must not contain parts of your name or username.'
 
     return True, None
@@ -281,13 +280,13 @@ class TasUserProfileAdminForm(forms.Form):
     piEligibility = forms.ChoiceField(
         choices=PI_ELIGIBILITY,
         label="PI Eligibility"
-       )
+    )
     reset_password = forms.BooleanField(
         required=False,
         label="Reset user's password",
         help_text="Check this box to reset the user's password. The user will be "
-            "notified via email with instructions to complete the password reset."
-       )
+        "notified via email with instructions to complete the password reset."
+    )
 
 
 class UserRegistrationForm(forms.Form):
@@ -310,7 +309,7 @@ class UserRegistrationForm(forms.Form):
         help_text='If your institution is not listed, please provide the name of the '
                   'institution as it should be shown here.',
         required=False,
-                                      )
+    )
     title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
     countryId = forms.ChoiceField(
         label='Country of residence', choices=(),
@@ -376,10 +375,9 @@ class UserRegistrationForm(forms.Form):
                 self.add_error('confirmPassword', '')
                 raise forms.ValidationError(error_message)
 
-
-            if email != confirmEmail:  
-                valid = False         
-                error_message = 'The email provided does not match the confirmation.' 
+            if email != confirmEmail:
+                valid = False
+                error_message = 'The email provided does not match the confirmation.'
             if not valid:
                 self.add_error('email', error_message)
                 self.add_error('confirmEmail', '')
@@ -409,7 +407,7 @@ class UserRegistrationForm(forms.Form):
                 first_name=tas_user['firstName'],
                 last_name=tas_user['lastName'],
                 email=tas_user['email']
-                )
+            )
 
         # extended profile information
         try:
@@ -422,7 +420,7 @@ class UserRegistrationForm(forms.Form):
                 user=user,
                 ethnicity=data['ethnicity'],
                 gender=data['gender']
-                )
+            )
         ds_profile.save()
 
         # terms of use

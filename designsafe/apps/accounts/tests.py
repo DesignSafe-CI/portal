@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model, signals
 from django.contrib.auth.models import Permission
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from unittest import skip
 
 
@@ -114,7 +114,7 @@ class AccountsTests(TestCase):
     def test_professional_profile_post(self):
         url = reverse('designsafe_accounts:pro_profile_edit')
         self.client.login(username='ds_admin', password='admin/password')
-        data = {'bio': 'NEW TEST BIO', 'website': 'NEW_WEBSITE', 'orcid_id':'NEW_ORCID_ID'}
+        data = {'bio': 'NEW TEST BIO', 'website': 'NEW_WEBSITE', 'orcid_id': 'NEW_ORCID_ID'}
         resp = self.client.post(url, data)
         url = reverse('designsafe_accounts:manage_pro_profile')
         resp = self.client.get(url)

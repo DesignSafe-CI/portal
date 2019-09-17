@@ -15,7 +15,7 @@ from dropbox.dropbox import Dropbox
 from dropbox.oauth import DropboxOAuth2Flow, BadRequestException, BadStateException, CsrfException, NotApprovedException, ProviderException
 
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import (JsonResponse, HttpResponseBadRequest)
 
 # pylint: disable=invalid-name
@@ -38,7 +38,7 @@ class FileManager(object):
             self.dropbox_api = Dropbox(dropbox_token.access_token)
 
         except DropboxUserToken.DoesNotExist:
-            message = 'Connect your Dropbox account <a href="'+ reverse('dropbox_integration:index') + '">here</a>'
+            message = 'Connect your Dropbox account <a href="' + reverse('dropbox_integration:index') + '">here</a>'
             raise ApiException(status=400, message=message, extra={
                 'action_url': reverse('dropbox_integration:index'),
                 'action_label': 'Connect Dropbox.com Account'
@@ -55,7 +55,7 @@ class FileManager(object):
                 if path[:1] != '/':
                     path = '/' + path
                 try:
-                    dropbox_item = DropboxFile(self.dropbox_api.files_list_folder( path))
+                    dropbox_item = DropboxFile(self.dropbox_api.files_list_folder(path))
                     return dropbox_item.type, path
                 except ApiError as e:
                     if e.error.get_path().is_not_found():
@@ -88,14 +88,14 @@ class FileManager(object):
 
             children = []
 
-            if file_type =='folder':
+            if file_type == 'folder':
                 has_more = dropbox_item.has_more
                 cursor = dropbox_item.cursor
                 entries = dropbox_item.entries
 
                 while True:
                     children.extend([DropboxFile(item, item.path_display.encode('utf-8'), parent=dropbox_item).to_dict(default_pems=default_pems)
-                                for item in entries])
+                                     for item in entries])
                     if has_more:
                         folder = self.dropbox_api.files_list_folder_continue(cursor)
                         entries = folder.entries
@@ -200,8 +200,8 @@ class FileManager(object):
 
             if not agave_file_path.startswith('/'):
                 agave_file_path = '/' + agave_file_path
-                
-            agave_indexer.apply_async(kwargs={'username': user.username, 'systemId': agave_system_id, 'filePath': os.path.dirname(agave_file_path), 'recurse':False}, queue='indexing')
+
+            agave_indexer.apply_async(kwargs={'username': user.username, 'systemId': agave_system_id, 'filePath': os.path.dirname(agave_file_path), 'recurse': False}, queue='indexing')
             agave_indexer.apply_async(kwargs={'systemId': agave_system_id, 'filePath': agave_file_path, 'recurse': True}, routing_key='indexing')
         except:
             logger.exception('Unexpected task failure: dropbox_download', extra={
@@ -228,7 +228,7 @@ class FileManager(object):
         file_type, path = self.parse_file_id(file_id)
         if file_type == 'file':
             shared_link = self.dropbox_api.sharing_create_shared_link(path).url
-            embed_url = re.sub('dl=0$','raw=1', shared_link)
+            embed_url = re.sub('dl=0$', 'raw=1', shared_link)
 
             return {'href': embed_url}
         return None
@@ -242,12 +242,12 @@ class FileManager(object):
                 preview_url = reverse('designsafe_api:box_files_media',
                                       args=[file_mgr_name, file_id.strip('/')])
                 return JsonResponse({'href':
-                                       '{}?preview=true'.format(preview_url)})
+                                     '{}?preview=true'.format(preview_url)})
             else:
                 return HttpResponseBadRequest('Preview not available for this item.')
         except HTTPError as e:
-                logger.exception('Unable to preview file')
-                return HttpResponseBadRequest(e.response.text)
+            logger.exception('Unable to preview file')
+            return HttpResponseBadRequest(e.response.text)
 
     def get_download_url(self, file_id, **kwargs):
         file_type, path = self.parse_file_id(file_id)
@@ -256,7 +256,7 @@ class FileManager(object):
             return {'href': download_url.link}
         return None
 
-    #def import_file(self, file_id, from_resource, import_file_id, **kwargs):
+    # def import_file(self, file_id, from_resource, import_file_id, **kwargs):
     #    dropbox_upload.apply_async(args=(self._user.username,
     #                                 file_id,
     #                                 from_resource,
@@ -264,7 +264,6 @@ class FileManager(object):
     #                           countdown=10)
 
     #    return {'message': 'Your file(s) have been scheduled for upload to box.'}
-
 
     def download_file(self, dropbox_file_path, download_directory_path):
         """
@@ -280,10 +279,9 @@ class FileManager(object):
         safe_filename = dropbox_file.name.encode(sys.getfilesystemencoding(), 'ignore')
         file_download_path = os.path.join(download_directory_path, safe_filename)
         logger.debug('Download file %s <= dropbox://file/%s', file_download_path, dropbox_file_path)
-        self.dropbox_api.files_download_to_file(file_download_path,dropbox_file_path)
+        self.dropbox_api.files_download_to_file(file_download_path, dropbox_file_path)
 
         return file_download_path
-
 
     def download_folder(self, path, download_path):
         """
@@ -316,9 +314,9 @@ class FileManager(object):
 
         while True:
             for item in items:
-                if type(item)==FileMetadata:
+                if type(item) == FileMetadata:
                     self.download_file(item.path_lower, directory_path)
-                elif type(item)==FolderMetadata:
+                elif type(item) == FolderMetadata:
                     self.download_folder(item.path_lower, directory_path)
             if has_more:
                 folder = self.dropbox_api.files_list_folder_continue(cursor)
@@ -401,7 +399,7 @@ class FileManager(object):
             f = file_handle.read()
             file_size = os.path.getsize(file_path)
 
-            CHUNK_SIZE = 4 * 1024 * 1024 # 4MB
+            CHUNK_SIZE = 4 * 1024 * 1024  # 4MB
 
             if file_size <= CHUNK_SIZE:
                 logger.debug('dropbox_path: %s, file_name: %s', dropbox_path, file_name),
@@ -421,7 +419,6 @@ class FileManager(object):
                         cursor.offset = f.tell()
             logger.info('Successfully uploaded %s to dropbox:folder/%s',
                         file_real_path, file_path)
-
 
     def upload_directory(self, dropbox_parent_folder, dir_real_path):
         """
