@@ -4,6 +4,7 @@ from django.urls import path, re_path
 from designsafe.apps.api.notifications.views.api import ManageNotificationsView, NotificationsBadgeView
 from designsafe.apps.api.notifications.views.webhooks import JobsWebhookView, FilesWebhookView
 
+app_name = "notifications_api"
 urlpatterns = [
     path('badge/', NotificationsBadgeView.as_view(), name='badge'),
     re_path(r'^notifications/(?P<event_type>\w+)/?$', ManageNotificationsView.as_view(),

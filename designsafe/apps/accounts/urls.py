@@ -2,6 +2,7 @@
 from django.urls import path, re_path
 from designsafe.apps.accounts import views
 
+app_name = "ds_accounts"
 urlpatterns = [
     path('profile/edit/', views.profile_edit, name='profile_edit'),
     path('profile/', views.manage_profile, name='manage_profile'),

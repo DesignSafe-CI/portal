@@ -8,6 +8,7 @@ from designsafe.apps.data.views.base import (
     DataDepotLegacyPublishedView
 )
 
+app_name = "ds_data"
 urlpatterns = [
     re_path(
         r'^browser/public/designsafe.storage.published/(?P<project_id>[\w.\-\/]+)/(?P<file_path>[ \S]+)/?',

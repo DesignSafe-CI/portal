@@ -2,6 +2,7 @@
 from django.urls import path
 from designsafe.apps.auth import views
 
+app_name = "ds_auth"
 urlpatterns = [
     path('logged-out/', views.logged_out, name='logout'),
     path('agave/', views.agave_oauth, name='agave_oauth'),

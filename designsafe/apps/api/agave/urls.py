@@ -7,6 +7,7 @@ from designsafe.apps.api.agave.views import (FileManagersView,
                                              FileMetaView,
                                              SystemsView)
 
+app_name = "agave_api"
 urlpatterns = [
 
     # Sources/file managers:

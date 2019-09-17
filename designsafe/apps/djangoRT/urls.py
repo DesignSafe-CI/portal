@@ -3,6 +3,7 @@ from django.urls import path, re_path
 
 from designsafe.apps.djangoRT import views
 
+app_name = "djangoRT"
 urlpatterns = [
     path('new-ticket/', views.ticketcreate, name='ticketcreate'),
     path('tickets/', views.mytickets, name='mytickets'),

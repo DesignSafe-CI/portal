@@ -4,6 +4,7 @@ from designsafe.apps.api.external_resources.views import (FilesListView,
                                                           FileMediaView,
                                                           FilePermissionsView)
 
+app_name = "external_resources"
 urlpatterns = [
     # Browsing:
     #

@@ -2,6 +2,7 @@
 from django.urls import path
 from designsafe.apps.api.users.views import SearchView, AuthenticatedView, UsageView, PublicView
 
+app_name = "ds_users_api"
 urlpatterns = [
     path('auth/', AuthenticatedView.as_view(), name='user_authenticated'),
     path('usage/', UsageView.as_view(), name='user_usage'),

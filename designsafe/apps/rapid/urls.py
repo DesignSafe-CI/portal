@@ -2,6 +2,7 @@
 from django.urls import path, re_path
 from designsafe.apps.rapid import views
 
+app_name = 'rapid'
 urlpatterns = [
     path('event-types/', views.get_event_types, name="get_event_types"),
     path('events/', views.get_events, name="get_events"),

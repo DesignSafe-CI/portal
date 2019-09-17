@@ -2,6 +2,7 @@
 from django.urls import url
 from designsafe.apps.api.external_resources.views import FilesListView
 
+app_name = "external_resources"
 urlpatterns = [
     url(r'^files/listing/(?P<file_mgr_name>[\w.-]+/?$',
         FilesListView.as_view(),

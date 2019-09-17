@@ -2,6 +2,7 @@
 from django.urls import path, include
 from designsafe.apps.api.views import LoggerApi
 
+app_name = "ds_res_api"
 urlpatterns = [
     path('logger/', LoggerApi.as_view(), name='logger'),
     path('agave/', include('designsafe.apps.api.agave.urls',

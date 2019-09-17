@@ -9,6 +9,7 @@ from designsafe.apps.api.projects.views import (ProjectListingView,
                                                 PublicationView,
                                                 NeesPublicationView)
 
+app_name = "projects"
 urlpatterns = [
     re_path(r'^publication/((?P<project_id>[a-zA-Z0-9\-\_\.]+)/?)?', PublicationView.as_view(), name='publication'),
 

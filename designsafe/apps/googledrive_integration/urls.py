@@ -2,6 +2,7 @@
 from django.urls import path
 from designsafe.apps.googledrive_integration import views
 
+app_name = "googledrive_integration"
 urlpatterns = [
     path('initialize/', views.initialize_token, name='initialize_token'),
     path('oauth2/', views.oauth2_callback, name='oauth2_callback'),
