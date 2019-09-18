@@ -4,7 +4,7 @@ MKPATH = $(abspath $(lastword $(MAKEFILE_LIST)))
 PWD = $(shell dirname $(MKPATH))
 COMPOSE = docker-compose -f $(PWD)/conf/docker/docker-compose.yml
 PYTHON = scl enable rh-python36
-DJMANAGE = /srv/www/designsafe/manage.py
+DJMANAGE = /home/tg458981/portal_env/bin/python /srv/www/designsafe/manage.py
 
 ifneq ("$(widlcard $(PWD)/*.mk)", "")
 	include *.mk
