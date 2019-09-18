@@ -1,4 +1,4 @@
-#!/opt/rh/rh-python36/root/usr/bin/dumb-init /bin/sh
+#!/home/tg458981/portal_env/bin/dumb-init /bin/sh
 source scl_source enable
 
 ###
