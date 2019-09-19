@@ -1,11 +1,11 @@
 import angular from 'angular';
 
-import {NotificationServiceProvider} from './notifications-provider';
-import {WSBusServiceProvider} from './ws-provider';
+import { NotificationServiceProvider } from './notifications-provider';
+import { WSBusServiceProvider } from './ws-provider';
 import '../services';
 
 const dsNotifications = angular.module(
-    'ds.notifications', ['toastr', 'djng.urls']
+    'ds.notifications', ['toastr']
 );
 dsNotifications.provider(
     'NotificationService',

@@ -22,7 +22,7 @@ class AgaveTokenRefreshMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         user = get_user(request)
-        if request.path != '/logout/' and user.is_authenticated():
+        if request.path != '/logout/' and user.is_authenticated:
             try:
                 agave_oauth = user.agave_oauth
                 if agave_oauth.expired:

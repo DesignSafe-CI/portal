@@ -4,7 +4,6 @@
  * @param {Object} $rootScope
  * @param {Object} logger
  * @param {Object} toastr
- * @param {Object} djangoUrl
  * @param {Object} $http
  * @param {Object} $mdToast
  * @return {Object} service;
@@ -13,7 +12,6 @@ function NotificationService(
     $rootScope,
     logger,
     toastr,
-    djangoUrl,
     $http,
     $mdToast
 ) {
@@ -36,15 +34,9 @@ function NotificationService(
         }
         if (msg.status != 'ERROR') {
             if (msg.event_type == 'job') {
-                url=djangoUrl.reverse(
-                    'designsafe_workspace:process_notification',
-                    {pk: msg.pk}
-                );
+                url='/rw/workspace/api/notification/process/' + msg.pk;
             } else if (msg.event_type == 'data_depot') {
-                url=djangoUrl.reverse(
-                    'designsafe_api:process_notification',
-                    {pk: msg.pk}
-                );
+                url='/api/notification/process/' + msg.pk;
             }
         }
         return url;
@@ -94,18 +86,18 @@ function NotificationService(
     function list(opts) {
         return $http(
             {
-                url: djangoUrl.reverse('designsafe_api:index'),
+                url: '/api/notifications/',
                 method: 'GET',
                 params: opts,
             }
-        ).then(resp => {
+        ).then((resp) => {
             resp.data.notifs.forEach(
-                d => {
+                (d) => {
                     d.datetime = new Date(d.datetime *1000);
                 }
             );
             return resp.data;
-        }, err => {
+        }, (err) => {
             return err;
         });
     }
@@ -118,9 +110,7 @@ function NotificationService(
      */
     function del(pk) {
         return $http.delete(
-            djangoUrl.reverse(
-                'designsafe_api:delete_notification',
-                {pk: encodeURIComponent(pk)})
+            '/api/notifications/delete/' + encodeURIComponent(pk)
         );
     }
 
@@ -141,7 +131,7 @@ function NotificationService(
         // Convert operation name to title case.
         // Operation name might be something like 'copy_file', 'job_submission' or 'publish'
         const toastTitle = msg.operation.replace(/_/g, ' ').replace(/\w\S*/,
-            s => {
+            (s) => {
                 return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
             });
 
@@ -192,7 +182,6 @@ export class NotificationServiceProvider {
      * @param {Object} $rootScope
      * @param {Object} logger
      * @param {Object} toastr
-     * @param {Object} djangoUrl
      * @param {Object} $http
      * @param {Object} $mdToast
      * @return {function} Notification Service
@@ -201,7 +190,6 @@ export class NotificationServiceProvider {
         $rootScope,
         logger,
         toastr,
-        djangoUrl,
         $http,
         $mdToast
     ) {
@@ -209,7 +197,6 @@ export class NotificationServiceProvider {
             $rootScope,
             logger,
             toastr,
-            djangoUrl,
             $http,
             $mdToast
         );

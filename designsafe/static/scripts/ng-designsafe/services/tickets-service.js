@@ -1,4 +1,4 @@
-export function TicketsService($http, $q, djangoUrl) {
+export function TicketsService($http, $q) {
     'ngInject';
     /**
      * Get user by username
@@ -6,13 +6,13 @@ export function TicketsService($http, $q, djangoUrl) {
      * @returns {Promise}
      */
     function get(username) {
-      return $http.get('/help/tickets?fmt=json')
-        .then(function (resp) {
-          return resp.data;
-        });
-    };
+        return $http.get('/help/tickets?fmt=json')
+            .then(function (resp) {
+                return resp.data;
+            });
+    }
     return {
         get: get
     };
 
-  }
+}

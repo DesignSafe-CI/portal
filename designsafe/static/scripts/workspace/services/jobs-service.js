@@ -1,13 +1,13 @@
 import * as d3 from 'd3';
 
-export function jobsService($http, djangoUrl) {
+export function jobsService($http) {
     'ngInject';
     let service = {};
 
     service.list = function(options) {
         options.limit = options.limit || 10;
         options.offest = options.offest || 0;
-        return $http.get(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
+        return $http.get('/rw/workspace/api/jobs', {
             params: options,
         }).then((resp) => {
             let data = resp.data;
@@ -19,13 +19,13 @@ export function jobsService($http, djangoUrl) {
     };
 
     service.get = function(uuid) {
-        return $http.get(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
+        return $http.get('/rw/workspace/api/jobs', {
             params: { job_id: uuid },
         });
     };
 
     service.submit = function(data) {
-        return $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), data);
+        return $http.post('/rw/workspace/api/jobs', data);
     };
 
     service.jobsByDate = function(jobs) {

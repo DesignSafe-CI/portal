@@ -155,7 +155,6 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.apps.auth.context_processors.auth',
-                'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
     },
@@ -286,9 +285,10 @@ LOGGING = {
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
-                      ' %(message)s user=%(user)s sessionId=%(sessionId)s op=%(operation)s'
-                      ' info=%(info)s'
+            'format': '[METRICS] %(levelname)s $(asctime) %(module)s'
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+                      'user=%(user)s sessionId=%(sessionId)s op=%(operation)s '
+                      'info=%(info)s'
         },
     },
     'handlers': {
@@ -296,8 +296,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'default',
-        },
-        'metrics': {
+        }, 'metrics': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'metrics',

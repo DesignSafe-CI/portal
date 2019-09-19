@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-import {NotificationBadgeCtrl} from './notifications';
+import { NotificationBadgeCtrl } from './notifications';
 
 let designsafeControllers = angular.module(
     'designsafe.controllers',
@@ -13,7 +13,6 @@ designsafeControllers.controller(
         '$rootScope',
         '$scope',
         '$filter',
-        'djangoUrl',
         'Logging',
         'Django',
         'NotificationService',

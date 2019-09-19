@@ -1,14 +1,13 @@
 export class Apps {
-    constructor($http, $translate, djangoUrl) {
+    constructor($http, $translate) {
         'ngInject';
         this.$http = $http;
         this.$translate = $translate;
-        this.djangoUrl = djangoUrl;
     }
 
     list(query) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/applications/api/meta/',
             method: 'GET',
             params: { q: query },
             cache: true,
@@ -17,14 +16,14 @@ export class Apps {
 
     getApps() {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            url: '/applications/api/apps',
             method: 'GET',
         });
     }
 
     get(appId) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            url: '/applications/api/apps',
             method: 'GET',
             params: { appId: appId },
         });
@@ -32,7 +31,7 @@ export class Apps {
 
     getPermissions(appId) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            url: '/applications/api/apps',
             method: 'GET',
             params: { appId: appId, pems: true },
         });
@@ -40,7 +39,7 @@ export class Apps {
 
     getMeta(appId) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/applications/api/meta/',
             method: 'GET',
             params: { q: { name: this.$translate.instant('apps_metadata_name'), 'value.definition.id': appId } },
         });
@@ -48,7 +47,7 @@ export class Apps {
 
     getMetaPems(uuid) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/applications/api/meta/',
             method: 'GET',
             params: { uuid: uuid, pems: true },
         });
@@ -56,7 +55,7 @@ export class Apps {
 
     createApp(body) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            url: '/applications/api/apps',
             method: 'POST',
             data: body,
         });
@@ -64,7 +63,7 @@ export class Apps {
 
     createMeta(body) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/applications/api/meta/',
             method: 'POST',
             data: body,
         });
@@ -72,7 +71,7 @@ export class Apps {
 
     updateMeta(body, uuid) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/applications/api/meta/',
             method: 'POST',
             data: body,
             params: { uuid: uuid },
@@ -81,7 +80,7 @@ export class Apps {
 
     updateMetaPermissions(permission, uuid) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/applications/api/meta/',
             method: 'POST',
             data: permission,
             params: { uuid: uuid, username: permission.username, pems: true },
@@ -90,7 +89,7 @@ export class Apps {
 
     getHistory(appId) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            url: '/applications/api/apps/',
             method: 'GET',
             params: { appId: appId, history: true },
         });
@@ -98,7 +97,7 @@ export class Apps {
 
     getSyncMeta(appId) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
+            url: '/applications/api/sync/',
             method: 'GET',
             params: { q: { name: this.$translate.instant('apps_metadata_name'), 'value.definition.id': appId } },
         });
@@ -106,7 +105,7 @@ export class Apps {
 
     getSyncPermissions(appId) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
+            url: '/applications/api/sync/',
             method: 'GET',
             params: { appId: appId, pems: true },
         });
@@ -114,7 +113,7 @@ export class Apps {
 
     syncPermissions(permission, uuid) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
+            url: '/applications/api/sync/',
             method: 'POST',
             data: permission,
             params: { uuid: uuid, username: permission.username, pems: true },
@@ -123,7 +122,7 @@ export class Apps {
 
     manageApp(appId, body) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            url: '/applications/api/apps/',
             method: 'POST',
             data: body,
             params: { appId: appId },
@@ -132,7 +131,7 @@ export class Apps {
 
     deleteApp(appId) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            url: '/applications/api/apps/',
             method: 'DELETE',
             params: { appId: appId },
         });
@@ -140,7 +139,7 @@ export class Apps {
 
     deleteMeta(uuid) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/applications/api/meta/',
             method: 'DELETE',
             params: { uuid: uuid },
         });
@@ -148,7 +147,7 @@ export class Apps {
 
     getSystems(systemId, isPublic, type) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
+            url: '/applications/api/systems/',
             method: 'GET',
             params: { system_id: systemId, type: type, isPublic: isPublic },
         });
@@ -156,7 +155,7 @@ export class Apps {
 
     getSystemRoles(systemId) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
+            url: '/applications/api/systems/',
             method: 'GET',
             params: { system_id: systemId, roles: true },
         });
@@ -164,7 +163,7 @@ export class Apps {
 
     getRoleForUser(systemId) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
+            url: '/applications/api/systems/',
             method: 'GET',
             params: { system_id: systemId, user_role: true },
         });
@@ -172,7 +171,7 @@ export class Apps {
 
     getFile(systemId, path) {
         return this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['files']),
+            url: '/applications/api/files/',
             method: 'GET',
             params: { system_id: systemId, path: path },
         });

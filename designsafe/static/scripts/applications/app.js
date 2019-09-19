@@ -27,7 +27,7 @@ appsPemsService(window, angular, $, _);
 appsMultipleListService(window, angular, $, _);
 
 angular.module('designsafe')
-    .factory('AppsSimpleList', ['$http', '$q', 'djangoUrl', 'appIcons', ($http, $q, djangoUrl, appIcons) => new SimpleList($http, $q, djangoUrl, appIcons)])
+    .factory('AppsSimpleList', ['$http', '$q', 'appIcons', ($http, $q, appIcons) => new SimpleList($http, $q, appIcons)])
     .service('Apps', Apps)
     .controller('ApplicationSystemsRoleCtrl', ApplicationSystemsRoleCtrl);
 
@@ -74,7 +74,6 @@ function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateP
 let app = angular.module('designsafe');
 app.requires.push(
     'django.context',
-    'djng.urls', // TODO: djng
     'dndLists',
     'ds.wsBus',
     'ds.notifications',

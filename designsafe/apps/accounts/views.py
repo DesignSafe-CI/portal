@@ -283,7 +283,7 @@ def nees_migration(request, step=None):
 
 
 def register(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('designsafe_accounts:index')
 

@@ -6,7 +6,7 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl){
+    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http){
         'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
@@ -14,7 +14,6 @@ class PublishedViewCtrl {
         this.FileListing = FileListing;
         this.$uibModal = $uibModal;
         this.$http = $http;
-        this.djangoUrl = djangoUrl;
     }
 
     $onInit() {
@@ -36,7 +35,7 @@ class PublishedViewCtrl {
                 f.system = 'designsafe.storage.published';
                 f.path = this.browser.publication.projectId + f.path;
                 f.permissions = 'READ';
-                return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
+                return this.FileListing.init(f, { fileMgr: 'published', baseUrl: '/api/public/files' });
             });
             evt.files.forEach((file) => {
                 if (!this.browser.listings[evt.uuid]) {
@@ -191,7 +190,7 @@ class PublishedViewCtrl {
             var link = document.createElement('a');
             link.style.display = 'none';
             link.setAttribute('href', postit);
-            link.setAttribute('download', "null");
+            link.setAttribute('download', 'null');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -205,14 +204,14 @@ class PublishedViewCtrl {
                 return true;
             }
             return false;
-        } else {
-            // if the category is related to the experiment level
-            // match appropriate data to corresponding experiment
-            if(model.associationIds.indexOf(exp.uuid) > -1) {
-                return true;
-            }
-            return false;
+        } 
+        // if the category is related to the experiment level
+        // match appropriate data to corresponding experiment
+        if(model.associationIds.indexOf(exp.uuid) > -1) {
+            return true;
         }
+        return false;
+        
     }
 
     treeDiagram(rootCategory) {

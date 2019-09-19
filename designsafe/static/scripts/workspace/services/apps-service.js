@@ -1,12 +1,12 @@
 import _ from 'underscore';
 
-export function appsService($http, $q, $translate, djangoUrl, Django) {
+export function appsService($http, $q, $translate, Django) {
     'ngInject';
     let service = {};
 
     service.list = function(query) {
         return $http({
-            url: djangoUrl.reverse('designsafe_workspace:call_api', ['meta']),
+            url: '/rw/workspace/api/meta/',
             method: 'GET',
             params: { q: query },
             cache: true,
@@ -15,7 +15,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
 
     service.get = function(appId) {
         return $http({
-            url: djangoUrl.reverse('designsafe_workspace:call_api', ['apps']),
+            url: '/rw/workspace/api/apps/',
             method: 'GET',
             params: { app_id: appId },
         });
@@ -23,27 +23,15 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
 
     service.getMeta = function(appId) {
         return $http({
-            url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/rw/workspace/api/meta/',
             method: 'GET',
             params: { q: { name: $translate.instant('apps_metadata_name'), 'value.definition.id': appId } },
         });
     };
 
-    service.copyNotebook = function(fileMgrName, systemId, filePath) {
-        return $http({
-            url: djangoUrl.reverse('designsafe_api:public_files_media', [fileMgrName, systemId, filePath]),
-            method: 'PUT',
-            data: {
-                action: 'copy',
-                ipynb: true,
-                system: 'designsafe.storage.default',
-            },
-        });
-    };
-
     service.setupNotebook = function(filePath) {
         return $http({
-            url: djangoUrl.reverse('designsafe_workspace:call_api', ['ipynb']),
+            url: '/rw/workspace/api/ipynb/',
             method: 'PUT',
             data: {
                 file_path: filePath,
@@ -54,7 +42,7 @@ export function appsService($http, $q, $translate, djangoUrl, Django) {
 
     service.getAppDropdownDescription = function(appId) {
         return $http({
-            url: djangoUrl.reverse('designsafe_workspace:call_api', ['description']),
+            url: '/rw/workspace/api/description/',
             method: 'GET',
             params: { app_id: appId },
         });

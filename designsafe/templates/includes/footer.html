@@ -1,14 +1,12 @@
-{% load staticfiles cms_tags %}
+{% load staticfiles%}
 <footer class="container">
   <hr>
   <ul id="logos" class="list-unstyled">
     <li><img class="img-responsive nsflogo" src="{% static 'images/nsf.jpg' %}"></li>
   </ul>
-  {% static_placeholder 'site_footer' site or %}
   <p class="text-center">
     DesignSafe-CI is supported by a grant from the National Science Foundation
     (<a target="_blank" href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1520817">#1520817</a>).
   </p>
-  {% endstatic_placeholder %}
 </footer>
 <div id="toast-container"></div>

@@ -1,5 +1,5 @@
 {% extends "base_angular.html" %}
-{% load cms_tags staticfiles sekizai_tags%}
+{% load staticfiles sekizai_tags%}
 {% block title %}Workspace{% endblock %}
 {% block content %}
 
@@ -8,7 +8,7 @@
         <span class="hl hl-research">Workspace</span>
     </h1>
     <div>
-        <a href="{% url 'pages-details-by-slug' slug='rw/user-guide/workspace' %}"><i class="fa fa-question-circle"></i> Learn About the <b>Workspace.</b></a>
+        <a href="/rw/user-guide/workspace"><i class="fa fa-question-circle"></i> Learn About the <b>Workspace.</b></a>
     </div>
 </div>
 

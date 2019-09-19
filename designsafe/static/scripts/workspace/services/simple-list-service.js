@@ -3,12 +3,11 @@
  * @function
  * @param {$http} $http
  * @param {$q} $q
- * @param {djangoUrl} djangoUrl
  * @param {Array} appCategories - Supported app categories
  * @param {Array} appIcons - Supported App Icons
  * @return {SimpleList}
  */
-export function simpleListService($http, $q, djangoUrl, appCategories, appIcons) {
+export function simpleListService($http, $q, appCategories, appIcons) {
     'ngInclude';
     let SimpleList = function() {
         this.selected = null;
@@ -28,7 +27,7 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
         let self = this,
             deferred = $q.defer();
         $http({
-            url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/applications/api/meta/',
             method: 'GET',
             params: { q: query },
         }).then(

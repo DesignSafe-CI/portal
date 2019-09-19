@@ -12,7 +12,7 @@ import './components';
 
 agave2ds();
 
-let dashboardServices = angular.module('dashboard.services', ['toastr', 'djng.urls']);
+let dashboardServices = angular.module('dashboard.services', ['toastr']);
 dashboardServices.factory('Apps', appsService);
 dashboardServices.factory('Jobs', jobsService);
 dashboardServices.service('UserService', UserService);
@@ -42,7 +42,6 @@ let dashboardModule = angular.module('dashboard', [
 
 dashboardModule.requires.push(
     'ui.router',
-    'djng.urls', // TODO: djng
     'ui.bootstrap',
     'django.context'
 );
