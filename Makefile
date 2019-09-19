@@ -38,7 +38,7 @@ help: ## display this help message
 	@echo $(AWK_SCRIPT)
 	@echo "Usage: make <target>\n"
 	@echo "\033[1;37m Tragets:\033[0m \n"
-	@awk '/^### / { printf "\n%s\n", "\033[1;37;40m" $$0 "\033[0m"; } /^[a-zA-Z\-\.]+:/ { target=gensub(/(.+):.*?##(.*)/, "\033[1;36m\\1\033[0m", "G", $$0); desc=gensub(/([a-zA-Z\-\.]+):.*?##(.*)/, "\033[0;33m\\2\033[0m", "G", $$0); printf "%-30s %s\n", target, desc }'$(MAKEFILE_LIST)
+	@awk '/^### / { printf "\n%s\n", "\033[1;37;40m" $$0 "\033[0m"; } /^[a-zA-Z\-\.%]+:/ { target=gensub(/([a-zA-Z\-\.%]+):.*?##(.*)/, "\033[1;36m\\1\033[0m", "G", $$0); desc=gensub(/([a-zA-Z\-\.]+):.*?##(.*)/, "\033[0;33m\\2\033[0m", "G", $$0); printf "%-30s %s\n", target, desc }'$(MAKEFILE_LIST)
 
 ################################################
 # To make the "help" target print every target with correct formatting please follow the following format:
