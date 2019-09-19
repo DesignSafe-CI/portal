@@ -1,3 +1,9 @@
+import logging
+import os
+import requests
+import time
+import binascii
+from requests import HTTPError
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -9,11 +15,6 @@ from django.shortcuts import render
 from .models import AgaveOAuthToken, AgaveServiceStatus
 from agavepy.agave import Agave
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir, new_user_alert
-import logging
-import os
-import requests
-import time
-from requests import HTTPError
 
 
 logger = logging.getLogger(__name__)
@@ -34,8 +35,8 @@ def login_options(request):
         agave_status = AgaveServiceStatus()
         ds_oauth_svc_id = getattr(settings, 'AGAVE_DESIGNSAFE_OAUTH_STATUS_ID',
                                   '56bb6d92a216b873280008fd')
-        designsafe_status = next((s for s in agave_status.status
-                                  if s['id'] == ds_oauth_svc_id))
+        designsafe_status = [s for s in agave_status.status
+                             if s['id'] == ds_oauth_svc_id]
         if designsafe_status and 'status_code' in designsafe_status:
             if designsafe_status['status_code'] == 400:
                 message = {
@@ -72,7 +73,7 @@ def agave_oauth(request):
     client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
 
     session = request.session
-    session['auth_state'] = os.urandom(24).encode('hex')
+    session['auth_state'] = binascii.hexlify(os.urandom(24)).decode()
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page

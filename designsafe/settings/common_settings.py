@@ -172,8 +172,11 @@ LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'memcached:11211',
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'redis:6379',
+        'OPTIONS': {
+            'DB': 3,
+        }
     },
 }
 
