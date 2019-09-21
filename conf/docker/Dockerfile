@@ -81,12 +81,18 @@ USER tg458981
 
 RUN virtualenv ~/portal_env
 
+RUN virtualenv ~/cms_env
+
 RUN ~/portal_env/bin/pip install --upgrade pip && \
-    ~/portal_env/bin/pip install pip-tools
+    ~/portal_env/bin/pip install pip-tools && \
+    ~/cms_env/bin/pip install --upgrade pip && \
+    ~/cms_env/bin/pip install pip-tools
 
-COPY --chown=tg458981:G-816877 requirements/prod.txt /tmp/requirements.txt
+COPY --chown=tg458981:G-816877 requirements/*.txt /tmp/.
 
-RUN ls -lah . && ~/portal_env/bin/pip-sync /tmp/requirements.txt
+RUN ~/portal_env/bin/pip-sync /tmp/prod.txt
+
+RUN ~/cms_env/bin/pip-sync /tmp/cms.txt
 
 COPY package*.json /srv/www/designsafe/
 

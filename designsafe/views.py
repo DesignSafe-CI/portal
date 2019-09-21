@@ -23,3 +23,10 @@ def project_version(request):
         version = 'UNKNOWN'
 
     return HttpResponse(version, content_type='text/plain')
+
+def redirect_to_cms(request):
+    """Redirect request to cms using X-ACCEL-REDIRECT."""
+    response = HttpResponse()
+    response["X-Accel-Redirect"] = "/internal_cms/{}".format(
+        request.path,
+    )

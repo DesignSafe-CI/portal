@@ -6,12 +6,14 @@
 #
 -e git+https://bitbucket.org/taccaci/pytas.git@2c88c3c#egg=pytas
 agavepy==0.9.3
+aioredis==1.2.0           # via channels-redis
 alabaster==0.7.12         # via sphinx
 amqp==2.5.1               # via kombu
 appnope==0.1.0            # via ipython
-asgiref==3.2.2            # via channels, daphne
+asgiref==3.2.2            # via channels, channels-redis, daphne
 asn1crypto==0.24.0        # via cryptography
 astroid==2.2.5            # via pylint
+async-timeout==3.0.1      # via aioredis
 attrs==19.1.0             # via automat, boxsdk, packaging, twisted
 autobahn==19.9.3          # via daphne
 automat==0.7.0            # via twisted
@@ -26,6 +28,7 @@ cachetools==3.1.1         # via google-auth
 celery==4.3.0
 certifi==2019.9.11        # via requests
 cffi==1.12.3              # via cryptography
+channels-redis==2.4.0
 channels==2.3.0
 chardet==3.0.4
 cloudpickle==1.2.2        # via agavepy
@@ -96,6 +99,7 @@ google-auth-oauthlib==0.4.0
 google-auth==1.6.3
 greenlet==0.4.15          # via django-websocket-redis, gevent
 hashids==1.2.0            # via djangocms-forms
+hiredis==1.0.0            # via aioredis
 html5lib==1.0.1           # via djangocms-text-ckeditor
 httplib2==0.13.1          # via google-api-python-client, google-auth-httplib2
 hyperlink==19.0.0         # via twisted
@@ -117,6 +121,7 @@ lazy-object-proxy==1.4.2  # via astroid
 markupsafe==1.1.1         # via jinja2
 mccabe==0.6.1             # via flake8, pylint
 more-itertools==7.2.0     # via zipp
+msgpack==0.6.2            # via channels-redis
 mysqlclient==1.4.4
 newrelic==5.0.2.126
 oauthlib==3.1.0           # via requests-oauthlib

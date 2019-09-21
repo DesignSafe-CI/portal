@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'termsandconditions',
     'impersonate',
     'ws4redis',
-    'haystack'
+    'haystack',
+    'channels',
 ]
 
 if DS_CMS:  # If DS_CMS is set
@@ -161,6 +162,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'designsafe.wsgi.application'
+
+ASGI_APPLICATION = 'designsafe.routing.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        }
+    }
+}
 
 AUTHENTICATION_BACKENDS = [
     'designsafe.apps.auth.backends.AgaveOAuthBackend',
@@ -344,7 +356,7 @@ DEFAULT_TERMS_SLUG = 'terms'
 ##
 # django-websockets-redis
 #
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
+# WSGI_APPLICATION = 'ws4redis.django_runserver.application'
 WEBSOCKET_URL = '/ws/'
 WS4REDIS_CONNECTION = {
     'host': os.environ.get('WS_BACKEND_HOST'),

@@ -6,7 +6,7 @@ function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateP
         (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
         window.location.hostname +
         (window.location.port ? ':' + window.location.port : '') +
-        '/ws/websockets?subscribe-broadcast&subscribe-user'
+        '/ws/websockets/'
     );
 }
 

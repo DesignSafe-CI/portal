@@ -5,6 +5,7 @@ boxsdk
 celery
 chardet
 channels
+channels_redis
 codecov
 coverage
 cryptography

@@ -136,14 +136,14 @@ pip.compile.cms: ## Compile prod requirements.
 
 pip.compile.all: pip.compile.dev pip.compile.prod pip.compile.cms## Compile prod and dev requirements.
 
-pip.sync.prod: ## Sync pip using requirements/prod.txt
+pip.sync.prod: ## Sync pip using requirements/prod.txt. This runs locally and not inside a docker container.
 	pip-sync $(PWD)/requirements/prod.txt
 
-pip.sync.dev: ## Sync pip using requirements.dev.txt
+pip.sync.dev: ## Sync pip using requirements.dev.txt. This runs locally and not inside a docker container.
 	$(warning Make sure you are running this inside a virtual env if needed.)
 	pip-sync $(PWD)/requirements/dev.txt
 
-### Django management. ###
+### Django management. Commands are run inside docker containers. ###
 ##########################
 django.migrate: ## Run migrate in django container.
 	$(DJ_COMPOSE) $(PYTHON) "$(DJMANAGE) migrate"
@@ -157,7 +157,7 @@ django.check: ## Run django check..
 django.static: ## Run django collectstatic
 	$(DJ_COMPOSE) $(PYTHON) "$(DJMANAGE) collectstatic --noinput -c -v3"
 
-### Celery workers management. ###
+### Celery workers management. Commands are run inside docker containers. ###
 ##################################
 workers.active: ## Run celery inspect active.
 	$(WK_COMPOSE) $(PYTHON) "$(CELERY) inspect active"
@@ -171,7 +171,7 @@ workers.scheduled: ## Run celery inspect scheduled.
 workers.stats: ## Run celery inspect stats.
 	$(WK_COMPOSE) $(PYTHON) "$(CELERY) inspect stats"
 
-### NPM management. ###
+### NPM management. Commands are run inside docker containers. ###
 #######################
 npm.dev: ## Run npm run-script dev
 	$(DJ_COMPOSE) $(PYTHON) "npm run-script dev"
