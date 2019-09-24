@@ -100,6 +100,6 @@ RUN cd /srv/www/designsafe npm install
 
 COPY --chown=tg458981:G-816877 conf/.bashrc /tmp/.bashrc
 
-RUN echo /tmp/.bashrc >> ~/.bashrc
+RUN cat /tmp/.bashrc >> ~/.bashrc
 
 WORKDIR /srv/www/designsafe

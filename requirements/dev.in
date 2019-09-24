@@ -8,4 +8,6 @@ pylint
 pylint-django
 pytest
 pytest-django
+pytest-mock
 pip-tools
+requests-mock

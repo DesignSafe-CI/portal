@@ -1,4 +1,9 @@
-from mock import Mock, patch, MagicMock, PropertyMock, call
+"""Elasticsearch docs tests.
+
+.. module:: designsafe.libs.elasticsearch.docs.tests.unit.tests
+    :synopsis: Tests for elasticsearch's docs.
+""" 
+from unittest.mock import Mock, patch, MagicMock, PropertyMock, call
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -9,7 +14,10 @@ from designsafe.libs.elasticsearch.docs.base import BaseESResource
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 from elasticsearch.exceptions import TransportError
 
+
 class TestBaseESFile(TestCase):
+    """Test for base ES file."""
+
     def setUp(self):
 
         self.patch_base_init = patch(
@@ -34,6 +42,7 @@ class TestBaseESFile(TestCase):
         self.addCleanup(self.patch_base_update.stop)
 
     def test_class_init_with_wrap(self):
+        """Test intialization with wrap obj."""
         wd = IndexedFile(
             **{'name': 'file1', 'system': 'test.system', 'path': '/path/to/file'})
         base = BaseESFile('test_user', wrapped_doc=wd)
@@ -46,6 +55,7 @@ class TestBaseESFile(TestCase):
 
     @patch('designsafe.libs.elasticsearch.docs.files.BaseESFile._populate')
     def test_class_init_no_wrap(self, mock_populate):
+        """Test initialization with no wrap obj."""
         base = BaseESFile('test_user', system='test.system', wrapped_doc=None)
         self.mock_base_init.assert_called_with(None)
 
@@ -58,21 +68,25 @@ class TestBaseESFile(TestCase):
 
     @patch('designsafe.libs.elasticsearch.docs.files.BaseESFile._index_cls')
     def test_populate_if_doc_exists(self, mock_index):
+        """Test populate if doc exists."""
         base = BaseESFile('test_user', system='test.system', wrapped_doc=None)
         mock_index().from_path.assert_called_with('test.system', '/')
 
     @patch('designsafe.libs.elasticsearch.docs.files.BaseESFile._index_cls')
     def test_populate_if_no_doc_exists(self, mock_index):
+        """Test populate if no doc exists."""
         mock_index.return_value.from_path.side_effect = DocumentNotFound
         base = BaseESFile('test_user', system='test.system', wrapped_doc=None)
         mock_index().assert_called_with(system='test.system', path='/')
 
     def test_indexed_file_class_getter(self):
+        """Test getter."""
         index_cls_1 = BaseESFile._index_cls(False)
         self.assertEqual(index_cls_1, IndexedFile)
 
     @patch('designsafe.libs.elasticsearch.docs.files.BaseESFile._index_cls')
     def test_children_function(self, mock_index):
+        """Test children function."""
         child_doc1 = IndexedFile(
             **{'name': 'child1', 'system': 'test.system', 'path': '/path/to/child1'})
         child_doc2 = IndexedFile(
@@ -124,7 +138,6 @@ class TestBaseESFile(TestCase):
         # self.mock_base_update.assert_called_with(**{'basePath': '/path/to'})
         mock_save.assert_called_with()
 
-    
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.delete')
     def test_delete_no_dir(self, mock_delete):
         wrapped_doc = IndexedFile(
@@ -150,11 +163,11 @@ class TestBaseESFile(TestCase):
         child_doc = IndexedFile(
             **{'name': 'child1', 'system': 'test.system', 'path': '/path/to/child1', 'format': 'file'})
         base_child = BaseESFile('test_user', system='test.system',
-                          wrapped_doc=child_doc)
+                                wrapped_doc=child_doc)
         object.__setattr__(base_child, '_wrapped', child_doc)
         object.__setattr__(base_child, 'format', 'file')
 
-        mock_children.return_value = iter( [base_child] )
+        mock_children.return_value = iter([base_child])
 
         base.delete()
         # Assert 2 delete calls: 1 for parent, 1 for child
@@ -173,7 +186,7 @@ class TestBaseESResource(TestCase):
     def test_getter_and_setter(self):
         wrapped_doc = IndexedFile(
             **{'name': 'folder1', 'system': 'test.system', 'path': '/path/to/folder', 'format': 'folder'})
-        base = BaseESResource(wrapped_doc=wrapped_doc)     
+        base = BaseESResource(wrapped_doc=wrapped_doc)
 
         base.name = 'folder2'
         self.assertEqual(base.name, 'folder2')
@@ -190,7 +203,7 @@ class TestBaseESResource(TestCase):
         base = BaseESResource(wrapped_doc=wrapped_doc)
         self.assertEqual(base._wrapped, wrapped_doc)
 
-        base_with_kwargs = BaseESResource(wrapped_doc=wrapped_doc, **{'name': 'folder2'}) 
+        base_with_kwargs = BaseESResource(wrapped_doc=wrapped_doc, **{'name': 'folder2'})
         mock_update.assert_called_with(**{'name': 'folder2'})
 
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.update')
@@ -205,10 +218,11 @@ class TestBaseESResource(TestCase):
     def test_to_dict(self, mock_to_dict):
         wrapped_doc = IndexedFile(
             **{'name': 'folder1', 'system': 'test.system', 'path': '/path/to/folder', 'format': 'folder'})
-        base = BaseESResource(wrapped_doc=wrapped_doc)   
+        base = BaseESResource(wrapped_doc=wrapped_doc)
 
         base.to_dict()
         mock_to_dict.assert_called_with()
+
 
 class TestIndexedFile(TestCase):
     def test_attrs(self):
@@ -255,7 +269,6 @@ class TestIndexedFile(TestCase):
 
         doc_from_path = IndexedFile.from_path('test.system', '/path/to/res1')
 
-        
         mock_search().filter.assert_called_with('term', **{'system._exact': 'test.system'})
         mock_search().filter().filter.assert_called_with('term', **{'path._exact': '/path/to/res1'})
 
@@ -307,7 +320,7 @@ class TestIndexedFile(TestCase):
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.get')
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
     def test_children_returns_when_hits(self, mock_search, mock_get):
-        
+
         search_res = IndexedFile(
             **{'name': 'res1', 'system': 'test.system', 'path': '/path/to/res1'})
 
