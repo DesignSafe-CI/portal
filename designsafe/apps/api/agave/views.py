@@ -1,5 +1,8 @@
-""" Main views for agave api. api/agave/*
-    All these views return :class:`JsonResponse`s"""
+"""Agave views.
+
+.. module:: designsafe.apps.api.agave.views
+    :synopsis: All these views return :class:`JsonResponse`.
+"""
 
 import logging
 import json

@@ -117,10 +117,10 @@ class EmailConfirmationForm(forms.Form):
 def check_password_policy(user, password, confirmPassword):
     """
     Checks the password for meeting the minimum password policy requirements:
-    * Must be a minimum of 8 characters in length
-    * Must contain characters from at least three of the following: uppercase letters,
-      lowercase letters, numbers, symbols
-    * Must NOT contain the username or the first or last name from the profile
+        * Must be a minimum of 8 characters in length
+        * Must contain characters from at least three of the following: uppercase letters,
+          lowercase letters, numbers, symbols
+        * Must NOT contain the username or the first or last name from the profile
 
     Returns:
         A boolean value indicating if the password meets the policy,

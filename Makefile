@@ -228,4 +228,17 @@ test.integration.collect: ## Collect test with Pytest. This does not run the tes
 ### Sphinx documentation. ###
 #############################
 docs.build: ## Build docs.
-	python setup.py build_sphinx
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) setup.py build_sphinx'
+
+### Local environment Certificates. ###
+#######################################
+certs.create: ## Create/renew designsafe.dev certificates.
+	$(DJ_COMPOSE) cd conf/nginx/certificates && \
+		openssl req -config conf/nginx/designsafe.dev.conf \
+					-new -sha256 \
+					-newkey rsa:2048 \
+					-nodes \
+					-keyout conf/nginx/designsafe.dev.key \
+					-x509 \
+					-days 365 \
+					-out designsafe.dev.crt

@@ -54,14 +54,6 @@ designsafe.routing module
    :undoc-members:
    :show-inheritance:
 
-designsafe.sitemaps module
---------------------------
-
-.. automodule:: designsafe.sitemaps
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 designsafe.storage module
 -------------------------
 
@@ -98,14 +90,6 @@ designsafe.wsgi module
 ----------------------
 
 .. automodule:: designsafe.wsgi
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-designsafe.wsgi\_websocket module
----------------------------------
-
-.. automodule:: designsafe.wsgi_websocket
    :members:
    :undoc-members:
    :show-inheritance:
