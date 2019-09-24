@@ -1,6 +1,8 @@
 hostname=`hostname`
-if [[ $hostname == "*cms" ]]; then
-    source ~/cms/env/bin/activate
+if [[ $hostname == *cms ]] && [ -f "~/cms_env/bin/activate" ]; then
+    source ~/cms_env/bin/activate
 else
-    source ~/portal_env/bin/activate
+    if [ -f "~/portal_env/bin/activate" ]; then
+        source ~/portal_env/bin/activate
+    fi
 fi

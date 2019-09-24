@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model, models, signals
 from designsafe.apps.rapid.models import RapidNHEvent
 from unittest import skip
-import mock
+from unittest import mock
 import requests_mock
 from unittest import skip
 

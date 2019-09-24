@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.test import Client
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from designsafe.apps.auth.models import AgaveOAuthToken
 from urllib.parse import urlencode
 from unittest import skip

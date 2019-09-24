@@ -4,7 +4,7 @@ from django.urls import reverse
 from boxsdk.object.user import User
 from designsafe.apps.box_integration.models import BoxUserToken
 from designsafe.apps.auth.signals import on_user_logged_in
-import mock
+from unittest import mock
 
 
 class BoxInitializationTestCase(TestCase):

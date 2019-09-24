@@ -224,3 +224,8 @@ test.integration: ## Run integration tests.
 
 test.integration.collect: ## Collect test with Pytest. This does not run the tests..
 	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest --collect-only $$(find /srv/www/designsafe/designsafe -name integration -type d)'
+
+### Sphinx documentation. ###
+#############################
+docs.build: ## Build docs.
+	python setup.py build_sphinx
