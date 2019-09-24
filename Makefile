@@ -234,11 +234,11 @@ docs.build: ## Build docs.
 #######################################
 certs.create: ## Create/renew designsafe.dev certificates.
 	$(DJ_COMPOSE) cd conf/nginx/certificates && \
-		openssl req -config conf/nginx/designsafe.dev.conf \
+		openssl req -config conf/nginx/certificates/designsafe.dev.conf \
 					-new -sha256 \
 					-newkey rsa:2048 \
 					-nodes \
-					-keyout conf/nginx/designsafe.dev.key \
+					-keyout conf/nginx/certificates/designsafe.dev.key \
 					-x509 \
 					-days 365 \
-					-out designsafe.dev.crt
+					-out conf/nginx/certificates/designsafe.dev.crt
