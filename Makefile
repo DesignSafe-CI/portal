@@ -217,10 +217,10 @@ test.unit: ## Run unit tests.
 	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest $$(find /srv/www/designsafe/designsafe -name unit -type d)'
 
 test.unit.collect: ## Collect test with Pytest. This does not run the tests..
-	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest $$(find /srv/www/designsafe/designsafe -name unit -type d)'
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest --collect-only $$(find /srv/www/designsafe/designsafe -name unit -type d)'
 
-test.integration.collect: ## Run integration tests.
+test.integration: ## Run integration tests.
 	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) pytest $$(find /srv/www/designsafe/designsafe -name integration -type d)'
 
 test.integration.collect: ## Collect test with Pytest. This does not run the tests..
-	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest $$(find /srv/www/designsafe/designsafe -name integration -type d)'
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest --collect-only $$(find /srv/www/designsafe/designsafe -name integration -type d)'
