@@ -32,7 +32,7 @@ Adjusting these settings for the CMS is handled in ``designsafe.urls``
  *  Priority - lets crawlers know which DesignSafe-CI pages are most important
 """
 
-from django.contrib import sitemaps
+from django.contrib import sitemaps as django_sitemaps
 from django.contrib.sites.models import Site
 from django.urls import reverse
 from designsafe.apps.api.agave.filemanager.publications import PublicationsManager
@@ -55,7 +55,7 @@ from designsafe.apps.dropbox_integration import urls as dropbox_integration_urls
 from designsafe.apps.googledrive_integration import urls as googledrive_integration_urls
 
 # Home
-class HomeSitemap(sitemaps.Sitemap):
+class HomeSitemap(django_sitemaps.Sitemap):
     priority = 1.0
     changefreq = 'weekly'
 
@@ -70,7 +70,7 @@ class HomeSitemap(sitemaps.Sitemap):
         return item
 
 # Subsites
-class SubSitemap(sitemaps.Sitemap):
+class SubSitemap(django_sitemaps.Sitemap):
     priority = 0.8
     changefreq = 'weekly'
 
@@ -90,7 +90,7 @@ class SubSitemap(sitemaps.Sitemap):
         return item
 
 # Static - for base urls with 'name'
-class StaticViewSitemap(sitemaps.Sitemap):
+class StaticViewSitemap(django_sitemaps.Sitemap):
     priority = 0.7
     changefreq = 'weekly'
 
@@ -131,7 +131,7 @@ dynamic_apps = {
     'googledrive_integration': googledrive_integration_urls.urlpatterns,
 }
 
-class DynamicViewSitemap(sitemaps.Sitemap):
+class DynamicViewSitemap(django_sitemaps.Sitemap):
     priority = 0.8
     changefreq = 'weekly'
 
@@ -158,7 +158,7 @@ class DynamicViewSitemap(sitemaps.Sitemap):
         return reverse(item)
 
 # public projects - pulling in urls from agave
-class ProjectSitemap(sitemaps.Sitemap):
+class ProjectSitemap(django_sitemaps.Sitemap):
     priority = 0.6
     changefreq = 'weekly'
 

@@ -8,9 +8,7 @@ Welcome to DesignSafe-CI's documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
-
-   API<designsafe>
+   
 
 Indices and tables
 ==================

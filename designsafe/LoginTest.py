@@ -2,7 +2,7 @@
 from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-import mock
+from unittest import mock
 from designsafe.apps.auth.models import AgaveOAuthToken
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
 from designsafe.apps.auth.views import agave_oauth_callback
