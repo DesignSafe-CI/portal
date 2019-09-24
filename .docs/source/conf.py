@@ -48,7 +48,10 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon']
+    'sphinx.ext.napoleon',
+    'sphinxcontrib.openapi',
+    'sphinxcontrib.redoc',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -64,15 +67,15 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'DesignSafe-CI'
-copyright = u'2017, Coronel B., Josue; Poindexter, Marjo; Meiring, Joseph'
-author = u'Coronel B., Josue; Poindexter, Marjo; Meiring, Joseph'
+copyright = u'2017, Texas Advanced Computing Center.'
+author = u'Texas Advanced Computing Center'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = u'v1.1'
+version = u'v4.7'
 # The full version, including alpha/beta/rc tags.
 release = u'.1'
 
@@ -162,7 +165,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'DesignSafe-CI.tex', u'DesignSafe-CI Documentation',
-     u'Coronel B., Josue; Poindexter, Marjo; Meiring, Joseph', 'manual'),
+     u'Texas Advanced Computing Center.', 'manual'),
 ]
 
 

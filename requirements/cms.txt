@@ -14,7 +14,7 @@ asgiref==3.2.2            # via channels, channels-redis, daphne
 asn1crypto==0.24.0        # via cryptography
 astroid==2.2.5            # via pylint
 async-timeout==3.0.1      # via aioredis
-attrs==19.1.0             # via automat, boxsdk, packaging, twisted
+attrs==19.1.0             # via automat, boxsdk, jsonschema, packaging, twisted
 autobahn==19.9.3          # via daphne
 automat==0.7.0            # via twisted
 babel==2.7.0              # via flower, sphinx
@@ -66,7 +66,7 @@ django-websocket-redis==0.6.0
 django==1.11
 djangocms-admin-style==1.4.0
 djangocms-attributes-field==1.1.0
-djangocms-cascade==0.19
+djangocms-cascade==0.17
 djangocms-column==1.9.0
 djangocms-file==2.3.0
 djangocms-flash==0.3.0
@@ -77,7 +77,7 @@ djangocms-link==2.5.0
 djangocms-picture==2.3.0
 djangocms-style==2.2.0
 djangocms-teaser==0.2.0
-djangocms-text-ckeditor==3.8.0
+djangocms-text-ckeditor==3.4.0
 djangocms-video==2.1.1
 docutils==0.15.2
 dropbox==9.4.0
@@ -100,7 +100,7 @@ google-auth==1.6.3
 greenlet==0.4.15          # via django-websocket-redis, gevent
 hashids==1.2.0            # via djangocms-forms
 hiredis==1.0.0            # via aioredis
-html5lib==1.0.1           # via djangocms-text-ckeditor
+html5lib==0.9999999       # via djangocms-text-ckeditor
 httplib2==0.13.1          # via google-api-python-client, google-auth-httplib2
 hyperlink==19.0.0         # via twisted
 idna==2.8                 # via hyperlink, requests
@@ -116,6 +116,7 @@ jedi==0.15.1              # via ipython
 jinja2==2.10.1
 jsonfield==2.0.2          # via djangocms-cascade, djangocms-forms
 jsonpickle==1.2
+jsonschema==3.0.2         # via sphinxcontrib-openapi
 kombu==4.6.4
 lazy-object-proxy==1.4.2  # via astroid
 markupsafe==1.1.1         # via jinja2
@@ -149,6 +150,7 @@ pymongo==3.9.0
 pymysql==0.9.3
 pyopenssl==19.0.0
 pyparsing==2.4.2          # via packaging
+pyrsistent==0.15.4        # via jsonschema
 pytest==2.8.3             # via agavepy
 python-dateutil==2.8.0    # via agavepy, elasticsearch-dsl
 pytz==2019.2
@@ -161,7 +163,7 @@ requests==2.21.0
 responses==0.10.6
 rsa==4.0                  # via google-auth
 rt==1.0.11
-six==1.12.0               # via agavepy, astroid, autobahn, automat, boxsdk, cryptography, django-appconf, django-websocket-redis, dropbox, elasticsearch-dsl, google-api-python-client, google-auth, html5lib, packaging, prompt-toolkit, pyhamcrest, pyopenssl, python-dateutil, responses, rt, traitlets, txaio, websocket-client
+six==1.12.0               # via agavepy, astroid, autobahn, automat, boxsdk, cryptography, django-appconf, django-websocket-redis, dropbox, elasticsearch-dsl, google-api-python-client, google-auth, html5lib, jsonschema, packaging, prompt-toolkit, pyhamcrest, pyopenssl, pyrsistent, python-dateutil, responses, rt, sphinxcontrib-httpdomain, sphinxcontrib-redoc, traitlets, txaio, websocket-client
 snowballstemmer==1.9.1    # via sphinx
 soupsieve==1.9.3          # via beautifulsoup4
 sphinx-rtd-theme==0.4.3
@@ -169,8 +171,11 @@ sphinx==2.2.0
 sphinxcontrib-applehelp==1.0.1  # via sphinx
 sphinxcontrib-devhelp==1.0.1  # via sphinx
 sphinxcontrib-htmlhelp==1.0.2  # via sphinx
+sphinxcontrib-httpdomain==1.7.0  # via sphinxcontrib-openapi
 sphinxcontrib-jsmath==1.0.1  # via sphinx
+sphinxcontrib-openapi==0.5.0
 sphinxcontrib-qthelp==1.0.2  # via sphinx
+sphinxcontrib-redoc==1.5.1
 sphinxcontrib-serializinghtml==1.1.3  # via sphinx
 tablib==0.13.0            # via djangocms-forms
 tornado==5.1.1            # via flower
@@ -183,7 +188,6 @@ uritemplate==3.0.0        # via google-api-python-client
 urllib3==1.24.3           # via elasticsearch, requests
 vine==1.3.0               # via amqp, celery
 wcwidth==0.1.7            # via prompt-toolkit
-webencodings==0.5.1       # via html5lib
 websocket-client==0.53.0  # via agavepy
 wrapt==1.11.2             # via astroid, boxsdk
 xlrd==1.2.0               # via tablib
@@ -192,4 +196,4 @@ zipp==0.6.0               # via importlib-metadata
 zope.interface==4.6.0     # via twisted
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.2.0        # via django-websocket-redis, ipdb, ipython, pyhamcrest, sphinx, zope.interface
+# setuptools==41.2.0        # via django-websocket-redis, ipdb, ipython, jsonschema, pyhamcrest, sphinx, zope.interface

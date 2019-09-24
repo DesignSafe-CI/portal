@@ -5,7 +5,7 @@ django-mptt
 django-recaptcha2
 djangocms-admin-style
 djangocms-attributes-field
-djangocms-cascade
+djangocms-cascade==0.17
 djangocms-column
 djangocms-file
 djangocms-flash
@@ -16,5 +16,5 @@ djangocms-link
 djangocms-picture
 djangocms-style
 djangocms-teaser
-djangocms-text-ckeditor
+djangocms-text-ckeditor>=3.4.0
 djangocms-video

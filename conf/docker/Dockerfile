@@ -88,16 +88,18 @@ RUN ~/portal_env/bin/pip install --upgrade pip && \
     ~/cms_env/bin/pip install --upgrade pip && \
     ~/cms_env/bin/pip install pip-tools
 
-COPY --chown=tg458981:G-816877 requirements/*.txt /tmp/.
+COPY --chown=tg458981:G-816877 requirements/*.txt /tmp/
 
-RUN ~/portal_env/bin/pip-sync /tmp/prod.txt
+RUN ~/portal_env/bin/pip-sync /tmp/dev.txt
 
 RUN ~/cms_env/bin/pip-sync /tmp/cms.txt
 
-COPY package*.json /srv/www/designsafe/
+COPY --chown=tg458981:G-816877 package*.json /srv/www/designsafe/
 
 RUN cd /srv/www/designsafe npm install
 
-RUN echo "source ~/portal_env/bin/activate" >> ~/.bashrc
+COPY --chown=tg458981:G-816877 conf/.bashrc /tmp/.bashrc
+
+RUN echo /tmp/.bashrc >> ~/.bashrc
 
 WORKDIR /srv/www/designsafe

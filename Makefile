@@ -1,5 +1,5 @@
 # Setup global variables
-.DEFAULT GOAL := help
+.DEFAULT_GOAL := help
 VENV_NAME = .env
 MKPATH = $(abspath $(lastword $(MAKEFILE_LIST)))
 # Helpful if this is used outside of the current folder, e.g. make -f /path/to/Makefile
@@ -7,7 +7,11 @@ PWD = $(shell dirname $(MKPATH))
 # Variable for docker-compose
 COMPOSE = docker-compose -f $(PWD)/conf/docker/docker-compose.yml
 # Variable to enable python36 in Centos
-PYTHON = scl enable rh-python36
+ENABLE_PYTHON = scl enable rh-python36
+# Portal virtualenv python
+PORTAL_PY = /home/tg458981/portal_env/bin/python
+# CMS virtualenv python
+CMS_PY = /home/tg458981/portal_env/bin/python
 # Variable to run django manage
 DJMANAGE = /home/tg458981/portal_env/bin/python /srv/www/designsafe/manage.py
 # Variable to run celery 
@@ -18,6 +22,13 @@ ifneq ($(shell docker ps | grep des_django),)
 	DJ_COMPOSE = $(COMPOSE) exec django
 else
 	DJ_COMPOSE = $(COMPOSE) run --rm django
+endif
+
+## See if CMS container is running
+ifneq ($(shell docker ps | grep des_django_cms),)
+	CMS_COMPOSE = $(COMPOSE) exec cms
+else
+	CMS_COMPOSE = $(COMPOSE) run --rm cms
 endif
 
 # See if workers container is running.
@@ -112,10 +123,13 @@ docker.logs.%: ## Usage: docker.logs.<service_name>
 # need to enable rh-python36. This should not be necessary
 # if we move away from Cenetos.
 docker.bash.django: ## Drop into django container's bash. Uses "exec" if container is running otherwise "run"..
-	$(DJ_COMPOSE) $(PYTHON) bash
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) bash
 
 docker.bash.workers: ## Drop into workers container's bash. Uses "exec" if container is running otherwise "run"..
-	$(WK_COMPOSE) $(PYTHON) bash
+	$(WK_COMPOSE) $(ENABLE_PYTHON) bash
+
+docker.bash.cms: ## Drop into workers container's bash. Uses "exec" if container is running otherwise "run"..
+	$(CMS_COMPOSE) $(ENABLE_PYTHON) bash 
 
 docker.bash.%: ## Drop into a running container's bash.
 	$(COMPOSE) exec $* bash
@@ -139,42 +153,67 @@ pip.compile.all: pip.compile.dev pip.compile.prod pip.compile.cms## Compile prod
 pip.sync.prod: ## Sync pip using requirements/prod.txt. This runs locally and not inside a docker container.
 	pip-sync $(PWD)/requirements/prod.txt
 
-pip.sync.dev: ## Sync pip using requirements.dev.txt. This runs locally and not inside a docker container.
+pip.sync.dev: ## Sync pip using requirements/dev.txt. This runs locally and not inside a docker container.
 	$(warning Make sure you are running this inside a virtual env if needed.)
 	pip-sync $(PWD)/requirements/dev.txt
+
+pip.sync.cms: ## Sync pip using requirements/cms.txt. This runs locally and not inside a docker container.
+	$(warning Make sure you are running this inside a virtual env if needed.)
+	pip-sync $(PWD)/requirements/cms.txt
 
 ### Django management. Commands are run inside docker containers. ###
 ##########################
 django.migrate: ## Run migrate in django container.
-	$(DJ_COMPOSE) $(PYTHON) "$(DJMANAGE) migrate"
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) "$(DJMANAGE) migrate"
 
 django.makemigrations: ## Run makemigrations in django container.
-	$(DJ_COMPOSE) $(PYTHON) "$(DJMANAGE) makemigrations"
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) "$(DJMANAGE) makemigrations"
 
 django.check: ## Run django check..
-	$(DJ_COMPOSE) $(PYTHON) "$(DJMANAGE) check"
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) "$(DJMANAGE) check"
 
 django.static: ## Run django collectstatic
-	$(DJ_COMPOSE) $(PYTHON) "$(DJMANAGE) collectstatic --noinput -c -v3"
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) "$(DJMANAGE) collectstatic --noinput -c -v3"
+
+### CMS Django management. Commands are run inside docker containers. ###
+##########################
+cms.migrate: ## Run migrate in django container.
+	$(CMS_COMPOSE) $(ENABLE_PYTHON) "$(DJMANAGE) migrate --fake-initial"
+
+cms.makemigrations: ## Run makemigrations in django container.
+	$(CMS_COMPOSE) $(ENABLE_PYTHON) "$(DJMANAGE) makemigrations"
+
+cms.check: ## Run django check..
+	$(CMS_COMPOSE) $(ENABLE_PYTHON) "$(DJMANAGE) check"
+
+cms.static: ## Run django collectstatic
+	$(CMS_COMPOSE) $(ENABLE_PYTHON) "$(DJMANAGE) collectstatic --noinput -c -v3"
 
 ### Celery workers management. Commands are run inside docker containers. ###
 ##################################
 workers.active: ## Run celery inspect active.
-	$(WK_COMPOSE) $(PYTHON) "$(CELERY) inspect active"
+	$(WK_COMPOSE) $(ENABLE_PYTHON) "$(CELERY) inspect active"
 
 workers.reserved: ## Run celery inspect reserved.
-	$(WK_COMPOSE) $(PYTHON) "$(CELERY) inspect reserved"
+	$(WK_COMPOSE) $(ENABLE_PYTHON) "$(CELERY) inspect reserved"
 
 workers.scheduled: ## Run celery inspect scheduled.
-	$(WK_COMPOSE) $(PYTHON) "$(CELERY) inspect scheduled"
+	$(WK_COMPOSE) $(ENABLE_PYTHON) "$(CELERY) inspect scheduled"
 
 workers.stats: ## Run celery inspect stats.
-	$(WK_COMPOSE) $(PYTHON) "$(CELERY) inspect stats"
+	$(WK_COMPOSE) $(ENABLE_PYTHON) "$(CELERY) inspect stats"
 
 ### NPM management. Commands are run inside docker containers. ###
 #######################
 npm.dev: ## Run npm run-script dev
-	$(DJ_COMPOSE) $(PYTHON) "npm run-script dev"
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) "npm run-script dev"
 
 npm.install: ## Runs npm install
-	$(DJ_COMPOSE) $(PYTHON) "npm install"
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) "npm install"
+
+### Python Tests. ###
+######################
+test.unit: ## Run unit tests.
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) "$(PORTAL_PY) -m pytest $$(find /srv/www/designsafe/designsafe -name unit -type d)" 
+test.integration: ## Run integration tests.
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) "$(PORTAL_PY) pytest $$(find /srv/www/designsafe/designsafe -name integration -type d)"

@@ -5,6 +5,7 @@
 """
 import logging
 import json
+import urllib
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
@@ -58,9 +59,11 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 self.scope["user"].username,
                 self.channel_name
             )
-        for group in self.scope["url_route"]["kwargs"].get("groups", []):
+
+        qstr = urllib.parse.parse_qs(self.scope["query_string"])
+        for group_name in qstr.get("groups", []):
             await self.channel_layer.group_add(
-                group,
+                group_name,
                 self.channel_name
             )
         await self.accept()

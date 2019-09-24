@@ -1,8 +1,9 @@
 """DesignSafe-CI URL Configuration."""
 
 from django.conf import settings
-from django.urls import path, include
+from django.conf.urls import url, include
 from django.conf.urls.static import static
+from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.sites.models import Site
 from cms.sitemaps import CMSSitemap  # pylint:disable=import-error
@@ -22,11 +23,12 @@ class DesignsafeCMSSitemap(CMSSitemap):  # pylint:disable=too-few-public-methods
 
 urlpatterns = [
     # cms sitemap
-    path('cms_sitemap.xml',
-         sitemap,
-         {'sitemaps': {'cmspages': DesignsafeCMSSitemap}}),
-    path('', include('djangocms_forms.urls')),
-    path('', include('cms.urls')),
+    url(r'^cms_sitemap\.xml$',
+        sitemap,
+        {'sitemaps': {'cmspages': DesignsafeCMSSitemap}}),
+    url(r'^cms-admin/', admin.site.urls),
+    url('', include('djangocms_forms.urls')),
+    url('', include('cms.urls')),
 ]
 
 if settings.DEBUG:

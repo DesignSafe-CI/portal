@@ -59,9 +59,10 @@ INSTALLED_APPS = [
     'reversion',
     'termsandconditions',
     'impersonate',
-    'ws4redis',
     'haystack',
-    'channels',
+    # designsafe
+    'designsafe.apps.token_access',
+    'designsafe.apps.auth',
 ]
 
 if DS_CMS:  # If DS_CMS is set
@@ -86,8 +87,9 @@ if DS_CMS:  # If DS_CMS is set
     ]
 else:
     INSTALLED_APPS += [
+        # django-channels
+        'channels',
         # custom
-        'designsafe.apps.auth',
         'designsafe.apps.api',
         'designsafe.apps.api.notifications',
         'designsafe.apps.accounts',
@@ -108,7 +110,6 @@ else:
         'designsafe.apps.djangoRT',
         'designsafe.apps.notifications',
         'designsafe.apps.workspace',
-        'designsafe.apps.token_access',
         'designsafe.apps.search',
         'designsafe.apps.geo',
         'designsafe.apps.rapid',
@@ -131,7 +132,10 @@ MIDDLEWARE = [
     'designsafe.middleware.DesignSafeTermsMiddleware',
 ]
 
-ROOT_URLCONF = 'designsafe.urls'
+if not DS_CMS:
+    ROOT_URLCONF = 'designsafe.urls'
+else:
+    ROOT_URLCONF = 'designsafe.cms_urls'
 
 TEMPLATES = [
     {
@@ -513,9 +517,7 @@ if DS_CMS:
         'easy_thumbnails.processors.filters',
     )
 
-    CKEDITOR_SETTINGS = {
-        'allowedContent': True
-    }
+    CKEDITOR_SETTINGS = { 'allowedContent': True }
 
     DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
     DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'

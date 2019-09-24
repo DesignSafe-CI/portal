@@ -12,11 +12,17 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # -*- coding: utf-8 -*-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from .external_resource_secrets import *
+from .rt_settings import *
+from .elasticsearch_settings import *
+from .nees_settings import NEES_USER_DATABASE
 import os
 import json
+DS_CMS = False
+
+def gettext(s): return s
 
 
-gettext = lambda s: s
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SITE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -41,11 +47,6 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
-    'djangocms_admin_style',
-    'djangocms_text_ckeditor',
-    'cmsplugin_cascade',
-    'cmsplugin_cascade.extra_fields',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,42 +57,18 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
 
-    'djng', #TODO: djng
-    'djng.urls',
-    'cms',
-    'treebeard',
-    'menus',
     'sekizai',
-    'djangocms_style',
-    'djangocms_file',
-    'djangocms_flash',
-    'djangocms_googlemap',
-    'djangocms_picture',
-    'djangocms_video',
-    'djangocms_forms',
-
-    #django recaptcha
     'snowpenguin.django.recaptcha2',
-
-    #'pipeline',
-    'filer',
-    'easy_thumbnails',
-    'reversion',
-    'bootstrap3',
+    'channels',
+    # 'pipeline',
     'termsandconditions',
     'impersonate',
-
-    'oauth2client.contrib.django_util',
-
-    #websockets
-    'ws4redis',
 
     # custom
     'designsafe.apps.auth',
     'designsafe.apps.api',
     'designsafe.apps.api.notifications',
     'designsafe.apps.accounts',
-    'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
     'designsafe.apps.dropbox_integration',
     'designsafe.apps.googledrive_integration',
@@ -113,43 +90,30 @@ INSTALLED_APPS = (
     'designsafe.apps.geo',
     'designsafe.apps.rapid',
 
-    #haystack integration
+    # haystack integration
     'haystack'
 )
-AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
-LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
-
-CACHES = {
-  'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-      'LOCATION': 'memcached:11211',
-  },
-}
-
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'designsafe.middleware.RequestProfilingMiddleware',
-    'djng.middleware.AngularUrlMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'cms.middleware.user.CurrentUserMiddleware',
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
     'designsafe.middleware.DesignSafeTermsMiddleware',
-)
+]
 
-ROOT_URLCONF = 'designsafe.urls'
+if not DS_CMS:
+    ROOT_URLCONF = 'designsafe.urls'
+else:
+    ROOT_URLCONF = 'designsafe.cms_urls'
 
 TEMPLATES = [
     {
@@ -167,15 +131,13 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
-                'cms.context_processors.cms_settings',
                 'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
-                'designsafe.context_processors.messages',
                 'designsafe.apps.auth.context_processors.auth',
-                'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
     },
@@ -183,9 +145,34 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'designsafe.wsgi.application'
 
+ASGI_APPLICATION = 'designsafe.routing.application'
 
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        }
+    }
+}
+
+AUTHENTICATION_BACKENDS = [
+    'designsafe.apps.auth.backends.AgaveOAuthBackend',
+    'designsafe.apps.auth.backends.TASBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'redis:6379',
+        'OPTIONS': {
+            'DB': 3,
+        }
+    },
+}
 
 if os.environ.get('DATABASE_HOST'):
     # mysql connection
@@ -212,8 +199,7 @@ HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
-from .nees_settings import NEES_USER_DATABASE
-#if NEES_USER_DATABASE['NAME']:
+# if NEES_USER_DATABASE['NAME']:
 #    DATABASES['nees_users'] = NEES_USER_DATABASE
 
 
@@ -240,8 +226,9 @@ STATICFILES_DIRS = [
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    #'pipeline.finders.PipelineFinder',
+    # 'pipeline.finders.PipelineFinder',
 )
+LOGIN_URL = os.environ.get('LOGIN_URL', '/login/')
 MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
 
@@ -291,7 +278,7 @@ TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'sr
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
-    #'easy_thumbnails.processors.scale_and_crop',
+    # 'easy_thumbnails.processors.scale_and_crop',
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
     'easy_thumbnails.processors.filters',
 )
@@ -300,7 +287,7 @@ CKEDITOR_SETTINGS = {
     'allowedContent': True
 }
 
-#MIGRATION_MODULES = {
+# MIGRATION_MODULES = {
 #    'djangocms_flash': 'djangocms_flash.migrations_django',
 #    'djangocms_file': 'djangocms_file.migrations_django',
 #    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
@@ -310,7 +297,7 @@ CKEDITOR_SETTINGS = {
 #    'djangocms_teaser': 'djangocms_teaser.migrations_django',
 #    'djangocms_video': 'djangocms_video.migrations_django',
 #    'djangocms_style': 'djangocms_style.migrations_django',
-#}
+# }
 
 LOGIN_URL = os.environ.get('LOGIN_URL', '/login/')
 
@@ -424,76 +411,6 @@ NEW_ACCOUNT_ALERT_EMAIL = os.environ.get('NEW_ACCOUNT_ALERT_EMAIL', 'no-reply@de
 # Terms and Conditions
 #
 DEFAULT_TERMS_SLUG = 'terms'
-
-###
-# Pipeline
-#
-PIPELINE = {
-    'PIPELINE_ENABLED': False
-    }
-PIPELINE['COMPILERS'] = (
-    'pipeline.compilers.sass.SASSCompiler',
-)
-PIPELINE['SASS_ARGUMENTS'] = '-C'
-PIPELINE['CSS_COMPRESSOR'] = None
-PIPELINE['JS_COMPRESSOR'] = 'pipeline.compressors.slimit.SlimItCompressor'
-PIPELINE['STYLESHEETS'] = {
-    'vendor': {
-        'source_filenames': (
-            'vendor/bootstrap-ds/css/bootstrap.css',
-            'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
-            'vendor/font-awesome/css/font-awesome.css',
-            'vendor/angular-toastr/dist/angular-toastr.css',
-            'vendor/slick-carousel/slick/slick.css',
-            'vendor/slick-carousel/slick/slick-theme.css'
-        ),
-        'output_filename': 'css/vendor.css',
-    },
-    'main': {
-        'source_filenames': (
-            'styles/typekit.css',
-            'styles/main.css',
-            'styles/corner-ribbon.css',
-            'styles/base.scss',
-            'styles/nested-list-group.scss',
-        ),
-        'output_filename': 'css/main.css',
-    },
-}
-
-PIPELINE['JAVASCRIPT'] = {
-    'vendor': {
-        'source_filenames': (
-            'vendor/modernizr/modernizr.js',
-            'vendor/jquery/dist/jquery.js',
-            'vendor/bootstrap-ds/js/bootstrap.js',
-            'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
-            'vendor/d3/d3.min.js'
-        ),
-        'output_filename': 'js/vendor.js',
-    },
-    'main': {
-        'source_filenames': (
-            'scripts/utils.js',
-            'scripts/dateinput.js',
-            'scripts/navbar.js',
-        ),
-        'output_filename': 'js/main.js',
-    },
-}
-
-##
-# django-websockets-redis
-#
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-WEBSOCKET_URL = '/ws/'
-WS4REDIS_CONNECTION = {
-    'host': os.environ.get('WS_BACKEND_HOST'),
-    'port': os.environ.get('WS_BACKEND_PORT'),
-    'db': os.environ.get('WS_BACKEND_DB'),
-}
-WS4REDIS_EXPIRE = 0
-
 # Analytics
 #
 GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', False)
@@ -555,10 +472,10 @@ PUBLISHED_SYSTEM = 'designsafe.storage.published'
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
 RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
 NOCAPTCHA = True
 
-#FOR RAPID UPLOADS
+# FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
 
 DATACITE_USER = os.environ.get('DATACITE_USER')
@@ -572,9 +489,6 @@ if os.environ.get('PORTAL_PROFILE') == 'True':
 else:
     PORTAL_PROFILE = False
 
-from .elasticsearch_settings import *
-from .rt_settings import *
-from .external_resource_secrets import *
 
 # Box sync
 BOX_APP_CLIENT_ID = 'boxappclientid'
@@ -598,7 +512,7 @@ CELERY_ALWAYS_EAGER = True
 BROKER_BACKEND = 'memory'
 
 # No token refreshes during testing
-MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c !=
+MIDDLEWARE = [c for c in MIDDLEWARE if c !=
                       'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -615,7 +529,7 @@ AGAVE_STORAGE_SYSTEM = 'storage.example.com'
 MIGRATION_MODULES = {
     'data': None,
     'designsafe_data': None,
-    'rapid': None }
+    'rapid': None}
 
 LOGGING = {
     'version': 1,
@@ -683,3 +597,4 @@ PORTAL_DATA_DEPOT_SEARCH_MANAGERS = {
     'published': 'designsafe.apps.api.search.searchmanager.published_files.PublishedDataSearchManager',
     'community': 'designsafe.apps.api.search.searchmanager.community.CommunityDataSearchManager'
 }
+COMMUNITY_INDEX_SCHEDULE = os.environ.get('COMMUNITY_INDEX_SCHEDULE', {})

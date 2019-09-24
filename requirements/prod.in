@@ -61,3 +61,5 @@ rt
 requests
 Sphinx
 sphinx-rtd-theme
+sphinxcontrib-openapi
+sphinxcontrib-redoc
