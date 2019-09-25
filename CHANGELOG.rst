@@ -1,4 +1,6 @@
-# DesignSafe-CI Portal Release Notes
+====================================
+DesignSafe-CI Portal Release Notes
+====================================
 
 ## [Python 3 update]
 

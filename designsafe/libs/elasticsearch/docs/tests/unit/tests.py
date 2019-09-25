@@ -150,29 +150,6 @@ class TestBaseESFile(TestCase):
         base.delete()
         mock_delete.assert_called_with()
 
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.delete')
-    @patch('designsafe.libs.elasticsearch.docs.files.BaseESFile.children')
-    def test_delete_recursive(self, mock_children, mock_delete):
-        wrapped_doc = IndexedFile(
-            **{'name': 'folder1', 'system': 'test.system', 'path': '/path/to/folder', 'format': 'folder'})
-        base = BaseESFile('test_user', system='test.system',
-                          wrapped_doc=wrapped_doc)
-        object.__setattr__(base, '_wrapped', wrapped_doc)
-        object.__setattr__(base, 'format', 'folder')
-
-        child_doc = IndexedFile(
-            **{'name': 'child1', 'system': 'test.system', 'path': '/path/to/child1', 'format': 'file'})
-        base_child = BaseESFile('test_user', system='test.system',
-                                wrapped_doc=child_doc)
-        object.__setattr__(base_child, '_wrapped', child_doc)
-        object.__setattr__(base_child, 'format', 'file')
-
-        mock_children.return_value = iter([base_child])
-
-        base.delete()
-        # Assert 2 delete calls: 1 for parent, 1 for child
-        self.assertEqual(mock_delete.call_count, 2)
-
 
 class TestBaseESResource(TestCase):
     @patch('designsafe.libs.elasticsearch.docs.base.BaseESResource._wrap')

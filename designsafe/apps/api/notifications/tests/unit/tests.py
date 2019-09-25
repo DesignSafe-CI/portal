@@ -26,7 +26,7 @@ webhook_body_pending = json.dumps(json.load(open(FILEDIR_PENDING)))
 webhook_body_pending2 = json.dumps(json.load(open(FILEDIR_PENDING2)))
 webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING)))
 
-wh_url = reverse('designsafe_api:jobs_wh_handler')
+wh_url = reverse('designsafe_api:ds_notifications_api:jobs_wh_handler')
 
 # Create your tests here.
 @skip("Need to mock websocket call to redis")
