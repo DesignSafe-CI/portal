@@ -84,7 +84,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                             $scope.data.messages.push({
                                 type: 'warning',
                                 header: 'System status unknown',
-                                body: `Could not access system status for system ${resp.data.executionSystem}. 
+                                body: `Could not access system status for system ${resp.data.executionSystem}.
                                 Jobs may fail.`,
                             });
                             $scope.data.systemDown = null;
@@ -172,6 +172,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 inputs: {},
                 parameters: {},
                 appDefinition: $scope.data.app,
+                archiveOnAppError: true,
             };
 
             /* copy form model to disconnect from $scope */
@@ -250,7 +251,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                                 type: 'danger',
                                 header: 'Job Submit Failed',
                                 body: `Your job submission failed with the following message:<br><em> ${err.data.message ||
-                                     'Unexpected error'} </em><br>Please try again. If this problem persists, 
+                                     'Unexpected error'} </em><br>Please try again. If this problem persists,
                                      please <a href='/help' target='_blank'>submit a support ticket</a>.`,
                             });
                             refocus();
