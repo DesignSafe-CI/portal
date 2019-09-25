@@ -147,6 +147,15 @@ class PublicationPreviewFieldReconCtrl {
         };
     }
 
+    emptyCheck(element) {
+        for (var i = 0; i < element.length; i++) {
+            if (typeof element[i] === 'object' && Object.keys(element[i]).length > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     matchingGroup(sim, model) {
         if (!sim) {
             // if the category is related to the project level

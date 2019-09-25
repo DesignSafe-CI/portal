@@ -71,6 +71,12 @@
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
+            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumbers | orderBy:'order' track by $index"
+                ng-if="$ctrl.readOnly">
+                <td ng-if="$first">Awards</td>
+                <td ng-if="!$first"></td>
+                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+            </tr>
             <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
                 <td ng-if="$first">Related Work</td>
                 <td ng-if="!$first"></td>
@@ -384,15 +390,17 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                                            Referenced Data
-                                        </div>
-                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                                            <ul style="list-style:none; padding-left:0;">
-                                                <li data-ng-repeat="data in collection.value.referencedDatas">
-                                                    <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
-                                                </li>
-                                            </ul>
+                                        <div ng-if="$ctrl.emptyCheck(collection.value.referencedDatas)">
+                                            <div style="display: inline-block; width:20%; vertical-align: top;">
+                                                Referenced Data
+                                            </div>
+                                            <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                                <ul style="list-style:none; padding-left:0;">
+                                                    <li data-ng-repeat="data in collection.value.referencedDatas">
+                                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                         <div ng-if="collection.value.description">
                                             <p>{{ collection.value.description }}</p>
