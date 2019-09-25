@@ -152,6 +152,8 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 'simsubstructure_set',
                 'expsubstructure_set',
             ];
+        } else if (project.value.projectType === 'field_recon') {
+            requiredSets = ['collection_set', 'mission_set'];
         }
         requiredSets.forEach((set) => {
             if (set in project) {
