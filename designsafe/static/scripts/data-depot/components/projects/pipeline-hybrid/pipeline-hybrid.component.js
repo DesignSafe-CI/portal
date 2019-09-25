@@ -51,8 +51,15 @@ class PipelineHybridCtrl {
         }, {reload: true});
     }
 
-    editExp() {
-        this.ProjectService.manageHybridSimulations({'hybridSimulations': this.project.hybridsimulation_set, 'project': this.project, 'edit': this.simulation});
+    manageHybridSimulations() {
+        this.$uibModal.open({
+            component: 'manageHybridSimulationsModal',
+            resolve: {
+                project: () => { return this.project; },
+                edit: () => { return this.simulation; },
+            },
+            size: 'lg',
+        });
     }
 
 }

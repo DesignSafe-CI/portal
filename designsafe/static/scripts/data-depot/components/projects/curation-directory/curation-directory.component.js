@@ -118,35 +118,33 @@ class CurationDirectoryCtrl {
     }
 
     manageExperiments() {
-        var experimentsAttr = this.browser.project.getRelatedAttrName('designsafe.project.experiment');
-        var experiments = this.browser.project[experimentsAttr];
-        if (typeof experiments === 'undefined') {
-            this.browser.project[experimentsAttr] = [];
-            experiments = this.browser.project[experimentsAttr];
-        }
-        this.ProjectService.manageExperiments({'experiments': experiments, 'project': this.browser.project});
+        this.$uibModal.open({
+            component: 'manageExperimentsModal',
+            resolve: {
+                project: () => { return this.browser.project; },
+            },
+            size: 'lg',
+        });
     }
 
     manageSimulations() {
-        var simulationAttr = this.browser.project.getRelatedAttrName('designsafe.project.simulation');
-        var simulations = this.browser.project[simulationAttr];
-        if (typeof simulations === 'undefined'){
-          this.browser.project[simulationAttr] = [];
-          simulations = this.browser.project[simulationAttr];
-        }
-        this.ProjectService.manageSimulations({'simulations': simulations, 'project': this.browser.project});
+        this.$uibModal.open({
+            component: 'manageSimulationsModal',
+            resolve: {
+                project: () => { return this.browser.project; },
+            },
+            size: 'lg',
+        });
     }
 
     manageHybridSimulations() {
-        var hybridSimulationAttr = this.browser.project.getRelatedAttrName(
-            'designsafe.project.hybrid_simulation'
-        );
-        var hybridSimulations = this.browser.project[hybridSimulationAttr];
-        if (typeof hybridSimulations === 'undefined'){
-          this.browser.project[hybridSimulationAttr] = [];
-          hybridSimulations = this.browser.project[hybridSimulationAttr];
-        }
-        this.ProjectService.manageHybridSimulations({'hybridSimulations': hybridSimulations, 'project': this.browser.project});
+        this.$uibModal.open({
+            component: 'manageHybridSimulationsModal',
+            resolve: {
+                project: () => { return this.browser.project; },
+            },
+            size: 'lg',
+        });
     }
 
     manageCategories() {

@@ -13,17 +13,19 @@ class ManageSimulationCtrl {
     }
 
     $onInit() {
-        this.options = this.resolve.options;
-        var members = [this.options.project.value.pi].concat(
-            this.options.project.value.coPis,
-            this.options.project.value.teamMembers,
-            this.options.project.value.guestMembers.map(g => g.user)
+        this.project = this.resolve.project;
+        this.edit = this.resolve.edit;
+
+        var members = [this.project.value.pi].concat(
+            this.project.value.coPis,
+            this.project.value.teamMembers,
+            this.project.value.guestMembers.map(g => g.user)
         );
         members.forEach((m, i) => {
             if (typeof m == 'string') {
                 // if user is guest append their data
                 if(m.slice(0,5) === 'guest') {
-                    var guestData = this.options.project.value.guestMembers.find(x => x.user === m);
+                    var guestData = this.project.value.guestMembers.find(x => x.user === m);
                     members[i] = {
                         name: m,
                         order: i,
@@ -42,8 +44,8 @@ class ManageSimulationCtrl {
 
         this.data = {
             busy: false,
-            simulations: this.options.simulations,
-            project: this.options.project,
+            simulations: this.project.simulation_set,
+            project: this.project,
             users: [... new Set(members)],
             form: {},
         };
@@ -89,8 +91,8 @@ class ManageSimulationCtrl {
             }
         ];
 
-        if (this.options.edit) {
-            this.editSim(this.options.edit);
+        if (this.edit) {
+            this.editSim(this.edit);
         }
     }
 
@@ -157,7 +159,7 @@ class ManageSimulationCtrl {
                 if (typeof auth == 'string') {
                     // if user is guest append their data
                     if(auth.slice(0,5) === 'guest') {
-                        var guestData = this.options.project.value.guestMembers.find(x => x.user === auth);
+                        var guestData = this.project.value.guestMembers.find(x => x.user === auth);
                         usersToClean[i] = {
                             name: auth,
                             order: i,

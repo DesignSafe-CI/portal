@@ -88,13 +88,18 @@ class PipelineExperimentCtrl {
         }, {reload: true});
     }
 
-    editExp() {
-        this.ProjectService.manageExperiments({'experiments': this.project.experiment_set, 'project': this.project, 'edit': this.experiment});
+    manageExperiments() {
+        this.$uibModal.open({
+            component: 'manageExperimentsModal',
+            resolve: {
+                project: () => { return this.project; },
+                edit: () => { return this.experiment; },
+            },
+            size: 'lg',
+        });
     }
 
 }
-
-PipelineExperimentCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];
 
 export const PipelineExperimentComponent = {
     template: PipelineExperimentTemplate,

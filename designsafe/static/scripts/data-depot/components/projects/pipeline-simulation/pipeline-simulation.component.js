@@ -51,8 +51,15 @@ class PipelineSimulationCtrl {
         }, {reload: true});
     }
 
-    editExp() {
-        this.ProjectService.manageSimulations({'simulations': this.project.simulation_set, 'project': this.project, 'edit': this.simulation});
+    manageSimulations() {
+        this.$uibModal.open({
+            component: 'manageSimulationsModal',
+            resolve: {
+                project: () => { return this.project; },
+                edit: () => { return this.simulation; },
+            },
+            size: 'lg',
+        });
     }
 
 }

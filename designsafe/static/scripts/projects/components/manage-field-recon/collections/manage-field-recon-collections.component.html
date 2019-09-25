@@ -126,7 +126,8 @@
                     <input type="checkbox"
                            data-format="lname"
                            id="{{ 'collector-' + $index }}"
-                           data-ng-model="usr.authorship">
+                           data-ng-model="usr.authorship"
+                           data-ng-required="$ctrl.validCollector()">
                         <ds-user data-ng-if="!usr.guest"
                                  data-username="usr.name"
                                  data-format="lname">

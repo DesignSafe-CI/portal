@@ -60,7 +60,7 @@ class ManageFieldReconMissionsCtrl {
     }
 
     cleanForm() {
-        this.form = angular.copy(this.data.users);
+        this.form = {'authors' : angular.copy(this.data.users)};
     }
 
     configureAuthors(mission) {
@@ -158,12 +158,13 @@ class ManageFieldReconMissionsCtrl {
         }
     }
 
-    addAuthors(user, i) {
-        if (document.getElementById('newAuthor' + i).checked) {
-            user.authorship = true;
-        } else {
-            user.authorship = false;
+    validAuthors(){
+        for(let i = 0; i < this.form.authors.length; i++) {
+            if (this.form.authors[i].authorship === true) {
+                return false;
+            }
         }
+        return true;
     }
 
     orderAuthors(up) {
@@ -214,7 +215,6 @@ class ManageFieldReconMissionsCtrl {
             $event.preventDefault();
         }
         this.data.busy = true;
-        this.form.authors = this.data.users;
         let mission = {
             title: this.form.title,
             dateStart: this.form.dateStart,
