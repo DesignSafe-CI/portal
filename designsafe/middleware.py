@@ -13,6 +13,7 @@ from django.core.exceptions import MiddlewareNotUsed
 from termsandconditions.middleware import (TermsAndConditionsRedirectMiddleware,
                                            is_path_protected)
 from termsandconditions.models import TermsAndConditions
+from django.shortcuts import redirect, reverse
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,26 @@ class DesignSafeSupportedBrowserMiddleware:
                                       'Please switch to <a href="https://www.google.com/chrome">Chrome</a> '
                                       'or <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a> '
                                       'if you experience issues.')
+
+class DesignsafeProfileUpdateMiddleware:
+
+    """
+    Middleware to check if a user's profile has the update_required flag set to 
+    True, and force them to update their profile if so.
+    """
+
+    def process_request(self, request):
+        blocked_path = request.path.startswith(
+            ("/data", "/applications", "/rw/workspace", "/recon-portal", "/dashboard")
+        )
+        if request.user.is_authenticated and request.user.profile.update_required and blocked_path:
+            messages.warning(
+                request, '<h4>Profile Update Required</h4>'
+                            'You are required to update your user profile in \
+                            order to continue using this feature of Designsafe.' )
+            return redirect(reverse('designsafe_accounts:profile_edit'))
+        return None
+
 
 class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
     """
@@ -58,6 +79,7 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
                                  'accept the Terms of Use.<br>Acceptance of the Terms of '
                                  'Use is required for continued use of DesignSafe '
                                  'resources.' % accept_url)
+                    #return redirect(reverse('designsafe_accounts:profile_edit'))
         return None
 
 class RequestProfilingMiddleware(object):

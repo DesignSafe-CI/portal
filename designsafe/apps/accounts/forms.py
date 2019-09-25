@@ -447,7 +447,7 @@ class ProfessionalProfileForm(forms.ModelForm):
     )
     nh_interests = forms.ModelMultipleChoiceField(
         queryset=DesignSafeProfileNHInterests.objects.all(),
-        required=False,
+        required=True,
         widget=forms.CheckboxSelectMultiple,
         label="Natural Hazards Interests (check all that apply)"
     )
@@ -462,10 +462,10 @@ class ProfessionalProfileForm(forms.ModelForm):
     professional_level = forms.ChoiceField(
         choices=PROFESSIONAL_LEVEL_OPTIONS,
         widget=forms.RadioSelect,
-        required=False)
+        required=True)
     research_activities = forms.ModelMultipleChoiceField(
         queryset=DesignSafeProfileResearchActivities.objects.all(),
-        required=False,
+        required=True,
         widget=forms.CheckboxSelectMultiple,
         label="Research Activities (check all that apply)"
     )
@@ -483,7 +483,7 @@ class ProfessionalProfileForm(forms.ModelForm):
 
     class Meta:
         model = DesignSafeProfile
-        exclude = ['user', 'ethnicity', 'gender']
+        exclude = ['user', 'ethnicity', 'gender', 'update_required']
 
 
 class NEESAccountMigrationForm(forms.Form):

@@ -11,9 +11,6 @@
           {% url 'designsafe_accounts:manage_profile' as item_url %}
           <li {% if item_url in request.path %}class="active"{% endif %}><a href="{{item_url}}">Account Profile</a></li>
 
-          {% url 'designsafe_accounts:manage_pro_profile' as item_url %}
-          <li {% if item_url in request.path %}class="active"{% endif %}><a href="{{item_url}}">Professional Profile</a></li>
-
           {% url 'designsafe_accounts:manage_authentication' as item_url %}
           <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Authentication</a></li>
 
