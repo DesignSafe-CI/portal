@@ -18,9 +18,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-FILEDIR_PENDING = os.path.join(os.path.dirname(__file__), './json/pending.json')
-FILEDIR_SUBMITTING = os.path.join(os.path.dirname(__file__), './json/submitting.json')
-FILEDIR_PENDING2 = os.path.join(os.path.dirname(__file__), './json/pending2.json')
+FILEDIR_PENDING = os.path.join(os.path.dirname(__file__), '../../json/pending.json')
+FILEDIR_SUBMITTING = os.path.join(os.path.dirname(__file__), '../../json/submitting.json')
+FILEDIR_PENDING2 = os.path.join(os.path.dirname(__file__), '../../json/pending2.json')
 
 webhook_body_pending = json.dumps(json.load(open(FILEDIR_PENDING)))
 webhook_body_pending2 = json.dumps(json.load(open(FILEDIR_PENDING2)))

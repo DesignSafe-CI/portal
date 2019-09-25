@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model, signals
 from django.urls import reverse
 from boxsdk.object.user import User
 from designsafe.apps.box_integration.models import BoxUserToken
-from designsafe.apps.auth.signals import on_user_logged_in
 from unittest import mock
 
 
@@ -15,9 +14,6 @@ class BoxInitializationTestCase(TestCase):
         user = get_user_model().objects.get(pk=2)
         user.set_password('password')
         user.save()
-
-        # disconnect user_logged_in signal
-        signals.user_logged_in.disconnect(on_user_logged_in)
 
     def test_index_view_not_enabled(self):
         """
@@ -92,9 +88,6 @@ class BoxDisconnectTestCase(TestCase):
         user = get_user_model().objects.get(pk=2)
         user.set_password('password')
         user.save()
-
-        # disconnect user_logged_in signal
-        signals.user_logged_in.disconnect(on_user_logged_in)
 
     def test_disconnect(self):
         """

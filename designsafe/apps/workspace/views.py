@@ -280,7 +280,6 @@ def call_api(request, service):
 def process_notification(request, pk, **kwargs):
     n = Notification.objects.get(pk=pk)
     extra = n.extra_content
-    logger.info('extra: {}'.format(extra))
     archiveSystem = extra['archiveSystem']
     archivePath = extra['archivePath']
 

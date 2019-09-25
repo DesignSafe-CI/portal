@@ -2,7 +2,7 @@ import json
 import os
 from unittest.mock import patch
 from django.test import TestCase
-from .models.app_descriptions import AppDescription
+from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 

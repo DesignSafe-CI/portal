@@ -227,8 +227,11 @@ test.integration.collect: ## Collect test with Pytest. This does not run the tes
 
 ### Sphinx documentation. ###
 #############################
-docs.build: ## Build docs.
+docs.build: docs.automodule ## Build docs.
 	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) setup.py build_sphinx'
+
+docs.automodule: ## Build automodule docs.
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) 'source ~/portal_env/bin/activate; sphinx-apidoc -f -o .docs/source/modules designsafe'
 
 ### Local environment Certificates. ###
 #######################################

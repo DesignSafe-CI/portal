@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from .models import Token
+from designsafe.apps.token_access.models import Token
 import requests_mock
 
 

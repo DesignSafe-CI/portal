@@ -30,6 +30,14 @@ designsafe.celery\_app module
    :undoc-members:
    :show-inheritance:
 
+designsafe.cms\_urls module
+---------------------------
+
+.. automodule:: designsafe.cms_urls
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 designsafe.context\_processors module
 -------------------------------------
 
@@ -50,6 +58,14 @@ designsafe.routing module
 -------------------------
 
 .. automodule:: designsafe.routing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+designsafe.sitemaps module
+--------------------------
+
+.. automodule:: designsafe.sitemaps
    :members:
    :undoc-members:
    :show-inheritance:
@@ -90,6 +106,14 @@ designsafe.wsgi module
 ----------------------
 
 .. automodule:: designsafe.wsgi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+designsafe.wsgi\_websocket module
+---------------------------------
+
+.. automodule:: designsafe.wsgi_websocket
    :members:
    :undoc-members:
    :show-inheritance:

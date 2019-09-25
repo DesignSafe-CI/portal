@@ -8,6 +8,12 @@ Welcome to DesignSafe-CI's documentation!
 
 .. toctree::
    :maxdepth: 1
+
+.. toctree::
+    :maxdepth: 1
+
+    contributing
+    changelog
    
 
 Indices and tables
