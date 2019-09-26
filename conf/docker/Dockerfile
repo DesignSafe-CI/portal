@@ -98,6 +98,10 @@ COPY --chown=tg458981:G-816877 package*.json /srv/www/designsafe/
 
 RUN cd /srv/www/designsafe npm install
 
+RUN echo "prefix=~/.npm-global" >> ~/.npmrc
+
+RUN npm install -g jsdoc
+
 COPY --chown=tg458981:G-816877 conf/.bashrc /tmp/.bashrc
 
 RUN cat /tmp/.bashrc >> ~/.bashrc

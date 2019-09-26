@@ -214,7 +214,7 @@ npm.install: ## Runs npm install
 ### Python Tests. ###
 ######################
 test.unit: ## Run unit tests.
-	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest -x $$(find /srv/www/designsafe/designsafe -name unit -type d)'
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest -x $$(find /srv/www/designsafe/designsafe -name unit -type d) && npm run-script test'
 
 test.unit.collect: ## Collect test with Pytest. This does not run the tests..
 	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest --collect-only $$(find /srv/www/designsafe/designsafe -name unit -type d)'
@@ -225,6 +225,21 @@ test.integration: ## Run integration tests.
 test.integration.collect: ## Collect test with Pytest. This does not run the tests..
 	$(DJ_COMPOSE) $(ENABLE_PYTHON) '$(PORTAL_PY) -m pytest --collect-only $$(find /srv/www/designsafe/designsafe -name integration -type d)'
 
+test.pylint: ## Run pylint
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) 'source ~/portal_env/bin/activate; pylint --rc .pylintrc --load-plugins pylint_django designsafe'
+
+test.flake8: ## Run pylint
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) 'source ~/portal_env/bin/activate; flake8 designsafe'
+
+test.pydocstyle: ## Run pydocstyle
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) 'source ~/portal_env/bin/activate; pydocstyle designsafe'
+
+test.eslint: ## Run eslint
+	$(DJ_COMPOSE) npm run-script lint
+
+test.quality: ## Run code quality tests.
+	$(DJ_COMPOSE) $(ENABLE_PYTHON) 'source ~/portal_env/bin/activate; pylint --rcfile=.pylintrc --load-plugins pylint_django designsafe &&  flake8 --config .flake8 designsafe && pydocstyle designsafe && npm run-script lint'
+	
 ### Sphinx documentation. ###
 #############################
 docs.build: docs.automodule ## Build docs.

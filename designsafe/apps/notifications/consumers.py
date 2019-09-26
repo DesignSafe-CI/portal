@@ -24,11 +24,13 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     we use the group channel and we don't have to use the internal unique `channel_name`.
 
     .. note::
+
         This consumer will automatically add a user to two channel groups:
         - A channel group with the user's username as name.
         - A channel group named `"broadcast"`.
 
     .. example::
+
         If a message needs to be sent to the user then we can do this:
         ```python
         >>> from channels.layers import get_channel_layer

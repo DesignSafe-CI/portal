@@ -114,69 +114,178 @@ Steps to create, work and merge bug fix branches:
 Development environment setup
 ==============================
 
-Pre-requisites:
+.. include:: dev_env_setup.rst
 
-* `Docker <https://docs.docker.com/install/>`_ `>=19.03.01`
-* `docker-compose <https://docs.docker.com/compose/install/>`_ `>=1.24.1`
+Requirements management
+========================
 
-Recommendations:
+Python requirements
+--------------------
 
-* For OSX `install
-  <https://www.topbug.net/blog/2013/04/14/install-and-use-gnu-command-line-tools-in-mac-os-x/>`_ 
-  `GNU Coreutils <https://en.wikipedia.org/wiki/GNU_Core_Utilities>`_ via homebrew.
-* Create a virtual environment.
-* Add this to your `.bashrc` so you'll have direct access to the project's makefile and autocompletion:
+Designsafe use `pip-tools <https://github.com/jazzband/pip-tools>`_ to manage requirements. Every :code:`.in` file lives
+in :code:`requirements/`.
 
-   .. code-block:: bash
+prod.in
+    This are the main requirements file. Every application docker container (:code:`django`, :code:`cms`, and :code:`workers`) will install these requirements. When the :code:`prod.txt` file is compiled the files :code:`prod.in` and :code:`django2x.in` are used.
 
-       ds-mk() {
-       Make -f <path_to_designsafe>/portal/Makefile "$@"
-       }
-       source <path_to_designsafe>/bin/make-autocomplete.bash
+dev.in
+    This are the requirements specific for development. This mainly contains the packages needed for testing. When the
+    :code:`dev.txt` file is compiled the files :code:`prod.in`, :code:`dev.in`, and :code:`django2x.in` are used.
 
-Follow these steps to setup your local dev environment:
+cms.in
+    This are the requirements specific for the cms. Every cms plugin and cms specific package should be lsited here to
+    avoid conflicts with the main application. When the :code:`cms.txt` file is compiled the files :code:`prod.in`,
+    :code:`django1.11.in`, and :code:`cmsn.in` files are used.
 
-#. Build images:
+Javascript requirements
+------------------------
 
-   .. code-block:: bash
+Designsafe use `npm <https://docs.npmjs.com/packages-and-modules/>`_ to keep track of javascript dependencies.
 
-       $ ds-mk build
+Tests
+======
 
-#. Run mysql to make sure it's initialized correctly:
+Designsafe runs multiple tests when a PR is submitted. 
 
-   .. code-block:: bash
+- **Quality tests:** To verify that the code submitted is written in a specific standard.
+- **Unit tests:** Must only test small unit of code. These tests **must not** call any external services.
+  Python unit tests **must** be placed inside a :code:`unit` subfolder and the file **must** start with :code:`test`. It
+  is recommended to place test files nearby the code they are testing.
+  Javascript unit test files **must** end with :code:`spec.js`.
+- **Integration Tests:** Must verify the correct integration between Designsafe's code and any external libraries or
+  services.
+  Python integration tests **must** be placed inside a :code:`integration` subfolder and the file **must** start with :code:`test`. It
+  is recommended to place test files nearby the code they are testing.
+- **End-to-end Tests:** Must verify the correct functionality of Designsafe from the user's point of view.
 
-       $ ds-mk dev.up.mysql
+Running quality tests
+--------------
 
-#. Run django migrations:
+Designsafe use `pylint <https://www.pylint.org>`_ (with `django-pylint <https://github.com/PyCQA/pylint-django>`_
+plugin), `flake8 <http://flake8.pycqa.org/en/latest/>`_, `pydocstyle <http://www.pydocstyle.org/en/4.0.0/>`_ and `eslint
+<https://eslint.org>`_ to check for code quality.
 
-   .. code-block:: bash
+The included :code:`Makefile` includes targets to run each one of these code quality checkers:
 
-       $ ds-mk django.migrate
+:code:`make test.pylint`
+    Run pylint checker. Configuration file: :code:`.pylintrc` 
 
-#. Run services:
-   A. To run every service and attach to the output:
+:code:`make test.flake8`
+    Run flake8 checker. Configuration file: :code:`.flake8`.
+    Configuration can also be added in the :code:`setup.cfg` file.
 
-       .. code-block:: bash
+:code:`make test.pydocstyle`
+    Run pydocstyle checker. Configuration file: :code:`.pydocstyle`.
+    Configuration can also be added in the :code:`setup.cfg` file.
 
-           $ ds-mk start
+:code:`make test.eslint`
+    Run eslint checker.
 
-   B. To run every service as a daemon:
+Running unit Tests
+-----------
 
-       .. code-block:: bash
+Unit test are run using `pytest <https://docs.pytest.org/en/latest/>`_ and `karma
+<https://karma-runner.github.io/latest/index.html>`_.
 
-           $ ds-mk dev.up
+Run tests using:
 
-#. Install `designsafe.dev` CA certificates:
+    .. code-block::
 
-  * OSX
+        $ make test.unit
 
-    #. Open Keychain Access.
-    #. Go to `File > Import Items`.
-    #. Navigate to `<path_to_designsafe>/conf/nginx/certificates`.
-    #. Select `ca.pem`.
-    #. Search for designsafe and double click on `Designsafe CA`.
-    #. Click on Trust and select *"Trust Always"*.
-    #. Close the window to save.
+Python unit tests
+    Every module should have a submodule called :code:`tests` within which there should be a :code:`unit` and
+    :code:`integration` submodules. A regular module should look like this in the file system:
 
-#. Go to `https://designsafe.dev <https://designsafe.dev>`_.
+    .. code-block::
+
+        + designsafe
+          + apps
+            + sample_module
+              + tests
+                + unit
+                  - test_views.py
+                  - test_models.py
+                + integration
+
+    Test files **must** start with :code:`"test"`.
+
+Javsacript unit tests
+    Test files **must** end with :code:`".spec.js"`.
+
+Running integration Tests
+--------------------------
+
+.. warning::
+    As of Sept/2019 there are not integration tests and this section is a placeholder
+
+Integration test are run using `pytest <https://docs.pytest.org/en/latest/>`_ and `TestCafe
+<https://devexpress.github.io/testcafe/>`_.
+
+Run tests using:
+
+    .. code-block::
+
+        $ make test.integration
+
+Running end-to-end Tests
+--------------------------
+
+.. warning::
+    As of Sept/2019 there are not integration tests and this section is a placeholder
+
+Automated recurrent tasks
+==========================
+
+.. include:: makefile.rst
+
+Documentation
+==============
+
+Designsafe use `sphinx <https://www.sphinx-doc.org/en/master/contents.html>`_ to build it documentation. The `napoleon
+<https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html>`_, `sphinx-js
+<https://github.com/mozilla/sphinx-js>`_ and `sphinx-redoc <https://sphinxcontrib-redoc.readthedocs.io/en/stable/>`_
+plugins are enabled.
+
+It is recommended to go over the `rst quick reference
+<http://docutils.sourceforge.net/docs/user/rst/quickref.html#directives>`_.
+
+Python documenation
+--------------------
+
+Documenting python objects should be done in docstrings following `PEP 257 <https://www.python.org/dev/peps/pep-0257/>`_
+and either `sphinx's reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_ or
+`Google  <https://google.github.io/styleguide/pyguide.html>`_ or `Numpy
+<https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_ formatting. Designsafe does not enforce a
+specific docstring format.
+
+Make sure to go over `sphinx's python domain
+<https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#the-python-domain>`_ to better use all the
+directives. Designsafe's sphinx configuration sets python as the project's domain so you don't have to prepen python
+directives with :code:`py:`.
+
+REST API documentation
+-----------------------
+
+Desigsafe's REST API is documented in `Open API <https://openapis.org/>`_ spec in the file :code:`specs/api.yml`. Note
+that only the REST API details are documented using OpenAPI, the implementation details **must** be documented in the
+python code to keep one single source of documentation.
+
+Javascript documentation
+-------------------------
+
+Javascript objects **should** be docuemnted using `JSDoc <https://devdocs.io/jsdoc/>`_. There's a very handy `cheatsheet
+<https://devhints.io/jsdoc>`_. Designsafe uses `sphinx-js
+<https://github.com/mozilla/sphinx-js>`_ to render javascript's documentation. It is advisable to read Sphinx-JS
+`caveats <https://github.com/mozilla/sphinx-js#caveats>`_.
+
+Building documentation
+-----------------------
+
+To build Designsafe's documentation run::
+
+    $ make docs.build
+
+The previous command will run everything necessary to build the documentation. The output dir will be
+:code:`.docs/build/html`. The rendered documentation will also be available on `https://designsafe.dev/docs
+<https://designsafe.dev/docs>`_ in your development environment.

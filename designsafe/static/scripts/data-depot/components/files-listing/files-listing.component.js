@@ -1,8 +1,29 @@
+/**
+ * files listing
+ * @module data-depot/components/files-listing/files-listing.component
+ */
 import _ from 'underscore';
 import FilesListingTemplate from './files-listing.template.html';
 import FilesListingPublicTemplate from './files-listing.public.template.html';
 
 class FilesListingCtrl {
+    /**
+     * Files listing controller.
+     *
+     * Every file listing in the portal is handled by this controller.
+     * The idea is to give this controller a list of files and everything should be taken care automatically.
+     *
+     * .. rubric:: Examples
+     *
+     * .. code-block:: html
+     *
+     *    <files-list browser="$ctr.browser" files-list="$ctrl.files">&nbsp;</files-list>
+     *
+     * @param {Object} $state - Angular state.
+     * @param {Object} DataBrowserService - DataBrowserService.
+     * @param {Object} $stateParams - State params.
+     * @param {Object} $uibModal - $uibModal
+     */
     constructor($state, DataBrowserService, $stateParams, $uibModal){
         'ngInject';
         this.$state = $state;
@@ -61,6 +82,9 @@ class FilesListingCtrl {
         };
     }
 
+    /**
+     * Browse to a specific point in the breadcrumbs.
+     */
     breadcrumbBrowse($event, path) {
         if ($event) {
             $event.preventDefault();
@@ -173,7 +197,6 @@ class FilesListingCtrl {
                  experiment_re.test(file.name.toLowerCase())){
             return file.metadata.experiments[0].title;
         }
-        console.log(file.name);
         return file.name;
     }
 
@@ -231,6 +254,7 @@ class FilesListingCtrl {
       }
 }
 
+/** Main Files Listing Component. **/
 export const FilesListingComponent = {
     controller: FilesListingCtrl,
     controllerAs: '$ctrl',
@@ -242,6 +266,7 @@ export const FilesListingComponent = {
     },
 };
 
+/** Files Listing for public sections. **/
 export const FilesListingPublicComponent = {
     controller: FilesListingCtrl,
     controllerAs: '$ctrl',

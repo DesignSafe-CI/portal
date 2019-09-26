@@ -3,5 +3,4 @@
 # H101: Use TODO(NAME)
 ignore = E501, H101
 exclude = __pycache__,
-          tests.py,
           migrations

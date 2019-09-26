@@ -1,0 +1,48 @@
+openapi: "3.0.0"
+info:
+    title: Designsafe API
+    version: 1.0.0
+servers:
+    - url: https://designsafe-ci.org/api
+      description: Production server.
+    - url: http://designsafeci-dev.tacc.utexas.edu/api
+      description: Development server.
+paths:
+    /projects/listing/{username}:
+        get:
+            operationId: projects.listing.get
+            summary: List user's projects
+            parameters:
+                - name: username
+                  in: path
+                  required: false
+                  description: Username to get a list of projects.
+                  schema:
+                      type: String
+            reponses:
+                '200':
+                    description: |-
+                        200 response
+                    content:
+                        application/json:
+                            $ref: "#/components/schemas/projects"
+
+components:
+    schemas:
+        project:
+            type: object
+            required:
+                - id
+                - title
+                - pi
+            properties:
+                id:
+                    type: string
+                title:
+                    type: string
+                pi:
+                    type: string
+        projects:
+            type: array
+            items:
+                $ref: "#/components/schemas/project"

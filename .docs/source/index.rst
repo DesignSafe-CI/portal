@@ -7,12 +7,30 @@ Welcome to DesignSafe-CI's documentation!
 =========================================
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
+
+    local_setup
+    contributing
+    rest_api
+
+.. toctree:: 
+    :caption: Backend Internals
+    :maxdepth: 1
+
+    indexing_files
+    notifications
+    settings
+
+.. toctree:: 
+    :caption: Frontend Internals
+    :maxdepth: 1
+
+    files_listing
+
 
 .. toctree::
     :maxdepth: 1
 
-    contributing
     changelog
    
 

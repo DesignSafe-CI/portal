@@ -70,6 +70,7 @@ services:
       - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
       - ../../data/static:/var/www/designsafe-ci.org/static
       - ../../data/media:/var/www/designsafe-ci.org/media
+      - ../../.docs:/srv/www/designsafe/.docs
     links:
       - django:django
     ports:

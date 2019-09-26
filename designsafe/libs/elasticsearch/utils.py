@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 # pylint: disable=too-many-locals
 @python_2_unicode_compatible
 def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False, paths_to_ignore=[]):
-    """Walk a pth in an Agave storgae system.
+    """Walk a path in an Agave storgae system.
 
     This generator will walk an agave storage system and return a tuple with
     the root path, a list of folder and a list of files. This function is more

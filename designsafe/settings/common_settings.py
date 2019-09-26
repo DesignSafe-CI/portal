@@ -1,5 +1,7 @@
-"""
-Django settings for designsafe project.
+""" Django settings for designsafe project.
+
+.. module:: designsafe.settings.common_settings
+    :synopsis: Designsafe's settings.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/2.2/topics/settings/
@@ -20,7 +22,6 @@ from .external_resource_settings import *  # noqa:F403, F401
 from .celery_settings import *  # noqa:F403, F401
 from .nees_settings import NEES_USER_DATABASE  # noqa:F401
 
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SITE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -31,6 +32,7 @@ SITE_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__CHANGE_ME_!__')
 
 # SESSIONS
+#: Session cookie domain
 SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
 # SESSION_ENGINE = 'redis_sessions.session'
 # SESSION_REDIS_HOST = 'redis'
@@ -370,7 +372,6 @@ WS4REDIS_CONNECTION = {
 WS4REDIS_EXPIRE = 0
 
 # Analytics
-#
 GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', False)
 
 # Google Site Verification
@@ -411,6 +412,8 @@ AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'tru
 DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
 DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
 
+#: Every project is created using this base template.
+#: .. todo:: This should be upgrade to use the Key API.
 PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'id': 'project-{}',
     'site': 'tacc.utexas.edu',

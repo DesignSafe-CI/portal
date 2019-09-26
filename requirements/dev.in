@@ -4,6 +4,7 @@ docutils
 flake8
 ipdb
 isort
+pydocstyle
 pylint
 pylint-django
 pytest

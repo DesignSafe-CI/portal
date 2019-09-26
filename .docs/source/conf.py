@@ -50,6 +50,7 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinxcontrib.openapi',
     'sphinxcontrib.redoc',
+    'sphinx_js',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -194,3 +195,15 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+redoc = [
+    {
+        "name": "Designsafe API",
+        "page": "rest/api",
+        "spec": "../../specs/api.yml",
+    }
+]
+
+js_source_path = "../../designsafe/static/scripts"
+
+uatodoc_mock_imports = ["cms"]

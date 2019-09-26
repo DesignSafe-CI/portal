@@ -63,3 +63,4 @@ Sphinx
 sphinx-rtd-theme
 sphinxcontrib-openapi
 sphinxcontrib-redoc
+sphinx-js
