@@ -1,5 +1,18 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.7.0-20190906
+
+Improvements:
+
+- User profile updates.
+- Failed jobs will now archive.
+
+
+Fixes:
+
+- Publication pipeline fixes.
+
+
 ## v4.7.0-20190905
 
 * Make sure to get project DOI if no entity uuid is given.
@@ -50,7 +63,7 @@
 * Close dropdowns by default in older publication template - DES-1210
 * Add recurring task for community data indexing - DES-1211
 * Enable selection boxes for published area - DES-1219
-* Fix breadcrumbs href creation - DES-1218 
+* Fix breadcrumbs href creation - DES-1218
 * Check for datetime obj or date string when setting creation date - DES-1253
 * Update node-sass version for compatibility with Node 12 - DES-1206
 * Add field recon to publication filter checklist - DES-1209
@@ -72,7 +85,7 @@
 
 ## v4.5.0-20190802
 
-Fixes: 
+Fixes:
 
 - Remove placeholder text (DES-976).
 - Allow for more than one Natural Hazard Type (DES-974).
