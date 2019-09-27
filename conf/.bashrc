@@ -6,3 +6,5 @@ else
         source /home/tg458981/portal_env/bin/activate
     fi
 fi
+
+export PATH=$PATH:/home/tg458981/.npm-global/bin

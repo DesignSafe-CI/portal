@@ -74,8 +74,8 @@ preferred to use the jira task after `task/` but any significant string can be u
 
 Bug fixes should be developed in a branch with a `bug/` prefix.
 
-Git workflow
-=============
+Git workflow (Submitting PRs)
+==============================
 
 Designsafe follows a git workflow based off of the `cactus workflow
 <https://barro.github.io/2016/02/a-succesful-git-branching-model-considered-harmful/>`_ with some small differences.
@@ -110,6 +110,32 @@ Steps to create, work and merge bug fix branches:
 6. If master advances further and the PR has to be updated it is better to reset the `bug` branch to before merging
    `master` and merge the updated `master`.
 7. Merge the PR into `master` and do a bug release.
+
+Githooks
+----------
+
+Designsafe recommends using a :code:`pre-commit` and :code:`pre-push` hook. You can use the ones in this repository at
+:code:`.github/hooks/`:
+
+.. rubric:: Pre-commit hook.
+
+.. include:: ../../.github/hooks/pre-commit
+   :code: bash
+
+
+.. rubric:: Pre-push hook.
+
+.. include:: ../../.github/hooks/pre-push
+   :code: bash
+
+Reviewing Pull Requests
+========================
+
+When reviewing Pull Requests is recommended to add the following template to your `github replies
+<https://help.github.com/en/articles/using-saved-replies>`_:
+
+.. include:: ../../.github/review_template.md
+   :code: bash
 
 Development environment setup
 ==============================
@@ -159,7 +185,7 @@ Designsafe runs multiple tests when a PR is submitted.
 - **End-to-end Tests:** Must verify the correct functionality of Designsafe from the user's point of view.
 
 Running quality tests
---------------
+-----------------------
 
 Designsafe use `pylint <https://www.pylint.org>`_ (with `django-pylint <https://github.com/PyCQA/pylint-django>`_
 plugin), `flake8 <http://flake8.pycqa.org/en/latest/>`_, `pydocstyle <http://www.pydocstyle.org/en/4.0.0/>`_ and `eslint
@@ -182,7 +208,7 @@ The included :code:`Makefile` includes targets to run each one of these code qua
     Run eslint checker.
 
 Running unit Tests
------------
+-------------------
 
 Unit test are run using `pytest <https://docs.pytest.org/en/latest/>`_ and `karma
 <https://karma-runner.github.io/latest/index.html>`_.

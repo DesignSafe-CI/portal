@@ -84,6 +84,7 @@ class FilesListingCtrl {
 
     /**
      * Browse to a specific point in the breadcrumbs.
+     * @function
      */
     breadcrumbBrowse($event, path) {
         if ($event) {
@@ -176,7 +177,7 @@ class FilesListingCtrl {
     }
 
     scrollToBottom() {
-        return this.DataBrowserService.scrollToBottom({queryString: this.$stateParams.query_string});
+        return this.DataBrowserService.scrollToBottom({ queryString: this.$stateParams.query_string });
     }
 
     renderName(file) {
@@ -211,50 +212,52 @@ class FilesListingCtrl {
     getType(meta) {
         if (typeof meta.dataType != 'undefined' && meta.dataType != 'None') {
             return meta.dataType;
-        } else {
-            return meta.type;
-        }
+        } 
+        return meta.type;
+        
     }
 
     showDescription(title, description) {
         var modal = this.$uibModal.open({
-          component: 'publicationDescriptionModalComponent',
-          resolve: {
-            title: () => title,
-            description: () => description,
-          },
-          size: 'lg'
+            component: 'publicationDescriptionModalComponent',
+            resolve: {
+                title: () => title,
+                description: () => description,
+            },
+            size: 'lg'
         });
-      }
-      areFiltersEmpty() {
-          let noneToggled = true;
-          for (const key of Object.keys(this.state.type_filters)) {
-              if (this.state.type_filters[key]) {
-                  noneToggled = false;
-              }
-          }
-          if (noneToggled) {
-              return true;
-          }
-          return false;
-      }
-      typeFilter(item, x, y) {
-          if (this.areFiltersEmpty()) {
-              return true;
-          }
-          if (item.metadata && this.state.type_filters['nees']) {
-              return true;
-          }
-          return this.state.type_filters[(item.meta || {}).type]; 
-      }
-      clearFilters() {
-          for (const key of Object.keys(this.state.type_filters)) {
-              this.state.type_filters[key] = false;
-          }
-      }
+    }
+    areFiltersEmpty() {
+        let noneToggled = true;
+        for (const key of Object.keys(this.state.type_filters)) {
+            if (this.state.type_filters[key]) {
+                noneToggled = false;
+            }
+        }
+        if (noneToggled) {
+            return true;
+        }
+        return false;
+    }
+    typeFilter(item, x, y) {
+        if (this.areFiltersEmpty()) {
+            return true;
+        }
+        if (item.metadata && this.state.type_filters['nees']) {
+            return true;
+        }
+        return this.state.type_filters[(item.meta || {}).type]; 
+    }
+    clearFilters() {
+        for (const key of Object.keys(this.state.type_filters)) {
+            this.state.type_filters[key] = false;
+        }
+    }
 }
 
-/** Main Files Listing Component. **/
+/** Main Files Listing Component.
+ * @constant
+ **/
 export const FilesListingComponent = {
     controller: FilesListingCtrl,
     controllerAs: '$ctrl',
@@ -266,7 +269,9 @@ export const FilesListingComponent = {
     },
 };
 
-/** Files Listing for public sections. **/
+/** Files Listing for public sections.
+ * @constant
+**/
 export const FilesListingPublicComponent = {
     controller: FilesListingCtrl,
     controllerAs: '$ctrl',

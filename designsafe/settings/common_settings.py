@@ -2,12 +2,6 @@
 
 .. module:: designsafe.settings.common_settings
     :synopsis: Designsafe's settings.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/2.2/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 # -*- coding: utf-8 -*-
 
@@ -413,7 +407,10 @@ DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
 DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
 
 #: Every project is created using this base template.
-#: .. todo:: This should be upgrade to use the Key API.
+#:
+#: .. todo::
+#:     This should be upgrade to use the Key API.
+#:
 PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'id': 'project-{}',
     'site': 'tacc.utexas.edu',

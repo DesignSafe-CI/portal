@@ -204,6 +204,21 @@ redoc = [
     }
 ]
 
-js_source_path = "../../designsafe/static/scripts"
+
+root_for_relative_js_paths = "/srv/www/designsafe/designsafe/static/scripts"
+
+js_source_path = []
+
+def walk_folders(paths, js_root):
+    """Walk folders."""
+    for root, dirs, files in os.walk(js_root):
+        for dir_name in dirs:
+            paths.append(
+                os.path.join(root, dir_name)
+            )
+            walk_folders(paths, os.path.join(root, dir_name))
+
+walk_folders(js_source_path, root_for_relative_js_paths)
+js_source_path = list(set(js_source_path))
 
 uatodoc_mock_imports = ["cms"]

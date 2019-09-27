@@ -18,21 +18,21 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     This consumer will accept any connection from a user that's authenticated.
     A group with the user's username will be created. We create a group
     because a single user could have multiple connections opened (multiple tabs opened).
-    Every time a user created a connection django channels creates a unique channel (`channel_name`).
-    This `channel_name` should only be used by django channels' internals. This is the reason
+    Every time a user created a connection django channels creates a unique channel (:code:`channel_name`).
+    This :code:`channel_name` should only be used by django channels' internals. This is the reason
     why we create a group with the user's username. If we need to send a message to the user
-    we use the group channel and we don't have to use the internal unique `channel_name`.
+    we use the group channel and we don't have to use the internal unique :code:`channel_name`.
 
     .. note::
 
         This consumer will automatically add a user to two channel groups:
         - A channel group with the user's username as name.
-        - A channel group named `"broadcast"`.
+        - A channel group named :code:`"broadcast"`.
 
-    .. example::
+    .. rubric:: Example
 
-        If a message needs to be sent to the user then we can do this:
-        ```python
+    If a message needs to be sent to the user then we can do this::
+
         >>> from channels.layers import get_channel_layer
         >>> channel_layer = get_channel_layer()
         >>> channel_layer.group_send({
@@ -42,11 +42,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         ...         "message": {}
         ...     }
         ... )
-        ```
 
-        Use `"broadcast"` channel group to send a message
-        to every connected user.
-        For more information see :meth:`receive`
+    Use :code:`"broadcast"` channel group to send a message
+    to every connected user.
+    For more information see :meth:`receive`
 
     """
     groups = ["broadcast"]

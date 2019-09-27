@@ -1586,9 +1586,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
             }
             };
 
-          /**
-           * Cancel and close upload dialog.
-           */
           $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
           };

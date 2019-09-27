@@ -20,8 +20,9 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False, path
     :param str path: path to walk
     :param bool bottom_up:if ``True`` walk the path bottom to top.
 
-    :returns: (<str root_path>, [<``BaseFile`` folders>],
-        [<``BaseFile`` files>])
+    :returns: (<str root_path>,
+        [<:class:`~designsafe.apps.data.models.agave.files.BaseFileResource` folders>],
+        [<:class:`~designsafe.apps.data.models.agave.files.BaseFileResource` files>])
     :rtype: tuple
 
     .. note::

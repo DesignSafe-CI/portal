@@ -13,3 +13,5 @@
     - <A list of changes, if needed>
 - Testing Instructions:
     - A list of testing instructions.
+- Screen shots:
+    - Add any supporting screen shots. Usually needed when the changes affect the front-end.

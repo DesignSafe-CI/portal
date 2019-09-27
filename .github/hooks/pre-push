@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# hook to run tests before pushig
+# 
+
+#NOTE: Update this if you are using something else. is there a way to generalize this?
+TEST_CMD="make test.quality && make test.unit"
+
+# get commits to push
+commits=`git log @{u}..`
+res=$?
+# if no commits (i.e. rebase) don't do anything
+if [ -z "$commits" ] && [ $res -eq 0 ]; then
+    exit 0
+fi
+
+if [ $res -eq 0 ]; then
+    echo "There was an error checking the upstream branch. Please see message above. Test will run anyway."
+fi
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+# Use this if if you want to only check test for a specific branch e.g. 'master'
+#if [[ $current_branch = 'master' ]]; then
+
+$TEST_CMD 
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+    echo "failed $CMD"
+    exit 1
+fi
+
+exit 0

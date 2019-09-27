@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# Hook to check that we're not commiting files
+# with some unnecessary things:
+#   * ipdb executions: 'ipdb.set_trace()'
+#   * stdout print statements: 'print(?' 
+#   * javascript console.log: 'console.log' 
+#   * conflict strings: '<<<<<<<'
+#
+
+#redirect output to stderr.
+exec 1>&2
+
+FILES_PATTERN='\.(py|js)$'
+
+regexes='ipdb\.set_trace()\|console\.log\|<<<<<<<'
+REPO_PATH=`git rev-parse --show-toplevel`
+REPO_PATH_ESCAPED=${REPO_PATH//\//\\\/}
+
+FILE_NAMES=`git diff --cached --name-only | grep -E $FILES_PATTERN`
+
+if [ -z "$FILE_NAMES" ]; then
+    exit 0
+fi
+
+git diff --cached --name-only | \
+    grep -E $FILES_PATTERN | \
+    sed -e "s/^/$REPO_PATH_ESCAPED\//" | 
+    xargs grep --color --with-filename -n "$regexes" && \
+    echo "Remove unecessary strings before commiting." && \
+    exit 1
+
+exit 0

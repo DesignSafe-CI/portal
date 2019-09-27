@@ -1,0 +1,7 @@
+- [ ] I read and understood the code.
+- [ ] I read and understood the documentation (if included).
+- [ ] I made sure any private documentation was written (if needed).
+- [ ] I made sure quality, unit, integration and end-to-end tests passed (if needed).
+- [ ] I ran and tested the code (list steps followed to run and test the code):
+    - Step 1
+    - Step 2
