@@ -3,7 +3,7 @@
     <div ng-if="!$ctrl.ui.loading">
         <div>
             <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
-            <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
+            <a class="edit-link" ng-click="$ctrl.editProject($event)" ng-if="!$ctrl.readOnly">Edit Project</a>
             <!-- <a class="curation-download" data-ng-if="$ctrl.readOnly" ng-click="$ctrl.download()"></a> -->
         </div>
         <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
@@ -269,7 +269,7 @@
                         </strong>
                         <strong style="display:inline-block; width:78%;"
                                 data-ng-if="$ctrl.readOnly">
-                            {{ experiment.doi }}
+                            {{ mission.doi }}
                         </strong>
                         <div style="display:inline-block; width:20%;">License(s)</div>
                         <strong style="display:inline-block; width:78%;"
@@ -291,12 +291,6 @@
                         <p>
                             <br>{{ mission.value.description }}
                         </p>
-                        <div class="preview-tree-btn-wrapper">
-                            <button class="btn btn-link"
-                                    data-ng-click="$ctrl.treeDiagram(mission)">
-                                View Related Diagram
-                            </button>
-                        </div>
                 <!-- Research Reports -->
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, report)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
