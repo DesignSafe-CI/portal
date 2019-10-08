@@ -1,12 +1,21 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.7.1 [2019-10-08]
+
+Improvements:
+
+- Failed jobs will now archive.
+
+Fixes:
+
+- Publication pipeline fixes.
+
 ## v4.7.0-20190906
 
 Improvements:
 
 - User profile updates.
 - Failed jobs will now archive.
-
 
 Fixes:
 
