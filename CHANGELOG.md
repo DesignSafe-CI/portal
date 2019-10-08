@@ -1,5 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.7.2 [2019-10-08]
+
+* fix(publication): Field Research Template fixes
+* feat: Add manage account to user menu dropdown
+
 ## v4.7.1 [2019-10-08]
 
 Improvements:
@@ -28,7 +33,7 @@ Fixes:
 
 ## v4.6.4 [2019-09-12]
 
-* Fix typo in Fownload citation button.
+* Fix typo in Download citation button.
 
 ## v4.6.3 [2019-09-11]
 
