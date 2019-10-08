@@ -29,6 +29,7 @@
           </button>
           <ul class="dropdown-menu">
             <li><a href="{% url 'designsafe_dashboard:index' %}">My Dashboard</a></li>
+            <li><a href="{% url 'designsafe_accounts:index' %}">Manage Account</a></li>
             <li><a href="{% url 'designsafe_notifications:index' %}">Notifications</a></li>
             <li><a href="{% url 'djangoRT:mytickets' %}">My Tickets</a></li>
             {% if user|has_group:'Rapid Admin' %}
