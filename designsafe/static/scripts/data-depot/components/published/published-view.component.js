@@ -99,6 +99,14 @@ class PublishedViewCtrl {
                         this.browser.publication.exp_outputs.forEach(this.getFileObjs);
                         this.browser.publication.sim_substructures.forEach(this.getFileObjs);
                         this.browser.publication.sim_outputs.forEach(this.getFileObjs);
+                    } else if (this.browser.publication.project.value.projectType === 'field_recon') {
+                        if (typeof this.browser.publication.analysiss != 'undefined') {
+                            this.browser.publication.analysiss.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.reports != 'undefined') {
+                            this.browser.publication.reports.forEach(this.getFileObjs);
+                        }
+                        this.browser.publication.collections.forEach(this.getFileObjs);
                     }
 
                     //add metadata to header
@@ -141,6 +149,10 @@ class PublishedViewCtrl {
             this.browser.project.report_set = this.browser.publication.reports;
         }
         if (this.project.value.projectType === 'field_recon'){
+            this.browser.project.mission_set = this.browser.publication.missions;
+            this.browser.project.collection_set = this.browser.publication.collections;
+            this.browser.project.analysis_set = this.browser.publication.analysiss;
+            this.browser.project.report_set = this.browser.publication.reports;
         }
     }
 
