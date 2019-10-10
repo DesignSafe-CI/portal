@@ -28,10 +28,19 @@ class PublicationsSearchManager(BaseSearchManager):
         super(PublicationsSearchManager, self).__init__(
             IndexedPublication, Search())
 
-    def construct_query(self, system=None, file_path=None):
+    def construct_query(self, system=None, file_path=None, **kwargs):
 
         published_index_name = Index('des-publications').get_alias().keys()[0]
         legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
+        logger.debug(kwargs)
+        filter_queries = []
+        if kwargs['type_filters']:
+            for type_filter in kwargs['type_filters']:
+                if type_filter == 'nees':
+                    type_query = Q({'term': {'_index': legacy_index_name}})
+                else:
+                    type_query = Q('term', **{'project.value.projectType._exact': type_filter})
+                filter_queries.append(type_query)
 
         published_query = Q(
             'bool',
@@ -42,6 +51,7 @@ class PublicationsSearchManager(BaseSearchManager):
                     Q({'term': {'_index': legacy_index_name}})
                 ])
             ],
+            should=filter_queries,
             must_not=[
                 Q('term', status='unpublished'),
                 Q('term', status='saved')
@@ -53,9 +63,9 @@ class PublicationsSearchManager(BaseSearchManager):
     def listing(self, system=None, file_path=None, offset=0, limit=100, **kwargs):
         """Perform the search and output in a serializable format."""
 
-        query = self.construct_query(system, file_path)
+        query = self.construct_query(system, file_path, **kwargs)
         listing_search = Search()
-        listing_search = listing_search.query(query).sort('_index')
+        listing_search = listing_search.filter(query).sort('_index')
         listing_search = listing_search.extra(from_=offset, size=limit)
         res = listing_search.execute()
         children = []

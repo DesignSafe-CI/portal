@@ -829,7 +829,7 @@ function config(
             },
         })
         .state('publicData', {
-            url: '/public/',
+            url: '/public/?typeFilters&query_string',
             component: 'dataDepotPublicationsBrowser',
             params: {
                 systemId: 'nees.public',
@@ -840,7 +840,7 @@ function config(
                     return {
                         fileMgr: 'public',
                         baseUrl: '/api/public/files',
-                        searchState: 'publicDataSearch',
+                        searchState: 'publicData',
                     };
                 },
                 path: ($stateParams)=>{

@@ -48,6 +48,7 @@ class DataDepotBrowserCtrl {
             system: this.$stateParams.systemId,
             path: this.path}, {
             query_string: this.$stateParams.query_string,
+            typeFilters: this.$stateParams.typeFilters,
             offset: this.$stateParams.offset,
             limit: this.$stateParams.limit,
         }).then(setupListing);

@@ -13,7 +13,7 @@ from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicat
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 
 
-LOG = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class PublicationsManager(AgaveFileManager):
@@ -27,10 +27,19 @@ class PublicationsManager(AgaveFileManager):
         """
         return False
 
-    def construct_query(self):  # pylint: disable=no-self-use
+    def construct_query(self, **kwargs):  # pylint: disable=no-self-use
         """Construct ES query."""
         published_index_name = Index('des-publications').get_alias().keys()[0]
         legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
+
+        filter_queries = []
+        if kwargs['type_filters']:
+            for type_filter in kwargs['type_filters']:
+                if type_filter == 'nees':
+                    type_query = Q({'term': {'_index': legacy_index_name}})
+                else:
+                    type_query = Q('term', **{'project.value.projectType._exact': type_filter})
+                filter_queries.append(type_query)
 
         published_query = Q(
             'bool',
@@ -40,6 +49,7 @@ class PublicationsManager(AgaveFileManager):
                     Q({'term': {'_index': legacy_index_name}})
                 ])
             ],
+            should=filter_queries,
             must_not=[
                 Q('term', status='unpublished'),
                 Q('term', status='publishing'),
@@ -51,9 +61,9 @@ class PublicationsManager(AgaveFileManager):
 
     def listing(self, system=None, file_path=None, offset=0, limit=100, **kwargs):
         """Wrap the search result in a BaseFile object for serializtion."""
-        query = self.construct_query()
+        query = self.construct_query(**kwargs)
         listing_search = Search()
-        listing_search = listing_search.query(query).sort(
+        listing_search = listing_search.filter(query).sort(
             '_index',
             {'project._exact': {'order': 'asc', 'unmapped_type': 'keyword'}},
             {'created': {'order': 'desc', 'unmapped_type': 'long'}}

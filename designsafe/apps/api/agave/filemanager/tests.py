@@ -147,7 +147,7 @@ class TestPublicationsManager(TestCase):
     @patch('designsafe.apps.api.agave.filemanager.publications.Search')
     def test_listing(self, mock_search, mock_pub, mock_leg_pub):
         fm = PublicationsManager(None) 
-        mock_search().query().sort().extra().execute.return_value = [
+        mock_search().filter().sort().extra().execute.return_value = [
             IndexedPublication(projectId='PRJ-XXX'),
             IndexedPublicationLegacy()
         ]
@@ -155,7 +155,7 @@ class TestPublicationsManager(TestCase):
         mock_pub().to_file.return_value = {'type': 'pub'}
         mock_leg_pub().to_file.return_value = {'type': 'leg_pub'}
 
-        res = fm.listing()
+        res = fm.listing(**{'type_filters': []})
         expected_result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
             'name': '$SEARCH',

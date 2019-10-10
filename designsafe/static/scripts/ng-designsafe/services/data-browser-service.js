@@ -38,13 +38,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     showPreviewListing: false,
     ui: {},
     tests: null,
-    type_filters: {
-      experimental: false,
-      simulation: false,
-      hybrid: false,
-      nees: false,
-      other: false
-    }
   };
 
   var projectBreadcrumbSubject = new Subject();
@@ -258,7 +251,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     if (options.page){
       offset += limit * options.page;
     }
-    var params = {limit: limit, offset: offset, query_string: options.queryString};
+    var params = {limit: limit, offset: offset, query_string: options.queryString, typeFilters: options.typeFilters};
     return FileListing.get(options, apiParams, params).then(function (listing) {
       select([], true);
       currentState.busy = false;
@@ -1996,10 +1989,12 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     }
     currentState.page += 1;
     currentState.loadingMore = true;
+    console.log(params.typeFilters)
     return browsePage({system: currentState.listing.system,
                 path: currentState.listing.path,
                 page: currentState.page,
-                queryString: (params || {}).queryString
+                queryString: (params || {}).queryString,
+                typeFilters: (params || {}).typeFilters
                 })
     .then(function(listing){
         currentState.loadingMore = false;

@@ -162,7 +162,7 @@ class TestPublicationSearchMgr(TestCase):
         request.username = 'test_user'
 
         fm = PublicationsSearchManager(request) 
-        mock_search().query().sort().extra().execute.return_value = [
+        mock_search().filter().sort().extra().execute.return_value = [
             IndexedPublication(projectId='PRJ-XXX'),
             IndexedPublicationLegacy()
         ]
@@ -170,7 +170,7 @@ class TestPublicationSearchMgr(TestCase):
         mock_pub().to_file.return_value = {'type': 'pub'}
         mock_leg_pub().to_file.return_value = {'type': 'leg_pub'}
 
-        res = fm.listing()
+        res = fm.listing(**{'type_filters': []})
         expected_result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
             'name': '$SEARCH',
