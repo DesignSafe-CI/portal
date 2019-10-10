@@ -194,11 +194,10 @@ class DataDepotPublishedView(TemplateView):
         context['projectId'] = pub.projectId
         context['citation_title'] = pub.project.value.title
         context['citation_date'] = pub.created
-        #new version:
-        context['doi'] = pub.project.value.dois[0]
-        #old version:
-        #context['doi'] = pub.project.doi
-
+        if pub.project.value.to_dict().has_key('dois'):
+            context['doi'] = pub.project.value.dois[0]
+        if pub.project.to_dict().has_key('doi'):
+            context['doi'] = pub.project.doi
         context['keywords'] = pub.project.value.keywords.split(',')
         context['authors'] = [{
             'full_name': '{last_name}, {first_name}'.format(
