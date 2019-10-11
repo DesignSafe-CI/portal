@@ -136,6 +136,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
             coordinator_set: 'Coordinator',
             simsubstructure_set: 'Simulation Substructure',
             expsubstructure_set: 'Experimental Substructure',
+            collection_set: 'Collection',
         };
         let requiredSets = [];
         let expSets = [];
@@ -153,7 +154,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 'expsubstructure_set',
             ];
         } else if (project.value.projectType === 'field_recon') {
-            requiredSets = ['collection_set', 'mission_set'];
+            requiredSets = ['collection_set'];
         }
         requiredSets.forEach((set) => {
             if (set in project) {
