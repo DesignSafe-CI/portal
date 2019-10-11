@@ -8,6 +8,17 @@
                 {{entityTag}}
             </div>
             <div style="width:100%;" class="file-tag-list">
+                <table class="file-tag-item file-tag-table" data-ng-repeat="parent in $ctrl.file._parent._entities">
+                    <tr style="vertical-align: top;">
+                        <td>
+                            <div class="file-category-label" style="width:50%;">
+                                <span class="label curation" data-ng-class="parent.cssClasses()['tag']">
+                                    {{ parent.value.title }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
                 <table class="file-tag-item file-tag-table" data-ng-repeat="entity in $ctrl.file._entities">
                     <tr style="vertical-align: top;">
                         <td style="width:49%;">
