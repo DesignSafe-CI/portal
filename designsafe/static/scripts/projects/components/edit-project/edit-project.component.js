@@ -141,7 +141,7 @@ class EditProjectCtrl {
                     this.setOrder(this.form.associatedProjects);
                 }
             } else {
-                this.form.associatedProjects = new Array (1);
+                this.form.associatedProjects = [{name: this.project.value.associatedProjects, number: ''}];
             }
             // pi
             this.UserService.get(this.project.value.pi).then((user) => {
@@ -186,16 +186,17 @@ class EditProjectCtrl {
                 if (this.project.value.nhEventEnd) {
                     this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                 }
-                this.form.nhTypes = this.project.value.nhTypes;
+                if (this.project.value.nhTypes.length > 0) {
+                    this.form.nhTypes = this.project.value.nhTypes;
+                } else {
+                    this.form.nhTypes = new Array (1);
+                }
             }
         }
         this.UserService.authenticate().then((u) => {
             this.form.creator = u;
         });
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
-        if (this.form.projectType == 'field_recon' && !this.form.nhTypes) {
-            this.form.nhTypes = [null];
-        }
     }
 
     searchUsers(q) {
@@ -309,7 +310,12 @@ class EditProjectCtrl {
             projectData.nhEventEnd = this.form.nhEventDateEnd;
         }
         if (this.form.nhTypes) {
-            projectData.nhTypes = this.form.nhTypes;
+            projectData.nhTypes = [];
+            this.form.nhTypes.forEach((nh) => {
+                if (typeof(nh) === 'string') {
+                    projectData.nhTypes.push(nh);
+                }
+            });
         }
 
         // move this to the back end ------------------------------------------------------->
