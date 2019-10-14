@@ -131,7 +131,7 @@ class EditProjectCtrl {
                 this.project.value.associatedProjects.forEach((aprj) => {
                     if (typeof aprj != 'object') {
                         if (aprj) {
-                            this.form.associatedProjects = [{name: '', number: aprj}];
+                            this.form.associatedProjects = [{title: '', href: aprj}];
                         }
                     } else {
                         this.form.associatedProjects.push(aprj);
@@ -141,7 +141,7 @@ class EditProjectCtrl {
                     this.setOrder(this.form.associatedProjects);
                 }
             } else {
-                this.form.associatedProjects = [{name: this.project.value.associatedProjects, number: ''}];
+                this.form.associatedProjects = [{title: '', href: ''}];
             }
             // pi
             this.UserService.get(this.project.value.pi).then((user) => {
@@ -352,9 +352,10 @@ class EditProjectCtrl {
             i = this.form.awardNumber.length;
             this.form.awardPrune = [];
             while(i--) {
-                if (typeof this.form.awardNumber[i] == 'undefined') {
+                if (typeof this.form.awardNumber[i] === 'undefined') {
                     this.form.awardNumber.splice(i, 1);
-                } else if (!this.form.awardNumber[i].name.length && !this.form.awardNumber[i].number.length ) {
+                } else if (typeof this.form.awardNumber[i].name === 'undefined' &&
+                           typeof this.form.awardNumber[i].number === 'undefined' ) {
                     this.form.awardNumber.splice(i, 1);
                 } else {
                     this.form.awardPrune.push(this.form.awardNumber[i]);
@@ -363,9 +364,10 @@ class EditProjectCtrl {
             i = this.form.associatedProjects.length;
             this.form.workPrune = [];
             while(i--) {
-                if (typeof this.form.associatedProjects[i] == 'undefined') {
+                if (typeof this.form.associatedProjects[i] === 'undefined') {
                     this.form.associatedProjects.splice(i, 1);
-                } else if (!this.form.associatedProjects[i].title.length && !this.form.associatedProjects[i].href.length ) {
+                } else if (typeof this.form.associatedProjects[i].title === 'undefined' &&
+                           typeof this.form.associatedProjects[i].href === 'undefined' ) {
                     this.form.associatedProjects.splice(i, 1);
                 } else {
                     this.form.workPrune.push(this.form.associatedProjects[i]);
