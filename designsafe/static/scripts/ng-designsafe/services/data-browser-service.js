@@ -42,6 +42,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       experimental: false,
       simulation: false,
       hybrid: false,
+      recon: false,
       nees: false,
       other: false
     }

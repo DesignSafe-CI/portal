@@ -189,6 +189,12 @@ class FilesListingCtrl {
         if (typeof meta.dataType != 'undefined' && meta.dataType != 'None') {
             return meta.dataType;
         } else {
+            if (meta.type === 'field_recon') {
+                return 'Field Research';
+            }
+            if (meta.type === 'hybrid_simulation') {
+                return 'Hybrid Simulation';
+            }
             return meta.type;
         }
     }
