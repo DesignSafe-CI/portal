@@ -102,7 +102,7 @@
                 </div>
                 <div data-ng-if="! $ctrl.browser.busy &&
                                  ! $ctrl.browser.error &&
-                                 ($ctrl.listing().children|length) === 0"
+                                 ($ctrl.listing().children.length) === 0"
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"
                 >
@@ -117,7 +117,7 @@
                             Learn how to move files to a project
                         </a>
                     </p>
-                    <p class="lead" style="margin-top:20px" ng-if="$ctrl.categorySelect() || $ctrl.categoryList()">
+                    <p class="lead" style="margin-top:20px" ng-if="!$ctrl._ui.showSelect">
                         There are no files under this category. <br />
                         <i class="fa fa-file-text-o">&nbsp;</i><br/>
                     </p>
