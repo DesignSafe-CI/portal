@@ -200,7 +200,7 @@
                     </div>
                 </tr>
                 <tr class="tg-0lax">
-                    <span ng-disabled="true">
+                    <!-- <span ng-disabled="true">
                         <input  class="project-form-input project-form-name"
                                 type="text"
                                 id="id_creator"
@@ -208,21 +208,20 @@
                                 placeholder="{{$ctrl.formatSelection($ctrl.form.creator)}}"
                                 ng-disabled="true"
                         >
-                    </span>
+                    </span> -->
                     <span ng-repeat="(i, usr) in $ctrl.form.team track by $index">
                         <input  class="project-form-input project-form-name"
                                 type="text"
                                 id="id_user"
                                 name="user"
                                 autocomplete="username"
-                                ng-style="{'float': $even ? 'right' : 'none'}"
+                                ng-style="{'float': $odd ? 'right' : 'none'}"
                                 ng-model="$ctrl.form.team[i]"
                                 placeholder="Lookup user by name or email address"
                                 uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
                                 typeahead-loading="searching"
                                 typeahead-input-formatter="$ctrl.formatSelection(usr)"
                                 typeahead-template-url="itemTmpl.html"
-                                ng-hide="$ctrl.form.creator.username === usr.username"
                         >
                     </span>
                     <div>
