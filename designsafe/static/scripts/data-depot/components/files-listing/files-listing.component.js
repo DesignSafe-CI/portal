@@ -92,8 +92,11 @@ class FilesListingCtrl {
             $event.stopPropagation();
         }
         let systemId = file.system || file.systemId;
+        let stateName = this.$state.current.name;
         let filePath;
-        if (file.path == '/') {
+        if (stateName === 'googledriveData') {
+            filePath = file.id;
+        } else if (file.path == '/') {
             filePath = file.path + file.name;
         } else {
             filePath = file.path;
@@ -103,7 +106,6 @@ class FilesListingCtrl {
                 file, this.browser.listing
             );
         }
-        let stateName = this.$state.current.name;
         let version = 1;
         if (file.system === 'nees.public') {
             stateName = 'neesPublished';
@@ -115,7 +117,7 @@ class FilesListingCtrl {
         }
         return this.$state.go(
             stateName,
-            { 
+            {
                 systemId: systemId,
                 filePath: filePath,
                 version: version,
@@ -222,7 +224,7 @@ class FilesListingCtrl {
           if (item.metadata && this.state.type_filters['nees']) {
               return true;
           }
-          return this.state.type_filters[(item.meta || {}).type]; 
+          return this.state.type_filters[(item.meta || {}).type];
       }
       clearFilters() {
           for (const key of Object.keys(this.state.type_filters)) {
