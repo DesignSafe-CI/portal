@@ -106,20 +106,23 @@
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"
                 >
-                    <p class="lead" style="margin-top:20px" ng-if="$ctrl._ui.showSelect">
+                    <p class="lead" style="margin-top:20px" ng-if="$ctrl.listing().type">
                         This folder is empty! <br />
                         <i class="fa fa-folder-open-o">&nbsp;</i><br/>
                         <a data-ng-if="$ctrl.listing().system.indexOf('project-') == 0"
                            href="https://www.youtube.com/watch?v=ISrPManDVCYi&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
                            target="_blank"
                         >
-                            <i class="fa fa-question-circle">&nbsp;</i>
+                            <i class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
                             Learn how to move files to a project
                         </a>
                     </p>
-                    <p class="lead" style="margin-top:20px" ng-if="!$ctrl._ui.showSelect">
-                        There are no files under this category. <br />
+                    <p class="lead" style="margin-top:20px" ng-if="!$ctrl.listing().type">
                         <i class="fa fa-file-text-o">&nbsp;</i><br/>
+                        <a href="https://www.youtube.com/watch?v=lfBe04ihQUs&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV&index=5" target="_blank">
+                            <i class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
+                            Learn how to assign files to categories<br/>
+                        </a>
                     </p>
                 </div>
             </caption>
