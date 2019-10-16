@@ -194,9 +194,9 @@ class DataDepotPublishedView(TemplateView):
         context['projectId'] = pub.projectId
         context['citation_title'] = pub.project.value.title
         context['citation_date'] = pub.created
-        if pub.project.value.to_dict().has_key('dois'):
+        if pub.project.value.to_dict().get('dois') != None: #This is for newer publications
             context['doi'] = pub.project.value.dois[0]
-        if pub.project.to_dict().has_key('doi'):
+        elif pub.project.to_dict().get('doi') != None: #This is for older publications
             context['doi'] = pub.project.doi
         context['keywords'] = pub.project.value.keywords.split(',')
         context['authors'] = [{
