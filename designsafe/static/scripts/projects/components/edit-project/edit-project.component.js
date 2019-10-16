@@ -318,8 +318,7 @@ class EditProjectCtrl {
             });
         }
 
-        // move this to the back end ------------------------------------------------------->
-        // we're checking for user objects and empty fields...
+        // clear any empty inputs...
         var i = this.form.copi.length;
         this.form.copiPrune = [];
         while(i--) {
@@ -374,7 +373,6 @@ class EditProjectCtrl {
                 }
             }
         }
-        // move this to the back end ------------------------------------------------------->
         if (this.form.pi) {
             projectData.pi = this.form.pi.username;
         }
@@ -384,10 +382,12 @@ class EditProjectCtrl {
             });
         }
         if (this.form.teamPrune) {
-            // this.form.teamPrune = projectData.teamMembers;
             this.form.teamPrune.forEach((ent) => {
                 projectData.teamMembers.push(ent.username);
             });
+        }
+        if (!projectData.teamMembers.concat(projectData.coPis, [projectData.pi]).includes(this.form.creator.username)) {
+            projectData.teamMembers.push(this.form.creator.username);
         }
         if (this.form.guests && this.form.guests.indexOf(null) === -1) {
             this.form.guests.forEach((g, i) => {
