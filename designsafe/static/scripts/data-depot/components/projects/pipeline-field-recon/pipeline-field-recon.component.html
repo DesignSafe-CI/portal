@@ -81,17 +81,7 @@
                 Authors
             </div>
             <div style="display: inline-block; width:78%; font-weight: bold;">
-                <div data-ng-repeat="author in $ctrl.mission.value.authors | orderBy: 'order'"
-                    data-ng-if="!author.length && author.authorship">
-                    <span data-ng-if="!author.guest">
-                        <ds-user data-username="author.name" data-format="lname">
-                            {{author}}
-                        </ds-user>
-                    </span>
-                    <span data-ng-if="author.guest">
-                        {{author.lname}}, {{author.fname}}
-                    </span>
-                </div>
+                <ds-author-list authors="$ctrl.mission.value.authors"></ds-author-list>
             </div>
             <div style="display: inline-block; width:20%;">Date of Mission</div>
             <div style="display: inline-block; width: 78%; font-weight:bold;">

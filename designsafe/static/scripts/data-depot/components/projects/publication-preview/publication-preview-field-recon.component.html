@@ -153,18 +153,6 @@
                     <div style="display: inline-block;
                                 width:78%;
                                 font-weight: bold;">
-                        <!-- <div data-ng-repeat="author in
-                            report.value.authors |
-                            orderBy: 'order'"
-                            data-ng-if="!author.length &&
-                            author.authorship">
-                            <span data-ng-if="!author.guest">
-                                <ds-user-list class="prj-data" usernames="author.name"></ds-user-list>
-                            </span>
-                            <span data-ng-if="author.guest">
-                                {{author.lname}}, {{author.fname}}
-                            </span>
-                        </div> -->
                         <ds-user-list authors="report.value.authors"></ds-user-list>
                         <ds-author-list authors="[$ctrl.browser.project.value.pi]"></ds-author-list>
                     </div>
@@ -347,17 +335,7 @@
                                             Data Collectors
                                         </div>
                                         <div style="display: inline-block; width:78%; font-weight: bold;">
-                                            <div data-ng-repeat="author in collection.value.dataCollectors | orderBy: 'order'"
-                                                data-ng-if="!author.length && author.authorship">
-                                                <span data-ng-if="!author.guest">
-                                                    <ds-user data-username="author.name" data-format="lname">
-                                                        {{author}}
-                                                    </ds-user>
-                                                </span>
-                                                <span data-ng-if="author.guest">
-                                                    {{author.lname}}, {{author.fname}}
-                                                </span>
-                                            </div>
+                                            <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
                                         </div>
                                         <div style="display: inline-block; width:20%; vertical-align: top;">
                                             Site Location

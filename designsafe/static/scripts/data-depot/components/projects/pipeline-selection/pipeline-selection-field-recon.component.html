@@ -135,17 +135,7 @@
                             Authors
                         </div>
                         <div style="display: inline-block; width:78%; font-weight: bold;">
-                            <div data-ng-repeat="author in mission.value.authors | orderBy: 'order'"
-                                data-ng-if="!author.length && author.authorship">
-                                <span data-ng-if="!author.guest">
-                                    <ds-user data-username="author.name" data-format="lname">
-                                        {{author}}
-                                    </ds-user>
-                                </span>
-                                <span data-ng-if="author.guest">
-                                    {{author.lname}}, {{author.fname}}
-                                </span>
-                            </div>
+                            <ds-author-list authors="mission.value.authors"></ds-author-list>
                         </div>
                         <div style="display: inline-block; width:20%;">Date of Mission</div>
                         <div style="display: inline-block; width: 78%; font-weight:bold;">
@@ -267,17 +257,7 @@
                                             Data Collectors
                                         </div>
                                         <div style="display: inline-block; width:78%; font-weight: bold;">
-                                            <div data-ng-repeat="author in collection.value.dataCollectors | orderBy: 'order'"
-                                                data-ng-if="!author.length && author.authorship">
-                                                <span data-ng-if="!author.guest">
-                                                    <ds-user data-username="author.name" data-format="lname">
-                                                        {{author}}
-                                                    </ds-user>
-                                                </span>
-                                                <span data-ng-if="author.guest">
-                                                    {{author.lname}}, {{author.fname}}
-                                                </span>
-                                            </div>
+                                            <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
                                         </div>
                                         <div style="display: inline-block; width:20%; vertical-align: top;">
                                             Site Location
