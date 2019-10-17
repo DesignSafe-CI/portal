@@ -126,10 +126,19 @@ class FilesListingCtrl {
     }
 
     selectAll () {
-        if (this.browser.selected.length) {
-            this.DataBrowserService.deselect(this.browser.listing.children);
+        let deselect = false;
+        this.listing().children.forEach((file) => {
+            if (typeof file._ui === 'undefined') {
+                file._ui = {selected: false};
+            }
+            if (file._ui.selected === true){
+                deselect = true;
+            }
+        });
+        if (deselect) {
+            this.DataBrowserService.deselect(this.listing().children);
         } else {
-            this.DataBrowserService.select(this.browser.listing.children, true);
+            this.DataBrowserService.select(this.listing().children, false);
         }
     }
 
