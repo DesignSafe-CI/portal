@@ -15,10 +15,13 @@ from django.core.urlresolvers import reverse
 from django.http import (JsonResponse, HttpResponseBadRequest)
 from requests import HTTPError
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload, HttpError
+from future.utils import python_2_unicode_compatible
+
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
+#pylint: enable=invalid-name
 
-
+@python_2_unicode_compatible
 class FileManager(object):
 
     NAME = 'googledrive'
@@ -81,14 +84,14 @@ class FileManager(object):
             file_type, file_id = self.parse_file_id(file_id)
             fields = "mimeType, name, id, modifiedTime, fileExtension, size, parents"
             googledrive_item = self.googledrive_api.files().get(fileId=file_id, fields=fields).execute()
-            
+
             child_results = self.googledrive_api.files().list(q="'{}' in parents and trashed=False".format(file_id), fields="files({})".format(fields)).execute()
             if file_type == 'folder':
 
                 children = [GoogleDriveFile(item, parent=googledrive_item, drive=self.googledrive_api).to_dict(default_pems=default_pems)
                             for item in child_results['files']]
-                child_folders = sorted([item for item in children if item['type']=='folder'], key=lambda k: os.path.splitext(k['name'])[0])
-                child_files = sorted([item for item in children if item['type']=='file'], key=lambda k: os.path.splitext(k['name'])[0])
+                child_folders = sorted([item for item in children if item['type'] == 'folder'], key=lambda k: os.path.splitext(k['name'])[0])
+                child_files = sorted([item for item in children if item['type'] == 'file'], key=lambda k: os.path.splitext(k['name'])[0])
                 children = child_folders + child_files
             else:
                 children = None
@@ -97,7 +100,7 @@ class FileManager(object):
 
             if children:
                 list_data['children'] = children
-                
+
             return list_data
 
         except AssertionError:
@@ -106,12 +109,12 @@ class FileManager(object):
         except Exception as e:
             if 'invalid_grant' in str(e):
                 message = 'While you previously granted this application access to Google Drive, ' \
-                      'that grant appears to be no longer valid. Please ' \
-                      '<a href="%s">disconnect and reconnect your Google Drive account</a> ' \
-                      'to continue using Google Drive data.' % reverse('googledrive_integration:index')
-                raise ApiException(status=403, message=message)
+                    'that grant appears to be no longer valid. Please ' \
+                    '<a href="{}">disconnect and reconnect your Google Drive account</a> ' \
+                    'to continue using Google Drive data.'.format(reverse('googledrive_integration:index'))
+                raise ApiException(status=401, message=message)
 
-            message = 'Unable to communicate with Google Drive: %s' % e
+            message = 'Unable to communicate with Google Drive: {}'.format(e)
             raise ApiException(status=500, message=message)
 
     def file(self, file_id, action, path=None, **kwargs):
