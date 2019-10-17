@@ -382,7 +382,7 @@ class ManageCategoriesCtrl {
                 }
             });
         };
-        confirmDelete({'entity': ent});
+        confirmDelete(ent);
     }
 }
 

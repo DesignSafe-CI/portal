@@ -387,7 +387,13 @@ class EditProjectCtrl {
             });
         }
         if (!projectData.teamMembers.concat(projectData.coPis, [projectData.pi]).includes(this.form.creator.username)) {
-            projectData.teamMembers.push(this.form.creator.username);
+            this.modalInstance = this.$uibModal.open({
+                component: 'confirmDelete',
+                resolve: {
+                    options: () => this.form.creator,
+                },
+                size: 'sm'
+            });
         }
         if (this.form.guests && this.form.guests.indexOf(null) === -1) {
             this.form.guests.forEach((g, i) => {
@@ -425,23 +431,28 @@ class EditProjectCtrl {
             projectData.keywords = this.form.keywords;
         }
 
-        this.savePrj(projectData).then((project) => {
-            if (this.project) {
-                this.project.value = project.value;
+        this.modalInstance.result.then((res) => {
+            if (!res) {
+                projectData.teamMembers.push(this.form.creator.username);
             }
-            if (!this.form.uuid) {
-                this.$state.go(
-                    'projects.view.data',	
-                    {	
-                        projectId: project.uuid,	
-                        filePath: '/',	
-                        projectTitle: project.value.title	
-                    },	
-                    {reload: true}	
-                );
-            }
-            this.close({$value: project});
-            this.ui.busy = false;
+            this.savePrj(projectData).then((project) => {
+                if (this.project) {
+                    this.project.value = project.value;
+                }
+                if (!this.form.uuid) {
+                    this.$state.go(
+                        'projects.view.data',	
+                        {	
+                            projectId: project.uuid,	
+                            filePath: '/',	
+                            projectTitle: project.value.title	
+                        },	
+                        {reload: true}	
+                    );
+                }
+                this.close({$value: project});
+                this.ui.busy = false;
+            });
         });
     }
 

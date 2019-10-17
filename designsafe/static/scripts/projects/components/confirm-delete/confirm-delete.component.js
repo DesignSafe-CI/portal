@@ -10,7 +10,14 @@ class ConfirmDeleteCtrl {
     }
 
     $onInit() {
-        this.ent = this.resolve.options.entity;
+        this.ent = this.resolve.options;
+        this._ui = {displayType: ''};
+
+        if (typeof this.ent.username !== 'undefined') {
+            this._ui.displayType = 'name';
+        } else {
+            this._ui.displayType = 'category';
+        }
     }
 
     delete () {
