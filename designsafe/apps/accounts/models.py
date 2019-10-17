@@ -47,6 +47,11 @@ class DesignSafeProfileNHInterests(models.Model):
     def __unicode__(self):
         return self.description
 
+class DesignSafeProfileNHTechnicalDomains(models.Model):
+    description = models.CharField(max_length=300)
+
+    def __unicode__(self):
+        return self.description
 
 class DesignSafeProfileResearchActivities(models.Model):
     description = models.CharField(max_length=300)
@@ -64,6 +69,7 @@ class DesignSafeProfile(models.Model):
     website = models.CharField(max_length=256, default=None, null=True, blank=True)
     orcid_id = models.CharField(max_length=256, default=None, null=True, blank=True)
     nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
+    nh_technical_domains = models.ManyToManyField(DesignSafeProfileNHTechnicalDomains)
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
     update_required = models.BooleanField(default=True)
