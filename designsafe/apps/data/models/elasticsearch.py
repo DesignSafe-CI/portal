@@ -229,6 +229,7 @@ class IndexedPublication(DocType):
             'title': Text(analyzer='english'),
             'projectId': String(fields={'_exact': Keyword()}),
             'projectType': String(fields={'_exact': Keyword()}),
+            'dois': String(fields={'_exact': Keyword()}, multi=True)
         })
     })
     projectId = String(fields={'_exact': Keyword()})
