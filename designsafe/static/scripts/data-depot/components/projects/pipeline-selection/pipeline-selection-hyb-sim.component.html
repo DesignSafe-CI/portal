@@ -68,7 +68,10 @@
                 The hybrid simulation you have selected for publication is missing data or has incomplete requirements.
                 Please review the following fields:
             </p>
-            <li ng-repeat="item in $ctrl.missing">The {{ item }} for this hybrid simulation is missing or has no categorized data.</li>
+            <li ng-repeat="item in $ctrl.missing">
+                <span ng-if="item === 'Analysis' || item === 'Report'">The {{ item }} for this hybrid simulation has no categorized data.</span>
+                <span ng-if="item !== 'Analysis' && item !== 'Report'">The {{ item }} for this hybrid simulation is missing or has no categorized data.</span>
+            </li>
         </div>
         <p>
             <h3 style="text-align: center">Select what you want to publish</h3>
