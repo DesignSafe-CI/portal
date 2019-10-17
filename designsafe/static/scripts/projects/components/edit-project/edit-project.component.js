@@ -131,7 +131,7 @@ class EditProjectCtrl {
                 this.project.value.associatedProjects.forEach((aprj) => {
                     if (typeof aprj != 'object') {
                         if (aprj) {
-                            this.form.associatedProjects = [{name: '', number: aprj}];
+                            this.form.associatedProjects = [{title: '', href: aprj}];
                         }
                     } else {
                         this.form.associatedProjects.push(aprj);
@@ -141,7 +141,7 @@ class EditProjectCtrl {
                     this.setOrder(this.form.associatedProjects);
                 }
             } else {
-                this.form.associatedProjects = new Array (1);
+                this.form.associatedProjects = [{title: '', href: ''}];
             }
             // pi
             this.UserService.get(this.project.value.pi).then((user) => {
@@ -186,16 +186,17 @@ class EditProjectCtrl {
                 if (this.project.value.nhEventEnd) {
                     this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                 }
-                this.form.nhTypes = this.project.value.nhTypes;
+                if (this.project.value.nhTypes.length > 0) {
+                    this.form.nhTypes = this.project.value.nhTypes;
+                } else {
+                    this.form.nhTypes = new Array (1);
+                }
             }
         }
         this.UserService.authenticate().then((u) => {
             this.form.creator = u;
         });
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
-        if (this.form.projectType == 'field_recon' && !this.form.nhTypes) {
-            this.form.nhTypes = [null];
-        }
     }
 
     searchUsers(q) {
@@ -309,7 +310,12 @@ class EditProjectCtrl {
             projectData.nhEventEnd = this.form.nhEventDateEnd;
         }
         if (this.form.nhTypes) {
-            projectData.nhTypes = this.form.nhTypes;
+            projectData.nhTypes = [];
+            this.form.nhTypes.forEach((nh) => {
+                if (typeof(nh) === 'string') {
+                    projectData.nhTypes.push(nh);
+                }
+            });
         }
 
         // move this to the back end ------------------------------------------------------->
@@ -346,9 +352,10 @@ class EditProjectCtrl {
             i = this.form.awardNumber.length;
             this.form.awardPrune = [];
             while(i--) {
-                if (typeof this.form.awardNumber[i] == 'undefined') {
+                if (typeof this.form.awardNumber[i] === 'undefined') {
                     this.form.awardNumber.splice(i, 1);
-                } else if (!this.form.awardNumber[i].name.length && !this.form.awardNumber[i].number.length ) {
+                } else if (typeof this.form.awardNumber[i].name === 'undefined' &&
+                           typeof this.form.awardNumber[i].number === 'undefined' ) {
                     this.form.awardNumber.splice(i, 1);
                 } else {
                     this.form.awardPrune.push(this.form.awardNumber[i]);
@@ -357,9 +364,10 @@ class EditProjectCtrl {
             i = this.form.associatedProjects.length;
             this.form.workPrune = [];
             while(i--) {
-                if (typeof this.form.associatedProjects[i] == 'undefined') {
+                if (typeof this.form.associatedProjects[i] === 'undefined') {
                     this.form.associatedProjects.splice(i, 1);
-                } else if (!this.form.associatedProjects[i].title.length && !this.form.associatedProjects[i].href.length ) {
+                } else if (typeof this.form.associatedProjects[i].title === 'undefined' &&
+                           typeof this.form.associatedProjects[i].href === 'undefined' ) {
                     this.form.associatedProjects.splice(i, 1);
                 } else {
                     this.form.workPrune.push(this.form.associatedProjects[i]);

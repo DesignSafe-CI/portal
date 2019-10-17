@@ -122,7 +122,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @param {Project} project The Project
      * @param {ProjectEntity} experiment The selected experiment/simulation/hybsim
      * @param {object} selections Object of file listings based on associated uuids
-     * @returns {Message} Returns an error message to be displayed to the user
+     * @returns {Message} Returns an error message for missing or incomplete entities
      */
     service.checkSelectedFiles = function(project, experiment, selections) {
         let errMsg = {
@@ -137,8 +137,12 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
             simsubstructure_set: 'Simulation Substructure',
             expsubstructure_set: 'Experimental Substructure',
             collection_set: 'Collection',
+            analysis_set: 'Analysis',
+            report_set: 'Report',
+
         };
         let requiredSets = [];
+        let requiresFiles = ['analysis_set', 'report_set'];
         let expSets = [];
         let selectedSets = [];
         let missingData = [];
@@ -156,6 +160,17 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
         } else if (project.value.projectType === 'field_recon') {
             requiredSets = ['collection_set'];
         }
+        requiresFiles.forEach((set) => {
+            if (set in project){
+                project[set].forEach((s) => {
+                    if (s.associationIds.indexOf(experiment.uuid) > -1) {
+                        if (s.value.files.length == 0) {
+                            missingData.push(errMsg[set]);
+                        }
+                    }
+                });
+            }
+        });
         requiredSets.forEach((set) => {
             if (set in project) {
                 project[set].forEach((s) => {
