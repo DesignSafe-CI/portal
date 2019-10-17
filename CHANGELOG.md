@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.7.3-20191017
+Improvements:
+* Add new fields to user profiles
+Fixes:
+* Publication Pipeline fixes
+* Fix navigation in Google Drive
+
 ## v4.7.2 [2019-10-08]
 
 * fix(publication): Field Research Template fixes
