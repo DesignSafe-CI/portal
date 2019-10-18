@@ -301,13 +301,13 @@ class ManageSimulationCtrl {
             this.editSimForm = {};
             this.ui.showEditSimulationForm = false;
         }
-        var confirmDelete = (options) => {
-            var modalInstance = this.$uibModal.open({
-                component: 'confirmDelete',
+        let confirmDelete = (msg) => {
+            let modalInstance = this.$uibModal.open({
+                component: 'confirmMessage',
                 resolve: {
-                    options: () => options,
+                    message: () => msg,
                 },
-                size: 'sm'
+                size: 'sm',
             });
 
             modalInstance.result.then((res) => {
@@ -315,20 +315,15 @@ class ManageSimulationCtrl {
                     this.ProjectEntitiesService.delete({
                         data: {
                             uuid: ent.uuid,
-                        }
+                        },
                     }).then((entity) => {
-                        var entityAttr = this.data.project.getRelatedAttrName(entity.name);
-                        var entitiesArray = this.data.project[entityAttr];
-                        entitiesArray = _.filter(entitiesArray, (e) => {
-                            return e.uuid !== entity.uuid;
-                        });
-                        this.data.project[entityAttr] = entitiesArray;
-                        this.data.simulations = this.data.project[entityAttr];
+                        this.data.project.removeEntity(entity);
+                        this.data.simulations = this.data.project.simulation_set;
                     });
                 }
             });
         };
-        confirmDelete({'entity': ent});
+        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
     }
 }
 

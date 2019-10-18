@@ -379,28 +379,30 @@ class ManageFieldReconCollectionsCtrl {
         });
     }
 
-    deleteCollection(collection) {
-        let confirmDialog = this.$uibModal.open({
-            component: 'confirmDelete',
-            resolve: {
-                options: () => { return { entity: collection }; }
-            },
-            size: 'sm'
-        });
-        confirmDialog.result.then( (res) => {
-            if (!res) {
-                return;
-            }
-            this.ui.busy = true;
-            this.ProjectEntitiesService.delete({
-                data: {
-                    uuid: collection.uuid,
-                }
-            }).then( (entity) => {
-                this.project.removeEntity(entity);
-                this.data.collections = this.project.collection_set;
+    deleteCollection(ent) {
+        let confirmDelete = (msg) => {
+            let modalInstance = this.$uibModal.open({
+                component: 'confirmMessage',
+                resolve: {
+                    message: () => msg,
+                },
+                size: 'sm'
             });
-        });
+
+            modalInstance.result.then((res) => {
+                if (res) {
+                    this.ProjectEntitiesService.delete({
+                        data: {
+                            uuid: ent.uuid
+                        }
+                    }).then((entity) => {
+                        this.project.removeEntity(entity);
+                        this.data.collections = this.project.collection_set;
+                    });
+                }
+            });
+        };
+        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
     }
 }
 

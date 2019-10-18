@@ -298,28 +298,30 @@ class ManageFieldReconMissionsCtrl {
         });
     }
 
-    deleteMission(mission) {
-        let confirmDialog = this.$uibModal.open({
-            component: 'confirmDelete',
-            resolve: {
-                options: () => { return { entity: mission }; }
-            },
-            size: 'sm'
-        });
-        confirmDialog.result.then( (res) => {
-            if (!res) {
-                return;
-            }
-            this.ui.busy = true;
-            this.ProjectEntitiesService.delete({
-                data: {
-                    uuid: mission.uuid,
-                }
-            }).then( (entity) => {
-                this.project.removeEntity(entity);
-                this.data.missions = this.project.mission_set;
+    deleteMission(ent) {
+        let confirmDelete = (msg) => {
+            let modalInstance = this.$uibModal.open({
+                component: 'confirmMessage',
+                resolve: {
+                    message: () => msg,
+                },
+                size: 'sm'
             });
-        });
+
+            modalInstance.result.then((res) => {
+                if (res) {
+                    this.ProjectEntitiesService.delete({
+                        data: {
+                            uuid: ent.uuid
+                        }
+                    }).then((entity) => {
+                        this.project.removeEntity(entity);
+                        this.data.missions = this.project.mission_set;
+                    });
+                }
+            });
+        };
+        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
     }
 }
 

@@ -423,7 +423,7 @@ class EditProjectCtrl {
         }
         if (!projectData.teamMembers.concat(projectData.coPis, [projectData.pi]).includes(this.form.creator.username) && this.form.uuid) {
             this.modalInstance = this.$uibModal.open({
-                component: 'confirmDelete',
+                component: 'confirmMessage',
                 resolve: {
                     message: () => "Are you sure you want to remove yourself from the project?",
                 },
@@ -431,15 +431,16 @@ class EditProjectCtrl {
             });
             this.modalInstance.result.then((res) => {
                 if (!res) {
-                    projectData.teamMembers.push(this.form.creator.username);
-                }
-                this.savePrj(projectData).then((project) => {
-                    if (this.project) {
-                        this.project.value = project.value;
-                    }
-                    this.close({ $value: project });
                     this.ui.busy = false;
-                });
+                } else {
+                    this.savePrj(projectData).then((project) => {
+                        if (this.project) {
+                            this.project.value = project.value;
+                        }
+                        this.close({ $value: project });
+                        this.ui.busy = false;
+                    });
+                }
             });
         } else {
             this.savePrj(projectData).then((project) => {

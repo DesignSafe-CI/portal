@@ -1,7 +1,7 @@
-import ConfirmDeleteTemplate from './confirm-delete.component.html';
+import ConfirmMessageTemplate from './confirm-message.template.html';
 import _ from 'underscore';
 
-class ConfirmDeleteCtrl {
+class ConfirmMessageCtrl {
 
     constructor(ProjectEntitiesService, ProjectModel) {
         'ngInject';
@@ -24,9 +24,9 @@ class ConfirmDeleteCtrl {
 
 }
 
-export const ConfirmDeleteComponent = {
-    template: ConfirmDeleteTemplate,
-    controller: ConfirmDeleteCtrl,
+export const ConfirmMessageComponent = {
+    template: ConfirmMessageTemplate,
+    controller: ConfirmMessageCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',
