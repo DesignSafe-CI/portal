@@ -386,15 +386,6 @@ class EditProjectCtrl {
                 projectData.teamMembers.push(ent.username);
             });
         }
-        if (!projectData.teamMembers.concat(projectData.coPis, [projectData.pi]).includes(this.form.creator.username)) {
-            this.modalInstance = this.$uibModal.open({
-                component: 'confirmDelete',
-                resolve: {
-                    options: () => this.form.creator,
-                },
-                size: 'sm'
-            });
-        }
         if (this.form.guests && this.form.guests.indexOf(null) === -1) {
             this.form.guests.forEach((g, i) => {
                 // create a "username" for guests
@@ -430,30 +421,47 @@ class EditProjectCtrl {
         if (typeof this.form.keywords !== 'undefined') {
             projectData.keywords = this.form.keywords;
         }
-
-        this.modalInstance.result.then((res) => {
-            if (!res) {
-                projectData.teamMembers.push(this.form.creator.username);
-            }
+        if (!projectData.teamMembers.concat(projectData.coPis, [projectData.pi]).includes(this.form.creator.username) && this.form.uuid) {
+            this.modalInstance = this.$uibModal.open({
+                component: 'confirmDelete',
+                resolve: {
+                    message: () => "Are you sure you want to remove yourself from the project?",
+                },
+                size: 'sm'
+            });
+            this.modalInstance.result.then((res) => {
+                if (!res) {
+                    projectData.teamMembers.push(this.form.creator.username);
+                }
+                this.savePrj(projectData).then((project) => {
+                    if (this.project) {
+                        this.project.value = project.value;
+                    }
+                    this.close({ $value: project });
+                    this.ui.busy = false;
+                });
+            });
+        } else {
             this.savePrj(projectData).then((project) => {
                 if (this.project) {
                     this.project.value = project.value;
                 }
                 if (!this.form.uuid) {
                     this.$state.go(
-                        'projects.view.data',	
-                        {	
-                            projectId: project.uuid,	
-                            filePath: '/',	
-                            projectTitle: project.value.title	
-                        },	
-                        {reload: true}	
+                        'projects.view.data',
+                        {
+                            projectId: project.uuid,
+                            filePath: '/',
+                            projectTitle: project.value.title
+                        },
+                        { reload: true }
                     );
                 }
-                this.close({$value: project});
+                this.close({ $value: project });
                 this.ui.busy = false;
             });
-        });
+        }
+
     }
 
     isNhTypeInDropdown($index) {

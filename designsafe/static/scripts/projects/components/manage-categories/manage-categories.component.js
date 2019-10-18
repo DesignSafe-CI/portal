@@ -360,11 +360,11 @@ class ManageCategoriesCtrl {
             this.editForm = {};
             this.ui.showEditCategory = false;
         }
-        var confirmDelete = (options) => {
+        var confirmDelete = (msg) => {
             var modalInstance = this.$uibModal.open({
                 component: 'confirmDelete',
                 resolve: {
-                    options: () => options,
+                    message: () => msg,
                 },
                 size: 'sm'
             });
@@ -382,7 +382,7 @@ class ManageCategoriesCtrl {
                 }
             });
         };
-        confirmDelete(ent);
+        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
     }
 }
 
