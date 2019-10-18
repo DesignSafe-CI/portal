@@ -47,8 +47,6 @@ class ManageFieldReconCollectionsCtrl {
 
         this.ui = {
             loading: false,
-            wantsToDelete: {},
-            confirmDelete: {},
         };
 
         this.data = {
@@ -290,7 +288,7 @@ class ManageFieldReconCollectionsCtrl {
         this.data.busy = true;
         let collection = {
             title: this.form.title,
-            observationTypes: this.form.observationTypes,
+            observationTypes: [],
             dateStart: this.form.dateStart,
             dateEnd: this.form.dateEnd,
             dataCollectors: this.form.dataCollectors,
@@ -298,10 +296,28 @@ class ManageFieldReconCollectionsCtrl {
             longitude: this.form.longitude,
             latitude: this.form.latitude,
             elevation: this.form.elevation,
-            instruments: this.form.instruments,
-            referencedDatas: this.form.referencedDatas,
+            instruments: [],
+            referencedDatas: [],
             description: this.form.description,
         };
+        this.form.observationTypes.forEach((obs) => {
+            if (typeof obs !== 'undefined' && obs !== '') {
+                collection.observationTypes.push(obs);
+            }
+        });
+        this.form.instruments.forEach((inst) => {
+            if (typeof inst.model !== 'undefined' && typeof inst.name !== 'undefined') {
+                collection.instruments.push(inst);
+            }
+        });
+        this.form.referencedDatas.forEach((ref) => {
+            if (typeof ref.title !== 'undefined' &&
+                typeof ref.url !== 'undefined' &&
+                ref.title.length &&
+                ref.url.length) {
+                collection.referencedDatas.push(ref);
+            }
+        });
 
         this.ProjectEntitiesService.create({
             data: {
@@ -328,6 +344,9 @@ class ManageFieldReconCollectionsCtrl {
             this.data.editCollection.value.dateEnd
         );
         let auths = this.configureAuthors(collection);
+        if (!this.data.editCollection.value.referencedDatas.length) {
+            this.data.editCollection.value.referencedDatas = new Array (1);
+        }
         this.form = {
             title: this.data.editCollection.value.title,
             observationTypes: this.data.editCollection.value.observationTypes,
@@ -348,7 +367,7 @@ class ManageFieldReconCollectionsCtrl {
         $event.preventDefault();
         this.ui.busy = true;
         this.data.editCollection.value.title = this.form.title;
-        this.data.editCollection.value.observationTypes = this.form.observationTypes;
+        this.data.editCollection.value.observationTypes = [];
         this.data.editCollection.value.dateStart = this.form.dateStart;
         this.data.editCollection.value.dateEnd = this.form.dateEnd;
         this.data.editCollection.value.dataCollectors = this.data.users,
@@ -356,9 +375,28 @@ class ManageFieldReconCollectionsCtrl {
         this.data.editCollection.value.longitude = this.form.longitude;
         this.data.editCollection.value.latitude = this.form.latitude;
         this.data.editCollection.value.elevation = this.form.elevation;
-        this.data.editCollection.value.instruments = this.form.instruments;
-        this.data.editCollection.value.referencedDatas = this.form.referencedDatas;
+        this.data.editCollection.value.instruments = [];
+        this.data.editCollection.value.referencedDatas = [];
         this.data.editCollection.value.description = this.form.description;
+        this.form.observationTypes.forEach((obs) => {
+            if (typeof obs !== 'undefined' && obs !== '') {
+                this.data.editCollection.value.observationTypes.push(obs);
+            }
+        });
+        this.form.instruments.forEach((inst) => {
+            if (typeof inst.model !== 'undefined' && typeof inst.name !== 'undefined') {
+                this.data.editCollection.value.instruments.push(inst);
+            }
+        });
+        this.form.referencedDatas.forEach((ref) => {
+            if (typeof ref.title !== 'undefined' &&
+                typeof ref.url !== 'undefined' &&
+                ref.title.length &&
+                ref.url.length) {
+                this.data.editCollection.value.referencedDatas.push(ref);
+            }
+        });
+
         this.ProjectEntitiesService.update({
             data: {
                 uuid: this.data.editCollection.uuid,
