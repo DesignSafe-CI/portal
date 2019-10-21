@@ -42,14 +42,16 @@
                   {{item.meta.piLabel}}
               </td>
               <td ng-if="!item.meta.pi">
-                N/A
-              </td>
+                <span ng-show="item.metadata.project.pis">{{ item.metadata.project.pis[0].lastName }}, {{ item.metadata.project.pis[0].firstName }}</span>
+                <span ng-hide="item.metadata.project.pis">N/A</span> 
+            </td>
               <td align="center" ng-if="item.meta.dateOfPublication">
                 <a ng-click="$ctrl.showDescription($ctrl.renderName(item), item.meta.description)">View Description</a>
               </td>
-              <td ng-if="!item.meta.dateOfPublication">
-                N/A
-              </td>
+            <td align="center" ng-if="!item.meta.dateOfPublication">
+                <a ng-click="$ctrl.showDescription($ctrl.renderName(item), item.metadata.project.description)" ng-hide="!item.metadata.project.description">View Description</a>
+                <span ng-show="!item.metadata.project.description">N/A</span>
+            </td>
               <td ng-if="item.meta.type">
                 {{item.meta.keywords}}
               </td>
