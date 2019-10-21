@@ -112,11 +112,13 @@
                 </td>
             </tr>
             <tr class="prj-row"
-                ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhType">
+                ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhTypes">
                 <td>Natural Hazard Type</td>
                 <td class="prj-data">
-                    <span ng-if="!$ctrl.project.value.nhTypeOther">{{ $ctrl.project.value.nhType }}</span>
-                    <span ng-if="$ctrl.project.value.nhTypeOther">{{ $ctrl.project.value.nhTypeOther }}</span>
+                    <span ng-repeat="nhtype in $ctrl.project.value.nhTypes">
+                        <span ng-if="!$last">{{ nhtype }},</span>
+                        <span ng-if="$last">{{ nhtype }}</span>
+                    </span>
                 </td>
             </tr>
             <!-- older projects will have awards listed as strings -->

@@ -58,11 +58,13 @@
                 </td>
             </tr>
             <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhType">
+                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes">
                 <td>Natural Hazard Type</td>
                 <td class="prj-data">
-                    <span ng-if="!$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhType }}</span>
-                    <span ng-if="$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhTypeOther }}</span>
+                    <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
+                        <span ng-if="!$last">{{ nhtype }},</span>
+                        <span ng-if="$last">{{ nhtype }}</span>
+                    </span>
                 </td>
             </tr>
             <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
