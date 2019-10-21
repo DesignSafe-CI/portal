@@ -437,6 +437,7 @@ class EditProjectCtrl {
                         if (this.project) {
                             this.project.value = project.value;
                         }
+                        this.$state.go('projects.list', { reload: true });
                         this.close({ $value: project });
                         this.ui.busy = false;
                     });
