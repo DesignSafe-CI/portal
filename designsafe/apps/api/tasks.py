@@ -915,7 +915,7 @@ def set_facl_project(self, project_uuid, usernames):
         logger.debug('set facl project: {}'.format(res))
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
-def email_collaborator_added_to_project(self, project_title, project_url, team_members_to_add, co_pis_to_add):
+def email_collaborator_added_to_project(self, project_id, project_title, project_url, team_members_to_add, co_pis_to_add):
 
     for username in team_members_to_add + co_pis_to_add:
         collab_users = get_user_model().objects.filter(username=username)
@@ -923,13 +923,13 @@ def email_collaborator_added_to_project(self, project_title, project_url, team_m
             for collab_user in collab_users:
                 email_body = """
                         <p>Hi {name},</p><br>
-                        <p>You have been added to the project <b>{title}</b>.</p><br>
+                        <p>You have been added to the project <b>{title} (ID: {prjID})</b>.</p><br>
                         <p>You can visit the project using the url <a href=\"{url}\">{url}</a>.</p>
                         <p>You can now start working on the project. Please use your TACC account to access the DesignSafe-CI website or to ask for help.</p>
                         <p>Thanks,<br>
                         The DesignSafe-CI Team.<br><br>
                         This is a programmatically generated message. Do NOT reply to this message.
-                        """.format(name=collab_user.get_full_name(), title=project_title, url=project_url)
+                        """.format(name=collab_user.get_full_name(), title=project_title, prjID=project_id, url=project_url)
                 try:
                     collab_user.profile.send_mail("You have been added to a DesignSafe project!", email_body)
                 except DesignSafeProfile.DoesNotExist as err:
