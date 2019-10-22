@@ -2,7 +2,7 @@
         <div class="btn-toolbar btn-toolbar-left"
              role="toolbar"
              aria-label="Data Browser Search"
-             style="with:160px; float:left; margin-left:15px;"
+             style="width:160px; float:left; margin-left:15px;"
              ng-if="apiParams.searchState">
         </div>
         <div class="btn-toolbar btn-toolbar-left" role="toolbar" aria-label="Data Browser Toolbar">
@@ -63,4 +63,11 @@
             </div>
         </div>
     </div>
-    
+
+<div class="alert alert-warning" ng-show="['Google Drive', 'Box'].includes($ctrl.placeholder())">
+    <p>{{$ctrl.placeholder()}} has rate limits. Click 
+        <a href="https://developer.box.com/reference" target="_blank" ng-if="$ctrl.placeholder() === 'Box'">here</a>
+        <a href="https://support.google.com/cloud/answer/6330231" ng-if="$ctrl.placeholder() === 'Google Drive'" target="_blank">here</a> 
+        for more information.
+    </p>
+</div>
