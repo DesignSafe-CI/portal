@@ -111,7 +111,7 @@ pathlib2==2.3.0
 pbr==1.8.1
 pexpect==4.2.1
 pickleshare==0.7.4
-Pillow==4.2.1
+Pillow==6.2.0
 ply==3.4
 prompt-toolkit==1.0.15
 ptyprocess==0.5.2
