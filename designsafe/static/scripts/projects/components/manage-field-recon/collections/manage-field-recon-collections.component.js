@@ -309,6 +309,7 @@ class ManageFieldReconCollectionsCtrl {
             }
         }).then( (res) => {
             this.data.project.addEntity(res);
+            this.data.collections = this.project.collection_set;
             this.clearForm();
         }, (err) => {
             this.data.error = err;
@@ -369,7 +370,7 @@ class ManageFieldReconCollectionsCtrl {
         }).then( (res) => {
             let collection = this.data.project.getRelatedByUuid(res.uuid);
             collection.update(res);
-            this.data.experiments = this.project.collection_set;
+            this.data.collections = this.project.collection_set;
             delete this.data.editCollection;
             if (window.sessionStorage.experimentData) {
                 this.close({ $value: collection });
