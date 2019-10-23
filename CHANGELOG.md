@@ -1,5 +1,5 @@
 # DesignSafe-CI Portal Release Notes
-## v4.7.3-20191002
+## v4.7.3-20191003
 Fixes: 
 * Field Recon project bugfixes.
 
