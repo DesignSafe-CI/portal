@@ -294,6 +294,13 @@ class ManageCategoriesCtrl {
                 (resp) => {
                     this.form.projectTagToAdd = { optional: {}, refs: new Array (1) };
                     this.browser.project.addEntity(resp);
+                    this.browser.listings[resp.uuid] = {
+                        name: this.browser.listing.name,
+                        path: this.browser.listing.path,
+                        system: this.browser.listing.system,
+                        trail: this.browser.listing.trail,
+                        children: [],
+                    }; 
                     this.ui.error = false;
                 },
                 (err) => {
