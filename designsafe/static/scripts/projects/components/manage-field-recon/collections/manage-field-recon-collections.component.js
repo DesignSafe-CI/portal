@@ -47,8 +47,6 @@ class ManageFieldReconCollectionsCtrl {
 
         this.ui = {
             loading: false,
-            wantsToDelete: {},
-            confirmDelete: {},
         };
 
         this.data = {
@@ -290,7 +288,7 @@ class ManageFieldReconCollectionsCtrl {
         this.data.busy = true;
         let collection = {
             title: this.form.title,
-            observationTypes: this.form.observationTypes,
+            observationTypes: this.form.observationTypes.filter(input => input),
             dateStart: this.form.dateStart,
             dateEnd: this.form.dateEnd,
             dataCollectors: this.form.dataCollectors,
@@ -298,8 +296,8 @@ class ManageFieldReconCollectionsCtrl {
             longitude: this.form.longitude,
             latitude: this.form.latitude,
             elevation: this.form.elevation,
-            instruments: this.form.instruments,
-            referencedDatas: this.form.referencedDatas,
+            instruments: this.form.instruments.filter(input => input.model && input.name),
+            referencedDatas: this.form.referencedDatas.filter(input => input.title && input.url),
             description: this.form.description,
         };
 
@@ -328,6 +326,9 @@ class ManageFieldReconCollectionsCtrl {
             this.data.editCollection.value.dateEnd
         );
         let auths = this.configureAuthors(collection);
+        if (!this.data.editCollection.value.referencedDatas.length) {
+            this.data.editCollection.value.referencedDatas = new Array (1);
+        }
         this.form = {
             title: this.data.editCollection.value.title,
             observationTypes: this.data.editCollection.value.observationTypes,
@@ -348,7 +349,7 @@ class ManageFieldReconCollectionsCtrl {
         $event.preventDefault();
         this.ui.busy = true;
         this.data.editCollection.value.title = this.form.title;
-        this.data.editCollection.value.observationTypes = this.form.observationTypes;
+        this.data.editCollection.value.observationTypes = this.form.observationTypes.filter(input => input);
         this.data.editCollection.value.dateStart = this.form.dateStart;
         this.data.editCollection.value.dateEnd = this.form.dateEnd;
         this.data.editCollection.value.dataCollectors = this.data.users,
@@ -356,9 +357,10 @@ class ManageFieldReconCollectionsCtrl {
         this.data.editCollection.value.longitude = this.form.longitude;
         this.data.editCollection.value.latitude = this.form.latitude;
         this.data.editCollection.value.elevation = this.form.elevation;
-        this.data.editCollection.value.instruments = this.form.instruments;
-        this.data.editCollection.value.referencedDatas = this.form.referencedDatas;
+        this.data.editCollection.value.instruments = this.form.instruments.filter(input => input.model && input.name);
+        this.data.editCollection.value.referencedDatas = this.form.referencedDatas.filter(input => input.title && input.url);
         this.data.editCollection.value.description = this.form.description;
+
         this.ProjectEntitiesService.update({
             data: {
                 uuid: this.data.editCollection.uuid,

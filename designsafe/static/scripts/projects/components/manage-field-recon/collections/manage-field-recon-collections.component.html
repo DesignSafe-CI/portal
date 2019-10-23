@@ -40,7 +40,7 @@
                             style="margin-bottom: 5px"
                             data-ng-options="item for item in $ctrl.data.observationTypes"
                             data-ng-model="$ctrl.form.observationTypes[$index]"
-                            data-ng-required="true"
+                            data-ng-required="$first"
                             class="form-control"
                             data-ng-if="$ctrl.showObservationDropdown($index)">
                     <option value="">-- Select Observation Type --</option>
@@ -214,6 +214,7 @@
                     <select class="form-control"
                             data-ng-model="instrument.name"
                             style="margin-bottom: 5px;"
+                            data-ng-required="$first"
                             data-ng-if="$ctrl.showInstrumentDropdown($index)">
                         <option value="">-- Select Instrument --</option>
                         <optgroup data-ng-repeat="(group, labels) in $ctrl.data.instruments"
@@ -233,6 +234,7 @@
                      data-ng-repeat-end>
                     <input type="text"
                            data-ng-model="instrument.model"
+                           data-ng-required="$first"
                            class="form-control" />
                 </div>
                 <button class="btn btn-link"
