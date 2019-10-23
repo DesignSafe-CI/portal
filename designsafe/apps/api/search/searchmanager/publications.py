@@ -32,7 +32,6 @@ class PublicationsSearchManager(BaseSearchManager):
 
         published_index_name = Index('des-publications').get_alias().keys()[0]
         legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
-        logger.debug(kwargs)
         filter_queries = []
         if kwargs['type_filters']:
             for type_filter in kwargs['type_filters']:

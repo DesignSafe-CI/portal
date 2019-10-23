@@ -1989,7 +1989,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     }
     currentState.page += 1;
     currentState.loadingMore = true;
-    console.log(params.typeFilters)
     return browsePage({system: currentState.listing.system,
                 path: currentState.listing.path,
                 page: currentState.page,

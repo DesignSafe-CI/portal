@@ -184,6 +184,12 @@ class FilesListingCtrl {
         if (typeof meta.dataType != 'undefined' && meta.dataType != 'None') {
             return meta.dataType;
         } else {
+            if (meta.type === 'field_recon') {
+                return 'Field Research';
+            }
+            if (meta.type === 'hybrid_simulation') {
+                return 'Hybrid Simulation';
+            }
             return meta.type;
         }
     }
@@ -202,9 +208,7 @@ class FilesListingCtrl {
       onTypeFilterSelect(typeFilter) {
         //Need to handle typeFilters being array, string, or undefined
         let typeFilters = this.$stateParams.typeFilters || [] 
-        typeFilters = Array.isArray(typeFilters) ? 
-            typeFilters
-            : [typeFilters]
+        typeFilters = [typeFilters].flat()
 
         if (typeFilters.includes(typeFilter)) {
             typeFilters = typeFilters.filter(x => x != typeFilter)
@@ -220,9 +224,7 @@ class FilesListingCtrl {
 
       checkTypeFilterSelected(typeFilter) {
         let typeFilters = this.$stateParams.typeFilters || [] 
-        typeFilters = Array.isArray(typeFilters) ? 
-            typeFilters
-            : [typeFilters]
+        typeFilters = [typeFilters].flat()
         return typeFilters.includes(typeFilter)
       }
 
