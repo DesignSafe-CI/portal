@@ -104,10 +104,29 @@ class FileMediaView(View):
             fm = AgaveFileManager(agave_client=ag)
             f = fm.listing(system_id, file_path)
             if request.GET.get('preview', False):
+                print('***'*100)
+                logger.info('Data Depot',
+                            extra={
+                                'user': request.user.username,
+                                'sessionId': getattr(request.session, 'session_key', ''),
+                                'operation': 'preview',
+                                'info': {
+                                             'systemId': system_id,
+                                             'filePath': file_path}
+                            })
                 context = {
                     'file': f
                 }
                 if f.ext in BaseFileResource.SUPPORTED_IMAGE_PREVIEW_EXTS:
+                    logger.info('Data Depot',
+                                extra={
+                                    'user': request.user.username,
+                                    'sessionId': getattr(request.session, 'session_key', ''),
+                                    'operation': 'preview',
+                                    'info': {
+                                        'systemId': system_id,
+                                        'filePath': file_path}
+                                })
                     context['image_preview'] = f.download_postit(force=False, lifetime=360)
                 elif f.ext in BaseFileResource.SUPPORTED_TEXT_PREVIEW_EXTS:
                     content = f.download()
@@ -126,13 +145,49 @@ class FileMediaView(View):
                                       u'to an unrecognized content encoding. Please ' \
                                       u'download the file to view its contents.'
                     context['text_preview'] = encoded
+                    logger.info('Data Depot',
+                                extra={
+                                    'user': request.user.username,
+                                    'sessionId': getattr(request.session, 'session_key', ''),
+                                    'operation': 'preview',
+                                    'info': {
+                                        'systemId': system_id,
+                                        'filePath': file_path}
+                                })
                 elif f.ext in BaseFileResource.SUPPORTED_OBJECT_PREVIEW_EXTS:
+                    logger.info('Data Depot',
+                                extra={
+                                    'user': request.user.username,
+                                    'sessionId': getattr(request.session, 'session_key', ''),
+                                    'operation': 'preview',
+                                    'info': {
+                                        'systemId': system_id,
+                                        'filePath': file_path}
+                                })
                     context['object_preview'] = f.download_postit(force=False, lifetime=360)
 
                 elif f.ext in BaseFileResource.SUPPORTED_MS_OFFICE:
+                    logger.info('Data Depot',
+                                extra={
+                                    'user': request.user.username,
+                                    'sessionId': getattr(request.session, 'session_key', ''),
+                                    'operation': 'preview',
+                                    'info': {
+                                        'systemId': system_id,
+                                        'filePath': file_path}
+                                })
                     context['iframe_preview'] = 'https://view.officeapps.live.com/op/view.aspx?src={}'\
                                                 .format(f.download_postit(force=False, lifetime=360))
                 elif f.ext in BaseFileResource.SUPPORTED_VIDEO_EXTS:
+                    logger.info('Data Depot',
+                                extra={
+                                    'user': request.user.username,
+                                    'sessionId': getattr(request.session, 'session_key', ''),
+                                    'operation': 'preview',
+                                    'info': {
+                                        'systemId': system_id,
+                                        'filePath': file_path}
+                                })
                     context['video_preview'] = f.download_postit(force=False, lifetime=360)
                     context['mimetype'] = BaseFileResource.SUPPORTED_VIDEO_MIMETYPES[f.ext]
 
@@ -423,14 +478,25 @@ class FileMediaView(View):
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'preview':
+                print('***'*100)
                 try:
                     file_listing = fm.listing(system_id, file_path)
                     if file_listing.previewable:
+                        logger.info('Data Depot',
+                                     extra={
+                                         'user': request.user.username,
+                                         'sessionId': getattr(request.session, 'session_key', ''),
+                                         'operation': 'preview',
+                                         'info': {
+                                             'systemId': system_id,
+                                             'filePath': file_path}
+                                     })
                         preview_url = reverse('designsafe_api:files_media',
                                               args=[file_mgr_name, system_id, file_path])
                         return JsonResponse({'href': '{}?preview=true'.format(preview_url),
                                              'postit': file_listing.download_postit(force=False, lifetime=360)})
                     else:
+                        print('***'*100)
                         return HttpResponseBadRequest('Preview not available for this item.')
                 except HTTPError as e:
                     logger.exception('Unable to preview file: {file_path}'.format(file_path=file))
