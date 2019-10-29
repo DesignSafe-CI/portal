@@ -160,7 +160,7 @@
         <p>You can order the authors after creating the experiment.</p>
         <div class="form-group">
           <div ng-repeat="usr in $ctrl.data.users track by $index" style="width:46%; display:inline-block; white-space: nowrap;">
-            <input type="checkbox" format="lname" id="{{ 'newAuthor' + $index }}" ng-click="$ctrl.addAuthors(usr, $index)">
+            <input type="checkbox" format="lname" id="{{ 'newAuthor' + $index }}" ng-click="$ctrl.addAuthors(usr, $index)" ng-checked="usr.authorship">
             <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
             <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
           </div>
