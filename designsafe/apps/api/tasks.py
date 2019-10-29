@@ -638,6 +638,8 @@ def set_project_id(self, project_uuid):
 
     index_or_update_project.apply_async(args=[project.uuid], queue='api')
 
+    return str(project_id)
+
 @shared_task(bind=True)
 def index_or_update_project(self, uuid):
     """
@@ -915,10 +917,8 @@ def set_facl_project(self, project_uuid, usernames):
         logger.debug('set facl project: {}'.format(res))
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
-def email_collaborator_added_to_project(self, project_uuid, project_title, project_url, team_members_to_add, co_pis_to_add):
-    from designsafe.apps.projects.models.agave.experimental import ExperimentalProject
+def email_collaborator_added_to_project(self, project_id, project_uuid, project_title, project_url, team_members_to_add, co_pis_to_add):
     service = get_service_account_client()
-    project_id = ExperimentalProject._meta.model_manager.get(service, project_uuid).project_id
     for username in team_members_to_add + co_pis_to_add:
         collab_users = get_user_model().objects.filter(username=username)
         if collab_users:

@@ -2,7 +2,7 @@
 import copy
 import logging
 import json
-from celery import group
+from celery import group, chain
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http.response import HttpResponseForbidden
@@ -266,16 +266,16 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
             prj.add_team_members([request.user.username])
 
         # Email collaborators
-        tasks.set_project_id.apply_async(args=[prj.uuid], queue="api")
-        tasks.email_collaborator_added_to_project.apply_async(
-            args=[
+        chain(
+            tasks.set_project_id.s(prj.uuid).set(queue="api") | 
+            tasks.email_collaborator_added_to_project.s(    
                 prj.uuid,
                 prj.title,
                 request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), prj.uuid)),
                 [u for u in list(set(prj.co_pis + prj.team_members + [prj.pi])) if u != request.user.username],
                 []
-            ]
-        )
+            )
+        ).apply_async()
 
         tasks.set_facl_project.apply_async(
             args=[
@@ -356,6 +356,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         )
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
+                p.project_id,
                 p.uuid,
                 p.title,
                 request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), p.uuid)),
@@ -404,6 +405,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
+                project.project_id,
                 project.project_uuid,
                 project.title,
                 request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project.uuid)),
