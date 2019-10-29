@@ -456,7 +456,7 @@ class ProfessionalProfileForm(forms.ModelForm):
         queryset=DesignSafeProfileNHTechnicalDomains.objects.all(),
         required=True,
         widget=forms.CheckboxSelectMultiple,
-        label="Natural Hazards Technical Domain (check all that apply)"
+        label="Technical Domains (check all that apply)"
     )
     bio = forms.CharField(
         max_length=4096,

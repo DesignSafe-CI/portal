@@ -48,8 +48,7 @@ class DesignsafeProfileUpdateMiddleware:
         if request.user.is_authenticated and request.user.profile.update_required and blocked_path:
             messages.warning(
                 request, '<h4>Profile Update Required</h4>'
-                            'You are required to update your user profile in \
-                            order to continue using this feature of Designsafe.' )
+                            'To better understand our user demographics, we ask you to update your  selections for Natural Hazards Interests and Technical Domain at the bottom of the Professional Profile.' )
             return redirect(reverse('designsafe_accounts:profile_edit'))
         return None
 

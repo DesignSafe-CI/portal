@@ -40,7 +40,7 @@
                             style="margin-bottom: 5px"
                             data-ng-options="item for item in $ctrl.data.observationTypes"
                             data-ng-model="$ctrl.form.observationTypes[$index]"
-                            data-ng-required="true"
+                            data-ng-required="$first"
                             class="form-control"
                             data-ng-if="$ctrl.showObservationDropdown($index)">
                     <option value="">-- Select Observation Type --</option>
@@ -145,7 +145,7 @@
                 </label>
                 <div>
                     <div style="width: 55%; display:inline-block;">
-                        <label for="id-location">
+                        <label for="id-location" class="label-secondary">
                             Geolocation
                         </label>
                         <input type="text"
@@ -155,7 +155,7 @@
                                class="form-control"/>
                     </div>
                     <div style="width: 13%; display:inline-block; margin-left:5px;">
-                        <label for="id-location">
+                        <label for="id-location" class="label-secondary">
                             Latitude
                         </label>
                         <input type="text"
@@ -165,7 +165,7 @@
                                class="form-control"/>
                     </div>
                     <div style="width: 13%; display:inline-block; margin-left:5px;">
-                        <label for="id-location">
+                        <label for="id-location" class="label-secondary">
                             Longitude
                         </label>
                         <input type="text"
@@ -175,7 +175,7 @@
                                class="form-control" />
                     </div>
                     <div style="width: 13%; display:inline-block; margin-left:5px;">
-                        <label for="id-elevation">
+                        <label for="id-elevation" class="label-secondary">
                             Elevation
                         </label>
                         <input type="text"
@@ -214,6 +214,7 @@
                     <select class="form-control"
                             data-ng-model="instrument.name"
                             style="margin-bottom: 5px;"
+                            data-ng-required="$first"
                             data-ng-if="$ctrl.showInstrumentDropdown($index)">
                         <option value="">-- Select Instrument --</option>
                         <optgroup data-ng-repeat="(group, labels) in $ctrl.data.instruments"
@@ -233,6 +234,7 @@
                      data-ng-repeat-end>
                     <input type="text"
                            data-ng-model="instrument.model"
+                           data-ng-required="$first"
                            class="form-control" />
                 </div>
                 <button class="btn btn-link"

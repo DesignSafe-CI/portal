@@ -119,6 +119,7 @@ class ManageHybridSimCtrl {
             }
         }).then((res) => {
             this.data.project.addEntity(res);
+            this.data.simulations = this.data.project.hybridsimulation_set;
         }).then(() => {
             this.data.busy = false;
             this.ui.showAddSimulationForm = false;

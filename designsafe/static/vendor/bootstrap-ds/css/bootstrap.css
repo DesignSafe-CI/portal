@@ -5084,6 +5084,9 @@ a.label:focus {
 .label-primary[href]:focus {
   background-color: #286090;
 }
+.label-secondary {
+  font-weight: normal;
+}
 .label-success {
   background-color: #5cb85c;
 }
