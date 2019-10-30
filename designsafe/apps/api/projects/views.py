@@ -71,28 +71,35 @@ class PublicationView(BaseApiView):
             (
                 tasks.freeze_publication_meta.s(
                     pub.projectId,
-                    data.get('mainEntityUuid')
+                    data.get('mainEntityUuid') #needs list of selected primary entities... (change name)
                 ).set(queue='api') |
-                group(
-                    tasks.save_publication.si(
-                        pub.projectId,
-                        data.get('mainEntityUuid')
-                    ).set(
-                        queue='files',
-                        countdown=60
-                    ),
-                    tasks.copy_publication_files_to_corral.si(
-                        pub.projectId
-                    ).set(
-                        queue='files',
-                        countdown=60
-                    )
-                ) |
-                tasks.set_publish_status.si(
+                tasks.save_publication.si(
                     pub.projectId,
-                    data.get('mainEntityUuid')
-                ) |
-                tasks.zip_publication_files.si(pub.projectId)
+                    data.get('mainEntityUuid') #needs list of selected primary entities... (change name)
+                ).set(
+                    queue='files',
+                    countdown=60
+                )
+                # group(
+                #     tasks.save_publication.si(
+                #         pub.projectId,
+                #         data.get('mainEntityUuid') #needs list of selected primary entities... (change name)
+                #     ).set(
+                #         queue='files',
+                #         countdown=60
+                #     ),
+                #     tasks.copy_publication_files_to_corral.si(
+                #         pub.projectId
+                #     ).set(
+                #         queue='files',
+                #         countdown=60
+                #     )
+                # ) |
+                # tasks.set_publish_status.si(
+                #     pub.projectId,
+                #     data.get('mainEntityUuid') #needs list of selected primary entities...
+                # ) |
+                # tasks.zip_publication_files.si(pub.projectId)
             ).apply_async()
 
         return JsonResponse({'status': 200,
