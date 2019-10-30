@@ -118,7 +118,9 @@ class ManageFieldReconCollectionsCtrl {
     clearForm() {
         this.form = {
             observationTypes: [null],
+            observationTypeOthers: [null],
             instruments: [{}],
+            instrumentTypeOthers: [null],
             referencedDatas: [{}],
             dataCollectors: angular.copy(this.data.users),
         };
@@ -145,6 +147,7 @@ class ManageFieldReconCollectionsCtrl {
         let last = this.form.observationTypes.length - 1;
         if (this.form.observationTypes[last]) {
             this.form.observationTypes.push(null);
+            this.form.observationTypeOthers.push(null);
         }
     }
 
@@ -184,6 +187,7 @@ class ManageFieldReconCollectionsCtrl {
         let last = this.form.instruments.length - 1;
         if (this.form.instruments[last].name) {
             this.form.instruments.push({});
+            this.form.instrumentTypeOthers.push(null);
         }
     }
 
@@ -288,7 +292,14 @@ class ManageFieldReconCollectionsCtrl {
         this.data.busy = true;
         let collection = {
             title: this.form.title,
-            observationTypes: this.form.observationTypes.filter(input => input),
+            observationTypes: this.form.observationTypes
+                .map((type, index) => {
+                    if(type === 'Other') {
+                        return this.form.observationTypeOthers[index];
+                    }
+                    return type;
+                })
+                .filter(input => input),
             dateStart: this.form.dateStart,
             dateEnd: this.form.dateEnd,
             dataCollectors: this.form.dataCollectors,
@@ -296,7 +307,14 @@ class ManageFieldReconCollectionsCtrl {
             longitude: this.form.longitude,
             latitude: this.form.latitude,
             elevation: this.form.elevation,
-            instruments: this.form.instruments.filter(input => input.model && input.name),
+            instruments: this.form.instruments
+                .map((type, index) => {
+                    if(type.name === 'Other') {
+                        type.name = this.form.instrumentTypeOthers[index];
+                    }
+                    return type;
+                })
+                .filter(input => input.model && input.name),
             referencedDatas: this.form.referencedDatas.filter(input => input.title && input.url),
             description: this.form.description,
         };
@@ -333,6 +351,7 @@ class ManageFieldReconCollectionsCtrl {
         this.form = {
             title: this.data.editCollection.value.title,
             observationTypes: this.data.editCollection.value.observationTypes,
+            observationTypeOthers: this.data.editCollection.value.observationTypes,
             dateStart: this.data.editCollection.value.dateStart,
             dateEnd: this.data.editCollection.value.dateEnd,
             dataCollectors: auths,
@@ -341,6 +360,7 @@ class ManageFieldReconCollectionsCtrl {
             latitude: this.data.editCollection.value.latitude,
             elevation: this.data.editCollection.value.elevation,
             instruments: this.data.editCollection.value.instruments,
+            instrumentTypeOthers: this.data.editCollection.value.instruments.map((instrument) => instrument.name),
             referencedDatas: this.data.editCollection.value.referencedDatas,
             description: this.data.editCollection.value.description,
         };
@@ -350,7 +370,14 @@ class ManageFieldReconCollectionsCtrl {
         $event.preventDefault();
         this.ui.busy = true;
         this.data.editCollection.value.title = this.form.title;
-        this.data.editCollection.value.observationTypes = this.form.observationTypes.filter(input => input);
+        this.data.editCollection.value.observationTypes = this.form.observationTypes
+            .map((type, index) => {
+                if(type === 'Other' || !(this.isObservationInDropdown(index))) {
+                    return this.form.observationTypeOthers[index];
+                }
+                return type;
+            })
+            .filter(input => input);
         this.data.editCollection.value.dateStart = this.form.dateStart;
         this.data.editCollection.value.dateEnd = this.form.dateEnd;
         this.data.editCollection.value.dataCollectors = this.data.users,
@@ -358,7 +385,14 @@ class ManageFieldReconCollectionsCtrl {
         this.data.editCollection.value.longitude = this.form.longitude;
         this.data.editCollection.value.latitude = this.form.latitude;
         this.data.editCollection.value.elevation = this.form.elevation;
-        this.data.editCollection.value.instruments = this.form.instruments.filter(input => input.model && input.name);
+        this.data.editCollection.value.instruments = this.form.instruments
+            .map((type, index) => {
+                if(type.name === 'Other') {
+                    type.name = this.form.instrumentTypeOthers[index];
+                }
+                return type;
+            })
+            .filter(input => input.model && input.name);
         this.data.editCollection.value.referencedDatas = this.form.referencedDatas.filter(input => input.title && input.url);
         this.data.editCollection.value.description = this.form.description;
 

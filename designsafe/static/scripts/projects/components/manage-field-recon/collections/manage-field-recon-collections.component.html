@@ -45,11 +45,13 @@
                             data-ng-if="$ctrl.showObservationDropdown($index)">
                     <option value="">-- Select Observation Type --</option>
                     </select>
-                    <input type="text"
-                           data-ng-model="$ctrl.form.observationTypes[$index]"
-                           data-ng-if="$ctrl.showObservationInput($index)"
-                           class="form-control"
-                        />
+                    <input 
+                        type="text"
+                        placeholder="Other"
+                        data-ng-model="$ctrl.form.observationTypeOthers[$index]"
+                        data-ng-if="$ctrl.showObservationInput($index)"
+                        class="form-control"
+                    />
                 </div>
                 <button type="button"
                         class="btn btn-link"
@@ -226,7 +228,7 @@
                         </optgroup>
                     </select>
                     <input type="text"
-                           data-ng-model="instrument.name"
+                           data-ng-model="$ctrl.form.instrumentTypeOthers[$index]"
                            data-ng-if="$ctrl.showInstrumentInput($index)"
                            class="form-control" />
                 </div>
