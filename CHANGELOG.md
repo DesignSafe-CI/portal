@@ -1,4 +1,10 @@
 # DesignSafe-CI Portal Release Notes
+## v4.7.3 [2019-10-30]
+* Publication Pipeline fixes
+* Enforce mandatory profile updates.
+
+* fix(publication): Field Research Template fixes
+* feat: Add manage account to user menu dropdown
 ## v4.7.3-20191004
 Fixes: 
 * Edit profile update message.
