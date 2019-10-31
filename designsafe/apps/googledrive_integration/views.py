@@ -91,13 +91,13 @@ def oauth2_callback(request):
         authorization_response = request.build_absolute_uri()
         logger.debug(authorization_response)
         flow.fetch_token(authorization_response=authorization_response)
-            
+
         credentials = flow.credentials
         token = GoogleDriveUserToken(
             user=request.user,
             credential=credentials
         )
-        
+
         token.save()
 
     except IntegrityError as e:
@@ -129,7 +129,7 @@ def disconnect(request):
             revoke = requests.post('https://accounts.google.com/o/oauth2/revoke',
                 params={'token': googledrive_user_token.credential.token},
                 headers = {'content-type': 'application/x-www-form-urlencoded'})
-            
+
             status_code = getattr(revoke, 'status_code')
 
             googledrive_user_token.delete()
@@ -153,9 +153,13 @@ def disconnect(request):
             logger.error('Disconnect Google Drive; GoogleDriveUserToken delete error.',
                          extra={'user': request.user})
             logger.exception('google drive delete error: {}'.format(e))
-            
+
         messages.success(request, 'Your Google Drive account has been disconnected from DesignSafe.')
 
         return HttpResponseRedirect(reverse('googledrive_integration:index'))
 
     return render(request, 'designsafe/apps/googledrive_integration/disconnect.html')
+
+
+def privacy_policy(request):
+    return render(request, 'designsafe/apps/googledrive_integration/privacy-policy.html')
