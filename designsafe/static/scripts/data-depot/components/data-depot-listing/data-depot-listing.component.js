@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import FilesListingTemplate from './files-listing.template.html';
-import FilesListingPublicTemplate from './files-listing.public.template.html';
+import PublicationsListingTemplate from './publications-listing.template.html';
 
 class FilesListingCtrl {
     constructor($state, DataBrowserService, $stateParams, $uibModal){
@@ -9,11 +9,7 @@ class FilesListingCtrl {
         this.DataBrowserService = DataBrowserService;
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
-
-        this.areFiltersEmpty = this.areFiltersEmpty.bind(this);
-        this.typeFilter = this.typeFilter.bind(this);
         this.renderName = this.renderName.bind(this);
-        this.clearFilters = this.clearFilters.bind(this);
     }
 
     $onInit() {
@@ -163,7 +159,7 @@ class FilesListingCtrl {
     }
 
     scrollToBottom() {
-        return this.DataBrowserService.scrollToBottom({queryString: this.$stateParams.query_string});
+        return this.DataBrowserService.scrollToBottom({queryString: this.$stateParams.query_string, typeFilters: this.$stateParams.typeFilters,});
     }
 
     renderName(file) {
@@ -184,7 +180,6 @@ class FilesListingCtrl {
                  experiment_re.test(file.name.toLowerCase())){
             return file.metadata.experiments[0].title;
         }
-        console.log(file.name);
         return file.name;
     }
 
@@ -200,6 +195,12 @@ class FilesListingCtrl {
         if (typeof meta.dataType != 'undefined' && meta.dataType != 'None') {
             return meta.dataType;
         } else {
+            if (meta.type === 'field_recon') {
+                return 'Field Research';
+            }
+            if (meta.type === 'hybrid_simulation') {
+                return 'Hybrid Simulation';
+            }
             return meta.type;
         }
     }
@@ -214,31 +215,32 @@ class FilesListingCtrl {
           size: 'lg'
         });
       }
-      areFiltersEmpty() {
-          let noneToggled = true;
-          for (const key of Object.keys(this.state.type_filters)) {
-              if (this.state.type_filters[key]) {
-                  noneToggled = false;
-              }
-          }
-          if (noneToggled) {
-              return true;
-          }
-          return false;
+
+      onTypeFilterSelect(typeFilter) {
+        //Need to handle typeFilters being array, string, or undefined
+        let typeFilters = this.$stateParams.typeFilters || [] 
+        typeFilters = [typeFilters].flat()
+
+        if (typeFilters.includes(typeFilter)) {
+            typeFilters = typeFilters.filter(x => x != typeFilter)
+        }
+        else {
+            typeFilters.push(typeFilter)
+        }
+        if (typeFilters.length === 0) {
+            typeFilters = null
+        }
+        this.$state.go(this.$state.current, {typeFilters: typeFilters}, {reload: true})
       }
-      typeFilter(item, x, y) {
-          if (this.areFiltersEmpty()) {
-              return true;
-          }
-          if (item.metadata && this.state.type_filters['nees']) {
-              return true;
-          }
-          return this.state.type_filters[(item.meta || {}).type];
+
+      checkTypeFilterSelected(typeFilter) {
+        let typeFilters = this.$stateParams.typeFilters || [] 
+        typeFilters = [typeFilters].flat()
+        return typeFilters.includes(typeFilter)
       }
-      clearFilters() {
-          for (const key of Object.keys(this.state.type_filters)) {
-              this.state.type_filters[key] = false;
-          }
+
+      clearTypeFilters() {
+        this.$state.go(this.$state.current, {typeFilters: null}, {reload: true})
       }
 }
 
@@ -253,10 +255,10 @@ export const FilesListingComponent = {
     },
 };
 
-export const FilesListingPublicComponent = {
+export const PublicationsListingComponent = {
     controller: FilesListingCtrl,
     controllerAs: '$ctrl',
-    template: FilesListingPublicTemplate,
+    template: PublicationsListingTemplate,
     bindings: {
         browser: '=',
         filesList: '=',

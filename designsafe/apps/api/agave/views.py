@@ -53,10 +53,15 @@ class FileListingView(BaseApiView):
 
     @profile_fn
     def get(self, request, file_mgr_name, system_id=None, file_path=''):
+        kwargs = {}
+
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string', None)
-        kwargs = {}
+        type_filters = request.GET.getlist('typeFilters', None)
+  
+        kwargs['type_filters'] = type_filters
+        
         if not request.user.is_authenticated:
             client = get_user_model().objects.get(username='envision').agave_oauth.client
         else:
@@ -69,7 +74,7 @@ class FileListingView(BaseApiView):
         if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and \
                 (file_path.strip('/') == '$SHARE'):
                 file_mgr_name = 'shared'
-                kwargs = {'user_context': request.user.username}
+                kwargs['user_context'] = request.user.username
 
         fm_cls = FileLookupManager(file_mgr_name)
         fm = fm_cls(agave_client=client)

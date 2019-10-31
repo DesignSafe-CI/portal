@@ -5,11 +5,11 @@ import { DataDepotNavComponent } from './data-depot-nav/data-depot-nav.component
 import { PublishedComponent } from './published/published.component';
 import { DataDepotNewComponent } from './data-depot-new/data-depot-new.component';
 import { MainComponent } from './main/main.component';
-import { FilesListingComponent, FilesListingPublicComponent } from './files-listing/files-listing.component';
+import { FilesListingComponent, PublicationsListingComponent } from './data-depot-listing/data-depot-listing.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { DataDepotBrowserComponent, DataDepotPublicationsBrowserComponent } from './data-depot-browser/data-depot-browser.component';
 import { NeesPublishedComponent } from './nees-publication/nees-publication.component';
-import { PublicationDescriptionModalComponent } from './files-listing/publication-description-modal/publication-description.component';
+import { PublicationDescriptionModalComponent } from './data-depot-listing/publication-description-modal/publication-description.component';
 import { FileMetadataComponent } from './file-metadata/file-metadata.component';
 import { PublishedParentComponent } from './published/published-parent.component.js';
 import { ExpPublishedViewComponent,
@@ -27,7 +27,7 @@ ddComponents.component('published', PublishedComponent);
 ddComponents.component('ddmain', MainComponent);
 ddComponents.component('ddnew', DataDepotNewComponent);
 ddComponents.component('filesListing', FilesListingComponent);
-ddComponents.component('filesListingPublic', FilesListingPublicComponent);
+ddComponents.component('publicationsListing', PublicationsListingComponent);
 ddComponents.component('breadcrumb', BreadcrumbComponent);
 ddComponents.component('dataDepotBrowser', DataDepotBrowserComponent);
 ddComponents.component('dataDepotPublicationsBrowser', DataDepotPublicationsBrowserComponent);

@@ -763,27 +763,6 @@ function config(
                 },
             },
         })
-        /* Public */
-        .state('publicDataSearch', {
-            url: '/public-search/?query_string&offset&limit',
-            component: 'dataDepotPublicationsBrowser',
-            params: {
-                systemId: 'nees.public',
-                filePath: '$SEARCH',
-            },
-            resolve: {
-                apiParams: ()=> {
-                    return {
-                        fileMgr: 'public',
-                        baseUrl: '/api/public/files',
-                        searchState: 'publicDataSearch',
-                    };
-                },
-                auth: () =>{
-                    return true;
-                },
-            },
-        })
         .state('communityDataSearch', {
             url: '/community-search/?query_string&offset&limit',
             component: 'dataDepotBrowser',
@@ -829,7 +808,7 @@ function config(
             },
         })
         .state('publicData', {
-            url: '/public/',
+            url: '/public/?typeFilters&query_string',
             component: 'dataDepotPublicationsBrowser',
             params: {
                 systemId: 'nees.public',
@@ -840,7 +819,7 @@ function config(
                     return {
                         fileMgr: 'public',
                         baseUrl: '/api/public/files',
-                        searchState: 'publicDataSearch',
+                        searchState: 'publicData',
                     };
                 },
                 path: ($stateParams)=>{
@@ -864,7 +843,7 @@ function config(
                     return {
                         fileMgr: 'public',
                         baseUrl: '/api/public/files',
-                        searchState: 'publicDataSearch',
+                        searchState: 'publicData',
                     };
                 },
                 path: ($stateParams)=>{
@@ -933,7 +912,7 @@ function config(
                     let filePath = $stateParams.filePath;
                     DataBrowserService.apiParams.fileMgr = 'published';
                     DataBrowserService.apiParams.baseUrl = '/api/public/files';
-                    DataBrowserService.apiParams.searchState = 'publicDataSearch';
+                    DataBrowserService.apiParams.searchState = 'publicData';
                     return DataBrowserService.browse({ system: systemId, path: filePath });
                 },
                 auth: () => {

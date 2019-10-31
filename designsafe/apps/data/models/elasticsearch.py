@@ -207,7 +207,7 @@ class IndexedPublication(DocType):
             'project': String(fields={'_exact': Keyword()}),
         })
     })
-    project = Nested(properties={
+    project = Object(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
         'doi': String(fields={'_exact':Keyword()}),
@@ -215,7 +215,7 @@ class IndexedPublication(DocType):
         'name': String({'_exact':Keyword()}),
         'owner': String(),
         'uuid': String({'_exact':Keyword()}),
-        'value': Nested(properties={
+        'value': Object(properties={
             'assocaitedProjects': Nested(properties={
                 'href': String(fields={'_exact': Keyword()}),
                 'title': String(fields={'_exact': Keyword()}, analyzer='english')
