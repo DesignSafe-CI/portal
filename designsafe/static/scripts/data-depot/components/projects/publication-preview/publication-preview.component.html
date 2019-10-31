@@ -107,6 +107,11 @@
         </tr>
     </table>
     <br>
+    <div style="margin-bottom: 2px;" ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading">
+        <a data-ng-click="$ctrl.treeDiagram()">
+            <strong>View Data Diagram</strong>
+        </a>
+    </div>
     <!-- Experiments -->
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
@@ -140,11 +145,6 @@
         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" params="$ctrl.fl"></files-listing>
     </div>
     <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
-        <div style="margin-bottom: 2px;">
-            <a data-ng-click="$ctrl.treeDiagram(experiment)">
-                <strong>View Data Diagram</strong>
-            </a>
-        </div>
         <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
             <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                 <table style="width:100%">

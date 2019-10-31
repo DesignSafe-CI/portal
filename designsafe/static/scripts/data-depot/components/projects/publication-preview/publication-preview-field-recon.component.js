@@ -212,12 +212,11 @@ class PublicationPreviewFieldReconCtrl {
         });
     }
 
-    treeDiagram(rootCategory) {
+    treeDiagram() {
         this.$uibModal.open({
             component: 'projectTree',
             resolve: {
                 project: () => {return this.browser.project; },
-                rootCategoryUuid: () => {return rootCategory.uuid; },
                 readOnly: () => {return true;},
             },
             size: 'lg'
