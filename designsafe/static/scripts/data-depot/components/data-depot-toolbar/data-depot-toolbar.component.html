@@ -2,7 +2,7 @@
         <div class="btn-toolbar btn-toolbar-left"
              role="toolbar"
              aria-label="Data Browser Search"
-             style="with:160px; float:left; margin-left:15px;"
+             style="width:160px; float:left; margin-left:15px;"
              ng-if="apiParams.searchState">
         </div>
         <div class="btn-toolbar btn-toolbar-left" role="toolbar" aria-label="Data Browser Toolbar">
@@ -63,4 +63,10 @@
             </div>
         </div>
     </div>
-    
+
+<div class="alert alert-warning" ng-show="['Google Drive', 'Box'].includes($ctrl.placeholder())">
+    <p>Please be aware that {{$ctrl.placeholder()}} has data transfer rate limits. For additional information and questions, please refer to the documentation   
+        <a href="https://box.dev/en/guides/api-calls/permissions-and-errors/rate-limits/" target="_blank" ng-if="$ctrl.placeholder() === 'Box'">here. </a>
+        <a href="https://developers.google.com/admin-sdk/data-transfer/v1/limits" ng-if="$ctrl.placeholder() === 'Google Drive'" target="_blank">here.</a>
+    </p>
+</div>
