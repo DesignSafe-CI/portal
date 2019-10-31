@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^initialize/$', views.initialize_token, name='initialize_token'),
     url(r'^oauth2/$', views.oauth2_callback, name='oauth2_callback'),
     url(r'^disconnect/$', views.disconnect, name='disconnect'),
+    url(r'^privacy-policy/$', views.privacy_policy, name='privacy_policy')
 ]

@@ -118,6 +118,11 @@
         </tr>
     </table>
     <br>
+    <div style="margin-bottom: 2px;" ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading">
+        <a data-ng-click="$ctrl.treeDiagram()">
+            <strong>View Data Diagram</strong>
+        </a>
+    </div>
     <!-- Missions -->
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
@@ -182,11 +187,6 @@
             </div>
         </div>
         <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="mission in $ctrl.browser.project.mission_set">
-            <div style="margin-bottom: 2px;">
-                <a data-ng-click="$ctrl.treeDiagram(mission)">
-                    <strong>View Data Diagram</strong>
-                </a>
-            </div>
             <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
                 <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
                     <table style="width:100%">
@@ -225,10 +225,8 @@
                         </div>
                         <div style="display: inline-block; width: 78%; font-weight:bold;">
                             <ul style="list-style:none; padding-left:0;">
-                                <li> Place: {{mission.value.location}} </li>
-                                <li> Lat: {{mission.value.latitude}} </li>
-                                <li> Lon: {{mission.value.longitude}} </li>
-                                <li> Elevation: {{mission.value.elevation}} </li>
+                                <li>{{mission.value.location}} | Lat {{mission.value.latitude}} Long {{mission.value.longitude}}</li>
+                                <!-- <li> Elevation: {{mission.value.elevation}} </li> -->
                             </ul>
                         </div>
                         <div style="display:inline-block; width:20%;">Date of Publication</div>
@@ -344,10 +342,8 @@
                                         </div>
                                         <div style="display: inline-block; width: 78%; font-weight:bold;">
                                             <ul style="list-style:none; padding-left:0;">
-                                                <li> Place: {{collection.value.location}} </li>
-                                                <li> Lat: {{collection.value.latitude}} </li>
-                                                <li> Lon: {{collection.value.longitude}} </li>
-                                                <li> Elevation: {{collection.value.elevation}} </li>
+                                                <li>{{collection.value.location}} | Lat {{collection.value.latitude}} Long {{collection.value.longitude}}</li>
+                                                <!-- <li> Elevation: {{collection.value.elevation}} </li> -->
                                             </ul>
                                         </div>
                                         <div style="display: inline-block; width:20%; vertical-align: top;">

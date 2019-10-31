@@ -378,17 +378,19 @@
                         <div style="display: inline-block; width: 78%; font-weight:bold;"
                              data-ng-if="collection.value.location">
                             <ul style="list-style:none; padding-left:0;">
-                                <li data-ng-if="collection.value.location">
-                                    Place: {{collection.value.location}}
-                                </li>
-                                <li data-ng-if="collection.value.latitude">
-                                    Lat: {{collection.value.latitude}}
-                                </li>
-                                <li data-ng-if="collection.value.longitude">
-                                    Lon: {{collection.value.longitude}}
-                                </li>
-                                <li data-ng-if="collection.value.elevation">
-                                    Elevation: {{collection.value.elevation}}
+                                <li>
+                                    <span data-ng-if="collection.value.location">
+                                        {{collection.value.location}} | 
+                                    </span>
+                                    <span data-ng-if="collection.value.latitude">
+                                        Lat {{collection.value.latitude}}
+                                    </span>
+                                    <span data-ng-if="collection.value.longitude">
+                                        Long {{collection.value.longitude}}
+                                    </span>
+                                    <!-- <li data-ng-if="collection.value.elevation">
+                                        Elevation: {{collection.value.elevation}}
+                                    </li> -->
                                 </li>
                             </ul>
                         </div>

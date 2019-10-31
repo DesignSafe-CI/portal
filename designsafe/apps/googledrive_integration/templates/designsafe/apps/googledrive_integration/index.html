@@ -21,6 +21,9 @@
                             Google Drive integration is enabled. DesignSafe can connect to
                             Google Drive as <em>{{googledrive_connection.displayName}} ({{googledrive_connection.emailAddress}})</em>.
                         </p>
+                        <p>
+                            <a href="{% url 'designsafe_data:data_depot' %}googledrive/" class="btn btn-default">Return to the Data Depot</a>
+                        </p>
                     {% else %}
                         <p class="text-warning">
                             While you have previously authorized DesignSafe to connect
@@ -43,11 +46,12 @@
         </div>
         <div class="col-md-8">
             <p class="lead">
-                <em class="label label-success">New!</em>
                 By connecting your Google Drive account with DesignSafe, you can access your
                 Google Drive files in the DesignSafe Data Depot. You can select files and
                 folders to copy to DesignSafe where you can operate on those files in the
                 Workspace. You can also send files from DesignSafe back to Google Drive.
+
+                For further information on usage, see the <a href="{% url 'googledrive_integration:privacy_policy' %}">Privacy Policy</a>.
             </p>
         </div>
     </div>

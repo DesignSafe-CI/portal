@@ -124,6 +124,9 @@ class ManageHybridSimCtrl {
             this.data.busy = false;
             this.ui.showAddSimulationForm = false;
             this.form.addSimulation = [{}];
+            this.data.users.forEach((user) => {
+                user.authorship = false;
+            });
         });
     }
 
