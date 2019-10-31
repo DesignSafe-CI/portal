@@ -8,7 +8,8 @@ from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from .models import (DesignSafeProfile, NotificationPreferences,
-    DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities)
+    DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities, 
+    DesignSafeProfileNHTechnicalDomains)
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
 import re
@@ -450,6 +451,12 @@ class ProfessionalProfileForm(forms.ModelForm):
         required=True,
         widget=forms.CheckboxSelectMultiple,
         label="Natural Hazards Interests (check all that apply)"
+    )
+    nh_technical_domains = forms.ModelMultipleChoiceField(
+        queryset=DesignSafeProfileNHTechnicalDomains.objects.all(),
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+        label="Technical Domains (check all that apply)"
     )
     bio = forms.CharField(
         max_length=4096,

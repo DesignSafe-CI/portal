@@ -88,8 +88,11 @@ class FilesListingCtrl {
             $event.stopPropagation();
         }
         let systemId = file.system || file.systemId;
+        let stateName = this.$state.current.name;
         let filePath;
-        if (file.path == '/') {
+        if (stateName === 'googledriveData') {
+            filePath = file.id;
+        } else if (file.path == '/') {
             filePath = file.path + file.name;
         } else {
             filePath = file.path;
@@ -99,7 +102,6 @@ class FilesListingCtrl {
                 file, this.browser.listing
             );
         }
-        let stateName = this.$state.current.name;
         let version = 1;
         if (file.system === 'nees.public') {
             stateName = 'neesPublished';
@@ -111,7 +113,7 @@ class FilesListingCtrl {
         }
         return this.$state.go(
             stateName,
-            { 
+            {
                 systemId: systemId,
                 filePath: filePath,
                 version: version,
@@ -122,10 +124,19 @@ class FilesListingCtrl {
     }
 
     selectAll () {
-        if (this.browser.selected.length) {
-            this.DataBrowserService.deselect(this.browser.listing.children);
+        let deselect = false;
+        this.listing().children.forEach((file) => {
+            if (typeof file._ui === 'undefined') {
+                file._ui = {selected: false};
+            }
+            if (file._ui.selected === true){
+                deselect = true;
+            }
+        });
+        if (deselect) {
+            this.DataBrowserService.deselect(this.listing().children);
         } else {
-            this.DataBrowserService.select(this.browser.listing.children, true);
+            this.DataBrowserService.select(this.listing().children, false);
         }
     }
 

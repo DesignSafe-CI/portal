@@ -8,26 +8,26 @@ class GoogleDriveFile(object):
     """Represents a google drive file"""
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
-      '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
-      '.dcm', '.dicm', '.dicom', '.svs', '.tga',
+        '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
+        '.dcm', '.dicm', '.dicom', '.svs', '.tga',
     ]
 
     SUPPORTED_TEXT_PREVIEWS = [
-      '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css', '.csv', '.cxx',
-      '.diff', '.doc', '.docx', '.erb', '.gdoc', '.groovy', '.gsheet', '.h', '.haml', '.hh', '.htm',
-      '.html', '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.ods', '.odt', '.odp',
-      '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
-      '.scm', '.script', '.sh', '.sml', '.sql', '.txt', '.vi', '.vim', '.wpd', '.xls', '.xlsm',
-      '.xlsx', '.xml', '.xsd', '.xsl', '.yaml',
+        '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css', '.csv', '.cxx',
+        '.diff', '.doc', '.docx', '.erb', '.gdoc', '.groovy', '.gsheet', '.h', '.haml', '.hh', '.htm',
+        '.html', '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.ods', '.odt', '.odp',
+        '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
+        '.scm', '.script', '.sh', '.sml', '.sql', '.txt', '.vi', '.vim', '.wpd', '.xls', '.xlsm',
+        '.xlsx', '.xml', '.xsd', '.xsl', '.yaml',
     ]
 
     SUPPORTED_OBJECT_PREVIEW_EXTS = [
-      '.pdf',
-      '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
+        '.pdf',
+        '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
 
-      # VIDEO
-      '.3g2', '.3gp', '.avi', '.m2v', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
-      '.ogg', '.mts', '.qt', '.wmv',
+        # VIDEO
+        '.3g2', '.3gp', '.avi', '.m2v', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
+        '.ogg', '.mts', '.qt', '.wmv',
     ]
 
     SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
@@ -59,13 +59,13 @@ class GoogleDriveFile(object):
             else:
                 path = '/'.join([self._parent.path, self.name])
         elif 'parents' in self._item:
-            parent = self._item
+            parent = self
             path = '{}'.format(self.name)
             while True:
                 try:
-                    self._path_collection.insert(0, {'id': parent['id'], 'name': '' if parent['name'] == 'My Drive' else parent['name']})
-                    parent = self._driveapi.files().get(fileId=parent['parents'][0], fields="parents, name, id").execute()
-                    parent_name = '' if parent['name'] == 'My Drive' else parent['name']
+                    self._path_collection.insert(0, {'id': parent.id, 'name': '' if parent.name == 'My Drive' else parent.name})
+                    parent = GoogleDriveFile(self._driveapi.files().get(fileId=parent._item['parents'][0], fields="parents, name, id, mimeType").execute())
+                    parent_name = '' if parent.name == 'My Drive' else parent.name
                     path = "{}/{}".format(parent_name, path)
                 except (AttributeError, KeyError):
                     break
@@ -74,7 +74,7 @@ class GoogleDriveFile(object):
         return path
 
     @property
-    def size(self):
+    def length(self):
         return self._item.get('size')
 
     @property
@@ -89,6 +89,13 @@ class GoogleDriveFile(object):
             return 'file'
 
     @property
+    def format(self):
+        if self._item['mimeType'] == 'application/vnd.google-apps.folder':
+            return 'folder'
+        else:
+            return 'raw'
+
+    @property
     def ext(self):
         try:
             return '.{}'.format(self._item['fileExtension']).lower()
@@ -98,10 +105,10 @@ class GoogleDriveFile(object):
     @property
     def trail(self):
         trail = [{'name': self._path_collection[i]['name'] or '/',
-                    'system': None,
-                    'resource': 'googledrive',
-                    'id': self._path_collection[i]['id'],
-                    'path': '/'.join(j['name'] for j in self._path_collection[0:i + 1]) or '/',
+                  'system': None,
+                  'resource': 'googledrive',
+                  'id': self._path_collection[i]['id'],
+                  'path': '/'.join(j['name'] for j in self._path_collection[0:i + 1]) or '/',
                   } for i in range(0, len(self._path_collection))]
 
         return trail
@@ -139,10 +146,11 @@ class GoogleDriveFile(object):
             'system': None,
             'id': self.id,
             'type': self.type,
+            'format': self.format,
             'path': self.path,
             'name': self.name,
             'ext': self.ext,
-            'size': self.size,
+            'length': self.length,
             'lastModified': self.last_modified,
             '_actions': [],
             'permissions': pems,

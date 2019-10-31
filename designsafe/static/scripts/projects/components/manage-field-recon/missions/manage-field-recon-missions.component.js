@@ -235,6 +235,7 @@ class ManageFieldReconMissionsCtrl {
             }
         }).then((res) => {
             this.data.project.addEntity(res);
+            this.data.missions = this.project.mission_set;
             this.cleanForm();
         }, (err) => {
             this.data.error = err;
@@ -286,7 +287,7 @@ class ManageFieldReconMissionsCtrl {
         }).then( (res) => {
             let mission = this.data.project.getRelatedByUuid(res.uuid);
             mission.update(res);
-            this.data.experiments = this.project.mission_set;
+            this.data.missions = this.project.mission_set;
             delete this.data.editMission;
             if (window.sessionStorage.experimentData) {
                 this.close({ $value: mission });

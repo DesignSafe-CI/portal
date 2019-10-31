@@ -132,6 +132,7 @@ class ManageSimulationCtrl {
             }
         }).then((res) => {
             this.data.project.addEntity(res);
+            this.data.simulations = this.data.project.simulation_set;
         }).then(() => {
             this.data.busy = false;
             this.ui.showAddSimulationForm = false;

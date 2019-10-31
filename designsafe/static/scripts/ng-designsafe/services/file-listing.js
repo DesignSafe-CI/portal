@@ -42,13 +42,19 @@ export function FileListing($http, $q) {
         _.each(entities, function(entity){
             if (typeof entity !== 'undefined' &&
             typeof entity._links !== 'undefined' &&
-            typeof entity._links.associationIds !== 'undefined'){
-                _.each(entity._links.associationIds, function(asc){
-                    if (asc.title === 'file'){
+            typeof entity._links.associationIds !== 'undefined') {
+                _.each(entity._links.associationIds, function (asc) {
+                    if (asc.title === 'file') {
                         var comps = asc.href.split('project-' + projectId, 2);
-                        if ( comps.length === 2 &&
-                   path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '')){
+                        if (comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '')) {
                             self._entities.push(entity);
+                        }
+                        if (!comps[1].replace(/^\/+/, '').includes('.')) {
+                            if (comps.length === 2 && self._parent.path.replace(/^\/+/, '').startsWith(comps[1].replace(/^\/+/, ''))) {
+                                if (!self._parent._entities.includes(entity)) {
+                                    self._parent._entities.push(entity);
+                                }
+                            }
                         }
                     }
                 });

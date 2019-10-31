@@ -335,6 +335,7 @@ def profile_edit(request):
             pro_form.save()
 
             data = form.cleaned_data
+            pro_data = pro_form.cleaned_data
             # punt on PI Eligibility for now
             data['piEligibility'] = tas_user['piEligibility']
 
@@ -348,13 +349,21 @@ def profile_edit(request):
                 ds_profile = user.profile
                 ds_profile.ethnicity = data['ethnicity']
                 ds_profile.gender = data['gender']
+                ds_profile.bio = pro_data['bio']
+                ds_profile.website = pro_data['website']
+                ds_profile.orcid_id = pro_data['orcid_id']
+                ds_profile.professional_level = pro_data['professional_level']
                 
             except ObjectDoesNotExist as e:
                 logger.info('exception e: {} {}'.format(type(e), e ))
                 ds_profile = DesignSafeProfile(
                     user=user,
                     ethnicity=data['ethnicity'],
-                    gender=data['gender']
+                    gender=data['gender'],
+                    bio=pro_data['bio'],
+                    website=pro_data['website'],
+                    orcid_id=pro_data['orcid_id'],
+                    professional_level=pro_data['professional_level']
                     )
 
             ds_profile.update_required = False

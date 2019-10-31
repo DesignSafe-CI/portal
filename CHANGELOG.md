@@ -1,4 +1,30 @@
 # DesignSafe-CI Portal Release Notes
+## v4.7.4 [2019-10-31]
+* Hotfix for Professional Profile fields that weren't updating correctly.
+## v4.7.3 [2019-10-30]
+* Publication Pipeline fixes
+* Enforce mandatory profile updates.
+
+* fix(publication): Field Research Template fixes
+* feat: Add manage account to user menu dropdown
+## v4.7.3-20191004
+Fixes: 
+* Edit profile update message.
+
+## v4.7.3-20191003
+Fixes: 
+* Field Recon project bugfixes.
+
+## v4.7.3-20191002
+Fixes: 
+* Styling changes for Edit Profile page.
+
+## v4.7.3-20191017
+Improvements:
+* Add new fields to user profiles
+Fixes:
+* Publication Pipeline fixes
+* Fix navigation in Google Drive
 
 ## v4.7.2 [2019-10-08]
 

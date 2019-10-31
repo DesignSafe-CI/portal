@@ -88,6 +88,11 @@
                     <dd> {{ interest.description }} </dd>
                 {% endfor %}
 
+                <dt> Technical Domains </dt>
+                {% for interest in ds_profile.nh_technical_domains.all %}
+                    <dd> {{ interest.description }} </dd>
+                {% endfor %}
+
                 <dt> Research Activities </dt>
                 {% for ra in ds_profile.research_activities.all %}
                     <dd> {{ ra.description }} </dd>

@@ -58,11 +58,13 @@
                 </td>
             </tr>
             <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhType">
+                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes">
                 <td>Natural Hazard Type</td>
                 <td class="prj-data">
-                    <span ng-if="!$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhType }}</span>
-                    <span ng-if="$ctrl.browser.project.value.nhTypeOther">{{ $ctrl.browser.project.value.nhTypeOther }}</span>
+                    <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
+                        <span ng-if="!$last">{{ nhtype }},</span>
+                        <span ng-if="$last">{{ nhtype }}</span>
+                    </span>
                 </td>
             </tr>
             <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
@@ -153,18 +155,6 @@
                     <div style="display: inline-block;
                                 width:78%;
                                 font-weight: bold;">
-                        <!-- <div data-ng-repeat="author in
-                            report.value.authors |
-                            orderBy: 'order'"
-                            data-ng-if="!author.length &&
-                            author.authorship">
-                            <span data-ng-if="!author.guest">
-                                <ds-user-list class="prj-data" usernames="author.name"></ds-user-list>
-                            </span>
-                            <span data-ng-if="author.guest">
-                                {{author.lname}}, {{author.fname}}
-                            </span>
-                        </div> -->
                         <ds-user-list authors="report.value.authors"></ds-user-list>
                         <ds-author-list authors="[$ctrl.browser.project.value.pi]"></ds-author-list>
                     </div>
@@ -255,7 +245,7 @@
                             <button class="btn btn-info btn-sm"
                                     style="padding: 0px 8px; border-radius: 4px;"
                                     ng-disabled="!$ctrl.readOnly"
-                                    data-ng-click="$ctrl.showCitation(missino)">
+                                    data-ng-click="$ctrl.showCitation(mission)">
                                 Citation
                             </button>
                         </div>
@@ -347,17 +337,7 @@
                                             Data Collectors
                                         </div>
                                         <div style="display: inline-block; width:78%; font-weight: bold;">
-                                            <div data-ng-repeat="author in collection.value.dataCollectors | orderBy: 'order'"
-                                                data-ng-if="!author.length && author.authorship">
-                                                <span data-ng-if="!author.guest">
-                                                    <ds-user data-username="author.name" data-format="lname">
-                                                        {{author}}
-                                                    </ds-user>
-                                                </span>
-                                                <span data-ng-if="author.guest">
-                                                    {{author.lname}}, {{author.fname}}
-                                                </span>
-                                            </div>
+                                            <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
                                         </div>
                                         <div style="display: inline-block; width:20%; vertical-align: top;">
                                             Site Location

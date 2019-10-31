@@ -456,7 +456,7 @@
                                 style="margin-bottom: 5px;"
                                 data-ng-options="item for item in $ctrl.rapidEventTypes"
                                 data-ng-model="$ctrl.form.nhTypes[$index]"
-                                data-ng-required="true"
+                                data-ng-required="$first"
                                 class="form-control"
                                 data-ng-if="$ctrl.showNhTypesDropdown($index)">
                             <option value="">-- Select Natural Hazard Type --</option>
