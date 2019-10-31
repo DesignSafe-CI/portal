@@ -337,6 +337,9 @@ class ManageExperimentsCtrl {
             }).then((res) => {
                 this.data.project.addEntity(res);
                 this.data.experiments = this.data.project.experiment_set;
+                this.data.users.forEach((user) => {
+                    user.authorship = false;
+                });
             });
         });
 
