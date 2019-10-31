@@ -244,17 +244,19 @@
                             <div style="display: inline-block; width: 78%; font-weight:bold;"
                                  data-ng-if="mission.value.location">
                                 <ul style="list-style:none; padding-left:0;">
-                                    <li data-ng-if="mission.value.location">
-                                        Place: {{mission.value.location}}
-                                    </li>
-                                    <li data-ng-if="mission.value.latitude">
-                                        Lat: {{mission.value.latitude}}
-                                    </li>
-                                    <li data-ng-if="mission.value.longitude">
-                                        Lon: {{mission.value.longitude}}
-                                    </li>
-                                    <li data-ng-if="mission.value.elevation">
-                                        Elevation: {{mission.value.elevation}}
+                                    <li>
+                                        <span data-ng-if="mission.value.location">
+                                            {{mission.value.location}} | 
+                                        </span>
+                                        <span data-ng-if="mission.value.latitude">
+                                            Lat {{mission.value.latitude}}
+                                        </span>
+                                        <span data-ng-if="mission.value.longitude">
+                                            Long {{mission.value.longitude}}
+                                        </span>
+                                        <!-- <li data-ng-if="mission.value.elevation">
+                                            Elevation: {{mission.value.elevation}}
+                                        </li> -->
                                     </li>
                                 </ul>
                             </div>
