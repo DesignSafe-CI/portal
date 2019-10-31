@@ -1,4 +1,6 @@
 # DesignSafe-CI Portal Release Notes
+## v4.7.4 [2019-10-31]
+* Hotfix for Professional Profile fields that weren't updating correctly.
 ## v4.7.3 [2019-10-30]
 * Publication Pipeline fixes
 * Enforce mandatory profile updates.
