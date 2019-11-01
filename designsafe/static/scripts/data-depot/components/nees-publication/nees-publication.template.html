@@ -99,6 +99,32 @@
                         </td>
                     </tr>
 
+                    <tr ng-if="$ctrl.project.metadata.experiments[0].doi">
+                        <td style="padding:0px;">
+                            <table class="table" style="margin-bottom:0;">
+                                <tbody>
+                                    <tr>
+                                        <th style="border-top:none; width:25%">DOIs</th>
+                                        <td style="border-top:none; width:75%">
+                                            <button class="btn btn-sm btn-info" ng-click="$ctrl.showDoiList($ctrl.project)">
+                                                View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style="padding:0px;">
+                            <table class="table" style="margin-bottom:0;">
+                                <tbody>
+                                    <tr>
+                                        <th style="border-top:none; width:25%">&nbsp;</th>
+                                        <td style="border-top:none; width:75%">&nbsp;</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

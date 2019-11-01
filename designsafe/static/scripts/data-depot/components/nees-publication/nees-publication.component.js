@@ -93,6 +93,14 @@ class NeesPublicationCtrl {
             }
         });
     }   
+    showDoiList(prj) {
+        this.$uibModal.open({
+            component: 'neesDoiList',
+            resolve: {
+                project: () => prj
+            }
+        });
+    }
 }
 
 export const NeesPublishedComponent = {

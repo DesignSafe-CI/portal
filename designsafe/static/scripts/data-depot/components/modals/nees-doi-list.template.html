@@ -1,0 +1,23 @@
+<div class="modal-header">
+    <h4 class="modal-title">DOIs</h4>
+</div>
+<div class="modal-body">
+    <ul>
+        <li ng-repeat="doi in $ctrl.experimentDois">
+            <div>
+                {{ doi.title }}
+            </div>
+            <div>
+                DOI: {{ doi.DOI }}
+            </div>
+            <div>
+                <a href="{{doi.doiURL}}" target="_blank">{{doi.doiURL}}</a>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-info btn-sm pull-right" ng-click="$ctrl.close()">
+        Close
+    </button>
+</div>
