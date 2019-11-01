@@ -12,6 +12,7 @@ class ManageFieldReconCollectionsCtrl {
 
     $onInit() {
         this.project = this.resolve.project;
+        this.edit = this.resolve.edit;
         var members = [this.project.value.pi].concat(
             this.project.value.coPis,
             this.project.value.teamMembers,
@@ -113,6 +114,9 @@ class ManageFieldReconCollectionsCtrl {
             },
         };
         this.clearForm();
+        if (this.edit){
+            this.editCollection(this.edit);
+        }
     }
 
     clearForm() {

@@ -14,79 +14,62 @@ class PipelineLicensesCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
-        this.experiment = this.ProjectService.resolveParams.experiment;
+        this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.license = {
             datasets: '',
             works: '',
             software: '',
         };
+        this.ui = {
+            loading: true
+        };
 
         if (!this.project) {
-            /*
-            Try to pass selected listings into a simple object so that we can
-            rebuild the project and selected files if a refresh occurs...
-            for now we can send them back to the selection area
-            */
             this.ProjectService.get({ uuid: this.projectId }).then((project) => {
-                this.projType = project.value.projectType;
-                this.uuid = project.uuid;
-                if (this.projType === 'experimental') {
-                    this.$state.go(
-                        'projects.pipelineSelect',
-                        { projectId: this.uuid },
-                        { reload: true }
-                    );
-                } else if (this.projType === 'simulation') {
-                    this.$state.go(
-                        'projects.pipelineSelectSim',
-                        { projectId: this.uuid },
-                        { reload: true }
-                    );
-                } else if (this.projType === 'hybrid_simulation') {
-                    this.$state.go(
-                        'projects.pipelineSelectHybSim',
-                        { projectId: this.uuid },
-                        { reload: true }
-                    );
-                } else if (this.projType === 'field_recon') {
-                    this.$state.go(
-                        'projects.pipelineSelectFieldRecon',
-                        { projectId: this.uuid },
-                        { reload: true }
-                    );
-                } else if (this.projType === 'other') {
-                    this.$state.go(
-                        'projects.pipelineSelectOther',
-                        { projectId: this.uuid },
-                        { reload: true }
-                    );
-                }
+                this.project = project;
+                this.prepProject();
+                this.ui.loading = false;
+                this.$state.go(this.selectDest, { projectId: this.projectId }, { reload: true });
             });
         } else {
-            this.projType = this.project.value.projectType;
-            if (this.projType === 'experimental') {
-                this.placeholder = 'Experiment';
-            } else if (this.projType === 'simulation') {
-                this.placeholder = 'Simulation';
-            } else if (this.projType === 'hybrid_simulation') {
-                this.placeholder = 'Hybrid Simulation';
-            } else if (this.projType === 'field_recon') {
-                this.placeholder = 'Mission';
-            }
+            this.prepProject();
+            this.ui.loading = false;
+        }
+    }
+
+    prepProject() {
+        this.selectDest = null;
+        this.placeholder = 'Entity';
+        if (this.project.value.projectType === 'experimental'){
+            this.selectDest = 'projects.pipelineSelectExp';
+            this.placeholder = 'Experiment';
+        } else if (this.project.value.projectType === 'simulation'){
+            this.selectDest = 'projects.pipelineSelectSim';
+            this.placeholder = 'Simulation';
+        } else if (this.project.value.projectType === 'hybrid_simulation'){
+            this.selectDest = 'projects.pipelineSelectHybSim';
+            this.placeholder = 'Hybrid Simulation';
+        } else if (this.project.value.projectType === 'field_recon'){
+            this.selectDest = 'projects.pipelineSelectField';
+            this.placeholder = 'Mission';
+        } else if (this.project.value.projectType === 'other') {
+            this.selectDest = 'projects.pipelineSelectOther';
         }
     }
 
     validSelection() {
-        if (typeof this.projType === 'undefined') {
+        if (this.project) {
+            if (typeof this.project.value.projectType === 'undefined') {
+                return false;
+            }
+            if (this.license.datasets ||
+                this.license.works ||
+                this.license.software) {
+                return true;
+            }
             return false;
         }
-        if (this.license.datasets ||
-            this.license.works ||
-            this.license.software) {
-            return true;
-        }
-        return false;
     }
 
     reset() {
@@ -120,7 +103,7 @@ class PipelineLicensesCtrl {
         this.$state.go('projects.pipelineAuthors', {
             projectId: this.projectId,
             project: this.project,
-            experiment: this.experiment,
+            primaryEntities: this.primaryEntities,
             selectedListings: this.selectedListings,
         }, { reload: true });
     }
@@ -154,8 +137,6 @@ class PipelineLicensesCtrl {
         });
     }
 }
-
-PipelineLicensesCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];
 
 export const PipelineLicensesComponent = {
     template: PipelineLicensesTemplate,

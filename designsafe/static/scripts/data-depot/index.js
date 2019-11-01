@@ -343,9 +343,9 @@ function config(
                 ],
             },
         })
-        .state('projects.pipelineSelect', {
+        .state('projects.pipelineSelectExp', {
             url: '/projects/{projectId}/curation/selection',
-            component: 'pipelineSelect',
+            component: 'pipelineSelectExp',
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
@@ -386,9 +386,9 @@ function config(
                 }]
             }
         })
-        .state('projects.pipelineSelectFieldRecon', {
+        .state('projects.pipelineSelectField', {
             url: '/projects/{projectId}/curation/selectionFieldRecon{filePath:any}',
-            component: 'pipelineSelectFieldRecon',
+            component: 'pipelineSelectField',
             params: {
                 filePath: '/',
             },
@@ -405,7 +405,7 @@ function config(
             component: 'pipelineProject',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -415,7 +415,7 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -426,7 +426,7 @@ function config(
             component: 'pipelineExperiment',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -436,7 +436,7 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -447,7 +447,7 @@ function config(
             component: 'pipelineSimulation',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -457,7 +457,7 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -468,7 +468,7 @@ function config(
             component: 'pipelineHybrid',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -478,7 +478,7 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -503,13 +503,13 @@ function config(
                 ],
             },
         })
-        .state('projects.pipelineFieldRecon', {
+        .state('projects.pipelineField', {
             url: '/projects/{projectId}/curation/fieldRecon',
-            component: 'pipelineFieldRecon',
+            component: 'pipelineField',
             params: {
                 project: '',
                 selectedListings: '',
-                experiment: '',
+                primaryEntities: '',
             },
             resolve: {
                 params: ($stateParams, ProjectService) => {
@@ -517,16 +517,16 @@ function config(
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
                     ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
-                    ProjectService.resolveParams.experiment = $stateParams.experiment;
+                    ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                 }
             }
         })
-        .state('projects.pipelineCategories', {
+        .state('projects.pipelineSubEntityExp', {
             url: '/projects/{projectId}/curation/categories',
-            component: 'pipelineCategories',
+            component: 'pipelineSubEntityExp',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -536,18 +536,18 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
             },
         })
-        .state('projects.pipelineCategoriesSim', {
+        .state('projects.pipelineSubEntitySim', {
             url: '/projects/{projectId}/curation/categoriesSim',
-            component: 'pipelineCategoriesSim',
+            component: 'pipelineSubEntitySim',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -557,18 +557,18 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
             },
         })
-        .state('projects.pipelineCategoriesHybSim', {
+        .state('projects.pipelineSubEntityHybSim', {
             url: '/projects/{projectId}/curation/categoriesHybSim',
-            component: 'pipelineCategoriesHybSim',
+            component: 'pipelineSubEntityHybSim',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -578,18 +578,18 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
             },
         })
-        .state('projects.pipelineCategoriesFieldRecon', {
+        .state('projects.pipelineSubEntityField', {
             url: '/projects/{projectId}/curation/categoriesFieldRecon',
-            component: 'pipelineCategoriesFieldRecon',
+            component: 'pipelineSubEntityField',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -599,7 +599,7 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -610,7 +610,7 @@ function config(
             component: 'pipelineAuthors',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -620,7 +620,7 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -631,7 +631,7 @@ function config(
             component: 'pipelineTeam',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -641,7 +641,7 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -652,7 +652,7 @@ function config(
             component: 'pipelineLicenses',
             params: {
                 project: '',
-                experiment: '',
+                primaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -662,7 +662,7 @@ function config(
                     ($stateParams, ProjectService) => {
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
-                        ProjectService.resolveParams.experiment = $stateParams.experiment;
+                        ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],

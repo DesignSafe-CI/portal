@@ -55,7 +55,7 @@
     </table>
     <br>
     <div>
-        <a class="pull-left" ng-click="$ctrl.goSimulation()">
+        <a class="pull-left" ng-click="$ctrl.goPrimaryEntity()">
             <i class="fa fa-arrow-left"></i> Back to Proofread Simulation
         </a>
         <button class="btn btn-add pull-right" ng-click="$ctrl.goAuthors()">Continue</button>
@@ -74,7 +74,7 @@
     <!-- Categories Start -->
     <!-- Reports -->
     <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
-         ng-if="$ctrl.matchingGroup($ctrl.simulation, report) && $ctrl.browser.listings[report.uuid]"
+         ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, report) && $ctrl.browser.listings[report.uuid]"
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
             <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
@@ -94,7 +94,7 @@
                 <div class="well">
                     <p>{{ report.value.description }}</p>
                     <div>
-                        <span ng-click="$ctrl.editCategory(report)"><a>Edit</a></span>
+                        <span ng-click="$ctrl.editSubEntity(report)"><a>Edit</a></span>
                     </div>
                 </div>
                 <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
@@ -103,7 +103,7 @@
     </div>
     <!-- Models -->
     <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'"
-         ng-if="$ctrl.matchingGroup($ctrl.simulation, model)"
+         ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, model)"
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
             <button class="btn tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
@@ -122,14 +122,14 @@
             <div id="files-{{model.uuid}}" class="collapse in">
                 <div class="well">
                     <p ng-if="model.value.description">{{ model.value.description }}</p>
-                    <span ng-click="$ctrl.editCategory(model)"><a>Edit</a></span>
+                    <span ng-click="$ctrl.editSubEntity(model)"><a>Edit</a></span>
                 </div>
                 <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
         <!-- Inputs -->
         <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: 'value.title'"
-             ng-if="$ctrl.matchingGroup($ctrl.simulation, input) && $ctrl.matchingGroup(model, input)"
+             ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, input) && $ctrl.matchingGroup(model, input)"
         >
             <div class="dropdown dropdown-spacer-sm"
                  id="details-{{input.uuid}}"
@@ -159,7 +159,7 @@
                         <div id="files-{{input.uuid}}{{model.uuid}}" class="collapse in">
                             <div class="well">
                                 <p ng-if="input.value.description">{{ input.value.description }}</p>
-                                <span ng-click="$ctrl.editCategory(input)"><a>Edit</a></span>
+                                <span ng-click="$ctrl.editSubEntity(input)"><a>Edit</a></span>
                             </div>
                             <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]" params="$ctrl.fl"></files-listing>
                         </div>
@@ -168,7 +168,7 @@
                 </table>
                 <!-- Output -->
                 <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: 'value.title'"
-                     ng-if="$ctrl.matchingGroup($ctrl.simulation, output) && $ctrl.matchingGroup(model, output) && $ctrl.matchingGroup(input, output)"
+                     ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, output) && $ctrl.matchingGroup(model, output) && $ctrl.matchingGroup(input, output)"
                 >
                     <div class="dropdown dropdown-spacer-sm"
                          id="details-{{output.uuid}}"
@@ -197,7 +197,7 @@
                                     <div id="files-{{output.uuid}}{{model.uuid}}" class="collapse in">
                                         <div class="well">
                                             <p ng-if="output.value.description">{{ output.value.description }}</p>
-                                            <span ng-click="$ctrl.editCategory(output)"><a>Edit</a></span>
+                                            <span ng-click="$ctrl.editSubEntity(output)"><a>Edit</a></span>
                                         </div>
                                         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]" params="$ctrl.fl"></files-listing>
                                     </div>
@@ -214,7 +214,7 @@
     <!-- Models -->
         <!-- Analysis -->
         <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'"
-             ng-if="$ctrl.matchingGroup($ctrl.simulation, analysis) && $ctrl.browser.listings[analysis.uuid]"
+             ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, analysis) && $ctrl.browser.listings[analysis.uuid]"
         >
             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
                 <button class="btn tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
@@ -245,7 +245,7 @@
                         </table>
                         <p>{{ analysis.value.description }}</p>
                         <div>
-                            <span ng-click="$ctrl.editCategory(analysis)"><a>Edit</a></span>
+                            <span ng-click="$ctrl.editSubEntity(analysis)"><a>Edit</a></span>
                         </div>
                     </div>
                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>

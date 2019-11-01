@@ -55,7 +55,7 @@
     </table>
     <br>
     <div>
-        <a class="pull-left" ng-click="$ctrl.goFieldRecon()">
+        <a class="pull-left" ng-click="$ctrl.goPrimaryEntity()">
             <i class="fa fa-arrow-left"></i> Back to Proofread Field Research 
         </a>
         <button class="btn btn-add pull-right" ng-click="$ctrl.goAuthors()">Continue</button>
@@ -74,7 +74,7 @@
     <!-- Categories Start -->
     <!-- Reports -->
     <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
-         ng-if="$ctrl.matchingGroup($ctrl.mission, report) && $ctrl.browser.listings[report.uuid]"
+         ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, report) && $ctrl.browser.listings[report.uuid]"
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
             <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
@@ -94,7 +94,7 @@
                 <div class="well">
                     <p>{{ report.value.description }}</p>
                     <div>
-                        <span ng-click="$ctrl.editCategory(report)"><a>Edit</a></span>
+                        <span ng-click="$ctrl.editSubEntity(report)"><a>Edit</a></span>
                     </div>
                 </div>
                 <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
@@ -102,7 +102,7 @@
         </div>
     </div>
     <!-- Collections -->
-    <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup($ctrl.mission, collection)">
+    <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, collection)">
         <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
             <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                 style="width:100%;">
@@ -130,7 +130,7 @@
                     <div style="display: inline-block; width:20%;">Date of Collection</div>
                     <div style="display: inline-block; width: 78%; font-weight:bold;">
                         <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                        <span data-ng-if="$ctrl.mission.value.dateEnd">
+                        <span data-ng-if="$ctrl.primaryEntities.value.dateEnd">
                             &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                         </span>
                     </div>
@@ -171,7 +171,7 @@
                     </div>
                     <div ng-if="collection.value.description">
                         <p>{{ collection.value.description }}</p>
-                        <span ng-click="$ctrl.editCollection(collection)"><a>Edit</a></span>
+                        <span ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
                     </div>
                 </div>
                 <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>

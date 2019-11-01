@@ -58,7 +58,7 @@
         <a class="pull-left" ng-click="$ctrl.goProject()">
             <i class="fa fa-arrow-left"></i> Back to Proofread Project
         </a>
-        <button class="btn btn-add pull-right" ng-click="$ctrl.goCategories()">Continue</button>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goSubEntities()">Continue</button>
     </div>
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
@@ -72,22 +72,22 @@
         </p>
     </div>
     <!-- Simulation Header Start -->
-    <div class="well">
+    <div class="well" ng-if="!$ctrl.ui.loading">
         <div class="prj-head" style="padding-bottom:20px">
-            Mission | <strong>{{ $ctrl.mission.value.title }}</strong>
+            Mission | <strong>{{ $ctrl.primaryEntities.value.title }}</strong>
         </div>
         <!-- TEST -->
         <div style="display: inline-block; width:20%; vertical-align: top;">
                 Authors
             </div>
             <div style="display: inline-block; width:78%; font-weight: bold;">
-                <ds-author-list authors="$ctrl.mission.value.authors"></ds-author-list>
+                <ds-author-list authors="$ctrl.primaryEntities.value.authors"></ds-author-list>
             </div>
             <div style="display: inline-block; width:20%;">Date of Mission</div>
             <div style="display: inline-block; width: 78%; font-weight:bold;">
-                <span>{{$ctrl.mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                <span data-ng-if="$ctrl.mission.value.dateEnd">
-                    &#8213; {{$ctrl.mission.value.dateEnd | date:'MM-dd-yyyy' }}
+                <span>{{$ctrl.primaryEntities.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                <span data-ng-if="$ctrl.primaryEntities.value.dateEnd">
+                    &#8213; {{$ctrl.primaryEntities.value.dateEnd | date:'MM-dd-yyyy' }}
                 </span>
             </div>
             <div style="display: inline-block; width:20%; vertical-align: top;">
@@ -133,11 +133,11 @@
                 {{ $ctrl.browser.publication.licenses }}
             </strong>
             <p>
-                <br>{{ $ctrl.mission.value.description }}
+                <br>{{ $ctrl.primaryEntities.value.description }}
             </p>
         <!-- TEST -->
         <div><br>
-            <span class="prj-head" ng-click="$ctrl.editExp()"><a>Edit</a></span>
+            <span class="prj-head" ng-click="$ctrl.managePrimaryEntity()"><a>Edit</a></span>
         </div>
     </div>
     <!-- Simulation Header End -->

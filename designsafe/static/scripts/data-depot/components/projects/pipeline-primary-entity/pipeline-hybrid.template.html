@@ -58,7 +58,7 @@
         <a class="pull-left" ng-click="$ctrl.goProject()">
             <i class="fa fa-arrow-left"></i> Back to Proofread Project
         </a>
-        <button class="btn btn-add pull-right" ng-click="$ctrl.goCategories()">Continue</button>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goSubEntities()">Continue</button>
     </div>
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
@@ -72,30 +72,30 @@
         </p>
     </div>
     <!-- Hybrid Simulation Header Start -->
-    <div class="well">
+    <div class="well" ng-if="!$ctrl.ui.loading">
         <div class="prj-head" style="padding-bottom:20px">
-            Hybrid Simulation | <strong>{{ $ctrl.simulation.value.title }}</strong>
+            Hybrid Simulation | <strong>{{ $ctrl.primaryEntities.value.title }}</strong>
         </div>
         <div style="display:inline-block; width:20%;">Simulation Type</div>
-        <strong ng-if="!$ctrl.isValid($ctrl.simulation.value.experimentalFacilityOther)"
+        <strong ng-if="!$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
                 style="display:inline-block; width:78%; text-transform:capitalize;"
         >
-            {{ $ctrl.simulation.value.simulationType.replace('_', ' ') }}
+            {{ $ctrl.primaryEntities.value.simulationType.replace('_', ' ') }}
         </strong>
-        <strong ng-if="$ctrl.isValid($ctrl.simulation.value.experimentalFacilityOther)"
+        <strong ng-if="$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
                 style="display:inline-block; width:78%; text-transform:capitalize;"
         >
-            {{ $ctrl.simulation.value.simulationTypeOther }}
+            {{ $ctrl.primaryEntities.value.simulationTypeOther }}
         </strong>
         <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
         <div style="display:inline-block; width:78%; font-weight: bold;">
-            <ds-author-list authors="$ctrl.simulation.value.authors"></ds-author-list>
+            <ds-author-list authors="$ctrl.primaryEntities.value.authors"></ds-author-list>
         </div>
         <div>
-            <br>{{ $ctrl.simulation.value.description }}
+            <br>{{ $ctrl.primaryEntities.value.description }}
         </div>
         <div><br>
-            <span class="prj-head" ng-click="$ctrl.manageHybridSimulations()"><a>Edit</a></span>
+            <span class="prj-head" ng-click="$ctrl.managePrimaryEntity()"><a>Edit</a></span>
         </div>
     </div>
     <!-- Hybrid Simulation Header End -->

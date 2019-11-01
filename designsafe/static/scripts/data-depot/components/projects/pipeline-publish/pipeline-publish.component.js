@@ -68,22 +68,22 @@ class PipelinePublishCtrl {
 
             if (this.project.value.projectType === 'experimental') {
                 publication.experimentsList = [{
-                    uuid: this.resolve.resolveParams.experiment.uuid,
+                    uuid: this.resolve.resolveParams.primaryEntities.uuid,
                 }];
             } else if (this.project.value.projectType === 'simulation') {
                 publication.simulations = [{
-                    uuid: this.resolve.resolveParams.experiment.uuid,
+                    uuid: this.resolve.resolveParams.primaryEntities.uuid,
                 }];
             } else if (this.project.value.projectType === 'hybrid_simulation') {
                 publication.hybrid_simulations = [{
-                    uuid: this.resolve.resolveParams.experiment.uuid,
+                    uuid: this.resolve.resolveParams.primaryEntities.uuid,
                 }];
             } else if (this.project.value.projectType === 'field_recon') {
                 publication.missions = [{
-                    uuid: this.resolve.resolveParams.experiment.uuid,
+                    uuid: this.resolve.resolveParams.primaryEntities.uuid,
                 }];
             }
-            this.mainEntityUuid = this.resolve.resolveParams.experiment.uuid;
+            this.mainEntityUuid = this.resolve.resolveParams.primaryEntities.uuid;
         }
         this.publication = publication;
     }

@@ -58,7 +58,7 @@
             <a class="pull-left" ng-click="$ctrl.goProject()">
                 <i class="fa fa-arrow-left"></i> Back to Proofread Project
             </a>
-            <button class="btn btn-add pull-right" ng-click="$ctrl.goCategories()">Continue</button>
+            <button class="btn btn-add pull-right" ng-click="$ctrl.goSubEntities()">Continue</button>
         </div>
         <!-- progression map -->
         <div style="padding-top: 40px; padding-bottom: 40px;">
@@ -72,57 +72,57 @@
             </p>
         </div>
         <!-- Experiment Header Start -->
-        <div class="well">
+        <div class="well" ng-if="!$ctrl.ui.loading">
             <div class="prj-head" style="padding-bottom:20px">
-                Experiment | <strong>{{ $ctrl.experiment.value.title }}</strong>
+                Experiment | <strong>{{ $ctrl.primaryEntities.value.title }}</strong>
             </div>
             <div style="display:inline-block; width:20%;">Experiment Type</div>
-            <strong ng-if="!$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+            <strong ng-if="!$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
                     style="display:inline-block; width:78%; text-transform:capitalize;"
             >
-                {{ $ctrl.getET($ctrl.experiment) }}
+                {{ $ctrl.getET($ctrl.primaryEntities) }}
             </strong>
-            <strong ng-if="$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+            <strong ng-if="$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
                     style="display:inline-block; width:78%; text-transform:capitalize;"
             >
-                {{ $ctrl.experiment.value.experimentTypeOther }}
+                {{ $ctrl.primaryEntities.value.experimentTypeOther }}
             </strong>
             <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
             <div style="display:inline-block; width:78%; font-weight: bold;">
-                <ds-author-list authors="$ctrl.experiment.value.authors"></ds-author-list>
+                <ds-author-list authors="$ctrl.primaryEntities.value.authors"></ds-author-list>
             </div>
             <div style="display:inline-block; width:20%;">Experimental Facility</div>
-            <strong ng-if="!$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+            <strong ng-if="!$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
                     style="display:inline-block; width:78%; text-transform:capitalize;">
-                    {{ $ctrl.getEF($ctrl.experiment.value.experimentalFacility) }}
+                    {{ $ctrl.getEF($ctrl.primaryEntities.value.experimentalFacility) }}
             </strong>
-            <strong ng-if="$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+            <strong ng-if="$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
                     style="display:inline-block; width:78%; text-transform:capitalize;">
-                {{ $ctrl.experiment.value.experimentalFacilityOther }}
+                {{ $ctrl.primaryEntities.value.experimentalFacilityOther }}
             </strong>
             <div style="display:inline-block; width:20%;">Equipment Type</div>
-            <strong ng-if="!$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+            <strong ng-if="!$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
                     style="display:inline-block; width:78%; text-transform:capitalize;">
-                {{ $ctrl.getEQ($ctrl.experiment) }}
+                {{ $ctrl.getEQ($ctrl.primaryEntities) }}
             </strong>
-            <strong ng-if="$ctrl.isValid($ctrl.experiment.value.experimentalFacilityOther)"
+            <strong ng-if="$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
                     style="display:inline-block; width:78%; text-transform:capitalize;">
-                {{ $ctrl.experiment.value.equipmentTypeOther }}
+                {{ $ctrl.primaryEntities.value.equipmentTypeOther }}
             </strong>
-            <div ng-show="$ctrl.experiment.value.procedureStart">
+            <div ng-show="$ctrl.primaryEntities.value.procedureStart">
                 <div style="display:inline-block; width:20%;">Date of Experiment</div>
-                <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate($ctrl.experiment.value.procedureEnd)">
-                    {{ $ctrl.experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ $ctrl.experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
+                <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate($ctrl.primaryEntities.value.procedureEnd)">
+                    {{ $ctrl.primaryEntities.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ $ctrl.primaryEntities.value.procedureEnd | date:'MM-dd-yyyy' }}
                 </strong>
-                <strong style="display:inline-block; width:78%;" ng-if="!$ctrl.hasEndDate($ctrl.experiment.value.procedureEnd)">
-                    {{ $ctrl.experiment.value.procedureStart | date:'MM-dd-yyyy' }}
+                <strong style="display:inline-block; width:78%;" ng-if="!$ctrl.hasEndDate($ctrl.primaryEntities.value.procedureEnd)">
+                    {{ $ctrl.primaryEntities.value.procedureStart | date:'MM-dd-yyyy' }}
                 </strong>
             </div>
             <div>
-                <br>{{ $ctrl.experiment.value.description }}
+                <br>{{ $ctrl.primaryEntities.value.description }}
             </div>
             <div><br>
-                <span class="prj-head" ng-click="$ctrl.manageExperiments()"><a>Edit</a></span>
+                <span class="prj-head" ng-click="$ctrl.managePrimaryEntity()"><a>Edit</a></span>
             </div>
         </div>
         <!-- Experiment Header End -->
