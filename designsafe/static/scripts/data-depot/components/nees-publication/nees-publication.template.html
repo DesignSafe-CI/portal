@@ -159,6 +159,9 @@
                                                 <tr ng-if="experiment.doi">
                                                     <td>
                                                         DOI
+                                                        <button class="btn btn-info btn-sm" ng-click="$ctrl.showExp(experiment)">
+                                                            Citation
+                                                        </button>
                                                     </td>
                                                     <td>
                                                         {{experiment.doi}}

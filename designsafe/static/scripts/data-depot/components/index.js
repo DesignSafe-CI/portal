@@ -18,6 +18,7 @@ import { ExpPublishedViewComponent,
     FieldReconPublishedViewComponent,
     OtherPublishedViewComponent
 } from './published/published-view.component.js';
+import { NeesCitationModalComponent } from './modals/nees-citation-modal.component';
 
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);
 
@@ -40,5 +41,6 @@ ddComponents.component('simPublishedView', SimPublishedViewComponent);
 ddComponents.component('simHybPublishedView', HybSimPublishedViewComponent);
 ddComponents.component('fieldReconPublishedView', FieldReconPublishedViewComponent);
 ddComponents.component('otherPublishedView', OtherPublishedViewComponent);
+ddComponents.component('neesCitationModal', NeesCitationModalComponent);
 
 export default ddComponents;

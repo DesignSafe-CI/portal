@@ -1,11 +1,11 @@
 class NeesPublicationCtrl {
-    constructor($stateParams, $state, PublishedService, DataBrowserService) {
+    constructor($stateParams, $state, PublishedService, DataBrowserService, $uibModal) {
         'ngInject';
         this.$stateParams = $stateParams;
         this.$state = $state;
         this.PublishedService = PublishedService;
         this.DataBrowserService = DataBrowserService;
-
+        this.$uibModal = $uibModal;
         this.onBrowse = this.onBrowse.bind(this);
         this.onDetail = this.onDetail.bind(this);
         this.onSelect = this.onSelect.bind(this);
@@ -85,6 +85,14 @@ class NeesPublicationCtrl {
     resolveBreadcrumbHref(trailItem) {
         return this.$state.href('neesPublished', { filePath: trailItem.path.replace(/^\/+/, '') });
     }
+    showExp (exp) {
+        this.$uibModal.open({
+            component: 'neesCitationModal',
+            resolve: {
+                experiment: () => exp
+            }
+        });
+    }   
 }
 
 export const NeesPublishedComponent = {
