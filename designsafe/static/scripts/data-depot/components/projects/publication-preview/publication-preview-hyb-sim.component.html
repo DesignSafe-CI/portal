@@ -26,9 +26,7 @@
             <tr class="prj-row" ng-if="$ctrl.readOnly">
                 <td>
                     <span>DOI</span>
-                    <button class="btn btn-info btn-sm"
-                            style="padding: 0px 8px; border-radius: 4px;"
-                            data-ng-click="$ctrl.showCitation()">
+                    <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
                         Citation
                     </button>
                 </td>
@@ -185,8 +183,7 @@
                     </strong>
                     <div style="display:inline-block; width:20%;">
                         DOI
-                        <button class="btn btn-info btn-sm"
-                                style="padding: 0px 8px; border-radius: 4px;"
+                        <button class="btn btn-info btn-sm btn-cite"
                                 ng-disabled="!$ctrl.readOnly"
                                 data-ng-click="$ctrl.showCitation(hybsim)">
                             Citation
