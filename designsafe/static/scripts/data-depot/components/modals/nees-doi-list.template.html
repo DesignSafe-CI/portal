@@ -5,13 +5,10 @@
     <ul>
         <li ng-repeat="doi in $ctrl.experimentDois">
             <div>
-                {{ doi.title }}
+                {{ doi.citationString }}
             </div>
             <div>
-                DOI: {{ doi.DOI }}
-            </div>
-            <div>
-                <a href="{{doi.doiURL}}" target="_blank">{{doi.doiURL}}</a>
+                <a href="{{doi.doiURL}}" target="_blank">{{doi.doiUrl}}</a>
             </div>
         </li>
     </ul>
