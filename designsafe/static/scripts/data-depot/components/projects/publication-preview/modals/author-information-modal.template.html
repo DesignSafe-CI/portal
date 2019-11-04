@@ -1,0 +1,18 @@
+<div class="modal-header" style="background-color: #c6c6c6; display: flex; justify-content: space-between;">
+    <strong>{{ $ctrl.last }}, {{ $ctrl.first }}</strong>
+    <strong ng-click="$ctrl.close()" class="fa fa-times"></strong>
+</div>
+<div class="modal-body" style="display: flex; justify-content: space-between;">
+    <div>
+        <p>First Name</p>
+        <p>Last Name</p>
+        <p>Email</p>
+        <p>Institution</p>
+    </div>
+    <div>
+        <p style="font-weight: bold">{{ $ctrl.first }}</p>
+        <p style="font-weight: bold">{{ $ctrl.last }}</p>
+        <p style="font-weight: bold">{{ $ctrl.email }}</p>
+        <p style="font-weight: bold">{{ $ctrl.institution }}</p>
+    </div>
+</div>

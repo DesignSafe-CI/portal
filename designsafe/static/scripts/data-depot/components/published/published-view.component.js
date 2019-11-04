@@ -227,6 +227,16 @@ class PublishedViewCtrl {
         }
     }
 
+    showAuthor(author) {
+        this.$uibModal.open({
+            component: 'authorInformationModal',
+            resolve: {
+                author
+            },
+            size: 'sm'
+        });
+    }
+
     treeDiagram() {
         this.$uibModal.open({
             component: 'projectTree',
