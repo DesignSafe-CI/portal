@@ -107,7 +107,7 @@ class FileMediaView(View):
                             extra={
                                 'user': request.user.username,
                                 'sessionId': getattr(request.session, 'session_key', ''),
-                                'operation': 'preview',
+                                'operation': 'agave_file_preview',
                                 'info': {
                                              'systemId': system_id,
                                              'filePath': file_path}
