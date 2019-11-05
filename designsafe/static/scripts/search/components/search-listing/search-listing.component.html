@@ -25,9 +25,20 @@
           <!-- This is for designsafe projects -->
           <div ng-if="$ctrl.data.projectId">
             <h4><a ng-href="/data/browser/public/designsafe.storage.published/{{$ctrl.data.projectId}}"  target="_self"> {{$ctrl.data.project.value.projectId}}: {{$ctrl.data.project.value.title}} (<span style="text-transform:capitalize;">{{$ctrl.data.project.value.projectType}}</span>)</a> </h4>
-            <p><strong> Author: </strong> {{$ctrl.data.piLabel}}</p>
+            <p ng-if="$ctrl.data.piLabel"><strong> Author: </strong> {{$ctrl.data.piLabel}}</p>
+            <p ng-if="!$ctrl.data.piLabel">
+              <ds-author-list format="hname" authors="$ctrl.data.authors"></ds-author-list>
+              <span ng-if="$ctrl.data.authors">
+                <strong>Author: </strong>
+                {{$ctrl.data.authors[0].lname}}, {{$ctrl.data.authors[0].fname}}
+              </span>
+              <span ng-if="!$ctrl.data.authors">
+                <strong>Author: </strong>{{$ctrl.author}}
+              </span>
+            </p>
             <p><strong> Publication Date: </strong> {{$ctrl.data.created | date: 'M/d/yyyy'}}</p>
-            <p><strong> DOI: </strong> {{$ctrl.data.project.doi}}</p>
+            <p ng-if="$ctrl.data.project.doi"><strong> DOI: </strong> {{$ctrl.data.project.doi}}</p>
+            <p ng-if="$ctrl.data.project.value.dois"><strong>DOI: </strong> {{ $ctrl.data.project.value.dois[0] }}</p>
             <p><strong> Keywords: </strong> {{$ctrl.data.project.value.keywords}}</p>
             <p> {{$ctrl.data.project.value.description}} </p>
           </div>
