@@ -1,4 +1,15 @@
 # DesignSafe-CI Portal Release Notes
+## v4.7.4-20191005
+Fixes: 
+* NEES data in publications browsing view
+* Site Location (lat long) Formatting
+* Improve data transfer messages in Data Depot
+* Add Project ID to Project Invitation E-mail
+* Multiple metadata values need to align top with the key, not align center
+* Uncheck author boxes after creating experiment/simulation/hybrid simulation
+* Change published and project listing header
+* Fix NEES publications not showing up when filter is selected
+
 ## v4.7.4 [2019-10-31]
 * Hotfix for Professional Profile fields that weren't updating correctly.
 ## v4.7.3 [2019-10-30]
