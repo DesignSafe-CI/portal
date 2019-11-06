@@ -397,7 +397,7 @@ LOGGING = {
         },
         'metrics': {
             'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
-                      ' %(message)s user=%(user)s sessionId=%(sessionId)s op=%(operation)s'
+                      ' %(message)s ip=%(ip)s user=%(user)s sessionId=%(sessionId)s op=%(operation)s'
                       ' info=%(info)s'
         },
     },

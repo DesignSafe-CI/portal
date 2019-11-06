@@ -106,6 +106,7 @@ class FileMediaView(View):
                 metrics.info('Data Depot',
                             extra={
                                 'user': request.user.username,
+                                'ip': request.META.get('HTTP_X_REAL_IP'),
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'operation': 'agave_file_preview',
                                 'info': {
@@ -331,6 +332,7 @@ class FileMediaView(View):
                 metrics.info('Data Depot',
                              extra = {
                                  'user': request.user.username,
+                                 'ip': request.META.get('HTTP_X_REAL_IP'),
                                  'sessionId': getattr(request.session, 'session_key', ''),
                                  'operation': 'agave_file_download',
                                  'info': {
