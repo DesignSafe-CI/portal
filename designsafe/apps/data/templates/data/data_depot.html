@@ -17,8 +17,13 @@
     {% endfor %}
     <meta name="citation_abstract_html_url" content="">
     <!--data/data_depot.html-->
+    {% if dois %}
+        {% for id in dois %}
+            <meta name="identifier" content="{{id}}">
+        {% endfor %}
+    {% else %}
     <meta name="identifier" content="{{doi}}">
-    <meta name="DC.identifier" content="{{doi}}">
+    {% endif %}
 {% endblock %}
 {% block title %}
 {% if citation_title %}{{citation_title}} 
