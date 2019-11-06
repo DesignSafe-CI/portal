@@ -5,10 +5,10 @@ import json
 from django.conf import settings
 from django.db import models
 from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl import (Search, DocType, Date, Nested,
+from elasticsearch_dsl import (Search, Document, Date, Nested,
                                analyzer, Object, Text, Long,
-                               InnerObjectWrapper, Boolean, Keyword,
-                               GeoPoint, String, MetaField)
+                               Boolean, Keyword,
+                               GeoPoint, MetaField)
 from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError, ConnectionTimeout
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
 @python_2_unicode_compatible
-class IndexedProject(DocType):
+class IndexedProject(Document):
     uuid = Text(fields={'_exact': Keyword()})
     schemaId = Text(fields={'_exact': Keyword()})
     internalUsername = Text(fields={'_exact': Keyword()})
@@ -85,21 +85,22 @@ class IndexedProject(DocType):
             'dois': Text(fields={'_exact': Keyword()}, multi=True),
         })
 
+    class Index:
+        name = settings.ES_INDICES['projects']['alias'] 
+
     class Meta:
-        index = settings.ES_INDICES['projects']['alias']
-        doc_type = settings.ES_INDICES['projects']['documents'][0]['name']
         dynamic = MetaField('strict')
 
 @python_2_unicode_compatible
-class IndexedEntity(DocType):
-    uuid = String(fields={'_exact': Keyword()})
-    schemaId = String(fields={'_exact': Keyword()})
-    internalUsername = String(fields={'_exact': Keyword()})
-    associationIds = String(fields={'_exact': Keyword()}, multi=True)
+class IndexedEntity(Document):
+    uuid = Text(fields={'_exact': Keyword()})
+    schemaId = Text(fields={'_exact': Keyword()})
+    internalUsername = Text(fields={'_exact': Keyword()})
+    associationIds = Text(fields={'_exact': Keyword()}, multi=True)
     lastUpdated = Date()
-    name = String(fields={'_exact': Keyword()})
+    name = Text(fields={'_exact': Keyword()})
     created = Date()
-    owner = String(fields={'_exact': Keyword()})
+    owner = Text(fields={'_exact': Keyword()})
     value = Nested(
         properties={
             'relations': Nested(properties={
@@ -114,7 +115,8 @@ class IndexedEntity(DocType):
             'description': Text(analyzer='english')
         })
 
+    class Index:
+        name = settings.ES_INDICES['project_entities']['alias']
+        
     class Meta:
-        index = settings.ES_INDICES['project_entities']['name']
-        doc_type = settings.ES_INDICES['project_entities']['documents'][0]['name']
         dynamic = MetaField('strict')

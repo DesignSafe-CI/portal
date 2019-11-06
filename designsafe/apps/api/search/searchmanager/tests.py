@@ -52,7 +52,7 @@ class TestPrivateDataSearchMgr(TestCase):
         request.username = 'test_user'
 
         mock_res = MagicMock()
-        mock_res.hits.total = 1
+        mock_res.hits.total.value = 1
         mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
 
         mock_search().query().extra().execute.return_value = mock_res
@@ -88,7 +88,7 @@ class TestCommunitySearchMgr(TestCase):
         request.username = 'test_user'
 
         mock_res = MagicMock()
-        mock_res.hits.total = 1
+        mock_res.hits.total.value = 1
         mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
 
         mock_search().query().extra().execute.return_value = mock_res
@@ -124,7 +124,7 @@ class TestPublishedDataSearchMgr(TestCase):
         request.username = 'test_user'
 
         mock_res = MagicMock()
-        mock_res.hits.total = 1
+        mock_res.hits.total.value = 1
         mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
 
         mock_search().query().extra().execute.return_value = mock_res

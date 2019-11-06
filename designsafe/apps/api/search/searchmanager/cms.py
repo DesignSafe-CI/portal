@@ -31,10 +31,11 @@ class CMSSearchManager(BaseSearchManager):
         super(CMSSearchManager, self).__init__(cms_index, cms_index.search())
 
     def construct_query(self, system=None, file_path=None):
+        cms_index_name = Index(settings.ES_INDEX_PREFIX.format('cms')).get_alias().keys()[0]
         cms_query = Q(
             'bool',
             must=[
-                Q({'term': {'_index': 'cms'}}),
+                Q({'term': {'_index': cms_index_name}}),
                 Q("query_string",
                     query=self.query_string,
                     default_operator="and",

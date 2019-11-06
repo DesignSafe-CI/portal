@@ -34,14 +34,24 @@ class CommunityDataSearchManager(BaseSearchManager):
 
     def construct_query(self, system=None, file_path=None):
 
-        files_index_name = Index('des-files').get_alias().keys()[0]
+        files_index_name = Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys()[0]
+
+        ngram_query = Q("query_string", query=self.query_string,
+                        fields=["name"],
+                        minimum_should_match='80%',
+                        default_operator='or')
+
+        match_query = Q("query_string", query=self.query_string,
+                        fields=[
+                            "name._exact", "name._pattern"],
+                        default_operator='and')
 
         community_files_query = Q(
             'bool',
             must=[
                 Q({'term': {'_index': files_index_name}}),
                 Q('term', system="designsafe.storage.community"),
-                Q("query_string", query=self.query_string, default_operator="and", fields=['name', 'name._exact']),
+                (ngram_query | match_query),
                 Q("term", type="file") | Q("term", type="dir") 
             ],
             must_not=[
@@ -61,8 +71,8 @@ class CommunityDataSearchManager(BaseSearchManager):
         res = listing_search.execute()
         
         children = []
-        print res.hits.total
-        if res.hits.total:
+
+        if res.hits.total.value:
             children = [o.to_dict() for o in res]
 
         result = {

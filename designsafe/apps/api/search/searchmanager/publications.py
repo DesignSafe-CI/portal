@@ -29,11 +29,21 @@ class PublicationsSearchManager(BaseSearchManager):
             IndexedPublication, Search())
 
     def construct_query(self, system=None, file_path=None, **kwargs):
-
-        published_index_name = Index('des-publications').get_alias().keys()[0]
-        legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
+        project_query_fields = [
+            "projectId",
+            "title", 
+            "description", 
+            "project.value.title", 
+            "project.value.keywords",
+            "project.value.description",
+            "project.value.dataType",
+            "project.value.projectType",
+            "name"
+            ]
+        published_index_name = Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys()[0]
+        legacy_index_name = Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys()[0]
         filter_queries = []
-        if kwargs['type_filters']:
+        if kwargs.get('type_filters'):
             for type_filter in kwargs['type_filters']:
                 if type_filter == 'nees':
                     type_query = Q({'term': {'_index': legacy_index_name}})
@@ -41,16 +51,37 @@ class PublicationsSearchManager(BaseSearchManager):
                     type_query = Q('term', **{'project.value.projectType._exact': type_filter})
                 filter_queries.append(type_query)
 
+        ds_user_query = Q({"nested":
+                        {"path": "users",
+                         "ignore_unmapped": True,
+                         "query": {"query_string":
+                                   {"query": self.query_string,
+                                    "fields": ["users.first_name",
+                                               "users.last_name",
+                                               "user.username"],
+                                    "lenient": True}}}
+                        })
+        nees_pi_query = Q({"nested":
+                        {"path": "pis",
+                         "ignore_unmapped": True,
+                         "query": {"query_string":
+                                   {"query": self.query_string,
+                                    "fields": ["pis.firstName",
+                                               "pis.lastName"],
+                                    "lenient": True}}}
+                        })
+        pub_query = Q('query_string', query=self.query_string, default_operator='and', fields=project_query_fields)
+
         published_query = Q(
             'bool',
             must=[
-                Q('query_string', query=self.query_string, default_operator='and'),
+                Q('bool', should=[ds_user_query, nees_pi_query, pub_query]),
                 Q('bool', should=[
                     Q({'term': {'_index': published_index_name}}),
                     Q({'term': {'_index': legacy_index_name}})
-                ])
+                ]),
+                Q('bool', should=filter_queries)
             ],
-            should=filter_queries,
             must_not=[
                 Q('term', status='unpublished'),
                 Q('term', status='saved')

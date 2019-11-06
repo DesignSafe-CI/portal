@@ -40,7 +40,7 @@ class Command(BaseCommand):
         index_config = settings.ES_INDICES[index]
 
         default_index_alias = index_config['alias']
-        reindex_index_alias = default_index_alias + '_reindex'
+        reindex_index_alias = default_index_alias + '-reindex'
 
         if not swap_only:
             confirm = input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias))
@@ -48,8 +48,6 @@ class Command(BaseCommand):
                 raise SystemExit
             # Set up a fresh reindexing alias.
             setup_index(index_config, force=True, reindex=True)
-            if index == 'publications':
-                Index(reindex_index_alias).put_settings(body={"index.mapping.total_fields.limit": 2000})
 
         try:
             default_index_name = Index(default_index_alias).get_alias().keys()[0]
@@ -75,4 +73,5 @@ class Command(BaseCommand):
 
         # Re-initialize the new reindexing index to save space.
         if cleanup:
-            Index(reindex_index_alias).delete(ignore=404)
+            reindex_index_name = Index(reindex_index_alias).get_alias().keys()[0]
+            Index(reindex_index_name).delete(ignore=404)
