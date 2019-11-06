@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 try:
     HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
     connections.configure(
-        default={'hosts': HOSTS}
+        default={'hosts': HOSTS, "http_auth": settings.ES_AUTH}
     )
 except AttributeError as exc:
     logger.error('Missing ElasticSearch config. %s', exc)

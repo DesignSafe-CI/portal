@@ -31,8 +31,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
-        connections.configure(default={'hosts': HOSTS})
-        es_client = elasticsearch.Elasticsearch(hosts=HOSTS)
+        connections.configure(default={'hosts': HOSTS, 'http_auth': settings.ES_AUTH})
+        es_client = elasticsearch.Elasticsearch([{'host': HOSTS, 'http_auth': settings.ES_AUTH}])
         index = options.get('index')
         cleanup = options.get('cleanup')
         swap_only = options.get('swap-only')

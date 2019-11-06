@@ -2,6 +2,7 @@
 import os 
 
 ES_INDEX_PREFIX = os.environ.get('ES_INDEX_PREFIX', 'designsafe-dev-{}')
+ES_AUTH = os.environ.get('ES_AUTH', 'username:password')
 
 ES_CONNECTIONS = {
     'default': {
