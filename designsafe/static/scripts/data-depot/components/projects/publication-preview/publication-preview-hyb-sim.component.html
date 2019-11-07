@@ -23,7 +23,7 @@
                     <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
             </tr>
-            <tr class="prj-row" ng-if="$ctrl.readOnly">
+            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.project.value.dois.length">
                 <td>
                     <span>DOI</span>
                     <button class="btn btn-info btn-sm"
