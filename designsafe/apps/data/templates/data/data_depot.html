@@ -16,6 +16,9 @@
         <meta name="citation_author_institution" content="{{author.institution}}">
     {% endfor %}
     <meta name="citation_abstract_html_url" content="">
+    <script type="application/json">
+        {{ dc_json | safe }}
+    </script>
     <!--data/data_depot.html-->
 {% endblock %}
 {% block title %}
