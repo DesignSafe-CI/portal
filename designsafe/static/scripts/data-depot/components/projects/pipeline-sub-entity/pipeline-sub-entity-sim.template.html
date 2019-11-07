@@ -15,37 +15,37 @@
             <col style="width: 16.5%">
         </colgroup>
         <tr style="text-align: center">
-            <td class="tg-0lax">
+            <td>
                 <strong>Selection</strong>
                 <div>
                     <i class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Proofread Project</strong>
                 <div>
                     <i class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Proofread Simulation</strong>
                 <div>
                     <i class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Proofread Categories</strong>
                 <div>
                     <i class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Order Authors</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Licenses</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
@@ -72,150 +72,145 @@
         </p>
     </div>
     <!-- Categories Start -->
-    <!-- Reports -->
-    <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
-         ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, report) && $ctrl.browser.listings[report.uuid]"
-    >
-        <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-            <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
-                style="width:100%;">
-                <table style="width:100%">
-                    <tr>
-                        <td style="text-align: left;">
-                            <span>Report | <strong>{{report.value.title}}</strong></span>
-                        </td>
-                        <td style="text-align: right;">
-                            <span class="curation-chevron" style="font-size: 18px;"></span>
-                        </td>
-                    </tr>
-                </table>
-            </button>
-            <div id="files-{{report.uuid}}" class="collapse in">
-                <div class="well">
-                    <p>{{ report.value.description }}</p>
-                    <div>
-                        <span ng-click="$ctrl.editSubEntity(report)"><a>Edit</a></span>
+    <div class="well" ng-repeat="primEnt in $ctrl.primaryEntities | orderBy: primEnt.value.title" style="margin-bottom: 40px;">
+        <div class="prj-head" style="padding-bottom: 20px;">
+            Simulation | <strong>{{ primEnt.value.title }}</strong>
+        </div>
+        <!-- Reports -->
+        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+            ng-if="$ctrl.matchingGroup(primEnt, report) && $ctrl.browser.listings[report.uuid]">
+            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: left;">
+                                <span>Report | <strong>{{report.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="files-{{report.uuid}}" class="collapse in">
+                    <div class="well">
+                        <p>{{ report.value.description }}</p>
+                        <div>
+                            <span ng-click="$ctrl.editSubEntity(report)"><a>Edit</a></span>
+                        </div>
                     </div>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl">
+                    </files-listing>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
             </div>
         </div>
-    </div>
-    <!-- Models -->
-    <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'"
-         ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, model)"
-    >
-        <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
-            <button class="btn tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
-                style="width:100%;">
-                <table style="width:100%">
-                    <tr>
-                        <td style="text-align: left;">
-                            <span>Model | <strong>{{model.value.title}}</strong></span>
-                        </td>
-                        <td style="text-align: right;">
-                            <span class="curation-chevron" style="font-size: 18px;"></span>
-                        </td>
-                    </tr>
-                </table>
-            </button>
-            <div id="files-{{model.uuid}}" class="collapse in">
-                <div class="well">
-                    <p ng-if="model.value.description">{{ model.value.description }}</p>
-                    <span ng-click="$ctrl.editSubEntity(model)"><a>Edit</a></span>
+        <!-- Models -->
+        <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'"
+            ng-if="$ctrl.matchingGroup(primEnt, model)">
+            <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
+                <button class="btn tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
+                    style="width:100%;">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: left;">
+                                <span>Model | <strong>{{model.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="files-{{model.uuid}}" class="collapse in">
+                    <div class="well">
+                        <p ng-if="model.value.description">{{ model.value.description }}</p>
+                        <span ng-click="$ctrl.editSubEntity(model)"><a>Edit</a></span>
+                    </div>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl">
+                    </files-listing>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl"></files-listing>
             </div>
-        </div>
-        <!-- Inputs -->
-        <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: 'value.title'"
-             ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, input) && $ctrl.matchingGroup(model, input)"
-        >
-            <div class="dropdown dropdown-spacer-sm"
-                 id="details-{{input.uuid}}"
-                 style="margin-left: 10px"
-            >
-                <table>
-                    <tr>
-                        <td style="padding-right: 10px;" valign="top">
-                            <span style="font-size: 20px; color: #1568C9">
-                                <i class="fa fa-level-up fa-rotate-90"></i>
-                            </span>
-                        </td>
-                        <td style="width: 100%;">
-                            <button class="btn tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{input.uuid}}{{model.uuid}}"
-                            style="width:100%;">
-                            <table style="width:100%">
+            <!-- Inputs -->
+            <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: 'value.title'"
+                ng-if="$ctrl.matchingGroup(primEnt, input) && $ctrl.matchingGroup(model, input)">
+                <div class="dropdown dropdown-spacer-sm" id="details-{{input.uuid}}" style="margin-left: 10px">
+                    <table>
+                        <tr>
+                            <td style="padding-right: 10px;" valign="top">
+                                <span style="font-size: 20px; color: #1568C9">
+                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                </span>
+                            </td>
+                            <td style="width: 100%;">
+                                <button class="btn tab-sensor-info dropdown-spacer-sm" data-toggle="collapse"
+                                    data-target="#files-{{input.uuid}}{{model.uuid}}" style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Input | <strong>{{input.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{input.uuid}}{{model.uuid}}" class="collapse in">
+                                    <div class="well">
+                                        <p ng-if="input.value.description">{{ input.value.description }}</p>
+                                        <span ng-click="$ctrl.editSubEntity(input)"><a>Edit</a></span>
+                                    </div>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]"
+                                        params="$ctrl.fl"></files-listing>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Output -->
+                    <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: 'value.title'"
+                        ng-if="$ctrl.matchingGroup(primEnt, output) && $ctrl.matchingGroup(model, output) && $ctrl.matchingGroup(input, output)">
+                        <div class="dropdown dropdown-spacer-sm" id="details-{{output.uuid}}" style="margin-left: 30px">
+                            <table>
                                 <tr>
-                                    <td style="text-align: left;">
-                                        <span>Input | <strong>{{input.value.title}}</strong></span>
+                                    <td style="padding-right: 10px" valign="top">
+                                        <span style="font-size: 20px; color: #43A59D">
+                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                        </span>
                                     </td>
-                                    <td style="text-align: right;">
-                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                    <td style="width: 100%;">
+                                        <button class="btn tab-outpt" data-toggle="collapse"
+                                            data-target="#files-{{output.uuid}}{{model.uuid}}" style="width:100%;">
+                                            <table style="width:100%">
+                                                <tr>
+                                                    <td style="text-align: left;">
+                                                        <span>Output | <strong>{{output.value.title}}</strong></span>
+                                                    </td>
+                                                    <td style="text-align: right;">
+                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </button>
+                                        <div id="files-{{output.uuid}}{{model.uuid}}" class="collapse in">
+                                            <div class="well">
+                                                <p ng-if="output.value.description">{{ output.value.description }}</p>
+                                                <span ng-click="$ctrl.editSubEntity(output)"><a>Edit</a></span>
+                                            </div>
+                                            <files-listing browser="$ctrl.browser"
+                                                files-list="$ctrl.browser.listings[output.uuid]" params="$ctrl.fl">
+                                            </files-listing>
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
-                        </button>
-                        <div id="files-{{input.uuid}}{{model.uuid}}" class="collapse in">
-                            <div class="well">
-                                <p ng-if="input.value.description">{{ input.value.description }}</p>
-                                <span ng-click="$ctrl.editSubEntity(input)"><a>Edit</a></span>
-                            </div>
-                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]" params="$ctrl.fl"></files-listing>
                         </div>
-                        </td>
-                    </tr>
-                </table>
-                <!-- Output -->
-                <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: 'value.title'"
-                     ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, output) && $ctrl.matchingGroup(model, output) && $ctrl.matchingGroup(input, output)"
-                >
-                    <div class="dropdown dropdown-spacer-sm"
-                         id="details-{{output.uuid}}"
-                         style="margin-left: 30px"
-                    >
-                        <table>
-                            <tr>
-                                <td style="padding-right: 10px" valign="top">
-                                    <span style="font-size: 20px; color: #43A59D">
-                                        <i class="fa fa-level-up fa-rotate-90"></i>
-                                    </span>
-                                </td>
-                                <td style="width: 100%;">
-                                    <button class="btn tab-outpt" data-toggle="collapse" data-target="#files-{{output.uuid}}{{model.uuid}}" style="width:100%;">
-                                        <table style="width:100%">
-                                            <tr>
-                                                <td style="text-align: left;">
-                                                    <span>Output | <strong>{{output.value.title}}</strong></span>
-                                                </td>
-                                                <td style="text-align: right;">
-                                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </button>
-                                    <div id="files-{{output.uuid}}{{model.uuid}}" class="collapse in">
-                                        <div class="well">
-                                            <p ng-if="output.value.description">{{ output.value.description }}</p>
-                                            <span ng-click="$ctrl.editSubEntity(output)"><a>Edit</a></span>
-                                        </div>
-                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]" params="$ctrl.fl"></files-listing>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
                     </div>
                 </div>
-                <!-- Outputs -->
             </div>
         </div>
-        <!-- Inputs -->
-    </div>
-    <!-- Models -->
         <!-- Analysis -->
         <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'"
-             ng-if="$ctrl.matchingGroup($ctrl.primaryEntities, analysis) && $ctrl.browser.listings[analysis.uuid]"
-        >
+            ng-if="$ctrl.matchingGroup(primEnt, analysis) && $ctrl.browser.listings[analysis.uuid]">
             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
                 <button class="btn tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                     style="width:100%;">
@@ -238,9 +233,9 @@
                                 <col style="width: 84%">
                             </colgroup>
                             <tr ng-repeat="ref in analysis.value.refs">
-                                <td class="tg-0lax" ng-if="$first">Referenced Work</td>
-                                <td class="tg-0lax" ng-if="!$first"></td>
-                                <td class="tg-0lax"><strong><a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.reference }}</a></strong></td>
+                                <td ng-if="$first">Referenced Work</td>
+                                <td ng-if="!$first"></td>
+                                <td><strong><a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.reference }}</a></strong></td>
                             </tr>
                         </table>
                         <p>{{ analysis.value.description }}</p>
@@ -252,6 +247,5 @@
                 </div>
             </div>
         </div>
-        <!-- Categories End -->
     </div>
 </div>

@@ -66,24 +66,22 @@ class PipelinePublishCtrl {
                 publication[attr].push(pubEntity);
             });
 
+            this.entityListName = '';
             if (this.project.value.projectType === 'experimental') {
-                publication.experimentsList = [{
-                    uuid: this.resolve.resolveParams.primaryEntities.uuid,
-                }];
+                this.entityListName = 'experimentsList';
             } else if (this.project.value.projectType === 'simulation') {
-                publication.simulations = [{
-                    uuid: this.resolve.resolveParams.primaryEntities.uuid,
-                }];
+                this.entityListName = 'simulations';
             } else if (this.project.value.projectType === 'hybrid_simulation') {
-                publication.hybrid_simulations = [{
-                    uuid: this.resolve.resolveParams.primaryEntities.uuid,
-                }];
+                this.entityListName = 'hybrid_simulations';
             } else if (this.project.value.projectType === 'field_recon') {
-                publication.missions = [{
-                    uuid: this.resolve.resolveParams.primaryEntities.uuid,
-                }];
+                this.entityListName = 'missions';
             }
-            this.mainEntityUuid = this.resolve.resolveParams.primaryEntities.uuid;
+            publication[this.entityListName] = [];
+            this.mainEntityUuids = [];
+            this.resolve.resolveParams.primaryEntities.forEach((entity) => {
+                publication[this.entityListName].push({uuid: entity.uuid});
+                this.mainEntityUuids.push(entity.uuid);
+            });
         }
         this.publication = publication;
     }
@@ -104,7 +102,7 @@ class PipelinePublishCtrl {
             '/api/projects/publication/',
             {
                 publication: this.publication,
-                mainEntityUuid: this.mainEntityUuid,
+                mainEntityUuids: this.mainEntityUuids,
                 status: 'publishing',
             }
         ).then((resp) => {

@@ -106,7 +106,7 @@ class PipelineSubEntityCtrl {
             component: this.modalName,
             resolve: {
                 browser: () => this.browser,
-                project: () => this.project,
+                project: () => this.browser.project,
                 edit: () => selection,
             },
             size: 'lg',

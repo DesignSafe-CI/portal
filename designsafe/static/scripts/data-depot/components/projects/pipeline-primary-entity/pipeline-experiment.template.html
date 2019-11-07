@@ -15,37 +15,37 @@
                 <col style="width: 16.5%">
             </colgroup>
             <tr style="text-align: center">
-                <td class="tg-0lax">
+                <td>
                     <strong>Selection</strong>
                     <div>
                         <i class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
-                <td class="tg-0lax">
+                <td>
                     <strong>Proofread Project</strong>
                     <div>
                         <i class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
-                <td class="tg-0lax">
+                <td>
                     <strong>Proofread Experiment</strong>
                     <div>
                         <i class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
-                <td class="tg-0lax">
+                <td>
                     <strong>Proofread Categories</strong>
                     <div>
                         <i class="fa fa-circle-thin"></i>
                     </div>
                 </td>
-                <td class="tg-0lax">
+                <td>
                     <strong>Order Authors</strong>
                     <div>
                         <i class="fa fa-circle-thin"></i>
                     </div>
                 </td>
-                <td class="tg-0lax">
+                <td>
                     <strong>Licenses</strong>
                     <div>
                         <i class="fa fa-circle-thin"></i>
@@ -72,57 +72,59 @@
             </p>
         </div>
         <!-- Experiment Header Start -->
-        <div class="well" ng-if="!$ctrl.ui.loading">
-            <div class="prj-head" style="padding-bottom:20px">
-                Experiment | <strong>{{ $ctrl.primaryEntities.value.title }}</strong>
-            </div>
-            <div style="display:inline-block; width:20%;">Experiment Type</div>
-            <strong ng-if="!$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
-                    style="display:inline-block; width:78%; text-transform:capitalize;"
-            >
-                {{ $ctrl.getET($ctrl.primaryEntities) }}
-            </strong>
-            <strong ng-if="$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
-                    style="display:inline-block; width:78%; text-transform:capitalize;"
-            >
-                {{ $ctrl.primaryEntities.value.experimentTypeOther }}
-            </strong>
-            <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-            <div style="display:inline-block; width:78%; font-weight: bold;">
-                <ds-author-list authors="$ctrl.primaryEntities.value.authors"></ds-author-list>
-            </div>
-            <div style="display:inline-block; width:20%;">Experimental Facility</div>
-            <strong ng-if="!$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
-                    style="display:inline-block; width:78%; text-transform:capitalize;">
-                    {{ $ctrl.getEF($ctrl.primaryEntities.value.experimentalFacility) }}
-            </strong>
-            <strong ng-if="$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
-                    style="display:inline-block; width:78%; text-transform:capitalize;">
-                {{ $ctrl.primaryEntities.value.experimentalFacilityOther }}
-            </strong>
-            <div style="display:inline-block; width:20%;">Equipment Type</div>
-            <strong ng-if="!$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
-                    style="display:inline-block; width:78%; text-transform:capitalize;">
-                {{ $ctrl.getEQ($ctrl.primaryEntities) }}
-            </strong>
-            <strong ng-if="$ctrl.isValid($ctrl.primaryEntities.value.experimentalFacilityOther)"
-                    style="display:inline-block; width:78%; text-transform:capitalize;">
-                {{ $ctrl.primaryEntities.value.equipmentTypeOther }}
-            </strong>
-            <div ng-show="$ctrl.primaryEntities.value.procedureStart">
-                <div style="display:inline-block; width:20%;">Date of Experiment</div>
-                <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate($ctrl.primaryEntities.value.procedureEnd)">
-                    {{ $ctrl.primaryEntities.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ $ctrl.primaryEntities.value.procedureEnd | date:'MM-dd-yyyy' }}
+        <div ng-repeat="primEnt in $ctrl.primaryEntities | orderBy: primEnt.value.title" style="padding-bottom:20px">
+            <div class="well" ng-if="!$ctrl.ui.loading">
+                <div class="prj-head" style="padding-bottom:20px">
+                    Experiment | <strong>{{ primEnt.value.title }}</strong>
+                </div>
+                <div style="display:inline-block; width:20%;">Experiment Type</div>
+                <strong ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                        style="display:inline-block; width:78%; text-transform:capitalize;"
+                >
+                    {{ $ctrl.getET(primEnt) }}
                 </strong>
-                <strong style="display:inline-block; width:78%;" ng-if="!$ctrl.hasEndDate($ctrl.primaryEntities.value.procedureEnd)">
-                    {{ $ctrl.primaryEntities.value.procedureStart | date:'MM-dd-yyyy' }}
+                <strong ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                        style="display:inline-block; width:78%; text-transform:capitalize;"
+                >
+                    {{ primEnt.value.experimentTypeOther }}
                 </strong>
-            </div>
-            <div>
-                <br>{{ $ctrl.primaryEntities.value.description }}
-            </div>
-            <div><br>
-                <span class="prj-head" ng-click="$ctrl.managePrimaryEntity()"><a>Edit</a></span>
+                <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
+                <div style="display:inline-block; width:78%; font-weight: bold;">
+                    <ds-author-list authors="primEnt.value.authors"></ds-author-list>
+                </div>
+                <div style="display:inline-block; width:20%;">Experimental Facility</div>
+                <strong ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                        style="display:inline-block; width:78%; text-transform:capitalize;">
+                        {{ $ctrl.getEF(primEnt.value.experimentalFacility) }}
+                </strong>
+                <strong ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                        style="display:inline-block; width:78%; text-transform:capitalize;">
+                    {{ primEnt.value.experimentalFacilityOther }}
+                </strong>
+                <div style="display:inline-block; width:20%;">Equipment Type</div>
+                <strong ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                        style="display:inline-block; width:78%; text-transform:capitalize;">
+                    {{ $ctrl.getEQ(primEnt) }}
+                </strong>
+                <strong ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                        style="display:inline-block; width:78%; text-transform:capitalize;">
+                    {{ primEnt.value.equipmentTypeOther }}
+                </strong>
+                <div ng-show="primEnt.value.procedureStart">
+                    <div style="display:inline-block; width:20%;">Date of Experiment</div>
+                    <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate(primEnt.value.procedureEnd)">
+                        {{ primEnt.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ primEnt.value.procedureEnd | date:'MM-dd-yyyy' }}
+                    </strong>
+                    <strong style="display:inline-block; width:78%;" ng-if="!$ctrl.hasEndDate(primEnt.value.procedureEnd)">
+                        {{ primEnt.value.procedureStart | date:'MM-dd-yyyy' }}
+                    </strong>
+                </div>
+                <div>
+                    <br>{{ primEnt.value.description }}
+                </div>
+                <div><br>
+                    <span class="prj-head" ng-click="$ctrl.managePrimaryEntity(primEnt)"><a>Edit</a></span>
+                </div>
             </div>
         </div>
         <!-- Experiment Header End -->

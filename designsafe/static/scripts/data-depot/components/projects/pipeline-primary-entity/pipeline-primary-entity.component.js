@@ -119,7 +119,6 @@ class PipelinePrimaryEntityCtrl {
         }, {reload: true});
     }
 
-    // Need to provide the selected entity a user wishes to edit
     managePrimaryEntity(selectedEnt) {
         this.$uibModal.open({
             component: this.modalName,

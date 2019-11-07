@@ -18,8 +18,8 @@ class PipelineAuthorsCtrl {
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.curDate = new Date().getFullYear();
         this.selectedAuthor = '';
-        this.saved = false;
         this.validAuths = true;
+        this.savedStatus = {};
 
 
         if (!this.project) {
@@ -31,14 +31,17 @@ class PipelineAuthorsCtrl {
         } else {
             this.projType = this.project.value.projectType;
             this.prepProject();
-            this.verifyAuthors = (expAuthors) => {
-                if (typeof expAuthors != 'undefined' && typeof expAuthors[0] != 'string') {
+            this.verifyAuthors = (entAuthors) => {
+                if (typeof entAuthors != 'undefined' && typeof entAuthors[0] != 'string') {
                     this.validAuths = true;
                 } else {
                     this.validAuths = false;
                 }
             };
-            this.verifyAuthors(this.primaryEntities.value.authors);
+            this.primaryEntities.forEach((ent) => {
+                this.verifyAuthors(ent.value.authors);
+                this.savedStatus[ent.uuid] = {'saved': false};
+            });
         }
 
     }
@@ -92,8 +95,12 @@ class PipelineAuthorsCtrl {
         }, {reload: true});
     }
 
-    orderAuthors(up) {
-        this.saved = false;
+    setSavedStatus(entity, status) {
+        this.savedStatus[entity.uuid].saved = status;
+    }
+
+    orderAuthors(up, entity) {
+        this.setSavedStatus(entity, false);
         var a;
         var b;
         if (up) {
@@ -101,30 +108,30 @@ class PipelineAuthorsCtrl {
                 return;
             }
             // move up
-            a = this.primaryEntities.value.authors.find(x => x.order === this.selectedAuthor.order - 1);
-            b = this.primaryEntities.value.authors.find(x => x.order === this.selectedAuthor.order);
+            a = entity.value.authors.find(x => x.order === this.selectedAuthor.order - 1);
+            b = entity.value.authors.find(x => x.order === this.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
         } else {
-            if (this.selectedAuthor.order >= this.primaryEntities.value.authors.length - 1) {
+            if (this.selectedAuthor.order >= entity.value.authors.length - 1) {
                 return;
             }
             // move down
-            a = this.primaryEntities.value.authors.find(x => x.order === this.selectedAuthor.order + 1);
-            b = this.primaryEntities.value.authors.find(x => x.order === this.selectedAuthor.order);
+            a = entity.value.authors.find(x => x.order === this.selectedAuthor.order + 1);
+            b = entity.value.authors.find(x => x.order === this.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
         }
     }
 
-    saveAuthors() {
-        var exp = this.primaryEntities;
-        this.saved = false;
+    saveAuthors(entity) {
+        var exp = entity;
+        this.setSavedStatus(entity, false);
         this.loading = true;
-        exp.value.authors = this.primaryEntities.value.authors;
-        exp.value.guests = this.primaryEntities.value.guests;
+        exp.value.authors = entity.value.authors;
+        exp.value.guests = entity.value.guests;
         this.ProjectEntitiesService.update({
             data: {
                 uuid: exp.uuid,
@@ -133,7 +140,7 @@ class PipelineAuthorsCtrl {
         }).then((e) => {
             var ent = this.project.getRelatedByUuid(e.uuid);
             ent.update(e);
-            this.saved = true;
+            this.setSavedStatus(entity, true);
             this.loading = false;
         });
     }

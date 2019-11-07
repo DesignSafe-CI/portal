@@ -21,6 +21,7 @@ class PipelineSelectionCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
+        this.selectedEnts = [];
         this.ui = {
             efs: experimentalData.experimentalFacility,
             equipmentTypes: experimentalData.equipmentTypes,
@@ -238,8 +239,8 @@ class PipelineSelectionCtrl {
     }
 
     goProject() {
-        this.gatherSelections();
-        this.missing = this.ProjectService.checkSelectedFiles(this.browser.project, this.selectedEnt, this.selectedListings);
+        this.gatherSelections(); // need to adjust this for a list of entities...
+        this.missing = this.ProjectService.checkSelectedFiles(this.browser.project, this.selectedEnts, this.selectedListings);
 
         if (this.missing.length) {
             return;
@@ -248,23 +249,31 @@ class PipelineSelectionCtrl {
         this.$state.go('projects.pipelineProject', {
             projectId: this.projectId,
             project: this.browser.project,
-            primaryEntities: this.selectedEnt,
+            primaryEntities: this.selectedEnts,
             selectedListings: this.selectedListings,
         }, { reload: true });
     }
 
     selectEntity(ent) {
-        this.selectedEnt = ent;
-        this.subEntities.forEach((set) => {
-            if (set in this.browser.project) {
-                this.browser.project[set].forEach((s) => {
-                    if (s.associationIds.indexOf(ent.uuid) > -1) {
-                        this.DataBrowserService.select(this.browser.listings[s.uuid].children);
-                    } else {
-                        this.DataBrowserService.deselect(this.browser.listings[s.uuid].children);
-                    }
-                });
-            }
+        let uuidsToSelect = [];
+        if (this.selectedEnts.find(selEnt => selEnt.uuid === ent.uuid)) {
+            this.selectedEnts = this.selectedEnts.filter(selEnt => selEnt.uuid !== ent.uuid);
+        } else {
+            this.selectedEnts.push(ent);
+        }
+        this.selectedEnts.forEach((sEnt) => {
+            uuidsToSelect.push(sEnt.uuid);
+        });
+
+        // iterate over subEntities and select files related to primary entity...
+        this.subEntities.forEach((subEntSet) => {
+            this.browser.project[subEntSet].forEach((subEnt) => {
+                if (subEnt.associationIds.some(uuid => uuidsToSelect.includes(uuid))){
+                    this.DataBrowserService.select(this.browser.listings[subEnt.uuid].children);
+                } else {
+                    this.DataBrowserService.deselect(this.browser.listings[subEnt.uuid].children);
+                }
+            });
         });
     }
 
