@@ -69,7 +69,6 @@
                            placeholder="mm-dd-yyyy"
                            data-date-picker-options="dateOptions"
                            data-date-disabled="disabled(date, mode)"
-                           data-ng-required="true"
                            data-close-text="Close"
                            class="form-control"
                            style="width: 25%; display:inline-block;" />
@@ -80,6 +79,26 @@
                             <i class="glyphicon glyphicon-calendar"></i>
                         </button>
                     </span>
+                </div>
+            </div>
+            <div class="expAuthors form-group">
+                <label>Assign Authorship</label>
+                <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                <p>
+                    You can order the authors during the publication process.
+                </p>
+                <div class="form-group">
+                    <div ng-repeat="usr in $ctrl.form.authors track by $index"
+                        style="width:46%; display:inline-block; white-space: nowrap;">
+                        <input type="checkbox"
+                                format="lname"
+                                ng-checked="usr.authorship"
+                                id="{{ 'newAuthor' + $index }}"
+                                data-ng-model="usr.authorship"
+                                data-ng-required="$ctrl.validAuthors()">
+                        <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
+                        <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
+                    </div>
                 </div>
             </div>
             <div class="mission-site-location form-group">
@@ -98,7 +117,7 @@
                                data-ng-required="true"
                                class="form-control"/>
                     </div>
-                    <div style="width: 13%; display:inline-block; margin-left:5px;">
+                    <div style="width: 21%; display:inline-block; margin-left:5px;">
                         <label for="id-location" class="label-secondary">
                             Latitude
                         </label>
@@ -108,23 +127,13 @@
                                data-ng-required="true"
                                class="form-control"/>
                     </div>
-                    <div style="width: 13%; display:inline-block; margin-left:5px;">
+                    <div style="width: 21%; display:inline-block; margin-left:5px;">
                         <label for="id-location" class="label-secondary">
                             Longitude
                         </label>
                         <input type="text"
                                id="id-longitude"
                                data-ng-model="$ctrl.form.longitude"
-                               data-ng-required="true"
-                               class="form-control" />
-                    </div>
-                    <div style="width: 13%; display:inline-block; margin-left:5px;">
-                        <label for="id-elevation" class="label-secondary">
-                            Elevation
-                        </label>
-                        <input type="text"
-                               id="id-elevation"
-                               data-ng-model="$ctrl.form.elevation"
                                data-ng-required="true"
                                class="form-control" />
                     </div>
@@ -146,7 +155,7 @@
                     &nbsp;
                 </textarea>
             </div>
-            <div class="expAuthors form-group">
+            <!-- <div class="expAuthors form-group">
                 <label>Assign Authorship</label>
                 <span style="color: #D04348; font-size:14px;">&#9679; </span>
                 <p>
@@ -165,7 +174,7 @@
                         <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
                     </div>
                 </div>
-            </div>
+            </div> -->
         <!-- Update Exp Btn -->
             <div class="text-right">
                 <button class="btn btn-add"
