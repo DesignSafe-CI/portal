@@ -52,6 +52,9 @@
     <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
     {% endfor %}{% endif %}
 
+    <script type="application/json">
+        {{ dc_json | safe }}
+    </script>
     <!--data/data_depot.html-->
     {% if dois %}
         {% for id in dois %}
