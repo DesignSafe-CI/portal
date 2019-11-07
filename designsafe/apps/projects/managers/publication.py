@@ -271,6 +271,8 @@ def _delete_unused_fields(dict_obj):
     for key in dict_obj:
         if key.endswith('_set'):
             keys_to_delete.append(key)
+        if key.startswith('_ui'):
+            continue
         if key.startswith('_'):
             keys_to_delete.append(key)
 
