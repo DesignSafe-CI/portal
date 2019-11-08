@@ -199,14 +199,14 @@ class DataDepotPublishedView(TemplateView):
         elif pub.project.to_dict().get('doi') != None: #This is for older publications
             context['doi'] = pub.project.doi
         context['keywords'] = pub.project.value.keywords.split(',')
-        if pub.__contains__('users'):
+        if 'users' in pub.to_dict():
             context['authors'] = [{
                 'full_name': '{last_name}, {first_name}'.format(
                     last_name=user['last_name'].encode('utf-8'), first_name=user['first_name'].encode('utf-8')
                 ),
                 'institution': getattr(getattr(user, 'profile'), 'institution', '')
             } for user in getattr(pub, 'users', [])]
-        elif pub.__contains__('authors'):
+        elif 'authors' in pub.to_dict():
             context['authors'] = [{
                 'full_name': '{last_name}, {first_name}'.format(
                     last_name=author['lname'].encode('utf-8'), first_name=author['fname'].encode('utf-8')

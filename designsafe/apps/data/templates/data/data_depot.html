@@ -15,8 +15,8 @@
     <meta name="citation_keywords" content="{{keyword}}">
     {% endfor %}
     {% for author in authors %}
-        {% if author.full_name %}<meta name="citation_author" content="{{author.full_name}}">{% endif %}
-        {% if author.institution %}<meta name="citation_author_institution" content="{{author.institution}}">{% endif %}
+    <meta name="citation_author" content="{{author.full_name}}">
+    <meta name="citation_author_institution" content="{{author.institution}}">
     {% endfor %}
     <meta name="citation_abstract_html_url" content="">
     <!--data/data_depot.html-->
