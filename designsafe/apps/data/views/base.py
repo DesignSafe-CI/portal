@@ -204,7 +204,7 @@ class DataDepotPublishedView(TemplateView):
                 'full_name': '{last_name}, {first_name}'.format(
                     last_name=user['last_name'].encode('utf-8'), first_name=user['first_name'].encode('utf-8')
                 ),
-                'institution': getattr(getattr(user, 'profile'), 'institution', '')
+                'institution': getattr(getattr(user, 'profile', ''), 'institution', '')
             } for user in getattr(pub, 'users', [])]
         elif 'authors' in pub.to_dict():
             context['authors'] = [{
