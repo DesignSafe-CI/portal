@@ -1,4 +1,4 @@
-import EditProjectTemplate from './edit-project.component.html';
+import EditProjectTemplate from './edit-project.template.html';
 import _ from 'underscore';
 
 class EditProjectCtrl {

@@ -16,14 +16,6 @@
 </div>
 <div class="modal-body" style="padding: 30px;">
     <form name="projForm">
-        <div class="text-center" ng-if="!$ctrl.form.uuid">
-            <span style="color: #D04348; font-size:14px;">&#9679; </span>
-            <span>Required to Add a Project</span>
-        </div>
-        <div class="text-center" ng-if="$ctrl.form.uuid">
-            <span style="color: #D04348; font-size:14px;">&#9679; </span>
-            <span>Required for Curation & Publication</span>
-        </div>
         <!-- Project Title -->
         <div class="form-group">
             <div style="margin-bottom: 5px;">
@@ -227,7 +219,11 @@
         <div class="expAuthorsAssign form-group" ng-if="$ctrl.form.uuid && $ctrl.form.projectType">
             <div style="margin-bottom: 5px;">
                 <strong>Unregistered Members</strong>
-                <div>Add members without a DesignSafe account. These names can be selected as authors during the publication process.</div>
+                <div>
+                    Add members without a DesignSafe account. These names can be selected as authors
+                    during the publication process. If adding unregistered members please insure all
+                    fields are completed.
+                </div>
             </div>
             <table style="table-layout: fixed; width: 100%;">
                 <colgroup>
@@ -372,11 +368,11 @@
             </div>
             <div data-ng-if="$ctrl.project.value.projectType === 'field_recon'">
                 <div style="width:45%; display:inline-block;" class="pull-left">
-                    <label for="id-nh-event">Natural Hazard Event
+                    <label for="id-nh-event">Event
                         <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                        <span style="font-weight:normal; display:inline-block;">
-                            Name given to the natural hazard (ex. Hurricane Katrina)
-                        </span>
+                        <div style="font-weight:normal;">
+                            The name given to the event (ex. Hurricane Katrina)
+                        </div>
                     </label>
                     <input class="project-form-input"
                            type="text"
@@ -387,11 +383,11 @@
                            data-ng-required="true"/>
                 </div>
                 <div style="width:45%; display: inline-block;" class="pull-right">
-                    <label for="id-nh-event-date">Natural Hazard Date
+                    <label for="id-nh-event-date">Event Date(s)
                         <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                        <span style="font-weight:normal; display:inline-block;">
+                        <div style="font-weight:normal;">
                             If you only want to enter a single date, fill in the first field.
-                        </span>
+                        </div>
                     </label>
                     <div style="display:flex;">
                       <span class="input-group" style="width:45%;">
@@ -435,7 +431,7 @@
                     </div>
                 </div>
                 <div style="width:100%;">
-                    <label for="id-nh-event-type">Natural Hazard Type
+                    <label for="id-nh-event-type">Event Type
                         <span style="color: #D04348; font-size:14px;">&#9679; </span>
                         <span style="font-weight:normal; display:inline-block;">
                             The hazards occurring from an event. An event can have multiple hazard types (Hurricanes also have storm surge and floods).
@@ -449,7 +445,7 @@
                                 data-ng-required="$first"
                                 class="form-control"
                                 data-ng-if="$ctrl.showNhTypesDropdown($index)">
-                            <option value="">-- Select Natural Hazard Type --</option>
+                            <option value="">-- Select Event Type --</option>
                         </select>
                         <div class="nh-types-input-wrapper"
                              data-ng-if="$ctrl.showNhTypesInput($index)">
@@ -462,7 +458,7 @@
                     <button type="button"
                             class="btn btn-link"
                             data-ng-click="$ctrl.addNhType()">
-                        <i class="fa fa-plus">&nbsp;</i> Add another Natural Hazard Event Type
+                        <i class="fa fa-plus">&nbsp;</i> Add another Event Type
                     </button>
                 </div>
             </div>
@@ -481,6 +477,7 @@
                             type="text"
                             style="width:100%;"
                             id="id_keywords"
+                            placeholder="Add keywords separated by commas (keyword 1, keyword 2, keywrod 3)"
                             ng-model="$ctrl.form.keywords"
                             ng-required="$ctrl.form.uuid && $ctrl.form.projectType"><br>
                 </div>
@@ -492,7 +489,9 @@
                         <span style="color: #D04348; font-size:14px;">&#9679; </span>
                     </strong>
                     <div>
-                        Make sure this is understandable to a wider audience. Answer questions such as what, how, and why. Do not use acronyms.
+                        This will appear in search listings, so make this understandable to a wider audience.
+                        Suggest how the data be reused. Include details about the hazard such as wind speed,
+                        hurricane category, or earthquake magnitude. Mention related works. Do not use acronyms.
                     </div>
                 </div>
                 <div>
