@@ -212,6 +212,7 @@ class DataDepotPublishedView(TemplateView):
         context['experiments'] = getattr(pub, 'experimentsList', [])
         context['missions'] = getattr(pub, 'missions', [])
         context['simulations'] = getattr(pub, 'simulations', [])
+        context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
                 'authenticated': True,

@@ -40,6 +40,15 @@
     {% for author in simulation.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
     <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
     {% endfor %}{% endif %}
+
+    {% if hybrid_simulations %}<!-- Hybrid Simulation Citation Tags -->{% for simulation in hybrid_simulations %}
+    <meta name="citation_title" content="{{ simulation.value.title }}">
+    <meta name="citation_doi" content="{{ simulation.doi }}">
+    <meta name="citation_description" content="{{ simulation.value.description }}">
+    {% for author in simulation.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
     <!--data/data_depot.html-->
 {% endblock %}
 {% block title %}
