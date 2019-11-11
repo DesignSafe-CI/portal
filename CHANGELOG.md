@@ -1,4 +1,8 @@
 # DesignSafe-CI Portal Release Notes
+## v4.7.4-20191102
+Fixes: 
+* Fix Webpack minification error in site search
+
 ## v4.7.4-20191101
 Fixes: 
 * Fix bugs with adding self to Team Members section
