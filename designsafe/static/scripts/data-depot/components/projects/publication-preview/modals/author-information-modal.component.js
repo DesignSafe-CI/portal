@@ -1,10 +1,7 @@
 import AuthorInformationModalTemplate from './author-information-modal.template.html';
 
 class AuthorInformationModalCtrl {
-    constructor(UserService) {
-        'ngInject';
-        this.UserService = UserService;
-    }
+    constructor() { }
 
     $onInit() { 
         this.author = this.resolve.author;
@@ -13,9 +10,9 @@ class AuthorInformationModalCtrl {
         this.email = this.author.email;
         this.institution = this.author.inst;
         this.username = this.author.name;
-        this.UserService.get(this.username).then((res) => {
-            this.orcid = res.orcid_id;
-        });
+        if (this.author.orcid) {
+            this.orcid = this.author.orcid;
+        }
     }
 
     close() {

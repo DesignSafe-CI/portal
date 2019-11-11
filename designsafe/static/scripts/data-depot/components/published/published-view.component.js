@@ -6,7 +6,7 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl){
+    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl, UserService){
         'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
@@ -15,6 +15,7 @@ class PublishedViewCtrl {
         this.$uibModal = $uibModal;
         this.$http = $http;
         this.djangoUrl = djangoUrl;
+        this.UserService = UserService;
     }
 
     $onInit() {
@@ -234,12 +235,17 @@ class PublishedViewCtrl {
     }
 
     showAuthor(author) {
-        this.$uibModal.open({
-            component: 'authorInformationModal',
-            resolve: {
-                author
-            },
-            size: 'sm'
+        this.UserService.get(author.name).then((res) => {
+            if (res.orcid_id) {
+                author.orcid = res.orcid_id;
+            }
+            this.$uibModal.open({
+                component: 'authorInformationModal',
+                resolve: {
+                    author
+                },
+                size: 'sm'
+            });
         });
     }
 
