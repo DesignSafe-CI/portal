@@ -2,7 +2,7 @@ import AuthorInformationModalTemplate from './author-information-modal.template.
 
 class AuthorInformationModalCtrl {
     constructor(UserService) {
-        'ng-inject';
+        'ngInject';
         this.UserService = UserService;
     }
 
