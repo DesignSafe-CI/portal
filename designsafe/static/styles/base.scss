@@ -36,4 +36,8 @@
     border-radius: 4px;
 }
 
+.carousel-control.left, .carousel-control.right {
+    background: none !important;
+}
+
 @import 'nested-list-group';

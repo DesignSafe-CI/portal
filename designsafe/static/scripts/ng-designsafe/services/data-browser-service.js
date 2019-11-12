@@ -160,6 +160,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       tests.canCopy = files.length >= 1 && hasPermission('READ', files) && !['publicData'].includes($state.current.name);
       tests.canMove = files.length >= 1 && hasPermission('WRITE', files) && !['dropboxData', 'boxData', 'googledriveData', 'publicData', 'publishedData.view', 'communityData'].includes($state.current.name);
       tests.canRename = files.length === 1 && hasPermission('WRITE', files) && !['dropboxData', 'boxData', 'googledriveData', 'publicData', 'publishedData.view', 'communityData'].includes($state.current.name);
+      tests.hasImages = files.filter(({ mimeType }) => mimeType.split('/')[0] === 'image').length > 0;
       // tests.canViewCategories = true;
 
       var trashPath = _trashPath();
@@ -879,56 +880,67 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
   */
   /**
    *
-   * @param {FileListing} folder
+   * @param {FileListing} images
    * @return {Promise}
    */
-  function previewImages (folder) {
-    var modal = $uibModal.open({
-      windowClass: 'modal-full',
-      template: require('../html/modals/data-browser-service-preview-images.html'),
-      controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder) {
-        $scope.folder = folder;
-        var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
-        $scope.busy = true;
-        $scope.images = [];
-        $scope.hrefs = [];
-        $scope.carouselSettings = {
-          dots: true,
-          arrows: true,
-          lazyLoad: true,
-          event: {
-            beforeChange: function (ev, slick, currentSlide, nextSlide) {
-              $scope.images[nextSlide].href = $scope.hrefs[nextSlide].href;
-            }
-          }
 
-        };
-        $scope.folder.children.forEach(function (file) {
-          var ext = file.path.split('.').pop().toLowerCase();
-          if (img_extensions.indexOf(ext) !== -1) {
-              $scope.hrefs.push({href: file.agaveUrl(), file:file});
-              $scope.images.push({file:file});
-          }
-        });
-        $scope.images[0] = $scope.hrefs[0];
-
-        if ($scope.images.length > 10) {
-          $scope.carouselSettings.dots = false;
-        }
-
-        $scope.close = function () {
-          $uibModalInstance.dismiss();
-        };
-
-      }],
-      size: 'lg',
+  function previewImages(images) {
+    return $uibModal.open({
+      component: 'ddimagepreview',
       resolve: {
-        folder: function() { return folder; }
-      }
-    });
-
-    return modal.result;
+        images: () => images
+      },
+      size: 'lg'
+    })
   }
+
+  // function previewImages (folder) {
+  //   var modal = $uibModal.open({
+  //     windowClass: 'modal-full',
+  //     template: require('../html/modals/data-browser-service-preview-images.html'),
+  //     controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder) {
+  //       $scope.folder = folder;
+  //       var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
+  //       $scope.busy = true;
+  //       $scope.images = [];
+  //       $scope.hrefs = [];
+  //       $scope.carouselSettings = {
+  //         dots: true,
+  //         arrows: true,
+  //         lazyLoad: true,
+  //         event: {
+  //           beforeChange: function (ev, slick, currentSlide, nextSlide) {
+  //             $scope.images[nextSlide].href = $scope.hrefs[nextSlide].href;
+  //           }
+  //         }
+
+  //       };
+  //       $scope.folder.children.forEach(function (file) {
+  //         var ext = file.path.split('.').pop().toLowerCase();
+  //         if (img_extensions.indexOf(ext) !== -1) {
+  //             $scope.hrefs.push({href: file.agaveUrl(), file:file});
+  //             $scope.images.push({file:file});
+  //         }
+  //       });
+  //       $scope.images[0] = $scope.hrefs[0];
+
+  //       if ($scope.images.length > 10) {
+  //         $scope.carouselSettings.dots = false;
+  //       }
+
+  //       $scope.close = function () {
+  //         $uibModalInstance.dismiss();
+  //       };
+
+  //     }],
+  //     size: 'lg',
+  //     resolve: {
+  //       folder: function() { return folder; }
+  //     }
+  //   });
+
+  //   return modal.result;
+  // }
 
   /**
    *

@@ -3,7 +3,7 @@ import dataDepotToolbarTemplate from './data-depot-toolbar.component.html'
 class DataDepotToolbarCtrl {
     constructor($state, $uibModal, Django, DataBrowserService, UserService) {
         'ngInject';
-        this.DataBrowserService = DataBrowserService
+        this.DataBrowserService = DataBrowserService;
         this.$state = $state;
         this.search = { queryString: '' };
         this.browser = DataBrowserService.state();
@@ -53,7 +53,9 @@ class DataDepotToolbarCtrl {
         this.DataBrowserService.preview(this.browser.selected[0], this.browser.listing);
     }
     previewImages() {
-        this.DataBrowserService.previewImages(this.browser.listing);
+        this.DataBrowserService.previewImages(
+            this.browser.listing.children.filter((child) => child.mimeType.split('/')[0] === 'image')
+        );
     }
     showCitation() {
         this.DataBrowserService.showCitation(this.browser.selected, this.browser.listing);
