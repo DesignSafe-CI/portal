@@ -49,7 +49,7 @@ class GoogleDriveFile(object):
 
     @property
     def name(self):
-        return self._item['name']
+        return self._item['name'].encode('utf-8')
 
     @property
     def path(self):
