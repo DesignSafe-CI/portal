@@ -282,7 +282,6 @@ def _delete_unused_fields(dict_obj):
     for key in dict_obj:
         if key.endswith('_set'):
             keys_to_delete.append(key)
-        #need to keep _ui elements for data diagram...
         if key.startswith('_ui'):
             continue
         if key.startswith('_'):
