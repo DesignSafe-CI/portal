@@ -66,6 +66,8 @@ class SearchView(SecureMixin, View):
                 'email': user.email,
                 'username': user.username,
             }
+            if(user.profile.orcid_id):
+                res_dict['orcid_id'] = user.profile.orcid_id
             try:
                 user_tas = TASClient().get_user(username=q)
                 res_dict['profile'] = {

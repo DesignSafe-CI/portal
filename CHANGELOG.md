@@ -1,4 +1,16 @@
 # DesignSafe-CI Portal Release Notes
+## v4.7.4-20191102
+Fixes: 
+* Fix Webpack minification error in site search
+
+## v4.7.4-20191101
+Fixes: 
+* Fix bugs with adding self to Team Members section
+* Prevent ui data from being removed from published project metadata
+* Hide citation for projects without citations
+* Fix KeyError in site search
+* Fix Projects with Blank Author/DOI Field in site search
+
 ## v4.7.4-20191005
 Fixes: 
 * NEES data in publications browsing view

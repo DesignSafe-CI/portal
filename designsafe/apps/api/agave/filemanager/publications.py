@@ -33,7 +33,7 @@ class PublicationsManager(AgaveFileManager):
         legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
 
         filter_queries = []
-        if kwargs['type_filters']:
+        if kwargs.get('type_filters'):
             for type_filter in kwargs['type_filters']:
                 if type_filter == 'nees':
                     type_query = Q({'term': {'_index': legacy_index_name}})

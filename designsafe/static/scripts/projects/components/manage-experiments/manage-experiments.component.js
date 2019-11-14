@@ -297,11 +297,11 @@ class ManageExperimentsCtrl {
             this.editExpForm = {};
             this.ui.showEditExperimentForm = false;
         }
-        let confirmDelete = (options) => {
+        let confirmDelete = (msg) => {
             let modalInstance = this.$uibModal.open({
-                component: 'confirmDelete',
+                component: 'confirmMessage',
                 resolve: {
-                    options: () => options,
+                    message: () => msg,
                 },
                 size: 'sm',
             });
@@ -319,7 +319,7 @@ class ManageExperimentsCtrl {
                 }
             });
         };
-        confirmDelete({ entity: ent });
+        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
     }
 
     saveExperiment($event) {

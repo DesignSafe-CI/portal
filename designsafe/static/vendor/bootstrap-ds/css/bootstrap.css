@@ -1318,7 +1318,6 @@ mark,
 }
 .prj-head {
   font-size: 20px;
-  text-transform:uppercase;
 }
 
 .edit-link {
@@ -1336,6 +1335,13 @@ mark,
   font-weight: bold;
   /* display:inline-block; */
   text-transform:capitalize;
+}
+.sort-arrows{
+  color: #337ab7;
+  font-size: 18px;
+  margin-right: 5px;
+  margin-top: 12px;
+  font-weight: bold;
 }
 .text-left {
   text-align: left;
