@@ -1,12 +1,13 @@
 from django.test import TestCase, RequestFactory
 from mock import patch, Mock
-from designsafe.apps.api.projects.managers import publication
+from unittest import skip
+# from designsafe.apps.api.projects.managers import publication
 
 import logging
 
 logger = logging.getLogger(__name__)
 
-
+@skip('Managers module has been removed')
 class ProjectDataModelsTestCase(TestCase):
     fixtures = ['user-data.json', 'agave-oauth-token-data.json']
 

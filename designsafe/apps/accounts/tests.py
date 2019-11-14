@@ -105,18 +105,18 @@ class AccountsTests(TestCase):
         self.assertContains(resp, 'Generating User Report')
 
     def test_professional_profile_manage(self):
-        url = reverse('designsafe_accounts:manage_pro_profile')
+        url = reverse('designsafe_accounts:manage_profile')
         self.client.login(username='ds_admin', password='admin/password')
         resp = self.client.get(url)
         assert 'TEST BIO' in resp.content
         assert 'test@test.com' in resp.content
 
     def test_professional_profile_post(self):
-        url = reverse('designsafe_accounts:pro_profile_edit')
+        url = reverse('designsafe_accounts:profile_edit')
         self.client.login(username='ds_admin', password='admin/password')
         data = {'bio': 'NEW TEST BIO', 'website': 'NEW_WEBSITE', 'orcid_id':'NEW_ORCID_ID'}
         resp = self.client.post(url, data)
-        url = reverse('designsafe_accounts:manage_pro_profile')
+        url = reverse('designsafe_accounts:manage_profile')
         resp = self.client.get(url)
         assert 'NEW TEST BIO' in resp.content
         assert 'NEW_WEBSITE' in resp.content
