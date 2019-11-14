@@ -2696,6 +2696,42 @@ input[type="search"] {
 .form-group {
   margin-bottom: 20px;
 }
+.collection-sample {
+  width: 65%;
+  display:inline-block;
+}
+.collection-sample-size {
+  width: 29%;
+  display:inline-block;
+  float:right;
+}
+.collection-sample-add {
+  float:left;
+}
+.collection-authors {
+  width:100%;
+}
+.collection-field{
+  padding-bottom: 6px;
+}
+.collection-label{
+  display: inline-block;
+  width:20%;
+}
+.collection-label-multi{
+  display: inline-block;
+  width:20%;
+  vertical-align: top;
+}
+.collection-data{
+  display: inline-block;
+  width: 78%;
+  font-weight:bold;
+}
+.collection-list{
+  list-style:none;
+  padding-left:0;
+}
 .radio,
 .checkbox {
   position: relative;
