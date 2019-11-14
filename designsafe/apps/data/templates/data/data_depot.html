@@ -16,6 +16,39 @@
         <meta name="citation_author_institution" content="{{author.institution}}">
     {% endfor %}
     <meta name="citation_abstract_html_url" content="">
+    
+    {% if experiments %}<!-- Experiment Citation Tags -->{% for experiment in experiments %}
+    <meta name="citation_title" content="{{ experiment.value.title }}">
+    <meta name="citation_doi" content="{{ experiment.doi }}">
+    <meta name="citation_description" content="{{ experiment.description }}">
+    {% for author in experiment.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
+    {% if missions %}<!-- Mission Citation Tags -->{% for mission in missions %}
+    <meta name="citation_title" content="{{ mission.value.title }}">
+    <meta name="citation_doi" content="{{ mission.doi }}">
+    <meta name="citation_description" content="{{ mission.value.description }}">
+    {% for author in mission.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
+    {% if simulations %}<!-- Simulation Citation Tags -->{% for simulation in simulations %}
+    <meta name="citation_title" content="{{ simulation.value.title }}">
+    <meta name="citation_doi" content="{{ simulation.doi }}">
+    <meta name="citation_description" content="{{ simulation.value.description }}">
+    {% for author in simulation.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
+    {% if hybrid_simulations %}<!-- Hybrid Simulation Citation Tags -->{% for simulation in hybrid_simulations %}
+    <meta name="citation_title" content="{{ simulation.value.title }}">
+    <meta name="citation_doi" content="{{ simulation.doi }}">
+    <meta name="citation_description" content="{{ simulation.value.description }}">
+    {% for author in simulation.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
     <!--data/data_depot.html-->
 {% endblock %}
 {% block title %}

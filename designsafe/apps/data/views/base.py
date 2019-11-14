@@ -186,7 +186,9 @@ class DataDepotPublishedView(TemplateView):
     template_name = 'data/data_depot.html'
 
     def get_context_data(self, **kwargs):
-        """Update context data to add publication."""
+        """
+        Update context data to add publication.
+        """
         context = super(DataDepotPublishedView, self).get_context_data(**kwargs)
         logger.info('Get context Data')
         pub = BaseESPublication(project_id=kwargs['project_id'].strip('/'))
@@ -207,7 +209,10 @@ class DataDepotPublishedView(TemplateView):
         } for user in getattr(pub, 'users', [])]
         context['publication'] = pub
         context['description'] = pub.project.value.description
-        
+        context['experiments'] = getattr(pub, 'experimentsList', [])
+        context['missions'] = getattr(pub, 'missions', [])
+        context['simulations'] = getattr(pub, 'simulations', [])
+        context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
                 'authenticated': True,
