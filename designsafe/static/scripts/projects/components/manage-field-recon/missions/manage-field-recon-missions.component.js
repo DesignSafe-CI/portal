@@ -269,7 +269,7 @@ class ManageFieldReconMissionsCtrl {
         this.data.editMission.value.authors = this.form.authors;
         this.data.editMission.value.title = this.form.title;
         this.data.editMission.value.dateStart = this.form.dateStart;
-        this.data.editMission.value.dateEnd = this.form.dateEnd;
+        this.data.editMission.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : '');
         this.data.editMission.value.location = this.form.location;
         this.data.editMission.value.longitude = this.form.longitude;
         this.data.editMission.value.latitude = this.form.latitude;
