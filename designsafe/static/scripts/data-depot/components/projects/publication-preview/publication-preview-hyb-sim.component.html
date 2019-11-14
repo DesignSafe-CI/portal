@@ -168,7 +168,9 @@
                     <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
                     <div style="display:inline-block; width:78%; font-weight: bold;">
                         <span ng-if="$ctrl.readOnly">
-                            <ds-author-list authors="hybsim.authors"></ds-author-list>
+                            <span ng-repeat="author in hybsim.authors">
+                                <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a>; 
+                            </span>
                         </span>
                         <span ng-if="!$ctrl.readOnly">
                             <ds-author-list authors="hybsim.value.authors"></ds-author-list>

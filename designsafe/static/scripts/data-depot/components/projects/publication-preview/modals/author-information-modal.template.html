@@ -1,0 +1,30 @@
+<div class="modal-header" style="background-color: #c6c6c6; display: flex; justify-content: space-between;">
+    <strong>{{ $ctrl.last }}, {{ $ctrl.first }}</strong>
+    <strong ng-click="$ctrl.close()" class="fa fa-times"></strong>
+</div>
+<div class="modal-body">
+    <table style="width: 95%">
+        <tbody>
+            <tr>
+                <td style="width: 45%"><p>First Name</p></td>
+                <td><p style="font-weight: bold">{{ $ctrl.first }}</p></td>
+            </tr>
+            <tr>
+                <td style="width: 45%"><p>Last Name</p></td>
+                <td><p style="font-weight: bold">{{ $ctrl.last }}</p></td>
+            </tr>
+            <tr>
+                <td style="width: 45%"><p>Email</p></td>
+                <td><p style="font-weight: bold">{{ $ctrl.email }}</p></td>
+            </tr>
+            <tr>
+                <td style="width: 45%"><p>Institution</p></td>
+                <td><p style="font-weight: bold">{{ $ctrl.institution }}</p></td>
+            </tr>
+            <tr ng-if="$ctrl.orcid">
+                <td style="width: 45%"><p>ORCID ID</p></td>
+                <td><p style="font-weight: bold">{{ $ctrl.orcid }}</p></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
