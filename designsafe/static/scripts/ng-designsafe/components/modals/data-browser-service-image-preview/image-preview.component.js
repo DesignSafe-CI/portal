@@ -5,6 +5,7 @@ class ImagePreviewCtrl {
 
     $onInit() {
         this.loading = true;
+        this.active = 0;
         this.slides = [];
         this.images = [];
         this.images = this.resolve.images;
