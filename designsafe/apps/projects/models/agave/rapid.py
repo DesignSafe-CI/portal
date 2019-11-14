@@ -81,13 +81,18 @@ class Instrument(MetadataModel):
     name = fields.CharField('Instrument Name', max_length=1024, default='')
     model = fields.CharField('Instrument Model', max_length=2048, default='')
 
+class Equipment(MetadataModel):
+    _is_nested = True
+    name = fields.CharField('Equipment Name', max_length=1024, default='')
+    model = fields.CharField('Equipment Model', max_length=2048, default='')
+
 
 class ReferencedData(MetadataModel):
     _is_nested = True
     title = fields.CharField('Title', max_length=1024, default='')
     doi_url = fields.CharField('Doi or Url', max_length=2048, default='')
 
-
+# FR ver1 Collections
 class Collection(RelatedEntity):
     model_name = 'designsafe.project.field_recon.collection'
     title = fields.CharField('Title', max_length=1024)
@@ -108,12 +113,63 @@ class Collection(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
 
+class SocialScience(RelatedEntity):
+    model_name = 'designsafe.project.field_recon.social_science'
+    title = fields.CharField('Title', max_length=1024)
+    unit = fields.CharField('Unit of Analysis', max_length=1024)
+    methods = fields.ListField('Methods of Collection')
+    modes = fields.ListField('Modes of Collection')
+    sample_approach = fields.ListField('Sampling Approaches')
+    sample_size = fields.CharField('Sampling Size', max_length=1024)
+    date_start = fields.CharField('Date Start', max_length=1024, default='')
+    date_end = fields.CharField('Date End', max_length=1024, default='')
+    data_collectors = fields.ListField('Data Collectors')
+    location = fields.CharField('Site Location', max_length=1024)
+    latitude = fields.CharField('Location Latitude', max_length=1024)
+    longitude = fields.CharField('Location Longitude', max_length=1024)
+    equipment = fields.ListField('Equipment', list_cls=Equipment)
+    restriction = fields.CharField('Restriction', max_length=1024)
+    referenced_data = fields.ListField('Reference Data', list_cls=ReferencedData)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(FieldReconProject)
+    missions = fields.RelatedObjectField(Mission)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
+    file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
+class Planning(RelatedEntity):
+    model_name = 'designsafe.project.field_recon.planning'
+    title = fields.CharField('Title', max_length=1024)
+    data_collectors = fields.ListField('Data Collectors')
+    referenced_data = fields.ListField('Reference Data', list_cls=ReferencedData)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(FieldReconProject)
+    missions = fields.RelatedObjectField(Mission)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
+    file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
+class Geoscience(RelatedEntity):
+    model_name = 'designsafe.project.field_recon.geoscience'
+    title = fields.CharField('Title', max_length=1024)
+    observation_types = fields.ListField('Observation Type')
+    date_start = fields.CharField('Date Start', max_length=1024, default='')
+    date_end = fields.CharField('Date End', max_length=1024, default='')
+    data_collectors = fields.ListField('Data Collectors')
+    location = fields.CharField('Site Location', max_length=1024)
+    latitude = fields.CharField('Location Latitude', max_length=1024)
+    longitude = fields.CharField('Location Longitude', max_length=1024)
+    equipment = fields.ListField('Equipment', list_cls=Equipment)
+    referenced_data = fields.ListField('Reference Data', list_cls=ReferencedData)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(FieldReconProject)
+    missions = fields.RelatedObjectField(Mission)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
+    file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 class Report(RelatedEntity):
     model_name = 'designsafe.project.field_recon.report'
     title = fields.CharField('Title', max_length=1024)
-    data_collectors = fields.ListField('Data Collectors')
-    guest_data_collectors = fields.ListField('Guest Data Collectors')
-    referenced_datas = fields.ListField('Reference Data', list_cls=ReferencedData)
+    authors = fields.ListField('Authors')
+    referenced_data = fields.ListField('Reference Data', list_cls=ReferencedData)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(FieldReconProject)
     missions = fields.RelatedObjectField(Mission)
