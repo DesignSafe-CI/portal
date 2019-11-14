@@ -16,20 +16,13 @@
 </div>
 <div class="modal-body" style="padding: 30px;">
     <form name="projForm">
-        <div class="text-center" ng-if="!$ctrl.form.uuid">
-            <span style="color: #D04348; font-size:14px;">&#9679; </span>
-            <span>Required to Add a Project</span>
-        </div>
-        <div class="text-center" ng-if="$ctrl.form.uuid">
-            <span style="color: #D04348; font-size:14px;">&#9679; </span>
-            <span>Required for Curation & Publication</span>
-        </div>
         <!-- Project Title -->
         <div class="form-group">
-            <div style="margin-bottom: 5px;">
-                <strong for="id_title">Project Title
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                </strong>
+            <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
+                <div>
+                    <span for="id_title" class="pull-left"><strong>Project Title </strong></span>
+                    <span class="label label-danger" style="margin-left: 5px">Required</span> 
+                </div>         
                 <div>
                     Incorporate the project's focus with words indicating the hazard, model, system, and research approach. Do not use acronyms.
                 </div>
@@ -44,12 +37,13 @@
                         ng-required="true"><br>
             </div>
         </div>
-        <!-- Poject Type -->
+        <!-- Project Type -->
         <div class="form-group" ng-if="$ctrl.form.uuid">
-            <div style="margin-bottom: 5px;">
-                <strong for="id_title">Project Type
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                </strong>
+            <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
+                <div>
+                    <strong for="id_title" class="pull-left">Project Type</strong>
+                    <span class="label label-danger" style="margin-left: 5px">Required</span>
+                </div>
             </div>
             <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
                     <colgroup>
@@ -147,10 +141,11 @@
                     <col style="width: 50%">
                 </colgroup>
                 <tr class="tg-0lax">
-                    <div style="margin-bottom: 5px;">
-                        <strong for="id_pi">Principal Investigators (PI)
-                            <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                        </strong>
+                    <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
+                        <div>
+                            <strong for="id_pi" class="pull-left">Principal Investigators (PI)</strong>
+                            <span class="label label-danger" style="margin-left: 5px">Required</span> 
+                        </div>
                         <div>Can view, edit, curate, and publish. Include Co-PIs.</div>
                     </div>
                 </tr> 
@@ -372,8 +367,9 @@
             </div>
             <div data-ng-if="$ctrl.project.value.projectType === 'field_recon'">
                 <div style="width:45%; display:inline-block;" class="pull-left">
-                    <label for="id-nh-event">Natural Hazard Event
-                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <label for="id-nh-event">
+                        <span class="pull-left">Natural Hazard Event</span>
+                        <span class="label label-danger" style="margin-left: 5px">Required</span>
                         <span style="font-weight:normal; display:inline-block;">
                             Name given to the natural hazard (ex. Hurricane Katrina)
                         </span>
@@ -387,8 +383,9 @@
                            data-ng-required="true"/>
                 </div>
                 <div style="width:45%; display: inline-block;" class="pull-right">
-                    <label for="id-nh-event-date">Natural Hazard Date
-                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <label for="id-nh-event-date">
+                        <span class="pull-left">Natural Hazard Date</span>
+                        <span class="label label-danger" style="margin-left: 5px">Required</span>
                         <span style="font-weight:normal; display:inline-block;">
                             If you only want to enter a single date, fill in the first field.
                         </span>
@@ -435,8 +432,9 @@
                     </div>
                 </div>
                 <div style="width:100%;">
-                    <label for="id-nh-event-type">Natural Hazard Type
-                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <label for="id-nh-event-type">
+                        <span class="pull-left">Natural Hazard Type</span>
+                        <span class="label label-danger" style="margin-left: 5px">Required</span>
                         <span style="font-weight:normal; display:inline-block;">
                             The hazards occurring from an event. An event can have multiple hazard types (Hurricanes also have storm surge and floods).
                         </span>
@@ -468,10 +466,11 @@
             </div>
             <!-- Project Keywords -->
             <div class="form-group" style="width:100%; display:inline-block;">
-                <div style="margin-bottom: 5px;">
-                    <strong for="id_keywords">Keywords
-                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    </strong>
+                <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
+                    <div>
+                        <strong for="id_keywords" class="pull-left">Keywords</strong>
+                        <span class="label label-danger" style="margin-left: 5px">Required</span>
+                    </div>
                     <div>
                         Choose informative words that indicate the content of the project.
                     </div>
@@ -487,10 +486,11 @@
             </div>
             <!-- Project Description -->
             <div class="form-group" style="width:100%; display:inline-block;">
-                <div style="margin-bottom: 5px;">
-                    <strong for="id_description">Project Description
-                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    </strong>
+                <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
+                    <div>
+                        <strong for="id_description" class="pull-left">Project Description</strong>
+                        <span class="label label-danger" style="margin-left: 5px">Required</span>
+                    </div>
                     <div>
                         Make sure this is understandable to a wider audience. Answer questions such as what, how, and why. Do not use acronyms.
                     </div>
