@@ -3,6 +3,9 @@
 
 {% block google_citation_meta %}
     <!--data/data_depot.html-->
+    <meta name="keywords" content='{{ keywords|join:", " }}'> <!-- related experiements, subject; used in search -->
+    <meta name="authors" content="{% for author in authors %}{{author.full_name}}; {% endfor %}"> <!-- author names -->
+    
     <meta name="citation_title" content="{{citation_title}}">
     <meta name="citation_publication_date" content="{{citation_date}}">
     <meta name="citation_doi" content="{{doi}}">
@@ -12,8 +15,8 @@
     <meta name="citation_keywords" content="{{keyword}}">
     {% endfor %}
     {% for author in authors %}
-        <meta name="citation_author" content="{{author.full_name}}">
-        <meta name="citation_author_institution" content="{{author.institution}}">
+    <meta name="citation_author" content="{{author.full_name}}">
+    <meta name="citation_author_institution" content="{{author.institution}}">
     {% endfor %}
     <meta name="citation_abstract_html_url" content="">
     
