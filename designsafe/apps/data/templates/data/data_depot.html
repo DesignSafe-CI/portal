@@ -53,6 +53,13 @@
     {% endfor %}{% endif %}
 
     <!--data/data_depot.html-->
+    {% if dois %}
+        {% for id in dois %}
+            <meta name="identifier" content="{{id}}">
+        {% endfor %}
+    {% else %}
+    <meta name="identifier" content="{{doi}}">
+    {% endif %}
 {% endblock %}
 {% block title %}
 {% if citation_title %}{{citation_title}} 
