@@ -15,7 +15,7 @@ class PipelineProjectCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
-        this.experiment = this.ProjectService.resolveParams.experiment;
+        this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
 
         if (!this.project) {
@@ -28,13 +28,13 @@ class PipelineProjectCtrl {
                 this.projType = project.value.projectType;
                 this.uuid = project.uuid;
                 if (this.projType === 'experimental') {
-                    this.$state.go('projects.pipelineSelect', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectExp', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'simulation') {
                     this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'hybrid_simulation') {
                     this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'field_recon') {
-                    this.$state.go('projects.pipelineSelectFieldRecon', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectField', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'other') {
                     this.$state.go('projects.pipelineSelectOther', {projectId: this.uuid}, {reload: true});
                 }
@@ -54,16 +54,6 @@ class PipelineProjectCtrl {
 
     }
 
-    isSingle(val) {
-        // we will have older projects with a single award number as a string
-        if (val.length) {
-            if (typeof val[0] === 'string') {
-                return true;
-            }
-        }
-        return false;
-    }
-
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
@@ -71,13 +61,13 @@ class PipelineProjectCtrl {
 
     goSelection() {
         if (this.projType === 'experimental') {
-            this.$state.go('projects.pipelineSelect', {projectId: this.project.uuid}, {reload: true});
+            this.$state.go('projects.pipelineSelectExp', {projectId: this.project.uuid}, {reload: true});
         } else if (this.projType === 'simulation') {
             this.$state.go('projects.pipelineSelectSim', {projectId: this.project.uuid}, {reload: true});
         } else if (this.projType === 'hybrid_simulation') {
             this.$state.go('projects.pipelineSelectHybSim', {projectId: this.project.uuid}, {reload: true});
         } else if (this.projType === 'field_recon') {
-            this.$state.go('projects.pipelineSelectFieldRecon', {projectId: this.project.uuid}, {reload: true});
+            this.$state.go('projects.pipelineSelectField', {projectId: this.project.uuid}, {reload: true});
         } else if (this.projType === 'other') {
             this.$state.go('projects.pipelineSelectOther', {projectId: this.project.uuid}, {reload: true});
         }
@@ -88,28 +78,28 @@ class PipelineProjectCtrl {
             this.$state.go('projects.pipelineExperiment', {
                 projectId: this.projectId,
                 project: this.project,
-                experiment: this.experiment,
+                primaryEntities: this.primaryEntities,
                 selectedListings: this.selectedListings,
             }, {reload: true});
         } else if (this.projType === 'simulation') {
             this.$state.go('projects.pipelineSimulation', {
                 projectId: this.projectId,
                 project: this.project,
-                experiment: this.experiment,
+                primaryEntities: this.primaryEntities,
                 selectedListings: this.selectedListings,
             }, {reload: true});
         } else if (this.projType === 'hybrid_simulation') {
             this.$state.go('projects.pipelineHybrid', {
                 projectId: this.projectId,
                 project: this.project,
-                experiment: this.experiment,
+                primaryEntities: this.primaryEntities,
                 selectedListings: this.selectedListings,
             }, {reload: true});
         } else if (this.projType === 'field_recon') {
-            this.$state.go('projects.pipelineFieldRecon', {
+            this.$state.go('projects.pipelineField', {
                 projectId: this.projectId,
                 project: this.project,
-                experiment: this.experiment,
+                primaryEntities: this.primaryEntities,
                 selectedListings: this.selectedListings,
             }, {reload: true});
         } else if (this.projType === 'other') {
