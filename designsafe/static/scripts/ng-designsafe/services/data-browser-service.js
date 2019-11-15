@@ -160,9 +160,10 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       tests.canCopy = files.length >= 1 && hasPermission('READ', files) && !['publicData'].includes($state.current.name);
       tests.canMove = files.length >= 1 && hasPermission('WRITE', files) && !['dropboxData', 'boxData', 'googledriveData', 'publicData', 'publishedData.view', 'communityData'].includes($state.current.name);
       tests.canRename = files.length === 1 && hasPermission('WRITE', files) && !['dropboxData', 'boxData', 'googledriveData', 'publicData', 'publishedData.view', 'communityData'].includes($state.current.name);
-      tests.hasImages = files.filter(({ mimeType }) => mimeType.split('/')[0] === 'image').length > 0;
-      // tests.canViewCategories = true;
-
+      tests.enablePreview = containsFolder(files) || files.filter(({ path }) => {
+        const ext = path.split('.').pop().toLowerCase();
+        return ['jpg', 'jpeg', 'png', 'tiff', 'gif'].indexOf(ext) !== -1;
+      }).length > 0;
       var trashPath = _trashPath();
       tests.canTrash = ($state.current.name === 'myData' || $state.current.name === 'projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
       tests.canDelete = $state.current.name === 'myData' && files.length >= 1 && currentState.listing.path === trashPath;

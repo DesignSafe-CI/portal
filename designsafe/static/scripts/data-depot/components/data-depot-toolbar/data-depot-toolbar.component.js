@@ -53,9 +53,25 @@ class DataDepotToolbarCtrl {
         this.DataBrowserService.preview(this.browser.selected[0], this.browser.listing);
     }
     previewImages() {
-        this.DataBrowserService.previewImages(
-            this.browser.listing.children.filter((child) => child.mimeType.split('/')[0] === 'image')
-        );
+        const images = this.browser.selected.filter(({ path }) => {
+            const ext = path.split('.').pop().toLowerCase();
+            return ['jpg', 'jpeg', 'png', 'tiff', 'gif'].indexOf(ext) !== -1;
+        });
+        const folders = this.browser.selected.filter(({ format }) => format === 'folder');
+        if (folders.length) {
+            Promise.all(folders.map((folder) => folder.fetch())).then((responses) => {
+                for (const res of responses) {
+                    const output = res.children.filter(({ path }) => {
+                        const ext = path.split('.').pop().toLowerCase();
+                        return ['jpg', 'jpeg', 'png', 'tiff', 'gif'].indexOf(ext) !== -1;
+                    });
+                    images.push(...output);
+                }
+                this.DataBrowserService.previewImages(images);
+            });
+        } else {
+            this.DataBrowserService.previewImages(images);
+        }
     }
     showCitation() {
         this.DataBrowserService.showCitation(this.browser.selected, this.browser.listing);
