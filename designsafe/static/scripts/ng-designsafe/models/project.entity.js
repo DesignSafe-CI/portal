@@ -156,7 +156,10 @@ export function ProjectEntityModel() {
         'designsafe.project.hybrid_simulation.analysis': {'tag': 'tag-light-blue', 'text': 'ds-text-light-blue'},
         'designsafe.project.hybrid_simulation.report': {'tag': 'tag-black', 'text': 'ds-text-black'},
         'designsafe.project.field_recon.report': {'tag': 'tag-black', 'text': 'ds-text-black'},
-        'designsafe.project.field_recon.collection': {'tag': 'tag-yellow', 'text': 'ds-text-yellow'},
+        'designsafe.project.field_recon.social_science': {'tag': 'tag-yellow', 'text': 'ds-text-yellow'},
+        'designsafe.project.field_recon.geoscience': {'tag': 'tag-yellow', 'text': 'ds-text-yellow'},
+        'designsafe.project.field_recon.planning': { tag: 'tag-green', text: 'ds-text-green' },
+        // 'designsafe.project.field_recon.collection': {'tag': 'tag-yellow', 'text': 'ds-text-yellow'},
     };
 
     ProjectEntity.prototype.cssClasses = function() {
