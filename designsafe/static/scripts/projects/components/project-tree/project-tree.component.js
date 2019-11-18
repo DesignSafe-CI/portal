@@ -240,11 +240,6 @@ class ProjectTreeCtrl {
      * For instance, a Collection  needs to have all of the above related but a Mission
      * only needs to have the project as a parent.
      */
-    // relateEntityToFieldReconProject(leaf, entity){
-    //     let leafParent = leaf.parent;
-    //     entity.value.missions.push(leafParent.data.uuid);
-    //     return this.addAssociationIds(leaf, entity);
-    // }
     relateEntityToFieldReconProject(leaf, entity){
         let leafParent = leaf.parent;
         let highestOrder = -1;
