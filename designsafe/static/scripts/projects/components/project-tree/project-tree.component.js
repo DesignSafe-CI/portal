@@ -240,8 +240,23 @@ class ProjectTreeCtrl {
      * For instance, a Collection  needs to have all of the above related but a Mission
      * only needs to have the project as a parent.
      */
+    // relateEntityToFieldReconProject(leaf, entity){
+    //     let leafParent = leaf.parent;
+    //     entity.value.missions.push(leafParent.data.uuid);
+    //     return this.addAssociationIds(leaf, entity);
+    // }
     relateEntityToFieldReconProject(leaf, entity){
         let leafParent = leaf.parent;
+        let highestOrder = -1;
+        leafParent.children.forEach((child) => {
+            if (child.data.order !== null && 
+                child.data.type === entity.name &&
+                child.data.order > highestOrder){
+                highestOrder = child.data.order;
+            }
+        });
+        highestOrder += 1;
+        entity.setOrderFor(leafParent.data.uuid, highestOrder);
         entity.value.missions.push(leafParent.data.uuid);
         return this.addAssociationIds(leaf, entity);
     }
@@ -403,6 +418,10 @@ class ProjectTreeCtrl {
      */
     buildFieldReconTree() {
         let missions = [];
+        this.project.allCollections = this.project.socialscience_set.concat(
+            this.project.geoscience_set,
+            this.project.planning_set
+        );
         if (this.rootCategoryUuid) {
             missions = _.filter(
                 this.project.mission_set,
@@ -418,10 +437,9 @@ class ProjectTreeCtrl {
                 }
             );
         }
-        let collections = _.sortBy(
-            this.project.collection_set,
-            (col) => { return col.value.title; }
-        );
+        let collections = this.project.allCollections.sort((col) => {
+            return col.value.title;
+        });
         let reports = _.sortBy(
             this.project.report_set,
             (rep) => { return rep.value.title; }
@@ -478,25 +496,43 @@ class ProjectTreeCtrl {
                     }
                 );
             }
-            _.each(collections, (col) => {
+            collections.forEach((col) => {
                 if (!_.contains(col.associationIds, node.uuid)){
                     return;
                 }
+                let collectionName = 'Collection';
+                let collectionStyle = 'stroke: #B59300; fill: #ECE4BF;';
+                if (col.name === 'designsafe.project.field_recon.planning') {
+                    collectionName = 'Research Planning Collection';
+                    collectionStyle = 'stroke: #43A59D; fill: #CAE9E6;';
+                } else if (col.name === 'designsafe.project.field_recon.geoscience') {
+                    collectionName = 'Engineering/Geoscience Collection';
+                } else if (col.name === 'designsafe.project.field_recon.social_science') {
+                    collectionName = 'Social Science Collection';
+                }
                 let colNode = {
                     name: col.value.title,
+                    type: col.name,
                     uuid: col.uuid,
                     parent: node.name,
                     children: [],
-                    rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
-                    display: 'Collection',
+                    rectStyle: collectionStyle,
+                    display: collectionName,
+                    order: this.orderOf(col, node.uuid).value,
                 };
                 node.children.push(colNode);
+            });
+            node.children = _.sortBy(node.children, (child) => {
+                if (child.order !== null) {
+                    return child.order;
+                }
+                return child.name;
             });
             if (!this.readOnly) {
                 node.children.push(
                     {
                         name: '-- Choose a Collection --',
-                        attr: 'collection_set',
+                        attr: 'allCollections',
                         entityType: 'collection',
                     }
                 );
@@ -1638,15 +1674,12 @@ class ProjectTreeCtrl {
     }
 
     orderOf(obj, parentUuid) {
-        if (typeof obj.orderOf === 'function') {
-            return obj.orderOf(parentUuid, order);
-        }
         let order = _.findWhere(
             obj._ui.orders,
             { parent: parentUuid }
         );
         if (!order) {
-            order = { value: 0 };
+            order = { value: 0 , parent: parentUuid};
         }
         return order;
     }
