@@ -18,8 +18,14 @@ class PublicationCitationCtrl {
             this.auths = angular.copy(this.entity.authors);
             this.doi = this.entity.doi;
         } else if (this.publication.project.value.projectType !== 'other') {
-            // exp,hyb,sim,field
-            this.auths = angular.copy(this.publication.authors);
+            // exp,hyb,sim,field 
+            let authIds = [];
+            if (this.publication.project.value.coPis) {
+                authIds = this.publication.project.value.coPis.concat(this.publication.project.value.pi);
+            } else {
+                authIds = [this.publication.project.value.pi];
+            }
+            this.auths = this.publication.authors.filter((author) => authIds.includes(author.name));
         } else {
             // other
             this.auths = angular.copy(this.publication.project.value.teamOrder);

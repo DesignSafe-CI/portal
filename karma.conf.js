@@ -15,7 +15,7 @@ module.exports = function(config) {
             './node_modules/marked/lib/marked.js',
             './node_modules/d3/dist/d3.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js',
-
+            './node_modules/d3plus/d3plus.full.min.js',
             './node_modules/angular/angular.min.js',
             './node_modules/ngstorage/ngStorage.js',
             './node_modules/angular-translate/dist/angular-translate.js',

@@ -19,16 +19,16 @@
                         <i class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
-                <td class="tg-0lax" ng-hide="$ctrl.projType === 'other'">
+                <td class="tg-0lax" ng-hide="$ctrl.project.value.projectType === 'other'">
                     <strong>Proofread {{$ctrl.placeholder}}</strong>
                     <div>
                         <i class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax">
-                        <strong ng-if="$ctrl.projType === 'other'">Proofread Data</strong>
-                        <strong ng-if="$ctrl.projType === 'field_recon'">Proofread Collections</strong>
-                        <strong ng-if="$ctrl.projType != 'other' && $ctrl.projType != 'field_recon'">Proofread Categories</strong>
+                        <strong ng-if="$ctrl.project.value.projectType === 'other'">Proofread Data</strong>
+                        <strong ng-if="$ctrl.project.value.projectType === 'field_recon'">Proofread Collections</strong>
+                        <strong ng-if="$ctrl.project.value.projectType != 'other' && $ctrl.project.value.projectType != 'field_recon'">Proofread Categories</strong>
                     <div>
                         <i class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
@@ -49,10 +49,10 @@
         </table>
         <br>
         <div>
-            <a class="pull-left" ng-click="$ctrl.goAuthors()" ng-if="$ctrl.projType !== 'other'">
+            <a class="pull-left" ng-click="$ctrl.goAuthors()" ng-if="$ctrl.project.value.projectType !== 'other'">
                 <i class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
-            <a class="pull-left" ng-click="$ctrl.goTeam()" ng-if="$ctrl.projType === 'other'">
+            <a class="pull-left" ng-click="$ctrl.goTeam()" ng-if="$ctrl.project.value.projectType === 'other'">
                 <i class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
             <button class="btn btn-small btn-add pull-right" ng-click="$ctrl.prepareModal()" ng-disabled="!$ctrl.validSelection()">
@@ -71,7 +71,7 @@
                 <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
             </p>
         </div>
-        <div>
+        <div ng-if="!$ctrl.ui.loading">
             <h3>Datasets</h3>
             <button class="btn-danger pull-right" ng-click="$ctrl.reset()" ng-if="$ctrl.validSelection()">
                 <strong>Clear Selection</strong>
