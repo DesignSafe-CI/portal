@@ -1,0 +1,88 @@
+{
+    "General": [
+        "None",
+        "Other"
+    ],
+    "IT/Electronics": [
+        "iPad Pro 10.5 | 256 GB, WiFi+Cellular ",
+        "iPad Rugged Case w/Keyboard | ZAGG Rugged Messenger",
+        "iPAD accessories | Tripod, HD Microphone, External battery, Apple Pencil",
+        "Flash Drive | For backing up iPad (SanDisk Wireless Stick 256GB)",
+        "External Hard Drive | 2 TB Drive for drone footage, protective bumpers, integrated microSD, USB-C"
+    ],
+    "Terrestrial Laser Scanning": [
+        "Short Range Scanner | Leica BLK360",
+        "Medium Range Scanner | Leica RTC360 ",
+        "Medium Range Scanner | Leica Scanstation P50",
+        "Long Range Scanner | Maptek I-Site XR3",
+        "Long Range Scanner | Maptek I-Site LR3"
+    ],
+    "Survey": [
+        "Robotic Total Station | Leica Nova TS16I instrument package",
+        "Survey (Digital level) | Leica LS15 digital level package",
+        "Survey (GNSS receiver) | Leica GS18T SmartAntenna package",
+        "Structure Sensor | Structure sensor bundle; 3-D scanner attaches to iPAD",
+        "Thermometer/Digital Compass/Barometer/Humidity Sensor | Kestrel Meter 5500 Weather Meter"
+    ],
+    "Unmanned Aerial Systems": [
+        "Small Portable (backpack-size) Drone | DJI Mavic Pro",
+        "Small Portable (backpack-size) Drone | DJI Mavic Pro 2",
+        "Small Portable (backpack-size) Drone | DJI Mavic Air ",
+        "Small to Medium-Sized Drone | DJI Phantom 4 Pro+ ",
+        "Small to Medium-Sized Drone | DJI Phantom 4 Pro+ RTK ",
+        "Medium Size Drone | DJI Inspire2",
+        "Mid-grade Industral Weather Resistant Drone | DJI Matrice 210 ",
+        "High-end Industrial Weather Resistant Drone | DJI Matrice 210 RTK",
+        "Fixed Wing Training Drone | Parrot Disco Adventurer package",
+        "Large Fixed Wing Drone | Sense fly Ebee with RTK and base station",
+        "Kite Balloon with Tether | SkyShot Hybrid HeliKite (already purchased)",
+        "High-end Drone with UAS LiDAR System | DJI M600 drone with Phoenix Aerial Mini Ranger LiDAR system",
+        "Drone Imaging systems (compatible with all Matrice platforms) | Zenmuse X4S, X5S, and X30 (zoom) camera. MicaSense Altum Multispectral Sensor."
+    ],
+    "Imaging": [
+        "Digital SLR Camera | Canon 7D Mark II, with narrow and wide angle lenses",
+        "Robotic Camera Mount | GigaPan Epic Pro V (for DSLR) and Tripod",
+        "3-axis Camera with Stabilizer | DJI Osmo 3-axis Gimbal and 4k camera",
+        "360 Degree Camera | Insta360 One for Apple Products",
+        "Car Camera System | Applied Streetview 360 degree panorama GPS camera system",
+        "Thermal Camera | Flir One Pro"
+    ],
+    "3D Visualization": [
+        "Computer Automated Virtual Environment (CAVE) System | at RAPID Facility Headquarters ONLY. B363D TV, TV stand, computer, tracking camera and accessories. "
+    ],
+    "Site Characterization": [
+        "Seismometers | Nanometrics triaxial, 20s, Trillium seismometer with Centaur digital recorder",
+        "Multichannel Analysis of Surface Waves (MASW) System | ATOM wireless seismic system, 24-channel system with GPS and WiFi"
+    ],
+    "Structural": [
+        "Accelerograph system | Nanometrics standalone accelerographs with batteries, cases, and data loggers"
+    ],
+    "Ground Investigation": [
+        "Hand Operated Dynamic Cone Penetrometer (DCP) System | SmartDCP digital recording system and hand operated DCP",
+        "Lightweight, Portable DCP | Sol'Solution Panda DCP",
+        "Pocket Penetrometer | Geotester pocket penetrometer",
+        "Schmidt Hammer | Digi-Schmidt 2000, digital measuring system",
+        "Basic Soil Sampling Kit | AMS 3-1/4-inch basic soil sampling kit, hand augers and samplers"
+    ],
+    "Coastal": [
+        "Remote-Operated Hydrographic Survey Boat | Z-boat 1800 with single beam echo sounder",
+        "Acousitc Beacons | ULB 350/37 underwater acoustic beacon",
+        "Beacon Locator - Diver Operated Pinger Receiver System | DPR-275 Diver Pinger Receiver",
+        "Water Level Data Logger | TruBlue 255",
+        "Acoustic Doppler Velocimeter | AquaDopp profiler with 90deg angle head",
+        "Grab Sampler | Petite Ponar 6\"x6\" w/ 50 ft of rope"
+    ],
+    "Social": [
+        "EEG Headset | Emotiv 14-channel headset",
+        "EEG Headset | Emotiv 5-channel headset"
+    ],
+    "Support": [
+        "Smaller Battery | Goal Zero Yeti 150",
+        "High Capacity Battery | Goal Zero Yeti 400",
+        "Safety Vest | Custom NHERI Rapid safety vests with iPad pocket",
+        "Safety Helmet | Rock climbing helmet",
+        "Power Inverters | 300W DC 12V to 110V car outlet",
+        "Walkie Talkies (pair) | Waterproof, weather proof, long range",
+        "RAPP Pack | Swiss Gear ScanSmart backpack w/Plumb Bob, Measuring tape, Digital Caliper, Safety Glasses, Hand level, Pocket Rod, First Aid Kit, Weld Gauge, Crack Gauge, Range Finder,"
+    ]
+}
