@@ -5150,6 +5150,14 @@ a.label:focus {
 .label-warning[href]:focus {
   background-color: #ec971f;
 }
+.label-form {
+  display: flex;
+  flex-direction: column
+}
+.label-form-name {
+  float: left !important;
+  margin-right: 5px;
+}
 .label-danger {
   background-color: #d9534f;
 }
