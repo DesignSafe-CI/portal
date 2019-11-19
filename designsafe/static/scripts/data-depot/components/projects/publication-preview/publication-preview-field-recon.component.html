@@ -14,17 +14,13 @@
             <tr class="prj-row">
                 <td>PI</td>
                 <td class="prj-data">
-                    <a href="#" ng-click="$ctrl.showAuthor($ctrl.piDisplay)">
-                        {{ $ctrl.piDisplay.lname}}, {{ $ctrl.piDisplay.fname }}
-                    </a>
+                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <span ng-repeat="coPi in $ctrl.coPIDisplay">
-                        <a href="#" ng-click="$ctrl.showAuthor(coPi)">{{coPi.lname}}, {{coPi.fname}}</a><span ng-if="!$last">;</span>
-                    </span>
+                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.project.value.dois.length">
