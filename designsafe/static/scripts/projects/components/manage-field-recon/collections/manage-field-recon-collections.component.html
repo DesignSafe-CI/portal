@@ -11,7 +11,14 @@
         <form name="addForm" data-ng-hide="$ctrl.ui.showEditCollectionForm">
             <div class="collection-type form-group">
                 <div style="padding-bottom: 10px;">
-                    <label>Collection Type<span style="color: #D04348; font-size: 14px;">&#9679; </span></label>
+                    <label for="id-type">
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name">Collection Type</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                        </div>
+                    </label>
                     <div>
                         <span class="category-sensor-info">Research Planning Collection</span>
                         Groups files related to planning and logistics, administration, design, institutional review board (IRB), or permits.
@@ -42,9 +49,9 @@
             </div>
             <div class="collection-title form-group">
                 <label for="id-title">
-                    <div style="display: flex; flex-direction: column">
+                    <div class="label-form">
                         <div>
-                            <span class="pull-left" style="margin-right: 5px">Collection Title</span>
+                            <span class="label-form-name">Collection Title</span>
                             <span class="label label-danger">Required</span>
                         </div>
                         <span style="display: block; font-weight: normal;">
@@ -53,10 +60,10 @@
                     </div>
                 </label>
                 <input type="text"
-                       id="id-title"
-                       data-ng-model="$ctrl.form.title"
-                       data-ng-required="true"
-                       class="form-control" />
+                        id="id-title"
+                        data-ng-model="$ctrl.form.title"
+                        data-ng-required="true"
+                        class="form-control" />
             </div>
             <div class="collection-unitAnalysis form-group" ng-if="$ctrl.formFields('unitAnalysis')">
                 <label for="id-unitAnalysis">Unit of Analysis
@@ -65,10 +72,10 @@
                     </span>
                 </label>
                 <input type="text"
-                       id="id-unitAnalysis"
-                       data-ng-model="$ctrl.form.unit"
-                       data-ng-required="false"
-                       class="form-control" />
+                        id="id-unitAnalysis"
+                        data-ng-model="$ctrl.form.unit"
+                        data-ng-required="false"
+                        class="form-control" />
             </div>
             <div class="collection-methods form-group" ng-if="$ctrl.formFields('methods')">
                 <label for="id-methods">Method(s) of Collection
@@ -78,16 +85,16 @@
                 </label>
                 <div ng-repeat="method in $ctrl.form.methods track by $index">
                     <input type="text"
-                           id="id-methods"
-                           data-ng-model="$ctrl.form.methods[$index]"
-                           data-ng-required="false"
-                           class="form-control" />
+                            id="id-methods"
+                            data-ng-model="$ctrl.form.methods[$index]"
+                            data-ng-required="false"
+                            class="form-control" />
                 </div>
                 <button class="btn btn-link"
                         type="button"
                         data-ng-click="$ctrl.addMethod()">
-                   <i class="fa fa-plus">&nbsp;</i> Add another Method of Collection
-               </button>
+                    <i class="fa fa-plus">&nbsp;</i> Add another Method of Collection
+                </button>
             </div>
             <div class="collection-modes form-group" ng-if="$ctrl.formFields('modes')">
                 <label for="id-modes">Modes(s) of Collection
@@ -97,16 +104,16 @@
                 </label>
                 <div ng-repeat="mode in $ctrl.form.modes track by $index">
                     <input type="text"
-                           id="id-modes"
-                           data-ng-model="$ctrl.form.modes[$index]"
-                           data-ng-required="false"
-                           class="form-control" />
+                            id="id-modes"
+                            data-ng-model="$ctrl.form.modes[$index]"
+                            data-ng-required="false"
+                            class="form-control" />
                 </div>
                 <button class="btn btn-link"
                         type="button"
                         data-ng-click="$ctrl.addModes()">
-                  <i class="fa fa-plus">&nbsp;</i> Add another Mode of Collection
-              </button>
+                    <i class="fa fa-plus">&nbsp;</i> Add another Mode of Collection
+                </button>
             </div>
             <div class="collection-sample form-group" ng-if="$ctrl.formFields('sample')">
                 <label for="id-sample">Sampling Approach(es)
@@ -116,33 +123,33 @@
                 </label>
                 <div ng-repeat="sample in $ctrl.form.sampleApproach track by $index">
                     <input type="text"
-                           id="id-sample"
-                           ng-model="$ctrl.form.sampleApproach[$index]"
-                           ng-required="false"
-                           class="form-control" />
+                            id="id-sample"
+                            ng-model="$ctrl.form.sampleApproach[$index]"
+                            ng-required="false"
+                            class="form-control" />
                 </div>
                 <button class="btn btn-link collection-sample-add"
                         type="button"
                         ng-click="$ctrl.addSampleApproach()">
-                   <i class="fa fa-plus">&nbsp;</i> Add another Sampling Approach
-               </button>  
+                    <i class="fa fa-plus">&nbsp;</i> Add another Sampling Approach
+                </button>  
             </div>
             <div class="collection-sample-size form-group"  ng-if="$ctrl.formFields('sample')">
                 <label for="id-sampleSize">Sample Size</label>
                 <br>
                 <br>
                 <input type="text"
-                       id="id-sampleSize"
-                       data-ng-model="$ctrl.form.sampleSize"
-                       data-ng-required="false"
-                       class="form-control" />
+                        id="id-sampleSize"
+                        data-ng-model="$ctrl.form.sampleSize"
+                        data-ng-required="false"
+                        class="form-control" />
             </div>
             <div class="observation-type form-group"
-                 ng-if="$ctrl.formFields('obsType')">
-                <label for="id-observation-type">
-                    <div style="display: flex; flex-direction: column">
+                    ng-if="$ctrl.formFields('obsType')">
+                <label for="id-type">
+                    <div class="label-form">
                         <div>
-                            <span class="pull-left" style="margin-right: 5px">Observation Type</span>
+                            <span class="label-form-name">Observation Type</span>
                             <span class="label label-danger">Required</span>
                         </div>
                         <span style="display: block; font-weight:normal;">
@@ -150,8 +157,7 @@
                         </span>
                     </div>
                 </label>
-                <div data-ng-repeat="observationType in
-                                     $ctrl.form.observationTypes">
+                <div data-ng-repeat="observationType in $ctrl.form.observationTypes">
                     <select id="id-observation-type"
                             style="margin-bottom: 5px"
                             data-ng-options="item for item in $ctrl.data.observationTypes"
@@ -161,14 +167,11 @@
                             data-ng-if="$ctrl.showObservationDropdown($index)">
                     <option value="">-- Select Observation Type --</option>
                     </select>
-                    <input 
-                        type="text"
-                        placeholder="Other"
-                        data-ng-model="$ctrl.form.observationTypeOthers[$index]"
-                        data-ng-if="$ctrl.showObservationInput($index)"
-                        data-ng-required="true"
-                        class="form-control"
-                    />
+                    <input type="text"
+                            data-ng-model="$ctrl.form.observationTypes[$index]"
+                            data-ng-if="$ctrl.showObservationInput($index)"
+                            class="form-control"
+                        />
                 </div>
                 <button type="button"
                         class="btn btn-link"
@@ -178,9 +181,9 @@
             </div>
             <div class="collection-dates form-group" ng-if="$ctrl.formFields('colDates')">
                 <label for="id-date-start">
-                    <div style="display: flex; flex-direction: column">
+                    <div class="label-form">
                         <div>
-                            <span class="pull-left" style="margin-right: 5px">Date(s) of Collection</span>
+                            <span class="label-form-name">Date(s) of Collection</span>
                             <span class="label label-danger">Required</span>
                         </div>
                         <span style="display: block; font-weight:normal;">
@@ -234,20 +237,28 @@
                 </div>
             </div>
             <div class="data-collectors form-group">
-                <label ng-if="$ctrl.formFields('collectors')">
-                    Data Collector(s)
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display: block; font-weight: normal;">
-                        Who, specifically, collected this data?
-                        You can order the data collectors later when you publish.
-                    </span>
+                <label for="id-collectors" ng-if="$ctrl.formFields('collectors')">
+                    <div class="label-form">
+                        <div>
+                            <span class="label-form-name">Data Collector(s)</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight: normal;">
+                            Who, specifically, collected this data?
+                            You can order the data collectors later when you publish.
+                        </span>
+                    </div>
                 </label>
-                <label ng-if="$ctrl.formFields('authors')">
-                    Author(s)
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display: block; font-weight: normal;">
-                        You can order the authors later when you publish.
-                    </span>
+                <label for="id-authors" ng-if="$ctrl.formFields('authors')">
+                    <div class="label-form">
+                        <div>
+                            <span class="label-form-name">Author(s)</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight: normal;">
+                            You can order the authors later when you publish.
+                        </span>
+                    </div>
                 </label>
                 <br>
                 <div data-ng-repeat="usr in $ctrl.form.dataCollectors track by $index"
@@ -272,8 +283,12 @@
             </div>
             <div class="site-location form-group" ng-if="$ctrl.formFields('colSite')">
                 <label for="id-location">
-                    <span class="pull-left" style="margin-right: 5px">Collection Site Location</span>
-                    <span class="label label-danger">Required</span>
+                    <div class="label-form">
+                        <div>
+                            <span class="label-form-name">Collection Site Location</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                    </div>
                 </label>
                 <div>
                     <div style="width: 55%; display:inline-block;">
@@ -308,65 +323,45 @@
                     </div>
                 </div>
             </div>
-            <div class="equipment" ng-if="$ctrl.formFields('equipment')">
-                <div style="width: 45%; display:inline-block;">
+            <div class="equipment form-group" ng-if="$ctrl.formFields('equipment')">
+                <div>
                     <label for="id-equipment">
-                        Equipment
-                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                        <span style="display: block; font-weight: normal;">
-                            The equipment used to gather your data.
-                        </span>
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name">Equipment</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span style="display: block; font-weight: normal;">
+                                The equipment used to gather your data.
+                            </span>
                         </div>
                     </label>
+                    <div data-ng-repeat="eqp in $ctrl.form.equipment track by $index">
+                        <select class="form-control"
+                                data-ng-model="$ctrl.form.equipment[$index]"
+                                style="margin-bottom: 5px;"
+                                data-ng-required="$first"
+                                data-ng-if="$ctrl.showEquipmentDropdown($index)">
+                            <option value="">-- Select Equipment --</option>
+                            <optgroup data-ng-repeat="(group, labels) in $ctrl.data.equipment"
+                                      label="{{group}}">
+                                <option data-ng-repeat="label in labels"
+                                        value="{{label}}">
+                                    {{label}}
+                                </option>
+                            </optgroup>
+                        </select>
+                        <input type="text"
+                               data-ng-model="$ctrl.form.equipment[$index]"
+                               data-ng-if="$ctrl.showEquipmentInput($index)"
+                               class="form-control" />
+                    </div>
+                    <button class="btn btn-link"
+                            type="button"
+                            data-ng-click="$ctrl.addEquipment()">
+                        <i class="fa fa-plus">&nbsp;</i> Add another Equipment
+                    </button>
                 </div>
-                <div style="width: 45%; display:inline-block;">
-                    <label form="id-equipment-model">
-                        Equipment Manufacturer and Model
-                        <span style="color: #D04348; font-size:14px;">
-                            &#9679;
-                        </span>
-                        <span style="display: block; font-weight: normal;">
-                            &nbsp;
-                        </span>
-                    </label>
-                </div>
-                <div style="width: 45%;
-                            display:inline-block;"
-                     data-ng-repeat-start="equipment
-                                           in $ctrl.form.equipment">
-                    <select class="form-control"
-                            data-ng-model="equipment.name"
-                            style="margin-bottom: 5px;"
-                            data-ng-required="$first"
-                            data-ng-if="$ctrl.showInstrumentDropdown($index)">
-                        <option value="">-- Select Equipment --</option>
-                        <optgroup data-ng-repeat="(group, labels) in $ctrl.data.instruments"
-                                  label="{{group}}">
-                            <option data-ng-repeat="label in labels"
-                                    value="{{label}}">
-                                {{label}}
-                            </option>
-                        </optgroup>
-                    </select>
-                    <input type="text"
-                           data-ng-model="equipment.name"
-                           data-ng-if="$ctrl.showInstrumentInput($index)"
-                           placeholder="Instrument"
-                           class="form-control" />
-                </div>
-                <div style="width: 45%; display:inline-block;"
-                     data-ng-repeat-end>
-                    <input type="text"
-                           data-ng-model="equipment.model"
-                           data-ng-required="$first"
-                           placeholder="Manufacturer and Model"
-                           class="form-control" />
-                </div>
-                <button class="btn btn-link"
-                        type="button"
-                        data-ng-click="$ctrl.addInstrument()">
-                    <i class="fa fa-plus">&nbsp;</i> Add another Equipment
-                </button>
             </div>
             <div class="collection-restriction form-group"  ng-if="$ctrl.formFields('restriction')">
                 <label for="id-restriction">Restriction
@@ -399,14 +394,12 @@
                     </span>
                 </div>
                 <div style="width:45%; display:inline-block; margin-bottom:5px"
-                     data-ng-repeat-start="referenced
-                                           in $ctrl.form.referencedData">
+                     data-ng-repeat-start="referenced in $ctrl.form.referencedData">
                     <input type="text"
                            data-ng-model="referenced.title"
                            class="form-control"/>
                 </div>
-                <div style="width: 45%; display:inline-block;"
-                     data-ng-repeat-end>
+                <div style="width: 45%; display:inline-block;" data-ng-repeat-end>
                     <input type="text"
                            data-ng-model="referenced.url"
                            class="form-control"/>
@@ -419,9 +412,9 @@
             </div>
             <div class="description form-group">
                 <label for="id-description">
-                    <div style="display: flex; flex-direction: column">
+                    <div class="label-form">
                         <div>
-                            <span class="pull-left" style="margin-right: 5px">Collection Description</span>
+                            <span class="label-form-name">Collection Description</span>
                             <span class="label label-danger">Required</span>
                         </div>
                         <span style="display:block; font-weight:normal;">
@@ -438,23 +431,23 @@
                 </textarea>
             </div>
             <div class="text-right">
-              <button class="btn btn-add"
-                      type="submit"
-                      data-ng-click="addForm.$valid &&
-                                     $ctrl.updateCollection($event)"
-                      data-ng-if="$ctrl.data.editCollection"
-                      style="width:18%;">Update</button>
+                <button class="btn btn-add"
+                        type="submit"
+                        data-ng-click="addForm.$valid &&
+                                        $ctrl.updateCollection($event)"
+                        data-ng-if="$ctrl.data.editCollection"
+                        style="width:18%;">Update</button>
             </div>
             <div class="text-right">
-              <button class="btn btn-add"
-                      data-ng-click="addForm.$valid &&
-                                     $ctrl.saveCollection($event)"
-                      data-ng-if="!$ctrl.data.editCollection"
-                      style="width:18%;"
-                      type="submit">
-                  <i class="fa fa-plus">&nbsp;</i>
-                  Add Collection
-              </button>
+                <button class="btn btn-add"
+                        data-ng-click="addForm.$valid &&
+                                        $ctrl.saveCollection($event)"
+                        data-ng-if="!$ctrl.data.editCollection"
+                        style="width:18%;"
+                        type="submit">
+                    <i class="fa fa-plus">&nbsp;</i>
+                    Add Collection
+                </button>
             </div>
         </form>
     </div>
@@ -492,7 +485,7 @@
                         <div class="collection-data">
                             <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
                             <span data-ng-if="collection.value.dateEnd">
-                               &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                             </span>
                         </div>
                         <div class="collection-label-multi"
@@ -512,12 +505,10 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="collection-label-multi"
-                             data-ng-if="collection.value.location">
+                        <div class="collection-label-multi" data-ng-if="collection.value.location">
                             Site Location
                         </div>
-                        <div class="collection-data"
-                             data-ng-if="collection.value.location">
+                        <div class="collection-data" data-ng-if="collection.value.location">
                             <ul class="collection-list">
                                 <li>
                                     <span data-ng-if="collection.value.location">
@@ -529,18 +520,15 @@
                                     <span data-ng-if="collection.value.longitude">
                                         Long {{collection.value.longitude}}
                                     </span>
-                                    <!-- <li data-ng-if="collection.value.elevation">
-                                        Elevation: {{collection.value.elevation}}
-                                    </li> -->
                                 </li>
                             </ul>
                         </div>
                         <div class="collection-label-multi"
-                             data-ng-if="collection.value.equipment.length">
+                                data-ng-if="collection.value.equipment.length">
                             Instrument
                         </div>
                         <div class="collection-data"
-                             data-ng-if="collection.value.equipment.length">
+                                data-ng-if="collection.value.equipment.length">
                             <ul class="collection-list">
                                 <li data-ng-repeat="equipment in collection.value.equipment">
                                     {{equipment.name}} | {{equipment.model}}
@@ -645,13 +633,12 @@
                             <div class="collection-data">
                                 <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
                                 <span data-ng-if="collection.value.dateEnd">
-                                   &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                    &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                                 </span>
                             </div>
                         </div>
                         <div class="collection-field">
-                            <div class="collection-label-multi"
-                                 data-ng-if="collection.value.dataCollectors.length">
+                            <div class="collection-label-multi" data-ng-if="collection.value.dataCollectors.length">
                                 Data Collectors
                             </div>
                             <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
@@ -669,12 +656,11 @@
                             </div>
                         </div>
                         <div class="collection-field">
-                            <div class="collection-label-multi"
-                                 data-ng-if="collection.value.location">
+                            <div class="collection-label-multi" data-ng-if="collection.value.location">
                                 Site Location
                             </div>
                             <div class="collection-data"
-                                 data-ng-if="collection.value.location">
+                                    data-ng-if="collection.value.location">
                                 <ul class="collection-list">
                                     <li>
                                         <span data-ng-if="collection.value.location">
@@ -691,12 +677,11 @@
                             </div>
                         </div>
                         <div class="collection-field">
-                            <div class="collection-label-multi"
-                                 data-ng-if="collection.value.equipment.length">
+                            <div class="collection-label-multi" data-ng-if="collection.value.equipment.length">
                                 Equipment
                             </div>
                             <div class="collection-data"
-                                 data-ng-if="collection.value.equipment.length">
+                                    data-ng-if="collection.value.equipment.length">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="equip in collection.value.equipment">
                                         {{equip.name}} | {{equip.model}}
@@ -776,13 +761,12 @@
                             <div class="collection-data">
                                 <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
                                 <span data-ng-if="collection.value.dateEnd">
-                                   &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                    &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                                 </span>
                             </div>
                         </div>
                         <div class="collection-field">
-                            <div class="collection-label-multi"
-                                 data-ng-if="collection.value.dataCollectors.length">
+                            <div class="collection-label-multi" data-ng-if="collection.value.dataCollectors.length">
                                 Data Collectors
                             </div>
                             <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
@@ -800,12 +784,10 @@
                             </div>
                         </div>
                         <div class="collection-field">
-                            <div class="collection-label-multi"
-                                 data-ng-if="collection.value.location">
+                            <div class="collection-label-multi" data-ng-if="collection.value.location">
                                 Site Location
                             </div>
-                            <div class="collection-data"
-                                 data-ng-if="collection.value.location">
+                            <div class="collection-data" data-ng-if="collection.value.location">
                                 <ul class="collection-list">
                                     <li>
                                         <span data-ng-if="collection.value.location">
@@ -822,12 +804,10 @@
                             </div>
                         </div>
                         <div class="collection-field">
-                            <div class="collection-label-multi"
-                                 data-ng-if="collection.value.equipment.length">
+                            <div class="collection-label-multi" data-ng-if="collection.value.equipment.length">
                                 Equipment
                             </div>
-                            <div class="collection-data"
-                                 data-ng-if="collection.value.equipment.length">
+                            <div class="collection-data" data-ng-if="collection.value.equipment.length">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="equip in collection.value.equipment">
                                         {{equip.name}} | {{equip.model}}
@@ -887,8 +867,7 @@
                 <div id="files-{{collection.uuid}}" class="collapse">
                     <div class="well">
                         <div class="collection-field">
-                            <div class="collection-label-multi"
-                                 data-ng-if="collection.value.dataCollectors.length">
+                            <div class="collection-label-multi" data-ng-if="collection.value.dataCollectors.length">
                                 Data Collectors
                             </div>
                             <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
@@ -957,8 +936,7 @@
                 <div id="files-{{collection.uuid}}" class="collapse">
                     <div class="well">
                         <div class="collection-field">
-                            <div class="collection-label-multi"
-                                 data-ng-if="collection.value.authors.length">
+                            <div class="collection-label-multi" data-ng-if="collection.value.authors.length">
                                 Authors
                             </div>
                             <div class="collection-data" data-ng-if="collection.value.authors.length">

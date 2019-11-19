@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import ManageFieldReconCollectionsTemplate from './manage-field-recon-collections.component.html';
+import collectionEquipment from './equipment-list.json';
 
 class ManageFieldReconCollectionsCtrl {
     constructor($q, $uibModal, UserService, ProjectEntitiesService) {
@@ -75,53 +76,7 @@ class ManageFieldReconCollectionsCtrl {
                 'Coastal',
                 'Other',
             ],
-            instruments: { 
-                General: [
-                    'Other',
-                    'None',
-                    'Long Range Laser Scanner',
-                    'Close Range Lase Scanner',
-                    'UAV Mounted Laser Scanner',
-                    'GPS',
-                    'Total Station',
-                    'Digital Level',
-                    'Street View Camera',
-                    'Thermal Camera',
-                    'DSLR Camera',
-                    'Gigapan',
-                    '360 Degree Camera',
-                    'UAVs with Lidar',
-                    'UAVs Industrial Grade',
-                    'UAVs Medium Grade',
-                    'UAVs Lightweight Grade',
-                    'Handheld CPT',
-                    'Schmidt Hammer',
-                    'Soil Sampling Kit',
-                    'Z-boat',
-                    'Acoustic Beacons'
-                ],
-                Sensors: [
-                    'Seismometers',
-                    'Geophones',
-                    'Water Level Gauges',
-                    'Accelerometer',
-                    'Comopnent Velocity & Statistic Pressure Probes',
-                    'Inertial',
-                    'Particle Image Velocimetry',
-                    'Pilot Tube',
-                    'Pressure Scanner',
-                    'Laser',
-                    'Linear Variable Differential Transformer',
-                    'Load Cells',
-                    'String Potentiometer',
-                    'Strain Gauge',
-                    'Pocket Penetrometer'
-                ],
-                'Social Science': [
-                    'EGG Headset',
-                    'Interview Equipment'
-                ]
-            },
+            equipment: collectionEquipment,
         };
         this.clearForm();
         if (this.edit){
@@ -201,27 +156,27 @@ class ManageFieldReconCollectionsCtrl {
         }
     }
 
-    isInstrumentInDropdown($index) {
-        for ( let group in this.data.instruments ){
-            let selections = this.data.instruments[group];
-            if (selections.includes(this.form.equipment[$index].name)) {
+    isEquipmentInDropdown($index) {
+        for ( let category in this.data.equipment ){
+            let match = this.data.equipment[category].filter(e => e.name === this.form.equipment[$index]);
+            if (match) {
                 return true;
             }
         }
         return false;
     }
 
-    showInstrumentDropdown($index) {
+    showEquipmentDropdown($index) {
         let equipment = this.form.equipment[$index];
-        return (this.isInstrumentInDropdown($index) ||
-                (!equipment.name));
+        return (this.isEquipmentInDropdown($index) ||
+                (!equipment));
     }
 
-    showInstrumentInput($index) {
+    showEquipmentInput($index) {
         let equipment = this.form.equipment[$index];
-        return (equipment.name === 'Other' ||
-                (!this.isInstrumentInDropdown($index) &&
-                equipment.name));
+        return (equipment === 'Other' ||
+                (!this.isEquipmentInDropdown($index) &&
+                equipment));
     }
 
     addMethod(){
@@ -245,9 +200,9 @@ class ManageFieldReconCollectionsCtrl {
         }
     }
 
-    addInstrument() {
+    addEquipment() {
         let last = this.form.equipment.length - 1;
-        if (this.form.equipment[last].name) {
+        if (this.form.equipment[last].length && !this.form.equipment.includes('None')) {
             this.form.equipment.push({});
         }
     }
