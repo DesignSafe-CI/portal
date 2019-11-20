@@ -17,7 +17,7 @@ from designsafe.apps.api.agave.filemanager.publications import PublicationsManag
 from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
 
 from designsafe.apps.api.exceptions import ApiException
-from requests import ConnectionError
+from elasticsearch.exceptions import ConnectionError
 
 class TestLookupManager(TestCase):
 
