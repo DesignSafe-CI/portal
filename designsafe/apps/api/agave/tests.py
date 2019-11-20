@@ -37,7 +37,7 @@ class TestListingViews_auth(TestCase):
         mock_lookup()().listing.return_value = {'resp': 'data'}
         mock_lookup()().requires_auth = True
         resp = self.client.get('/api/agave/files/listing/agave/designsafe.storage.default/ds_user')
-        mock_lookup.assert_called_with('agave')
+        mock_lookup()().assert_called_with('agave')
         mock_lookup()().listing.assert_called_with(
             system='designsafe.storage.default', 
             file_path='ds_user',
