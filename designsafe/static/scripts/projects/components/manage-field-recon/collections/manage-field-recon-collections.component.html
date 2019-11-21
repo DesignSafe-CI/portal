@@ -42,6 +42,8 @@
                             style="margin-bottom: 5px"
                             ng-options="type.name as type.label for type in $ctrl.data.collectionTypes"
                             ng-model="$ctrl.form.collectionType"
+                            ng-disabled="$ctrl.data.editCollection"
+                            ng-change="$ctrl.clearForm($ctrl.form.collectionType)"
                             ng-required="true">
                         <option value="">-- Select Collection Type --</option>
                     </select>
@@ -168,7 +170,7 @@
                     <option value="">-- Select Observation Type --</option>
                     </select>
                     <input type="text"
-                            data-ng-model="$ctrl.form.observationTypes[$index]"
+                            data-ng-model="$ctrl.form.observationTypesOther[$index]"
                             data-ng-if="$ctrl.showObservationInput($index)"
                             class="form-control"
                         />
@@ -342,7 +344,7 @@
                                 style="margin-bottom: 5px;"
                                 data-ng-required="$first"
                                 data-ng-if="$ctrl.showEquipmentDropdown($index)">
-                            <option value="">-- Select Equipment --</option>
+                            <option selected value="">-- Select Equipment --</option>
                             <optgroup data-ng-repeat="(group, labels) in $ctrl.data.equipment"
                                       label="{{group}}">
                                 <option data-ng-repeat="label in labels"
@@ -352,7 +354,7 @@
                             </optgroup>
                         </select>
                         <input type="text"
-                               data-ng-model="$ctrl.form.equipment[$index]"
+                               data-ng-model="$ctrl.form.equipmentOther[$index]"
                                data-ng-if="$ctrl.showEquipmentInput($index)"
                                class="form-control" />
                     </div>
@@ -677,6 +679,16 @@
                             </div>
                         </div>
                         <div class="collection-field">
+                            <div class="collection-label-multi">Equipment</div>
+                            <div class="collection-data">
+                                <ul class="collection-list">
+                                    <li data-ng-repeat="eqp in collection.value.equipment">
+                                        {{eqp}}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- <div class="collection-field">
                             <div class="collection-label-multi" data-ng-if="collection.value.equipment.length">
                                 Equipment
                             </div>
@@ -688,7 +700,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="collection-field" ng-if="collection.value.restriction">
                             <div class="collection-label">Restriction</div>
                             <div class="collection-data">
@@ -804,6 +816,16 @@
                             </div>
                         </div>
                         <div class="collection-field">
+                            <div class="collection-label-multi">Equipment</div>
+                            <div class="collection-data">
+                                <ul class="collection-list">
+                                    <li data-ng-repeat="eqp in collection.value.equipment">
+                                        {{eqp}}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- <div class="collection-field">
                             <div class="collection-label-multi" data-ng-if="collection.value.equipment.length">
                                 Equipment
                             </div>
@@ -814,7 +836,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="collection-field" ng-if="collection.value.referencedData.length">
                             <div class="collection-label-multi">
                                 Referenced Data
