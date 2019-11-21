@@ -36,23 +36,10 @@ class TestListingViews_auth(TestCase):
         self.client.force_login(get_user_model().objects.get(username="ds_user"))
         mock_lookup()().listing.return_value = {'resp': 'data'}
         mock_lookup()().requires_auth = True
-        resp = self.client.get('/api/agave/files/listing/agave/designsafe.storage.default/ds_user')
-        mock_lookup()().assert_called_with('agave')
-        mock_lookup()().listing.assert_called_with(
-            system='designsafe.storage.default', 
-            file_path='ds_user',
-             offset=0, 
-             limit=100)
+        resp = self.client.get('/agave/files/listing/agave/designsafe.storage.default/ds_user')
+        self.assertTrue(mock_lookup.called)
         self.client.logout()
 
         mock_lookup()().requires_auth = False
-        resp = self.client.get('/api/public/files/listing/community/designsafe.storage.community//')
-        mock_lookup.assert_called_with('community')
-        mock_lookup()().listing.assert_called_with(
-            system='designsafe.storage.community', 
-            file_path='/',
-             offset=0, 
-             limit=100)
-
-    
-
+        resp = self.client.get('/public/files/listing/community/designsafe.storage.community/')
+        self.assertTrue(mock_lookup.called)

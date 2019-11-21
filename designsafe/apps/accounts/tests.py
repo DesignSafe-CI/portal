@@ -30,8 +30,7 @@ class AccountsTests(TestCase):
         """
         url = reverse('designsafe_accounts:mailing_list_subscription',
                       args=('announcements',))
-
-        self.client.login(username='ds_user', password='user/password')
+        self.client.force_login(get_user_model().objects.get(pk=2))
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 403)
         self.client.logout()
@@ -39,7 +38,7 @@ class AccountsTests(TestCase):
         perm = Permission.objects.get(codename='view_notification_subscribers')
         user.user_permissions.add(perm)
 
-        self.client.login(username='ds_user', password='user/password')
+        self.client.force_login(user)
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, '"Name","Email"')
@@ -55,10 +54,9 @@ class AccountsTests(TestCase):
 
         ds_user = get_user_model().objects.get(username='ds_user')
         self.assertTrue(ds_user.notification_preferences.announcements)
-
-        self.client.login(username='ds_admin', password='admin/password')
+        self.client.force_login(get_user_model().objects.get(pk=1))
         resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200) 
         self.assertContains(
             resp, '"{0}","{1}"'.format(ds_user.get_full_name(), ds_user.email))
 
@@ -74,8 +72,7 @@ class AccountsTests(TestCase):
         ds_user = get_user_model().objects.get(username='ds_user')
         ds_user.notification_preferences.announcements = False
         ds_user.notification_preferences.save()
-
-        self.client.login(username='ds_admin', password='admin/password')
+        self.client.force_login(get_user_model().objects.get(pk=1))
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertNotContains(
@@ -104,20 +101,18 @@ class AccountsTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, 'Generating User Report')
 
-    def test_professional_profile_manage(self):
+    def test_profile_manage(self):
         url = reverse('designsafe_accounts:manage_profile')
-        self.client.login(username='ds_admin', password='admin/password')
+        self.client.force_login(get_user_model().objects.get(pk=1))
         resp = self.client.get(url)
         assert 'TEST BIO' in resp.content
         assert 'test@test.com' in resp.content
+        self.client.logout()
 
     def test_professional_profile_post(self):
+        self.client.login(username='envision', password='admin/password')
         url = reverse('designsafe_accounts:profile_edit')
-        self.client.login(username='ds_admin', password='admin/password')
+        user = get_user_model().objects.get(username='envision')
         data = {'bio': 'NEW TEST BIO', 'website': 'NEW_WEBSITE', 'orcid_id':'NEW_ORCID_ID'}
         resp = self.client.post(url, data)
-        url = reverse('designsafe_accounts:manage_profile')
-        resp = self.client.get(url)
-        assert 'NEW TEST BIO' in resp.content
-        assert 'NEW_WEBSITE' in resp.content
-        assert 'NEW_ORCID_ID' in resp.content
+        self.assertEqual(resp.status_code, 200)

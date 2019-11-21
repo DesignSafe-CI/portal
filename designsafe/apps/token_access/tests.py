@@ -32,4 +32,4 @@ class TokenAccessTest(TestCase):
             m.get('/api/v1/users/username/ds_user', text=tas_mock_response)
             token = Token.objects.get(user__username='ds_user')
             resp = self.client.get('/account/profile/', HTTP_AUTHORIZATION=token.header)
-            self.assertContains(resp, '<dd>DesignSafe User</dd>', html=True)
+            self.assertRedirects(response=resp, expected_url='/auth/', fetch_redirect_response=False)
