@@ -121,7 +121,6 @@
             <strong>View Data Diagram</strong>
         </a>
     </div>
-    <!-- Missions -->
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
             <i class="fa fa-spinner fa-spin"></i> Loading...
@@ -184,6 +183,7 @@
                 </div>
             </div>
         </div>
+        <!-- Missions -->
         <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="mission in $ctrl.browser.project.mission_set">
             <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
                 <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
@@ -276,8 +276,8 @@
                         <p>
                             <br>{{ mission.value.description }}
                         </p>
-                <!-- Research Reports -->
-                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, report)">
+                        <!-- Research Reports (REMOVE) -->
+                        <!-- <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, report)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                                 <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                                     <table style="width:100%">
@@ -298,8 +298,8 @@
                                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Research Models -->
+                        </div> -->
+                        <!-- Old Collections -->
                         <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
                                 <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
@@ -374,6 +374,314 @@
                                         </div>
                                     </div>
                                     <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Research Planning Collection -->
+                        <div ng-repeat="collection in $ctrl.browser.project.planning_set | orderBy: 'getOrder(collection, mission)'"
+                             ng-if="$ctrl.matchingGroup(mission, collection)">
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                    style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{collection.uuid}}" class="collapse">
+                                    <div class="well">
+                                        <div class="collection-field">
+                                            <div class="collection-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                                                Data Collectors
+                                            </div>
+                                            <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
+                                                <div data-ng-repeat="collector in collection.value.dataCollectors | orderBy: 'order'"
+                                                    data-ng-if="!collector.length && collector.authorship">
+                                                    <span data-ng-if="!collector.guest">
+                                                        <ds-user data-username="collector.name" data-format="lname">
+                                                            {{collector}}
+                                                        </ds-user>
+                                                    </span>
+                                                    <span data-ng-if="collector.guest">
+                                                        {{collector.lname}}, {{collector.fname}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.referencedData.length">
+                                            <div class="collection-label-multi">
+                                                Referenced Data
+                                            </div>
+                                            <div class="collection-data">
+                                                <ul class="collection-list">
+                                                    <li data-ng-repeat="data in collection.value.referencedData">
+                                                        {{data.title}} |
+                                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.description">
+                                            <p>{{ collection.value.description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Social Science -->
+                        <div ng-repeat="collection in $ctrl.browser.project.socialscience_set | orderBy: 'getOrder(collection, mission)'"
+                             ng-if="$ctrl.matchingGroup(mission, collection)">
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                    style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{collection.uuid}}" class="collapse">
+                                    <div class="well">
+                                        <div class="collection-field" ng-if="collection.value.unit">
+                                            <div class="collection-label">Unit of Analysis</div>
+                                            <div class="collection-data">
+                                                <span>{{collection.value.unit}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.methods.length">
+                                            <div class="collection-label-multi">Method(s) of Collection</div>
+                                            <div class="collection-data">
+                                                <ul class="collection-list">
+                                                    <li data-ng-repeat="method in collection.value.methods">
+                                                        {{method}}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.modes.length">
+                                            <div class="collection-label-multi">Mode(s) of Collection</div>
+                                            <div class="collection-data">
+                                                <ul class="collection-list">
+                                                    <li data-ng-repeat="mode in collection.value.modes">
+                                                        {{mode}}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.sampleApproach.length">
+                                            <div class="collection-label-multi">Sampling Approach(es)</div>
+                                            <div class="collection-data">
+                                                <ul class="collection-list">
+                                                    <li data-ng-repeat="sample in collection.value.sampleApproach">
+                                                        {{sample}}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.sampleSize">
+                                            <div class="collection-label">Sample Size</div>
+                                            <div class="collection-data">
+                                                <span>{{collection.value.sampleSize}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field">
+                                            <div class="collection-label">Date of Collection</div>
+                                            <div class="collection-data">
+                                                <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                                <span data-ng-if="collection.value.dateEnd">
+                                                    &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field">
+                                            <div class="collection-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                                                Data Collectors
+                                            </div>
+                                            <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
+                                                <div data-ng-repeat="collector in collection.value.dataCollectors | orderBy: 'order'"
+                                                    data-ng-if="!collector.length && collector.authorship">
+                                                    <span data-ng-if="!collector.guest">
+                                                        <ds-user data-username="collector.name" data-format="lname">
+                                                            {{collector}}
+                                                        </ds-user>
+                                                    </span>
+                                                    <span data-ng-if="collector.guest">
+                                                        {{collector.lname}}, {{collector.fname}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field">
+                                            <div class="collection-label-multi" data-ng-if="collection.value.location">
+                                                Site Location
+                                            </div>
+                                            <div class="collection-data"
+                                                    data-ng-if="collection.value.location">
+                                                <ul class="collection-list">
+                                                    <li>
+                                                        <span data-ng-if="collection.value.location">
+                                                            {{collection.value.location}} | 
+                                                        </span>
+                                                        <span data-ng-if="collection.value.latitude">
+                                                            Lat {{collection.value.latitude}}
+                                                        </span>
+                                                        <span data-ng-if="collection.value.longitude">
+                                                            Long {{collection.value.longitude}}
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field">
+                                            <div class="collection-label-multi">Equipment</div>
+                                            <div class="collection-data">
+                                                <ul class="collection-list">
+                                                    <li data-ng-repeat="eqp in collection.value.equipment">
+                                                        {{eqp}}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.restriction">
+                                            <div class="collection-label">Restriction</div>
+                                            <div class="collection-data">
+                                                <span>{{collection.value.restriction}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.referencedData.length">
+                                            <div class="collection-label-multi">
+                                                Referenced Data
+                                            </div>
+                                            <div class="collection-data">
+                                                <ul class="collection-list">
+                                                    <li data-ng-repeat="data in collection.value.referencedData">
+                                                        {{data.title}} |
+                                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.description">
+                                            <p>{{ collection.value.description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- GeoscienceEngineering -->
+                        <div ng-repeat="collection in $ctrl.browser.project.geoscience_set | orderBy: 'getOrder(collection, mission)'"
+                             ng-if="$ctrl.matchingGroup(mission, collection)">
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                    style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{collection.uuid}}" class="collapse">
+                                    <div class="well">
+                                        <div class="collection-field" ng-if="collection.value.observationTypes.length">
+                                            <div class="collection-label-multi">Observation Type(s)</div>
+                                            <div class="collection-data">
+                                                <ul class="collection-list">
+                                                    <li data-ng-repeat="obs in collection.value.observationTypes">
+                                                        {{obs}}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field">
+                                            <div class="collection-label">Date of Collection</div>
+                                            <div class="collection-data">
+                                                <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                                <span data-ng-if="collection.value.dateEnd">
+                                                    &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field">
+                                            <div class="collection-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                                                Data Collectors
+                                            </div>
+                                            <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
+                                                <div data-ng-repeat="collector in collection.value.dataCollectors | orderBy: 'order'"
+                                                    data-ng-if="!collector.length && collector.authorship">
+                                                    <span data-ng-if="!collector.guest">
+                                                        <ds-user data-username="collector.name" data-format="lname">
+                                                            {{collector}}
+                                                        </ds-user>
+                                                    </span>
+                                                    <span data-ng-if="collector.guest">
+                                                        {{collector.lname}}, {{collector.fname}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field">
+                                            <div class="collection-label-multi" data-ng-if="collection.value.location">
+                                                Site Location
+                                            </div>
+                                            <div class="collection-data" data-ng-if="collection.value.location">
+                                                <ul class="collection-list">
+                                                    <li>
+                                                        <span data-ng-if="collection.value.location">
+                                                            {{collection.value.location}} | 
+                                                        </span>
+                                                        <span data-ng-if="collection.value.latitude">
+                                                            Lat {{collection.value.latitude}}
+                                                        </span>
+                                                        <span data-ng-if="collection.value.longitude">
+                                                            Long {{collection.value.longitude}}
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field">
+                                            <div class="collection-label-multi">Equipment</div>
+                                            <div class="collection-data">
+                                                <ul class="collection-list">
+                                                    <li data-ng-repeat="eqp in collection.value.equipment">
+                                                        {{eqp}}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.referencedData.length">
+                                            <div class="collection-label-multi">
+                                                Referenced Data
+                                            </div>
+                                            <div class="collection-data">
+                                                <ul class="collection-list">
+                                                    <li data-ng-repeat="data in collection.value.referencedData">
+                                                        {{data.title}} |
+                                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="collection-field" ng-if="collection.value.description">
+                                            <p>{{ collection.value.description }}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

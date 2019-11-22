@@ -187,6 +187,10 @@ class PublicationPreviewFieldReconCtrl {
         this.ProjectService.editProject(this.browser.project);
     }
 
+    getOrder(ent, primEnt){
+        return ent._ui.orders.find(order => order.parent === primEnt.uuid).value;
+    }
+
     prepareModal() {
         this.$uibModal.open({
             template: PublicationPopupTemplate,
