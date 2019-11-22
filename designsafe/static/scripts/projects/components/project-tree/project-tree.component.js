@@ -18,6 +18,9 @@ class ProjectTreeCtrl {
         this.project = this.resolve.project;
         this.rootCategoryUuid = this.resolve.rootCategoryUuid;
         this.readOnly = this.resolve.readOnly || false;
+        if (this.project.mission_set) {
+            this.initiateEntityOrder(this.project.mission_set.concat(this.project.report_set));
+        }
     }
 
     /*
@@ -398,6 +401,67 @@ class ProjectTreeCtrl {
 
     /*
      * @method
+     * @param {Object} primary entities.
+     *
+     * Primary entities will have to have their order
+     * established when the trees modal is opened. Normally
+     * We create an order when an entity is added to the tree.
+     * Primary entities related directly to the project cannot
+     * be added/removed as other entities (as this would mean
+     * adding/removing their relationship to the project). 
+     * We will run initiateEntityOrder for primary entities 
+     * and reports associated to the project.
+     */
+    initiateEntityOrder(entities){
+        this._ui.loading = true;
+        let promises = [];
+
+        let getOrder = (ent) => {
+            return ent._ui.orders.find(order => order.parent === this.project.uuid);
+        };
+
+        let ordered = entities.filter(entity => getOrder(entity));
+        let unordered = entities.filter(entity => !getOrder(entity));
+
+        ordered.sort((a, b) => (getOrder(a).value > getOrder(b).value) ? 1 : -1);
+
+        ordered.forEach((ent, index) => {
+            if (getOrder(ent).value != index) {
+                ent.setOrderFor(this.project.uuid, index);
+            }
+        });
+
+        unordered.forEach((ent, index) => {
+            let order = ordered.length + index;
+            ent.setOrderFor(this.project.uuid, order);
+        });
+
+        let sorted = ordered.concat(unordered);
+        sorted.forEach((ent) => {
+            promises.push(
+                this.ProjectEntitiesService.update({
+                    data: {
+                        uuid: ent.uuid,
+                        entity: ent,
+                    },
+                })
+            );
+        });
+
+        this.$q.all(promises).then( (resps) => {
+            _.each(resps, (resp) => {
+                let ent = this.project.getRelatedByUuid(resp.uuid);
+                ent.update(resp);
+            });
+        }).then( () => {
+            this.drawProjectTrees();
+        }).finally( () => {
+            this._ui.loading = false;
+        });
+    }
+
+    /*
+     * @method
      *
      * Build tress for every Mission in this class' `this.project`.
      * The hierarchy is build like so:
@@ -448,49 +512,30 @@ class ProjectTreeCtrl {
             rectStyle: 'stroke: none;',
         };
         _.each(reports, (report) => {
-            if (report.value.missions.length) {
-                return;
-            }
             let repNode = {
                 name: report.value.title,
                 uuid: report.uuid,
+                type: report.name,
                 parent: projectNode.name,
                 rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
                 display: 'Report',
+                primary: true,
+                order: this.orderOf(report, projectNode.uuid).value,
             };
             projectNode.children.push(repNode);
         });
-        roots.push(projectNode);
         _.each(missions, (mission) => {
             let node = {
                 name: mission.value.title,
                 uuid: mission.uuid,
-                parent: null,
+                type: mission.name,
+                parent: projectNode.name,
+                rectStyle: 'stroke: #000000; fill: #ffffff;',
+                display: 'Mission',
+                primary: true,
+                order: this.orderOf(mission, projectNode.uuid).value,
                 children: [],
-                rectStyle: 'stroke: none;',
             };
-            _.each(reports, (rep) => {
-                if (!_.contains(rep.associationIds, node.uuid)) {
-                    return;
-                }
-                let repNode = {
-                    name: rep.value.title,
-                    uuid: rep.uuid,
-                    parent: node.name,
-                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
-                    display: 'Report',
-                };
-                node.children.push(repNode);
-            });
-            if (!this.readOnly){
-                node.children.push(
-                    {
-                        name: '-- Choose a Report --',
-                        attr: 'report_set',
-                        entityType: 'report',
-                    }
-                );
-            }
             collections.forEach((col) => {
                 if (!_.contains(col.associationIds, node.uuid)){
                     return;
@@ -501,9 +546,9 @@ class ProjectTreeCtrl {
                     collectionName = 'Research Planning Collection';
                     collectionStyle = 'stroke: #43A59D; fill: #CAE9E6;';
                 } else if (col.name === 'designsafe.project.field_recon.geoscience') {
-                    collectionName = 'Engineering/Geoscience Collection';
+                    collectionName = 'Engineering/Geosciences Collection';
                 } else if (col.name === 'designsafe.project.field_recon.social_science') {
-                    collectionName = 'Social Science Collection';
+                    collectionName = 'Social Sciences Collection';
                 }
                 let colNode = {
                     name: col.value.title,
@@ -532,8 +577,15 @@ class ProjectTreeCtrl {
                     }
                 );
             }
-            roots.push(node);
+            projectNode.children.push(node);
         });
+        projectNode.children = _.sortBy(projectNode.children, (child) => {
+            if (child.order !== null) {
+                return child.order;
+            }
+            return child.name;
+        });
+        roots.push(projectNode);
         this.trees = roots;
     }
 
@@ -1338,12 +1390,23 @@ class ProjectTreeCtrl {
         let entity = this.project.getRelatedByUuid(node.data.uuid);
         let parentNode = node.parent;
         let promises = [];
-        let siblingNodes = _.filter(parentNode.children, (child) => {
-            if (direction === 'up') {
-                return child.data.type === node.data.type && child.data.order === node.data.order - 1;
-            }
-            return child.data.type === node.data.type && child.data.order === node.data.order + 1;
-        });
+        let siblingNodes;
+
+        if (node.data.primary) {
+            siblingNodes = parentNode.children.filter((child) => {
+                if (direction === 'up') {
+                    return child.data.primary && node.data.primary && child.data.order === node.data.order - 1;
+                }
+                return child.data.primary && node.data.primary && child.data.order === node.data.order + 1;
+            });
+        } else {
+            siblingNodes = parentNode.children.filter((child) => {
+                if (direction === 'up') {
+                    return child.data.type === node.data.type && child.data.order === node.data.order - 1;
+                }
+                return child.data.type === node.data.type && child.data.order === node.data.order + 1;
+            });
+        }
         if (!siblingNodes.length) {
             this._ui.loading = false;
             return;
