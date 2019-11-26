@@ -31,7 +31,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.auth.views import login_options as des_login_options
 from django.contrib.auth.views import logout as des_logout
-from designsafe.views import project_version as des_version
+from designsafe.views import project_version as des_version, redirect_old_nees
 
 # sitemap - classes must be imported and added to sitemap dictionary
 from django.contrib.sitemaps.views import sitemap
@@ -138,10 +138,14 @@ urlpatterns = [
     # version check
     url(r'^version/', des_version),
 
+    # old NEES urls
+    url(r'^warehouse/project/([0-9]+)/?', redirect_old_nees),
+    url(r'^warehouse/experiment/([0-9]+)/project/([0-9]+)/?', redirect_old_nees),
+    url(r'^warehouse/hybrid/([0-9]+)/project/([0-9]+)/?', redirect_old_nees),
+
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
     url(r'^', include('cms.urls')),
-
 ]
 if settings.DEBUG:
     urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

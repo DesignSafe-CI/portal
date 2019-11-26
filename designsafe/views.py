@@ -1,8 +1,8 @@
-import logging
+import logging, urllib2
 from django.http import HttpResponse
+from django.shortcuts import redirect
 
 logger = logging.getLogger(__name__)
-
 
 def project_version(request):
     try:
@@ -23,3 +23,14 @@ def project_version(request):
         version = 'UNKNOWN'
 
     return HttpResponse(version, content_type='text/plain')
+
+def redirect_old_nees(*args):
+    """
+    Parse old NEES.org url and pull out part of the NEES ID (Project Number)
+    Returns: call to redirect method to a search page
+    """
+    nees_prj = str(args[-1])
+    if len(nees_prj) is not 4:
+        nees_prj = '0'*(4 - len(nees_prj)) + nees_prj
+    url = '/search/?query_string=NEES {}'.format(nees_prj)
+    return redirect(url)
