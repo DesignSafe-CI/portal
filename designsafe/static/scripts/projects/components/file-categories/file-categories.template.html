@@ -68,16 +68,26 @@
                                     ng-model="$ctrl.otherTagName[entity.uuid]"
                                     placeholder="Enter your custom tag..."
                                 >
+                                <input class="input-tag"
+                                    ng-if="$ctrl.selectedFileTag[entity.uuid] === 'Location' "
+                                    ng-model="$ctrl.locationTag[entity.uuid]"
+                                    placeholder="Enter your location..."
+                                >
+                                <input class="input-tag"
+                                    ng-if="$ctrl.selectedFileTag[entity.uuid] === 'Lat Long' "
+                                    ng-model="$ctrl.latLongTag[entity.uuid]"
+                                    placeholder="Enter latitude and longitude coordinates..."
+                                >
                                 <!-- save custom tag -->
                                 <button class="btn-link"
-                                        ng-if="$ctrl.selectedFileTag[entity.uuid] === 'other' "
+                                        ng-if="['other', 'Lat Long', 'Location'].includes($ctrl.selectedFileTag[entity.uuid])"
                                         data-ng-click="$ctrl.addFileTag(entity)"
-                                        data-ng-disabled="$ctrl._ui.busy || !$ctrl.otherTagName[entity.uuid]">
+                                        data-ng-disabled="$ctrl._ui.busy">
                                     Save
                                 </button>
                                 <!-- save tag -->
                                 <button class="btn-link"
-                                        ng-if="$ctrl.selectedFileTag[entity.uuid] != 'other' "
+                                        ng-if="!['other', 'Lat Long', 'Location'].includes($ctrl.selectedFileTag[entity.uuid])"
                                         data-ng-click="$ctrl.addFileTag(entity)"
                                         data-ng-disabled="$ctrl._ui.busy || !$ctrl.selectedFileTag[entity.uuid]">
                                     Save
