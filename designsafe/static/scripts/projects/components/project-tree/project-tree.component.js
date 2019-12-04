@@ -69,10 +69,12 @@ class ProjectTreeCtrl {
             );
             nodeParent = nodeParent.parent;
         }
-        entity.associationIds = _.without(
-            entity.associationIds,
-            nodeParent.data.uuid
-        );
+        if (nodeParent.data.uuid !== this.project.uuid) {
+            entity.associationIds = _.without(
+                entity.associationIds,
+                nodeParent.data.uuid
+            );
+        }
         return this.ProjectEntitiesService.update(
             {
                 data: {
@@ -101,7 +103,7 @@ class ProjectTreeCtrl {
             !entity.value.missions.length) {
             return this.$q.deferred();
         }
-        entity.value.simulations = _.without(
+        entity.value.missions = _.without(
             entity.value.missions,
             nodeParent.data.uuid
         );

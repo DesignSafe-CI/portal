@@ -43,6 +43,9 @@ FIELD_MAP = {
     "designsafe.project.hybrid_simulation.report": "reports",
     "designsafe.project.field_recon.mission": "missions",
     "designsafe.project.field_recon.collection": "collections",
+    "designsafe.project.field_recon.social_science": "socialscience",
+    "designsafe.project.field_recon.planning": "planning",
+    "designsafe.project.field_recon.geoscience": "geoscience",
     "designsafe.project.field_recon.report": "reports",
 }
 
