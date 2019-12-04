@@ -24,12 +24,12 @@ def project_version(request):
 
     return HttpResponse(version, content_type='text/plain')
 
-def redirect_old_nees(*args):
+def redirect_old_nees(request, nees_prj):
     """
     Parse old NEES.org url and pull out part of the NEES ID (Project Number)
     Returns: call to redirect method to a search page
     """
-    nees_prj = str(args[-1])
+    nees_prj = str(nees_prj)
     if len(nees_prj) is not 4:
         nees_prj = '0'*(4 - len(nees_prj)) + nees_prj
     url = '/search/?query_string=NEES {}'.format(nees_prj)
