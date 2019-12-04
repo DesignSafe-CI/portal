@@ -53,7 +53,7 @@
     "webpack-livereload-plugin": "^0.10.0"
   },
   "dependencies": {
-    "angular": "^1.6.9",
+    "angular": "^1.7.9",
     "angular-animate": "^1.4.8",
     "angular-aria": "^1.4.8",
     "angular-bootstrap": "^0.12.2",
