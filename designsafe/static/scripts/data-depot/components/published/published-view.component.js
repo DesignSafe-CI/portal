@@ -158,9 +158,32 @@ class PublishedViewCtrl {
         if (this.project.value.projectType === 'field_recon'){
             this.browser.project.mission_set = this.browser.publication.missions;
             this.browser.project.collection_set = this.browser.publication.collections;
+            this.browser.project.geoscience_set = this.browser.publication.socialscience;
+            this.browser.project.planning_set = this.browser.publication.planning;
+            this.browser.project.report_set = this.browser.publication.geoscience;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
         }
+    }
+
+    ordered(parent, entities) {
+        if (!entities || !parent || parent.name == 'designsafe.project.field_recon.report'){
+            return;
+        }
+        let order = (ent) => {
+            if (!ent._ui) {
+                return 0;
+            }
+            return ent._ui.orders.find(order => order.parent === parent.uuid);
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
     }
 
     getEF(str) {
