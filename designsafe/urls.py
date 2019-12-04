@@ -140,8 +140,8 @@ urlpatterns = [
 
     # old NEES urls
     url(r'^warehouse/project/([0-9]+)/?', redirect_old_nees),
-    url(r'^warehouse/experiment/([0-9]+)/project/([0-9]+)/?', redirect_old_nees),
-    url(r'^warehouse/hybrid/([0-9]+)/project/([0-9]+)/?', redirect_old_nees),
+    url(r'^warehouse/experiment/[0-9]+/project/([0-9]+)/?', redirect_old_nees),
+    url(r'^warehouse/hybrid/[0-9]+/project/([0-9]+)/?', redirect_old_nees),
 
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
