@@ -80,6 +80,10 @@ body.navbar-fixed {
   padding-bottom: 1em;
 }
 
+.site-banner-left {
+  width:55%;
+}
+
 .site-banner-right {
   flex-grow: 2;
   display: flex;
