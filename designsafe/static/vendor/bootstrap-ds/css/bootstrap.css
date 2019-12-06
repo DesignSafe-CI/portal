@@ -5158,6 +5158,10 @@ a.label:focus {
   float: left !important;
   margin-right: 5px;
 }
+.label-form-desc {
+  display: block;
+  font-weight: normal;
+}
 .label-danger {
   background-color: #d9534f;
 }
