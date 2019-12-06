@@ -61,6 +61,9 @@ class IndexedProject(Document):
             'nhEventEnd': Date(),
             'nhTypes': Text(fields={'_exact': Keyword()}),
             'nhEvent': Text(fields={'_exact': Keyword()}),
+            'nhLocation': Text(fields={'_exact': Keyword()}),
+            'nhLatitude': Text(fields={'_exact': Keyword()}),
+            'nhLongitude': Text(fields={'_exact': Keyword()}),
 
             'coPis': Text(fields={'_exact': Keyword()}, multi=True),
             'projectType': Text(fields={'_exact': Keyword()}, analyzer='english'),
