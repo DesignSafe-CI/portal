@@ -191,6 +191,11 @@ class EditProjectCtrl {
                 } else {
                     this.form.nhTypes = new Array (1);
                 }
+                if (this.project.value.nhLocation && this.project.value.nhLatitude && this.project.value.nhLongitude) {
+                    this.form.nhLocation = this.project.value.nhLocation;
+                    this.form.nhLatitude = this.project.value.nhLatitude;
+                    this.form.nhLongitude = this.project.value.nhLongitude;
+                }
             }
         }
         this.UserService.authenticate().then((u) => {
@@ -308,6 +313,11 @@ class EditProjectCtrl {
         }
         if (this.form.nhEventDateEnd) {
             projectData.nhEventEnd = this.form.nhEventDateEnd;
+        }
+        if (this.form.nhLocation && this.form.nhLatitude && this.form.nhLongitude) {
+            projectData.nhLocation = this.form.nhLocation;
+            projectData.nhLatitude = this.form.nhLatitude;
+            projectData.nhLongitude = this.form.nhLongitude;
         }
         if (this.form.nhTypes) {
             projectData.nhTypes = [];

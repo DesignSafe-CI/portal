@@ -56,7 +56,7 @@
                             <span class="label-form-name">Collection Title</span>
                             <span class="label label-danger">Required</span>
                         </div>
-                        <span style="display: block; font-weight: normal;">
+                        <span class="label-form-desc">
                             Make it unique from other collections. Use sequential ordering if necessary.
                         </span>
                     </div>
@@ -69,7 +69,7 @@
             </div>
             <div class="collection-unitAnalysis form-group" ng-if="$ctrl.formFields('unitAnalysis')">
                 <label for="id-unitAnalysis">Unit of Analysis
-                    <span style="display: block; font-weight: normal;">
+                    <span class="label-form-desc">
                         A description of who or what is being studied.
                     </span>
                 </label>
@@ -81,7 +81,7 @@
             </div>
             <div class="collection-methods form-group" ng-if="$ctrl.formFields('methods')">
                 <label for="id-methods">Method(s) of Collection
-                    <span style="display: block; font-weight: normal;">
+                    <span class="label-form-desc">
                         Information Describing the type of data found in the file.
                     </span>
                 </label>
@@ -100,7 +100,7 @@
             </div>
             <div class="collection-modes form-group" ng-if="$ctrl.formFields('modes')">
                 <label for="id-modes">Modes(s) of Collection
-                    <span style="display: block; font-weight: normal;">
+                    <span class="label-form-desc">
                         The procedure/technique of the inquiry used to obtain the data.
                     </span>
                 </label>
@@ -119,7 +119,7 @@
             </div>
             <div class="collection-sample form-group" ng-if="$ctrl.formFields('sample')">
                 <label for="id-sample">Sampling Approach(es)
-                    <span style="display: block; font-weight: normal;">
+                    <span class="label-form-desc">
                         Methods used to sample the population.
                     </span>
                 </label>
@@ -245,7 +245,7 @@
                             <span class="label-form-name">Data Collector(s)</span>
                             <span class="label label-danger">Required</span>
                         </div>
-                        <span style="display: block; font-weight: normal;">
+                        <span class="label-form-desc">
                             Who, specifically, collected this data?
                             You can order the data collectors later when you publish.
                         </span>
@@ -257,7 +257,7 @@
                             <span class="label-form-name">Author(s)</span>
                             <span class="label label-danger">Required</span>
                         </div>
-                        <span style="display: block; font-weight: normal;">
+                        <span class="label-form-desc">
                             You can order the authors later when you publish.
                         </span>
                     </div>
@@ -333,7 +333,7 @@
                                 <span class="label-form-name">Equipment</span>
                                 <span class="label label-danger">Required</span>
                             </div>
-                            <span style="display: block; font-weight: normal;">
+                            <span class="label-form-desc">
                                 The equipment used to gather your data.
                             </span>
                         </div>
@@ -367,7 +367,7 @@
             </div>
             <div class="collection-restriction form-group"  ng-if="$ctrl.formFields('restriction')">
                 <label for="id-restriction">Restriction
-                    <span style="display: block; font-weight: normal;">
+                    <span class="label-form-desc">
                         Information regarding limitations on use or restrictions on access to the data.
                     </span>
                 </label>
@@ -391,7 +391,7 @@
                     <label>
                         Referenced Data DOI or URL
                     </label>
-                    <span style="display: block; font-weight: normal;">
+                    <span class="label-form-desc">
                         &nbsp;
                     </span>
                 </div>
@@ -544,8 +544,7 @@
                             <div class="collection-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
-                                        {{data.title}} |
-                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -701,8 +700,7 @@
                             <div class="collection-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
-                                        {{data.title}} |
-                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -819,8 +817,7 @@
                             <div class="collection-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
-                                        {{data.title}} |
-                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -888,8 +885,7 @@
                             <div class="collection-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
-                                        {{data.title}} |
-                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -957,8 +953,7 @@
                             <div class="collection-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
-                                        {{data.title}} |
-                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
                                     </li>
                                 </ul>
                             </div>

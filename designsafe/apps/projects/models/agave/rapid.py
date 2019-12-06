@@ -37,6 +37,9 @@ class FieldReconProject(Project):
     nh_event = fields.CharField('Natural Hazard Event')
     nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
     nh_event_end = fields.CharField('Date End', max_length=1024, default='')
+    nh_location = fields.CharField('Natural Hazard Location')
+    nh_latitude = fields.CharField('Natural Hazard Latitude')
+    nh_longitude = fields.CharField('Natural Hazard Longitude')
     nh_types = fields.ListField('Natural Hazard Type')
     dois = fields.ListField('Dois')
 
