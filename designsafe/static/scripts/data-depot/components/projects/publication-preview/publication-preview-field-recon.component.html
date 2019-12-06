@@ -39,25 +39,31 @@
                 <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
                     {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}
                 </td>
-                <!-- FR -->
                 <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
-            <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
-                <td>Natural Hazard</td>
+            <!-- FR -->
+            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
+                <td>Event</td>
                 <td class="prj-data">
-                    {{ $ctrl.browser.project.value.nhEvent }} | {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">―
-                        {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
+                    {{ $ctrl.browser.project.value.nhEvent }} |
+                    <span ng-if="$ctrl.browser.project.value.nhLocation">{{ $ctrl.browser.project.value.nhLocation }} |</span>
+                    {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">
+                        ― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
+                    </span>
+                    <a href="http://www.google.com/maps/place/{{ $ctrl.browser.project.value.nhLatitude }},{{ $ctrl.browser.project.value.nhLongitude }}"
+                        rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLatitude">
+                        | Lat {{ $ctrl.browser.project.value.nhLatitude }} Long {{ $ctrl.browser.project.value.nhLongitude }}
+                    </a>
                 </td>
             </tr>
             <tr class="prj-row"
                 ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes">
-                <td>Natural Hazard Type</td>
+                <td>Event Type</td>
                 <td class="prj-data">
                     <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
                         <span ng-if="!$last">{{ nhtype }},</span>
@@ -65,6 +71,7 @@
                     </span>
                 </td>
             </tr>
+            <!-- FR -->
             <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
                 ng-if="!$ctrl.readOnly">
                 <td ng-if="$first">Awards</td>
@@ -175,8 +182,7 @@
                                 <div class="collection-data">
                                     <ul class="collection-list">
                                         <li data-ng-repeat="data in mission.value.referencedData">
-                                            {{data.title}} |
-                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -489,8 +495,7 @@
                                                 <div class="collection-data">
                                                     <ul class="collection-list">
                                                         <li data-ng-repeat="data in collection.value.referencedData">
-                                                            {{data.title}} |
-                                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -595,8 +600,7 @@
                                                 <div class="collection-data">
                                                     <ul class="collection-list">
                                                         <li data-ng-repeat="data in collection.value.referencedData">
-                                                            {{data.title}} |
-                                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -652,8 +656,7 @@
                                                 <div class="collection-data">
                                                     <ul class="collection-list">
                                                         <li data-ng-repeat="data in collection.value.referencedData">
-                                                            {{data.title}} |
-                                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.url }}</a>
+                                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
