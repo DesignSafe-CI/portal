@@ -13,7 +13,7 @@ ES_CONNECTIONS = {
     },
     'staging': { #dev/qa
         'hosts':  [
-            'designsafe-es01-dev.tacc.utexas.edu',
+            'https://wma-es-client.tacc.utexas.edu:9200',
         ]
     },
     'dev': {
@@ -90,5 +90,6 @@ HAYSTACK_CONNECTIONS = {
         # 'URL': 'des_elasticsearch:9200/',
         'URL': ES_CONNECTIONS[os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev')]['hosts'][0] + ':9200/',
         'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
+        'KWARGS': {'http_auth': ES_AUTH}
     }
 }
