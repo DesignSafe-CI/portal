@@ -49,7 +49,7 @@ FIELD_MAP = {
 
 def draft_publication(
     project_id,
-    main_entity_uuid=None,
+    main_entity_uuids=None,
     project_doi=None,
     main_entity_doi=None,
     upsert_project_doi=False,
@@ -67,7 +67,7 @@ def draft_publication(
     set to `True` then any saved DOIs will be updated (even if there's multiple
     unless a specific DOI is given). If there are no saved DOIs then a new DOI
     will be created. Meaning, it will act as update or insert.
-    - If :param:`project_id` is given **but** :param:`main_entity_uuid` is ``None``
+    - If :param:`project_id` is given **but** :param:`main_entity_uuids` is ``None``
     then a project DOI will be created or updated.
 
     .. warning:: This funciton only creates a *Draft* DOI and not a public one.
@@ -80,11 +80,11 @@ def draft_publication(
     but we don't know how this will change in the future, hence, we are
     supporting multiple DOIs.
 
-    .. note:: If no :param:`main_entity_uuid` is given then a project DOI will be
+    .. note:: If no :param:`main_entity_uuids` is given then a project DOI will be
     created.
 
     :param str project_id: Project Id
-    :param str main_entity_uuid: Uuid of main entity.
+    :param list main_entity_uuids: uuid strings of main entities.
     :param str project_doi: Custom doi for project.
     :param str main_entity_doi: Custom doi for main entity.
     :param bool upsert_project_doi: Update or insert project doi.
@@ -92,24 +92,55 @@ def draft_publication(
     """
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
-    entity = None
-    if main_entity_uuid:
-        entity = mgr.get_entity_by_uuid(main_entity_uuid)
+    responses = []
+
+    ### Draft Entity DOI(s) ###
+    if main_entity_uuids:
+        for ent_uuid in main_entity_uuids:
+            entity = None
+            if ent_uuid:
+                entity = mgr.get_entity_by_uuid(ent_uuid)
+            # else:
+            #     upsert_project_doi = True
+
+            if entity:
+                entity_url = ENTITY_TARGET_BASE.format(
+                    project_id=project_id,
+                    entity_uuid=ent_uuid
+                )
+                ent_datacite_json = entity.to_datacite_json()
+                ent_datacite_json['url'] = entity_url
+            
+            if entity and upsert_main_entity_doi and main_entity_doi:
+                me_res = DataciteManager.create_or_update_doi(
+                    ent_datacite_json,
+                    main_entity_doi
+                )
+                entity.dois += [main_entity_doi]
+                entity.dois = list(set(entity.dois))
+                entity.save(service_account())
+                responses.append(me_res)
+            elif entity and upsert_main_entity_doi and entity.dois:
+                for doi in entity.dois:
+                    me_res = DataciteManager.create_or_update_doi(
+                        ent_datacite_json,
+                        doi
+                    )
+                    responses.append(me_res)
+            elif entity and upsert_main_entity_doi and not entity.dois:
+                me_res = DataciteManager.create_or_update_doi(
+                    ent_datacite_json
+                )
+                entity.dois += [me_res['data']['id']]
+                entity.save(service_account())
+                responses.append(me_res)
     else:
         upsert_project_doi = True
 
-    responses = []
+    ### Draft Project DOI ###
     prj_url = TARGET_BASE.format(project_id=project_id)
-    if entity:
-        entity_url = ENTITY_TARGET_BASE.format(
-            project_id=project_id,
-            entity_uuid=main_entity_uuid
-        )
     prj_datacite_json = prj.to_datacite_json()
     prj_datacite_json['url'] = prj_url
-    if entity:
-        ent_datacite_json = entity.to_datacite_json()
-        ent_datacite_json['url'] = entity_url
 
     if upsert_project_doi and project_doi:
         prj_res = DataciteManager.create_or_update_doi(
@@ -133,30 +164,6 @@ def draft_publication(
         prj.save(service_account())
         responses.append(prj_res)
 
-    if entity and upsert_main_entity_doi and main_entity_doi:
-        me_res = DataciteManager.create_or_update_doi(
-            ent_datacite_json,
-            main_entity_doi
-        )
-        entity.dois += [main_entity_doi]
-        entity.dois = list(set(entity.dois))
-        entity.save(service_account())
-        responses.append(me_res)
-    elif entity and upsert_main_entity_doi and entity.dois:
-        for doi in entity.dois:
-            me_res = DataciteManager.create_or_update_doi(
-                ent_datacite_json,
-                doi
-            )
-            responses.append(me_res)
-    elif entity and upsert_main_entity_doi and not entity.dois:
-        me_res = DataciteManager.create_or_update_doi(
-            ent_datacite_json
-        )
-        entity.dois += [me_res['data']['id']]
-        entity.save(service_account())
-        responses.append(me_res)
-
     for res in responses:
         LOG.info(
             "DOI created or updated: %(doi)s",
@@ -165,7 +172,7 @@ def draft_publication(
     return responses
 
 
-def publish_resource(project_id, entity_uuid=None):
+def publish_resource(project_id, entity_uuids=None):
     """Publish a resource.
 
     Retrieves a project and/or an entity and set any saved DOIs
@@ -175,22 +182,26 @@ def publish_resource(project_id, entity_uuid=None):
     to `"published"` that way it shows up in the published listing.
 
     :param str project_id: Project Id to publish.
-    :param str entity_uuid: Entity uuid to publish.
+    :param list entity_uuids: list of str Entity uuids to publish.
     """
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
-    entity = None
-    if entity_uuid:
-        entity = mgr.get_entity_by_uuid(entity_uuid)
     responses = []
+
+    for ent_uuid in entity_uuids:
+        entity = None
+        if ent_uuid:
+            entity = mgr.get_entity_by_uuid(ent_uuid)
+        
+        if entity:
+            for doi in entity.dois:
+                res = DataciteManager.publish_doi(doi)
+                responses.append(res)
+    
     for doi in prj.dois:
         res = DataciteManager.publish_doi(doi)
         responses.append(res)
 
-    if entity:
-        for doi in entity.dois:
-            res = DataciteManager.publish_doi(doi)
-            responses.append(res)
 
     pub = BaseESPublication(project_id=project_id)
     pub.update(status='published')
@@ -271,6 +282,8 @@ def _delete_unused_fields(dict_obj):
     for key in dict_obj:
         if key.endswith('_set'):
             keys_to_delete.append(key)
+        if key.startswith('_ui'):
+            continue
         if key.startswith('_'):
             keys_to_delete.append(key)
 
@@ -278,7 +291,7 @@ def _delete_unused_fields(dict_obj):
         dict_obj.pop(key, '')
 
 
-def freeze_project_and_entity_metadata(project_id, entity_uuid=None):
+def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     """Freeze project and entity metadata.
 
     Given a project id and an entity uuid (should be a main entity) this function
@@ -286,35 +299,37 @@ def freeze_project_and_entity_metadata(project_id, entity_uuid=None):
     as :class:`~designafe.libs.elasticsearch.docs.publications.BaseESPublication`
 
     :param str project_id: Project id.
-    :param str entity_uuid: Entity uuid.
+    :param list of entity_uuid strings: Entity uuids.
     """
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
-    entity = None
-    if entity_uuid:
-        entity = mgr.get_entity_by_uuid(entity_uuid)
-        entity_json = entity.to_body_dict()
-
     pub_doc = BaseESPublication(project_id=project_id)
     publication = pub_doc.to_dict()
 
-    if entity:
+    if entity_uuids:
+        # clear any existing entities in publication
+        entity = mgr.get_entity_by_uuid(entity_uuids[0])
         pub_entities_field_name = FIELD_MAP[entity.name]
-        publication['authors'] = entity_json['value']['authors'][:]
-        entity_json['authors'] = []
+        publication[pub_entities_field_name] = []
+        
+        for ent_uuid in entity_uuids:
+            entity = None
+            entity = mgr.get_entity_by_uuid(ent_uuid)
+            entity_json = entity.to_body_dict()
 
-        _populate_entities_in_publication(entity, publication)
-        _transform_authors(entity_json, publication)
+            if entity:
+                pub_entities_field_name = FIELD_MAP[entity.name]
+                publication['authors'] = entity_json['value']['authors'][:]
+                entity_json['authors'] = []
 
-        publication[pub_entities_field_name] = [
-            sobj for sobj in publication[pub_entities_field_name]
-            if sobj['uuid'] != entity.uuid
-        ]
-        if entity_json['value']['dois']:
-            entity_json['doi'] = entity_json['value']['dois'][-1]
-
-        _delete_unused_fields(entity_json)
-        publication[pub_entities_field_name].append(entity_json)
+                _populate_entities_in_publication(entity, publication)
+                _transform_authors(entity_json, publication)
+                
+                if entity_json['value']['dois']:
+                    entity_json['doi'] = entity_json['value']['dois'][-1]
+                
+                _delete_unused_fields(entity_json)
+                publication[pub_entities_field_name].append(entity_json)
 
     prj_json = prj.to_body_dict()
     _delete_unused_fields(prj_json)

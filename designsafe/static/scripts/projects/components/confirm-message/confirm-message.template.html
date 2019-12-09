@@ -8,10 +8,7 @@
 </div>
 <div class="modal-body" style="text-align: center; padding: 30px;">
     <div style="padding-bottom: 20px;">
-        Are you sure you want to delete
-        <div>
-            <strong>{{ $ctrl.ent.value.title }}</strong>?
-        </div>
+        {{$ctrl.message}}
     </div>
     <button class="btn btn-sm btn-add" style="width: 30%; margin-right: 10px;" ng-click="$ctrl.delete()">Yes</button>
     <button class="btn btn-sm btn-danger" style="width: 30%; margin-left: 10px;" ng-click="$ctrl.cancel()">No</button>

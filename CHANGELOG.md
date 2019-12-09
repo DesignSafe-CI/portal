@@ -1,4 +1,32 @@
 # DesignSafe-CI Portal Release Notes
+## v4.8.0-20191103
+Enhancements:
+* Allow multiple procedures to be published through the pipeline
+* Add metadata for multiple publication types for SEO
+* Add modal for displaying author information in publications
+* Add description for the Field Research project type
+* Remove elevation from Field Research mission metadata and make endDate optional.
+
+Fixes: 
+* Encode google drive filenames as utf-8
+* Remove some team members from citations
+
+## v4.7.5
+Fixes: 
+* Curation enhancements
+
+## v4.7.4-20191102
+Fixes: 
+* Fix Webpack minification error in site search
+
+## v4.7.4-20191101
+Fixes: 
+* Fix bugs with adding self to Team Members section
+* Prevent ui data from being removed from published project metadata
+* Hide citation for projects without citations
+* Fix KeyError in site search
+* Fix Projects with Blank Author/DOI Field in site search
+
 ## v4.7.4-20191005
 Fixes: 
 * NEES data in publications browsing view

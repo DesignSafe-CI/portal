@@ -16,37 +16,37 @@
             <col style="width: 16.5%">
         </colgroup>
         <tr style="text-align: center">
-            <td class="tg-0lax">
+            <td>
                 <strong>Selection</strong>
                 <div>
                     <i class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Proofread Project</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Proofread Mission</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Proofread Collections</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Order Authors</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
                 </div>
             </td>
-            <td class="tg-0lax">
+            <td>
                 <strong>Licenses</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
@@ -58,7 +58,7 @@
     <div>
         <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
             Preview</a>
-        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedExp">Continue</button>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedEnts.length">Continue</button>
     </div>
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
@@ -66,20 +66,24 @@
         <div class="alert alert-danger" ng-if="$ctrl.missing.length">
             <p class="lead" style="text-align:center;">Your Selection is Incomplete!</p>
             <p>
-                The mission you have selected for publication is missing data or has incomplete requirements.
+                Your selection has missing data or incomplete requirements.
                 Please review the following fields:
             </p>
-            <li ng-repeat="item in $ctrl.missing">The {{ item }} for this mission is missing or has no collection data.</li>
+            <div ng-repeat="entity in $ctrl.missing">
+                <div ng-if="entity.missing.length">
+                    In the mission <strong>{{entity.title}}</strong>, the following categories are missing or have no categorized files:
+                    <li ng-if="entity.missing.length" ng-repeat="err in entity.missing">{{ err }}</li>
+                </div>
+            </div>
         </div>
         <p>
             <h3 style="text-align: center">Select what you want to publish</h3>
-            <li>You can only publish one mission at a time.</li>
-            <li>Click "Select this Mission and all of its files"</li>
+            <li>Click "Select this Mission and all of its files" for each Mission you want to publish.</li>
             <li>If you want to deselect individual files, deselect the checkboxes.</li>
             <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
-        <!-- Experiments -->
+        <!-- Missions -->
         <div ng-show="$ctrl.ui.loading">
             <h3 class="text-center">
                 <i class="fa fa-spinner fa-spin"></i> Loading...
@@ -114,9 +118,9 @@
         </div>
         <div ng-hide="$ctrl.ui.loading" ng-repeat="mission in $ctrl.browser.project.mission_set">
             <div class="dropdown dropdown-spacer-lg" id="details-{{experiment.uuid}}">
-                <a ng-click="$ctrl.selectExperiment(mission)">Select this Mission and all of its files</a>
-                <span ng-if="$ctrl.selectedExp.uuid === mission.uuid"><i class="fa fa-check" style="color: #1CB500;"></i></span>
-                <button class="btn tab-experiment" ng-class="{'collapsed': !$ctrl.singleExperiment()}" data-toggle="collapse" data-target="#data-{{mission.uuid}}"
+                <a ng-click="$ctrl.selectEntity(mission)">Select this Mission and all of its files</a>
+                <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}"
                     style="width:100%;">
                     <table style="width:100%">
                         <tr>
@@ -129,7 +133,7 @@
                         </tr>
                     </table>
                 </button>
-                <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg" ng-class="{'in': $ctrl.singleExperiment()}">
+                <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                     <div class="well">
                         <div style="display: inline-block; width:20%; vertical-align: top;">
                             Authors
@@ -210,7 +214,7 @@
                                         </tr>
                                     </table>
                                 </button>
-                                <div id="files-{{report.uuid}}" class="collapse" ng-class="{'in': $ctrl.readOnly}">
+                                <div id="files-{{report.uuid}}" class="collapse">
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
@@ -234,7 +238,7 @@
                                         </tr>
                                     </table>
                                 </button>
-                                <div id="files-{{collection.uuid}}" class="collapse" ng-class="{'in': $ctrl.singleExperiment() || $ctrl.readOnly}">
+                                <div id="files-{{collection.uuid}}" class="collapse">
                                     <div class="well">
                                         <div style="display: inline-block; width:20%;">Observation Type</div>
                                         <div style="display: inline-block; width: 78%; font-weight:bold;">

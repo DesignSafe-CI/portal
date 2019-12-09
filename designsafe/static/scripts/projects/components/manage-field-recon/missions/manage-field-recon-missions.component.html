@@ -12,16 +12,17 @@
     </div>
     <div class="well">
         <form name="addForm" data-ng-hide="$ctrl.ui.showEditMissionForm">
-            <div class="text-center">
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                <span>Required for Curation & Publication</span>
-            </div>
             <div class="expTitle form-group">
-                <label for="id-title">Mission Title
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display: block; font-weight:normal;">
-                        Different from the Project Title. Make it focused on the methods used to obtain the data.
-                    </span>
+                <label for="id-title">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Mission Title</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight:normal;">
+                            Different from the Project Title. Make it focused on the methods used to obtain the data.
+                        </span>
+                    </div>
                 </label>
                 <input type="text"
                        id="id-title"
@@ -31,12 +32,16 @@
             </div>
             <div class="expDate form-group">
                 <label for="id-date-start">
-                    Date(s) of Mission
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display: block; font-weight:normal;">
-                        The entire time spent deployed on the mission.
-                        If you only want to enter a single date, fill in the first field.
-                    </span>
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Date(s) of Mission</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight:normal;">
+                            The entire time spent deployed on the mission.
+                            If you only want to enter a single date, fill in the first field.
+                        </span>
+                    </div>
                 </label>
                 <div style="display: flex;">
                     <input type="text"
@@ -69,7 +74,6 @@
                            placeholder="mm-dd-yyyy"
                            data-date-picker-options="dateOptions"
                            data-date-disabled="disabled(date, mode)"
-                           data-ng-required="true"
                            data-close-text="Close"
                            class="form-control"
                            style="width: 25%; display:inline-block;" />
@@ -82,10 +86,34 @@
                     </span>
                 </div>
             </div>
+            <div class="expAuthors form-group">
+                <label>Assign Authorship</label>
+                <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                <p>
+                    You can order the authors during the publication process.
+                </p>
+                <div class="form-group">
+                    <div ng-repeat="usr in $ctrl.form.authors track by $index"
+                        style="width:46%; display:inline-block; white-space: nowrap;">
+                        <input type="checkbox"
+                                format="lname"
+                                ng-checked="usr.authorship"
+                                id="{{ 'newAuthor' + $index }}"
+                                data-ng-model="usr.authorship"
+                                data-ng-required="$ctrl.validAuthors()">
+                        <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
+                        <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
+                    </div>
+                </div>
+            </div>
             <div class="mission-site-location form-group">
                 <label for="id-location">
-                    Mission Site Location
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Mission Site Location</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                    </div>
                 </label>
                 <div>
                     <div style="width: 55%; display:inline-block;">
@@ -98,7 +126,7 @@
                                data-ng-required="true"
                                class="form-control"/>
                     </div>
-                    <div style="width: 13%; display:inline-block; margin-left:5px;">
+                    <div style="width: 21%; display:inline-block; margin-left:5px;">
                         <label for="id-location" class="label-secondary">
                             Latitude
                         </label>
@@ -108,7 +136,7 @@
                                data-ng-required="true"
                                class="form-control"/>
                     </div>
-                    <div style="width: 13%; display:inline-block; margin-left:5px;">
+                    <div style="width: 21%; display:inline-block; margin-left:5px;">
                         <label for="id-location" class="label-secondary">
                             Longitude
                         </label>
@@ -118,26 +146,20 @@
                                data-ng-required="true"
                                class="form-control" />
                     </div>
-                    <div style="width: 13%; display:inline-block; margin-left:5px;">
-                        <label for="id-elevation" class="label-secondary">
-                            Elevation
-                        </label>
-                        <input type="text"
-                               id="id-elevation"
-                               data-ng-model="$ctrl.form.elevation"
-                               data-ng-required="true"
-                               class="form-control" />
-                    </div>
                 </div>
             </div>
             <div class="mission-description form-group">
                 <label for="id-description">
-                    Mission Description
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display:block; font-weight:normal;">
-                        What types of damages and structures/natural features were observed?
-                        What methods were used to gather the data?
-                    </span>
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Mission Description</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight:normal;">
+                            What types of damages and structures/natural features were observed?
+                            What methods were used to gather the data?
+                        </span>
+                    </div>
                 </label>
                 <textarea style="width:100%; height:3em; resize: vertical;"
                           id="id-description"
@@ -145,26 +167,6 @@
                           data-ng-required="true">
                     &nbsp;
                 </textarea>
-            </div>
-            <div class="expAuthors form-group">
-                <label>Assign Authorship</label>
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                <p>
-                    You can order the authors during the publication process.
-                </p>
-                <div class="form-group">
-                    <div ng-repeat="usr in $ctrl.form.authors track by $index"
-                        style="width:46%; display:inline-block; white-space: nowrap;">
-                        <input type="checkbox"
-                               format="lname"
-                               ng-checked="usr.authorship"
-                               id="{{ 'newAuthor' + $index }}"
-                               data-ng-model="usr.authorship"
-                               data-ng-required="$ctrl.validAuthors()">
-                        <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
-                        <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
-                    </div>
-                </div>
             </div>
         <!-- Update Exp Btn -->
             <div class="text-right">
