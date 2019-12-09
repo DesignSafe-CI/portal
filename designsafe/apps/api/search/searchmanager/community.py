@@ -19,9 +19,9 @@ class CommunityDataSearchManager(BaseSearchManager):
 
     def __init__(self, request=None, **kwargs):
         if request:
-            self.query_string = request.GET.get('query_string')
+            self.query_string = request.GET.get('query_string').replace("/", "\\/")
         else:
-            self.query_string = kwargs.get('query_string')
+            self.query_string = kwargs.get('query_string').replace("/", "\\/")
 
         split_query = self.query_string.split(" ")
         for i, c in enumerate(split_query):

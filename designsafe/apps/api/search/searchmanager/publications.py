@@ -21,9 +21,9 @@ class PublicationsSearchManager(BaseSearchManager):
 
     def __init__(self, request=None, **kwargs):
         if request:
-            self.query_string = request.GET.get('query_string')
+            self.query_string = request.GET.get('query_string').replace("/", "\\/")
         else:
-            self.query_string = kwargs.get('query_string')
+            self.query_string = kwargs.get('query_string').replace("/", "\\/")
 
         super(PublicationsSearchManager, self).__init__(
             IndexedPublication, Search())
@@ -33,11 +33,13 @@ class PublicationsSearchManager(BaseSearchManager):
             "projectId",
             "title", 
             "description", 
+            "doi",
             "project.value.title", 
             "project.value.keywords",
             "project.value.description",
             "project.value.dataType",
             "project.value.projectType",
+            "project.value.dois",
             "name"
             ]
         published_index_name = Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys()[0]
