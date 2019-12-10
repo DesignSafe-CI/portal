@@ -7,8 +7,7 @@ ES_AUTH = os.environ.get('ES_AUTH', 'username:password')
 ES_CONNECTIONS = {
     'default': {
         'hosts': [
-            'designsafe-es01.tacc.utexas.edu',
-            'designsafe-es02.tacc.utexas.edu',
+            'https://wma-es-client.tacc.utexas.edu:9200',
         ],
     },
     'staging': { #dev/qa
