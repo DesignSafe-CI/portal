@@ -137,6 +137,9 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
             simsubstructure_set: 'Simulation Substructure',
             expsubstructure_set: 'Experimental Substructure',
             collection_set: 'Collection',
+            planning_set: 'Research Planning Collection',
+            socialscience_set: 'Social Sciences Collection',
+            geoscience_set: 'Engineering/Geosciences Collection',
             analysis_set: 'Analysis',
             report_set: 'Report',
 
@@ -157,31 +160,47 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 'expsubstructure_set',
             ];
         } else if (project.value.projectType === 'field_recon') {
-            requiredSets = ['collection_set'];
+            requiredSets = [
+                'planning_set',
+                'socialscience_set',
+                'geoscience_set'
+            ];
         }
 
         selectedEntities.forEach((primEnt) => {
             let associatedEnts = [];
-            requiredSets.forEach((set) => {
-                project[set].forEach((subEnt) => {
-                    if (subEnt.associationIds.includes(primEnt.uuid)) {
-                        if (selections[subEnt.uuid]) {
-                            associatedEnts.push(set);
+            if (primEnt.name.endsWith('report')){
+                if (!selections[primEnt.uuid]) {
+                    missingData.push({
+                        'title': primEnt.value.title,
+                        'missing': ['Associated files/data are missing or not selected'],
+                        'type': primEnt.name
+                    });
+                }
+            } else {
+                requiredSets.forEach((set) => {
+                    project[set].forEach((subEnt) => {
+                        if (subEnt.associationIds.includes(primEnt.uuid)) {
+                            if (selections[subEnt.uuid]) {
+                                associatedEnts.push(set);
+                            }
                         }
-                    }
+                    });
                 });
-            });
-            if (!requiredSets.every(set => associatedEnts.includes(set))){
-                let missingSets = requiredSets.filter(set => !associatedEnts.includes(set));
-                let missingNames = [];
-                missingSets.forEach((set) => {
-                    missingNames.push(errMsg[set]); 
-                });
-                missingData.push({
-                    'title': primEnt.value.title,
-                    'missing': missingNames
-                });
+                if (!requiredSets.every(set => associatedEnts.includes(set))){
+                    let missingSets = requiredSets.filter(set => !associatedEnts.includes(set));
+                    let missingNames = [];
+                    missingSets.forEach((set) => {
+                        missingNames.push(errMsg[set]); 
+                    });
+                    missingData.push({
+                        'title': primEnt.value.title,
+                        'missing': missingNames,
+                        'type': primEnt.name
+                    });
+                }
             }
+
         });
         return missingData;
     };
