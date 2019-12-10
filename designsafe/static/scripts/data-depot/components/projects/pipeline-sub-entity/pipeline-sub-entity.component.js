@@ -22,6 +22,7 @@ class PipelineSubEntityCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
+        this.secondaryEntities = this.ProjectService.resolveParams.secondaryEntities;
         this.browser.project = this.ProjectService.resolveParams.project;
         this.browser.listings = this.ProjectService.resolveParams.selectedListings;
         this.fl = {
@@ -78,6 +79,26 @@ class PipelineSubEntityCtrl {
         }
     }
 
+    ordered(parent, entities) {
+        if (!entities || !parent || parent.name == 'designsafe.project.field_recon.report'){
+            return;
+        }
+        let order = (ent) => {
+            if (!ent._ui) {
+                return 0;
+            }
+            return ent._ui.orders.find(order => order.parent === parent.uuid);
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
+    }
+
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
@@ -88,6 +109,7 @@ class PipelineSubEntityCtrl {
             projectId: this.projectId,
             project: this.browser.project,
             primaryEntities: this.primaryEntities,
+            secondaryEntities: this.secondaryEntities,
             selectedListings: this.browser.listings,
         }, {reload: true});
     }
@@ -97,6 +119,7 @@ class PipelineSubEntityCtrl {
             projectId: this.projectId,
             project: this.browser.project,
             primaryEntities: this.primaryEntities,
+            secondaryEntities: this.secondaryEntities,
             selectedListings: this.browser.listings,
         }, {reload: true});
     }

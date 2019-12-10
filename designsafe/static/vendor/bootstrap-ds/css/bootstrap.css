@@ -2731,6 +2731,7 @@ input[type="search"] {
 .collection-list{
   list-style:none;
   padding-left:0;
+  margin-bottom:0px;
 }
 .radio,
 .checkbox {
