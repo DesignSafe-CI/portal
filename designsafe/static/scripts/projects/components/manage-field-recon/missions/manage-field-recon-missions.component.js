@@ -12,6 +12,7 @@ class ManageFieldReconMissionsCtrl {
 
     $onInit() {
         this.project = this.resolve.project;
+        this.edit = this.resolve.edit;
         var members = [this.project.value.pi].concat(
             this.project.value.coPis,
             this.project.value.teamMembers,
@@ -57,6 +58,9 @@ class ManageFieldReconMissionsCtrl {
             form: {}
         };
         this.cleanForm();
+        if (this.edit) {
+            this.editMission(this.edit);
+        }
     }
 
     cleanForm() {

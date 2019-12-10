@@ -176,7 +176,12 @@ class PipelineSelectionCtrl {
             this.matchingGroupKey = 'missions';
             this.projectSet = 'mission_set';
             this.previewDest = 'projects.previewFieldRecon';
-            this.subEntities = ['collection_set'];
+            this.subEntities = [
+                // 'collection_set',
+                'socialscience_set',
+                'geoscience_set',
+                'planning_set',
+            ];
         }
     }
 
@@ -239,19 +244,49 @@ class PipelineSelectionCtrl {
     }
 
     goProject() {
-        this.gatherSelections(); // need to adjust this for a list of entities...
+        this.gatherSelections();
         this.missing = this.ProjectService.checkSelectedFiles(this.browser.project, this.selectedEnts, this.selectedListings);
+        let primaryNames = [
+            'designsafe.project.experiment',
+            'designsafe.project.simulation',
+            'designsafe.project.hybrid_simulation',
+            'designsafe.project.field_recon.mission',
+        ];
 
         if (this.missing.length) {
             return;
         }
+
+        let primary = this.selectedEnts.filter(ent => primaryNames.includes(ent.name));
+        let secondary = this.selectedEnts.filter(ent => !primaryNames.includes(ent.name));
         window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
         this.$state.go('projects.pipelineProject', {
             projectId: this.projectId,
             project: this.browser.project,
-            primaryEntities: this.selectedEnts,
+            primaryEntities: primary,
+            secondaryEntities: secondary,
             selectedListings: this.selectedListings,
         }, { reload: true });
+    }
+
+    ordered(parent, entities) {
+        if (!entities || !parent || parent.name == 'designsafe.project.field_recon.report'){
+            return;
+        }
+        let order = (ent) => {
+            if (!ent._ui) {
+                return 0;
+            }
+            return ent._ui.orders.find(order => order.parent === parent.uuid);
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
     }
 
     selectEntity(ent) {
@@ -266,15 +301,23 @@ class PipelineSelectionCtrl {
         });
 
         // iterate over subEntities and select files related to primary entity...
-        this.subEntities.forEach((subEntSet) => {
-            this.browser.project[subEntSet].forEach((subEnt) => {
-                if (subEnt.associationIds.some(uuid => uuidsToSelect.includes(uuid))){
-                    this.DataBrowserService.select(this.browser.listings[subEnt.uuid].children);
-                } else {
-                    this.DataBrowserService.deselect(this.browser.listings[subEnt.uuid].children);
-                }
+        if (ent.name.endsWith('field_recon.report')){
+            if (uuidsToSelect.includes(ent.uuid)) {
+                this.DataBrowserService.select(this.browser.listings[ent.uuid].children);
+            } else {
+                this.DataBrowserService.deselect(this.browser.listings[ent.uuid].children);
+            }
+        } else {
+            this.subEntities.forEach((subEntSet) => {
+                this.browser.project[subEntSet].forEach((subEnt) => {
+                    if (subEnt.associationIds.some(uuid => uuidsToSelect.includes(uuid))){
+                        this.DataBrowserService.select(this.browser.listings[subEnt.uuid].children);
+                    } else {
+                        this.DataBrowserService.deselect(this.browser.listings[subEnt.uuid].children);
+                    }
+                });
             });
-        });
+        }
     }
 
     gatherSelections() {
@@ -289,7 +332,7 @@ class PipelineSelectionCtrl {
             };
 
             this.browser.listings[key].children.forEach((child) => {
-                if (typeof child._ui.selected != 'undefined' && child._ui.selected === true) {
+                if (child._ui && child._ui.selected && child._ui.selected === true) {
                     this.selectedListings[key].children.push(child);
                 }
             });
