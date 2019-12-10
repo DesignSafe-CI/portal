@@ -406,6 +406,7 @@ function config(
             params: {
                 project: '',
                 primaryEntities: '',
+                secondaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -416,6 +417,7 @@ function config(
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
+                        ProjectService.resolveParams.secondaryEntities = $stateParams.secondaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -510,6 +512,7 @@ function config(
                 project: '',
                 selectedListings: '',
                 primaryEntities: '',
+                secondaryEntities: '',
             },
             resolve: {
                 params: ($stateParams, ProjectService) => {
@@ -518,6 +521,7 @@ function config(
                     ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
+                    ProjectService.resolveParams.secondaryEntities = $stateParams.secondaryEntities;
                 }
             }
         })
@@ -590,6 +594,7 @@ function config(
             params: {
                 project: '',
                 primaryEntities: '',
+                secondaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -600,6 +605,7 @@ function config(
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
+                        ProjectService.resolveParams.secondaryEntities = $stateParams.secondaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -611,6 +617,7 @@ function config(
             params: {
                 project: '',
                 primaryEntities: '',
+                secondaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -621,6 +628,7 @@ function config(
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
+                        ProjectService.resolveParams.secondaryEntities = $stateParams.secondaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],
@@ -653,6 +661,7 @@ function config(
             params: {
                 project: '',
                 primaryEntities: '',
+                secondaryEntities: '',
                 selectedListings: '',
             },
             resolve: {
@@ -663,6 +672,7 @@ function config(
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         ProjectService.resolveParams.project = $stateParams.project;
                         ProjectService.resolveParams.primaryEntities = $stateParams.primaryEntities;
+                        ProjectService.resolveParams.secondaryEntities = $stateParams.secondaryEntities;
                         ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                     },
                 ],

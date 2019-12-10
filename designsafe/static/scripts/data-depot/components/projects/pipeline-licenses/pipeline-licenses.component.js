@@ -15,6 +15,7 @@ class PipelineLicensesCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
         this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
+        this.secondaryEntities = this.ProjectService.resolveParams.secondaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.license = {
             datasets: '',
@@ -104,6 +105,7 @@ class PipelineLicensesCtrl {
             projectId: this.projectId,
             project: this.project,
             primaryEntities: this.primaryEntities,
+            secondaryEntities: this.secondaryEntities,
             selectedListings: this.selectedListings,
         }, { reload: true });
     }
