@@ -10,7 +10,7 @@ from elasticsearch_dsl import Q, Search, Index
 from elasticsearch import TransportError, ConnectionTimeout
 from django.http import (HttpResponseBadRequest,
                          JsonResponse)
-
+from django.conf import settings
 from designsafe.apps.api.views import BaseApiView
 
 from designsafe.apps.api.search.searchmanager.community import CommunityDataSearchManager
@@ -31,6 +31,13 @@ class SearchView(BaseApiView):
         if limit > 500:
             return HttpResponseBadRequest("limit must not exceed 500")
         type_filter = request.GET.get('type_filter', 'all')
+
+        doc_type_map = {
+            Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys()[0]: 'publication',
+            Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys()[0]: 'publication',
+            Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys()[0]: 'file',
+            Index(settings.ES_INDEX_PREFIX.format('cms')).get_alias().keys()[0]: 'modelresult'
+        }
 
         public_files_query = CommunityDataSearchManager(request).construct_query() | PublishedDataSearchManager(request).construct_query()
         publications_query = PublicationsSearchManager(request).construct_query()
@@ -67,7 +74,7 @@ class SearchView(BaseApiView):
 
         for r in res:
             d = r.to_dict()
-            d["doc_type"] = r.meta.doc_type
+            d["doc_type"] = doc_type_map[r.meta.index]
             if hasattr(r.meta, 'highlight'):
                 highlight = r.meta.highlight.to_dict()
                 d["highlight"] = highlight
@@ -78,7 +85,7 @@ class SearchView(BaseApiView):
                 d["piLabel"] = "{}, {}".format(pi_user.last_name, pi_user.first_name)
             hits.append(d)
 
-        out['total_hits'] = res.hits.total
+        out['total_hits'] = res.hits.total.value
         out['hits'] = hits
         out['all_total'] = Search().query(public_files_query | publications_query | cms_query).count()
         out['public_files_total'] = Search().query(public_files_query).count()

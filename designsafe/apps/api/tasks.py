@@ -666,13 +666,13 @@ def index_or_update_project(self, uuid):
         })
     )
     res = project_search.execute()
-
-    if res.hits.total == 0:
+    
+    if res.hits.total.value == 0:
         # Create an ES record for the new metadata.
         # project_info_args = {key:value for key,value in project_info.iteritems() if key != '_links'}
         project_ES = IndexedProject(**to_index)
         project_ES.save()
-    elif res.hits.total == 1:
+    elif res.hits.total.value == 1:
         # Update the record.
         doc = res[0]
         doc.update(**to_index)
@@ -680,7 +680,7 @@ def index_or_update_project(self, uuid):
         # If we're here we've somehow indexed the same project multiple times. 
         # Delete all records and replace with the metadata passed to the task.
         for doc in res:
-            doc.delete()
+            IndexedProject.get(doc.meta.id).delete()
         project_ES = IndexedProject(**to_index) 
         project_ES.save()
 
