@@ -250,6 +250,9 @@ def _transform_authors(entity, publication):
 
     :param dict entity: Entity dictionary.
     :param dict publication: Publication dictionary.
+    Sets authors on the entity to a list of string usernames within 'value'
+    Sets authors on the entity to a list of user objects
+    Sets authors on the publication
     """
     entity['value']['authors'] = []
     for author in publication['authors']:
@@ -310,24 +313,37 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     publication = pub_doc.to_dict()
 
     if entity_uuids:
-        # clear any existing entities in publication
-        entity = mgr.get_entity_by_uuid(entity_uuids[0])
-        pub_entities_field_name = FIELD_MAP[entity.name]
-        publication[pub_entities_field_name] = []
-        
+        # clear any existing entities in publication and keep updated fileObjs
+        fields_to_clear = []
+        entities_with_files = []
+        for ent_uuid in entity_uuids:
+            entity = mgr.get_entity_by_uuid(ent_uuid)
+            fields_to_clear.append(FIELD_MAP[entity.name])
+        fields_to_clear = set(fields_to_clear)
+        for field in fields_to_clear:
+            for ent in publication[field]:
+                if 'fileObjs' in ent:
+                    entities_with_files.append(ent)
+            publication[field] = []
+
         for ent_uuid in entity_uuids:
             entity = None
             entity = mgr.get_entity_by_uuid(ent_uuid)
-            entity_json = entity.to_body_dict()
 
             if entity:
+                entity_json = entity.to_body_dict()
                 pub_entities_field_name = FIELD_MAP[entity.name]
-                publication['authors'] = entity_json['value']['authors'][:]
+
+                for e in entities_with_files:
+                    if e['uuid'] == entity_json['uuid']:
+                        entity_json['fileObjs'] = e['fileObjs']
+
+                publication['authors'] = list(entity_json['value']['authors'])
                 entity_json['authors'] = []
 
                 _populate_entities_in_publication(entity, publication)
                 _transform_authors(entity_json, publication)
-                
+
                 if entity_json['value']['dois']:
                     entity_json['doi'] = entity_json['value']['dois'][-1]
                 
