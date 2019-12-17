@@ -112,9 +112,10 @@
                     <span ng-if="$ctrl.project.value.nhEventEnd">
                         ― {{$ctrl.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
                     </span>
+                    <span ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">|</span>
                     <a href="http://www.google.com/maps/place/{{ $ctrl.project.value.nhLatitude }},{{ $ctrl.project.value.nhLongitude }}"
                         rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">
-                        | Lat {{ $ctrl.project.value.nhLatitude }} Long {{ $ctrl.project.value.nhLongitude }}
+                        Lat {{ $ctrl.project.value.nhLatitude }} Long {{ $ctrl.project.value.nhLongitude }}
                     </a>
                 </td>
             </tr>
