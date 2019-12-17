@@ -101,7 +101,11 @@
                     Site Location
                 </div>
                 <div class="collection-data">
-                    <span>{{primEnt.value.location}} | Lat {{primEnt.value.latitude}} Long {{primEnt.value.longitude}}</span>
+                    <span>{{primEnt.value.location}} | </span>
+                    <a href="http://www.google.com/maps/place/{{ primEnt.value.latitude }},{{ primEnt.value.longitude }}"
+                        rel="noopener noreferrer" target=”_blank” ng-if="primEnt.value.latitude && primEnt.value.longitude">
+                        Lat {{primEnt.value.latitude}} Long {{primEnt.value.longitude}}
+                    </a>
                 </div>
             </div>
             <div class="collection-field">

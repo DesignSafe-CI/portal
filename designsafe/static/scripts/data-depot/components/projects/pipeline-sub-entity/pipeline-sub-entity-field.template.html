@@ -227,15 +227,11 @@
                                         data-ng-if="collection.value.location">
                                     <ul class="collection-list">
                                         <li>
-                                            <span data-ng-if="collection.value.location">
-                                                {{collection.value.location}} | 
-                                            </span>
-                                            <span data-ng-if="collection.value.latitude">
-                                                Lat {{collection.value.latitude}}
-                                            </span>
-                                            <span data-ng-if="collection.value.longitude">
-                                                Long {{collection.value.longitude}}
-                                            </span>
+                                            <span>{{collection.value.location}} | </span>
+                                            <a href="http://www.google.com/maps/place/{{ collection.value.latitude }},{{ collection.value.longitude }}"
+                                                rel="noopener noreferrer" target=”_blank” ng-if="collection.value.latitude && collection.value.longitude">
+                                                Lat {{collection.value.latitude}} Long {{collection.value.longitude}}
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -331,15 +327,11 @@
                                 <div class="collection-data" data-ng-if="collection.value.location">
                                     <ul class="collection-list">
                                         <li>
-                                            <span data-ng-if="collection.value.location">
-                                                {{collection.value.location}} | 
-                                            </span>
-                                            <span data-ng-if="collection.value.latitude">
-                                                Lat {{collection.value.latitude}}
-                                            </span>
-                                            <span data-ng-if="collection.value.longitude">
-                                                Long {{collection.value.longitude}}
-                                            </span>
+                                            <span>{{collection.value.location}} | </span>
+                                            <a href="http://www.google.com/maps/place/{{ collection.value.latitude }},{{ collection.value.longitude }}"
+                                                rel="noopener noreferrer" target=”_blank” ng-if="collection.value.latitude && collection.value.longitude">
+                                                Lat {{collection.value.latitude}} Long {{collection.value.longitude}}
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
