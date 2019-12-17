@@ -107,20 +107,30 @@ class PublishedViewCtrl {
                         if (typeof this.browser.publication.reports != 'undefined') {
                             this.browser.publication.reports.forEach(this.getFileObjs);
                         }
-                        this.browser.publication.collections.forEach(this.getFileObjs);
+                        if (typeof this.browser.publication.collections != 'undefined') {
+                            this.browser.publication.collections.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.planning != 'undefined') {
+                            this.browser.publication.planning.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.geoscience != 'undefined') {
+                            this.browser.publication.geoscience.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.socialscience != 'undefined') {
+                            this.browser.publication.socialscience.forEach(this.getFileObjs);
+                        }
                     }
-
+                    
                     //add metadata to header
                     this.PublishedService.updateHeaderMetadata(projId, resp);
                     this.version = this.browser.publication.version || 1;
                     this.type = this.browser.publication.project.value.projectType;
                     this.ui.loading = false;
-
-                    // Generate text for PI
-                    this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi)
-                    // Generate CoPI list
-                    this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
-
+                    
+                    // // Generate text for PI
+                    // this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi);
+                    // // Generate CoPI list
+                    // this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
                 }).then( () => {
                     this.prepProject();
                 });
@@ -158,9 +168,9 @@ class PublishedViewCtrl {
         if (this.project.value.projectType === 'field_recon'){
             this.browser.project.mission_set = this.browser.publication.missions;
             this.browser.project.collection_set = this.browser.publication.collections;
-            this.browser.project.geoscience_set = this.browser.publication.socialscience;
+            this.browser.project.socialscience_set = this.browser.publication.socialscience;
             this.browser.project.planning_set = this.browser.publication.planning;
-            this.browser.project.report_set = this.browser.publication.geoscience;
+            this.browser.project.geoscience_set = this.browser.publication.geoscience;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
         }

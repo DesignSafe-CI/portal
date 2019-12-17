@@ -22,6 +22,9 @@ const attributeMap = {
     'designsafe.project.hybrid_simulation.analysis': 'analysiss',
     'designsafe.project.hybrid_simulation.report': 'reports',
     'designsafe.project.field_recon.collection': 'collections',
+    'designsafe.project.field_recon.social_science': 'socialscience',
+    'designsafe.project.field_recon.planning': 'planning',
+    'designsafe.project.field_recon.geoscience': 'geoscience',
     'designsafe.project.field_recon.report': 'reports',
 };
 
@@ -49,7 +52,7 @@ class PipelinePublishCtrl {
             let uuids = Object.keys(this.selectedListings);
             uuids.forEach((uuid) => {
                 let listing = this.selectedListings[uuid];
-                let entity = this.project.getRelatedByUuid(uuid);
+                let entity = this.project.getRelatedByUuid(uuid); // this part is still gathering collections...
                 let attr = attributeMap[entity.name];
                 let pubEntity = { name: entity.name, uuid: entity.uuid };
                 pubEntity.fileObjs = _.map(listing.children, (child) => {
@@ -84,6 +87,11 @@ class PipelinePublishCtrl {
                 publication[this.entityListName].push({uuid: entity.uuid});
                 this.mainEntityUuids.push(entity.uuid);
             });
+            // TEMPORARY FOR TESTING REMOVE REMOVE REMOVE
+            publication.reports.forEach((report) => {
+                this.mainEntityUuids.push(report.uuid);
+            });
+            // TEMPORARY FOR TESTING REMOVE REMOVE REMOVE
         }
         this.publication = publication;
         this.PublishedService.getPublished(this.project.value.projectId).then((resp) => {
