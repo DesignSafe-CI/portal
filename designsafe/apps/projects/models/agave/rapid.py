@@ -178,3 +178,11 @@ class Report(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    dois = fields.ListField('Dois')
+
+    def to_datacite_json(self):
+        """Serialize object to datacite JSON."""
+        attributes = super(Report, self).to_datacite_json()
+        attributes['types']['resourceType'] = "Project/Report"
+        return attributes
+
