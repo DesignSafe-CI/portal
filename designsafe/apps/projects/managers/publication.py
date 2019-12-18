@@ -175,7 +175,7 @@ def draft_publication(
     return responses
 
 
-def publish_resource(project_id, entity_uuids=None):
+def publish_resource(project_id, entity_uuids=None, publish_dois=False):
     """Publish a resource.
 
     Retrieves a project and/or an entity and set any saved DOIs
@@ -184,6 +184,11 @@ def publish_resource(project_id, entity_uuids=None):
     this function also changes the status of the locally saved publication
     to `"published"` that way it shows up in the published listing.
 
+    If publish_dois is False Datacite will keep the newly created DOIs in
+    "DRAFT" status, but they will not be set to "PUBLISHED". A DOI on
+    DataCite can only be deleted if it is in "DRAFT" status. Once a DOI
+    is set to "PUBLISHED" or "RESERVED" it can't be deleted.
+
     :param str project_id: Project Id to publish.
     :param list entity_uuids: list of str Entity uuids to publish.
     """
@@ -191,19 +196,20 @@ def publish_resource(project_id, entity_uuids=None):
     prj = mgr.get_project_by_id(project_id)
     responses = []
 
-    for ent_uuid in entity_uuids:
-        entity = None
-        if ent_uuid:
-            entity = mgr.get_entity_by_uuid(ent_uuid)
+    if publish_dois:
+        for ent_uuid in entity_uuids:
+            entity = None
+            if ent_uuid:
+                entity = mgr.get_entity_by_uuid(ent_uuid)
+            
+            if entity:
+                for doi in entity.dois:
+                    res = DataciteManager.publish_doi(doi)
+                    responses.append(res)
         
-        if entity:
-            for doi in entity.dois:
-                res = DataciteManager.publish_doi(doi)
-                responses.append(res)
-    
-    for doi in prj.dois:
-        res = DataciteManager.publish_doi(doi)
-        responses.append(res)
+        for doi in prj.dois:
+            res = DataciteManager.publish_doi(doi)
+            responses.append(res)
 
 
     pub = BaseESPublication(project_id=project_id)
