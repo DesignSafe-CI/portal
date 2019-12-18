@@ -73,13 +73,26 @@ class PublicationView(BaseApiView):
                     pub.projectId,
                     data.get('mainEntityUuids')
                 ).set(queue='api') |
-                tasks.save_publication.si(
+                group(
+                    tasks.save_publication.si(
+                        pub.projectId,
+                        data.get('mainEntityUuids')
+                    ).set(
+                        queue='files',
+                        countdown=60
+                    ),
+                    tasks.copy_publication_files_to_corral.si(
+                        pub.projectId
+                    ).set(
+                        queue='files',
+                        countdown=60
+                    )
+                ) |
+                tasks.set_publish_status.si(
                     pub.projectId,
                     data.get('mainEntityUuids')
-                ).set(
-                    queue='files',
-                    countdown=60
-                )
+                ) |
+                tasks.zip_publication_files.si(pub.projectId)
             ).apply_async()
 
         return JsonResponse({'status': 200,
