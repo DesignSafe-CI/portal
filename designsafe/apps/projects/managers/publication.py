@@ -327,9 +327,10 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
             fields_to_clear.append(FIELD_MAP[entity.name])
         fields_to_clear = set(fields_to_clear)
         for field in fields_to_clear:
-            for ent in publication[field]:
-                if 'fileObjs' in ent:
-                    entities_with_files.append(ent)
+            if field in publication.keys():
+                for ent in publication[field]:
+                    if 'fileObjs' in ent:
+                        entities_with_files.append(ent)
             publication[field] = []
 
         for ent_uuid in entity_uuids:
