@@ -72,6 +72,7 @@ class PipelinePublishCtrl {
             });
 
             this.entityListName = '';
+            this.mainEntityUuids = [];
             if (this.project.value.projectType === 'experimental') {
                 this.entityListName = 'experimentsList';
             } else if (this.project.value.projectType === 'simulation') {
@@ -80,18 +81,15 @@ class PipelinePublishCtrl {
                 this.entityListName = 'hybrid_simulations';
             } else if (this.project.value.projectType === 'field_recon') {
                 this.entityListName = 'missions';
+                publication.reports.forEach((report) => {
+                    this.mainEntityUuids.push(report.uuid);
+                });
             }
             publication[this.entityListName] = [];
-            this.mainEntityUuids = [];
             this.resolve.resolveParams.primaryEntities.forEach((entity) => {
                 publication[this.entityListName].push({uuid: entity.uuid});
                 this.mainEntityUuids.push(entity.uuid);
             });
-            // TEMPORARY FOR TESTING REMOVE REMOVE REMOVE
-            publication.reports.forEach((report) => {
-                this.mainEntityUuids.push(report.uuid);
-            });
-            // TEMPORARY FOR TESTING REMOVE REMOVE REMOVE
         }
         this.publication = publication;
         this.PublishedService.getPublished(this.project.value.projectId).then((resp) => {
