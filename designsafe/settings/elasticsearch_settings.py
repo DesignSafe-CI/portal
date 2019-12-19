@@ -1,16 +1,18 @@
 """Elastic search connection configuration"""
 import os 
 
+ES_INDEX_PREFIX = os.environ.get('ES_INDEX_PREFIX', 'designsafe-dev-{}')
+ES_AUTH = os.environ.get('ES_AUTH', 'username:password')
+
 ES_CONNECTIONS = {
     'default': {
         'hosts': [
-            'designsafe-es01.tacc.utexas.edu',
-            'designsafe-es02.tacc.utexas.edu',
+            'https://wma-es-client.tacc.utexas.edu:9200',
         ],
     },
     'staging': { #dev/qa
         'hosts':  [
-            'designsafe-es01-dev.tacc.utexas.edu',
+            'https://wma-es-client.tacc.utexas.edu:9200',
         ]
     },
     'dev': {
@@ -27,49 +29,45 @@ ES_CONNECTIONS = {
 
 ES_INDICES = {
     'files': {
-        'name': 'des-files_a',
-        'alias': 'des-files',
-        'documents': [{'name': 'file',
-                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedFile'}]
+        'alias': ES_INDEX_PREFIX.format('files'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedFile',
+        'kwargs': {'number_of_shards': 3}
     },
     'publications': {
-        'name': 'des-publications_a',
-        'alias': 'des-publications',
-        'documents': [{'name': 'publication',
-                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedPublication'}]
+        'alias': ES_INDEX_PREFIX.format('publications'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedPublication',
+        'kwargs': {'index.mapping.total_fields.limit': 2000}
     },
     'web_content': {
-        'name': 'des-web_content_a',
-        'alias': 'des-web_content',
-        'documents': [{'name': 'page',
-                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedCMSPage'}]
+        'alias': ES_INDEX_PREFIX.format('web-content'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedCMSPage',
+        'kwargs': {}
     },
     'publications_legacy': {
-        'name': 'des-publications_legacy_a',
-        'alias': 'des-publications_legacy',
-        'documents': [{'name': 'publication',
-                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedPublicationLegacy'
-                      }]
+        'alias': ES_INDEX_PREFIX.format('publications-legacy'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedPublicationLegacy',
+        'kwargs': {}
     },
-    'rapid': {
-        'name': 'des-rapid_nh_a',
-        'alias': 'des-rapid_nh',
-        'documents': [{'name': 'event',
-                       'class': 'designsafe.apps.rapid.models.RapidNHEvent'},
-                      {'name': 'eventType',
-                       'class': 'designsafe.apps.rapid.models.RapidNHEventType'}]
+    'rapid_event': {
+        'alias': ES_INDEX_PREFIX.format('rapid-events'),
+        'document': 'designsafe.apps.rapid.models.RapidNHEvent',
+        'kwargs': {}
+    },
+    'rapid_event_type': {
+        'alias': ES_INDEX_PREFIX.format('rapid-event-types'),
+        'document': 'designsafe.apps.rapid.models.RapidNHEventType',
+        'kwargs': {}
     },
     'projects': {
-        'name': 'des-projects_a',
-        'alias': 'des-projects',
-        'documents': [{'name': 'project',
-                       'class': 'designsafe.apps.projects.models.elasticsearch.IndexedProject'}]
+        'alias': ES_INDEX_PREFIX.format('projects'),
+        'document': 'designsafe.apps.projects.models.elasticsearch.IndexedProject',
+        'kwargs': {}
     },
     'project_entities': {
-        'name': 'des-project_entities_a',
-        'alias': 'des-projects_entities',
-        'documents': [{'name': 'entity',
-                       'class': 'designsafe.apps.projects.models.elasticsearch.IndexedEntity'}]
+        'alias': ES_INDEX_PREFIX.format('project-entities'),
+        'document': 'designsafe.apps.projects.models.elasticsearch.IndexedEntity',
+        'kwargs': {}
+
     },
     #'apps': {
     #    'name': 'des-apps_a',
@@ -90,6 +88,7 @@ HAYSTACK_CONNECTIONS = {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         # 'URL': 'des_elasticsearch:9200/',
         'URL': ES_CONNECTIONS[os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev')]['hosts'][0] + ':9200/',
-        'INDEX_NAME': 'cms',
+        'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
+        'KWARGS': {'http_auth': ES_AUTH}
     }
 }

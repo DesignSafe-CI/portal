@@ -33,7 +33,7 @@ services:
     hostname: des_memcached
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
     ulimits:
       memlock: -1
     environment:

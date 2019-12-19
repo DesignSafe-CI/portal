@@ -2,38 +2,32 @@ from mock import Mock, patch, MagicMock, PropertyMock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from designsafe.apps.api.search.views import SearchView
 import json
 
 class SearchViewTests(TestCase):
 
-    @patch('designsafe.apps.api.search.views.SearchView.search_cms_content')
-    @patch('designsafe.apps.api.search.views.SearchView.search_public_files')
-    @patch('designsafe.apps.api.search.views.SearchView.search_published')
-    @patch('designsafe.apps.api.search.views.SearchView.search_all')
-    def test_search_view(self, mock_all, mock_pub, mock_files, mock_cms):
-        self.assertTrue(True) 
-        
-        mock_request = MagicMock()
-        mock_request.GET = {
-            'query_string': 'test_query',
-        }
-        mock_all.return_value.execute.return_value.hits.total = 0 
-        mock_all.return_value.count.return_value = 0
-        mock_pub.return_value.count.return_value = 0
-        mock_files.return_value.count.return_value = 0
-        mock_cms.return_value.count.return_value = 0
+    @patch('designsafe.apps.api.search.views.CommunityDataSearchManager')
+    @patch('designsafe.apps.api.search.views.PublishedDataSearchManager')
+    @patch('designsafe.apps.api.search.views.CMSSearchManager')
+    @patch('designsafe.apps.api.search.views.PublicationsSearchManager')
+    @patch('designsafe.apps.api.search.views.Search')
+    @patch('designsafe.apps.api.search.views.Index')
+    def test_search_view(self, mock_index, mock_search, mock_community, mock_published, mock_cms, mock_publications):
 
-        res = SearchView().get(mock_request)
-        res_dict = json.loads(res.content)
+        mock_index().alias().keys.side_effect = [['test-pub'], ['test-pub-legacy'], ['test-files'], ['test-cms']]
+        mock_search().query().count.return_value = 0
+        mock_search().query().highlight().highlight_options().execute().return_value = []
+        mock_search().query().highlight().highlight_options().execute().hits.total.value = 0
+        url = "{}?type_filter=all&query_string=test".format(reverse('designsafe_api:ds_search_api:search'))
 
-        self.assertEqual(res_dict['all_total'], 0)
-        self.assertEqual(res_dict['total_hits'], 0)
-        self.assertEqual(res_dict['public_files_total'], 0)
-        self.assertEqual(res_dict['published_total'], 0)
-        self.assertEqual(res_dict['cms_total'], 0)
+        response = self.client.get(url)
 
-        print json.loads(res.content)['all_total']
-
-
+        self.assertEqual(response.json(), {'hits': [],
+                                           'public_files_total': 0,
+                                           'published_total': 0,
+                                           'cms_total': 0,
+                                           'total_hits': 0,
+                                           'all_total': 0})
 

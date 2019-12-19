@@ -19,24 +19,18 @@ class SharedDataSearchManager(BaseSearchManager):
 
     def __init__(self, request=None, **kwargs):
         if request:
-            self.query_string = request.GET.get('query_string')
+            self.query_string = request.GET.get('query_string').replace("/", "\\/")
             self.username = request.user.username
         else:
-            self.query_string = kwargs.get('query_string')
+            self.query_string = kwargs.get('query_string').replace("/", "\\/")
             self.username = kwargs.get('username')
-
-        split_query = self.query_string.split(" ")
-        for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR", "NOT"]:
-                split_query[i] = "*" + c + "*"
-        self.query_string = " ".join(split_query)
 
         super(SharedDataSearchManager, self).__init__(
             IndexedFile, IndexedFile.search())
 
     def construct_query(self, system, file_path=None):
 
-        files_index_name = Index('des-files').get_alias().keys()[0]
+        files_index_name = Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys()[0]
 
         if system == settings.AGAVE_STORAGE_SYSTEM:
             storage_prefix_query = Q({'prefix': {'path._exact': '/' + self.username}})
@@ -60,10 +54,20 @@ class SharedDataSearchManager(BaseSearchManager):
 
     def listing(self, system, file_path, user_context=None, offset=None, limit=None):
         """Perform the search and output in a serializable format."""
+
+        ngram_query = Q("query_string", query=self.query_string,
+                        fields=["name"],
+                        minimum_should_match='80%',
+                        default_operator='or')
+
+        match_query = Q("query_string", query=self.query_string,
+                        fields=[
+                            "name._exact", "name._pattern"],
+                        default_operator='and')
         
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=user_context))
-        search = search.query("query_string", query=self.query_string, fields=["name", "name._exact", "keywords"])
+        search = search.query(ngram_query | match_query)
         
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '/'+user_context}})]))
         search = search.filter("term", system=system)
@@ -71,7 +75,7 @@ class SharedDataSearchManager(BaseSearchManager):
         res = search.execute()
 
         children = []
-        if res.hits.total:
+        if res.hits.total.value:
             children = [o.to_dict() for o in search[offset:limit]]
 
         result = {
