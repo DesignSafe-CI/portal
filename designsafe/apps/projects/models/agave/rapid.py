@@ -175,7 +175,7 @@ class Report(RelatedEntity):
     referenced_data = fields.ListField('Reference Data', list_cls=ReferencedData)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(FieldReconProject)
-    missions = fields.RelatedObjectField(Mission)
+    # missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
     dois = fields.ListField('Dois')
