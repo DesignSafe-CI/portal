@@ -1,7 +1,10 @@
 <div class="table-responsive" data-ng-class="{'preview-wrapper': $ctrl.browser.showPreviewListing}">
-    <div data-ds-infinite-scroll
-         data-scroll-bottom="$ctrl.scrollToBottom()"
-         data-bottom-height="0"
+    <div
+        class="ds-table-display-wrapper"
+        data-ds-infinite-scroll
+        data-scroll-bottom="$ctrl.scrollToBottom()"
+        data-scroll-top="$ctrl.scrollToTop()"
+        data-bottom-height="0"
     >
         <div>
             <span ng-repeat="path in $ctrl.breadcrumbs track by $index">
@@ -26,7 +29,7 @@
             </thead>
             <tbody>
                 <tr data-ng-if="!$ctrl.browser.busyListing"
-                    data-ng-repeat="item in $ctrl.listing().children | orderBy: ['type', 'ext', 'name']"
+                    data-ng-repeat="item in $ctrl.listing().children"
                     ng-class="{highlight: item._ui.selected}"
                 >
                     <td class="unselectable">
