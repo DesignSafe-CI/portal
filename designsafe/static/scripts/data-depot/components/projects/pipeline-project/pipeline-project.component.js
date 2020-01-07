@@ -46,7 +46,7 @@ class PipelineProjectCtrl {
             } else if (this.projType === 'simulation') {
                 this.placeholder = 'Simulation';
             } else if (this.projType === 'hybrid_simulation') {
-                this.placeholder = 'Hybrid Simulation';
+                this.placeholder = 'Hybrid Sim';
             } else if (this.projType === 'field_recon') {
                 this.placeholder = 'Mission';
             }
