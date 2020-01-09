@@ -10,5 +10,5 @@ class RedirectTest(TestCase):
     @patch('django.shortcuts.redirect')
     def test_redirect_old_nees(self, mock_redirect):
         mock_redirect.return_value = True
-        redirect_old_nees(685)
+        redirect_old_nees(request=None, nees_prj=685)
         self.assertTrue(mock_redirect.called_with('/search/?query_string=NEES 0685'))
