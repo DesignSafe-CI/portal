@@ -14,7 +14,7 @@ from designsafe.apps.api.agave.filemanager.agave import  AgaveFileManager
 from designsafe.apps.api.exceptions import ApiException
 from elasticsearch import TransportError, ConnectionTimeout
 from elasticsearch_dsl.query import Q
-from elasticsearch_dsl import Search, DocType
+from elasticsearch_dsl import Search, Document
 from elasticsearch_dsl.connections import connections
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 logger = logging.getLogger(__name__)

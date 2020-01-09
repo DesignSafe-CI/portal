@@ -48,28 +48,28 @@ class TestPrivateDataSearchMgr(TestCase):
     @patch('designsafe.apps.api.search.searchmanager.private_data.BaseSearchManager.__init__')
     @patch('designsafe.apps.api.search.searchmanager.private_data.Search')
     def test_search(self, mock_search, mock_base):
-        try:
-            request = MagicMock()
-            request.query_string = 'test_query'
-            request.username = 'test_user'
-            mock_res = MagicMock()
-            mock_res.hits.total = 1
-            mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
-            mock_search().query().extra().execute.return_value = mock_res
-            sm = PrivateDataSearchManager(request)
-            expected_result = {
-                'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
-                'name': '$SEARCH',
-                'path': '/',
-                'system': 'test.system',
-                'type': 'dir',
-                'children': [{'name': 'file01'}],
-                'permissions': 'READ'
-            }
-            listing = sm.listing('test.system', '/')
-            self.assertEqual(listing, expected_result)
-        except ConnectionError:
-            self.assertTrue(True)
+        request = MagicMock()
+        request.query_string = 'test_query'
+        request.username = 'test_user'
+
+        mock_res = MagicMock()
+        mock_res.hits.total.value = 1
+        mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
+
+        mock_search().query().extra().execute.return_value = mock_res
+
+        sm = PrivateDataSearchManager(request)
+        expected_result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/',
+            'system': 'test.system',
+            'type': 'dir',
+            'children': [{'name': 'file01'}],
+            'permissions': 'READ'
+        }
+        listing = sm.listing('test.system', '/')
+        self.assertEqual(listing, expected_result)
 
 class TestCommunitySearchMgr(TestCase):
     @patch('designsafe.apps.api.search.searchmanager.community.BaseSearchManager.__init__')
@@ -84,28 +84,28 @@ class TestCommunitySearchMgr(TestCase):
     @patch('designsafe.apps.api.search.searchmanager.community.BaseSearchManager.__init__')
     @patch('designsafe.apps.api.search.searchmanager.community.Search')
     def test_search(self, mock_search, mock_base):
-        try:
-            request = MagicMock()
-            request.query_string = 'test_query'
-            request.username = 'test_user'
-            mock_res = MagicMock()
-            mock_res.hits.total = 1
-            mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
-            mock_search().query().extra().execute.return_value = mock_res
-            sm = CommunityDataSearchManager(request)
-            expected_result = {
-                'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
-                'name': '$SEARCH',
-                'path': '/',
-                'system': 'test.community',
-                'type': 'dir',
-                'children': [{'name': 'file01'}],
-                'permissions': 'READ'
-            }
-            listing = sm.listing('test.community', '/')
-            self.assertEqual(listing, expected_result)
-        except ConnectionError:
-            self.assertTrue(True)
+        request = MagicMock()
+        request.query_string = 'test_query'
+        request.username = 'test_user'
+
+        mock_res = MagicMock()
+        mock_res.hits.total.value = 1
+        mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
+
+        mock_search().query().extra().execute.return_value = mock_res
+
+        sm = CommunityDataSearchManager(request)
+        expected_result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/',
+            'system': 'test.community',
+            'type': 'dir',
+            'children': [{'name': 'file01'}],
+            'permissions': 'READ'
+        }
+        listing = sm.listing('test.community', '/')
+        self.assertEqual(listing, expected_result)
 
 class TestPublishedDataSearchMgr(TestCase):
     @patch('designsafe.apps.api.search.searchmanager.published_files.BaseSearchManager.__init__')
@@ -120,28 +120,28 @@ class TestPublishedDataSearchMgr(TestCase):
     @patch('designsafe.apps.api.search.searchmanager.published_files.BaseSearchManager.__init__')
     @patch('designsafe.apps.api.search.searchmanager.published_files.Search')
     def test_search(self, mock_search, mock_base):
-        try:
-            request = MagicMock()
-            request.query_string = 'test_query'
-            request.username = 'test_user'
-            mock_res = MagicMock()
-            mock_res.hits.total = 1
-            mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
-            mock_search().query().extra().execute.return_value = mock_res
-            sm = PublishedDataSearchManager(request)
-            expected_result = {
-                'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
-                'name': '$SEARCH',
-                'path': '/',
-                'system': 'test.published',
-                'type': 'dir',
-                'children': [{'name': 'file01'}],
-                'permissions': 'READ'
-            }
-            listing = sm.listing('test.published', '/')
-            self.assertEqual(listing, expected_result)
-        except ConnectionError:
-            self.assertTrue(True)
+        request = MagicMock()
+        request.query_string = 'test_query'
+        request.username = 'test_user'
+
+        mock_res = MagicMock()
+        mock_res.hits.total.value = 1
+        mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
+
+        mock_search().query().extra().execute.return_value = mock_res
+
+        sm = PublishedDataSearchManager(request)
+        expected_result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/',
+            'system': 'test.published',
+            'type': 'dir',
+            'children': [{'name': 'file01'}],
+            'permissions': 'READ'
+        }
+        listing = sm.listing('test.published', '/')
+        self.assertEqual(listing, expected_result)
 
 class TestPublicationSearchMgr(TestCase):
     @patch('designsafe.apps.api.search.searchmanager.publications.BaseSearchManager.__init__')

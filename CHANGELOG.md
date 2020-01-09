@@ -1,4 +1,13 @@
 # DesignSafe-CI Portal Release Notes
+
+## v4.8.1-10291201
+* Upgrade to Elasticsearch v7.4
+* Fix image preview carousel and links to NEES publications
+* Frontend enhancements for publications
+
+## v4.7.6
+* update header to include NSF logo
+
 ## v4.8.0-20191103
 Enhancements:
 * Allow multiple procedures to be published through the pipeline

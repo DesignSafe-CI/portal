@@ -7,8 +7,8 @@ from django.db import models
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Search, DocType, Date, Nested,
                                analyzer, Object, Text, Long,
-                               InnerObjectWrapper, Boolean, Keyword,
-                               GeoPoint, String, MetaField)
+                               Boolean, Keyword,
+                               GeoPoint, MetaField)
 from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
@@ -19,14 +19,14 @@ logger = logging.getLogger(__name__)
 
 @python_2_unicode_compatible
 class IndexedApp(DocType):
-    uuid = String(fields={'_exact': Keyword()})
-    schemaId = String(fields={'_exact': Keyword()})
-    internalUsername = String(fields={'_exact': Keyword()})
-    associationIds = String(fields={'_exact': Keyword()}, multi=True)
+    uuid = Text(fields={'_exact': Keyword()})
+    schemaId = Text(fields={'_exact': Keyword()})
+    internalUsername = Text(fields={'_exact': Keyword()})
+    associationIds = Text(fields={'_exact': Keyword()}, multi=True)
     lastUpdated = Date()
-    name = String(fields={'_exact': Keyword()})
+    name = Text(fields={'_exact': Keyword()})
     created = Date()
-    owner = String(fields={'_exact': Keyword()})
+    owner = Text(fields={'_exact': Keyword()})
     value = Nested(
         properties={
             'relations': Nested(properties={
@@ -41,7 +41,8 @@ class IndexedApp(DocType):
             'description': Text(analyzer='english')
         })
 
+    class Index:
+        name = settings.ES_INDICES['project_entities']['alias'] 
+        
     class Meta:
-        index = settings.ES_INDICES['project_entities']['name']
-        doc_type = settings.ES_INDICES['project_entities']['documents'][0]['name']
         dynamic = MetaField('strict')
