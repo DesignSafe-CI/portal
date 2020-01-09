@@ -157,27 +157,24 @@ class TestPublicationSearchMgr(TestCase):
     @patch('designsafe.apps.api.search.searchmanager.publications.BaseESPublication')
     @patch('designsafe.apps.api.search.searchmanager.publications.Search')
     def test_listing(self, mock_search, mock_pub, mock_leg_pub):
-        try:
-            request = MagicMock()
-            request.query_string = 'test_query'
-            request.username = 'test_user'
-            fm = PublicationsSearchManager(request) 
-            mock_search().filter().sort().extra().execute.return_value = [
-                IndexedPublication(projectId='PRJ-XXX'),
-                IndexedPublicationLegacy()
-            ]
-            mock_pub().to_file.return_value = {'type': 'pub'}
-            mock_leg_pub().to_file.return_value = {'type': 'leg_pub'}
-            res = fm.listing(**{'type_filters': []})
-            expected_result = {
-                'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
-                'name': '$SEARCH',
-                'path': '/',
-                'system': None,
-                'type': 'dir',
-                'children': [{'type': 'pub'}, {'type': 'leg_pub'}],
-                'permissions': 'READ'
-            }
-            self.assertEqual(res, expected_result)
-        except ConnectionError:
-            self.assertTrue(True)
+        request = MagicMock()
+        request.query_string = 'test_query'
+        request.username = 'test_user'
+        fm = PublicationsSearchManager(request) 
+        mock_search().filter().sort().extra().execute.return_value = [
+            IndexedPublication(projectId='PRJ-XXX'),
+            IndexedPublicationLegacy()
+        ]
+        mock_pub().to_file.return_value = {'type': 'pub'}
+        mock_leg_pub().to_file.return_value = {'type': 'leg_pub'}
+        res = fm.listing(**{'type_filters': []})
+        expected_result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/',
+            'system': None,
+            'type': 'dir',
+            'children': [{'type': 'pub'}, {'type': 'leg_pub'}],
+            'permissions': 'READ'
+        }
+        self.assertEqual(res, expected_result)

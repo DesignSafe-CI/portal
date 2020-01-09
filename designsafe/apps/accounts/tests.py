@@ -102,23 +102,17 @@ class AccountsTests(TestCase):
         self.assertContains(resp, 'Generating User Report')
 
     def test_profile_manage(self):
-        try:
-            url = reverse('designsafe_accounts:manage_profile')
-            self.client.force_login(get_user_model().objects.get(pk=1))
-            resp = self.client.get(url)
-            assert 'TEST BIO' in resp.content
-            assert 'test@test.com' in resp.content
-            self.client.logout()
-        except urllib2.HttpError:
-            self.assertTrue(True)
+        url = reverse('designsafe_accounts:manage_profile')
+        self.client.force_login(get_user_model().objects.get(pk=1))
+        resp = self.client.get(url)
+        assert 'TEST BIO' in resp.content
+        assert 'test@test.com' in resp.content
+        self.client.logout()
 
     def test_professional_profile_post(self):
-        try:
-            self.client.login(username='envision', password='admin/password')
-            url = reverse('designsafe_accounts:profile_edit')
-            user = get_user_model().objects.get(username='envision')
-            data = {'bio': 'NEW TEST BIO', 'website': 'NEW_WEBSITE', 'orcid_id':'NEW_ORCID_ID'}
-            resp = self.client.post(url, data)
-            self.assertEqual(resp.status_code, 200)
-        except urllib2.HttpError:
-            self.assertTrue(True)
+        self.client.login(username='envision', password='admin/password')
+        url = reverse('designsafe_accounts:profile_edit')
+        user = get_user_model().objects.get(username='envision')
+        data = {'bio': 'NEW TEST BIO', 'website': 'NEW_WEBSITE', 'orcid_id':'NEW_ORCID_ID'}
+        resp = self.client.post(url, data)
+        self.assertEqual(resp.status_code, 200)
