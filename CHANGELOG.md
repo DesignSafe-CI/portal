@@ -1,6 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
-## v4.8.1-10291201
+## v4.8.1-20200101
+Enhancements:
+* Paginate Applications Builder page
+* Logging for file previews
+* Data Depot Infinite Scroll
+* Field Research Model improvements
+
+## v4.8.1-20191201
 * Upgrade to Elasticsearch v7.4
 * Fix image preview carousel and links to NEES publications
 * Frontend enhancements for publications
@@ -16,20 +23,20 @@ Enhancements:
 * Add description for the Field Research project type
 * Remove elevation from Field Research mission metadata and make endDate optional.
 
-Fixes: 
+Fixes:
 * Encode google drive filenames as utf-8
 * Remove some team members from citations
 
 ## v4.7.5
-Fixes: 
+Fixes:
 * Curation enhancements
 
 ## v4.7.4-20191102
-Fixes: 
+Fixes:
 * Fix Webpack minification error in site search
 
 ## v4.7.4-20191101
-Fixes: 
+Fixes:
 * Fix bugs with adding self to Team Members section
 * Prevent ui data from being removed from published project metadata
 * Hide citation for projects without citations
@@ -37,7 +44,7 @@ Fixes:
 * Fix Projects with Blank Author/DOI Field in site search
 
 ## v4.7.4-20191005
-Fixes: 
+Fixes:
 * NEES data in publications browsing view
 * Site Location (lat long) Formatting
 * Improve data transfer messages in Data Depot
@@ -56,15 +63,15 @@ Fixes:
 * fix(publication): Field Research Template fixes
 * feat: Add manage account to user menu dropdown
 ## v4.7.3-20191004
-Fixes: 
+Fixes:
 * Edit profile update message.
 
 ## v4.7.3-20191003
-Fixes: 
+Fixes:
 * Field Recon project bugfixes.
 
 ## v4.7.3-20191002
-Fixes: 
+Fixes:
 * Styling changes for Edit Profile page.
 
 ## v4.7.3-20191017
