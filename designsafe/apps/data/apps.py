@@ -15,7 +15,7 @@ class DataConfig(AppConfig):
         from django.conf import settings
         try:
             connections.configure(
-                default={'hosts': settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']},
+                default={'hosts': settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],  "http_auth": settings.ES_AUTH},
                 request_timeout=60,
                 sniff_on_start=True,
                 sniffer_timeout=60,

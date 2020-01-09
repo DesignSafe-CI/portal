@@ -1,0 +1,56 @@
+<div class="modal-header">
+    <h3 class="modal-title">
+        Image Preview<span ng-if="!$ctrl.loading">: "{{ $ctrl.slides[$ctrl.active].meta.name }}"</span>
+    </h3>
+</div>
+<div class="modal-body" ng-if="$ctrl.images.length > 0">
+    <div ng-if="$ctrl.loading" style="text-align: center;">
+        <i style="font-size:150px;line-height:400px" class="fa fa-spinner fa-spin"></i>
+    </div>
+    <file-metadata ng-if="!$ctrl.loading" file="$ctrl.images[$ctrl.active]"></file-metadata>
+    <div ng-if="!$ctrl.loading" class="table-preview actions text-center">
+        <button class="btn btn-sm btn-default" 
+                ng-if="$ctrl.images[$ctrl.active].tests.canRename" 
+                ng-click="$ctrl.rename($ctrl.images[$ctrl.active])">
+            <i class="fa fa-pencil"></i> Rename
+        </button>
+        <button class="btn btn-sm btn-default" 
+                ng-if="$ctrl.images[$ctrl.active].tests.canMove" 
+                ng-click="$ctrl.move($ctrl.images[$ctrl.active])">
+            <i class="fa fa-arrows"></i> Move
+        </button>
+        <button class="btn btn-sm btn-default" 
+                ng-if="$ctrl.images[$ctrl.active].tests.canCopy" 
+                ng-click="$ctrl.copy($ctrl.images[$ctrl.active])">
+            <i class="fa fa-copy"></i> Copy
+        </button>
+        <button class="btn btn-sm btn-default" 
+                ng-if="$ctrl.images[$ctrl.active].tests.canDownload" 
+                ng-click="$ctrl.download($ctrl.images[$ctrl.active])">
+            <i class="fa fa-cloud-download"></i> Download
+        </button>
+        <button class="btn btn-sm btn-danger" 
+                ng-if="$ctrl.images[$ctrl.active].tests.canDelete" 
+                ng-click="$ctrl.rm($ctrl.images[$ctrl.active])">
+            <i class="fa fa-trash"></i> Delete
+        </button>
+    </div>
+    <div ng-if="!$ctrl.loading" uib-carousel active="$ctrl.active">
+        <div uib-slide ng-repeat="slide in $ctrl.slides track by slide.id" index="slide.id">
+            <img src="{{ slide.image }}" />
+            <div class="carousel-caption">
+                <strong>
+                    <span ng-if="$ctrl.slides.length > 1">{{ $index + 1}})</span> {{ slide.text }}
+                </strong>
+            </div>
+        </div>
+    </div> 
+</div>
+<div class="modal-body" ng-if="$ctrl.images.length === 0">
+    <div>
+        The selected folder(s) contains no images.
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-info btn-sm" ng-click="$ctrl.close()">Close</button>
+</div>    

@@ -17,6 +17,7 @@ from designsafe.apps.api.agave.filemanager.publications import PublicationsManag
 from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
 
 from designsafe.apps.api.exceptions import ApiException
+from elasticsearch.exceptions import ConnectionError
 
 class TestLookupManager(TestCase):
 
@@ -151,10 +152,8 @@ class TestPublicationsManager(TestCase):
             IndexedPublication(projectId='PRJ-XXX'),
             IndexedPublicationLegacy()
         ]
-
         mock_pub().to_file.return_value = {'type': 'pub'}
         mock_leg_pub().to_file.return_value = {'type': 'leg_pub'}
-
         res = fm.listing(**{'type_filters': []})
         expected_result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],

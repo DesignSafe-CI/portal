@@ -197,7 +197,7 @@ class PublicationPreviewFieldReconCtrl {
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineSelectFieldRecon', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineSelectField', {projectId: browser.project.uuid}, {reload: true});
                 };
             }],
             resolve: {

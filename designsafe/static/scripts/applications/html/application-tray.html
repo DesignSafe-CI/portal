@@ -47,9 +47,8 @@
           <button ng-show="tab.title !== 'Public' && tab.title !== 'Private' && !tab.edit" class="btn btn-default pull-right " ng-click="editTab(tab); tab.edit = !tab.edit">Edit</button>
           <a ui-sref="applications-systems" ng-show="tab.title === 'Private' && !tab.edit" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add</a>
         </div>
-
-        <div ng-if="!tab.edit" class=" row top-buffer">
-          <div ng-repeat="appMeta in tab.content | filter: query | orderBy: 'id' track by $index">
+        <div ng-if="!tab.edit && !requesting" class="row top-buffer">
+          <div ng-repeat="appMeta in paginate(tab.content | filter: query)[currentPage] | orderBy: 'id' track by $index">
             <div class="col-md-3 text-center">
               <div class="material-card">
                 <i class="fa fa-remove-sign text-right"></i>
@@ -116,6 +115,27 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div id="test-post" style="text-align: center; font-weight: bold; clear: both;">
+            <nav ng-if="paginate(tab.content | filter: query).length > 1" aria-label="Page navigation">
+              <ul class="pagination">
+                <li>
+                  <a ng-style="currentPage === 0 ? {'pointer-events': 'none'} : null" 
+                    ng-click="prevPage()">
+                    <
+                  </a>
+                </li>
+                <li>
+                <a>{{currentPage + 1}} / {{ paginate(tab.content | filter: query).length }}</a>
+                </li>
+                <li>
+                    <a ng-style="currentPage === paginate(tab.content | filter: query).length - 1 ? {'pointer-events': 'none'} : null" 
+                      ng-click="nextPage(paginate(tab.content | filter: query))">
+                      >
+                    </a>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
         <div ng-if="tab.edit" class="dnd-list">

@@ -7,6 +7,7 @@
 from __future__ import unicode_literals, absolute_import
 import logging
 import datetime
+from django.conf import settings
 from elasticsearch_dsl import Q, Search, Index
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
@@ -29,8 +30,8 @@ class PublicationsManager(AgaveFileManager):
 
     def construct_query(self, **kwargs):  # pylint: disable=no-self-use
         """Construct ES query."""
-        published_index_name = Index('des-publications').get_alias().keys()[0]
-        legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
+        published_index_name = Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys()[0]
+        legacy_index_name = Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys()[0]
 
         filter_queries = []
         if kwargs.get('type_filters'):
@@ -40,16 +41,15 @@ class PublicationsManager(AgaveFileManager):
                 else:
                     type_query = Q('term', **{'project.value.projectType._exact': type_filter})
                 filter_queries.append(type_query)
-
         published_query = Q(
             'bool',
             must=[
                 Q('bool', should=[
                     Q({'term': {'_index': published_index_name}}),
                     Q({'term': {'_index': legacy_index_name}})
-                ])
+                ]),
+                Q('bool', should=filter_queries)
             ],
-            should=filter_queries,
             must_not=[
                 Q('term', status='unpublished'),
                 Q('term', status='publishing'),

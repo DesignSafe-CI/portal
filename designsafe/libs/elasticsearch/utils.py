@@ -130,7 +130,7 @@ def repair_paths(limit=1000):
     files_alias = settings.ES_INDICES['files']['alias']
     HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
     es_client = Elasticsearch(hosts=HOSTS)
-    file_search = IndexedFile.search().sort('_uid').extra(size=limit)
+    file_search = IndexedFile.search().sort('_id').extra(size=limit)
     res = file_search.execute()
 
     while res.hits:
@@ -160,5 +160,37 @@ def repair_paths(limit=1000):
         bulk(es_client, update_ops)
         search_after = res.hits.hits[-1]['sort']
         logger.debug(search_after)
-        file_search = IndexedFile.search().sort('_uid').extra(size=limit, search_after=search_after)
+        file_search = IndexedFile.search().sort('_id').extra(size=limit, search_after=search_after)
         res = file_search.execute()
+
+
+@python_2_unicode_compatible
+def full_dedup(limit=1000):
+    from designsafe.apps.data.models.elasticsearch import IndexedFile
+    from elasticsearch import Elasticsearch
+    from elasticsearch.helpers import bulk
+
+    files_alias = settings.ES_INDICES['files']['alias']
+    HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
+    es_client = Elasticsearch(hosts=HOSTS)
+    file_search = IndexedFile.search().sort('_id').extra(size=limit)
+    res = file_search.execute()
+
+    while res.hits:
+        for hit in res.hits:
+            
+            if hit.name is None or hit.path is None:
+                continue
+
+            print hit.meta.id
+            try:
+                IndexedFile.from_path(hit.system, hit.path)
+            except Exception as e:
+                print e
+        
+        search_after = res.hits.hits[-1]['sort']
+        logger.debug(search_after)
+        file_search = IndexedFile.search().sort('_id').extra(size=limit, search_after=search_after)
+        res = file_search.execute()
+
+

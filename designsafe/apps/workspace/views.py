@@ -181,11 +181,11 @@ def call_api(request, service):
                     job_post['parameters']['_webhook_base_url'] = wh_base_url
 
                     # Remove any params from job_post that are not in appDef
-                    for param, _ in job_post['parameters'].items():
-                        if not any(p['id'] == param for p in job_post['appDefinition']['parameters']):
-                            del job_post['parameters'][param]
-
-                    del job_post['appDefinition']
+                    if 'appDefinition' in job_post:
+                        for param, _ in job_post['parameters'].items():
+                            if not any(p['id'] == param for p in job_post['appDefinition']['parameters']):
+                                del job_post['parameters'][param]
+                        del job_post['appDefinition']
 
                     job_post['notifications'] = [
                         {'url': jobs_wh_url,

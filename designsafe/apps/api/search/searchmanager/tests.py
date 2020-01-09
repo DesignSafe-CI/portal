@@ -20,6 +20,7 @@ from designsafe.apps.data.models.elasticsearch import IndexedPublication, Indexe
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 
 from designsafe.apps.api.exceptions import ApiException
+from elasticsearch.exceptions import ConnectionError
 
 class TestLookupManager(TestCase):
 
@@ -52,7 +53,7 @@ class TestPrivateDataSearchMgr(TestCase):
         request.username = 'test_user'
 
         mock_res = MagicMock()
-        mock_res.hits.total = 1
+        mock_res.hits.total.value = 1
         mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
 
         mock_search().query().extra().execute.return_value = mock_res
@@ -88,7 +89,7 @@ class TestCommunitySearchMgr(TestCase):
         request.username = 'test_user'
 
         mock_res = MagicMock()
-        mock_res.hits.total = 1
+        mock_res.hits.total.value = 1
         mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
 
         mock_search().query().extra().execute.return_value = mock_res
@@ -124,7 +125,7 @@ class TestPublishedDataSearchMgr(TestCase):
         request.username = 'test_user'
 
         mock_res = MagicMock()
-        mock_res.hits.total = 1
+        mock_res.hits.total.value = 1
         mock_res.__iter__.return_value = [IndexedFile(name='file01')] 
 
         mock_search().query().extra().execute.return_value = mock_res
@@ -156,20 +157,16 @@ class TestPublicationSearchMgr(TestCase):
     @patch('designsafe.apps.api.search.searchmanager.publications.BaseESPublication')
     @patch('designsafe.apps.api.search.searchmanager.publications.Search')
     def test_listing(self, mock_search, mock_pub, mock_leg_pub):
-
         request = MagicMock()
         request.query_string = 'test_query'
         request.username = 'test_user'
-
         fm = PublicationsSearchManager(request) 
         mock_search().filter().sort().extra().execute.return_value = [
             IndexedPublication(projectId='PRJ-XXX'),
             IndexedPublicationLegacy()
         ]
-
         mock_pub().to_file.return_value = {'type': 'pub'}
         mock_leg_pub().to_file.return_value = {'type': 'leg_pub'}
-
         res = fm.listing(**{'type_filters': []})
         expected_result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],

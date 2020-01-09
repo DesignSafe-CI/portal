@@ -9,16 +9,17 @@
 <div class="modal-body">
     <div class="well">
         <form name="addForm">
-            <div class="text-center">
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                <span>Required for Curation & publication</span>
-            </div>
             <div class="report-title form-group">
-                <label for="id-title">Report Title
-                    <span style="color: #D04348; font-size: 14px;">&#9679; </span>
-                    <span style="dispay: block; font-weight: normal;">
-                        Different from the Project Title. Make it focused on the methods used to obtain the data.
-                    </span>
+                <label for="id-title">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Report Title</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight: normal;">
+                            Different from the Project Title. Make it focused on the methods used to obtain the data.
+                        </span>
+                    </div>
                 </label>
                 <input type="text"
                        id="id-title"
@@ -27,12 +28,17 @@
                        class="form-control" />
             </div>
             <div class="data-collectors form-group">
-                <label>Data Collectors
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display: block; font-weight: normal;">
-                        Who, specifically, collected this data?
-                        You can order the data collectors later when you publish.
-                    </span>
+                <label>
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Data Collectors</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight: normal;">
+                            Who, specifically, collected this data?
+                            You can order the data collectors later when you publish.
+                        </span>
+                    </div>
                 </label>
                 <div data-ng-repeat="usr in $ctrl.data.users track by $index"
                      style="width: 45%;
@@ -89,12 +95,16 @@
             </div>
             <div class="description form-group">
                 <label for="id-description">
-                    Report Description
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display:block; font-weight:normal;">
-                        Summarized the purpose of the collection and its files.
-                        What is it about? What are its features?
-                    </span>
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Report Description</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display:block; font-weight:normal;">
+                            Summarized the purpose of the collection and its files.
+                            What is it about? What are its features?
+                        </span>
+                    </div>
                 </label>
                 <textarea style="width:100%; height:3em; resize: vertical;"
                           id="id-description"

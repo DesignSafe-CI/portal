@@ -15,14 +15,11 @@
     <div class="well" id="form-top">
         <!-- Create Category Form -->
         <form name='addForm' ng-hide="$ctrl.ui.showEditCategory">
-            <div class="text-center">
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                <span>Required for Curation & Publication</span>
-            </div>
             <!-- Category Type -->
             <div class="form-group">
-                <label>Category Type
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                <label>
+                    <span class="pull-left" style="margin-right: 5px">Category Type</span>
+                    <span class="label label-danger">Required</span>
                 </label>
                 <!-- Experimental Categories -->
                 <div ng-if="$ctrl.ui.experimental">
@@ -123,8 +120,10 @@
             </div>
             <!-- Category Title -->
             <div class="form-group">
-                <label>Category Title</label>
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                <label>
+                    <span class="pull-left" style="margin-right: 5px">Category Title</span>
+                    <span class="label label-danger">Required</span>
+                </label>
                 <div>
                     Make it unique from other categories. Use sequential ordering if necessary. Do not repeat the category type in the title.
                 </div>
@@ -186,14 +185,11 @@
         </form>
         <!-- Edit Category Form -->
         <form name='editForm' ng-show="$ctrl.ui.showEditCategory">
-            <div class="text-center">
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                <span>Required for Curation & Publication</span>
-            </div>
             <!-- Edit Category Type -->
             <div class="form-group">
-                <label>Category Type
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                <label>
+                    <span class="pull-left" style="margin-right: 5px">Category Type</span>
+                    <span class="label label-danger">Required</span>
                 </label>
                 <!-- Experimental Categories -->
                 <div ng-if="$ctrl.ui.experimental">
@@ -295,8 +291,10 @@
             </div>
             <!-- Edit Category Title -->
             <div class="form-group">
-                <label>Category Title</label>
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                <label>
+                    <span class="pull-left" style="margin-right: 5px">Category Title</span>
+                    <span class="label label-danger">Required</span>
+                </label>
                 <div>
                     Make it unique from other categories. Use sequential ordering if necessary. Do not repeat the category type in the title.
                 </div>
