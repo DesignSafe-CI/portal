@@ -92,8 +92,10 @@ class PublicationView(BaseApiView):
                     pub.projectId,
                     data.get('mainEntityUuids')
                 ) |
-                tasks.zip_publication_files.si(pub.projectId)
+                tasks.zip_publication_files.si(pub.projectId) |
+                tasks.swap_file_tag_uuids.si(pub.project_id)
             ).apply_async()
+
 
         return JsonResponse({'status': 200,
                              'response': {

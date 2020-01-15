@@ -850,6 +850,22 @@ def zip_publication_files(self, project_id):
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
+def swap_file_tag_uuids(self, project_id):
+    """Swap File Tag UUID's
+
+    This task will update each file tag's file uuid from the file in
+    the project directory to the copied file in the published storage system
+
+    :param str project_id: Project Id.
+    """
+    from designsafe.apps.projects.managers import publication as PublicationManager
+    try:
+        PublicationManager.redirect_file_tags(project_id)
+    except Exception as exc:
+        logger.error('File Tag Correction Error: %s. %s', project_id, exc, exc_info=True)
+        raise self.retry(exc=exc)
+
+@shared_task(bind=True)
 def set_publish_status(self, project_id, entity_uuids, publish_dois=False):
     from designsafe.apps.projects.managers import publication as PublicationManager
     # Only publish DOIs created from prod

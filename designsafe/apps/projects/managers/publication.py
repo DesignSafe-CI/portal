@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
 from designsafe.apps.api.agave import service_account
+from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from designsafe.apps.projects.managers.base import ProjectsManager
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
@@ -301,6 +302,110 @@ def _delete_unused_fields(dict_obj):
 
     for key in keys_to_delete:
         dict_obj.pop(key, '')
+
+
+def redirect_file_tags(project_id):
+    ENTITY_MAP = {
+        "experimental": [
+            "analysisList",
+            "modelConfigs",
+            "sensorLists",
+            "eventsList",
+            "reportsList"
+        ],
+        "simulation": [
+            "models",
+            "inputs",
+            "outputs",
+            "analysiss",
+            "reports"
+        ],
+        "hybrid_simulation": [
+            "global_models",
+            "coordinators",
+            "sim_substructures",
+            "exp_substructures",
+            "coordinator_outputs",
+            "sim_outputs",
+            "exp_outputs",
+            "analysiss",
+            "reports"
+        ],
+        "field_recon": [
+            "collections",
+            "socialscience",
+            "planning",
+            "geoscience",
+            "reports"
+        ],
+        "other": [
+            "project"
+        ]
+    }
+
+    mgr = ProjectsManager(service_account())
+    prj = mgr.get_project_by_id(project_id=project_id)
+    pub = BaseESPublication(project_id=project_id)
+    pub_dict = pub.to_dict()
+
+    def update_published_file_tags(publication, entity_field, published_file_uuid, project_file_uuid):
+        if entity_field == 'project':
+            if 'fileTags' in publication[entity_field]['value']:
+                for tag in publication[entity_field]['value']['fileTags']:
+                    if tag['fileUuid'] == project_file_uuid:
+                        tag['fileUuid'] = published_file_uuid
+        else:
+            for entity in publication[entity_field]:
+                if 'fileTags' in entity['value']:
+                    for tag in entity['value']['fileTags']:
+                        if tag['fileUuid'] == project_file_uuid:
+                            tag['fileUuid'] = published_file_uuid
+
+    def check_complete_tags(tags):
+        for tag in tags:
+            if 'path' not in tag:
+                return False
+        return True
+
+    for field in ENTITY_MAP[pub_dict['project']['value']['projectType']]:
+        if field == 'project':
+            # Fix tags for other...
+            if 'fileTags' in pub_dict[field]['value']:
+                if check_complete_tags(pub_dict[field]['value']['fileTags']):
+                    print('placeholder for new tag path script...')
+                    # this will be more effecient because we will have the project file's uuid and path
+                    # to request a single publication file listing. From there we can compare the uuids and update the file tag.
+                else:
+                    proj_other = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path="")
+                    children_to_check = []
+                    for child in proj_other.children:
+                        try:
+                            pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, child.path))
+                            proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path=child.path)
+                            children_to_check.append(proj_file)
+                            update_published_file_tags(pub_dict, field, pub_file.uuid, proj_file.uuid)
+                        except Exception as err:
+                            print('error: {}'.format(err))
+                            continue
+        else:
+            for pub_entity in pub_dict[field]:
+                # Check if the entity has files tags to fix
+                if 'fileTags' in pub_entity['value']:
+                    if check_complete_tags(pub_entity['value']['fileTags']):
+                        print('placeholder for new tag path script...')
+                        # this will be more effecient because we will have the project file's uuid and path
+                        # to request a single publication file listing. From there we can compare the uuids and update the file tag.
+                    else:
+                        for fobj in pub_entity['fileObjs']:
+                            try:
+                                pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, fobj['path']))
+                                proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path=fobj['path'])
+                                update_published_file_tags(pub_dict, field, pub_file.uuid, proj_file.uuid)
+                            except Exception as err:
+                                print('error: {}'.format(err))
+                                continue
+
+    pub.update(**pub_dict)
 
 
 def freeze_project_and_entity_metadata(project_id, entity_uuids=None):

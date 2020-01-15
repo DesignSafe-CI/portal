@@ -6,7 +6,7 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl, UserService){
+    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl, UserService, $q){
         'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
@@ -16,6 +16,7 @@ class PublishedViewCtrl {
         this.$http = $http;
         this.djangoUrl = djangoUrl;
         this.UserService = UserService;
+        this.$q = $q;
     }
 
     $onInit() {
@@ -44,6 +45,9 @@ class PublishedViewCtrl {
                     this.browser.listings[evt.uuid] = { children: [] };
                 }
                 this.browser.listings[evt.uuid].children.push(file);
+            });
+            this.browser.listings[evt.uuid].children.forEach((child) => {
+                child._entities.push(evt);
             });
         };
 
