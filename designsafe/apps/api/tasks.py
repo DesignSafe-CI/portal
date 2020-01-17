@@ -860,7 +860,7 @@ def swap_file_tag_uuids(self, project_id):
     """
     from designsafe.apps.projects.managers import publication as PublicationManager
     try:
-        PublicationManager.redirect_file_tags(project_id)
+        PublicationManager.fix_file_tags(project_id)
     except Exception as exc:
         logger.error('File Tag Correction Error: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)

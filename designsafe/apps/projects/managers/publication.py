@@ -104,8 +104,6 @@ def draft_publication(
             entity = None
             if ent_uuid:
                 entity = mgr.get_entity_by_uuid(ent_uuid)
-            # else:
-            #     upsert_project_doi = True
 
             if entity:
                 entity_url = ENTITY_TARGET_BASE.format(
@@ -304,62 +302,12 @@ def _delete_unused_fields(dict_obj):
         dict_obj.pop(key, '')
 
 
-def redirect_file_tags(project_id):
-    ENTITY_MAP = {
-        "experimental": [
-            "analysisList",
-            "modelConfigs",
-            "sensorLists",
-            "eventsList",
-            "reportsList"
-        ],
-        "simulation": [
-            "models",
-            "inputs",
-            "outputs",
-            "analysiss",
-            "reports"
-        ],
-        "hybrid_simulation": [
-            "global_models",
-            "coordinators",
-            "sim_substructures",
-            "exp_substructures",
-            "coordinator_outputs",
-            "sim_outputs",
-            "exp_outputs",
-            "analysiss",
-            "reports"
-        ],
-        "field_recon": [
-            "collections",
-            "socialscience",
-            "planning",
-            "geoscience",
-            "reports"
-        ],
-        "other": [
-            "project"
-        ]
-    }
-
-    mgr = ProjectsManager(service_account())
-    prj = mgr.get_project_by_id(project_id=project_id)
+def fix_file_tags(project_id):
     pub = BaseESPublication(project_id=project_id)
     pub_dict = pub.to_dict()
 
-    def update_published_file_tags(publication, entity_field, published_file_uuid, project_file_uuid):
-        if entity_field == 'project':
-            if 'fileTags' in publication[entity_field]['value']:
-                for tag in publication[entity_field]['value']['fileTags']:
-                    if tag['fileUuid'] == project_file_uuid:
-                        tag['fileUuid'] = published_file_uuid
-        else:
-            for entity in publication[entity_field]:
-                if 'fileTags' in entity['value']:
-                    for tag in entity['value']['fileTags']:
-                        if tag['fileUuid'] == project_file_uuid:
-                            tag['fileUuid'] = published_file_uuid
+    entities_to_check = list(set(pub_dict.keys()).intersection(list(FIELD_MAP.values())))
+    entities_to_check.append('project')
 
     def check_complete_tags(tags):
         for tag in tags:
@@ -367,43 +315,58 @@ def redirect_file_tags(project_id):
                 return False
         return True
 
-    for field in ENTITY_MAP[pub_dict['project']['value']['projectType']]:
-        if field == 'project':
-            # Fix tags for other...
-            if 'fileTags' in pub_dict[field]['value']:
-                if check_complete_tags(pub_dict[field]['value']['fileTags']):
-                    print('placeholder for new tag path script...')
-                    # this will be more effecient because we will have the project file's uuid and path
-                    # to request a single publication file listing. From there we can compare the uuids and update the file tag.
-                else:
-                    proj_other = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path="")
-                    children_to_check = []
-                    for child in proj_other.children:
-                        try:
-                            pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, child.path))
-                            proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path=child.path)
-                            children_to_check.append(proj_file)
-                            update_published_file_tags(pub_dict, field, pub_file.uuid, proj_file.uuid)
-                        except Exception as err:
-                            print('error: {}'.format(err))
-                            continue
+    def fix_tags_path(entity):
+        for tag in entity['value']['fileTags']:
+            try:
+                pub_file = BaseFileResource.listing(
+                    service_account(),
+                    system="designsafe.storage.published",
+                    path="{}{}".format(project_id, tag['path'])
+                )
+                tag['fileUuid'] = pub_file.uuid
+            except Exception as err:
+                LOG.info('error: {}'.format(err))
+                continue
+
+    def fix_tags_no_path(entity):
+        if entity['name'] == 'designsafe.project':
+            proj_other = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path="")
+            for child in proj_other.children:
+                try:
+                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, child.path))
+                    proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path=child.path)
+                    for tag in entity['value']['fileTags']:
+                        if tag['fileUuid'] == proj_file.uuid:
+                            tag['fileUuid'] = pub_file.uuid
+                    
+                except Exception as err:
+                    LOG.info('error: {}'.format(err))
+                    continue
         else:
-            for pub_entity in pub_dict[field]:
-                # Check if the entity has files tags to fix
-                if 'fileTags' in pub_entity['value']:
-                    if check_complete_tags(pub_entity['value']['fileTags']):
-                        print('placeholder for new tag path script...')
-                        # this will be more effecient because we will have the project file's uuid and path
-                        # to request a single publication file listing. From there we can compare the uuids and update the file tag.
-                    else:
-                        for fobj in pub_entity['fileObjs']:
-                            try:
-                                pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, fobj['path']))
-                                proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path=fobj['path'])
-                                update_published_file_tags(pub_dict, field, pub_file.uuid, proj_file.uuid)
-                            except Exception as err:
-                                print('error: {}'.format(err))
-                                continue
+            for fobj in entity['fileObjs']:
+                try:
+                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, fobj['path']))
+                    proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path=fobj['path'])
+                    for tag in entity['value']['fileTags']:
+                        if tag['fileUuid'] == proj_file.uuid:
+                            tag['fileUuid'] = pub_file.uuid
+                    
+                except Exception as err:
+                    LOG.info('error: {}'.format(err))
+                    continue
+
+    for entname in entities_to_check:
+        if type(pub_dict[entname]) == list:
+            for entity in pub_dict[entname]:
+                if 'value' in entity and 'fileTags' in entity['value'] and check_complete_tags(entity['value']['fileTags']):
+                    fix_tags_path(entity)
+                elif 'value' in entity and 'fileTags' in entity['value']:
+                    fix_tags_no_path(entity)
+        else:
+            if 'value' in pub_dict[entname] and 'fileTags' in pub_dict[entname]['value'] and check_complete_tags(pub_dict[entname]['value']['fileTags']):
+                fix_tags_path(pub_dict[entname])
+            elif 'value' in pub_dict[entname] and 'fileTags' in pub_dict[entname]['value']:
+                fix_tags_no_path(pub_dict[entname])
 
     pub.update(**pub_dict)
 
