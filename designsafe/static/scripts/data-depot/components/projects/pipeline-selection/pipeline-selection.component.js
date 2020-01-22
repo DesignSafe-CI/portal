@@ -38,7 +38,7 @@ class PipelineSelectionCtrl {
             this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
         ]).then(([project, listing, entities]) => {
             this.browser.project = project;
-            this.prepProject();
+            // this.prepProject();
             this.browser.project.appendEntitiesRel(entities);
             this.browser.listing = listing;
             this.browser.listing.href = this.$state.href('projects.view.data', {
@@ -71,6 +71,8 @@ class PipelineSelectionCtrl {
                 };
                 allFilePaths = allFilePaths.concat(entity._filePaths);
             });
+
+            this.prepProject();
 
             this.setFilesDetails = (paths) => {
                 let filePaths = [...new Set(paths)];
@@ -182,6 +184,15 @@ class PipelineSelectionCtrl {
                 'geoscience_set',
                 'planning_set',
             ];
+            this.primaryEnts = [].concat(
+                this.browser.project.mission_set || [],
+                this.browser.project.report_set || []
+            );
+            this.secondaryEnts = [].concat(
+                this.browser.project.socialscience_set || [],
+                this.browser.project.planning_set || [],
+                this.browser.project.geoscience_set || []
+            );
         }
     }
 
@@ -309,13 +320,15 @@ class PipelineSelectionCtrl {
             }
         } else {
             this.subEntities.forEach((subEntSet) => {
-                this.browser.project[subEntSet].forEach((subEnt) => {
-                    if (subEnt.associationIds.some(uuid => uuidsToSelect.includes(uuid))){
-                        this.DataBrowserService.select(this.browser.listings[subEnt.uuid].children);
-                    } else {
-                        this.DataBrowserService.deselect(this.browser.listings[subEnt.uuid].children);
-                    }
-                });
+                if (this.browser.project[subEntSet]) {
+                    this.browser.project[subEntSet].forEach((subEnt) => {
+                        if (subEnt.associationIds.some(uuid => uuidsToSelect.includes(uuid))){
+                            this.DataBrowserService.select(this.browser.listings[subEnt.uuid].children);
+                        } else {
+                            this.DataBrowserService.deselect(this.browser.listings[subEnt.uuid].children);
+                        }
+                    });
+                }
             });
         }
     }

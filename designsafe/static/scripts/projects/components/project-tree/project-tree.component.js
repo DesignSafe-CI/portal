@@ -19,7 +19,7 @@ class ProjectTreeCtrl {
         this.rootCategoryUuid = this.resolve.rootCategoryUuid;
         this.readOnly = this.resolve.readOnly || false;
         if (this.project.mission_set) {
-            this.initiateEntityOrder(this.project.mission_set.concat(this.project.report_set));
+            this.initiateEntityOrder([].concat(this.project.mission_set || [], this.project.report_set || []));
         }
     }
 
@@ -91,6 +91,31 @@ class ProjectTreeCtrl {
 
     /*
      * @method
+     * @param [Array] nodes to update.
+     * 
+     * Update the node and entities' order below a removed entity.
+     * Example: order = [ent1, ent2, ent3, ent4, ent5]
+     *                                |
+     *                              Remove
+     * 
+     * Example: order = [ent1, ent2, ent4, ent5]
+     *                                 |     |
+     *                                shiftOrder
+     * 
+     * Example: order = [ent1, ent2, ent3, ent4]
+     */
+    shiftOrder(nodes){
+        this._ui.loading = true;
+        nodes.forEach((node) => {
+            let entity = this.project.getRelatedByUuid(node.data.uuid);
+            let entOrder = entity._ui.orders.find(order => order.parent === node.parent.data.uuid);
+            node.data.order -= 1;
+            entity.setOrderFor(this.project.uuid, entOrder.value -= 1);
+        });
+    }
+
+    /*
+     * @method
      * @param {Object} node. Hierarchical node so we can walk parents.
      * @param {Object} entity.
      *
@@ -102,6 +127,10 @@ class ProjectTreeCtrl {
         if (entity.name === 'designsafe.project.field_recon.report' &&
             !entity.value.missions.length) {
             return this.$q.deferred();
+        }
+        if (node.data.secondary) {
+            let nodesToUpdate = nodeParent.children.filter(child => child.data.order > node.data.order);
+            this.shiftOrder(nodesToUpdate);
         }
         entity.value.missions = _.without(
             entity.value.missions,
@@ -120,6 +149,8 @@ class ProjectTreeCtrl {
      */
     unrelateEntityToHybridSimProject(node, entity){
         let nodeParent = node.parent;
+        let nodesToUpdate = nodeParent.children.filter(child => child.data.order > node.data.order);
+        this.shiftOrder(nodesToUpdate);
         if (entity.name === 'designsafe.project.hybrid_simulation.coordinator_output') {
             entity.value.coordinators = _.without(
                 entity.value.coordinators,
@@ -175,6 +206,8 @@ class ProjectTreeCtrl {
      */
     unrelateEntityToSimProject(node, entity){
         let nodeParent = node.parent;
+        let nodesToUpdate = nodeParent.children.filter(child => child.data.order > node.data.order);
+        this.shiftOrder(nodesToUpdate);
         if (entity.name === 'designsafe.project.simulation.output') {
             entity.value.simInputs = _.without(
                 entity.value.simInputs,
@@ -207,6 +240,8 @@ class ProjectTreeCtrl {
      */
     unrelateEntityToExperimental(node, entity){
         let nodeParent = node.parent;
+        let nodesToUpdate = nodeParent.children.filter(child => child.data.order > node.data.order);
+        this.shiftOrder(nodesToUpdate);
         if (entity.name === 'designsafe.project.event') {
             entity.value.sensorLists = _.without(
                 entity.value.sensorLists,
@@ -250,7 +285,6 @@ class ProjectTreeCtrl {
         let highestOrder = -1;
         leafParent.children.forEach((child) => {
             if (child.data.order !== null && 
-                child.data.type === entity.name &&
                 child.data.order > highestOrder){
                 highestOrder = child.data.order;
             }
@@ -409,7 +443,7 @@ class ProjectTreeCtrl {
      * established when the trees modal is opened. Normally
      * We create an order when an entity is added to the tree.
      * Primary entities related directly to the project cannot
-     * be added/removed as other entities (as this would mean
+     * be added/removed like other entities (this would mean
      * adding/removing their relationship to the project). 
      * We will run initiateEntityOrder for primary entities 
      * and reports associated to the project.
@@ -466,22 +500,26 @@ class ProjectTreeCtrl {
      * @method
      *
      * Build tress for every Mission in this class' `this.project`.
-     * The hierarchy is build like so:
-     *
-     * + Mission 1
+     * The hierarchy is built like so:
+     * + Project
      * |
-     * -- + Collection 1
+     * -- + Report 1
      * |
-     * -- + Collection 2
-     * 
-     * + Mission 2
+     * -- + Mission 1
+     * |   |
+     * |   -- + Collection 1
+     * |   |
+     * |   -- + Collection 2
+     * |
+     * -- + Mission 2
      * [...]
      */
     buildFieldReconTree() {
         let missions = [];
-        this.project.allCollections = this.project.socialscience_set.concat(
-            this.project.geoscience_set,
-            this.project.planning_set
+        this.project.allCollections = [].concat(
+            this.project.socialscience_set || [],
+            this.project.geoscience_set || [],
+            this.project.planning_set || []
         );
         if (this.rootCategoryUuid) {
             missions = _.filter(
@@ -560,6 +598,7 @@ class ProjectTreeCtrl {
                     children: [],
                     rectStyle: collectionStyle,
                     display: collectionName,
+                    secondary: true,
                     order: this.orderOf(col, node.uuid).value,
                 };
                 node.children.push(colNode);
@@ -595,7 +634,7 @@ class ProjectTreeCtrl {
      * @method
      *
      * Build tress for every Hybrid Simulation in this class' `this.project`.
-     * The hierarchy is build like so:
+     * The hierarchy is built like so:
      * + Simulation 1
      * |
      * -- + Report
@@ -955,7 +994,7 @@ class ProjectTreeCtrl {
      * @method
      *
      * Build tress for every experiment in this class' `this.project`.
-     * The hierarchy is build like so:
+     * The hierarchy is built like so:
      * + Simulation 1
      * |
      * -- + Report
@@ -1168,7 +1207,7 @@ class ProjectTreeCtrl {
      * @method
      *
      * Build tress for every experiment in this class' `this.project`.
-     * The hierarchy is build like so:
+     * The hierarchy is built like so:
      * + Experiment 1
      * |
      * -- + Report
@@ -1400,6 +1439,13 @@ class ProjectTreeCtrl {
                     return child.data.primary && node.data.primary && child.data.order === node.data.order - 1;
                 }
                 return child.data.primary && node.data.primary && child.data.order === node.data.order + 1;
+            });
+        } else if (node.data.secondary) {
+            siblingNodes = parentNode.children.filter((child) => {
+                if (direction === 'up') {
+                    return child.data.secondary && node.data.secondary && child.data.order === node.data.order - 1;
+                }
+                return child.data.secondary && node.data.secondary && child.data.order === node.data.order + 1;
             });
         } else {
             siblingNodes = parentNode.children.filter((child) => {

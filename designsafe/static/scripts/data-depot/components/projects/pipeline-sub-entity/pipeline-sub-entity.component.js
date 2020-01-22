@@ -76,6 +76,11 @@ class PipelineSubEntityCtrl {
             this.primEntDest = 'projects.pipelineField';
             this.modalName = 'fieldReconCollectionsModal';
             this.matchingGroupKey = 'missions';
+            this.secondaryEnts = [].concat(
+                this.browser.project.socialscience_set || [],
+                this.browser.project.planning_set || [],
+                this.browser.project.geoscience_set || []
+            );
         }
     }
 
