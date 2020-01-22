@@ -186,7 +186,7 @@ class EditProjectCtrl {
                 if (this.project.value.nhEventEnd) {
                     this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                 }
-                if (this.project.value.nhTypes.length > 0) {
+                if (this.project.value.nhTypes && this.project.value.nhTypes.length > 0) {
                     this.form.nhTypes = this.project.value.nhTypes;
                 } else {
                     this.form.nhTypes = new Array (1);
