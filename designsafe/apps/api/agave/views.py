@@ -105,10 +105,18 @@ class FileMediaView(View):
                     return HttpResponseForbidden('Login required')
             else:
                 ag = request.user.agave_oauth.client
-
             fm = AgaveFileManager(agave_client=ag)
             f = fm.listing(system_id, file_path)
             if request.GET.get('preview', False):
+                metrics.info('Data Depot',
+                            extra={
+                                'user': request.user.username,
+                                'sessionId': getattr(request.session, 'session_key', ''),
+                                'operation': 'agave_file_preview',
+                                'info': {
+                                             'systemId': system_id,
+                                             'filePath': file_path}
+                            })
                 context = {
                     'file': f
                 }

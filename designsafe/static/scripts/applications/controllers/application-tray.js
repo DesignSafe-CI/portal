@@ -8,6 +8,14 @@ export function applicationTrayCtrl(window, angular, $, _) {
                 $scope.tabs.push({ title: tab });
             });
 
+            $scope.currentPage = 0;
+            $scope.$watch('query', () => $scope.currentPage = 0);
+            $scope.nextPage = (arr) => {
+                if (arr && $scope.currentPage === (arr.length - 1)) return $scope.currentPage = 0;
+                return $scope.currentPage++;
+            };
+            $scope.prevPage = () => !$scope.currentPage ? null : $scope.currentPage--;
+            $scope.paginate = (arr) => arr.length ? _.chunk(arr, 12) : [];
             $scope.addDefaultTabs = function(query) {
                 $scope.error = '';
                 let deferred = $q.defer();

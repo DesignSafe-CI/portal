@@ -1,5 +1,5 @@
 import ManageExperimentsTemplate from './manage-experiments.component.html';
-import experimentalData from "../../../projects/components/manage-experiments/experimental-data.json";
+import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 import _ from 'underscore';
 
 class ManageExperimentsCtrl {
@@ -319,7 +319,7 @@ class ManageExperimentsCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete('Are you sure you want to delete ' + ent.value.title + '?');
     }
 
     saveExperiment($event) {
@@ -344,7 +344,7 @@ class ManageExperimentsCtrl {
         });
 
         this.$q.all(addActions).then(
-            (results) => {
+            (results) => { /* eslint-disable-line */
                 this.data.busy = false;
                 this.form.addExperiments = [{}];
             },
