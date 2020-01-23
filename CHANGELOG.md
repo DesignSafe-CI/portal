@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.8.1-20200104
+Fixes:
+* Fix unescaped angle brackets
+
 ## v4.8.1-20200103
 Enhancements:
 * Additions to equipment and experiment types in experimental models
@@ -8,11 +12,6 @@ Enhancements:
 Fixes:
 * Fix bug causing Edit Prj. Modal break upon selection of FR Model
 * Fix project typos
-
-
-## v4.8.1-20200102
-Fixes:
-* Fix unescaped angle brackets
 
 ## v4.8.1-20200101
 Enhancements:
