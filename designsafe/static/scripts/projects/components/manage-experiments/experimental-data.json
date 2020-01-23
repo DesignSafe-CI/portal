@@ -16,6 +16,7 @@
     },
     "equipmentTypes": {
         "atlss": [
+            { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
             {"name": "lsrthcshas", "label": "Large-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System"},
             {"name": "ssrthcshas", "label": "Small-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System "},
             {"name": "rssb", "label": "Reduced-Scale Soil Box"},
@@ -69,6 +70,7 @@
     },
     "experimentTypes": {
         "atlss": [
+            { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
             { "name": "large", "label": "Large-Scale" },
             { "name": "small", "label": "Small-Scale" },
             { "name": "char", "label": "Characterization" },
