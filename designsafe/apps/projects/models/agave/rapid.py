@@ -120,7 +120,6 @@ class SocialScience(RelatedEntity):
     model_name = 'designsafe.project.field_recon.social_science'
     title = fields.CharField('Title', max_length=1024)
     unit = fields.CharField('Unit of Analysis', max_length=1024)
-    methods = fields.ListField('Methods of Collection')
     modes = fields.ListField('Modes of Collection')
     sample_approach = fields.ListField('Sampling Approaches')
     sample_size = fields.CharField('Sampling Size', max_length=1024)

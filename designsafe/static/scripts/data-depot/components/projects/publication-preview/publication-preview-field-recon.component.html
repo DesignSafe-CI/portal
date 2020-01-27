@@ -412,60 +412,48 @@
                                     </div>
                                 </div>
                             </div>
-                            <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.secondaryEnts)" ng-if="$ctrl.matchingGroup(mission, collection)">
-                                <!-- Social Science -->
-                                <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
-                                    <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
-                                            style="width:100%;">
-                                            <table style="width:100%">
-                                                <tr>
-                                                    <td style="text-align: left;">
-                                                        <span>Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
-                                                    </td>
-                                                    <td style="text-align: right;">
-                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </button>
-                                        <div id="files-{{collection.uuid}}" class="collapse">
-                                            <div class="well">
-                                                <div class="collection-field" ng-if="collection.value.unit">
-                                                    <div class="collection-label">Unit of Analysis</div>
-                                                    <div class="collection-data">
-                                                        <span>{{collection.value.unit}}</span>
-                                                    </div>
+                            <!-- Social Science -->
+                            <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.browser.project.socialscience_set)" ng-if="$ctrl.matchingGroup(mission, collection)">
+                                <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                    <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                        style="width:100%;">
+                                        <table style="width:100%">
+                                            <tr>
+                                                <td class="tab-cell">
+                                                    <span>Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                                </td>
+                                                <td style="text-align: right;">
+                                                    <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </button>
+                                    <div id="files-{{collection.uuid}}" class="collapse">
+                                        <div class="well">
+                                            <div class="collection-field" ng-if="collection.value.unit">
+                                                <div class="collection-label">Unit of Analysis</div>
+                                                <div class="collection-data">
+                                                    <span>{{collection.value.unit}}</span>
                                                 </div>
-                                                <div class="collection-field" ng-if="collection.value.methods.length">
-                                                    <div class="collection-label-multi">Method(s) of Collection</div>
-                                                    <div class="collection-data">
-                                                        <ul class="collection-list">
-                                                            <li data-ng-repeat="method in collection.value.methods">
-                                                                {{method}}
-                                                            </li>
-                                                        </ul>
-                                                    </div>
+                                            </div>
+                                            <div class="collection-field" ng-if="collection.value.modes.length">
+                                                <div class="collection-label-multi">Mode(s) of Collection</div>
+                                                <div class="collection-data">
+                                                    <ul class="collection-list">
+                                                        <li data-ng-repeat="mode in collection.value.modes">
+                                                            {{mode}}
+                                                        </li>
+                                                    </ul>
                                                 </div>
-                                                <div class="collection-field" ng-if="collection.value.modes.length">
-                                                    <div class="collection-label-multi">Mode(s) of Collection</div>
-                                                    <div class="collection-data">
-                                                        <ul class="collection-list">
-                                                            <li data-ng-repeat="mode in collection.value.modes">
-                                                                {{mode}}
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="collection-field" ng-if="collection.value.sampleApproach.length">
-                                                    <div class="collection-label-multi">Sampling Approach(es)</div>
-                                                    <div class="collection-data">
-                                                        <ul class="collection-list">
-                                                            <li data-ng-repeat="sample in collection.value.sampleApproach">
-                                                                {{sample}}
-                                                            </li>
-                                                        </ul>
-                                                    </div>
+                                            </div>
+                                            <div class="collection-field" ng-if="collection.value.sampleApproach.length">
+                                                <div class="collection-label-multi">Sampling Approach(es)</div>
+                                                <div class="collection-data">
+                                                    <ul class="collection-list">
+                                                        <li data-ng-repeat="sample in collection.value.sampleApproach">
+                                                            {{sample}}
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                                 <div class="collection-field" ng-if="collection.value.sampleSize">
                                                     <div class="collection-label">Sample Size</div>
