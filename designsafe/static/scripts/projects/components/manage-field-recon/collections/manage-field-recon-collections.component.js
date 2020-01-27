@@ -97,7 +97,6 @@ class ManageFieldReconCollectionsCtrl {
         let socialFields = [
             'collectors',
             'unitAnalysis',
-            'methods',
             'modes',
             'sample',
             'colDates',
@@ -124,7 +123,6 @@ class ManageFieldReconCollectionsCtrl {
             collectionType: (colType ? colType : null),
             observationTypes: [null],
             observationTypesOther: [null],
-            methods: [null],
             modes: [null],
             sampleApproach: [null],
             equipment: [null],
@@ -184,13 +182,6 @@ class ManageFieldReconCollectionsCtrl {
         if (this.form.equipment[last].length && !this.form.equipment.includes('None')) {
             this.form.equipment.push(null);
             this.form.equipmentOther.push(null);
-        }
-    }
-
-    addMethod(){
-        let last = this.form.methods.length - 1;
-        if (this.form.methods[last]) {
-            this.form.methods.push(null);
         }
     }
 
@@ -316,11 +307,10 @@ class ManageFieldReconCollectionsCtrl {
         let collection = {
             'designsafe.project.field_recon.social_science': {
                 title: this.form.title,
-                unit: this.form.unit,
-                methods: this.form.methods,
-                modes: this.form.modes,
-                sampleApproach: this.form.sampleApproach,
-                sampleSize: this.form.sampleSize,
+                unit: this.form.unit || '',
+                modes: this.form.modes.filter(mode => mode != null),
+                sampleApproach: this.form.sampleApproach.filter(sample => sample != null),
+                sampleSize: this.form.sampleSize || '',
                 dateStart: this.form.dateStart,
                 dateEnd: this.form.dateEnd,
                 dataCollectors: this.form.dataCollectors,
@@ -335,7 +325,7 @@ class ManageFieldReconCollectionsCtrl {
                         return type;
                     })
                     .filter(input => input),
-                restriction: this.form.restriction,
+                restriction: this.form.restriction || '',
                 referencedData: this.form.referencedData.filter(input => input.title && input.url),
                 description: this.form.description,
             },
@@ -420,7 +410,12 @@ class ManageFieldReconCollectionsCtrl {
         } else {
             this.data.editCollection.value.dateEnd = '';
         }
-        
+        if (!this.data.editCollection.value.modes.length) {
+            this.data.editCollection.value.modes = [null];
+        }
+        if (!this.data.editCollection.value.sampleApproach.length) {
+            this.data.editCollection.value.sampleApproach = [null];
+        }
         let auths = this.configureAuthors(collection);
         if (!this.data.editCollection.value.referencedData.length) {
             this.data.editCollection.value.referencedData = new Array (1);
@@ -460,7 +455,6 @@ class ManageFieldReconCollectionsCtrl {
             observationTypes: formObservationTypes,
             observationTypesOther: formObservationTypesOther,
             unit: this.data.editCollection.value.unit,
-            methods: this.data.editCollection.value.methods,
             modes: this.data.editCollection.value.modes,
             sampleApproach: this.data.editCollection.value.sampleApproach,
             sampleSize: this.data.editCollection.value.sampleSize,
@@ -494,9 +488,8 @@ class ManageFieldReconCollectionsCtrl {
         }
         if (['designsafe.project.field_recon.social_science'].includes(this.form.collectionType)) {
             this.data.editCollection.value.unit = this.form.unit;
-            this.data.editCollection.value.methods = this.form.methods;
-            this.data.editCollection.value.modes = this.form.modes;
-            this.data.editCollection.value.sampleApproach = this.form.sampleApproach;
+            this.data.editCollection.value.modes = this.form.modes.filter(mode => mode != null);
+            this.data.editCollection.value.sampleApproach = this.form.sampleApproach.filter(sample => sample != null);
             this.data.editCollection.value.sampleSize = this.form.sampleSize;
             this.data.editCollection.value.restriction = this.form.restriction;
         }
