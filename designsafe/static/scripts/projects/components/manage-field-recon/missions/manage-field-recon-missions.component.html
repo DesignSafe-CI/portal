@@ -30,6 +30,22 @@
                        data-ng-required="true"
                        class="form-control"/>
             </div>
+            <div class="expEvent form-group">
+                <label for="id-event">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Event</span>
+                        </div>
+                        <span style="display: block; font-weight:normal;">
+                            The event to which the mission is associated.
+                        </span>
+                    </div>
+                </label>
+                <input type="text"
+                       id="id-event"
+                       data-ng-model="$ctrl.form.event"
+                       class="form-control"/>
+            </div>
             <div class="expDate form-group">
                 <label for="id-date-start">
                     <div style="display: flex; flex-direction: column">
@@ -222,6 +238,16 @@
                     </button>
                     <div id="files-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
+                            <div data-ng-if="mission.value.event">
+                                <div style="display: inline-block; width:20%; vertical-align: top;">
+                                    Event
+                                </div>
+                                <div style="display: inline-block; width:78%; font-weight: bold;">
+                                    <div>
+                                        {{mission.value.event}}
+                                    </div>
+                                </div>
+                            </div>
                             <div style="display: inline-block; width:20%; vertical-align: top;">
                                 Author(s)
                             </div>
