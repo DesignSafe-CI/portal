@@ -59,6 +59,7 @@ class DataTag(MetadataModel):
 class Mission(RelatedEntity):
     model_name = 'designsafe.project.field_recon.mission'
     title = fields.CharField('Title', max_length=1024)
+    event = fields.CharField('Event', max_length=1024, default='')
     date_start = fields.CharField('Date Start', max_length=1024, default='')
     date_end = fields.CharField('Date End', max_length=1024, default='')
     location = fields.CharField('Site Location', max_length=1024)

@@ -64,7 +64,7 @@ class ManageFieldReconCollectionsCtrl {
                 {name: 'designsafe.project.field_recon.planning', label:'Research Planning Collection'},
                 {name: 'designsafe.project.field_recon.geoscience', label:'Engineering/Geosciences Collection'},
                 {name: 'designsafe.project.field_recon.social_science', label:'Social Sciences Collection'},
-                {name: 'designsafe.project.field_recon.report', label:'Reports Collection'},
+                {name: 'designsafe.project.field_recon.report', label:'Documents Collection'},
             ],
             observationTypes: [
                 'Wind',

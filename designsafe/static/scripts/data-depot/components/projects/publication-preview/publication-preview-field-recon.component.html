@@ -148,7 +148,7 @@
                         <table style="width:100%">
                             <tr>
                                 <td class="tab-cell">
-                                    <span>Reports Collection | <strong>{{mission.value.title}}</strong></span>
+                                    <span>Documents | <strong>{{mission.value.title}}</strong></span>
                                 </td>
                                 <td style="text-align: right;">
                                     <span class="curation-chevron" style="font-size: 18px;"></span>
@@ -252,6 +252,12 @@
                     </button>
                     <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
+                            <div class="collection-field" ng-if="mission.value.event">
+                                <div class="collection-label">Event</div>
+                                <div class="collection-data">
+                                    <span>{{ mission.value.event }}</span>
+                                </div>
+                            </div>
                             <div class="collection-field">
                                 <div class="collection-label-multi" data-ng-if="mission.value.authors.length">
                                     Author(s)
