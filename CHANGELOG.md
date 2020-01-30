@@ -1,5 +1,35 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.8.1-20200105
+Enhancements:
+* Collections Form revisions
+* Update project review process in publication pipeline
+* Allow inter-sorting of different collection types
+* Update UUIDs of file tags for published files
+* Require users to submit a ticket to republish/overwrite publications
+Fixes:
+* Remove faulty options from experimental-data.json
+
+## v4.8.1-20200104
+Fixes:
+* Fix unescaped angle brackets
+
+## v4.8.1-20200103
+Enhancements:
+* Additions to equipment and experiment types in experimental models
+* Project styling improvements
+
+Fixes:
+* Fix bug causing Edit Prj. Modal break upon selection of FR Model
+* Fix project typos
+
+## v4.8.1-20200101
+Enhancements:
+* Paginate Applications Builder page
+* Logging for file previews
+* Data Depot Infinite Scroll
+* Field Research Model improvements
+
 ## v4.8.1-10291201
 * Upgrade to Elasticsearch v7.4
 * Fix image preview carousel and links to NEES publications
