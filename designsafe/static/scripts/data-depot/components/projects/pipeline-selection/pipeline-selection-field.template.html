@@ -71,8 +71,7 @@
             </p>
             <div ng-repeat="entity in $ctrl.missing track by $index">
                 <div ng-if="entity.missing.length">
-                    In the <span>{{entity.type.endsWith('report') ? 'report' : 'mission'}}</span> <strong>{{entity.title}}</strong>
-                    , the following categories are missing or have no categorized files:
+                    In the <span>{{entity.type}}</span> <strong>{{entity.title}}</strong>, the following requirements are missing or incomplete:
                     <li ng-if="entity.missing.length" ng-repeat="err in entity.missing track by $index">{{ err }}</li>
                 </div>
             </div>
