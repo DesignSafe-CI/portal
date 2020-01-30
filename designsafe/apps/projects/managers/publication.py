@@ -43,6 +43,9 @@ FIELD_MAP = {
     "designsafe.project.hybrid_simulation.report": "reports",
     "designsafe.project.field_recon.mission": "missions",
     "designsafe.project.field_recon.collection": "collections",
+    "designsafe.project.field_recon.social_science": "socialscience",
+    "designsafe.project.field_recon.planning": "planning",
+    "designsafe.project.field_recon.geoscience": "geoscience",
     "designsafe.project.field_recon.report": "reports",
 }
 
@@ -172,7 +175,7 @@ def draft_publication(
     return responses
 
 
-def publish_resource(project_id, entity_uuids=None):
+def publish_resource(project_id, entity_uuids=None, publish_dois=False):
     """Publish a resource.
 
     Retrieves a project and/or an entity and set any saved DOIs
@@ -181,6 +184,11 @@ def publish_resource(project_id, entity_uuids=None):
     this function also changes the status of the locally saved publication
     to `"published"` that way it shows up in the published listing.
 
+    If publish_dois is False Datacite will keep the newly created DOIs in
+    "DRAFT" status, but they will not be set to "PUBLISHED". A DOI on
+    DataCite can only be deleted if it is in "DRAFT" status. Once a DOI
+    is set to "PUBLISHED" or "RESERVED" it can't be deleted.
+
     :param str project_id: Project Id to publish.
     :param list entity_uuids: list of str Entity uuids to publish.
     """
@@ -188,19 +196,20 @@ def publish_resource(project_id, entity_uuids=None):
     prj = mgr.get_project_by_id(project_id)
     responses = []
 
-    for ent_uuid in entity_uuids:
-        entity = None
-        if ent_uuid:
-            entity = mgr.get_entity_by_uuid(ent_uuid)
+    if publish_dois:
+        for ent_uuid in entity_uuids:
+            entity = None
+            if ent_uuid:
+                entity = mgr.get_entity_by_uuid(ent_uuid)
+            
+            if entity:
+                for doi in entity.dois:
+                    res = DataciteManager.publish_doi(doi)
+                    responses.append(res)
         
-        if entity:
-            for doi in entity.dois:
-                res = DataciteManager.publish_doi(doi)
-                responses.append(res)
-    
-    for doi in prj.dois:
-        res = DataciteManager.publish_doi(doi)
-        responses.append(res)
+        for doi in prj.dois:
+            res = DataciteManager.publish_doi(doi)
+            responses.append(res)
 
 
     pub = BaseESPublication(project_id=project_id)
@@ -247,6 +256,9 @@ def _transform_authors(entity, publication):
 
     :param dict entity: Entity dictionary.
     :param dict publication: Publication dictionary.
+    Sets authors on the entity to a list of string usernames within 'value'
+    Sets authors on the entity to a list of user objects
+    Sets authors on the publication
     """
     entity['value']['authors'] = []
     for author in publication['authors']:
@@ -307,24 +319,38 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     publication = pub_doc.to_dict()
 
     if entity_uuids:
-        # clear any existing entities in publication
-        entity = mgr.get_entity_by_uuid(entity_uuids[0])
-        pub_entities_field_name = FIELD_MAP[entity.name]
-        publication[pub_entities_field_name] = []
-        
+        # clear any existing entities in publication and keep updated fileObjs
+        fields_to_clear = []
+        entities_with_files = []
+        for ent_uuid in entity_uuids:
+            entity = mgr.get_entity_by_uuid(ent_uuid)
+            fields_to_clear.append(FIELD_MAP[entity.name])
+        fields_to_clear = set(fields_to_clear)
+        for field in fields_to_clear:
+            if field in publication.keys():
+                for ent in publication[field]:
+                    if 'fileObjs' in ent:
+                        entities_with_files.append(ent)
+            publication[field] = []
+
         for ent_uuid in entity_uuids:
             entity = None
             entity = mgr.get_entity_by_uuid(ent_uuid)
-            entity_json = entity.to_body_dict()
 
             if entity:
+                entity_json = entity.to_body_dict()
                 pub_entities_field_name = FIELD_MAP[entity.name]
-                publication['authors'] = entity_json['value']['authors'][:]
+
+                for e in entities_with_files:
+                    if e['uuid'] == entity_json['uuid']:
+                        entity_json['fileObjs'] = e['fileObjs']
+
+                publication['authors'] = list(entity_json['value']['authors'])
                 entity_json['authors'] = []
 
                 _populate_entities_in_publication(entity, publication)
                 _transform_authors(entity_json, publication)
-                
+
                 if entity_json['value']['dois']:
                     entity_json['doi'] = entity_json['value']['dois'][-1]
                 

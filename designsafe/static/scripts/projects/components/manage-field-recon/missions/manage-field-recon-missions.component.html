@@ -87,11 +87,17 @@
                 </div>
             </div>
             <div class="expAuthors form-group">
-                <label>Assign Authorship</label>
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                <p>
-                    You can order the authors during the publication process.
-                </p>
+                <label for="id-authorship">
+                        <div style="display: flex; flex-direction: column">
+                            <div>
+                                <span class="pull-left" style="margin-right: 5px">Assign Authorship</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span style="display: block; font-weight:normal;">
+                                You can order the authors during the publication process.
+                            </span>
+                        </div>
+                    </label>
                 <div class="form-group">
                     <div ng-repeat="usr in $ctrl.form.authors track by $index"
                         style="width:46%; display:inline-block; white-space: nowrap;">
@@ -217,7 +223,7 @@
                     <div id="files-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
                             <div style="display: inline-block; width:20%; vertical-align: top;">
-                                Authors
+                                Author(s)
                             </div>
                             <div style="display: inline-block; width:78%; font-weight: bold;">
                                 <div data-ng-repeat="author in mission.value.authors | orderBy: 'order'"

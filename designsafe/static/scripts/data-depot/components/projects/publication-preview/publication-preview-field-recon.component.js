@@ -187,6 +187,26 @@ class PublicationPreviewFieldReconCtrl {
         this.ProjectService.editProject(this.browser.project);
     }
 
+    ordered(parent, entities) {
+        if (!entities || !parent || parent.name == 'designsafe.project.field_recon.report'){
+            return;
+        }
+        let order = (ent) => {
+            if (!ent._ui) {
+                return 0;
+            }
+            return ent._ui.orders.find(order => order.parent === parent.uuid);
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
+    }
+
     prepareModal() {
         this.$uibModal.open({
             template: PublicationPopupTemplate,

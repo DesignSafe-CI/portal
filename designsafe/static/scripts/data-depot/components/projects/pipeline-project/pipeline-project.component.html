@@ -96,24 +96,32 @@
                 <td class="prj-data" ng-if="$ctrl.project.value.projectType !== 'field_recon'">
                     {{ $ctrl.project.value.projectType.replace('_', ' ') }}
                 </td>
-                <!-- FR -->
                 <td class="prj-data" ng-if="$ctrl.project.value.projectType === 'field_recon'">Field Research</td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.project.value.dataType }}</td>
             </tr>
-            <tr class="prj-row"
-                ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhEvent">
-                <td>Natural Hazard</td>
+            <!-- FR -->
+            <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhEvent">
+                <td>Event</td>
                 <td class="prj-data">
-                    {{ $ctrl.project.value.nhEvent }} | {{$ctrl.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                    <span ng-if="$ctrl.project.value.nhEventEnd">― {{$ctrl.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
+                    {{ $ctrl.project.value.nhEvent }} |
+                    <span ng-if="$ctrl.project.value.nhLocation">{{ $ctrl.project.value.nhLocation }} |</span>
+                    {{$ctrl.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+                    <span ng-if="$ctrl.project.value.nhEventEnd">
+                        ― {{$ctrl.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
+                    </span>
+                    <span ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">|</span>
+                    <a href="http://www.google.com/maps/place/{{ $ctrl.project.value.nhLatitude }},{{ $ctrl.project.value.nhLongitude }}"
+                        rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">
+                        Lat {{ $ctrl.project.value.nhLatitude }} Long {{ $ctrl.project.value.nhLongitude }}
+                    </a>
                 </td>
             </tr>
             <tr class="prj-row"
                 ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhTypes">
-                <td>Natural Hazard Type</td>
+                <td>Event Type</td>
                 <td class="prj-data">
                     <span ng-repeat="nhtype in $ctrl.project.value.nhTypes">
                         <span ng-if="!$last">{{ nhtype }},</span>
@@ -121,6 +129,7 @@
                     </span>
                 </td>
             </tr>
+            <!-- FR -->
             <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
                 <td ng-if="$first">Awards</td>
                 <td ng-if="!$first"></td>

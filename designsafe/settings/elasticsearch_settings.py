@@ -36,7 +36,7 @@ ES_INDICES = {
     'publications': {
         'alias': ES_INDEX_PREFIX.format('publications'),
         'document': 'designsafe.apps.data.models.elasticsearch.IndexedPublication',
-        'kwargs': {'index.mapping.total_fields.limit': 2000}
+        'kwargs': {'index.mapping.total_fields.limit': 3000}
     },
     'web_content': {
         'alias': ES_INDEX_PREFIX.format('web-content'),

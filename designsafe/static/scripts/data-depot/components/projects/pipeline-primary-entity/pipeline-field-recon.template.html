@@ -71,76 +71,74 @@
             <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
-    <!-- Simulation Header Start -->
+    <!-- Missions -->
     <div ng-repeat="primEnt in $ctrl.primaryEntities | orderBy: primEnt.value.title" style="padding-bottom:20px">
         <div class="well" ng-if="!$ctrl.ui.loading">
             <div class="prj-head" style="padding-bottom:20px">
                 Mission | <strong>{{ primEnt.value.title }}</strong>
             </div>
-            <!-- TEST -->
-            <div style="display: inline-block; width:20%; vertical-align: top;">
-                    Authors
+            <div class="collection-field">
+                <div class="collection-label-multi">
+                    Author(s)
                 </div>
-                <div style="display: inline-block; width:78%; font-weight: bold;">
+                <div class="collection-data">
                     <ds-author-list authors="primEnt.value.authors"></ds-author-list>
                 </div>
-                <div style="display: inline-block; width:20%;">Date of Mission</div>
-                <div style="display: inline-block; width: 78%; font-weight:bold;">
+            </div>
+            <div class="collection-field">
+                <div class="collection-label-multi">
+                    Date of Mission
+                </div>
+                <div class="collection-data">
                     <span>{{primEnt.value.dateStart | date:'MM-dd-yyyy'}}</span>
                     <span data-ng-if="primEnt.value.dateEnd">
                         &#8213; {{primEnt.value.dateEnd | date:'MM-dd-yyyy' }}
                     </span>
                 </div>
-                <div style="display: inline-block; width:20%; vertical-align: top;">
+            </div>
+            <div class="collection-field">
+                <div class="collection-label-multi">
                     Site Location
                 </div>
-                <div style="display: inline-block; width: 78%; font-weight:bold;">
-                    <ul style="list-style:none; padding-left:0;">
-                        <li>{{$ctrl.mission.value.location}} | Lat {{$ctrl.mission.value.latitude}} Long {{$ctrl.mission.value.longitude}}</li>
-                        <!-- <li> Elevation: {{$ctrl.mission.value.elevation}} </li> -->
-                    </ul>
+                <div class="collection-data">
+                    <span>{{primEnt.value.location}} | </span>
+                    <a href="http://www.google.com/maps/place/{{ primEnt.value.latitude }},{{ primEnt.value.longitude }}"
+                        rel="noopener noreferrer" target=”_blank” ng-if="primEnt.value.latitude && primEnt.value.longitude">
+                        Lat {{primEnt.value.latitude}} Long {{primEnt.value.longitude}}
+                    </a>
                 </div>
-                <div style="display:inline-block; width:20%;">Date of Publication</div>
-                <strong style="display:inline-block; width:78%;"
-                        data-ng-if="!$ctrl.readOnly">
-                    (Appears when published)
-                </strong>
-                <strong style="display:inline-block; width:78%;"
-                        data-ng-if="$ctrl.readOnly">
-                    {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
-                </strong>
-                <div style="display:inline-block; width:20%;">
-                    DOI 
-                    <button class="btn btn-info btn-sm"
-                            data-ng-click="$ctrl.showCitation(missino)">
+            </div>
+            <div class="collection-field">
+                <div class="collection-label">Date of Publication</div>
+                <div class="collection-data">
+                    <span>(Appears when published)</span>
+                </div>
+            </div>
+            <div class="collection-field">
+                <div class="collection-label">
+                    DOI
+                    <button class="btn btn-info btn-sm btn-cite"
+                            ng-disabled="true"
+                            data-ng-click="$ctrl.showCitation(mission)">
                         Citation
                     </button>
                 </div>
-                <strong style="display:inline-block; width:78%;"
-                        data-ng-if="!$ctrl.readOnly">
-                    (Appears when published)
-                </strong>
-                <strong style="display:inline-block; width:78%;"
-                        data-ng-if="$ctrl.readOnly">
-                    {{ experiment.doi }}
-                </strong>
-                <div style="display:inline-block; width:20%;">License</div>
-                <strong style="display:inline-block; width:78%;"
-                        data-ng-if="!$ctrl.readOnly">
-                    (Appears when published)
-                </strong>
-                <strong style="display:inline-block; width:78%;"
-                        data-ng-if="$ctrl.readOnly">
-                    {{ $ctrl.browser.publication.licenses }}
-                </strong>
-                <p>
-                    <br>{{ primEnt.value.description }}
-                </p>
-            <!-- TEST -->
+                <div class="collection-data">
+                    <span>(Appears when published)</span>
+                </div>
+            </div>
+            <div class="collection-field">
+                <div class="collection-label">License(s)</div>
+                <div class="collection-data">
+                    <span>(Appears when published)</span>
+                </div>
+            </div>
+            <p>
+                <br>{{ primEnt.value.description }}
+            </p>
             <div><br>
                 <span class="prj-head" ng-click="$ctrl.managePrimaryEntity(primEnt)"><a>Edit</a></span>
             </div>
         </div>
     </div>
-    <!-- Simulation Header End -->
 </div>

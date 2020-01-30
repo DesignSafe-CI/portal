@@ -161,10 +161,18 @@ class FileCategoriesCtrl {
     addFileTag(entity) {
         this._ui.busy = true;
         let tagName;
-        if (this.selectedFileTag[entity.uuid] === 'other' && typeof this.otherTagName !== undefined) {
+        if (this.selectedFileTag[entity.uuid] === 'other' && typeof this.otherTagName !== 'undefined') {
             tagName = this.otherTagName[entity.uuid];
+        } else if (this.selectedFileTag[entity.uuid] === 'Location' && typeof this.locationTag !== 'undefined') {
+            tagName = this.locationTag[entity.uuid];
+        } else if (this.selectedFileTag[entity.uuid] === 'Lat Long' && typeof this.latLongTag !== 'undefined') {
+            tagName = this.latLongTag[entity.uuid];
         } else {
             tagName = this.selectedFileTag[entity.uuid];
+        }
+
+        if (!tagName) {
+            return;
         }
 
         getFileUuid(this.file).then((file)=>{

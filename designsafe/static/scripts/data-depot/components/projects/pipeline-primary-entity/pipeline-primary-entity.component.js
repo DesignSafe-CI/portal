@@ -19,6 +19,7 @@ class PipelinePrimaryEntityCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
         this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
+        this.secondaryEntities = this.ProjectService.resolveParams.secondaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.ui = {
             efs: experimentalData.experimentalFacility,
@@ -106,6 +107,7 @@ class PipelinePrimaryEntityCtrl {
             projectId: this.projectId,
             project: this.project,
             primaryEntities: this.primaryEntities,
+            secondaryEntities: this.secondaryEntities,
             selectedListings: this.selectedListings,
         }, {reload: true});
     }
@@ -115,6 +117,7 @@ class PipelinePrimaryEntityCtrl {
             projectId: this.projectId,
             project: this.project,
             primaryEntities: this.primaryEntities,
+            secondaryEntities: this.secondaryEntities,
             selectedListings: this.selectedListings,
         }, {reload: true});
     }
