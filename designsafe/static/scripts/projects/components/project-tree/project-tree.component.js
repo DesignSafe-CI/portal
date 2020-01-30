@@ -520,7 +520,7 @@ class ProjectTreeCtrl {
                 type: report.name,
                 parent: projectNode.name,
                 rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
-                display: 'Report',
+                display: 'Documents',
                 primary: true,
                 order: this.orderOf(report, projectNode.uuid).value,
             };

@@ -77,6 +77,12 @@
             <div class="prj-head" style="padding-bottom:20px">
                 Mission | <strong>{{ primEnt.value.title }}</strong>
             </div>
+            <div class="collection-field" ng-if="primEnt.value.event">
+                <div class="collection-label">Event</div>
+                <div class="collection-data">
+                    <span>{{ primEnt.value.event }}</span>
+                </div>
+            </div>
             <div class="collection-field">
                 <div class="collection-label-multi">
                     Author(s)
