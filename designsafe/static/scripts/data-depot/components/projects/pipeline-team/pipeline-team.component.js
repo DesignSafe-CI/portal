@@ -66,6 +66,7 @@ class PipelineTeamCtrl {
         var projectData = {
             title: this.project.value.title,
             uuid: this.project.uuid,
+            dois: this.project.value.dois,
             fileTags: this.project.value.fileTags,
             projectId: this.project.value.projectId,
             projectType: this.project.value.projectType,
