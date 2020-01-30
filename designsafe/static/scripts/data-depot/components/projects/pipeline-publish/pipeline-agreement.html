@@ -19,7 +19,7 @@
         publication that cannot be changed. If I have revisions this will result in a new
         version of the publication including a new DOI.
     </p>
-    <div ng-if="!$ctrl.published">
+    <div ng-if="!$ctrl.published && !$ctrl.existingPub">
         <span style="display:inline-block; width:75%;">
             <input type="checkbox" id="agreement" name="agreement" data-ng-model="$ctrl.agreed">
             <label for="agreement"> I agree </label>
@@ -27,7 +27,7 @@
         <button class="btn btn-add"
                 style="display:inline-block; width:24%;"
                 data-ng-click="$ctrl.publish()"
-                data-ng-disabled="!$ctrl.agreed || $ctrl.published || $ctrl.busy">
+                data-ng-disabled="!$ctrl.agreed || $ctrl.published || $ctrl.busy || $ctrl.existingPub">
             <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish
         </button>
     </div>
@@ -43,6 +43,23 @@
                         data-ng-click="$ctrl.return()"
                 >
                     Complete Submission
+                </button>
+        </div>
+    </div>
+    <div data-ng-if="$ctrl.existingPub">
+        <div class="alert alert-warning">
+            This project has already been published.
+            If you would like to update your existing publication or
+            if you are having trouble viewing your publication please
+            <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+update+to+existing+publication:+{{$ctrl.project.value.projectId}}"
+               target="_blank">submit a ticket</a>.
+        </div>
+        <div style="text-align: center">
+                <button class="btn btn-add"
+                        style="width:24%;"
+                        data-ng-click="$ctrl.return()"
+                >
+                    Return to Project
                 </button>
         </div>
     </div>

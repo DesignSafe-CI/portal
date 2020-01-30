@@ -29,9 +29,10 @@ const attributeMap = {
 };
 
 class PipelinePublishCtrl {
-    constructor(ProjectService, DataBrowserService, $http, $state) {
+    constructor(ProjectService, PublishedService, DataBrowserService, $http, $state) {
         'ngInject';
         this.ProjectService = ProjectService;
+        this.PublishedService = PublishedService;
         this.$http = $http;
         this.$state = $state;
         this.DataBrowserService = DataBrowserService;
@@ -40,6 +41,7 @@ class PipelinePublishCtrl {
     $onInit() {
         this.project = this.resolve.project;
         this.selectedListings = this.resolve.resolveParams.selectedListings;
+        this.existingPub = false;
 
         let publication = {
             project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
@@ -90,6 +92,12 @@ class PipelinePublishCtrl {
             });
         }
         this.publication = publication;
+        this.PublishedService.getPublished(this.project.value.projectId).then((resp) => {
+            let data = resp.data;
+            if (data.project) {
+                this.existingPub = true;
+            }
+        });
     }
 
     return() {
