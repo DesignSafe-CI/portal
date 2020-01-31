@@ -38,7 +38,6 @@ class PipelineSelectionCtrl {
             this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
         ]).then(([project, listing, entities]) => {
             this.browser.project = project;
-            // this.prepProject();
             this.browser.project.appendEntitiesRel(entities);
             this.browser.listing = listing;
             this.browser.listing.href = this.$state.href('projects.view.data', {
