@@ -101,7 +101,7 @@
                         <table style="width:100%">
                             <tr>
                                 <td style="text-align: left;">
-                                    <span>Reports Collection | <strong>{{mission.value.title}}</strong></span>
+                                    <span>Documents | <strong>{{mission.value.title}}</strong></span>
                                 </td>
                                 <td style="text-align: right;">
                                     <span class="curation-chevron" style="font-size: 18px;"></span>
@@ -186,6 +186,12 @@
                     </button>
                     <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
+                            <div class="collection-field" ng-if="mission.value.event">
+                                <div class="collection-label">Event</div>
+                                <div class="collection-data">
+                                    <span>{{ mission.value.event }}</span>
+                                </div>
+                            </div>
                             <div class="collection-field">
                                 <div class="collection-label-multi">
                                     Author(s)
@@ -246,7 +252,6 @@
                                 <br>{{ primEnt.value.description }}
                             </p>
                             <!-- Mission Collections -->
-                            <!-- <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.browser.project.socialscience_set.concat($ctrl.browser.project.geoscience_set, $ctrl.browser.project.planning_set))" ng-if="$ctrl.matchingGroup(mission, collection)"> -->
                             <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.secondaryEnts)" ng-if="$ctrl.matchingGroup(mission, collection)">
                             <!-- Social Science -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
@@ -270,16 +275,6 @@
                                                     <div class="collection-label">Unit of Analysis</div>
                                                     <div class="collection-data">
                                                         <span>{{collection.value.unit}}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="collection-field" ng-if="collection.value.methods.length">
-                                                    <div class="collection-label-multi">Method(s) of Collection</div>
-                                                    <div class="collection-data">
-                                                        <ul class="collection-list">
-                                                            <li data-ng-repeat="method in collection.value.methods">
-                                                                {{method}}
-                                                            </li>
-                                                        </ul>
                                                     </div>
                                                 </div>
                                                 <div class="collection-field" ng-if="collection.value.modes.length">
