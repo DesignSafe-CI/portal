@@ -140,8 +140,8 @@
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
-        <div ng-hide="this.ui.loading">
-            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" params="$ctrl.fl"></files-listing>
+        <div ng-if="$ctrl.fl">
+            <files-listing browser="$ctrl.browser" params="$ctrl.fl"></files-listing>
         </div>
     </div>
 </div>
