@@ -78,7 +78,7 @@
             class="well"
             style="margin-bottom: 40px;">
             <div class="prj-head" style="padding-bottom:20px">
-                Report | <strong>{{ mission.value.title }}</strong>
+                Documents | <strong>{{ mission.value.title }}</strong>
             </div>
             <div class="collection-field">
                 <div class="collection-label-multi" data-ng-if="mission.value.authors.length">
@@ -165,16 +165,6 @@
                                     <div class="collection-label">Unit of Analysis</div>
                                     <div class="collection-data">
                                         <span>{{collection.value.unit}}</span>
-                                    </div>
-                                </div>
-                                <div class="collection-field" ng-if="collection.value.methods.length">
-                                    <div class="collection-label-multi">Method(s) of Collection</div>
-                                    <div class="collection-data">
-                                        <ul class="collection-list">
-                                            <li data-ng-repeat="method in collection.value.methods">
-                                                {{method}}
-                                            </li>
-                                        </ul>
                                     </div>
                                 </div>
                                 <div class="collection-field" ng-if="collection.value.modes.length">

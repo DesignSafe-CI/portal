@@ -32,8 +32,9 @@
                         Groups related data from the social sciences domain.
                     </div>
                     <div>
-                        <span class="category-report">Reports Collection</span>
-                        Includes different reports (Virtual Recon, Field Assessment, Preliminary Virtual Assessment, etc) These reports can be published separately before the mission.
+                        <span class="category-report">Documents Collection</span>
+                        Can include instruments, protocols, and different reports (Virtual Recon, Field Assessment, Preliminary Virtual Assessment, etc).
+                        These documents are published separately with their own DOI.
                     </div>
                 </div>
                 <div>
@@ -78,25 +79,6 @@
                         data-ng-model="$ctrl.form.unit"
                         data-ng-required="false"
                         class="form-control" />
-            </div>
-            <div class="collection-methods form-group" ng-if="$ctrl.formFields('methods')">
-                <label for="id-methods">Method(s) of Collection
-                    <span class="label-form-desc">
-                        Information Describing the type of data found in the file.
-                    </span>
-                </label>
-                <div ng-repeat="method in $ctrl.form.methods track by $index">
-                    <input type="text"
-                            id="id-methods"
-                            data-ng-model="$ctrl.form.methods[$index]"
-                            data-ng-required="false"
-                            class="form-control" />
-                </div>
-                <button class="btn btn-link"
-                        type="button"
-                        data-ng-click="$ctrl.addMethod()">
-                    <i class="fa fa-plus">&nbsp;</i> Add another Method of Collection
-                </button>
             </div>
             <div class="collection-modes form-group" ng-if="$ctrl.formFields('modes')">
                 <label for="id-modes">Modes(s) of Collection
@@ -288,7 +270,6 @@
                     <div class="label-form">
                         <div>
                             <span class="label-form-name">Collection Site Location</span>
-                            <span class="label label-danger">Required</span>
                         </div>
                     </div>
                 </label>
@@ -300,7 +281,6 @@
                         <input type="text"
                                id="id-location"
                                data-ng-model="$ctrl.form.location"
-                               data-ng-required="true"
                                class="form-control"/>
                     </div>
                     <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -310,7 +290,6 @@
                         <input type="text"
                                id="id-latitude"
                                data-ng-model="$ctrl.form.latitude"
-                               data-ng-required="true"
                                class="form-control"/>
                     </div>
                     <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -320,7 +299,6 @@
                         <input type="text"
                                id="id-longitude"
                                data-ng-model="$ctrl.form.longitude"
-                               data-ng-required="true"
                                class="form-control" />
                     </div>
                 </div>
@@ -591,16 +569,6 @@
                             <div class="collection-label">Unit of Analysis</div>
                             <div class="collection-data">
                                 <span>{{collection.value.unit}}</span>
-                            </div>
-                        </div>
-                        <div class="collection-field" ng-if="collection.value.methods.length">
-                            <div class="collection-label-multi">Method(s) of Collection</div>
-                            <div class="collection-data">
-                                <ul class="collection-list">
-                                    <li data-ng-repeat="method in collection.value.methods">
-                                        {{method}}
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                         <div class="collection-field" ng-if="collection.value.modes.length">
@@ -918,7 +886,7 @@
                     <table style="width:100%">
                         <tr>
                             <td style="text-align: left;">
-                                <span>Reports Collection | <strong>{{collection.value.title}}</strong></span>
+                                <span>Documents Collection | <strong>{{collection.value.title}}</strong></span>
                             </td>
                             <td style="text-align: right;">
                                 <span class="curation-chevron" style="font-size: 18px;"></span>
