@@ -7,7 +7,11 @@
     </h4>
 </div>
 <div class="modal-body" style="padding: 30px;">
-    <p style="padding-bottom: 10px;">
+    <h3>
+        Publishing Agreement
+    </h3>
+    <hr>
+    <p class="prj-agree-body">
         This submission represents my original work. The submission meets the requirements
         established by DesignSafe-CI available at the
         <a href="/rw/user-guides/data-publication-guidelines/" target="_blank">
@@ -20,14 +24,13 @@
         version of the publication including a new DOI.
     </p>
     <div ng-if="!$ctrl.published">
-        <span style="display:inline-block; width:75%;">
+        <span class="prj-agree-select">
             <input type="checkbox" id="agreement" name="agreement" data-ng-model="$ctrl.agreed">
             <label for="agreement"> I agree </label>
         </span>
-        <button class="btn btn-add"
-                style="display:inline-block; width:24%;"
+        <button class="btn btn-add prj-agree-publish"
                 data-ng-click="$ctrl.publish()"
-                data-ng-disabled="!$ctrl.agreed || $ctrl.published || $ctrl.busy">
+                data-ng-disabled="!$ctrl.agreed || $ctrl.busy">
             <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish
         </button>
     </div>
@@ -38,8 +41,7 @@
             You will find your published project in the "Published" ared of the Data Depot soon.
         </div>
         <div style="text-align: center">
-                <button class="btn btn-add"
-                        style="width:24%;"
+                <button class="btn btn-add prj-agree-publish"
                         data-ng-click="$ctrl.return()"
                 >
                     Complete Submission

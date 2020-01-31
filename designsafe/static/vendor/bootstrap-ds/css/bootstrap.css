@@ -1336,6 +1336,50 @@ mark,
   /* display:inline-block; */
   text-transform:capitalize;
 }
+.prj-agree-body {
+  padding-bottom: 10px;
+}
+.prj-agree-select {
+  padding-top: 15px;
+  display:inline-block;
+  width:75%;
+}
+.prj-agree-publish {
+  display:inline-block;
+  width:24%;
+}
+.overview-body {
+  padding-bottom: 40px;
+}
+.overview-prj-type {
+  font-size:32px;
+  margin-right:10px;
+  margin-left:10px;
+}
+.overview-radio-btn {
+  margin-top: -18px;
+  vertical-align: middle;
+}
+.overview-heading {
+  font-weight: bold;
+  padding-bottom: 15px;
+}
+.overview-skip {
+  width: 70%;
+  padding-top: 8px;
+}
+.overview-back-long {
+  width: 80%; 
+  padding-top: 8px;
+}
+.overview-back-short {
+  width: 10%;
+  text-align: center;
+  padding-top: 8px;
+}
+.overview-continue {
+  width: 20%;
+}
 .sort-arrows{
   color: #337ab7;
   font-size: 18px;
