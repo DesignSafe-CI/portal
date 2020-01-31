@@ -97,7 +97,6 @@ class ManageFieldReconCollectionsCtrl {
         let socialFields = [
             'collectors',
             'unitAnalysis',
-            'modes',
             'sample',
             'colDates',
             'colSite',
@@ -123,7 +122,6 @@ class ManageFieldReconCollectionsCtrl {
             collectionType: (colType ? colType : null),
             observationTypes: [null],
             observationTypesOther: [null],
-            modes: [null],
             sampleApproach: [null],
             equipment: [null],
             equipmentOther: [null],
@@ -182,13 +180,6 @@ class ManageFieldReconCollectionsCtrl {
         if (this.form.equipment[last].length && !this.form.equipment.includes('None')) {
             this.form.equipment.push(null);
             this.form.equipmentOther.push(null);
-        }
-    }
-
-    addModes(){
-        let last = this.form.modes.length - 1;
-        if (this.form.modes[last]) {
-            this.form.modes.push(null);
         }
     }
     
@@ -308,7 +299,6 @@ class ManageFieldReconCollectionsCtrl {
             'designsafe.project.field_recon.social_science': {
                 title: this.form.title,
                 unit: this.form.unit || '',
-                modes: this.form.modes.filter(mode => mode != null),
                 sampleApproach: this.form.sampleApproach.filter(sample => sample != null),
                 sampleSize: this.form.sampleSize || '',
                 dateStart: this.form.dateStart,
@@ -410,14 +400,11 @@ class ManageFieldReconCollectionsCtrl {
         } else {
             this.data.editCollection.value.dateEnd = '';
         }
-        if (!this.data.editCollection.value.modes.length) {
-            this.data.editCollection.value.modes = [null];
-        }
-        if (!this.data.editCollection.value.sampleApproach.length) {
+        if (!this.data.editCollection.value.sampleApproach || !this.data.editCollection.value.sampleApproach.length) {
             this.data.editCollection.value.sampleApproach = [null];
         }
         let auths = this.configureAuthors(collection);
-        if (!this.data.editCollection.value.referencedData.length) {
+        if (!this.data.editCollection.value.referencedData || !this.data.editCollection.value.referencedData.length) {
             this.data.editCollection.value.referencedData = new Array (1);
         }
 
@@ -455,7 +442,6 @@ class ManageFieldReconCollectionsCtrl {
             observationTypes: formObservationTypes,
             observationTypesOther: formObservationTypesOther,
             unit: this.data.editCollection.value.unit,
-            modes: this.data.editCollection.value.modes,
             sampleApproach: this.data.editCollection.value.sampleApproach,
             sampleSize: this.data.editCollection.value.sampleSize,
             restriction: this.data.editCollection.value.restriction,
@@ -488,7 +474,6 @@ class ManageFieldReconCollectionsCtrl {
         }
         if (['designsafe.project.field_recon.social_science'].includes(this.form.collectionType)) {
             this.data.editCollection.value.unit = this.form.unit;
-            this.data.editCollection.value.modes = this.form.modes.filter(mode => mode != null);
             this.data.editCollection.value.sampleApproach = this.form.sampleApproach.filter(sample => sample != null);
             this.data.editCollection.value.sampleSize = this.form.sampleSize;
             this.data.editCollection.value.restriction = this.form.restriction;
