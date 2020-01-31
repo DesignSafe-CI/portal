@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
 from designsafe.apps.api.agave import service_account
+from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from designsafe.apps.projects.managers.base import ProjectsManager
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
@@ -103,8 +104,6 @@ def draft_publication(
             entity = None
             if ent_uuid:
                 entity = mgr.get_entity_by_uuid(ent_uuid)
-            # else:
-            #     upsert_project_doi = True
 
             if entity:
                 entity_url = ENTITY_TARGET_BASE.format(
@@ -301,6 +300,75 @@ def _delete_unused_fields(dict_obj):
 
     for key in keys_to_delete:
         dict_obj.pop(key, '')
+
+
+def fix_file_tags(project_id):
+    pub = BaseESPublication(project_id=project_id)
+    pub_dict = pub.to_dict()
+
+    entities_to_check = list(set(pub_dict.keys()).intersection(list(FIELD_MAP.values())))
+    entities_to_check.append('project')
+
+    def check_complete_tags(tags):
+        for tag in tags:
+            if 'path' not in tag:
+                return False
+        return True
+
+    def fix_tags_path(entity):
+        for tag in entity['value']['fileTags']:
+            try:
+                pub_file = BaseFileResource.listing(
+                    service_account(),
+                    system="designsafe.storage.published",
+                    path="{}{}".format(project_id, tag['path'])
+                )
+                tag['fileUuid'] = pub_file.uuid
+            except Exception as err:
+                LOG.info('error: {}'.format(err))
+                continue
+
+    def fix_tags_no_path(entity):
+        if entity['name'] == 'designsafe.project':
+            proj_other = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path="")
+            for child in proj_other.children:
+                try:
+                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, child.path))
+                    proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path=child.path)
+                    for tag in entity['value']['fileTags']:
+                        if tag['fileUuid'] == proj_file.uuid:
+                            tag['fileUuid'] = pub_file.uuid
+                    
+                except Exception as err:
+                    LOG.info('error: {}'.format(err))
+                    continue
+        else:
+            for fobj in entity['fileObjs']:
+                try:
+                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, fobj['path']))
+                    proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path=fobj['path'])
+                    for tag in entity['value']['fileTags']:
+                        if tag['fileUuid'] == proj_file.uuid:
+                            tag['fileUuid'] = pub_file.uuid
+                    
+                except Exception as err:
+                    LOG.info('error: {}'.format(err))
+                    continue
+
+    for entname in entities_to_check:
+        if type(pub_dict[entname]) == list:
+            for entity in pub_dict[entname]:
+                if 'value' in entity and 'fileTags' in entity['value'] and check_complete_tags(entity['value']['fileTags']):
+                    fix_tags_path(entity)
+                elif 'value' in entity and 'fileTags' in entity['value']:
+                    fix_tags_no_path(entity)
+        else:
+            if 'value' in pub_dict[entname] and 'fileTags' in pub_dict[entname]['value'] and check_complete_tags(pub_dict[entname]['value']['fileTags']):
+                fix_tags_path(pub_dict[entname])
+            elif 'value' in pub_dict[entname] and 'fileTags' in pub_dict[entname]['value']:
+                fix_tags_no_path(pub_dict[entname])
+
+    pub.update(**pub_dict)
 
 
 def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
