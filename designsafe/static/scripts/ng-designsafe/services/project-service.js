@@ -162,7 +162,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
         } else if (project.value.projectType === 'field_recon') {
             requiredSets = [
                 'planning_set',
-                'socialscience_set',
+                // 'socialscience_set',
                 'geoscience_set'
             ];
         }
@@ -179,13 +179,15 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 }
             } else {
                 requiredSets.forEach((set) => {
-                    project[set].forEach((subEnt) => {
-                        if (subEnt.associationIds.includes(primEnt.uuid)) {
-                            if (selections[subEnt.uuid]) {
-                                associatedEnts.push(set);
+                    if (project[set]) {
+                        project[set].forEach((subEnt) => {
+                            if (subEnt.associationIds.includes(primEnt.uuid)) {
+                                if (selections[subEnt.uuid]) {
+                                    associatedEnts.push(set);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 });
                 if (!requiredSets.every(set => associatedEnts.includes(set))){
                     let missingSets = requiredSets.filter(set => !associatedEnts.includes(set));
