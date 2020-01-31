@@ -1,5 +1,5 @@
-import _ from 'underscore';
 import AgreementTemplate from './pipeline-agreement.html';
+import PrivacyAgreementTemplate from './pipeline-privacy-agreement.html';
 
 const attributeMap = {
     'designsafe.project.analysis': 'analysisList',
@@ -55,7 +55,7 @@ class PipelinePublishCtrl {
                 let entity = this.project.getRelatedByUuid(uuid); // this part is still gathering collections...
                 let attr = attributeMap[entity.name];
                 let pubEntity = { name: entity.name, uuid: entity.uuid };
-                pubEntity.fileObjs = _.map(listing.children, (child) => {
+                pubEntity.fileObjs = listing.children.map((child) => {
                     return {
                         name: child.name,
                         path: child.path,
@@ -64,7 +64,7 @@ class PipelinePublishCtrl {
                     };
                 });
                 if (!publication[attr] ||
-                    _.isEmpty(publication[attr]) ||
+                    publication[attr].length === 0 ||
                     typeof publication[attr] === 'undefined') {
                     publication[attr] = [];
                 }
@@ -132,6 +132,18 @@ class PipelinePublishCtrl {
 
 export const PipelinePublishComponent = {
     template: AgreementTemplate,
+    controller: PipelinePublishCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&',
+    },
+    size: 'lg',
+};
+
+export const PipelinePrivacyPublishComponent = {
+    template: PrivacyAgreementTemplate,
     controller: PipelinePublishCtrl,
     controllerAs: '$ctrl',
     bindings: {
