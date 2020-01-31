@@ -129,7 +129,8 @@ class FileCategoriesCtrl {
         getFileUuid(this.file).then((file) => {
             this.project.value.fileTags.push({
                 fileUuid: file.uuid(),
-                tagName: tagName
+                tagName: tagName,
+                path: this.file.path
             });
         }).then(() => {
             let projectData = {};
@@ -178,7 +179,8 @@ class FileCategoriesCtrl {
         getFileUuid(this.file).then((file)=>{
             entity.value.fileTags.push({
                 fileUuid: file.uuid(),
-                tagName: tagName
+                tagName: tagName,
+                path: this.file.path
             });
         }).then(() => {
             return this.ProjectEntitiesService.update({
