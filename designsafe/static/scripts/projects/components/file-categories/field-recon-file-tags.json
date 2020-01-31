@@ -107,11 +107,15 @@
         }
     },
     "designsafe.project.field_recon.report": {
-        "name": "Report",
+        "name": "Document",
         "tags": {
             "General": [
                 "README",
+                "IRB",
+                "Codebook",
+                "Instrument",
                 "Data Report",
+                "Data Dictionary",
                 "Virtual Reconnaissance",
                 "Field Assessment",
                 "Preliminary Virtual Assessment"
