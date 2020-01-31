@@ -80,25 +80,6 @@
                         data-ng-required="false"
                         class="form-control" />
             </div>
-            <div class="collection-modes form-group" ng-if="$ctrl.formFields('modes')">
-                <label for="id-modes">Modes(s) of Collection
-                    <span class="label-form-desc">
-                        The procedure/technique of the inquiry used to obtain the data.
-                    </span>
-                </label>
-                <div ng-repeat="mode in $ctrl.form.modes track by $index">
-                    <input type="text"
-                            id="id-modes"
-                            data-ng-model="$ctrl.form.modes[$index]"
-                            data-ng-required="false"
-                            class="form-control" />
-                </div>
-                <button class="btn btn-link"
-                        type="button"
-                        data-ng-click="$ctrl.addModes()">
-                    <i class="fa fa-plus">&nbsp;</i> Add another Mode of Collection
-                </button>
-            </div>
             <div class="collection-sample form-group" ng-if="$ctrl.formFields('sample')">
                 <label for="id-sample">Sampling Approach(es)
                     <span class="label-form-desc">
@@ -569,16 +550,6 @@
                             <div class="collection-label">Unit of Analysis</div>
                             <div class="collection-data">
                                 <span>{{collection.value.unit}}</span>
-                            </div>
-                        </div>
-                        <div class="collection-field" ng-if="collection.value.modes.length">
-                            <div class="collection-label-multi">Mode(s) of Collection</div>
-                            <div class="collection-data">
-                                <ul class="collection-list">
-                                    <li data-ng-repeat="mode in collection.value.modes">
-                                        {{mode}}
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                         <div class="collection-field" ng-if="collection.value.sampleApproach.length">
