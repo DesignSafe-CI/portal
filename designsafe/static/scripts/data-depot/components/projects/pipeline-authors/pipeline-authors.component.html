@@ -63,6 +63,20 @@
     </div>
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
+        <!-- Error Messages -->
+        <div class="alert alert-danger" ng-if="$ctrl.missing.length">
+            <p class="lead" style="text-align:center;">Your Project is Incomplete!</p>
+            <p>
+                Your project has missing data or incomplete requirements. You may have removed or modified a requirement in your project.
+                Please review the following fields:
+            </p>
+            <div ng-repeat="entity in $ctrl.missing">
+                <div ng-if="entity.missing.length">
+                    In the {{entity.type}} <strong>{{entity.title}}</strong>, the following requirements are missing or incomplete:
+                    <li ng-if="entity.missing.length" ng-repeat="err in entity.missing">{{ err }}</li>
+                </div>
+            </div>
+        </div>
         <p>
             <h3 style="text-align: center">Order the Authors of the {{$ctrl.placeholder}}</h3>
             <h3 style="text-align: center; color: orange;">
