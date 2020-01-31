@@ -123,6 +123,15 @@ class PublishedViewCtrl {
                         if (typeof this.browser.publication.socialscience != 'undefined') {
                             this.browser.publication.socialscience.forEach(this.getFileObjs);
                         }
+                        this.primaryEnts = [].concat(
+                            this.browser.project.mission_set || [],
+                            this.browser.project.report_set || []
+                        );
+                        this.secondaryEnts = [].concat(
+                            this.browser.project.socialscience_set || [],
+                            this.browser.project.planning_set || [],
+                            this.browser.project.geoscience_set || []
+                        );
                     }
                     
                     //add metadata to header
