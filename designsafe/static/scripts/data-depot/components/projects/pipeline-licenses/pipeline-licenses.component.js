@@ -128,15 +128,27 @@ class PipelineLicensesCtrl {
 
     // Modal for accept and publish...
     prepareModal() {
-        this.$uibModal.open({
-            component: 'pipelinePublishModal',
-            resolve: {
-                project: () => { return this.project; },
-                resolveParams: () => { return this.ProjectService.resolveParams; },
-                license: () => { return this.license; },
-            },
-            size: 'lg',
-        });
+        if (this.project.value.projectType === 'field_recon'){
+            this.$uibModal.open({
+                component: 'pipelinePrivacyPublishModal',
+                resolve: {
+                    project: () => { return this.project; },
+                    resolveParams: () => { return this.ProjectService.resolveParams; },
+                    license: () => { return this.license; },
+                },
+                size: 'lg',
+            });
+        } else {
+            this.$uibModal.open({
+                component: 'pipelinePublishModal',
+                resolve: {
+                    project: () => { return this.project; },
+                    resolveParams: () => { return this.ProjectService.resolveParams; },
+                    license: () => { return this.license; },
+                },
+                size: 'lg',
+            });
+        }
     }
 }
 
