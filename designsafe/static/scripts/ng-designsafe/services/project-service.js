@@ -301,7 +301,6 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 checkRequirements(reports);
             }
         }
-        console.log(missingData);
         return missingData;
     };
 
