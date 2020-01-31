@@ -96,6 +96,15 @@ class PipelineAuthorsCtrl {
     }
 
     goLicenses() {
+        this.missing = this.ProjectService.checkSelectedFiles(
+            this.project,
+            [].concat(this.secondaryEntities, this.primaryEntities),
+            this.selectedListings
+        );
+        if (this.missing.length) {
+            return;
+        }
+
         this.$state.go('projects.pipelineLicenses', {
             projectId: this.projectId,
             project: this.project,
