@@ -418,7 +418,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.secondaryEnts)" ng-if="$ctrl.matchingGroup(mission, collection)">
+                            <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.secondaryEnts)">
                                 <!-- Social Science -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">

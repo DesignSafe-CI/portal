@@ -35,36 +35,29 @@ class PublicationPreviewFieldReconCtrl {
         if (this.filePath === '/') {
             this.ui.fileNav = false;
         }
-
-        if (this.data && this.data.listing.path == this.filePath) {
-            this.browser = this.data;
-            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }).then((ents) => {
-                this.createListing(ents);
-            });
-        } else {
-            this.$q.all([
-                this.ProjectService.get({ uuid: this.projectId }),
-                this.DataBrowserService.browse(
-                    { system: 'project-' + this.projectId, path: this.filePath },
-                    { query_string: this.$state.params.query_string }
-                ),
-                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
-            ]).then(([project, listing, ents]) => {
-                this.browser.project = project;
-                this.browser.project.appendEntitiesRel(ents);
-                this.browser.listing = listing;
-                this.createListing(ents);
-                this.primaryEnts = [].concat(
-                    this.browser.project.mission_set || [],
-                    this.browser.project.report_set || []
-                );
-                this.secondaryEnts = [].concat(
-                    this.browser.project.socialscience_set || [],
-                    this.browser.project.planning_set || [],
-                    this.browser.project.geoscience_set || []
-                );
-            });
-        }
+    
+        this.$q.all([
+            this.ProjectService.get({ uuid: this.projectId }),
+            this.DataBrowserService.browse(
+                { system: 'project-' + this.projectId, path: this.filePath },
+                { query_string: this.$state.params.query_string }
+            ),
+            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
+        ]).then(([project, listing, ents]) => {
+            this.browser.project = project;
+            this.browser.project.appendEntitiesRel(ents);
+            this.browser.listing = listing;
+            this.createListing(ents);
+            this.primaryEnts = [].concat(
+                this.browser.project.mission_set || [],
+                this.browser.project.report_set || []
+            );
+            this.secondaryEnts = [].concat(
+                this.browser.project.socialscience_set || [],
+                this.browser.project.planning_set || [],
+                this.browser.project.geoscience_set || []
+            );
+        });
 
         this.createListing = (entities) => {
             this.browser.listing.href = this.$state.href('projects.view.data', {
@@ -200,6 +193,7 @@ class PublicationPreviewFieldReconCtrl {
         if (!entities || !parent || parent.name == 'designsafe.project.field_recon.report'){
             return;
         }
+        entities = entities.filter(ent => ent._ui.orders.length);
         let order = (ent) => {
             if (!ent._ui) {
                 return 0;
