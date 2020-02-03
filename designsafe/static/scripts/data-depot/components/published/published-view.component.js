@@ -123,15 +123,6 @@ class PublishedViewCtrl {
                         if (typeof this.browser.publication.socialscience != 'undefined') {
                             this.browser.publication.socialscience.forEach(this.getFileObjs);
                         }
-                        this.primaryEnts = [].concat(
-                            this.browser.project.mission_set || [],
-                            this.browser.project.report_set || []
-                        );
-                        this.secondaryEnts = [].concat(
-                            this.browser.project.socialscience_set || [],
-                            this.browser.project.planning_set || [],
-                            this.browser.project.geoscience_set || []
-                        );
                     }
                     
                     //add metadata to header
@@ -186,6 +177,15 @@ class PublishedViewCtrl {
             this.browser.project.geoscience_set = this.browser.publication.geoscience;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
+            this.primaryEnts = [].concat(
+                this.browser.publication.missions || [],
+                this.browser.publication.reports || []
+            );
+            this.secondaryEnts = [].concat(
+                this.browser.publication.socialscience || [],
+                this.browser.publication.planning || [],
+                this.browser.publication.geoscience || []
+            );
         }
     }
 
@@ -193,6 +193,7 @@ class PublishedViewCtrl {
         if (!entities || !parent || parent.name == 'designsafe.project.field_recon.report'){
             return;
         }
+        entities = entities.filter(ent => ent._ui.orders.length);
         let order = (ent) => {
             if (!ent._ui) {
                 return 0;
