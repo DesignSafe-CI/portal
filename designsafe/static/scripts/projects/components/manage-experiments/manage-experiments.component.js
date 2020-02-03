@@ -1,5 +1,5 @@
 import ManageExperimentsTemplate from './manage-experiments.component.html';
-import experimentalData from "../../../projects/components/manage-experiments/experimental-data.json";
+import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 import _ from 'underscore';
 
 class ManageExperimentsCtrl {
@@ -17,9 +17,14 @@ class ManageExperimentsCtrl {
         this.project = this.resolve.project;
         this.edit = this.resolve.edit;
         
+        let remData = (data) => {
+            data.atlss = data.atlss.filter(a => a.name != "hybrid_simulation"); 
+            return data;
+        };
+
         this.efs = experimentalData.experimentalFacility;
-        this.experimentTypes = experimentalData.experimentTypes;
-        this.equipmentTypes = experimentalData.equipmentTypes;
+        this.experimentTypes = remData(experimentalData.experimentTypes);
+        this.equipmentTypes = remData(experimentalData.equipmentTypes);
 
         var members = [this.project.value.pi].concat(
             this.project.value.coPis,
@@ -319,7 +324,7 @@ class ManageExperimentsCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete('Are you sure you want to delete ' + ent.value.title + '?');
     }
 
     saveExperiment($event) {
@@ -344,7 +349,7 @@ class ManageExperimentsCtrl {
         });
 
         this.$q.all(addActions).then(
-            (results) => {
+            (results) => { /* eslint-disable-line */
                 this.data.busy = false;
                 this.form.addExperiments = [{}];
             },
