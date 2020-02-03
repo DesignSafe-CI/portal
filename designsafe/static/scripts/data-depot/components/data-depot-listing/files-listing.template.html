@@ -1,6 +1,6 @@
 <div class="table-responsive" data-ng-class="{'preview-wrapper': $ctrl.browser.showPreviewListing}">
     <div
-        class="ds-table-display-wrapper"
+        data-ng-class="{'ds-table-display-wrapper' : $ctrl.listing().children.length > 10}"
         data-ds-infinite-scroll
         data-scroll-bottom="$ctrl.scrollToBottom()"
         data-scroll-top="$ctrl.scrollToTop()"
