@@ -88,6 +88,7 @@ class PipelineSubEntityCtrl {
         if (!entities || !parent || parent.name == 'designsafe.project.field_recon.report'){
             return;
         }
+        entities = entities.filter(ent => ent._ui.orders.length);
         let order = (ent) => {
             if (!ent._ui) {
                 return 0;
