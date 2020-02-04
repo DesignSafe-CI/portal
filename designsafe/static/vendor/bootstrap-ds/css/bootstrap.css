@@ -1333,7 +1333,7 @@ mark,
 .prj-data {
   width: 84%;
   font-weight: bold;
-  /* display:inline-block; */
+  padding-bottom: 6px;
   text-transform:capitalize;
 }
 .prj-agree-body {
@@ -2755,22 +2755,28 @@ input[type="search"] {
 .collection-authors {
   width:100%;
 }
-.collection-field{
+.entity-meta-field{
   padding-bottom: 6px;
 }
-.collection-label{
+.entity-meta-label{
   display: inline-block;
   width:20%;
 }
-.collection-label-multi{
+.entity-meta-label-multi{
   display: inline-block;
   width:20%;
   vertical-align: top;
 }
-.collection-data{
+.entity-meta-data{
   display: inline-block;
   width: 78%;
   font-weight:bold;
+}
+.entity-meta-data-cap{
+  display: inline-block;
+  width: 78%;
+  font-weight:bold;
+  text-transform: capitalize;
 }
 .collection-list{
   list-style:none;
