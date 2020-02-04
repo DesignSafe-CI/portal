@@ -214,12 +214,16 @@
           </button>
           <div id="files-{{simulation.uuid}}" class="collapse dropdown-spacer-lg">
             <div class="well">
-              <div style="display:inline-block; width:20%;">Hybrid Simulation Type</div>
-              <strong ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationType }}</strong>
-              <strong ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationTypeOther }}</strong>
-              <div style="display:inline-block; width:20%; vertical-align: top;">Author(s)</div>
-              <div style="display:inline-block; width:78%; font-weight: bold;">
-                <ds-author-list authors="simulation.value.authors"></ds-author-list>
+              <div class="entity-meta-field">
+                <div class="entity-meta-label">Hybrid Simulation Type</div>
+                <span ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" class="entity-meta-data">{{ simulation.value.simulationType }}</span>
+                <span ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" class="entity-meta-data">{{ simulation.value.simulationTypeOther }}</span>
+              </div>
+              <div class="entity-meta-field">
+                <div class="entity-meta-label-multi">Author(s)</div>
+                <div class="entity-meta-data">
+                  <ds-author-list authors="simulation.value.authors"></ds-author-list>
+                </div>
               </div>
               <div>
                 <br>{{ simulation.value.description }}
