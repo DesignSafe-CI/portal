@@ -434,26 +434,26 @@
                 </button>
                 <div id="files-{{collection.uuid}}" class="collapse">
                     <div class="well">
-                        <div class="collection-label-multi">Observation Type</div>
-                        <div class="collection-data">
+                        <div class="entity-meta-label-multi">Observation Type</div>
+                        <div class="entity-meta-data">
                             <ul class="collection-list">
                                 <li data-ng-repeat="ot in collection.value.observationTypes">
                                     {{ot}}
                                 </li>
                             </ul>
                         </div>
-                        <div class="collection-label">Date of Collection</div>
-                        <div class="collection-data">
+                        <div class="entity-meta-label">Date of Collection</div>
+                        <div class="entity-meta-data">
                             <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
                             <span data-ng-if="collection.value.dateEnd">
                                 &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                             </span>
                         </div>
-                        <div class="collection-label-multi"
+                        <div class="entity-meta-label-multi"
                              data-ng-if="collection.value.dataCollectors.length">
                             Data Collector(s)
                         </div>
-                        <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
+                        <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
                             <div data-ng-repeat="collector in collection.value.dataCollectors | orderBy: 'order'"
                                 data-ng-if="!collector.length && collector.authorship">
                                 <span data-ng-if="!collector.guest">
@@ -466,10 +466,10 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="collection-label-multi" data-ng-if="collection.value.location">
+                        <div class="entity-meta-label-multi" data-ng-if="collection.value.location">
                             Site Location
                         </div>
-                        <div class="collection-data" data-ng-if="collection.value.location">
+                        <div class="entity-meta-data" data-ng-if="collection.value.location">
                             <ul class="collection-list">
                                 <li>
                                     <span data-ng-if="collection.value.location">
@@ -484,11 +484,11 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="collection-label-multi"
+                        <div class="entity-meta-label-multi"
                                 data-ng-if="collection.value.equipment.length">
                             Instrument
                         </div>
-                        <div class="collection-data"
+                        <div class="entity-meta-data"
                                 data-ng-if="collection.value.equipment.length">
                             <ul class="collection-list">
                                 <li data-ng-repeat="equipment in collection.value.equipment">
@@ -497,10 +497,10 @@
                             </ul>
                         </div>
                         <div ng-if="collection.value.referencedData.length">
-                            <div class="collection-label-multi">
+                            <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
-                            <div class="collection-data">
+                            <div class="entity-meta-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
                                         <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
@@ -546,15 +546,15 @@
                 </button>
                 <div id="files-{{collection.uuid}}" class="collapse">
                     <div class="well">
-                        <div class="collection-field" ng-if="collection.value.unit">
-                            <div class="collection-label">Unit of Analysis</div>
-                            <div class="collection-data">
+                        <div class="entity-meta-field" ng-if="collection.value.unit">
+                            <div class="entity-meta-label">Unit of Analysis</div>
+                            <div class="entity-meta-data">
                                 <span>{{collection.value.unit}}</span>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.sampleApproach.length">
-                            <div class="collection-label-multi">Sampling Approach(es)</div>
-                            <div class="collection-data">
+                        <div class="entity-meta-field" ng-if="collection.value.sampleApproach.length">
+                            <div class="entity-meta-label-multi">Sampling Approach(es)</div>
+                            <div class="entity-meta-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="sample in collection.value.sampleApproach">
                                         {{sample}}
@@ -562,26 +562,26 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.sampleSize">
-                            <div class="collection-label">Sample Size</div>
-                            <div class="collection-data">
+                        <div class="entity-meta-field" ng-if="collection.value.sampleSize">
+                            <div class="entity-meta-label">Sample Size</div>
+                            <div class="entity-meta-data">
                                 <span>{{collection.value.sampleSize}}</span>
                             </div>
                         </div>
-                        <div class="collection-field">
-                            <div class="collection-label">Date of Collection</div>
-                            <div class="collection-data">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Date of Collection</div>
+                            <div class="entity-meta-data">
                                 <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
                                 <span data-ng-if="collection.value.dateEnd">
                                     &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                                 </span>
                             </div>
                         </div>
-                        <div class="collection-field">
-                            <div class="collection-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi" data-ng-if="collection.value.dataCollectors.length">
                                 Data Collector(s)
                             </div>
-                            <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
+                            <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
                                 <div data-ng-repeat="collector in collection.value.dataCollectors | orderBy: 'order'"
                                     data-ng-if="!collector.length && collector.authorship">
                                     <span data-ng-if="!collector.guest">
@@ -595,11 +595,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="collection-field">
-                            <div class="collection-label-multi" data-ng-if="collection.value.location">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi" data-ng-if="collection.value.location">
                                 Site Location
                             </div>
-                            <div class="collection-data"
+                            <div class="entity-meta-data"
                                     data-ng-if="collection.value.location">
                                 <ul class="collection-list">
                                     <li>
@@ -616,9 +616,9 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field">
-                            <div class="collection-label-multi">Equipment</div>
-                            <div class="collection-data">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi">Equipment</div>
+                            <div class="entity-meta-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="eqp in collection.value.equipment">
                                         {{eqp}}
@@ -626,17 +626,17 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.restriction">
-                            <div class="collection-label">Restriction</div>
-                            <div class="collection-data">
+                        <div class="entity-meta-field" ng-if="collection.value.restriction">
+                            <div class="entity-meta-label">Restriction</div>
+                            <div class="entity-meta-data">
                                 <span>{{collection.value.restriction}}</span>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.referencedData.length">
-                            <div class="collection-label-multi">
+                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                            <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
-                            <div class="collection-data">
+                            <div class="entity-meta-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
                                         <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
@@ -644,7 +644,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.description">
+                        <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
                         <div style="margin-top: 10px;">
@@ -682,9 +682,9 @@
                 </button>
                 <div id="files-{{collection.uuid}}" class="collapse">
                     <div class="well">
-                        <div class="collection-field" ng-if="collection.value.observationTypes.length">
-                            <div class="collection-label-multi">Observation Type(s)</div>
-                            <div class="collection-data">
+                        <div class="entity-meta-field" ng-if="collection.value.observationTypes.length">
+                            <div class="entity-meta-label-multi">Observation Type(s)</div>
+                            <div class="entity-meta-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="obs in collection.value.observationTypes">
                                         {{obs}}
@@ -692,20 +692,20 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field">
-                            <div class="collection-label">Date of Collection</div>
-                            <div class="collection-data">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Date of Collection</div>
+                            <div class="entity-meta-data">
                                 <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
                                 <span data-ng-if="collection.value.dateEnd">
                                     &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                                 </span>
                             </div>
                         </div>
-                        <div class="collection-field">
-                            <div class="collection-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi" data-ng-if="collection.value.dataCollectors.length">
                                 Data Collector(s)
                             </div>
-                            <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
+                            <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
                                 <div data-ng-repeat="collector in collection.value.dataCollectors | orderBy: 'order'"
                                     data-ng-if="!collector.length && collector.authorship">
                                     <span data-ng-if="!collector.guest">
@@ -719,11 +719,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="collection-field">
-                            <div class="collection-label-multi" data-ng-if="collection.value.location">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi" data-ng-if="collection.value.location">
                                 Site Location
                             </div>
-                            <div class="collection-data" data-ng-if="collection.value.location">
+                            <div class="entity-meta-data" data-ng-if="collection.value.location">
                                 <ul class="collection-list">
                                     <li>
                                         <span data-ng-if="collection.value.location">
@@ -739,9 +739,9 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field">
-                            <div class="collection-label-multi">Equipment</div>
-                            <div class="collection-data">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi">Equipment</div>
+                            <div class="entity-meta-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="eqp in collection.value.equipment">
                                         {{eqp}}
@@ -749,11 +749,11 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.referencedData.length">
-                            <div class="collection-label-multi">
+                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                            <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
-                            <div class="collection-data">
+                            <div class="entity-meta-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
                                         <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
@@ -761,7 +761,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.description">
+                        <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
                         <div style="margin-top: 10px;">
@@ -799,11 +799,11 @@
                 </button>
                 <div id="files-{{collection.uuid}}" class="collapse">
                     <div class="well">
-                        <div class="collection-field">
-                            <div class="collection-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi" data-ng-if="collection.value.dataCollectors.length">
                                 Data Collector(s)
                             </div>
-                            <div class="collection-data" data-ng-if="collection.value.dataCollectors.length">
+                            <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
                                 <div data-ng-repeat="collector in collection.value.dataCollectors | orderBy: 'order'"
                                     data-ng-if="!collector.length && collector.authorship">
                                     <span data-ng-if="!collector.guest">
@@ -817,11 +817,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.referencedData.length">
-                            <div class="collection-label-multi">
+                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                            <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
-                            <div class="collection-data">
+                            <div class="entity-meta-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
                                         <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
@@ -829,7 +829,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.description">
+                        <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
                         <div style="margin-top: 10px;">
@@ -867,11 +867,11 @@
                 </button>
                 <div id="files-{{collection.uuid}}" class="collapse">
                     <div class="well">
-                        <div class="collection-field">
-                            <div class="collection-label-multi" data-ng-if="collection.value.authors.length">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi" data-ng-if="collection.value.authors.length">
                                 Author(s)
                             </div>
-                            <div class="collection-data" data-ng-if="collection.value.authors.length">
+                            <div class="entity-meta-data" data-ng-if="collection.value.authors.length">
                                 <div data-ng-repeat="author in collection.value.authors | orderBy: 'order'"
                                     data-ng-if="!author.length && author.authorship">
                                     <span data-ng-if="!author.guest">
@@ -885,11 +885,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.referencedData.length">
-                            <div class="collection-label-multi">
+                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                            <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
-                            <div class="collection-data">
+                            <div class="entity-meta-data">
                                 <ul class="collection-list">
                                     <li data-ng-repeat="data in collection.value.referencedData">
                                         <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
@@ -897,7 +897,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="collection-field" ng-if="collection.value.description">
+                        <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
                         <div style="margin-top: 10px;">
