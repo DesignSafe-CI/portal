@@ -133,29 +133,44 @@
                 </button>
                 <div id="data-{{simulation.uuid}}" class="collapse">
                     <div class="well">
-                        <div style="display:inline-block; width:20%;">Simulation Type</div>
-                        <strong ng-if="!$ctrl.isValid(simulation.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                            {{ simulation.value.experimentType.replace('_', ' ') }}
-                        </strong>
-                        <strong ng-if="$ctrl.isValid(simulation.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                            {{ simulation.value.experimentTypeOther }}
-                        </strong>
-                        <div style="display:inline-block; width:20%; vertical-align: top;">Author(s)</div>
-                        <div style="display:inline-block; width:78%; font-weight: bold;">
-                            <ds-author-list authors="simulation.value.authors"></ds-author-list>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Simulation Type</div>
+                            <span ng-if="!$ctrl.isValid(simulation.value.experimentalFacilityOther)" class="entity-meta-data-cap">
+                                {{ simulation.value.experimentType.replace('_', ' ') }}
+                            </span>
+                            <span ng-if="$ctrl.isValid(simulation.value.experimentalFacilityOther)" class="entity-meta-data-cap">
+                                {{ simulation.value.experimentTypeOther }}
+                            </span>
                         </div>
-                        <div style="display:inline-block; width:20%;">Date of Publication</div>
-                        <strong style="display:inline-block; width:78%;">
-                            (Appears when published)
-                        </strong>
-                        <div style="display:inline-block; width:20%;">DOI <button class="btn btn-info btn-sm">Citation</button></div>
-                        <strong style="display:inline-block; width:78%;">
-                            (Appears when published)
-                        </strong>
-                        <div style="display:inline-block; width:20%;">License</div>
-                        <strong style="display:inline-block; width:78%;">
-                            (Appears when published)
-                        </strong>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi">Author(s)</div>
+                            <div class="entity-meta-data">
+                                <ds-author-list authors="simulation.value.authors"></ds-author-list>
+                            </div>
+                        </div>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Date of Publication</div>
+                            <span class="entity-meta-data">
+                                (Appears when published)
+                            </span>
+                        </div>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">
+                                DOI
+                                <button class="btn btn-info btn-sm btn-cite">
+                                    Citation
+                                </button>
+                            </div>
+                            <span class="entity-meta-data">
+                                (Appears when published)
+                            </span>
+                        </div>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">License</div>
+                            <span class="entity-meta-data">
+                                (Appears when published)
+                            </span>
+                        </div>
                         <p>
                             <br>{{ simulation.value.description }}
                         </p>
