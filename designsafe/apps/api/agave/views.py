@@ -15,6 +15,7 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.agave import get_service_account_client, impersonate_service_account
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
@@ -89,7 +90,7 @@ class FileListingView(BaseApiView):
                                 encoder=AgaveJSONEncoder,
                                 safe=False)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class FileMediaView(View):
 
     @profile_fn
