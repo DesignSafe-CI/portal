@@ -192,6 +192,13 @@ class PipelineSelectionCtrl {
                 this.browser.project.planning_set || [],
                 this.browser.project.geoscience_set || []
             );
+            this.orderedPrimary = this.ordered(this.browser.project, this.primaryEnts);
+            this.orderedSecondary = {};
+            this.orderedPrimary.forEach((primEnt) => {
+                if (primEnt.name === 'designsafe.project.field_recon.mission') {
+                    this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
+                }
+            });
         }
     }
 
@@ -280,15 +287,11 @@ class PipelineSelectionCtrl {
     }
 
     ordered(parent, entities) {
-        if (!entities || !parent || parent.name == 'designsafe.project.field_recon.report'){
-            return;
-        }
-        entities = entities.filter(ent => ent._ui.orders.length);
         let order = (ent) => {
-            if (!ent._ui) {
-                return 0;
+            if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
+                return ent._ui.orders.find(order => order.parent === parent.uuid);
             }
-            return ent._ui.orders.find(order => order.parent === parent.uuid);
+            return 0;
         };
         entities.sort((a,b) => {
             if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {

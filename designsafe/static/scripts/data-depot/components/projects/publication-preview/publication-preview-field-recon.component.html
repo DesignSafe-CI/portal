@@ -139,7 +139,8 @@
     </div>
     <div ng-if="!$ctrl.ui.fileNav">
         <!-- Root Sets -->
-        <div ng-repeat="mission in $ctrl.ordered($ctrl.browser.project, $ctrl.primaryEnts)">
+        <!-- <div ng-repeat="mission in $ctrl.ordered($ctrl.browser.project, $ctrl.primaryEnts)"> -->
+        <div ng-repeat="mission in $ctrl.orderedPrimary">
             <!-- Reports -->
             <div ng-if="mission.name == 'designsafe.project.field_recon.report' && !$ctrl.ui.loading">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
@@ -418,7 +419,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.secondaryEnts)">
+                            <!-- <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.secondaryEnts)"> -->
+                            <div ng-repeat="collection in $ctrl.orderedSecondary[mission.uuid]">
                                 <!-- Social Science -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
