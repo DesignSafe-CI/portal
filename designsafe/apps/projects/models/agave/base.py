@@ -377,6 +377,7 @@ def _process_authors(authors):
                 'givenName': author['fname'],
                 'familyName': author['lname'],
             })
-            institutions.append(author['inst'])
+            if 'inst' in author:
+                institutions.append(author['inst'])
     institutions = set(institutions)
     return creators_details, institutions

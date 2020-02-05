@@ -72,7 +72,7 @@
         </p>
     </div>
     <!-- Root Sets -->
-    <div ng-repeat="mission in $ctrl.ordered($ctrl.browser.project, [].concat($ctrl.primaryEntities, $ctrl.secondaryEntities))">
+    <div ng-repeat="mission in $ctrl.orderedPrimary">
         <!-- Reports -->
         <div ng-if="mission.name == 'designsafe.project.field_recon.report' && !$ctrl.ui.loading"
             class="well"
@@ -142,7 +142,7 @@
             <div class="prj-head" style="padding-bottom:20px">
                 Mission | <strong>{{ mission.value.title }}</strong>
             </div>
-            <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.secondaryEnts)" ng-if="$ctrl.matchingGroup(mission, collection)">
+            <div ng-repeat="collection in $ctrl.orderedSecondary[mission.uuid]" ng-if="$ctrl.matchingGroup(mission, collection)">
                 <!-- Social Science -->
                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
