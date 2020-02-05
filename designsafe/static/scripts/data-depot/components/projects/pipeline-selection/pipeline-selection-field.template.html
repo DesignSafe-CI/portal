@@ -90,8 +90,7 @@
             </h3>
         </div>
         <!-- Reports Collection -->
-        <div ng-repeat="mission in $ctrl.ordered($ctrl.browser.project, $ctrl.primaryEnts)"
-             ng-hide="$ctrl.ui.loading">
+        <div ng-repeat="mission in $ctrl.orderedPrimary" ng-hide="$ctrl.ui.loading">
             <div ng-if="mission.name == 'designsafe.project.field_recon.report'">
                 <a ng-click="$ctrl.selectEntity(mission)">Select this Report and all of its files</a>
                 <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
@@ -252,7 +251,7 @@
                                 <br>{{ primEnt.value.description }}
                             </p>
                             <!-- Mission Collections -->
-                            <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.secondaryEnts)" ng-if="$ctrl.matchingGroup(mission, collection)">
+                            <div ng-repeat="collection in $ctrl.orderedSecondary[mission.uuid]">
                             <!-- Social Science -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
