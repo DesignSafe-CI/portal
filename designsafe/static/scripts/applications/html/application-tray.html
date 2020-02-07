@@ -46,6 +46,7 @@
           <span class="text-left"><i class="fa fa-cube fa-2x disabled"></i> Disabled</span>
           <button ng-show="tab.title !== 'Public' && tab.title !== 'Private' && !tab.edit" class="btn btn-default pull-right " ng-click="editTab(tab); tab.edit = !tab.edit">Edit</button>
           <a ui-sref="applications-systems" ng-show="tab.title === 'Private' && !tab.edit" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add</a>
+          <button class="btn btn-danger pull-right" ng-click="openAddForm()">Add 2.0</button>
         </div>
         <div ng-if="!tab.edit && !requesting" class="row top-buffer">
           <div ng-repeat="appMeta in paginate(tab.content | filter: query)[currentPage] | orderBy: 'id' track by $index">

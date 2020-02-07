@@ -1,3 +1,4 @@
+/* eslint-disable */
 export function applicationAddCtrl(window, angular, $, _) {
     'ngInject';
     angular.module('designsafe').controller('ApplicationAddCtrl',

@@ -885,5 +885,14 @@ export function applicationTrayCtrl(window, angular, $, _) {
                     ],
                 });
             };
+        
+            $scope.openAddForm = function() {
+                $uibModal.open({
+                    template: require('../html/appform-v2/app-form-v2.html'),
+                    controller: require('./appform-v2/appform-v2').default
+                });
+                console.log('Click!');
+            };
+        
         }]);
 }

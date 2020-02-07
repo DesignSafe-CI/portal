@@ -1,0 +1,35 @@
+<div class="modal-header" style="background-color: #c6c6c6; display: flex; justify-content: space-between;">
+    Apps Builder Wizard
+</div>
+<div class="modal-body">
+    <div style="display: flex; justify-content: space-evenly;">
+        <div ng-repeat="(pg, lbl) in pages" style="display: flex; flex-direction: column; align-items: center;">
+            <span class="wizard-number">
+                <strong ng-if="pg === page">{{ pg }}</strong>
+                <span ng-if="pg !== page">{{ pg }}</span>
+            </span>
+            <span class="wizard-label">{{ lbl }}</span>  
+        </div>
+    </div>
+    <div class="form-group" ng-repeat="(k, v) in currentPage">
+        <label for="name" class="control-label">{{ v.title }}</label>
+        <input ng-if="v.type === 'string'" type="text" name="formBody[k]" class="form-control" ng-model="formBody[k]" />
+        <div ng-if="v.type === 'array'">
+            <span ng-show="formBody[k].length > 0">{{ formBody[k] }}</span>
+            <input
+                type="text"
+                name="formBody[k]"
+                class="form-control"
+                ng-model="foobar"
+            />
+            <button class="btn-btn-small btn-default" ng-click="addModel(formBody[k], foobar)">Add</button>
+        </div>
+
+        <div class="help-block">
+            {{ v.description }}
+        </div>
+        <div ng-if="!showValidation(formBody[k], v.validator)">
+            The value you have entered is not valid.
+        </div>
+    </div>
+</div>
