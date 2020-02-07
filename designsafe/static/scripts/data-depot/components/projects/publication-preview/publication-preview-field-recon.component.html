@@ -63,7 +63,7 @@
                 </td>
             </tr>
             <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes">
+                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes.length">
                 <td>Event Type</td>
                 <td class="prj-data">
                     <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
