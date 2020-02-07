@@ -1,6 +1,6 @@
-export default function($scope) {
+export default function($scope, $uibModalInstance, Apps, appIcons, appCategories) {
     // Set-up schema
-    $scope.formSchema = require('./utils/schema');
+    $scope.formSchema = require('./utils/schema')(appIcons, appCategories);
     $scope.pages = { 1: 'Basics', 2: 'Dependences', 3: 'Environment', 4: 'Parameters', 5: 'Inputs' };
     $scope.page = 1;
     $scope.currentPage = $scope.formSchema[$scope.page];
@@ -21,6 +21,7 @@ export default function($scope) {
         });
     }, {});
 
+    $scope.ngPlaceholder = '';
     $scope.addModel = function(array, value) {
         // console.log('click');
         if (array === undefined) {
@@ -31,5 +32,12 @@ export default function($scope) {
             value = '';
         }
         return null;
+    };
+    $scope.removeModel = function(array, index) {
+        array.splice(index, 1);
+    };
+
+    $scope.closeForm = function() {
+        $uibModalInstance.close();
     };
 }

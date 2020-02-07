@@ -1,5 +1,6 @@
 <div class="modal-header" style="background-color: #c6c6c6; display: flex; justify-content: space-between;">
     Apps Builder Wizard
+    <i class="fa fa-times" aria-hidden="true" ng-click="closeForm()"></i>
 </div>
 <div class="modal-body">
     <div style="display: flex; justify-content: space-evenly;">
@@ -11,18 +12,36 @@
             <span class="wizard-label">{{ lbl }}</span>  
         </div>
     </div>
+    <div class="progress" style="margin-top: 1em; border: 2px solid black">
+        <div class="progress-bar" style="width: 50%;"></div>
+    </div>
     <div class="form-group" ng-repeat="(k, v) in currentPage">
         <label for="name" class="control-label">{{ v.title }}</label>
-        <input ng-if="v.type === 'string'" type="text" name="formBody[k]" class="form-control" ng-model="formBody[k]" />
-        <div ng-if="v.type === 'array'">
-            <span ng-show="formBody[k].length > 0">{{ formBody[k] }}</span>
+        <input ng-if="v.type === 'string' && !v.enum" type="text" name="formBody[k]" class="form-control" ng-model="formBody[k]" />
+        <select ng-if="v.enum" ng-model="formBody[k]" class="form-control">
+            <option ng-repeat="val in v.enum">
+                {{ val }}
+            </option>
+        </select>
+        <div ng-if="v.type === 'array'" >
+            <div class="btn-group" ng-show="formBody[k].length > 0">
+                <button 
+                    ng-repeat="item in formBody[k] track by $index"
+                    class="btn btn-default"
+                    ng-click="removeModel(formBody[k], $index)"
+                >
+                    {{ item }}
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            
             <input
                 type="text"
                 name="formBody[k]"
                 class="form-control"
-                ng-model="foobar"
+                ng-model="ngPlaceholder"
             />
-            <button class="btn-btn-small btn-default" ng-click="addModel(formBody[k], foobar)">Add</button>
+            <button class="btn-btn-small btn-default" ng-click="addModel(formBody[k], ngPlaceholder)">Add</button>
         </div>
 
         <div class="help-block">

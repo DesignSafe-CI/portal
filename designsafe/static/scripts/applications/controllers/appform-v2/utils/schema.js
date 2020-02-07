@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = (icons, categories) => ({
     1: {
         name: {
             type: 'string',
@@ -29,7 +29,7 @@ module.exports = {
         appCategory: {
             type: 'string',
             description: 'Categorization for this app if made public',
-            enum: [], // TODO: Fix
+            enum: categories,
             title: 'Category',
             defaultValue: '',
         },
@@ -37,7 +37,7 @@ module.exports = {
             type: 'string',
             description: 'The icon to associate with this app',
             title: 'Icon',
-            enum: [''].concat([]).sort(), //TODO: Fix
+            enum: icons.sort(),
             //   'validator': '(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?'
             defaultValue: '',
         },
@@ -468,4 +468,4 @@ module.exports = {
             },
         },
     },
-};
+});

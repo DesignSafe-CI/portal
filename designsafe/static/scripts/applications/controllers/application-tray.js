@@ -1,7 +1,7 @@
 export function applicationTrayCtrl(window, angular, $, _) {
     'ngInject';
     angular.module('designsafe').controller('ApplicationTrayCtrl',
-        ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'AppsPems', 'AppsSimpleList', 'MultipleList', 'Django', 'toastr', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, AppsPems, AppsSimpleList, MultipleList, Django, toastr) {
+        ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'AppsPems', 'AppsSimpleList', 'MultipleList', 'Django', 'toastr', 'appIcons', 'appCategories',function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, AppsPems, AppsSimpleList, MultipleList, Django, toastr, appIcons, appCategories) {
             $scope.tabs = [];
             $scope.simpleList = AppsSimpleList;
             _.forEach($scope.simpleList.tabs, (tab) => {
@@ -889,9 +889,11 @@ export function applicationTrayCtrl(window, angular, $, _) {
             $scope.openAddForm = function() {
                 $uibModal.open({
                     template: require('../html/appform-v2/app-form-v2.html'),
-                    controller: require('./appform-v2/appform-v2').default
+                    controller: [
+                        '$scope', '$uibModalInstance', 'Apps', 'appIcons', 'appCategories', 
+                        require('./appform-v2/appform-v2').default
+                    ]
                 });
-                console.log('Click!');
             };
         
         }]);
