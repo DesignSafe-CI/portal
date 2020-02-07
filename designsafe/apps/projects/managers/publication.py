@@ -378,6 +378,11 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     retrieves all metadata related to these entities and stores it into Elasticsearch
     as :class:`~designafe.libs.elasticsearch.docs.publications.BaseESPublication`
 
+    When publishing for the first time or publishing over an existing publication. We
+    will clear any existing entities (if any) from the published metadata. We'll use entity_uuids
+    (the entities getting DOIs) to rebuild the rest of the publication. These entities
+    usually do not have files associated to them (except published reports/documents).
+
     :param str project_id: Project id.
     :param list of entity_uuid strings: Entity uuids.
     """
@@ -387,19 +392,20 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     publication = pub_doc.to_dict()
 
     if entity_uuids:
-        # clear any existing entities in publication and keep updated fileObjs
+        # clear any existing sub entities in publication and keep updated fileObjs
         fields_to_clear = []
         entities_with_files = []
-        for ent_uuid in entity_uuids:
-            entity = mgr.get_entity_by_uuid(ent_uuid)
-            fields_to_clear.append(FIELD_MAP[entity.name])
+        for key in FIELD_MAP.keys():
+            if FIELD_MAP[key] in publication.keys():
+                fields_to_clear.append(FIELD_MAP[key])
         fields_to_clear = set(fields_to_clear)
+
         for field in fields_to_clear:
-            if field in publication.keys():
-                for ent in publication[field]:
-                    if 'fileObjs' in ent:
-                        entities_with_files.append(ent)
-            publication[field] = []
+            for ent in publication[field]:
+                if 'fileObjs' in ent:
+                    entities_with_files.append(ent)
+                if ent['uuid'] in entity_uuids:
+                    publication[field] = []
 
         for ent_uuid in entity_uuids:
             entity = None
