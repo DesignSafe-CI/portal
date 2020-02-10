@@ -38,7 +38,7 @@ class PipelinePublishCtrl {
     $onInit() {
         this.project = this.resolve.project;
         this.selectedListings = this.resolve.resolveParams.selectedListings;
-        this.existingPub = false;
+        this.existingPub = null;
 
         let publication = {
             project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
@@ -90,6 +90,8 @@ class PipelinePublishCtrl {
             let data = resp.data;
             if (data.project) {
                 this.existingPub = true;
+            } else {
+                this.existingPub = false;
             }
         });
     }
