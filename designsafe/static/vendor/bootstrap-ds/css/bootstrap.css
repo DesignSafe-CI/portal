@@ -2755,6 +2755,10 @@ input[type="search"] {
 .collection-authors {
   width:100%;
 }
+.tag-preview {
+  font-weight: bold;
+  font-style: italic;
+}
 .entity-meta-field{
   padding-bottom: 6px;
 }
@@ -5215,6 +5219,7 @@ a.label:focus {
 }
 .label-danger {
   background-color: #d9534f;
+  margin-top: 3px;
 }
 .label-danger[href]:hover,
 .label-danger[href]:focus {
