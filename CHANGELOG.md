@@ -1,6 +1,59 @@
 # DesignSafe-CI Portal Release Notes
 
-## v4.8.1-10291201
+## v4.8.1-20200202
+Enhancements:
+* FR Model enchancements
+* Users must submit a ticket to republish or overwrite their publications
+
+Fixes:
+* Remove field from experimental-data.json
+* Fix shared with me listing
+
+
+## v4.8.1-20200201
+Enhancements:
+* FR Model enhancements
+
+## v4.7.7
+Enhancements:
+* New options for experimental models.
+
+## v4.8.1-20200106
+Fixes:
+
+Fix webpack build error
+
+## v4.8.1-20200105
+Enhancements:
+* Collections Form revisions
+* Update project review process in publication pipeline
+* Allow inter-sorting of different collection types
+* Update UUIDs of file tags for published files
+* Require users to submit a ticket to republish/overwrite publications
+
+Fixes:
+* Remove faulty options from experimental-data.json
+
+## v4.8.1-20200104
+Enhancements:
+* Additions to equipment and experiment types in experimental models
+* Project styling improvements
+
+Fixes:
+* Fix bug causing Edit Prj. Modal break upon selection of FR Model
+* Fix project typos
+
+## v4.8.1-20200101
+Enhancements:
+* Paginate Applications Builder page
+* Logging for file previews
+* Data Depot Infinite Scroll
+* Field Research Model improvements
+
+## v4.8.1-20191202
+* Dev release for publication pipeline upgrades in task/DES-1358
+
+## v4.8.1-20191201
 * Upgrade to Elasticsearch v7.4
 * Fix image preview carousel and links to NEES publications
 * Frontend enhancements for publications
@@ -16,20 +69,20 @@ Enhancements:
 * Add description for the Field Research project type
 * Remove elevation from Field Research mission metadata and make endDate optional.
 
-Fixes: 
+Fixes:
 * Encode google drive filenames as utf-8
 * Remove some team members from citations
 
 ## v4.7.5
-Fixes: 
+Fixes:
 * Curation enhancements
 
 ## v4.7.4-20191102
-Fixes: 
+Fixes:
 * Fix Webpack minification error in site search
 
 ## v4.7.4-20191101
-Fixes: 
+Fixes:
 * Fix bugs with adding self to Team Members section
 * Prevent ui data from being removed from published project metadata
 * Hide citation for projects without citations
@@ -37,7 +90,7 @@ Fixes:
 * Fix Projects with Blank Author/DOI Field in site search
 
 ## v4.7.4-20191005
-Fixes: 
+Fixes:
 * NEES data in publications browsing view
 * Site Location (lat long) Formatting
 * Improve data transfer messages in Data Depot
@@ -56,15 +109,15 @@ Fixes:
 * fix(publication): Field Research Template fixes
 * feat: Add manage account to user menu dropdown
 ## v4.7.3-20191004
-Fixes: 
+Fixes:
 * Edit profile update message.
 
 ## v4.7.3-20191003
-Fixes: 
+Fixes:
 * Field Recon project bugfixes.
 
 ## v4.7.3-20191002
-Fixes: 
+Fixes:
 * Styling changes for Edit Profile page.
 
 ## v4.7.3-20191017
