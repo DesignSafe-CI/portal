@@ -23,6 +23,11 @@
   border-color: #1568C9;
   white-space: normal;
 }
+.tab-cell {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  text-align: left;
+}
 
 .category-sensor-info {
   font-weight: bold;
@@ -104,6 +109,13 @@
 .tab-collection-conf {
   background-color: #ECE4BF;
   border-color: #B59300;
+  white-space: normal;
+}
+
+.tab-old-collection {
+  background-color: #f2dede;
+  border-color: #ebccd1;
+  color: #a94442;
   white-space: normal;
 }
 

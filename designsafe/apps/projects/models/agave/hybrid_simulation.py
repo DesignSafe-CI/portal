@@ -28,8 +28,8 @@ class HybridSimulationProject(Project):
     pi = fields.CharField('PI', max_length=255)
     award_number = fields.ListField('Award Number')
     associated_projects = fields.ListField('Associated Project')
-    ef = fields.CharField('Experimental Facility', max_length=512)
-    keywords = fields.CharField('Keywords')
+    ef = fields.CharField('Experimental Facility', max_length=512, default='')
+    keywords = fields.CharField('Keywords', default='')
     dois = fields.ListField('Dois')
 
 class FileModel(MetadataModel):

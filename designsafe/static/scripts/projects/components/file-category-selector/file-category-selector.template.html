@@ -95,9 +95,23 @@
                 {{simOutput.value.title}}
             </option>
         </optgroup>
-        <optgroup label="Collection"
-                  data-ng-if="$ctrl.project.collection_set.length">
-            <option data-ng-repeat="collection in $ctrl.project.collection_set | orderBy: ['value.title']"
+        <optgroup label="Social Sciences Collection"
+                  data-ng-if="$ctrl.project.socialscience_set.length">
+            <option data-ng-repeat="collection in $ctrl.project.socialscience_set | orderBy: ['value.title']"
+                    value="{{collection.uuid}}">
+                {{collection.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Engineering/Geosciences Collection"
+                  data-ng-if="$ctrl.project.geoscience_set.length">
+            <option data-ng-repeat="collection in $ctrl.project.geoscience_set | orderBy: ['value.title']"
+                    value="{{collection.uuid}}">
+                {{collection.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Research Planning Collection"
+                  data-ng-if="$ctrl.project.planning_set.length">
+            <option data-ng-repeat="collection in $ctrl.project.planning_set | orderBy: ['value.title']"
                     value="{{collection.uuid}}">
                 {{collection.value.title}}
             </option>

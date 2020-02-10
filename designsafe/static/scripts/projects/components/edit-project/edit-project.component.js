@@ -186,10 +186,15 @@ class EditProjectCtrl {
                 if (this.project.value.nhEventEnd) {
                     this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                 }
-                if (this.project.value.nhTypes.length > 0) {
+                if (this.project.value.nhTypes && this.project.value.nhTypes.length > 0) {
                     this.form.nhTypes = this.project.value.nhTypes;
                 } else {
                     this.form.nhTypes = new Array (1);
+                }
+                if (this.project.value.nhLocation && this.project.value.nhLatitude && this.project.value.nhLongitude) {
+                    this.form.nhLocation = this.project.value.nhLocation;
+                    this.form.nhLatitude = this.project.value.nhLatitude;
+                    this.form.nhLongitude = this.project.value.nhLongitude;
                 }
             }
         }
@@ -308,6 +313,11 @@ class EditProjectCtrl {
         }
         if (this.form.nhEventDateEnd) {
             projectData.nhEventEnd = this.form.nhEventDateEnd;
+        }
+        if (this.form.nhLocation && this.form.nhLatitude && this.form.nhLongitude) {
+            projectData.nhLocation = this.form.nhLocation;
+            projectData.nhLatitude = this.form.nhLatitude;
+            projectData.nhLongitude = this.form.nhLongitude;
         }
         if (this.form.nhTypes) {
             projectData.nhTypes = [];

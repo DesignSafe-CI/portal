@@ -68,16 +68,26 @@
                                     ng-model="$ctrl.otherTagName[entity.uuid]"
                                     placeholder="Enter your custom tag..."
                                 >
+                                <input class="input-tag"
+                                    ng-if="$ctrl.selectedFileTag[entity.uuid] === 'Location' "
+                                    ng-model="$ctrl.locationTag[entity.uuid]"
+                                    placeholder="Enter your location..."
+                                >
+                                <input class="input-tag"
+                                    ng-if="$ctrl.selectedFileTag[entity.uuid] === 'Lat Long' "
+                                    ng-model="$ctrl.latLongTag[entity.uuid]"
+                                    placeholder="Enter latitude and longitude coordinates..."
+                                >
                                 <!-- save custom tag -->
                                 <button class="btn-link"
-                                        ng-if="$ctrl.selectedFileTag[entity.uuid] === 'other' "
+                                        ng-if="['other', 'Lat Long', 'Location'].includes($ctrl.selectedFileTag[entity.uuid])"
                                         data-ng-click="$ctrl.addFileTag(entity)"
-                                        data-ng-disabled="$ctrl._ui.busy || !$ctrl.otherTagName[entity.uuid]">
+                                        data-ng-disabled="$ctrl._ui.busy">
                                     Save
                                 </button>
                                 <!-- save tag -->
                                 <button class="btn-link"
-                                        ng-if="$ctrl.selectedFileTag[entity.uuid] != 'other' "
+                                        ng-if="!['other', 'Lat Long', 'Location'].includes($ctrl.selectedFileTag[entity.uuid])"
                                         data-ng-click="$ctrl.addFileTag(entity)"
                                         data-ng-disabled="$ctrl._ui.busy || !$ctrl.selectedFileTag[entity.uuid]">
                                     Save
@@ -91,10 +101,10 @@
         <!-- preview/published tags -->
         <span data-ng-repeat="entity in $ctrl.file._entities" ng-if="$ctrl._ui.showTags">
             <span data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags)">
-                <strong>
+                <div class="tag-preview">
                     <span ng-if="!$last">{{tag.tagName}}, </span>
                     <span ng-if="$last">{{tag.tagName}}</span>
-                </strong>
+                </div>
             </span>
         </span>
     </div>
@@ -142,10 +152,10 @@
             </div>
         </div>
         <span ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags)" ng-if="$ctrl._ui.showTags">
-            <strong>
+            <div class="tag-preview">
                 <span ng-if="!$last">{{tag.tagName}}, </span>
                 <span ng-if="$last">{{tag.tagName}}</span>
-            </strong>
+            </div>
         </span>
     </div>
     <!-- Other Projects -->
