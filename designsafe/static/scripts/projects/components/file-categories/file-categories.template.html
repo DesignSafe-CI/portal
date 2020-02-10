@@ -101,10 +101,10 @@
         <!-- preview/published tags -->
         <span data-ng-repeat="entity in $ctrl.file._entities" ng-if="$ctrl._ui.showTags">
             <span data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags)">
-                <strong>
+                <div class="tag-preview">
                     <span ng-if="!$last">{{tag.tagName}}, </span>
                     <span ng-if="$last">{{tag.tagName}}</span>
-                </strong>
+                </div>
             </span>
         </span>
     </div>
@@ -152,10 +152,10 @@
             </div>
         </div>
         <span ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags)" ng-if="$ctrl._ui.showTags">
-            <strong>
+            <div class="tag-preview">
                 <span ng-if="!$last">{{tag.tagName}}, </span>
                 <span ng-if="$last">{{tag.tagName}}</span>
-            </strong>
+            </div>
         </span>
     </div>
     <!-- Other Projects -->
