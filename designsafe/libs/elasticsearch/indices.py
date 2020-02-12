@@ -12,19 +12,15 @@ from django.conf import settings
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Index)
 from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError, ConnectionTimeout
+from elasticsearch import TransportError, ConnectionTimeout, Elasticsearch
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
 from datetime import datetime
 
-#pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
 
 try:
     HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
-    connections.configure(
-        default={'hosts': HOSTS, "http_auth": settings.ES_AUTH}
-    )
+    es_client = Elasticsearch(HOSTS, http_auth=settings.ES_AUTH)
 except AttributeError as exc:
     logger.error('Missing ElasticSearch config. %s', exc)
     raise
@@ -46,7 +42,7 @@ def setup_index(index_config, force=False, reindex=False):
     time_now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
     index_name = '{}-{}'.format(alias, time_now)
 
-    index = Index(alias)
+    index = Index(alias, using=es_client)
 
     if force or not index.exists():
         # If an index exists under the alias and force=True, delete any indices
@@ -55,7 +51,7 @@ def setup_index(index_config, force=False, reindex=False):
             Index(index.get_alias().keys()[0]).delete(ignore=404)
             index = Index(alias)
         # Create a new index with the provided name.
-        index = Index(index_name)
+        index = Index(index_name, using=es_client)
         # Alias this new index with the provided alias key.
         aliases = {alias: {}}
         index.aliases(**aliases)
