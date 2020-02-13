@@ -6304,6 +6304,12 @@ button.close {
   }
 }
 @media (min-width: 992px) {
+  .modal-author {
+    width: 500px;
+    top: 35%;
+  }
+}
+@media (min-width: 992px) {
   .modal-lg {
     width: 900px;
   }
