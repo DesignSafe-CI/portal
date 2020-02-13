@@ -2740,6 +2740,9 @@ input[type="search"] {
 .form-group {
   margin-bottom: 20px;
 }
+.curation-tools {
+  vertical-align: middle;
+}
 .collection-sample {
   width: 65%;
   display:inline-block;
