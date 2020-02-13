@@ -136,11 +136,11 @@ export function ProjectEntityModel() {
     }
 
     var cssClasses = {
-        'designsafe.project.model_config': { tag: 'tag-blue', text: 'ds-text-blue' },
-        'designsafe.project.sensor_list': { tag: 'tag-green', text: 'ds-text-green' },
-        'designsafe.project.event': { tag: 'tag-yellow', text: 'ds-text-red' },
-        'designsafe.project.analysis': { tag: 'tag-light-blue', text: 'ds-text-light-blue' },
-        'designsafe.project.report': { tag: 'tag-black', text: 'ds-text-black' },
+        'designsafe.project.model_config': { 'tag': 'tag-blue', 'text': 'ds-text-blue' },
+        'designsafe.project.sensor_list': { 'tag': 'tag-green', 'text': 'ds-text-green' },
+        'designsafe.project.event': { 'tag': 'tag-yellow', 'text': 'ds-text-red' },
+        'designsafe.project.analysis': { 'tag': 'tag-light-blue', 'text': 'ds-text-light-blue' },
+        'designsafe.project.report': { 'tag': 'tag-black', 'text': 'ds-text-black' },
         'designsafe.project.simulation.model': {'tag': 'tag-blue', 'text': 'ds-text-blue'},
         'designsafe.project.simulation.input': {'tag': 'tag-green', 'text': 'ds-text-green'},
         'designsafe.project.simulation.output': {'tag': 'tag-yellow', 'text': 'ds-text-red'},
@@ -158,7 +158,7 @@ export function ProjectEntityModel() {
         'designsafe.project.field_recon.report': {'tag': 'tag-black', 'text': 'ds-text-black'},
         'designsafe.project.field_recon.social_science': {'tag': 'tag-yellow', 'text': 'ds-text-yellow'},
         'designsafe.project.field_recon.geoscience': {'tag': 'tag-yellow', 'text': 'ds-text-yellow'},
-        'designsafe.project.field_recon.planning': { tag: 'tag-green', text: 'ds-text-green' },
+        'designsafe.project.field_recon.planning': { 'tag': 'tag-green', 'text': 'ds-text-green' },
     };
 
     ProjectEntity.prototype.cssClasses = function() {
