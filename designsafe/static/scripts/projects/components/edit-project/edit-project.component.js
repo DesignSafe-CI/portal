@@ -49,6 +49,7 @@ class EditProjectCtrl {
             'Presentation',
             'Report',
             'REU',
+            'Social Sciences',
             'Softwarem',
             'Survey',
             'Video',

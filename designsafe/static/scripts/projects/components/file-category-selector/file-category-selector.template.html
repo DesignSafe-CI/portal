@@ -1,4 +1,4 @@
-<form ng-if="$ctrl.selectMultiple()">
+<form ng-if="$ctrl.selectMultiple() && $ctrl.project.value.projectType !== 'other'">
     <select name="project-category"
             data-ng-model="$ctrl.selectedUuid"
             class="form-control">

@@ -8,7 +8,7 @@
 </div>
 <div class="modal-body">
     <div class="well">
-        <form name="addForm" data-ng-hide="$ctrl.ui.showEditCollectionForm">
+        <ng-form name="addForm" data-ng-hide="$ctrl.ui.showEditCollectionForm">
             <div class="collection-type form-group">
                 <div style="padding-bottom: 10px;">
                     <label for="id-type">
@@ -50,365 +50,367 @@
                     </select>
                 </div>
             </div>
-            <div class="collection-title form-group">
-                <label for="id-title">
-                    <div class="label-form">
-                        <div>
-                            <span class="label-form-name">Collection Title</span>
-                            <span class="label label-danger">Required</span>
-                        </div>
-                        <span class="label-form-desc">
-                            Make it unique from other collections. Use sequential ordering if necessary.
-                        </span>
-                    </div>
-                </label>
-                <input type="text"
-                        id="id-title"
-                        data-ng-model="$ctrl.form.title"
-                        data-ng-required="true"
-                        class="form-control" />
-            </div>
-            <div class="collection-unitAnalysis form-group" ng-if="$ctrl.formFields('unitAnalysis')">
-                <label for="id-unitAnalysis">Unit of Analysis
-                    <span class="label-form-desc">
-                        A description of who or what is being studied.
-                    </span>
-                </label>
-                <input type="text"
-                        id="id-unitAnalysis"
-                        data-ng-model="$ctrl.form.unit"
-                        data-ng-required="false"
-                        class="form-control" />
-            </div>
-            <div class="collection-modes form-group" ng-if="$ctrl.formFields('modes')">
-                <label for="id-modes">Modes(s) of Collection
-                    <span class="label-form-desc">
-                        The procedure/technique of the inquiry used to obtain the data.
-                    </span>
-                </label>
-                <div ng-repeat="mode in $ctrl.form.modes track by $index">
-                    <input type="text"
-                            id="id-modes"
-                            data-ng-model="$ctrl.form.modes[$index]"
-                            data-ng-required="false"
-                            class="form-control" />
-                </div>
-                <button class="btn btn-link"
-                        type="button"
-                        data-ng-click="$ctrl.addModes()">
-                    <i class="fa fa-plus">&nbsp;</i> Add another Mode of Collection
-                </button>
-            </div>
-            <div class="collection-sample form-group" ng-if="$ctrl.formFields('sample')">
-                <label for="id-sample">Sampling Approach(es)
-                    <span class="label-form-desc">
-                        Methods used to sample the population.
-                    </span>
-                </label>
-                <div ng-repeat="sample in $ctrl.form.sampleApproach track by $index">
-                    <input type="text"
-                            id="id-sample"
-                            ng-model="$ctrl.form.sampleApproach[$index]"
-                            ng-required="false"
-                            class="form-control" />
-                </div>
-                <button class="btn btn-link collection-sample-add"
-                        type="button"
-                        ng-click="$ctrl.addSampleApproach()">
-                    <i class="fa fa-plus">&nbsp;</i> Add another Sampling Approach
-                </button>  
-            </div>
-            <div class="collection-sample-size form-group"  ng-if="$ctrl.formFields('sample')">
-                <label for="id-sampleSize">Sample Size</label>
-                <br>
-                <br>
-                <input type="text"
-                        id="id-sampleSize"
-                        data-ng-model="$ctrl.form.sampleSize"
-                        data-ng-required="false"
-                        class="form-control" />
-            </div>
-            <div class="observation-type form-group"
-                    ng-if="$ctrl.formFields('obsType')">
-                <label for="id-type">
-                    <div class="label-form">
-                        <div>
-                            <span class="label-form-name">Observation Type</span>
-                            <span class="label label-danger">Required</span>
-                        </div>
-                        <span style="display: block; font-weight:normal;">
-                            The nature or subject of the data collected.
-                        </span>
-                    </div>
-                </label>
-                <div data-ng-repeat="observationType in $ctrl.form.observationTypes">
-                    <select id="id-observation-type"
-                            style="margin-bottom: 5px"
-                            data-ng-options="item for item in $ctrl.data.observationTypes"
-                            data-ng-model="$ctrl.form.observationTypes[$index]"
-                            data-ng-required="$first"
-                            class="form-control"
-                            data-ng-if="$ctrl.showObservationDropdown($index)">
-                    <option value="">-- Select Observation Type --</option>
-                    </select>
-                    <input type="text"
-                            data-ng-model="$ctrl.form.observationTypesOther[$index]"
-                            data-ng-if="$ctrl.showObservationInput($index)"
-                            class="form-control"
-                        />
-                </div>
-                <button type="button"
-                        class="btn btn-link"
-                        data-ng-click="$ctrl.addObservationType()">
-                    <i class="fa fa-plus">&nbsp;</i> Add another Observation Type
-                </button>
-            </div>
-            <div class="collection-dates form-group" ng-if="$ctrl.formFields('colDates')">
-                <label for="id-date-start">
-                    <div class="label-form">
-                        <div>
-                            <span class="label-form-name">Date(s) of Collection</span>
-                            <span class="label label-danger">Required</span>
-                        </div>
-                        <span style="display: block; font-weight:normal;">
-                            When the data in this collection was gathered.
-                            If you only want to enter a single date, fill in the first field.
-                        </span>
-                    </div>
-                </label>
-                <div style="display: flex;">
-                    <input type="text"
-                           id="id-date-start"
-                           data-uib-datepicker-popup="MM-dd-yyyy"
-                           data-ng-model="$ctrl.form.dateStart"
-                           data-is-open="isStartOpen"
-                           placeholder="mm-dd-yyyy"
-                           data-date-picker-options="dateOptions"
-                           data-date-disabled="disabled(date, mode)"
-                           data-ng-required="true"
-                           data-close-text="Close"
-                           class="form-control"
-                           style="width: 25%; display:inline-block;" />
-                    <span class="input-group-btn">
-                        <button type="button"
-                                class="btn btn-default"
-                                data-ng-click="isStartOpen = !isStartOpen">
-                            <i class="glyphicon glyphicon-calendar"></i>
-                        </button>
-                    </span>
-                    <span style="padding:6px; margin-left:30px;">
-                        &#8213;
-                    </span>
-                    <input type="text"
-                           id="id-date-end"
-                           data-uib-datepicker-popup="MM-dd-yyyy"
-                           data-ng-model="$ctrl.form.dateEnd"
-                           data-is-open="isEndOpen"
-                           placeholder="mm-dd-yyyy"
-                           data-date-picker-options="dateOptions"
-                           data-date-disabled="disabled(date, mode)"
-                           data-ng-required="false"
-                           data-close-text="Close"
-                           class="form-control"
-                           style="width: 25%; display:inline-block;" />
-                    <span class="input-group-btn">
-                        <button type="button"
-                                class="btn btn-default"
-                                data-ng-click="isEndOpen = !isEndOpen">
-                            <i class="glyphicon glyphicon-calendar"></i>
-                        </button>
-                    </span>
-                </div>
-            </div>
-            <div class="data-collectors form-group">
-                <label for="id-collectors" ng-if="$ctrl.formFields('collectors')">
-                    <div class="label-form">
-                        <div>
-                            <span class="label-form-name">Data Collector(s)</span>
-                            <span class="label label-danger">Required</span>
-                        </div>
-                        <span class="label-form-desc">
-                            Who, specifically, collected this data?
-                            You can order the data collectors later when you publish.
-                        </span>
-                    </div>
-                </label>
-                <label for="id-authors" ng-if="$ctrl.formFields('authors')">
-                    <div class="label-form">
-                        <div>
-                            <span class="label-form-name">Author(s)</span>
-                            <span class="label label-danger">Required</span>
-                        </div>
-                        <span class="label-form-desc">
-                            You can order the authors later when you publish.
-                        </span>
-                    </div>
-                </label>
-                <br>
-                <div data-ng-repeat="usr in $ctrl.form.dataCollectors track by $index"
-                     style="width: 45%;
-                            display:inline-block;
-                            white-space: nowrap;
-                            margin-bottom:5px;">
-                    <input type="checkbox"
-                           data-format="lname"
-                           id="{{ 'collector-' + $index }}"
-                           data-ng-model="usr.authorship"
-                           data-ng-required="$ctrl.validCollector()">
-                        <ds-user data-ng-if="!usr.guest"
-                                 data-username="usr.name"
-                                 data-format="lname">
-                            {{usr.name}}
-                        </ds-user>
-                        <span data-ng-if="usr.guest">
-                            {{ usr.lname }}, {{ usr.fname }}
-                        </span>
-                </div>
-            </div>
-            <div class="site-location form-group" ng-if="$ctrl.formFields('colSite')">
-                <label for="id-location">
-                    <div class="label-form">
-                        <div>
-                            <span class="label-form-name">Collection Site Location</span>
-                        </div>
-                    </div>
-                </label>
-                <div>
-                    <div style="width: 55%; display:inline-block;">
-                        <label for="id-location" class="label-secondary">
-                            Geolocation
-                        </label>
-                        <input type="text"
-                               id="id-location"
-                               data-ng-model="$ctrl.form.location"
-                               class="form-control"/>
-                    </div>
-                    <div style="width: 21%; display:inline-block; margin-left:5px;">
-                        <label for="id-location" class="label-secondary">
-                            Latitude
-                        </label>
-                        <input type="text"
-                               id="id-latitude"
-                               data-ng-model="$ctrl.form.latitude"
-                               class="form-control"/>
-                    </div>
-                    <div style="width: 21%; display:inline-block; margin-left:5px;">
-                        <label for="id-location" class="label-secondary">
-                            Longitude
-                        </label>
-                        <input type="text"
-                               id="id-longitude"
-                               data-ng-model="$ctrl.form.longitude"
-                               class="form-control" />
-                    </div>
-                </div>
-            </div>
-            <div class="equipment form-group" ng-if="$ctrl.formFields('equipment')">
-                <div>
-                    <label for="id-equipment">
+            <div ng-if="$ctrl.form.collectionType">
+                <div class="collection-title form-group">
+                    <label for="id-title">
                         <div class="label-form">
                             <div>
-                                <span class="label-form-name">Equipment</span>
+                                <span class="label-form-name">Collection Title</span>
                                 <span class="label label-danger">Required</span>
                             </div>
                             <span class="label-form-desc">
-                                The equipment used to gather your data.
+                                Make it unique from other collections. Use sequential ordering if necessary.
                             </span>
                         </div>
                     </label>
-                    <div data-ng-repeat="eqp in $ctrl.form.equipment track by $index">
-                        <select class="form-control"
-                                data-ng-model="$ctrl.form.equipment[$index]"
-                                style="margin-bottom: 5px;"
-                                data-ng-required="$first"
-                                data-ng-if="$ctrl.showEquipmentDropdown($index)">
-                            <option selected value="">-- Select Equipment --</option>
-                            <optgroup data-ng-repeat="(group, labels) in $ctrl.data.equipment"
-                                      label="{{group}}">
-                                <option data-ng-repeat="label in labels"
-                                        value="{{label}}">
-                                    {{label}}
-                                </option>
-                            </optgroup>
-                        </select>
+                    <input type="text"
+                            id="id-title"
+                            data-ng-model="$ctrl.form.title"
+                            data-ng-required="true"
+                            class="form-control" />
+                </div>
+                <div class="collection-unitAnalysis form-group" ng-if="$ctrl.formFields('unitAnalysis')">
+                    <label for="id-unitAnalysis">Unit of Analysis
+                        <span class="label-form-desc">
+                            A description of who or what is being studied.
+                        </span>
+                    </label>
+                    <input type="text"
+                            id="id-unitAnalysis"
+                            data-ng-model="$ctrl.form.unit"
+                            data-ng-required="false"
+                            class="form-control" />
+                </div>
+                <div class="collection-modes form-group" ng-if="$ctrl.formFields('modes')">
+                    <label for="id-modes">Modes(s) of Collection
+                        <span class="label-form-desc">
+                            The procedure/technique of the inquiry used to obtain the data.
+                        </span>
+                    </label>
+                    <div ng-repeat="mode in $ctrl.form.modes track by $index">
                         <input type="text"
-                               data-ng-model="$ctrl.form.equipmentOther[$index]"
-                               data-ng-if="$ctrl.showEquipmentInput($index)"
-                               class="form-control" />
+                                id="id-modes"
+                                data-ng-model="$ctrl.form.modes[$index]"
+                                data-ng-required="false"
+                                class="form-control" />
                     </div>
                     <button class="btn btn-link"
                             type="button"
-                            data-ng-click="$ctrl.addEquipment()">
-                        <i class="fa fa-plus">&nbsp;</i> Add another Equipment
+                            data-ng-click="$ctrl.addModes()">
+                        <i class="fa fa-plus">&nbsp;</i> Add another Mode of Collection
                     </button>
                 </div>
-            </div>
-            <div class="collection-restriction form-group"  ng-if="$ctrl.formFields('restriction')">
-                <label for="id-restriction">Restriction
-                    <span class="label-form-desc">
-                        Information regarding limitations on use or restrictions on access to the data.
-                    </span>
-                </label>
-                <input type="text"
-                       id="id-restriction"
-                       data-ng-model="$ctrl.form.restriction"
-                       data-ng-required="false"
-                       class="form-control" />
-            </div>
-            <div class="referenced-data form-group">
-                <div style="width:45%; display:inline-block;">
-                    <label>
-                        Referenced Data Title
-                        <span style="display:block; font-weight: normal;">
-                            Data from published projects or an
-                            external repository.
+                <div class="collection-sample form-group" ng-if="$ctrl.formFields('sample')">
+                    <label for="id-sample">Sampling Approach(es)
+                        <span class="label-form-desc">
+                            Methods used to sample the population.
                         </span>
                     </label>
+                    <div ng-repeat="sample in $ctrl.form.sampleApproach track by $index">
+                        <input type="text"
+                                id="id-sample"
+                                ng-model="$ctrl.form.sampleApproach[$index]"
+                                ng-required="false"
+                                class="form-control" />
+                    </div>
+                    <button class="btn btn-link collection-sample-add"
+                            type="button"
+                            ng-click="$ctrl.addSampleApproach()">
+                        <i class="fa fa-plus">&nbsp;</i> Add another Sampling Approach
+                    </button>  
                 </div>
-                <div style="width:45%; display:inline-block;">
-                    <label>
-                        Referenced Data DOI or URL
-                    </label>
-                    <span class="label-form-desc">
-                        &nbsp;
-                    </span>
-                </div>
-                <div style="width:45%; display:inline-block; margin-bottom:5px"
-                     data-ng-repeat-start="referenced in $ctrl.form.referencedData">
+                <div class="collection-sample-size form-group"  ng-if="$ctrl.formFields('sample')">
+                    <label for="id-sampleSize">Sample Size</label>
+                    <br>
+                    <br>
                     <input type="text"
-                           data-ng-model="referenced.title"
-                           class="form-control"/>
+                            id="id-sampleSize"
+                            data-ng-model="$ctrl.form.sampleSize"
+                            data-ng-required="false"
+                            class="form-control" />
                 </div>
-                <div style="width: 45%; display:inline-block;" data-ng-repeat-end>
-                    <input type="text"
-                           data-ng-model="referenced.url"
-                           class="form-control"/>
-                </div>
-                <button class="btn btn-link"
-                        data-ng-click="$ctrl.addReferenced()">
-                    <i class="fa fa-plus">&nbsp;</i>
-                    Add another Referenced Data
-                </button>
-            </div>
-            <div class="description form-group">
-                <label for="id-description">
-                    <div class="label-form">
-                        <div>
-                            <span class="label-form-name">Collection Description</span>
-                            <span class="label label-danger">Required</span>
+                <div class="observation-type form-group"
+                        ng-if="$ctrl.formFields('obsType')">
+                    <label for="id-type">
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name">Observation Type</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span style="display: block; font-weight:normal;">
+                                The nature or subject of the data collected.
+                            </span>
                         </div>
-                        <span style="display:block; font-weight:normal;">
-                            Summarized the purpose of the collection and its files.
-                            What is it about? What are its features?
+                    </label>
+                    <div data-ng-repeat="observationType in $ctrl.form.observationTypes">
+                        <select id="id-observation-type"
+                                style="margin-bottom: 5px"
+                                data-ng-options="item for item in $ctrl.data.observationTypes"
+                                data-ng-model="$ctrl.form.observationTypes[$index]"
+                                data-ng-required="$first"
+                                class="form-control"
+                                data-ng-if="$ctrl.showObservationDropdown($index)">
+                        <option value="">-- Select Observation Type --</option>
+                        </select>
+                        <input type="text"
+                                data-ng-model="$ctrl.form.observationTypesOther[$index]"
+                                data-ng-if="$ctrl.showObservationInput($index)"
+                                class="form-control"
+                            />
+                    </div>
+                    <button type="button"
+                            class="btn btn-link"
+                            data-ng-click="$ctrl.addObservationType()">
+                        <i class="fa fa-plus">&nbsp;</i> Add another Observation Type
+                    </button>
+                </div>
+                <div class="collection-dates form-group" ng-if="$ctrl.formFields('colDates')">
+                    <label for="id-date-start">
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name">Date(s) of Collection</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span style="display: block; font-weight:normal;">
+                                When the data in this collection was gathered.
+                                If you only want to enter a single date, fill in the first field.
+                            </span>
+                        </div>
+                    </label>
+                    <div style="display: flex;">
+                        <input type="text"
+                            id="id-date-start"
+                            data-uib-datepicker-popup="MM-dd-yyyy"
+                            data-ng-model="$ctrl.form.dateStart"
+                            data-is-open="isStartOpen"
+                            placeholder="mm-dd-yyyy"
+                            data-date-picker-options="dateOptions"
+                            data-date-disabled="disabled(date, mode)"
+                            data-ng-required="true"
+                            data-close-text="Close"
+                            class="form-control"
+                            style="width: 25%; display:inline-block;" />
+                        <span class="input-group-btn">
+                            <button type="button"
+                                    class="btn btn-default"
+                                    data-ng-click="isStartOpen = !isStartOpen">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </button>
+                        </span>
+                        <span style="padding:6px; margin-left:30px;">
+                            &#8213;
+                        </span>
+                        <input type="text"
+                            id="id-date-end"
+                            data-uib-datepicker-popup="MM-dd-yyyy"
+                            data-ng-model="$ctrl.form.dateEnd"
+                            data-is-open="isEndOpen"
+                            placeholder="mm-dd-yyyy"
+                            data-date-picker-options="dateOptions"
+                            data-date-disabled="disabled(date, mode)"
+                            data-ng-required="false"
+                            data-close-text="Close"
+                            class="form-control"
+                            style="width: 25%; display:inline-block;" />
+                        <span class="input-group-btn">
+                            <button type="button"
+                                    class="btn btn-default"
+                                    data-ng-click="isEndOpen = !isEndOpen">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </button>
                         </span>
                     </div>
-                </label>
-                <textarea style="width:100%; height:3em; resize: vertical;"
-                          id="id-description"
-                          data-ng-model="$ctrl.form.description"
-                          data-ng-required="true">
-                    &nbsp;
-                </textarea>
+                </div>
+                <div class="data-collectors form-group">
+                    <label for="id-collectors" ng-if="$ctrl.formFields('collectors')">
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name">Data Collector(s)</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span class="label-form-desc">
+                                Who, specifically, collected this data?
+                                You can order the data collectors later when you publish.
+                            </span>
+                        </div>
+                    </label>
+                    <label for="id-authors" ng-if="$ctrl.formFields('authors')">
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name">Author(s)</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span class="label-form-desc">
+                                You can order the authors later when you publish.
+                            </span>
+                        </div>
+                    </label>
+                    <br>
+                    <div data-ng-repeat="usr in $ctrl.form.dataCollectors track by $index"
+                        style="width: 45%;
+                                display:inline-block;
+                                white-space: nowrap;
+                                margin-bottom:5px;">
+                        <input type="checkbox"
+                            data-format="lname"
+                            id="{{ 'collector-' + $index }}"
+                            data-ng-model="usr.authorship"
+                            data-ng-required="$ctrl.validCollector()">
+                            <ds-user data-ng-if="!usr.guest"
+                                    data-username="usr.name"
+                                    data-format="lname">
+                                {{usr.name}}
+                            </ds-user>
+                            <span data-ng-if="usr.guest">
+                                {{ usr.lname }}, {{ usr.fname }}
+                            </span>
+                    </div>
+                </div>
+                <div class="site-location form-group" ng-if="$ctrl.formFields('colSite')">
+                    <label for="id-location">
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name">Collection Site Location</span>
+                            </div>
+                        </div>
+                    </label>
+                    <div>
+                        <div style="width: 55%; display:inline-block;">
+                            <label for="id-location" class="label-secondary">
+                                Geolocation
+                            </label>
+                            <input type="text"
+                                id="id-location"
+                                data-ng-model="$ctrl.form.location"
+                                class="form-control"/>
+                        </div>
+                        <div style="width: 21%; display:inline-block; margin-left:5px;">
+                            <label for="id-location" class="label-secondary">
+                                Latitude
+                            </label>
+                            <input type="text"
+                                id="id-latitude"
+                                data-ng-model="$ctrl.form.latitude"
+                                class="form-control"/>
+                        </div>
+                        <div style="width: 21%; display:inline-block; margin-left:5px;">
+                            <label for="id-location" class="label-secondary">
+                                Longitude
+                            </label>
+                            <input type="text"
+                                id="id-longitude"
+                                data-ng-model="$ctrl.form.longitude"
+                                class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="equipment form-group" ng-if="$ctrl.formFields('equipment')">
+                    <div>
+                        <label for="id-equipment">
+                            <div class="label-form">
+                                <div>
+                                    <span class="label-form-name">Equipment</span>
+                                    <span class="label label-danger">Required</span>
+                                </div>
+                                <span class="label-form-desc">
+                                    The equipment used to gather your data.
+                                </span>
+                            </div>
+                        </label>
+                        <div data-ng-repeat="eqp in $ctrl.form.equipment track by $index">
+                            <select class="form-control"
+                                    data-ng-model="$ctrl.form.equipment[$index]"
+                                    style="margin-bottom: 5px;"
+                                    data-ng-required="$first"
+                                    data-ng-if="$ctrl.showEquipmentDropdown($index)">
+                                <option selected value="">-- Select Equipment --</option>
+                                <optgroup data-ng-repeat="(group, labels) in $ctrl.data.equipment"
+                                        label="{{group}}">
+                                    <option data-ng-repeat="label in labels"
+                                            value="{{label}}">
+                                        {{label}}
+                                    </option>
+                                </optgroup>
+                            </select>
+                            <input type="text"
+                                data-ng-model="$ctrl.form.equipmentOther[$index]"
+                                data-ng-if="$ctrl.showEquipmentInput($index)"
+                                class="form-control" />
+                        </div>
+                        <button class="btn btn-link"
+                                type="button"
+                                data-ng-click="$ctrl.addEquipment()">
+                            <i class="fa fa-plus">&nbsp;</i> Add another Equipment
+                        </button>
+                    </div>
+                </div>
+                <div class="collection-restriction form-group"  ng-if="$ctrl.formFields('restriction')">
+                    <label for="id-restriction">Restriction
+                        <span class="label-form-desc">
+                            Information regarding limitations on use or restrictions on access to the data.
+                        </span>
+                    </label>
+                    <input type="text"
+                        id="id-restriction"
+                        data-ng-model="$ctrl.form.restriction"
+                        data-ng-required="false"
+                        class="form-control" />
+                </div>
+                <div class="referenced-data form-group">
+                    <div style="width:45%; display:inline-block;">
+                        <label>
+                            Referenced Data Title
+                            <span style="display:block; font-weight: normal;">
+                                Data from published projects or an
+                                external repository.
+                            </span>
+                        </label>
+                    </div>
+                    <div style="width:45%; display:inline-block;">
+                        <label>
+                            Referenced Data DOI or URL
+                        </label>
+                        <span class="label-form-desc">
+                            &nbsp;
+                        </span>
+                    </div>
+                    <div style="width:45%; display:inline-block; margin-bottom:5px"
+                        data-ng-repeat-start="referenced in $ctrl.form.referencedData">
+                        <input type="text"
+                            data-ng-model="referenced.title"
+                            class="form-control"/>
+                    </div>
+                    <div style="width: 45%; display:inline-block;" data-ng-repeat-end>
+                        <input type="text"
+                            data-ng-model="referenced.url"
+                            class="form-control"/>
+                    </div>
+                    <button class="btn btn-link"
+                            data-ng-click="$ctrl.addReferenced()">
+                        <i class="fa fa-plus">&nbsp;</i>
+                        Add another Referenced Data
+                    </button>
+                </div>
+                <div class="description form-group">
+                    <label for="id-description">
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name">Collection Description</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span style="display:block; font-weight:normal;">
+                                Summarized the purpose of the collection and its files.
+                                What is it about? What are its features?
+                            </span>
+                        </div>
+                    </label>
+                    <textarea style="width:100%; height:3em; resize: vertical;"
+                            id="id-description"
+                            data-ng-model="$ctrl.form.description"
+                            data-ng-required="true">
+                        &nbsp;
+                    </textarea>
+                </div>
             </div>
             <div class="text-right">
                 <button class="btn btn-add"
@@ -429,7 +431,7 @@
                     Add Collection
                 </button>
             </div>
-        </form>
+        </ng-form>
     </div>
     <div class="collection-list">
         <div class="collection-list-title">
