@@ -295,7 +295,7 @@ class PublishedViewCtrl {
                 resolve: {
                     author
                 },
-                size: 'sm'
+                size: 'author'
             });
         });
     }
