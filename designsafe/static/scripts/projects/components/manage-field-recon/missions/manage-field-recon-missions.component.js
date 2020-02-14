@@ -223,7 +223,6 @@ class ManageFieldReconMissionsCtrl {
             location: this.form.location,
             longitude: this.form.longitude,
             latitude: this.form.latitude,
-            elevation: this.form.elevation,
             description: this.form.description
         };
 
@@ -249,9 +248,7 @@ class ManageFieldReconMissionsCtrl {
         this.data.editMission.value.dateStart = new Date(
             this.data.editMission.value.dateStart
         );
-        this.data.editMission.value.dateEnd = new Date(
-            this.data.editMission.value.dateEnd
-        );
+        this.data.editMission.value.dateEnd = (this.data.editMission.value.dateEnd && this.data.editMission.value.dateEnd !== 'None') ? new Date(this.data.editMission.value.dateEnd) : '';
         let auths = this.configureAuthors(mission);
         this.form = {
             authors: auths,
@@ -262,7 +259,6 @@ class ManageFieldReconMissionsCtrl {
             location: this.data.editMission.value.location,
             longitude: this.data.editMission.value.longitude,
             latitude: this.data.editMission.value.latitude,
-            elevation: this.data.editMission.value.elevation,
             description: this.data.editMission.value.description
         };
     }
@@ -273,11 +269,10 @@ class ManageFieldReconMissionsCtrl {
         this.data.editMission.value.authors = this.form.authors;
         this.data.editMission.value.title = this.form.title;
         this.data.editMission.value.dateStart = this.form.dateStart;
-        this.data.editMission.value.dateEnd = this.form.dateEnd;
+        this.data.editMission.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : '');
         this.data.editMission.value.location = this.form.location;
         this.data.editMission.value.longitude = this.form.longitude;
         this.data.editMission.value.latitude = this.form.latitude;
-        this.data.editMission.value.elevation = this.form.elevation;
         this.data.editMission.value.description = this.form.description;
         this.ProjectEntitiesService.update({
             data: {
@@ -299,28 +294,30 @@ class ManageFieldReconMissionsCtrl {
         });
     }
 
-    deleteMission(mission) {
-        let confirmDialog = this.$uibModal.open({
-            component: 'confirmDelete',
-            resolve: {
-                options: () => { return { entity: mission }; }
-            },
-            size: 'sm'
-        });
-        confirmDialog.result.then( (res) => {
-            if (!res) {
-                return;
-            }
-            this.ui.busy = true;
-            this.ProjectEntitiesService.delete({
-                data: {
-                    uuid: mission.uuid,
-                }
-            }).then( (entity) => {
-                this.project.removeEntity(entity);
-                this.data.missions = this.project.mission_set;
+    deleteMission(ent) {
+        let confirmDelete = (msg) => {
+            let modalInstance = this.$uibModal.open({
+                component: 'confirmMessage',
+                resolve: {
+                    message: () => msg,
+                },
+                size: 'sm'
             });
-        });
+
+            modalInstance.result.then((res) => {
+                if (res) {
+                    this.ProjectEntitiesService.delete({
+                        data: {
+                            uuid: ent.uuid
+                        }
+                    }).then((entity) => {
+                        this.project.removeEntity(entity);
+                        this.data.missions = this.project.mission_set;
+                    });
+                }
+            });
+        };
+        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
     }
 }
 

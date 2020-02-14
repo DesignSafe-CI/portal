@@ -19,29 +19,33 @@ class PrivateDataSearchManager(BaseSearchManager):
 
     def __init__(self, request=None, **kwargs):
         if request:
-            self.query_string = request.GET.get('query_string')
+            self.query_string = request.GET.get('query_string').replace("/", "\\/")
             self.username = request.user.username
         else:
-            self.query_string = kwargs.get('query_string')
+            self.query_string = kwargs.get('query_string').replace("/", "\\/")
             self.username = kwargs.get('username')
-
-        split_query = self.query_string.split(" ")
-        for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR", "NOT"]:
-                split_query[i] = "*" + c + "*"
-        self.query_string = " ".join(split_query)
 
         super(PrivateDataSearchManager, self).__init__(
             IndexedFile, IndexedFile.search())
 
     def construct_query(self, system, file_path=None):
 
-        files_index_name = Index('des-files').get_alias().keys()[0]
+        files_index_name = Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys()[0]
 
         if system == settings.AGAVE_STORAGE_SYSTEM:
             storage_prefix_query = Q({'prefix': {'path._exact': '/' + self.username}})
         else:
             storage_prefix_query = Q({'prefix': {'path._exact': '/'}})
+
+        ngram_query = Q("query_string", query=self.query_string,
+                        fields=["name"],
+                        minimum_should_match='80%',
+                        default_operator='or')
+
+        match_query = Q("query_string", query=self.query_string,
+                        fields=[
+                            "name._exact", "name._pattern"],
+                        default_operator='and')
 
         private_files_query = Q(
             'bool',
@@ -49,7 +53,7 @@ class PrivateDataSearchManager(BaseSearchManager):
                 Q({'term': {'_index': files_index_name}}),
                 Q({'term': {'system._exact': system}}),
                 storage_prefix_query,
-                Q("query_string", query=self.query_string, default_operator="and", fields=['name', 'name._exact'])
+                (ngram_query | match_query)
             ],
             must_not=[
                 Q({"prefix": {"path._exact": "/.Trash"}})
@@ -68,8 +72,7 @@ class PrivateDataSearchManager(BaseSearchManager):
         res = listing_search.execute()
         
         children = []
-        print res.hits.total
-        if res.hits.total:
+        if res.hits.total.value:
             children = [o.to_dict() for o in res]
 
         result = {

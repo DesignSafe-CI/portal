@@ -1,5 +1,4 @@
 import PipelineAuthorsTemplate from './pipeline-authors.component.html';
-import _ from 'underscore';
 
 class PipelineAuthorsCtrl {
 
@@ -15,55 +14,62 @@ class PipelineAuthorsCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
-        this.experiment = this.ProjectService.resolveParams.experiment;
+        this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.curDate = new Date().getFullYear();
-
         this.selectedAuthor = '';
-        this.saved = false;
         this.validAuths = true;
+        this.savedStatus = {};
 
 
         if (!this.project) {
-            /*
-            Try to pass selected listings into a simple object so that we can
-            rebuild the project and selected files if a refresh occurs...
-            for now we can send them back to the selection area
-            */
             this.ProjectService.get({ uuid: this.projectId }).then((project) => {
-                this.projType = project.value.projectType;
-                this.uuid = project.uuid;
-                if (this.projType === 'experimental') {
-                    this.$state.go('projects.pipelineSelect', {projectId: this.uuid}, {reload: true});
-                } else if (this.projType === 'simulation') {
-                    this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
-                } else if (this.projType === 'hybrid_simulation') {
-                    this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
-                } else if (this.projType === 'field_recon') {
-                    this.$state.go('projects.pipelineSelectFieldRecon', {projectId: this.uuid}, {reload: true});
-                }
+                this.project = project;
+                this.prepProject();
+                this.$state.go(this.selectDest, {projectId: this.projectId}, {reload: true});
             });
         } else {
             this.projType = this.project.value.projectType;
-            this.verifyAuthors = (expAuthors) => {
-                if (typeof expAuthors != 'undefined' && typeof expAuthors[0] != 'string') {
+            this.prepProject();
+            this.verifyAuthors = (entAuthors) => {
+                if (typeof entAuthors != 'undefined' && typeof entAuthors[0] != 'string') {
                     this.validAuths = true;
                 } else {
                     this.validAuths = false;
                 }
             };
-            this.verifyAuthors(this.experiment.value.authors);    
-            if (this.projType === 'experimental') {
-                this.placeholder = 'Experiment';
-            } else if (this.projType === 'simulation') {
-                this.placeholder = 'Simulation';
-            } else if (this.projType === 'hybrid_simulation') {
-                this.placeholder = 'Hybrid Simulation';
-            } else if (this.projType === 'field_recon') {
-                this.placeholder = 'Mission';
-            }
+            this.primaryEntities.forEach((ent) => {
+                this.verifyAuthors(ent.value.authors);
+                this.savedStatus[ent.uuid] = {'saved': false};
+            });
         }
 
+    }
+
+    prepProject() {
+        this.selectDest = null;
+        this.subEntityDest = null;
+        this.placeholder = 'Entity';
+        if (this.project.value.projectType === 'experimental'){
+            this.selectDest = 'projects.pipelineSelectExp';
+            this.subEntityDest = 'projects.pipelineSubEntityExp';
+            this.placeholder = 'Experiment';
+        }
+        if (this.project.value.projectType === 'simulation'){
+            this.selectDest = 'projects.pipelineSelectSim';
+            this.subEntityDest = 'projects.pipelineSubEntitySim';
+            this.placeholder = 'Simulation';
+        }
+        if (this.project.value.projectType === 'hybrid_simulation'){
+            this.selectDest = 'projects.pipelineSelectHybSim';
+            this.subEntityDest = 'projects.pipelineSubEntityHybSim';
+            this.placeholder = 'Hybrid Simulation';
+        }
+        if (this.project.value.projectType === 'field_recon'){
+            this.selectDest = 'projects.pipelineSelectField';
+            this.subEntityDest = 'projects.pipelineSubEntityField';
+            this.placeholder = 'Mission';
+        }
     }
 
     goWork() {
@@ -72,48 +78,29 @@ class PipelineAuthorsCtrl {
     }
 
     goCategories() {
-        if (this.projType === 'experimental') {
-            this.$state.go('projects.pipelineCategories', {
-                projectId: this.projectId,
-                project: this.project,
-                experiment: this.experiment,
-                selectedListings: this.selectedListings,
-            }, {reload: true});
-        } else if (this.projType === 'simulation') {
-            this.$state.go('projects.pipelineCategoriesSim', {
-                projectId: this.projectId,
-                project: this.project,
-                experiment: this.experiment,
-                selectedListings: this.selectedListings,
-            }, {reload: true});
-        } else if (this.projType === 'hybrid_simulation') {
-            this.$state.go('projects.pipelineCategoriesHybSim', {
-                projectId: this.projectId,
-                project: this.project,
-                experiment: this.experiment,
-                selectedListings: this.selectedListings,
-            }, {reload: true});
-        } else if (this.projType === 'field_recon') {
-            this.$state.go('projects.pipelineCategoriesFieldRecon', {
-                projectId: this.projectId,
-                project: this.project,
-                experiment: this.experiment,
-                selectedListings: this.selectedListings,
-            }, {reload: true});
-        }
+        this.$state.go(this.subEntityDest, {
+            projectId: this.projectId,
+            project: this.project,
+            primaryEntities: this.primaryEntities,
+            selectedListings: this.selectedListings,
+        }, {reload: true});
     }
 
     goLicenses() {
         this.$state.go('projects.pipelineLicenses', {
             projectId: this.projectId,
             project: this.project,
-            experiment: this.experiment,
+            primaryEntities: this.primaryEntities,
             selectedListings: this.selectedListings,
         }, {reload: true});
     }
 
-    orderAuthors(up) {
-        this.saved = false;
+    setSavedStatus(entity, status) {
+        this.savedStatus[entity.uuid].saved = status;
+    }
+
+    orderAuthors(up, entity) {
+        this.setSavedStatus(entity, false);
         var a;
         var b;
         if (up) {
@@ -121,30 +108,30 @@ class PipelineAuthorsCtrl {
                 return;
             }
             // move up
-            a = this.experiment.value.authors.find(x => x.order === this.selectedAuthor.order - 1);
-            b = this.experiment.value.authors.find(x => x.order === this.selectedAuthor.order);
+            a = entity.value.authors.find(x => x.order === this.selectedAuthor.order - 1);
+            b = entity.value.authors.find(x => x.order === this.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
         } else {
-            if (this.selectedAuthor.order >= this.experiment.value.authors.length - 1) {
+            if (this.selectedAuthor.order >= entity.value.authors.length - 1) {
                 return;
             }
             // move down
-            a = this.experiment.value.authors.find(x => x.order === this.selectedAuthor.order + 1);
-            b = this.experiment.value.authors.find(x => x.order === this.selectedAuthor.order);
+            a = entity.value.authors.find(x => x.order === this.selectedAuthor.order + 1);
+            b = entity.value.authors.find(x => x.order === this.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
         }
     }
 
-    saveAuthors() {
-        var exp = this.experiment;
-        this.saved = false;
+    saveAuthors(entity) {
+        var exp = entity;
+        this.setSavedStatus(entity, false);
         this.loading = true;
-        exp.value.authors = this.experiment.value.authors;
-        exp.value.guests = this.experiment.value.guests;
+        exp.value.authors = entity.value.authors;
+        exp.value.guests = entity.value.guests;
         this.ProjectEntitiesService.update({
             data: {
                 uuid: exp.uuid,
@@ -153,14 +140,12 @@ class PipelineAuthorsCtrl {
         }).then((e) => {
             var ent = this.project.getRelatedByUuid(e.uuid);
             ent.update(e);
-            this.saved = true;
+            this.setSavedStatus(entity, true);
             this.loading = false;
         });
     }
 
 }
-
-PipelineAuthorsCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];
 
 export const PipelineAuthorsComponent = {
     template: PipelineAuthorsTemplate,

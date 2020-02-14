@@ -72,10 +72,10 @@ class TestSwapReindex(TestCase):
 
         mock_alias = {
             'actions': [
-                {'remove': {'index': 'DEFAULT_NAME', 'alias': 'des-files'}},
-                {'remove': {'index': 'REINDEX_NAME', 'alias': 'des-files_reindex'}},
-                {'add': {'index': 'DEFAULT_NAME', 'alias': 'des-files_reindex'}},
-                {'add': {'index': 'REINDEX_NAME', 'alias': 'des-files'}},
+                {'remove': {'index': 'DEFAULT_NAME', 'alias': 'designsafe-dev-files'}},
+                {'remove': {'index': 'REINDEX_NAME', 'alias': 'designsafe-dev-files-reindex'}},
+                {'add': {'index': 'DEFAULT_NAME', 'alias': 'designsafe-dev-files-reindex'}},
+                {'add': {'index': 'REINDEX_NAME', 'alias': 'designsafe-dev-files'}},
             ]
         }
         self.mock_elasticsearch.Elasticsearch().indices.update_aliases.assert_called_with(mock_alias)
@@ -85,7 +85,7 @@ class TestSwapReindex(TestCase):
     def test_cleanup(self, mock_input, mock_index):
         mock_input.return_value = 'Y'
 
-        mock_index.return_value.get_alias.return_value.keys.side_effect = [['DEFAULT_NAME'], ['REINDEX_NAME']]
+        mock_index.return_value.get_alias.return_value.keys.side_effect = [['DEFAULT_NAME'], ['REINDEX_NAME'], ['REINDEX_NAME']]
         opts = {'index': 'files', 'cleanup': True}
 
         call_command('swap_reindex', **opts)

@@ -9,16 +9,17 @@
 <div class="modal-body">
     <div class="well">
         <form name="addForm" data-ng-hide="$ctrl.ui.showEditCollectionForm">
-            <div class="text-center">
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                <span>Required for Curation & publication</span>
-            </div>
             <div class="collection-title form-group">
-                <label for="id-title">Collection Title
-                    <span style="color: #D04348; font-size: 14px;">&#9679; </span>
-                    <span style="display: block; font-weight: normal;">
-                        Make it unique from other collections. Use sequential ordering if necessary.
-                    </span>
+                <label for="id-title">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Collection Title</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight: normal;">
+                            Make it unique from other collections. Use sequential ordering if necessary.
+                        </span>
+                    </div>
                 </label>
                 <input type="text"
                        id="id-title"
@@ -28,11 +29,15 @@
             </div>
             <div class="observation-type form-group">
                 <label for="id-observation-type">
-                    Observation Type
-                    <span style="color: #D04348; font-size: 14px;">&#9679; </span>
-                    <span style="display: block; font-weight:normal;">
-                        The nature or subject of the data collected.
-                    </span>
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Observation Type</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight:normal;">
+                            The nature or subject of the data collected.
+                        </span>
+                    </div>
                 </label>
                 <div data-ng-repeat="observationType in
                                      $ctrl.form.observationTypes">
@@ -45,11 +50,14 @@
                             data-ng-if="$ctrl.showObservationDropdown($index)">
                     <option value="">-- Select Observation Type --</option>
                     </select>
-                    <input type="text"
-                           data-ng-model="$ctrl.form.observationTypes[$index]"
-                           data-ng-if="$ctrl.showObservationInput($index)"
-                           class="form-control"
-                        />
+                    <input 
+                        type="text"
+                        placeholder="Other"
+                        data-ng-model="$ctrl.form.observationTypeOthers[$index]"
+                        data-ng-if="$ctrl.showObservationInput($index)"
+                        data-ng-required="true"
+                        class="form-control"
+                    />
                 </div>
                 <button type="button"
                         class="btn btn-link"
@@ -59,12 +67,16 @@
             </div>
             <div class="collection-dates form-group">
                 <label for="id-date-start">
-                    Date(s) of Collection
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display: block; font-weight:normal;">
-                        When the data in this collection was gathered.
-                        If you only want to enter a single date, fill in the first field.
-                    </span>
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Date(s) of Collection</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight:normal;">
+                            When the data in this collection was gathered.
+                            If you only want to enter a single date, fill in the first field.
+                        </span>
+                    </div>
                 </label>
                 <div style="display: flex;">
                     <input type="text"
@@ -111,12 +123,17 @@
                 </div>
             </div>
             <div class="data-collectors form-group">
-                <label>Data Collectors
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display: block; font-weight: normal;">
-                        Who, specifically, collected this data?
-                        You can order the data collectors later when you publish.
-                    </span>
+                <label>
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Data Collectors</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight: normal;">
+                            Who, specifically, collected this data?
+                            You can order the data collectors later when you publish.
+                        </span>
+                    </div>
                 </label>
                 <div data-ng-repeat="usr in $ctrl.form.dataCollectors track by $index"
                      style="width: 45%;
@@ -140,8 +157,8 @@
             </div>
             <div class="site-location form-group">
                 <label for="id-location">
-                    Collection Site Location
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                    <span class="pull-left" style="margin-right: 5px">Collection Site Location</span>
+                    <span class="label label-danger">Required</span>
                 </label>
                 <div>
                     <div style="width: 55%; display:inline-block;">
@@ -189,22 +206,28 @@
             <div class="instrument">
                 <div style="width: 45%; display:inline-block;">
                     <label for="id-instrument">
-                        Instrument
-                        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+                        <div style="display: flex; flex-direction: column">
+                            <div>
+                                <span class="pull-left" style="margin-right: 5px">Instrument</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
                         <span style="display: block; font-weight: normal;">
                             The equipment used to gather your data.
                         </span>
+                        </div>
                     </label>
                 </div>
                 <div style="width: 45%; display:inline-block;">
                     <label form="id-instrument-model">
-                        Instrument Manufacturer and Model
-                        <span style="color: #D04348; font-size:14px;">
-                            &#9679;
-                        </span>
-                        <span style="display: block; font-weight: normal;">
-                            &nbsp;
-                        </span>
+                        <div style="display: flex; flex-direction: column">
+                            <div>
+                                <span class="pull-left" style="margin-right: 5px">Instrument Manufacturer and Model</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span style="display: block; font-weight: normal;">
+                                &nbsp;
+                            </span>
+                        </div>
                     </label>
                 </div>
                 <div style="width: 45%;
@@ -226,8 +249,9 @@
                         </optgroup>
                     </select>
                     <input type="text"
-                           data-ng-model="instrument.name"
+                           data-ng-model="$ctrl.form.instrumentTypeOthers[$index]"
                            data-ng-if="$ctrl.showInstrumentInput($index)"
+                           placeholder="Instrument"
                            class="form-control" />
                 </div>
                 <div style="width: 45%; display:inline-block;"
@@ -235,6 +259,7 @@
                     <input type="text"
                            data-ng-model="instrument.model"
                            data-ng-required="$first"
+                           placeholder="Manufacturer and Model"
                            class="form-control" />
                 </div>
                 <button class="btn btn-link"
@@ -282,12 +307,16 @@
             </div>
             <div class="description form-group">
                 <label for="id-description">
-                    Collection Description
-                    <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                    <span style="display:block; font-weight:normal;">
-                        Summarized the purpose of the collection and its files.
-                        What is it about? What are its features?
-                    </span>
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Collection Description</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display:block; font-weight:normal;">
+                            Summarized the purpose of the collection and its files.
+                            What is it about? What are its features?
+                        </span>
+                    </div>
                 </label>
                 <textarea style="width:100%; height:3em; resize: vertical;"
                           id="id-description"

@@ -50,19 +50,19 @@ class BaseSearchManager(object):
 
     def all(self):
         res = self._search.execute()
-        if res.success() and res.hits.total:
+        if res.success() and res.hits.total.value:
             res_offset = 0
             page_size = len(res)
             res_limit = page_size
-            while res_limit <= res.hits.total:
+            while res_limit <= res.hits.total.value:
                 for doc in self._search[res_offset:res_limit]:
                     yield self._doc_class(doc)
 
                 res_limit += page_size
                 res_offset += page_size
 
-            res_limit = res.hits.total - \
-                ((res.hits.total / page_size) * page_size)
+            res_limit = res.hits.total.value - \
+                ((res.hits.total.value / page_size) * page_size)
             if res_limit > 0:
                 res_offset -= page_size
                 res_limit += res_offset
@@ -72,8 +72,8 @@ class BaseSearchManager(object):
     def results(self, offset):
         res = self._search.execute()
         limit = offset + self._page_size
-        if res.hits.total < limit:
-            limit = res.hits.total
+        if res.hits.total.value < limit:
+            limit = res.hits.total.value
 
         if offset > limit:
             offset = 0
@@ -101,4 +101,4 @@ class BaseSearchManager(object):
             return val
         else:
             raise AttributeError(
-                '\'PublicSearchManager\' has no attribute \'{}\''.format(name))
+                'Search class has no attribute \'{}\''.format(name))

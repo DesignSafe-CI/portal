@@ -26,9 +26,10 @@ const attributeMap = {
 };
 
 class PipelinePublishCtrl {
-    constructor(ProjectService, DataBrowserService, $http, $state) {
+    constructor(ProjectService, PublishedService, DataBrowserService, $http, $state) {
         'ngInject';
         this.ProjectService = ProjectService;
+        this.PublishedService = PublishedService;
         this.$http = $http;
         this.$state = $state;
         this.DataBrowserService = DataBrowserService;
@@ -37,6 +38,7 @@ class PipelinePublishCtrl {
     $onInit() {
         this.project = this.resolve.project;
         this.selectedListings = this.resolve.resolveParams.selectedListings;
+        this.existingPub = null;
 
         let publication = {
             project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
@@ -66,26 +68,32 @@ class PipelinePublishCtrl {
                 publication[attr].push(pubEntity);
             });
 
+            this.entityListName = '';
             if (this.project.value.projectType === 'experimental') {
-                publication.experimentsList = [{
-                    uuid: this.resolve.resolveParams.experiment.uuid,
-                }];
+                this.entityListName = 'experimentsList';
             } else if (this.project.value.projectType === 'simulation') {
-                publication.simulations = [{
-                    uuid: this.resolve.resolveParams.experiment.uuid,
-                }];
+                this.entityListName = 'simulations';
             } else if (this.project.value.projectType === 'hybrid_simulation') {
-                publication.hybrid_simulations = [{
-                    uuid: this.resolve.resolveParams.experiment.uuid,
-                }];
+                this.entityListName = 'hybrid_simulations';
             } else if (this.project.value.projectType === 'field_recon') {
-                publication.missions = [{
-                    uuid: this.resolve.resolveParams.experiment.uuid,
-                }];
+                this.entityListName = 'missions';
             }
-            this.mainEntityUuid = this.resolve.resolveParams.experiment.uuid;
+            publication[this.entityListName] = [];
+            this.mainEntityUuids = [];
+            this.resolve.resolveParams.primaryEntities.forEach((entity) => {
+                publication[this.entityListName].push({uuid: entity.uuid});
+                this.mainEntityUuids.push(entity.uuid);
+            });
         }
         this.publication = publication;
+        this.PublishedService.getPublished(this.project.value.projectId).then((resp) => {
+            let data = resp.data;
+            if (data.project) {
+                this.existingPub = true;
+            } else {
+                this.existingPub = false;
+            }
+        });
     }
 
     return() {
@@ -104,7 +112,7 @@ class PipelinePublishCtrl {
             '/api/projects/publication/',
             {
                 publication: this.publication,
-                mainEntityUuid: this.mainEntityUuid,
+                mainEntityUuids: this.mainEntityUuids,
                 status: 'publishing',
             }
         ).then((resp) => {

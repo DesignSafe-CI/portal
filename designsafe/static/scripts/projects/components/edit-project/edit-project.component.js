@@ -318,8 +318,7 @@ class EditProjectCtrl {
             });
         }
 
-        // move this to the back end ------------------------------------------------------->
-        // we're checking for user objects and empty fields...
+        // clear any empty inputs...
         var i = this.form.copi.length;
         this.form.copiPrune = [];
         while(i--) {
@@ -374,7 +373,6 @@ class EditProjectCtrl {
                 }
             }
         }
-        // move this to the back end ------------------------------------------------------->
         if (this.form.pi) {
             projectData.pi = this.form.pi.username;
         }
@@ -384,7 +382,6 @@ class EditProjectCtrl {
             });
         }
         if (this.form.teamPrune) {
-            // this.form.teamPrune = projectData.teamMembers;
             this.form.teamPrune.forEach((ent) => {
                 projectData.teamMembers.push(ent.username);
             });
@@ -424,25 +421,49 @@ class EditProjectCtrl {
         if (typeof this.form.keywords !== 'undefined') {
             projectData.keywords = this.form.keywords;
         }
+        if (!projectData.teamMembers.concat(projectData.coPis, [projectData.pi]).includes(this.form.creator.username) && this.form.uuid) {
+            this.modalInstance = this.$uibModal.open({
+                component: 'confirmMessage',
+                resolve: {
+                    message: () => "Are you sure you want to remove yourself from the project?",
+                },
+                size: 'sm'
+            });
+            this.modalInstance.result.then((res) => {
+                if (!res) {
+                    this.ui.busy = false;
+                } else {
+                    this.savePrj(projectData).then((project) => {
+                        if (this.project) {
+                            this.project.value = project.value;
+                        }
+                        this.$state.go('projects.list', { reload: true });
+                        this.close({ $value: project });
+                        this.ui.busy = false;
+                    });
+                }
+            });
+        } else {
+            this.savePrj(projectData).then((project) => {
+                if (this.project) {
+                    this.project.value = project.value;
+                }
+                if (!this.form.uuid) {
+                    this.$state.go(
+                        'projects.view.data',
+                        {
+                            projectId: project.uuid,
+                            filePath: '/',
+                            projectTitle: project.value.title
+                        },
+                        { reload: true }
+                    );
+                }
+                this.close({ $value: project });
+                this.ui.busy = false;
+            });
+        }
 
-        this.savePrj(projectData).then((project) => {
-            if (this.project) {
-                this.project.value = project.value;
-            }
-            if (!this.form.uuid) {
-                this.$state.go(
-                    'projects.view.data',	
-                    {	
-                        projectId: project.uuid,	
-                        filePath: '/',	
-                        projectTitle: project.value.title	
-                    },	
-                    {reload: true}	
-                );
-            }
-            this.close({$value: project});
-            this.ui.busy = false;
-        });
     }
 
     isNhTypeInDropdown($index) {

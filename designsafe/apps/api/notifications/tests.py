@@ -12,6 +12,7 @@ from unittest import skip
 from django.dispatch import receiver
 from django.core.urlresolvers import reverse
 from designsafe.apps.api.notifications.models import Notification
+from .receivers import send_notification_ws
 
 import logging
 
@@ -90,46 +91,26 @@ class NotificationsTestCase(TestCase):
         self.assertEqual(Notification.objects.count(), 2)
 
 
-class TestJobsWebhookView(TestCase):
+class TestWebhookViews(TestCase):
     fixtures = ['user-data', 'agave-oauth-token-data']
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestJobsWebhookView, cls).setUpClass()
-        cls.mock_agave_patcher = patch('designsafe.apps.auth.models.AgaveOAuthToken')
-        cls.mock_agave = cls.mock_agave_patcher.start()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.mock_agave_patcher.stop()
-        super(TestJobsWebhookView, cls).tearDownClass()
-
     def setUp(self):
-        self.user = get_user_model().objects.get(username="ds_user")
+        self.mock_agave_patcher = patch('designsafe.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+        self.mock_agave = self.mock_agave_patcher.start()
+
+        self.client.force_login(get_user_model().objects.get(username="ds_user"))
+
         post_save.disconnect(sender=Notification, dispatch_uid="notification_msg")
 
-    @patch('designsafe.apps.api.notifications.receivers.send_notification_ws')
-    def test_webhook_job_post(self, mock_receiver):
-        post_save.connect(mock_receiver, sender=Notification, dispatch_uid='notification_msg')
-        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'json/submitting.json')))
-        mock_receiver.return_value = None
-        response = self.client.post(wh_url, json.dumps(job_event), content_type='application/json')
-        self.assertEqual(response.status_code, 200)
+        self.web_event = {
+            "event_type": "WEB",
+            "port": "1234",
+            "address": "http://designsafe-exec-01.tacc.utexas.edu:1234",
+            "job_uuid": "3373312947011719656-242ac11b-0001-007",
+            "owner": "ds_user"
+        }
 
-        n = Notification.objects.last()
-        n_status = n.to_dict()['extra']['status']
-        self.assertEqual(n_status, job_event['status'])
-
-    @patch('designsafe.apps.api.notifications.receivers.send_notification_ws')
-    @patch('designsafe.apps.notifications.views.get_user_model')
-    def test_webhook_vnc_post(self, get_user_model, mock_receiver):
-        u = Mock()
-        get_user_model.return_value.objects.get.return_value = u
-        u.agave_oauth.client = self.mock_agave
-        post_save.connect(mock_receiver, sender=Notification, dispatch_uid='notification_msg')
-        mock_receiver.return_value = None
-        post_save.connect(mock_receiver, sender=Notification, dispatch_uid='notification_msg')
-        vnc_event = {
+        self.vnc_event = {
             "event_type": "VNC",
             "host": "vis.tacc.utexas.edu",
             "port": "2234",
@@ -137,42 +118,78 @@ class TestJobsWebhookView(TestCase):
             "password": "3373312947011719656-242ac11b-0001-007",
             "owner": "ds_user"
         }
-        self.mock_agave.meta.addMetadata.return_value = {}
+
+        self.agave_job_running = {"owner": "ds_user", "status": "RUNNING"}
+        self.agave_job_failed = {"owner": "ds_user", "status": "FAILED"}
+
+    def tearDown(self):
+        self.mock_agave_patcher.stop()
+        post_save.connect(send_notification_ws, sender=Notification, dispatch_uid="notification_msg")
+
+    def test_unsupported_event_type(self):
+        response = self.client.post(reverse('interactive_wh_handler'),
+                                    urlencode({'event_type': 'DUMMY'}),
+                                    content_type='application/x-www-form-urlencoded')
+        self.assertTrue(response.status_code == 400)
+
+    def test_webhook_job_post(self):
+        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'json/submitting.json')))
+
+        response = self.client.post(wh_url, json.dumps(job_event), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        n = Notification.objects.last()
+        n_status = n.to_dict()['extra']['status']
+        self.assertEqual(n_status, job_event['status'])
+
+    def test_webhook_vnc_post(self):
+        self.mock_agave.jobs.get.return_value = self.agave_job_running
+
         link_from_event = "https://vis.tacc.utexas.edu/no-vnc/vnc.html?hostname=vis.tacc.utexas.edu&port=2234&autoconnect=true&password=3373312947011719656-242ac11b-0001-007"
 
-        response = self.client.post(reverse('interactive_wh_handler'), urlencode(vnc_event), content_type='application/x-www-form-urlencoded')
+        response = self.client.post(reverse('interactive_wh_handler'), urlencode(self.vnc_event), content_type='application/x-www-form-urlencoded')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.mock_agave.meta.addMetadata.called)
+        self.assertEqual(Notification.objects.count(), 1)
 
         n = Notification.objects.last()
         action_link = n.to_dict()['action_link']
-        self.assertTrue(self.mock_agave.meta.addMetadata.called)
         self.assertEqual(action_link, link_from_event)
         self.assertEqual(n.operation, 'web_link')
-        self.assertEqual(response.status_code, 200)
 
-    @patch('designsafe.apps.api.notifications.receivers.send_notification_ws')
-    @patch('designsafe.apps.notifications.views.get_user_model')
-    def test_webhook_interactive_post(self, get_user_model, mock_receiver):
-        u = Mock()
-        get_user_model.return_value.objects.get.return_value = u
-        u.agave_oauth.client = self.mock_agave
-        post_save.connect(mock_receiver, sender=Notification, dispatch_uid='notification_msg')
-        mock_receiver.return_value = None
-        post_save.connect(mock_receiver, sender=Notification, dispatch_uid='notification_msg')
-        web_event = {
-            "event_type": "WEB",
-            "port": "1234",
-            "address": "http://designsafe-exec-01.tacc.utexas.edu:1234",
-            "job_uuid": "3373312947011719656-242ac11b-0001-007",
-            "owner": "ds_user"
-        }
-        self.mock_agave.meta.addMetadata.return_value = {}
+    def test_webhook_web_post(self):
+        self.mock_agave.jobs.get.return_value = self.agave_job_running
+
         link_from_event = "http://designsafe-exec-01.tacc.utexas.edu:1234"
 
-        response = self.client.post(reverse('interactive_wh_handler'), urlencode(web_event), content_type='application/x-www-form-urlencoded')
+        response = self.client.post(reverse('interactive_wh_handler'), urlencode(self.web_event), content_type='application/x-www-form-urlencoded')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.mock_agave.meta.addMetadata.called)
+        self.assertEqual(Notification.objects.count(), 1)
 
         n = Notification.objects.last()
         action_link = n.to_dict()['action_link']
-        self.assertTrue(self.mock_agave.meta.addMetadata.called)
         self.assertEqual(action_link, link_from_event)
         self.assertEqual(n.operation, 'web_link')
-        self.assertEqual(response.status_code, 200)
+
+    def test_webhook_vnc_post_no_matching_job(self):
+        self.mock_agave.jobs.get.return_value = self.agave_job_failed
+
+        response = self.client.post(reverse('interactive_wh_handler'),
+                                    urlencode(self.vnc_event),
+                                    content_type='application/x-www-form-urlencoded')
+        # no matching running job so it fails
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(Notification.objects.count(), 0)
+
+    def test_webhook_web_post_no_matching_job(self):
+        self.mock_agave.jobs.get.return_value = self.agave_job_failed
+
+        response = self.client.post(reverse('interactive_wh_handler'),
+                                    urlencode(self.web_event),
+                                    content_type='application/x-www-form-urlencoded')
+        # no matching running job so it fails
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(Notification.objects.count(), 0)

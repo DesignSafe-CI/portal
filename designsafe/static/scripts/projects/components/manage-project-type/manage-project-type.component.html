@@ -5,6 +5,7 @@
             <span style="text-transform: capitalize;">{{$ctrl.prjType.replace('_', ' ')}}</span>
             Project Overview
         </span>
+        <span ng-if="$ctrl.prjType === 'field_recon' && $ctrl.slide != 'type'"> | 5 minutes to read</span>
         <span class="pull-right" ng-click="$ctrl.cancel()">
             <i class="fa fa-times"></i>
         </span>
@@ -156,7 +157,7 @@
                             style="width: 100%;"
                             ng-disabled="!$ctrl.prjType"
                             ng-click="$ctrl.continue('overview')"
-                            ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation' "
+                            ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation' || $ctrl.prjType === 'field_recon' "
                     >
                         Continue
                     </button> 
@@ -164,7 +165,7 @@
                             style="width: 100%;"
                             ng-disabled="!$ctrl.prjType"
                             ng-click="$ctrl.continue('finish')"
-                            ng-if="$ctrl.prjType !== 'experimental' && $ctrl.prjType !== 'simulation' "
+                            ng-if="!['experimental', 'simulation', 'field_recon'].includes($ctrl.prjType)"
                     >
                         Continue
                     </button> 
@@ -584,7 +585,43 @@
         <!-- Project Overview -->
         <div ng-if="$ctrl.slide === 'overview'">
             <div>
-                <h3>Field Research Overview Coming Soon...</h3>
+                <p>
+                    DesignSafe offers an interactive interface to curate and publish data with other project members.
+                    Curation is important so your data can be <strong>organized</strong>, <strong>discovered</strong>, and <strong>understood</strong> for years to come.
+                </p>
+                <p>
+                    The four components of curation:
+                    <div style="margin-left: 18px;">
+                        <div>
+                            <strong>Missions</strong> group collections of data representing different visits to a site, field teams, field experiments,
+                            or research topics (e.g., liquefaction, structural performance, wave inundation, etc.). Some researchers refer to missions using
+                            terms such as "time 1", "wave 1", etc.
+                        </div>
+                        <div>
+                            <strong>Collections</strong> group related data gathered in a mission. Sub-collections are organized within folders.
+                        </div>
+                        <div>
+                            <strong>Relate</strong> relates collections to missions and allows hierarchical organization.
+                        </div>
+                        <div>
+                            <strong>Reports</strong> group virtual reconnaissance, field assessments, or preliminary virtual assessments that can be published
+                            before the missions or as a final report.
+                        </div>
+                        <div>
+                            <strong>File Tags</strong> are agreed upon terms from the community that describe individual files.
+                        </div>
+                    </div>
+                </p>
+                <p>
+                    For further help with curation, DesignSafe has the following resources:
+                    <li> <a href="/rw/user-guides/data-curation-publication/" target="_blank">Data Curation and Publication user guide</a></li>
+                    <li> <a href="/rw/user-guides/data-publication-guidelines/" target="_blank">Data Publication Guidelines</a></li>
+                    <li> <a href="https://www.youtube.com/playlist?list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">YouTube video instruction series</a></li>
+                    <!-- <li> <a href="______" target="_blank">Example projects that highlight best practices</a> (recommended)</li> -->
+                    <li> <a href="/learning-center/training/" target="_blank">Curation office hours</a></li>
+                    <li> <a href="/learning-center/training/" target="_blank">Webinars</a></li>
+                </p>
+                <br> 
             </div>
             <div class="btn-group" style="overflow: auto; width:100%;">
                 <a data-ng-click="$ctrl.continue('type')" class="pull-left">

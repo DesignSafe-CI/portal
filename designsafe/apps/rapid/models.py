@@ -1,36 +1,38 @@
 from django.conf import settings
 from datetime import datetime
 import logging
-from elasticsearch_dsl import (DocType, String, Date, Nested,
+from elasticsearch_dsl import (Document, Text, Date, Nested,
                                Boolean, GeoPoint, MetaField, Text,
                                Keyword)
 #from designsafe.connections import connections
 logger = logging.getLogger(__name__)
 
-class RapidNHEventType(DocType):
+class RapidNHEventType(Document):
+    class Index:
+        name = settings.ES_INDICES['rapid_event_type']['alias']
+
     class Meta:
-        index = settings.ES_INDICES['rapid']['name']
-        doc_type = settings.ES_INDICES['rapid']['documents'][0]['name']
         dynamic = MetaField('strict')
 
-    display_name = String(fields={
+    display_name = Text(fields={
         '_exact': Keyword()
     })
-    name = String(fields={
+    name = Text(fields={
         '_exact': Keyword()
     })
 
 
-class RapidNHEvent(DocType):
+class RapidNHEvent(Document):
+    class Index:
+        name = settings.ES_INDICES['rapid_event']['alias'] 
+
     class Meta:
-        index = settings.ES_INDICES['rapid']['name']
-        doc_type = settings.ES_INDICES['rapid']['documents'][1]['name']
         dynamic = MetaField('strict')
 
     event_date = Date()
     created_date = Date()
     title = Text(analyzer='english')
-    event_type = String(fields={
+    event_type = Text(fields={
                 '_exact': Keyword()
             })
     location_description = Text(
@@ -39,24 +41,24 @@ class RapidNHEvent(DocType):
             '_exact': Keyword()
         })
     location = GeoPoint()
-    main_image_url = String(fields={
+    main_image_url = Text(fields={
         '_exact': Keyword()
     })
-    main_image_uuid = String(fields={
+    main_image_uuid = Text(fields={
         '_exact': Keyword()
     })
     datasets = Nested(
         properties={
-            "id": String(fields={
+            "id": Text(fields={
                 '_exact': Keyword()
             }),
-            "title": String(fields={
+            "title": Text(fields={
                 '_exact': Keyword()
             }),
-            "doi": String(fields={
+            "doi": Text(fields={
                 '_exact': Keyword()
             }),
-            "url": String(fields={
+            "url": Text(fields={
                 '_exact': Keyword()
             }),
         })

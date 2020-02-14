@@ -59,9 +59,10 @@ class FileListingView(BaseApiView):
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string', None)
         type_filters = request.GET.getlist('typeFilters', None)
-  
-        kwargs['type_filters'] = type_filters
-        
+
+        if type_filters:
+            kwargs['type_filters'] = type_filters
+
         if not request.user.is_authenticated:
             client = get_user_model().objects.get(username='envision').agave_oauth.client
         else:
@@ -105,10 +106,18 @@ class FileMediaView(View):
                     return HttpResponseForbidden('Login required')
             else:
                 ag = request.user.agave_oauth.client
-
             fm = AgaveFileManager(agave_client=ag)
             f = fm.listing(system_id, file_path)
             if request.GET.get('preview', False):
+                metrics.info('Data Depot',
+                            extra={
+                                'user': request.user.username,
+                                'sessionId': getattr(request.session, 'session_key', ''),
+                                'operation': 'agave_file_preview',
+                                'info': {
+                                             'systemId': system_id,
+                                             'filePath': file_path}
+                            })
                 context = {
                     'file': f
                 }

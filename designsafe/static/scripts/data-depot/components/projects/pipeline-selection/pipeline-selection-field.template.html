@@ -1,0 +1,306 @@
+<div style="background:white; padding-top: 20px">
+    <!-- progression map -->
+    <div class="pull-right" style="padding-bottom: 20px;">
+        <a ng-click="$ctrl.goWork()">
+            <i class="fa fa-times"></i> Exit Prepare to Publish
+        </a>
+    </div>
+    <table class="tg"
+           style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
+        <colgroup>
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+        </colgroup>
+        <tr style="text-align: center">
+            <td>
+                <strong>Selection</strong>
+                <div>
+                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                </div>
+            </td>
+            <td>
+                <strong>Proofread Project</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td>
+                <strong>Proofread Mission</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td>
+                <strong>Proofread Collections</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td>
+                <strong>Order Authors</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td>
+                <strong>Licenses</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div>
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+            Preview</a>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedEnts.length">Continue</button>
+    </div>
+    <!-- progression map -->
+    <div style="padding-top: 40px; padding-bottom: 40px;">
+        <!-- Error Messages -->
+        <div class="alert alert-danger" ng-if="$ctrl.missing.length">
+            <p class="lead" style="text-align:center;">Your Selection is Incomplete!</p>
+            <p>
+                Your selection has missing data or incomplete requirements.
+                Please review the following fields:
+            </p>
+            <div ng-repeat="entity in $ctrl.missing">
+                <div ng-if="entity.missing.length">
+                    In the mission <strong>{{entity.title}}</strong>, the following categories are missing or have no categorized files:
+                    <li ng-if="entity.missing.length" ng-repeat="err in entity.missing">{{ err }}</li>
+                </div>
+            </div>
+        </div>
+        <p>
+            <h3 style="text-align: center">Select what you want to publish</h3>
+            <li>Click "Select this Mission and all of its files" for each Mission you want to publish.</li>
+            <li>If you want to deselect individual files, deselect the checkboxes.</li>
+            <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
+        </p>
+    </div>
+        <!-- Missions -->
+        <div ng-show="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+        <!-- Reports -->
+        <div ng-hide="$ctrl.ui.loading"
+             ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+             ng-if="$ctrl.matchingGroup(mission, report)"
+        >
+            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                    style="width:100%;">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: left;">
+                                <span>Report | <strong>{{report.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="files-{{report.uuid}}" class="collapse">
+                    <div class="well" ng-if="report.value.description">
+                        <p>{{ report.value.description }}</p>
+                    </div>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-selection="true"></files-listing>
+                </div>
+            </div>
+        </div>
+        <div ng-hide="$ctrl.ui.loading" ng-repeat="mission in $ctrl.browser.project.mission_set">
+            <div class="dropdown dropdown-spacer-lg" id="details-{{experiment.uuid}}">
+                <a ng-click="$ctrl.selectEntity(mission)">Select this Mission and all of its files</a>
+                <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}"
+                    style="width:100%;">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: left;">
+                                <span>Mission | <strong>{{mission.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
+                    <div class="well">
+                        <div style="display: inline-block; width:20%; vertical-align: top;">
+                            Authors
+                        </div>
+                        <div style="display: inline-block; width:78%; font-weight: bold;">
+                            <ds-author-list authors="mission.value.authors"></ds-author-list>
+                        </div>
+                        <div style="display: inline-block; width:20%;">Date of Mission</div>
+                        <div style="display: inline-block; width: 78%; font-weight:bold;">
+                            <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                            <span data-ng-if="mission.value.dateEnd">
+                                &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
+                            </span>
+                        </div>
+                        <div style="display: inline-block; width:20%; vertical-align: top;">
+                            Site Location
+                        </div>
+                        <div style="display: inline-block; width: 78%; font-weight:bold;">
+                            <ul style="list-style:none; padding-left:0;">
+                                <li>{{mission.value.location}} | Lat {{mission.value.latitude}} Long {{mission.value.longitude}}</li>
+                                <!-- <li> Elevation: {{mission.value.elevation}} </li> -->
+                            </ul>
+                        </div>
+                        <div style="display:inline-block; width:20%;">Date of Publication</div>
+                        <strong style="display:inline-block; width:78%;"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </strong>
+                        <strong style="display:inline-block; width:78%;"
+                                data-ng-if="$ctrl.readOnly">
+                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
+                        </strong>
+                        <div style="display:inline-block; width:20%;">
+                            DOI 
+                            <button class="btn btn-info btn-sm"
+                                    data-ng-click="$ctrl.showCitation(missino)">
+                                Citation
+                            </button>
+                        </div>
+                        <strong style="display:inline-block; width:78%;"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </strong>
+                        <strong style="display:inline-block; width:78%;"
+                                data-ng-if="$ctrl.readOnly">
+                            {{ experiment.doi }}
+                        </strong>
+                        <div style="display:inline-block; width:20%;">License</div>
+                        <strong style="display:inline-block; width:78%;"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </strong>
+                        <strong style="display:inline-block; width:78%;"
+                                data-ng-if="$ctrl.readOnly">
+                            {{ $ctrl.browser.publication.licenses }}
+                        </strong>
+                        <p>
+                            <br>{{ mission.value.description }}
+                        </p>
+                        <div class="preview-tree-btn-wrapper">
+                            <button class="btn btn-link"
+                                    data-ng-click="$ctrl.treeDiagram(mission)">
+                                View Related Diagram
+                            </button>
+                        </div>
+                        <!-- Research Reports -->
+                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, report)">
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Report | <strong>{{report.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{report.uuid}}" class="collapse">
+                                    <div class="well" ng-if="report.value.description">
+                                        <p>{{ report.value.description }}</p>
+                                    </div>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-selection="true"></files-listing>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Research Models -->
+                        <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
+                            <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                    style="width:100%;">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <span>Collection | <strong>{{collection.value.title}}</strong></span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                                <div id="files-{{collection.uuid}}" class="collapse">
+                                    <div class="well">
+                                        <div style="display: inline-block; width:20%;">Observation Type</div>
+                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                            <ul style="list-style: none; padding-left: 0;">
+                                                <li data-ng-repeat="ot in collection.value.observationTypes">
+                                                    {{ot}}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div style="display: inline-block; width:20%;">Date of Collection</div>
+                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                            <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                            <span data-ng-if="mission.value.dateEnd">
+                                                &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                            </span>
+                                        </div>
+                                        <div style="display: inline-block; width:20%; vertical-align: top;">
+                                            Data Collectors
+                                        </div>
+                                        <div style="display: inline-block; width:78%; font-weight: bold;">
+                                            <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
+                                        </div>
+                                        <div style="display: inline-block; width:20%; vertical-align: top;">
+                                            Site Location
+                                        </div>
+                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                            <ul style="list-style:none; padding-left:0;">
+                                                <li>{{collection.value.location}} | Lat {{collection.value.latitude}} Long {{collection.value.longitude}}</li>
+                                                <!-- <li> Elevation: {{collection.value.elevation}} </li> -->
+                                            </ul>
+                                        </div>
+                                        <div style="display: inline-block; width:20%; vertical-align: top;">
+                                            Instrument
+                                        </div>
+                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                            <ul style="list-style:none; padding-left:0;">
+                                                <li data-ng-repeat="instrument in collection.value.instruments">
+                                                    {{instrument.name}} | {{instrument.model}}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div style="display: inline-block; width:20%; vertical-align: top;">
+                                            Referenced Data
+                                        </div>
+                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                            <ul style="list-style:none; padding-left:0;">
+                                                <li data-ng-repeat="data in collection.value.referencedDatas">
+                                                    <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div ng-if="collection.value.description">
+                                            <p>{{ collection.value.description }}</p>
+                                        </div>
+                                    </div>
+                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-selection="true"></files-listing>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

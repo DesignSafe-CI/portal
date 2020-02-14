@@ -121,13 +121,7 @@
                     </span>
                 </td>
             </tr>
-            <!-- older projects will have awards listed as strings -->
-            <tr ng-if="$ctrl.isSingle($ctrl.project.value.awardNumber) && $ctrl.project.value.awardNumber.length">
-                <td>Awards</td>
-                <td><strong>{{ $ctrl.project.value.awardNumber.join("") }}</strong></td>
-            </tr>
-            <tr ng-if="!$ctrl.isSingle($ctrl.project.value.awardNumber)"
-                ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
+            <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
                 <td ng-if="$first">Awards</td>
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>

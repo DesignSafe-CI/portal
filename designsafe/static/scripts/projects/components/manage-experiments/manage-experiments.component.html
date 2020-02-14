@@ -9,14 +9,11 @@
 <div class="modal-body">
   <div class="well" id="form-top">
     <form name='addForm' ng-hide="$ctrl.ui.showEditExperimentForm">
-      <div class="text-center">
-        <span style="color: #D04348; font-size:14px;">&#9679; </span>
-        <span>Required for Curation & Publication</span>
-      </div>
       <!-- Title -->
       <div class="expTitle form-group">
-        <label>Experiment Title
-          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+        <label>
+          <span class="pull-left" style="margin-right: 5px">Experiment Title</span>
+          <span class="label label-danger">Required</span>
         </label>
         <p>
           Different from the Project Title. Make it focused on the methods used to obtain the data in this Experiment.
@@ -27,8 +24,10 @@
       </div>
       <!-- Experiment Date -->
       <div class="expDate form-group">
-        <label>Dates of Experiment</label>
-        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+        <label>
+          <span class="pull-left" style="margin-right: 5px">Dates of Experiment</span>
+          <span class="label label-danger">Required</span>
+        </label>
         <p>
           If you only want to enter a single date, fill in the first field.
         </p>
@@ -74,8 +73,10 @@
       </div>
       <!-- Experimental Facility -->
       <div class="expFacility form-group">
-        <label>Experimental Facility</label>
-        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+        <label>
+          <span class="pull-left" style="margin-right: 5px">Experimental Facility</span>
+          <span class="label label-danger">Required</span>
+        </label>
         <div>
           <select ng-options="ef.name as ef.label for ef in $ctrl.ui.efs[$ctrl.data.project.value.projectType]"
                   style="background:white; width:100%"
@@ -96,8 +97,10 @@
       </div>
       <!-- Experiment Type -->
       <div class="expType form-group">
-        <label>Experiment Type</label>
-        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          <label>
+            <span class="pull-left" style="margin-right: 5px">Experiment Type</span>
+            <span class="label label-danger">Required</span>
+          </label>
         <div>
           <select ng-options="type.name as type.label for type in $ctrl.ui.experimentTypes[$ctrl.form.addExperiments[0].experimentalFacility]"
                   style="background:white; width:100%"
@@ -118,8 +121,10 @@
       </div>
       <!-- Equipment Type -->
       <div class="expEqType form-group">
-        <label>Equipment Type</label>
-        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          <label>
+            <span class="pull-left" style="margin-right: 5px">Equipment Type</span>
+            <span class="label label-danger">Required</span>
+          </label>
         <div>
           <select ng-options="et.name as et.label for et in $ctrl.ui.equipmentTypes[$ctrl.form.addExperiments[0].experimentalFacility]"
                   style="background:white; width:100%"
@@ -140,8 +145,10 @@
       </div>
       <!-- Exp Description -->
       <div class="expDescription form-group">
-        <label>Experiment Description</label>
-        <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          <label>
+            <span class="pull-left" style="margin-right: 5px">Experiment Description</span>
+            <span class="label label-danger">Required</span>
+          </label>
         <p>
           What was under investigation? How was it tested? What was the outcome? How can the data be reused?
         </p>
@@ -172,14 +179,11 @@
       </div>
     </form>
     <form name='editForm' ng-show="$ctrl.ui.showEditExperimentForm">
-        <div class="text-center">
-          <span style="color: #D04348; font-size:14px;">&#9679; </span>
-          <span>Required for Curation & Publication</span>
-        </div>
         <!-- Edit Title -->
         <div class="expTitle form-group">
-          <label>Experiment Title
-            <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          <label>
+            <span class="pull-left" style="margin-right: 5px">Experiment Title</span>
+            <span class="label label-danger">Required</span>
           </label>
           <p>
             Different from the Project Title. Make it focused on the methods used to obtain the data in this Experiment.
@@ -190,8 +194,10 @@
         </div>
         <!-- Edit Experiment Date -->
         <div class="expDate form-group">
-          <label>Dates of Experiment</label>
-          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          <label>
+            <span class="pull-left" style="margin-right: 5px">Dates of Experiment</span>
+            <span class="label label-danger">Required</span>
+          </label>
           <p>
             Please confirm your experiment dates for each update. If you only want to enter a single date, fill in the first field.
           </p>
@@ -237,8 +243,10 @@
         </div>
         <!-- Edit Experimental Facility -->
         <div class="expFacility form-group">
-          <label>Experimental Facility</label>
-          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+          <label>
+            <span class="pull-left" style="margin-right: 5px">Experimental Facility</span>
+            <span class="label label-danger">Required</span>
+          </label>
           <div>
             <select style="width:100%"
                     class="grayed-out"
@@ -251,8 +259,10 @@
         </div>
         <!-- Edit Experiment Type -->
         <div class="expType form-group">
-          <label>Experiment Type</label>
-          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+            <label>
+              <span class="pull-left" style="margin-right: 5px">Experiment Type</span>
+              <span class="label label-danger">Required</span>
+            </label>
           <div>
             <select style=" width:100%"
                     class="grayed-out"
@@ -265,8 +275,10 @@
         </div>
         <!-- Edit Equipment Type -->
         <div class="expEqType form-group">
-          <label>Equipment Type</label>
-          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+            <label>
+              <span class="pull-left" style="margin-right: 5px">Equipment Type</span>
+              <span class="label label-danger">Required</span>
+            </label>
           <div>
             <select ng-options="equip.name as equip.label for equip in $ctrl.editExpForm.equipmentList"
                     ng-model="$ctrl.editExpForm.equipment"
@@ -287,8 +299,10 @@
         </div>
         <!-- Edit Exp Description -->
         <div class="expDescription form-group">
-          <label>Experiment Description</label>
-          <span style="color: #D04348; font-size:14px;">&#9679; </span>
+            <label>
+              <span class="pull-left" style="margin-right: 5px">Experiment Description</span>
+              <span class="label label-danger">Required</span>
+            </label>
           <p>
             What was under investigation? How was it tested? What was the outcome? How can the data be reused?
           </p>

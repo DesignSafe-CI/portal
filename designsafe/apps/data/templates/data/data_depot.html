@@ -3,6 +3,9 @@
 
 {% block google_citation_meta %}
     <!--data/data_depot.html-->
+    <meta name="keywords" content='{{ keywords|join:", " }}'> <!-- related experiements, subject; used in search -->
+    <meta name="authors" content="{% for author in authors %}{{author.full_name}}; {% endfor %}"> <!-- author names -->
+    
     <meta name="citation_title" content="{{citation_title}}">
     <meta name="citation_publication_date" content="{{citation_date}}">
     <meta name="citation_doi" content="{{doi}}">
@@ -12,14 +15,56 @@
     <meta name="citation_keywords" content="{{keyword}}">
     {% endfor %}
     {% for author in authors %}
-        <meta name="citation_author" content="{{author.full_name}}">
-        <meta name="citation_author_institution" content="{{author.institution}}">
+    <meta name="citation_author" content="{{author.full_name}}">
+    <meta name="citation_author_institution" content="{{author.institution}}">
     {% endfor %}
     <meta name="citation_abstract_html_url" content="">
+
     <script type="application/json">
         {{ dc_json | safe }}
     </script>
+
+    
+    {% if experiments %}<!-- Experiment Citation Tags -->{% for experiment in experiments %}
+    <meta name="citation_title" content="{{ experiment.value.title }}">
+    <meta name="citation_doi" content="{{ experiment.doi }}">
+    <meta name="citation_description" content="{{ experiment.description }}">
+    {% for author in experiment.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
+    {% if missions %}<!-- Mission Citation Tags -->{% for mission in missions %}
+    <meta name="citation_title" content="{{ mission.value.title }}">
+    <meta name="citation_doi" content="{{ mission.doi }}">
+    <meta name="citation_description" content="{{ mission.value.description }}">
+    {% for author in mission.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
+    {% if simulations %}<!-- Simulation Citation Tags -->{% for simulation in simulations %}
+    <meta name="citation_title" content="{{ simulation.value.title }}">
+    <meta name="citation_doi" content="{{ simulation.doi }}">
+    <meta name="citation_description" content="{{ simulation.value.description }}">
+    {% for author in simulation.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
+    {% if hybrid_simulations %}<!-- Hybrid Simulation Citation Tags -->{% for simulation in hybrid_simulations %}
+    <meta name="citation_title" content="{{ simulation.value.title }}">
+    <meta name="citation_doi" content="{{ simulation.doi }}">
+    <meta name="citation_description" content="{{ simulation.value.description }}">
+    {% for author in simulation.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
     <!--data/data_depot.html-->
+    {% if dois %}
+        {% for id in dois %}
+            <meta name="identifier" content="{{id}}">
+        {% endfor %}
+    {% else %}
+    <meta name="identifier" content="{{doi}}">
+    {% endif %}
 {% endblock %}
 {% block title %}
 {% if citation_title %}{{citation_title}} 

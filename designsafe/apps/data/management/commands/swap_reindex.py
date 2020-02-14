@@ -31,8 +31,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
-        connections.configure(default={'hosts': HOSTS})
-        es_client = elasticsearch.Elasticsearch(hosts=HOSTS)
+        es_client = elasticsearch.Elasticsearch(HOSTS, http_auth=settings.ES_AUTH)
         index = options.get('index')
         cleanup = options.get('cleanup')
         swap_only = options.get('swap-only')
@@ -40,7 +39,7 @@ class Command(BaseCommand):
         index_config = settings.ES_INDICES[index]
 
         default_index_alias = index_config['alias']
-        reindex_index_alias = default_index_alias + '_reindex'
+        reindex_index_alias = default_index_alias + '-reindex'
 
         if not swap_only:
             confirm = input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias))
@@ -48,12 +47,10 @@ class Command(BaseCommand):
                 raise SystemExit
             # Set up a fresh reindexing alias.
             setup_index(index_config, force=True, reindex=True)
-            if index == 'publications':
-                Index(reindex_index_alias).put_settings(body={"index.mapping.total_fields.limit": 2000})
 
         try:
-            default_index_name = Index(default_index_alias).get_alias().keys()[0]
-            reindex_index_name = Index(reindex_index_alias).get_alias().keys()[0]
+            default_index_name = Index(default_index_alias, using=es_client).get_alias().keys()[0]
+            reindex_index_name = Index(reindex_index_alias, using=es_client).get_alias().keys()[0]
         except Exception as e:
             self.stdout.write('Unable to lookup required indices by alias. Have you set up both a default and a reindexing index?')
             raise SystemExit
@@ -75,4 +72,5 @@ class Command(BaseCommand):
 
         # Re-initialize the new reindexing index to save space.
         if cleanup:
-            Index(reindex_index_alias).delete(ignore=404)
+            reindex_index_name = Index(reindex_index_alias, using=es_client).get_alias().keys()[0]
+            Index(reindex_index_name, using=es_client).delete(ignore=404)

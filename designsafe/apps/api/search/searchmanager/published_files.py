@@ -19,35 +19,32 @@ class PublishedDataSearchManager(BaseSearchManager):
 
     def __init__(self, request=None, **kwargs):
         if request:
-            self.query_string = request.GET.get('query_string')
+            self.query_string = request.GET.get('query_string').replace("/", "\\/")
         else:
-            self.query_string = kwargs.get('query_string')
-
-        split_query = self.query_string.split(" ")
-        for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR", "NOT"]:
-                split_query[i] = "*" + c + "*"
-        self.query_string = " ".join(split_query)
+            self.query_string = kwargs.get('query_string').replace("/", "\\/")
 
         super(PublishedDataSearchManager, self).__init__(
             IndexedFile, IndexedFile.search())
 
     def construct_query(self, system=None, file_path=None):
 
-        files_index_name = Index('des-files').get_alias().keys()[0]
-        legacy_index_name = Index('des-publications_legacy').get_alias().keys()[0]
+        files_index_name = Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys()[0]
+        ngram_query = Q("query_string", query=self.query_string,
+                        fields=["name"],
+                        minimum_should_match='80%',
+                        default_operator='or')
+
+        match_query = Q("query_string", query=self.query_string,
+                        fields=[
+                            "name._exact", "name._pattern"],
+                        default_operator='and')
 
         published_files_query = Q(
             'bool',
             must=[
-                Q('bool', should=[
-                    Q({'term': {'_index': files_index_name}}),
-                    Q({'term': {'_index': legacy_index_name}})
-                ]),
                 Q({'term': {'_index': files_index_name}}),
                 Q('term', system="designsafe.storage.published"),
-                Q("query_string", query=self.query_string, default_operator="and"),
-                Q("term", type="file")
+                (ngram_query | match_query)
             ],
             must_not=[
                 Q({"prefix": {"path._exact": "/Trash"}})
@@ -66,8 +63,7 @@ class PublishedDataSearchManager(BaseSearchManager):
         res = listing_search.execute()
         
         children = []
-        print res.hits.total
-        if res.hits.total:
+        if res.hits.total.value:
             children = [o.to_dict() for o in res]
 
         result = {

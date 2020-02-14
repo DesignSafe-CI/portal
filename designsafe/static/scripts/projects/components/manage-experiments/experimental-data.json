@@ -17,6 +17,10 @@
     "equipmentTypes": {
         "atlss": [
             { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
+            {"name": "lsrthcshas", "label": "Large-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System"},
+            {"name": "ssrthcshas", "label": "Small-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System "},
+            {"name": "rssb", "label": "Reduced-Scale Soil Box"},
+            {"name": "ssihb", "label":"Soil-Structure Interaction Hybrid Simulation" },
             { "name": "other", "label": "Other" }
         ],
         "cgm-ucdavis": [
@@ -67,6 +71,12 @@
     "experimentTypes": {
         "atlss": [
             { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
+            { "name": "large", "label": "Large-Scale" },
+            { "name": "small", "label": "Small-Scale" },
+            { "name": "char", "label": "Characterization" },
+            { "name": "qstatic", "label": "Quasi-Static" },
+            { "name": "dynamic", "label": "Dynamic" },
+            { "name": "ssi", "label": "Soil-Structure Interaction" },
             { "name": "other", "label": "Other" }
         ],
         "cgm-ucdavis": [

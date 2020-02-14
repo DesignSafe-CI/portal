@@ -6,7 +6,7 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl){
+    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl, UserService){
         'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
@@ -15,6 +15,7 @@ class PublishedViewCtrl {
         this.$uibModal = $uibModal;
         this.$http = $http;
         this.djangoUrl = djangoUrl;
+        this.UserService = UserService;
     }
 
     $onInit() {
@@ -114,6 +115,12 @@ class PublishedViewCtrl {
                     this.version = this.browser.publication.version || 1;
                     this.type = this.browser.publication.project.value.projectType;
                     this.ui.loading = false;
+
+                    // Generate text for PI
+                    this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi)
+                    // Generate CoPI list
+                    this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
+
                 }).then( () => {
                     this.prepProject();
                 });
@@ -225,6 +232,21 @@ class PublishedViewCtrl {
             }
             return false;
         }
+    }
+
+    showAuthor(author) {
+        this.UserService.get(author.name).then((res) => {
+            if (res.orcid_id) {
+                author.orcid = res.orcid_id;
+            }
+            this.$uibModal.open({
+                component: 'authorInformationModal',
+                resolve: {
+                    author
+                },
+                size: 'sm'
+            });
+        });
     }
 
     treeDiagram() {

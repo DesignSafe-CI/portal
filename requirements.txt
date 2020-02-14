@@ -66,8 +66,8 @@ docutils==0.14
 dropbox==7.1.1
 dumb-init==1.2.2
 easy-thumbnails==2.3
-elasticsearch==5.4.0
-elasticsearch-dsl==5.3.0
+elasticsearch==7.0.4
+elasticsearch-dsl==7.0.0
 enum34==1.1.6
 et-xmlfile==1.0.1
 flake8==3.5.0
