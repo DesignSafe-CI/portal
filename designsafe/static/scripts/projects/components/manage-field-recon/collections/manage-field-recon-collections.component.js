@@ -148,14 +148,6 @@ class ManageFieldReconCollectionsCtrl {
                  this.form.observationTypes[$index]));
     }
 
-    addObservationType() {
-        let last = this.form.observationTypes.length - 1;
-        if (this.form.observationTypes[last]) {
-            this.form.observationTypes.push(null);
-            this.form.observationTypesOther.push(null);
-        }
-    }
-
     isEquipmentInDropdown(equip) {
         let status = false;
         Object.keys(this.data.equipment).forEach((key) => {
@@ -204,6 +196,25 @@ class ManageFieldReconCollectionsCtrl {
         if (this.form.referencedData[last].title) {
             this.form.referencedData.push({});
         }
+    }
+
+    addObservationType() {
+        let last = this.form.observationTypes.length - 1;
+        if (this.form.observationTypes[last]) {
+            this.form.observationTypes.push(null);
+            this.form.observationTypesOther.push(null);
+        }
+    }
+
+    removeInput(group) {
+        group.pop();
+    }
+
+    minimumInputs(group) {
+        if (group.length <= 1) {
+            return true;
+        }
+        return false;
     }
 
     validCollector(){

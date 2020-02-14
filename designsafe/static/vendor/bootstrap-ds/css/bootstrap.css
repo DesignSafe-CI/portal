@@ -3700,6 +3700,20 @@ fieldset[disabled] .btn-danger.active {
   font-size: 13px;
   font-weight: bold;
 }
+.btn-project-add-rm {
+  color: #337ab7;
+  font-weight: normal;
+  border-radius: 0;
+  border-color: transparent;
+  background-color: transparent;
+}
+.btn-project-add-rm[disabled],
+fieldset[disabled] .btn-project-add-rm {
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  color: lightgray;
+}
 .btn-link {
   color: #337ab7;
   font-weight: normal;

@@ -157,13 +157,23 @@
                         </td>
                     </tr>
                 </table>
-                <div style="width:28%; display:inline-block;">
-                    <div>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addEntity($ctrl.form.projectTagToAdd.refs)">
+                            &#x2b; Add another Referenced Data
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropEntity($ctrl.form.projectTagToAdd.refs)"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.projectTagToAdd.refs)">
+                            &#x2212; Remove Referenced Data
+                    </button>
+                    <!-- <div>
                         <a ng-click="$ctrl.addEntity($ctrl.form.projectTagToAdd.refs)">&#x2b; Add another Referenced Data</a>
                     </div>
                     <div ng-hide="$ctrl.checkEmpty($ctrl.form.projectTagToAdd.refs)">
                         <a ng-click="$ctrl.dropEntity($ctrl.form.projectTagToAdd.refs)">&#x2212; Drop Referenced Data</a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <!-- Category Description -->
@@ -329,13 +339,17 @@
                         </td>
                     </tr>
                 </table>
-                <div style="width:28%; display:inline-block;">
-                    <div>
-                        <a ng-click="$ctrl.addEntity($ctrl.editForm.refs)">&#x2b; Add another Referenced Data</a>
-                    </div>
-                    <div ng-hide="$ctrl.checkEmpty($ctrl.editForm.refs)">
-                        <a ng-click="$ctrl.dropEntity($ctrl.editForm.refs)">&#x2212; Drop Referenced Data</a>
-                    </div>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addEntity($ctrl.editForm.refs)">
+                            &#x2b; Add another Referenced Data
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropEntity($ctrl.editForm.refs)"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.editForm.refs)">
+                            &#x2212; Remove Referenced Data
+                    </button>
                 </div>
             </div>
             <!-- Edit Category Description -->
