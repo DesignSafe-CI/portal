@@ -19,6 +19,11 @@
     <meta name="citation_author_institution" content="{{author.institution}}">
     {% endfor %}
     <meta name="citation_abstract_html_url" content="">
+
+    <script type="application/json">
+        {{ dc_json | safe }}
+    </script>
+
     
     {% if experiments %}<!-- Experiment Citation Tags -->{% for experiment in experiments %}
     <meta name="citation_title" content="{{ experiment.value.title }}">

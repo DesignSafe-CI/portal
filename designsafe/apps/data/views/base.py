@@ -16,10 +16,11 @@ from designsafe.libs.common.decorators import profile
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 
+from designsafe.apps.projects.managers.base import ProjectsManager
+from designsafe.apps.api.agave import service_account
+import json
+
 logger = logging.getLogger(__name__)
-
-
-
 
 class  BasePublicTemplate(TemplateView):
     def get_context_data(self, **kwargs):
@@ -232,6 +233,10 @@ class DataDepotPublishedView(TemplateView):
         context['missions'] = getattr(pub, 'missions', [])
         context['simulations'] = getattr(pub, 'simulations', [])
         context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
+
+        proj = ProjectsManager(service_account()).get_project_by_id(pub.projectId)
+        context['dc_json'] = json.dumps(proj.to_datacite_json())
+
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
                 'authenticated': True,
