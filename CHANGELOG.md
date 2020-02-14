@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.8.1-20200203
+Enhancements:
+* FR Model enchancements
+* Google Dataset Search
+
+Fixes:
+* Allow anonymous users to download and preview public files
+* Specify default Elasticsearch connection
+
 ## v4.8.1-20200202
 Enhancements:
 * FR Model enchancements
@@ -8,7 +17,6 @@ Enhancements:
 Fixes:
 * Remove field from experimental-data.json
 * Fix shared with me listing
-
 
 ## v4.8.1-20200201
 Enhancements:
