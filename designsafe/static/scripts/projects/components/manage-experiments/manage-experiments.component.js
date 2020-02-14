@@ -16,10 +16,15 @@ class ManageExperimentsCtrl {
     $onInit() {
         this.project = this.resolve.project;
         this.edit = this.resolve.edit;
-        
+
+        let remData = (data) => {
+            data.atlss = data.atlss.filter(a => a.name != "hybrid_simulation"); 
+            return data;
+        };
+
         this.efs = experimentalData.experimentalFacility;
-        this.experimentTypes = experimentalData.experimentTypes;
-        this.equipmentTypes = experimentalData.equipmentTypes;
+        this.experimentTypes = remData(experimentalData.experimentTypes);
+        this.equipmentTypes = remData(experimentalData.equipmentTypes);
 
         var members = [this.project.value.pi].concat(
             this.project.value.coPis,
