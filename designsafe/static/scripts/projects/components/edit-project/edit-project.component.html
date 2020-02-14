@@ -223,16 +223,18 @@
                                 typeahead-template-url="itemTmpl.html"
                         >
                     </span>
-                    <button class="btn-project-add-rm"
-                            ng-click="$ctrl.addField($ctrl.form.team)">
-                            &#x2b; Add another Project Member
-                    </button>
-                    |
-                    <button class="btn-project-add-rm"
-                            ng-click="$ctrl.dropField($ctrl.form.team)"
-                            ng-disabled="$ctrl.checkEmpty($ctrl.form.team)">
-                            &#x2212; Remove Project Member
-                    </button>
+                    <div>
+                        <button class="btn-project-add-rm"
+                                ng-click="$ctrl.addField($ctrl.form.team)">
+                                &#x2b; Add another Project Member
+                        </button>
+                        |
+                        <button class="btn-project-add-rm"
+                                ng-click="$ctrl.dropField($ctrl.form.team)"
+                                ng-disabled="$ctrl.checkEmpty($ctrl.form.team)">
+                                &#x2212; Remove Project Member
+                        </button>
+                    </div>
                 </tr>
             </table>
         </div>
@@ -559,7 +561,7 @@
                         <div class="nh-types-input-wrapper"
                              data-ng-if="$ctrl.showNhTypesInput($index)">
                             <input type="text"
-                                   data-ng-model="$ctrl.form.nhTypes[$index]"
+                                   data-ng-model="$ctrl.form.nhTypesOther[$index]"
                                    class="form-control"
                                />
                         </div>
@@ -570,7 +572,7 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.dropField($ctrl.form.nhTypes)"
+                            ng-click="$ctrl.dropEventType()"
                             ng-disabled="$ctrl.checkEmpty($ctrl.form.nhTypes)">
                             &#x2212; Remove Event Type
                     </button>
