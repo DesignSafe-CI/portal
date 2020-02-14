@@ -15,7 +15,6 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.agave import get_service_account_client, impersonate_service_account
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
@@ -60,9 +59,9 @@ class FileListingView(BaseApiView):
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string', None)
         type_filters = request.GET.getlist('typeFilters', None)
-  
+
         kwargs['type_filters'] = type_filters
-        
+
         if not request.user.is_authenticated:
             client = get_user_model().objects.get(username='envision').agave_oauth.client
         else:
@@ -90,7 +89,7 @@ class FileListingView(BaseApiView):
                                 encoder=AgaveJSONEncoder,
                                 safe=False)
 
-@method_decorator(csrf_exempt, name='dispatch')
+
 class FileMediaView(View):
 
     @profile_fn
