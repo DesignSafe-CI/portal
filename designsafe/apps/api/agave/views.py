@@ -60,9 +60,9 @@ class FileListingView(BaseApiView):
         query_string = request.GET.get('query_string', None)
         type_filters = request.GET.getlist('typeFilters', None)
 
-        if type_filters: 
+        if type_filters:
             kwargs['type_filters'] = type_filters
-        
+
         if not request.user.is_authenticated:
             client = get_user_model().objects.get(username='envision').agave_oauth.client
         else:
