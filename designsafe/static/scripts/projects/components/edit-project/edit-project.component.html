@@ -188,10 +188,16 @@
                                 >
                             </span>
                             <div>
-                                <a ng-click="$ctrl.addField($ctrl.form.copi)">&#x2b; Add another PI</a>
-                            </div>
-                            <div ng-hide="$ctrl.checkEmpty($ctrl.form.copi)">
-                                <a ng-click="$ctrl.dropField($ctrl.form.copi)">&#x2212; Drop PI</a>
+                                <button class="btn-project-add-rm"
+                                        ng-click="$ctrl.addField($ctrl.form.copi)">
+                                        &#x2b; Add another PI
+                                </button>
+                                |
+                                <button class="btn-project-add-rm"
+                                        ng-click="$ctrl.dropField($ctrl.form.copi)"
+                                        ng-disabled="$ctrl.checkEmpty($ctrl.form.copi)">
+                                        &#x2212; Remove PI
+                                </button>
                             </div>
                     </div>
                 </tr>
@@ -217,12 +223,16 @@
                                 typeahead-template-url="itemTmpl.html"
                         >
                     </span>
-                    <div>
-                        <a ng-click="$ctrl.addField($ctrl.form.team)">&#x2b; Add another Project Member</a>
-                    </div>
-                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.team)">
-                        <a ng-click="$ctrl.dropField($ctrl.form.team)">&#x2212; Drop Project Member</a>
-                    </div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addField($ctrl.form.team)">
+                            &#x2b; Add another Project Member
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropField($ctrl.form.team)"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.team)">
+                            &#x2212; Remove Project Member
+                    </button>
                 </tr>
             </table>
         </div>
@@ -263,12 +273,16 @@
                     </td>
                 </tr>
             </table>
-            <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
-                + Add another Unregistered Project Member
-            </a>
-            <div ng-hide="$ctrl.checkEmpty($ctrl.form.guests)">
-                <a ng-click="$ctrl.dropField($ctrl.form.guests)">&#x2212; Drop Unregistered Project Member</a>
-            </div>
+            <button class="btn-project-add-rm"
+                    ng-click="$ctrl.addGuests()">
+                    &#x2b; Add another Unregistered Project Member
+            </button>
+            |
+            <button class="btn-project-add-rm"
+                    ng-click="$ctrl.dropField($ctrl.form.guests)"
+                    ng-disabled="$ctrl.checkEmpty($ctrl.form.guests)">
+                    &#x2212; Remove Unregistered Project Member
+            </button>
         </div>
         <!-- Edit Project Section -->
         <div ng-if="$ctrl.form.uuid && $ctrl.form.projectType">
@@ -335,13 +349,17 @@
                         </td>
                     </tr>
                 </table>
-                <div style="width:28%; display:inline-block;">
-                    <div>
-                        <a ng-click="$ctrl.addAwardField($ctrl.form.awardNumber)">&#x2b; Add another Award</a>
-                    </div>
-                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.awardNumber)">
-                        <a ng-click="$ctrl.dropField($ctrl.form.awardNumber, true)">&#x2212; Drop Award</a>
-                    </div>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addField($ctrl.form.awardNumber)">
+                            &#x2b; Add another Award
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropField($ctrl.form.awardNumber)"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.awardNumber)">
+                            &#x2212; Remove Award
+                    </button>
                 </div>
             </div>
             <!-- Related Works -->
@@ -390,13 +408,17 @@
                         </td>
                     </tr>
                 </table>
-                <div style="width:28%; display:inline-block;">
-                    <div>
-                        <a ng-click="$ctrl.addWorkField($ctrl.form.associatedProjects, true)">&#x2b; Add another Related Work</a>
-                    </div>
-                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.associatedProjects)">
-                        <a ng-click="$ctrl.dropField($ctrl.form.associatedProjects, true)">&#x2212; Drop Related Work</a>
-                    </div>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addWorkField($ctrl.form.associatedProjects, true)">
+                            &#x2b; Add another Related Work
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropField($ctrl.form.associatedProjects, true)"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.associatedProjects)">
+                            &#x2212; Remove Related Work
+                    </button>
                 </div>
             </div>
             <!-- FR Fields -->
@@ -524,7 +546,7 @@
                             The hazards occurring from an event. An event can have multiple hazard types (Hurricanes also have storm surge and floods).
                         </span>
                     </label>
-                    <div data-ng-repeat="nhType in $ctrl.form.nhTypes track by $index">
+                    <div ng-repeat="nhType in $ctrl.form.nhTypes track by $index">
                         <select id="id-nh-event-type"
                                 style="margin-bottom: 5px;"
                                 data-ng-options="item for item in $ctrl.rapidEventTypes"
@@ -542,10 +564,15 @@
                                />
                         </div>
                     </div>
-                    <button type="button"
-                            class="btn btn-link"
-                            data-ng-click="$ctrl.addNhType()">
-                        <i class="fa fa-plus">&nbsp;</i> Add another Event Type
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addField($ctrl.form.nhTypes)">
+                            &#x2b; Add another Event Type
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropField($ctrl.form.nhTypes)"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.nhTypes)">
+                            &#x2212; Remove Event Type
                     </button>
                 </div>
             </div>

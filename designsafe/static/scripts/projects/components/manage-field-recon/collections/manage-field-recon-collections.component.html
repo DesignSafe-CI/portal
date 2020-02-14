@@ -94,10 +94,15 @@
                                 data-ng-required="false"
                                 class="form-control" />
                     </div>
-                    <button class="btn btn-link"
-                            type="button"
-                            data-ng-click="$ctrl.addModes()">
-                        <i class="fa fa-plus">&nbsp;</i> Add another Mode of Collection
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addModes()">
+                            &#x2b; Add another Mode of Collection
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.removeInput($ctrl.form.modes)"
+                            ng-disabled="$ctrl.minimumInputs($ctrl.form.modes)">
+                            &#x2212; Remove Mode of Collection
                     </button>
                 </div>
                 <div class="collection-sample form-group" ng-if="$ctrl.formFields('sample')">
@@ -113,11 +118,16 @@
                                 ng-required="false"
                                 class="form-control" />
                     </div>
-                    <button class="btn btn-link collection-sample-add"
-                            type="button"
+                    <button class="btn-project-add-rm"
                             ng-click="$ctrl.addSampleApproach()">
-                        <i class="fa fa-plus">&nbsp;</i> Add another Sampling Approach
-                    </button>  
+                            &#x2b; Add another Sampling Approach
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.removeInput($ctrl.form.sampleApproach)"
+                            ng-disabled="$ctrl.minimumInputs($ctrl.form.sampleApproach)">
+                            &#x2212; Remove Sampling Approach
+                    </button>
                 </div>
                 <div class="collection-sample-size form-group"  ng-if="$ctrl.formFields('sample')">
                     <label for="id-sampleSize">Sample Size</label>
@@ -158,10 +168,15 @@
                                 class="form-control"
                             />
                     </div>
-                    <button type="button"
-                            class="btn btn-link"
-                            data-ng-click="$ctrl.addObservationType()">
-                        <i class="fa fa-plus">&nbsp;</i> Add another Observation Type
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addObservationType()">
+                            &#x2b; Add another Observation Type
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.removeInput($ctrl.form.observationTypes)"
+                            ng-disabled="$ctrl.minimumInputs($ctrl.form.observationTypes)">
+                            &#x2212; Remove Observation Type
                     </button>
                 </div>
                 <div class="collection-dates form-group" ng-if="$ctrl.formFields('colDates')">
@@ -337,10 +352,15 @@
                                 data-ng-if="$ctrl.showEquipmentInput($index)"
                                 class="form-control" />
                         </div>
-                        <button class="btn btn-link"
-                                type="button"
-                                data-ng-click="$ctrl.addEquipment()">
-                            <i class="fa fa-plus">&nbsp;</i> Add another Equipment
+                        <button class="btn-project-add-rm"
+                                ng-click="$ctrl.addEquipment()">
+                                &#x2b; Add another Equipment
+                        </button>
+                        |
+                        <button class="btn-project-add-rm"
+                                ng-click="$ctrl.removeInput($ctrl.form.equipment)"
+                                ng-disabled="$ctrl.minimumInputs($ctrl.form.equipment)">
+                                &#x2212; Remove Equipment
                         </button>
                     </div>
                 </div>
@@ -385,10 +405,15 @@
                             data-ng-model="referenced.url"
                             class="form-control"/>
                     </div>
-                    <button class="btn btn-link"
-                            data-ng-click="$ctrl.addReferenced()">
-                        <i class="fa fa-plus">&nbsp;</i>
-                        Add another Referenced Data
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addReferenced()">
+                            &#x2b; Add another Referenced Data
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.removeInput($ctrl.form.referencedData)"
+                            ng-disabled="$ctrl.minimumInputs($ctrl.form.referencedData)">
+                            &#x2212; Remove Referenced Data
                     </button>
                 </div>
                 <div class="description form-group">
