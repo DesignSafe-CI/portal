@@ -10,11 +10,72 @@
             <div style="width:100%;" class="file-tag-list">
                 <table class="file-tag-item file-tag-table" data-ng-repeat="parent in $ctrl.file._parent._entities">
                     <tr style="vertical-align: top;">
-                        <td>
-                            <div class="file-category-label" style="width:50%;">
+                        <td style="width:49%">
+                            <div class="file-category-label">
                                 <span class="label curation" data-ng-class="parent.cssClasses()['tag']">
                                     {{ parent.value.title }}
                                 </span>
+                            </div>
+                        </td>
+                        <td style="width:49%">
+                            <div class="file-tag-label" style="display: inline-block;" data-ng-repeat="tag in $ctrl.tagsForFile(parent.value.fileTags)">
+                                <span>{{tag.tagName}}</span>
+                                <button class="btn-link"
+                                        data-ng-click="$ctrl.removeFileTag(parent, tag)"
+                                        data-ng-disabled="$ctrl._ui.busy">
+                                    Remove
+                                </button>
+                            </div>
+                            <div class="file-tag-selector">
+                                <select name="project-file-tags"
+                                        data-ng-model="$ctrl.selectedFileTag[parent.uuid]"
+                                        class="form-control project-file-tags-select">
+                                    <option value="" data-ng-if="$ctrl.fileTagsForEntity(parent).name == 'Analysis'">
+                                        -- Select an {{$ctrl.fileTagsForEntity(parent).name}} File Tag --
+                                    </option>
+                                    <option value="" data-ng-if="$ctrl.fileTagsForEntity(parent).name != 'Analysis'">
+                                        -- Select a {{$ctrl.fileTagsForEntity(parent).name}} File Tag --
+                                    </option>
+                                    <optgroup data-ng-repeat="(tagName, tags) in $ctrl.fileTagsForEntity(parent).tags"
+                                            label="{{tagName}}">
+                                        <option value="other">
+                                            Other
+                                        </option>
+                                        <option data-ng-repeat="tag in tags"
+                                                value="{{tag}}">
+                                            {{tag}}
+                                        </option>
+                                    </optgroup>
+                                </select>
+                                <input class="input-tag"
+                                    ng-if="$ctrl.selectedFileTag[parent.uuid] === 'other' "
+                                    ng-model="$ctrl.otherTagName[parent.uuid]"
+                                    placeholder="Enter your custom tag..."
+                                >
+                                <input class="input-tag"
+                                    ng-if="$ctrl.selectedFileTag[parent.uuid] === 'Location' "
+                                    ng-model="$ctrl.locationTag[parent.uuid]"
+                                    placeholder="Enter your location..."
+                                >
+                                <input class="input-tag"
+                                    ng-if="$ctrl.selectedFileTag[parent.uuid] === 'Lat Long' "
+                                    ng-model="$ctrl.latLongTag[parent.uuid]"
+                                    placeholder="Enter latitude and longitude coordinates..."
+                                >
+                                <!-- save custom tag -->
+                                <button class="btn-link"
+                                        ng-if="['other', 'Lat Long', 'Location'].includes($ctrl.selectedFileTag[parent.uuid])"
+                                        data-ng-click="$ctrl.addFileTag(parent)"
+                                        data-ng-disabled="$ctrl._ui.busy">
+                                    Save
+                                </button>
+                                <!-- save tag -->
+                                <button class="btn-link"
+                                        ng-if="!['other', 'Lat Long', 'Location'].includes($ctrl.selectedFileTag[parent.uuid])"
+                                        data-ng-click="$ctrl.addFileTag(parent)"
+                                        data-ng-disabled="$ctrl._ui.busy || !$ctrl.selectedFileTag[parent.uuid]">
+                                    Save
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -68,16 +129,26 @@
                                     ng-model="$ctrl.otherTagName[entity.uuid]"
                                     placeholder="Enter your custom tag..."
                                 >
+                                <input class="input-tag"
+                                    ng-if="$ctrl.selectedFileTag[entity.uuid] === 'Location' "
+                                    ng-model="$ctrl.locationTag[entity.uuid]"
+                                    placeholder="Enter your location..."
+                                >
+                                <input class="input-tag"
+                                    ng-if="$ctrl.selectedFileTag[entity.uuid] === 'Lat Long' "
+                                    ng-model="$ctrl.latLongTag[entity.uuid]"
+                                    placeholder="Enter latitude and longitude coordinates..."
+                                >
                                 <!-- save custom tag -->
                                 <button class="btn-link"
-                                        ng-if="$ctrl.selectedFileTag[entity.uuid] === 'other' "
+                                        ng-if="['other', 'Lat Long', 'Location'].includes($ctrl.selectedFileTag[entity.uuid])"
                                         data-ng-click="$ctrl.addFileTag(entity)"
-                                        data-ng-disabled="$ctrl._ui.busy || !$ctrl.otherTagName[entity.uuid]">
+                                        data-ng-disabled="$ctrl._ui.busy">
                                     Save
                                 </button>
                                 <!-- save tag -->
                                 <button class="btn-link"
-                                        ng-if="$ctrl.selectedFileTag[entity.uuid] != 'other' "
+                                        ng-if="!['other', 'Lat Long', 'Location'].includes($ctrl.selectedFileTag[entity.uuid])"
                                         data-ng-click="$ctrl.addFileTag(entity)"
                                         data-ng-disabled="$ctrl._ui.busy || !$ctrl.selectedFileTag[entity.uuid]">
                                     Save
@@ -89,12 +160,20 @@
             </div>
         </div>
         <!-- preview/published tags -->
-        <span data-ng-repeat="entity in $ctrl.file._entities" ng-if="$ctrl._ui.showTags">
-            <span data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags)">
-                <strong>
+        <span data-ng-repeat="parent in $ctrl.file._parent._entities" ng-if="$ctrl._ui.showTags">
+            <span data-ng-repeat="tag in $ctrl.tagsForFile(parent.value.fileTags)">
+                <div class="tag-preview">
                     <span ng-if="!$last">{{tag.tagName}}, </span>
                     <span ng-if="$last">{{tag.tagName}}</span>
-                </strong>
+                </div>
+            </span>
+        </span>
+        <span data-ng-repeat="entity in $ctrl.file._entities" ng-if="$ctrl._ui.showTags">
+            <span data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags)">
+                <div class="tag-preview">
+                    <span ng-if="!$last">{{tag.tagName}}, </span>
+                    <span ng-if="$last">{{tag.tagName}}</span>
+                </div>
             </span>
         </span>
     </div>
@@ -142,10 +221,10 @@
             </div>
         </div>
         <span ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags)" ng-if="$ctrl._ui.showTags">
-            <strong>
+            <div class="tag-preview">
                 <span ng-if="!$last">{{tag.tagName}}, </span>
                 <span ng-if="$last">{{tag.tagName}}</span>
-            </strong>
+            </div>
         </span>
     </div>
     <!-- Other Projects -->

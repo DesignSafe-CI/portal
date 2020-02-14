@@ -125,7 +125,7 @@
             <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                 <table style="width:100%">
                     <tr>
-                        <td style="text-align: left;">
+                        <td class="tab-cell">
                             <span>Report | <strong>{{report.value.title}}</strong></span>
                         </td>
                         <td style="text-align: right;">
@@ -150,7 +150,7 @@
             <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
                 <table style="width:100%">
                     <tr>
-                        <td style="text-align: left;">
+                        <td class="tab-cell">
                             <span>Simulation | <strong>{{simulation.value.title}}</strong></span>
                         </td>
                         <td style="text-align: right;">
@@ -161,67 +161,77 @@
             </button>
             <div id="data-{{simulation.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
-                    <div style="display:inline-block; width:20%;">Simulation Type</div>
-                    <strong ng-if="!$ctrl.isValid(simulation.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ simulation.value.simulationType.replace('_', ' ') }}
-                    </strong>
-                    <strong ng-if="$ctrl.isValid(simulation.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ simulation.value.simulationTypeOther }}
-                    </strong>
-                    <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-                    <div style="display:inline-block; width:78%; font-weight: bold;">
-                        <span ng-if="$ctrl.readOnly">
-                            <!-- <ds-author-list authors="simulation.authors"></ds-author-list> -->
-                            <span ng-repeat="author in simulation.authors | filter: { authorship: true }">
-                                <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Simulation Type</div>
+                        <span ng-if="!$ctrl.isValid(simulation.value.experimentalFacilityOther)" class="entity-meta-data-cap">
+                            {{ simulation.value.simulationType.replace('_', ' ') }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(simulation.value.experimentalFacilityOther)" class="entity-meta-data-cap">
+                            {{ simulation.value.simulationTypeOther }}
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label-multi">Author(s)</div>
+                        <div class="entity-meta-data">
+                            <span ng-if="$ctrl.readOnly">
+                                <!-- <ds-author-list authors="simulation.authors"></ds-author-list> -->
+                                <span ng-repeat="author in simulation.authors | filter: { authorship: true }">
+                                    <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
+                                </span>
                             </span>
+                            <span ng-if="!$ctrl.readOnly">
+                                <ds-author-list authors="simulation.value.authors"></ds-author-list>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Date of Publication</div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
                         </span>
-                        <span ng-if="!$ctrl.readOnly">
-                            <ds-author-list authors="simulation.value.authors"></ds-author-list>
+                        <span class="entity-meta-data"
+                                data-ng-if="$ctrl.readOnly">
+                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
                         </span>
                     </div>
-                    <div style="display:inline-block; width:20%;">Date of Publication</div>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="!$ctrl.readOnly">
-                        (Appears when published)
-                    </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                        {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
-                    </strong>
-                    <div style="display:inline-block; width:20%;">
-                        DOI
-                        <button class="btn btn-info btn-sm btn-cite"
-                                ng-disabled="!$ctrl.readOnly"
-                                data-ng-click="$ctrl.showCitation(simulation)">
-                            Citation
-                        </button>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">
+                            DOI
+                            <button class="btn btn-info btn-sm btn-cite"
+                                    ng-disabled="!$ctrl.readOnly"
+                                    data-ng-click="$ctrl.showCitation(simulation)">
+                                Citation
+                            </button>
+                        </div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </span>
+                        <span class="entity-meta-data"
+                                data-ng-if="$ctrl.readOnly">
+                            {{ simulation.doi }}
+                        </span>
                     </div>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="!$ctrl.readOnly">
-                        (Appears when published)
-                    </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                        {{ simulation.doi }}
-                    </strong>
-                    <div style="display:inline-block; width:20%;">License(s)</div>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="!$ctrl.readOnly">
-                        (Appears when published)
-                    </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
-                                {{ $ctrl.browser.publication.licenses.datasets }}
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.works">
-                                {{ $ctrl.browser.publication.licenses.works }}
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.software">
-                                {{ $ctrl.browser.publication.licenses.software }}
-                            </div>
-                    </strong>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">License(s)</div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </span>
+                        <span class="entity-meta-data"
+                                data-ng-if="$ctrl.readOnly">
+                                <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
+                                    {{ $ctrl.browser.publication.licenses.datasets }}
+                                </div>
+                                <div data-ng-if="$ctrl.browser.publication.licenses.works">
+                                    {{ $ctrl.browser.publication.licenses.works }}
+                                </div>
+                                <div data-ng-if="$ctrl.browser.publication.licenses.software">
+                                    {{ $ctrl.browser.publication.licenses.software }}
+                                </div>
+                        </span>
+                    </div>
                     <p>
                         <br>{{ simulation.value.description }}
                     </p>
@@ -234,7 +244,7 @@
                                 <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                                     <table style="width:100%">
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="tab-cell">
                                                 <span>Report | <strong>{{report.value.title}}</strong></span>
                                             </td>
                                             <td style="text-align: right;">
@@ -258,7 +268,7 @@
                                     style="width:100%;">
                                     <table style="width:100%">
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="tab-cell">
                                                 <span>Simulation Model | <strong>{{model.value.title}}</strong></span>
                                             </td>
                                             <td style="text-align: right;">
@@ -294,7 +304,7 @@
                                                 style="width:100%;">
                                                 <table style="width:100%">
                                                     <tr>
-                                                        <td style="text-align: left;">
+                                                        <td class="tab-cell">
                                                             <span>Simulation Input | <strong>{{input.value.title}}</strong></span>
                                                         </td>
                                                         <td style="text-align: right;">
@@ -331,7 +341,7 @@
                                                         <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{output.uuid}}{{model.uuid}}" style="width:100%;">
                                                             <table style="width:100%">
                                                                 <tr>
-                                                                    <td style="text-align: left;">
+                                                                    <td class="tab-cell">
                                                                         <span>Simulation Output | <strong>{{output.value.title}}</strong></span>
                                                                     </td>
                                                                     <td style="text-align: right;">
@@ -364,7 +374,7 @@
                                     style="width:100%;">
                                     <table style="width:100%">
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="tab-cell">
                                                 <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
                                             </td>
                                             <td style="text-align: right;">

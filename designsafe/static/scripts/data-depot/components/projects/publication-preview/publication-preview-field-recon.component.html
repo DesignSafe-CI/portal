@@ -14,17 +14,13 @@
             <tr class="prj-row">
                 <td>PI</td>
                 <td class="prj-data">
-                    <a href="#" ng-click="$ctrl.showAuthor($ctrl.piDisplay)">
-                        {{ $ctrl.piDisplay.lname}}, {{ $ctrl.piDisplay.fname }}
-                    </a>
+                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <span ng-repeat="coPi in $ctrl.coPIDisplay">
-                        <a href="#" ng-click="$ctrl.showAuthor(coPi)">{{coPi.lname}}, {{coPi.fname}}</a><span ng-if="!$last">;</span>
-                    </span>
+                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.project.value.dois.length">
@@ -43,25 +39,32 @@
                 <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
                     {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}
                 </td>
-                <!-- FR -->
                 <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
-            <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
-                <td>Natural Hazard</td>
+            <!-- FR -->
+            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
+                <td>Event</td>
                 <td class="prj-data">
-                    {{ $ctrl.browser.project.value.nhEvent }} | {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">―
-                        {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
+                    {{ $ctrl.browser.project.value.nhEvent }} |
+                    <span ng-if="$ctrl.browser.project.value.nhLocation">{{ $ctrl.browser.project.value.nhLocation }} |</span>
+                    {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">
+                        ― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
+                    </span>
+                    <span ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLatitude">|</span>
+                    <a href="http://www.google.com/maps/place/{{ $ctrl.browser.project.value.nhLatitude }},{{ $ctrl.browser.project.value.nhLongitude }}"
+                        rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLatitude">
+                        Lat {{ $ctrl.browser.project.value.nhLatitude }} Long {{ $ctrl.browser.project.value.nhLongitude }}
+                    </a>
                 </td>
             </tr>
             <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes">
-                <td>Natural Hazard Type</td>
+                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes.length">
+                <td>Event Type</td>
                 <td class="prj-data">
                     <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
                         <span ng-if="!$last">{{ nhtype }},</span>
@@ -69,6 +72,7 @@
                     </span>
                 </td>
             </tr>
+            <!-- FR -->
             <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
                 ng-if="!$ctrl.readOnly">
                 <td ng-if="$first">Awards</td>
@@ -125,7 +129,6 @@
             <strong>View Data Diagram</strong>
         </a>
     </div>
-    <!-- Missions -->
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
             <i class="fa fa-spinner fa-spin"></i> Loading...
@@ -135,249 +138,545 @@
         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" params="$ctrl.fl"></files-listing>
     </div>
     <div ng-if="!$ctrl.ui.fileNav">
-        <!-- Project Reports -->
-        <div ng-hide="$ctrl.ui.loading"
-            ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
-            ng-if="$ctrl.isProjectReport(report)"
-        >
-            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
-                    <table style="width:100%">
-                        <tr>
-                            <td style="text-align: left;">
-                                <span>Report | <strong>{{report.value.title}}</strong></span>
-                            </td>
-                            <td style="text-align: right;">
-                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                            </td>
-                        </tr>
-                    </table>
-                </button>
-                <div id="files-{{report.uuid}}" class="collapse">
-                    <div style="display: inline-block;
-                                width:20%;
-                                vertical-align: top;">
-                        Data Collectors
-                    </div>
-                    <div style="display: inline-block;
-                                width:78%;
-                                font-weight: bold;">
-                        <ds-user-list authors="report.value.authors"></ds-user-list>
-                        <ds-author-list authors="[$ctrl.browser.project.value.pi]"></ds-author-list>
-                    </div>
-                    <div style="display: inline-block;
-                                width: 20%;
-                                vertical-align: top;">
-                        Referenced Data
-                    </div>
-                    <div style="display: inline-block;
-                                width: 78%;
-                                font-weight: bold;">
-                        <ul style="list-style: none;
-                                padding-left: 0;">
-                            <li data-ng-repeat="referencedData in
-                                report.value.referencedDatas">
-                                {{referencedData.title}} | {{referencedData.url}}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="well" ng-if="report.value.description">
-                        <p>{{ report.value.description }}</p>
-                    </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
-                </div>
-            </div>
-        </div>
-        <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="mission in $ctrl.browser.project.mission_set">
-            <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
-                <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
-                    <table style="width:100%">
-                        <tr>
-                            <td style="text-align: left;">
-                                <span>Mission | <strong>{{mission.value.title}}</strong></span>
-                            </td>
-                            <td style="text-align: right;">
-                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                            </td>
-                        </tr>
-                    </table>
-                </button>
-                <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
-                    <div class="well">
-                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                            Authors
-                        </div>
-                        <div style="display: inline-block; width:78%; font-weight: bold;">
-                            <span ng-if="$ctrl.readOnly">
-                                <!-- <ds-author-list authors="mission.authors"></ds-author-list> -->
-                                <span ng-repeat="author in mission.authors | filter: { authorship: true }">
-                                    <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
-                                    
-                                </span>
-                            </span>
-                            <span ng-if="!$ctrl.readOnly">
-                                <ds-author-list authors="mission.value.authors"></ds-author-list>
-                            </span>
-                        </div>
-                        <div style="display: inline-block; width:20%;">Date of Mission</div>
-                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                            <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                            <span data-ng-if="mission.value.dateEnd">
-                                &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
-                            </span>
-                        </div>
-                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                            Site Location
-                        </div>
-                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                            <ul style="list-style:none; padding-left:0;">
-                                <li>{{mission.value.location}} | Lat {{mission.value.latitude}} Long {{mission.value.longitude}}</li>
-                                <!-- <li> Elevation: {{mission.value.elevation}} </li> -->
-                            </ul>
-                        </div>
-                        <div style="display:inline-block; width:20%;">Date of Publication</div>
-                        <strong style="display:inline-block; width:78%;"
-                                data-ng-if="!$ctrl.readOnly">
-                            (Appears when published)
-                        </strong>
-                        <strong style="display:inline-block; width:78%;"
-                                data-ng-if="$ctrl.readOnly">
-                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
-                        </strong>
-                        <div style="display:inline-block; width:20%;">
-                            DOI 
-                            <button class="btn btn-info btn-sm btn-cite"
-                                    ng-disabled="!$ctrl.readOnly"
-                                    data-ng-click="$ctrl.showCitation(mission)">
-                                Citation
-                            </button>
-                        </div>
-                        <strong style="display:inline-block; width:78%;"
-                                data-ng-if="!$ctrl.readOnly">
-                            (Appears when published)
-                        </strong>
-                        <strong style="display:inline-block; width:78%;"
-                                data-ng-if="$ctrl.readOnly">
-                            {{ mission.doi }}
-                        </strong>
-                        <div style="display:inline-block; width:20%;">License(s)</div>
-                        <strong style="display:inline-block; width:78%;"
-                                data-ng-if="!$ctrl.readOnly">
-                            (Appears when published)
-                        </strong>
-                        <strong style="display:inline-block; width:78%;"
-                                data-ng-if="$ctrl.readOnly">
-                                <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
-                                    {{ $ctrl.browser.publication.licenses.datasets }}
+        <!-- Root Sets -->
+        <!-- <div ng-repeat="mission in $ctrl.ordered($ctrl.browser.project, $ctrl.primaryEnts)"> -->
+        <div ng-repeat="mission in $ctrl.orderedPrimary">
+            <!-- Reports -->
+            <div ng-if="mission.name == 'designsafe.project.field_recon.report' && !$ctrl.ui.loading">
+                <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
+                    <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
+                        style="width:100%;">
+                        <table style="width:100%">
+                            <tr>
+                                <td class="tab-cell">
+                                    <span>Documents | <strong>{{mission.value.title}}</strong></span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="curation-chevron" style="font-size: 18px;"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </button>
+                    <div id="files-{{mission.uuid}}" class="collapse">
+                        <div class="well">
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label-multi" data-ng-if="mission.value.authors.length">
+                                    Author(s)
                                 </div>
-                                <div data-ng-if="$ctrl.browser.publication.licenses.works">
-                                    {{ $ctrl.browser.publication.licenses.works }}
-                                </div>
-                                <div data-ng-if="$ctrl.browser.publication.licenses.software">
-                                    {{ $ctrl.browser.publication.licenses.software }}
-                                </div>
-                        </strong>
-                        <p>
-                            <br>{{ mission.value.description }}
-                        </p>
-                <!-- Research Reports -->
-                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, report)">
-                            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
-                                    <table style="width:100%">
-                                        <tr>
-                                            <td style="text-align: left;">
-                                                <span>Report | <strong>{{report.value.title}}</strong></span>
-                                            </td>
-                                            <td style="text-align: right;">
-                                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </button>
-                                <div id="files-{{report.uuid}}" class="collapse">
-                                    <div class="well" ng-if="report.value.description">
-                                        <p>{{ report.value.description }}</p>
-                                    </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
+                                <div class="entity-meta-data" data-ng-if="mission.value.authors.length">
+                                    <span ng-if="$ctrl.readOnly">
+                                        <span ng-repeat="author in mission.authors | filter: { authorship: true }">
+                                            <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
+                                        </span>
+                                    </span>
+                                    <span ng-if="!$ctrl.readOnly">
+                                        <ds-author-list authors="mission.value.authors"></ds-author-list>
+                                    </span>
                                 </div>
                             </div>
+                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
+                                <div class="entity-meta-label-multi">
+                                    Referenced Data
+                                </div>
+                                <div class="entity-meta-data">
+                                    <ul class="collection-list">
+                                        <li data-ng-repeat="data in mission.value.referencedData">
+                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">Date of Publication</div>
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                                    <span>(Appears when published)</span>
+                                </div>
+                                <div class="entity-meta-data" ng-if="$ctrl.readOnly">
+                                    <span>{{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}</span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">
+                                    DOI
+                                    <button class="btn btn-info btn-sm btn-cite"
+                                            ng-disabled="!$ctrl.readOnly"
+                                            data-ng-click="$ctrl.showCitation(mission)">
+                                        Citation
+                                    </button>
+                                </div>
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                                    <span>(Appears when published)</span>
+                                </div>
+                                <div class="entity-meta-data" ng-if="$ctrl.readOnly">
+                                    <span>{{mission.doi}}</span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label-multi">License(s)</div>
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                                    <span>(Appears when published)</span>
+                                </div>
+                                <div class="entity-meta-data" ng-if="$ctrl.readOnly">
+                                    <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
+                                        {{ $ctrl.browser.publication.licenses.datasets }}
+                                    </div>
+                                    <div data-ng-if="$ctrl.browser.publication.licenses.works">
+                                        {{ $ctrl.browser.publication.licenses.works }}
+                                    </div>
+                                    <div data-ng-if="$ctrl.browser.publication.licenses.software">
+                                        {{ $ctrl.browser.publication.licenses.software }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.description">
+                                <p>{{ mission.value.description }}</p>
+                            </div>
                         </div>
-                        <!-- Research Models -->
-                        <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
-                            <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
-                                    style="width:100%;">
-                                    <table style="width:100%">
-                                        <tr>
-                                            <td style="text-align: left;">
-                                                <span>Collection | <strong>{{collection.value.title}}</strong></span>
-                                            </td>
-                                            <td style="text-align: right;">
-                                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </button>
-                                <div id="files-{{collection.uuid}}" class="collapse dropdown-spacer-lg">
-                                    <div class="well">
-                                        <div style="display: inline-block; width:20%;">Observation Type</div>
-                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                                            <ul style="list-style: none; padding-left: 0;">
-                                                <li data-ng-repeat="ot in collection.value.observationTypes">
-                                                    {{ot}}
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div style="display: inline-block; width:20%;">Date of Collection</div>
-                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                                            <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                            <span data-ng-if="mission.value.dateEnd">
-                                                &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
-                                            </span>
-                                        </div>
-                                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                                            Data Collectors
-                                        </div>
-                                        <div style="display: inline-block; width:78%; font-weight: bold;">
-                                            <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
-                                        </div>
-                                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                                            Site Location
-                                        </div>
-                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                                            <ul style="list-style:none; padding-left:0;">
-                                                <li>{{collection.value.location}} | Lat {{collection.value.latitude}} Long {{collection.value.longitude}}</li>
-                                                <!-- <li> Elevation: {{collection.value.elevation}} </li> -->
-                                            </ul>
-                                        </div>
-                                        <div style="display: inline-block; width:20%; vertical-align: top;">
-                                            Instrument
-                                        </div>
-                                        <div style="display: inline-block; width: 78%; font-weight:bold;">
-                                            <ul style="list-style:none; padding-left:0;">
-                                                <li data-ng-repeat="instrument in collection.value.instruments">
-                                                    {{instrument.name}} | {{instrument.model}}
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div ng-if="$ctrl.emptyCheck(collection.value.referencedDatas)">
-                                            <div style="display: inline-block; width:20%; vertical-align: top;">
-                                                Referenced Data
-                                            </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[mission.uuid]" params="$ctrl.fl"></files-listing>
+                    </div>
+                </div>
+            </div>
+            <!-- Missions -->
+            <div ng-if="!$ctrl.ui.fileNav && mission.name == 'designsafe.project.field_recon.mission' && !$ctrl.ui.loading">
+                <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
+                    <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
+                        <table style="width:100%">
+                            <tr>
+                                <td class="tab-cell">
+                                    <span>Mission | <strong>{{mission.value.title}}</strong></span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="curation-chevron" style="font-size: 18px;"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </button>
+                    <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
+                        <div class="well">
+                            <div class="entity-meta-field" ng-if="mission.value.event">
+                                <div class="entity-meta-label">Event</div>
+                                <div class="entity-meta-data">
+                                    <span>{{ mission.value.event }}</span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label-multi" data-ng-if="mission.value.authors.length">
+                                    Author(s)
+                                </div>
+                                <div class="entity-meta-data" data-ng-if="mission.value.authors.length">
+                                    <span ng-if="$ctrl.readOnly">
+                                        <span ng-repeat="author in mission.authors | filter: { authorship: true }">
+                                            <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
+                                        </span>
+                                    </span>
+                                    <span ng-if="!$ctrl.readOnly">
+                                        <ds-author-list authors="mission.value.authors"></ds-author-list>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">
+                                    Date(s) of Mission
+                                </div>
+                                <div class="entity-meta-data">
+                                    <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                    <span data-ng-if="mission.value.dateEnd">
+                                        &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">
+                                    Site Location
+                                </div>
+                                <div class="entity-meta-data">
+                                    <span>{{mission.value.location}} |</span>
+                                    <a href="http://www.google.com/maps/place/{{ mission.value.latitude }},{{ mission.value.longitude }}"
+                                        rel="noopener noreferrer" target=”_blank” ng-if="mission.value.latitude && mission.value.longitude">
+                                        Lat {{mission.value.latitude}} Long {{mission.value.longitude}}
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">Date of Publication</div>
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                                    <span>(Appears when published)</span>
+                                </div>
+                                <div class="entity-meta-data" ng-if="$ctrl.readOnly">
+                                    <span>{{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}</span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">
+                                    DOI
+                                    <button class="btn btn-info btn-sm btn-cite"
+                                            ng-disabled="!$ctrl.readOnly"
+                                            data-ng-click="$ctrl.showCitation(mission)">
+                                        Citation
+                                    </button>
+                                </div>
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                                    <span>(Appears when published)</span>
+                                </div>
+                                <div class="entity-meta-data" ng-if="$ctrl.readOnly">
+                                    <span>{{mission.doi}}</span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label-multi">License(s)</div>
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                                    <span>(Appears when published)</span>
+                                </div>
+                                <div class="entity-meta-data" ng-if="$ctrl.readOnly">
+                                    <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
+                                        {{ $ctrl.browser.publication.licenses.datasets }}
+                                    </div>
+                                    <div data-ng-if="$ctrl.browser.publication.licenses.works">
+                                        {{ $ctrl.browser.publication.licenses.works }}
+                                    </div>
+                                    <div data-ng-if="$ctrl.browser.publication.licenses.software">
+                                        {{ $ctrl.browser.publication.licenses.software }}
+                                    </div>
+                                </div>
+                            </div>
+                            <p>
+                                <br>{{ mission.value.description }}
+                            </p>
+                            <!-- Old Collections -->
+                            <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
+                                <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                    <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                        style="width:100%;">
+                                        <table style="width:100%">
+                                            <tr>
+                                                <td class="tab-cell">
+                                                    <span>Collection | <strong>{{collection.value.title}}</strong></span>
+                                                </td>
+                                                <td style="text-align: right;">
+                                                    <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </button>
+                                    <div id="files-{{collection.uuid}}" class="collapse dropdown-spacer-lg">
+                                        <div class="well">
+                                            <div style="display: inline-block; width:20%;">Observation Type</div>
                                             <div style="display: inline-block; width: 78%; font-weight:bold;">
-                                                <ul style="list-style:none; padding-left:0;">
-                                                    <li data-ng-repeat="data in collection.value.referencedDatas">
-                                                        <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                <ul style="list-style: none; padding-left: 0;">
+                                                    <li data-ng-repeat="ot in collection.value.observationTypes">
+                                                        {{ot}}
                                                     </li>
                                                 </ul>
                                             </div>
+                                            <div style="display: inline-block; width:20%;">Date(s) of Collection</div>
+                                            <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                                <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                                <span data-ng-if="mission.value.dateEnd">
+                                                    &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                                </span>
+                                            </div>
+                                            <div style="display: inline-block; width:20%; vertical-align: top;">
+                                                Data Collector(s)
+                                            </div>
+                                            <div style="display: inline-block; width:78%; font-weight: bold;">
+                                                <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
+                                            </div>
+                                            <div style="display: inline-block; width:20%; vertical-align: top;">
+                                                Site Location
+                                            </div>
+                                            <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                                <ul style="list-style:none; padding-left:0;">
+                                                    <li>{{collection.value.location}} | Lat {{collection.value.latitude}} Long {{collection.value.longitude}}</li>
+                                                </ul>
+                                            </div>
+                                            <div style="display: inline-block; width:20%; vertical-align: top;">
+                                                Instrument
+                                            </div>
+                                            <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                                <ul style="list-style:none; padding-left:0;">
+                                                    <li data-ng-repeat="instrument in collection.value.instruments">
+                                                        {{instrument.name}} | {{instrument.model}}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div ng-if="$ctrl.emptyCheck(collection.value.referencedDatas)">
+                                                <div style="display: inline-block; width:20%; vertical-align: top;">
+                                                    Referenced Data
+                                                </div>
+                                                <div style="display: inline-block; width: 78%; font-weight:bold;">
+                                                    <ul style="list-style:none; padding-left:0;">
+                                                        <li data-ng-repeat="data in collection.value.referencedDatas">
+                                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div ng-if="collection.value.description">
+                                                <p>{{ collection.value.description }}</p>
+                                            </div>
                                         </div>
-                                        <div ng-if="collection.value.description">
-                                            <p>{{ collection.value.description }}</p>
+                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div ng-repeat="collection in $ctrl.ordered(mission, $ctrl.secondaryEnts)"> -->
+                            <div ng-repeat="collection in $ctrl.orderedSecondary[mission.uuid]">
+                                <!-- Social Science -->
+                                <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
+                                    <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                            style="width:100%;">
+                                            <table style="width:100%">
+                                                <tr>
+                                                    <td style="text-align: left;">
+                                                        <span>Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                                    </td>
+                                                    <td style="text-align: right;">
+                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </button>
+                                        <div id="files-{{collection.uuid}}" class="collapse">
+                                            <div class="well">
+                                                <div class="entity-meta-field" ng-if="collection.value.unit">
+                                                    <div class="entity-meta-label">Unit of Analysis</div>
+                                                    <div class="entity-meta-data">
+                                                        <span>{{collection.value.unit}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.modes.length">
+                                                    <div class="entity-meta-label-multi">Mode(s) of Collection</div>
+                                                    <div class="entity-meta-data">
+                                                        <ul class="collection-list">
+                                                            <li data-ng-repeat="mode in collection.value.modes">
+                                                                {{mode}}
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.sampleApproach.length">
+                                                    <div class="entity-meta-label-multi">Sampling Approach(es)</div>
+                                                    <div class="entity-meta-data">
+                                                        <ul class="collection-list">
+                                                            <li data-ng-repeat="sample in collection.value.sampleApproach">
+                                                                {{sample}}
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.sampleSize">
+                                                    <div class="entity-meta-label">Sample Size</div>
+                                                    <div class="entity-meta-data">
+                                                        <span>{{collection.value.sampleSize}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label">Date(s) of Collection</div>
+                                                    <div class="entity-meta-data">
+                                                        <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                                        <span data-ng-if="collection.value.dateEnd">
+                                                            &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                                                        Data Collector(s)
+                                                    </div>
+                                                    <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
+                                                        <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label-multi" data-ng-if="collection.value.location">
+                                                        Site Location
+                                                    </div>
+                                                    <div class="entity-meta-data"
+                                                            data-ng-if="collection.value.location">
+                                                        <ul class="collection-list">
+                                                            <li>
+                                                                <span>{{collection.value.location}} |</span>
+                                                                <a href="http://www.google.com/maps/place/{{ collection.value.latitude }},{{ collection.value.longitude }}"
+                                                                    rel="noopener noreferrer" target=”_blank” ng-if="collection.value.latitude && collection.value.longitude">
+                                                                    Lat {{collection.value.latitude}} Long {{collection.value.longitude}}
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label-multi">Equipment</div>
+                                                    <div class="entity-meta-data">
+                                                        <ul class="collection-list">
+                                                            <li data-ng-repeat="eqp in collection.value.equipment">
+                                                                {{eqp}}
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.restriction">
+                                                    <div class="entity-meta-label">Restriction</div>
+                                                    <div class="entity-meta-data">
+                                                        <span>{{collection.value.restriction}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                                                    <div class="entity-meta-label-multi">
+                                                        Referenced Data
+                                                    </div>
+                                                    <div class="entity-meta-data">
+                                                        <ul class="collection-list">
+                                                            <li data-ng-repeat="data in collection.value.referencedData">
+                                                                <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.description">
+                                                    <p>{{ collection.value.description }}</p>
+                                                </div>
+                                            </div>
+                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
                                         </div>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
+                                </div>
+                                <!-- GeoscienceEngineering -->
+                                <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.geoscience'">
+                                    <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                            style="width:100%;">
+                                            <table style="width:100%">
+                                                <tr>
+                                                    <td style="text-align: left;">
+                                                        <span>Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                                    </td>
+                                                    <td style="text-align: right;">
+                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </button>
+                                        <div id="files-{{collection.uuid}}" class="collapse">
+                                            <div class="well">
+                                                <div class="entity-meta-field" ng-if="collection.value.observationTypes.length">
+                                                    <div class="entity-meta-label-multi">Observation Type(s)</div>
+                                                    <div class="entity-meta-data">
+                                                        <ul class="collection-list">
+                                                            <li data-ng-repeat="obs in collection.value.observationTypes">
+                                                                {{obs}}
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label">Date(s) of Collection</div>
+                                                    <div class="entity-meta-data">
+                                                        <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                                        <span data-ng-if="collection.value.dateEnd">
+                                                            &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                                                        Data Collector(s)
+                                                    </div>
+                                                    <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
+                                                        <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label-multi" data-ng-if="collection.value.location">
+                                                        Site Location
+                                                    </div>
+                                                    <div class="entity-meta-data" data-ng-if="collection.value.location">
+                                                        <ul class="collection-list">
+                                                            <li>
+                                                                <span>{{collection.value.location}} |</span>
+                                                                <a href="http://www.google.com/maps/place/{{ collection.value.latitude }},{{ collection.value.longitude }}"
+                                                                    rel="noopener noreferrer" target=”_blank” ng-if="collection.value.latitude && collection.value.longitude">
+                                                                    Lat {{collection.value.latitude}} Long {{collection.value.longitude}}
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label-multi">Equipment</div>
+                                                    <div class="entity-meta-data">
+                                                        <ul class="collection-list">
+                                                            <li data-ng-repeat="eqp in collection.value.equipment">
+                                                                {{eqp}}
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                                                    <div class="entity-meta-label-multi">
+                                                        Referenced Data
+                                                    </div>
+                                                    <div class="entity-meta-data">
+                                                        <ul class="collection-list">
+                                                            <li data-ng-repeat="data in collection.value.referencedData">
+                                                                <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.description">
+                                                    <p>{{ collection.value.description }}</p>
+                                                </div>
+                                            </div>
+                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Research Planning Collection -->
+                                <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.planning'">
+                                    <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                        <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                            style="width:100%;">
+                                            <table style="width:100%">
+                                                <tr>
+                                                    <td style="text-align: left;">
+                                                        <span>Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
+                                                    </td>
+                                                    <td style="text-align: right;">
+                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </button>
+                                        <div id="files-{{collection.uuid}}" class="collapse">
+                                            <div class="well">
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                                                        Data Collector(s)
+                                                    </div>
+                                                    <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
+                                                        <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                                                    <div class="entity-meta-label-multi">
+                                                        Referenced Data
+                                                    </div>
+                                                    <div class="entity-meta-data">
+                                                        <ul class="collection-list">
+                                                            <li data-ng-repeat="data in collection.value.referencedData">
+                                                                <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="entity-meta-field" ng-if="collection.value.description">
+                                                    <p>{{ collection.value.description }}</p>
+                                                </div>
+                                            </div>
+                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

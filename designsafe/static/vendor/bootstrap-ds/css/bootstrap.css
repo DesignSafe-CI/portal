@@ -1333,8 +1333,52 @@ mark,
 .prj-data {
   width: 84%;
   font-weight: bold;
-  /* display:inline-block; */
+  padding-bottom: 6px;
   text-transform:capitalize;
+}
+.prj-agree-body {
+  padding-bottom: 10px;
+}
+.prj-agree-select {
+  padding-top: 15px;
+  display:inline-block;
+  width:75%;
+}
+.prj-agree-publish {
+  display:inline-block;
+  width:24%;
+}
+.overview-body {
+  padding-bottom: 40px;
+}
+.overview-prj-type {
+  font-size:32px;
+  margin-right:10px;
+  margin-left:10px;
+}
+.overview-radio-btn {
+  margin-top: -18px;
+  vertical-align: middle;
+}
+.overview-heading {
+  font-weight: bold;
+  padding-bottom: 15px;
+}
+.overview-skip {
+  width: 70%;
+  padding-top: 8px;
+}
+.overview-back-long {
+  width: 80%; 
+  padding-top: 8px;
+}
+.overview-back-short {
+  width: 10%;
+  text-align: center;
+  padding-top: 8px;
+}
+.overview-continue {
+  width: 20%;
 }
 .sort-arrows{
   color: #337ab7;
@@ -2695,6 +2739,56 @@ input[type="search"] {
 }
 .form-group {
   margin-bottom: 20px;
+}
+.curation-tools {
+  vertical-align: middle;
+}
+.collection-sample {
+  width: 65%;
+  display:inline-block;
+}
+.collection-sample-size {
+  width: 29%;
+  display:inline-block;
+  float:right;
+}
+.collection-sample-add {
+  float:left;
+}
+.collection-authors {
+  width:100%;
+}
+.tag-preview {
+  font-weight: bold;
+  font-style: italic;
+}
+.entity-meta-field{
+  padding-bottom: 6px;
+}
+.entity-meta-label{
+  display: inline-block;
+  width:20%;
+}
+.entity-meta-label-multi{
+  display: inline-block;
+  width:20%;
+  vertical-align: top;
+}
+.entity-meta-data{
+  display: inline-block;
+  width: 78%;
+  font-weight:bold;
+}
+.entity-meta-data-cap{
+  display: inline-block;
+  width: 78%;
+  font-weight:bold;
+  text-transform: capitalize;
+}
+.collection-list{
+  list-style:none;
+  padding-left:0;
+  margin-bottom:0px;
 }
 .radio,
 .checkbox {
@@ -5114,8 +5208,21 @@ a.label:focus {
 .label-warning[href]:focus {
   background-color: #ec971f;
 }
+.label-form {
+  display: flex;
+  flex-direction: column
+}
+.label-form-name {
+  float: left !important;
+  margin-right: 5px;
+}
+.label-form-desc {
+  display: block;
+  font-weight: normal;
+}
 .label-danger {
   background-color: #d9534f;
+  margin-top: 3px;
 }
 .label-danger[href]:hover,
 .label-danger[href]:focus {
@@ -6197,6 +6304,12 @@ button.close {
   }
   .modal-sm {
     width: 300px;
+  }
+}
+@media (min-width: 992px) {
+  .modal-author {
+    width: 500px;
+    top: 35%;
   }
 }
 @media (min-width: 992px) {

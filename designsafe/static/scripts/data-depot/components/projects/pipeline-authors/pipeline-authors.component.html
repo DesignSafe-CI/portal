@@ -63,6 +63,20 @@
     </div>
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
+        <!-- Error Messages -->
+        <div class="alert alert-danger" ng-if="$ctrl.missing.length">
+            <p class="lead" style="text-align:center;">Your Project is Incomplete!</p>
+            <p>
+                Your project has missing data or incomplete requirements. You may have removed or modified a requirement in your project.
+                Please review the following fields:
+            </p>
+            <div ng-repeat="entity in $ctrl.missing">
+                <div ng-if="entity.missing.length">
+                    In the {{entity.type}} <strong>{{entity.title}}</strong>, the following requirements are missing or incomplete:
+                    <li ng-if="entity.missing.length" ng-repeat="err in entity.missing">{{ err }}</li>
+                </div>
+            </div>
+        </div>
         <p>
             <h3 style="text-align: center">Order the Authors of the {{$ctrl.placeholder}}</h3>
             <h3 style="text-align: center; color: orange;">
@@ -128,6 +142,67 @@
                         <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, primEnt)"></i>
                         <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, primEnt)"></i>
                         <a class="sort-arrows" ng-click="$ctrl.saveAuthors(primEnt)">Save</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div ng-repeat="secEnt in $ctrl.secondaryEntities | orderBy: secEnt.value.title" style="margin-bottom: 40px;">
+        <!-- Order Authors -->
+        <div class="well">
+            <div class="prj-head" style="padding-bottom:20px">
+                {{$ctrl.placeholderSecondary}} | <strong>{{ secEnt.value.title }}</strong>
+            </div>
+            <!-- Success Alert -->
+            <div class="alert alert-success text-center" ng-if="$ctrl.savedStatus[secEnt.uuid].saved">
+                <h4>Success</h4>
+                The author order for this {{$ctrl.placeholder}} has been saved.
+            </div>
+            <div ng-hide="$ctrl.validAuths">
+                Your authors need to be updated. Edit your {{$ctrl.placeholder}} and select which users are authors for the {{$ctrl.placeholder}}.
+            </div>
+            <div ng-show="$ctrl.loading">
+                <h3 class="text-center">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </h3>
+            </div>
+            <!-- Citation Preview -->
+            <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
+            <div class="well" style="margin-bottom:20px; background-color: white;">
+                <div>
+                    <ds-author-list format="hname" authors="secEnt.value.authors"></ds-author-list>
+                    <span style="background: #f5f5f5;">
+                        ({{ $ctrl.curDate }}) “{{ secEnt.value.title }}”, in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI. <a>https://doi.org/10.12345/ABCDEF</a>.
+                    </span>
+                </div>
+            </div>
+            <table class="tg" style="table-layout: fixed; width: 100%;" ng-show="$ctrl.validAuths && !$ctrl.loading">
+                <tr>
+                    <td>
+                        <div ng-repeat="author in secEnt.value.authors | orderBy: 'order'">
+                            <input type="radio" name="author" format="lname" ng-model="$ctrl.selectedAuthor" ng-value="author"
+                                ng-if="author.authorship">
+                            <span ng-if="!author.guest">
+                                <ds-user    username="author.name"
+                                            format="lname"
+                                            ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                                >
+                                    {{ author.name }}
+                                </ds-user>
+                            </span>
+                            <span   ng-if="author.guest"
+                                    ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                            >
+                                {{ author.lname }}, {{ author.fname }}
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, secEnt)"></i>
+                        <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, secEnt)"></i>
+                        <a class="sort-arrows" ng-click="$ctrl.saveAuthors(secEnt)">Save</a>
                     </td>
                 </tr>
             </table>

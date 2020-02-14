@@ -88,6 +88,7 @@ class PublicationView(BaseApiView):
                         countdown=60
                     )
                 ) |
+                tasks.swap_file_tag_uuids.si(pub.project_id) |
                 tasks.set_publish_status.si(
                     pub.projectId,
                     data.get('mainEntityUuids')

@@ -1,5 +1,5 @@
-import _ from 'underscore';
 import AgreementTemplate from './pipeline-agreement.html';
+import PrivacyAgreementTemplate from './pipeline-privacy-agreement.html';
 
 const attributeMap = {
     'designsafe.project.analysis': 'analysisList',
@@ -22,6 +22,9 @@ const attributeMap = {
     'designsafe.project.hybrid_simulation.analysis': 'analysiss',
     'designsafe.project.hybrid_simulation.report': 'reports',
     'designsafe.project.field_recon.collection': 'collections',
+    'designsafe.project.field_recon.social_science': 'socialscience',
+    'designsafe.project.field_recon.planning': 'planning',
+    'designsafe.project.field_recon.geoscience': 'geoscience',
     'designsafe.project.field_recon.report': 'reports',
 };
 
@@ -49,10 +52,10 @@ class PipelinePublishCtrl {
             let uuids = Object.keys(this.selectedListings);
             uuids.forEach((uuid) => {
                 let listing = this.selectedListings[uuid];
-                let entity = this.project.getRelatedByUuid(uuid);
+                let entity = this.project.getRelatedByUuid(uuid); // this part is still gathering collections...
                 let attr = attributeMap[entity.name];
                 let pubEntity = { name: entity.name, uuid: entity.uuid };
-                pubEntity.fileObjs = _.map(listing.children, (child) => {
+                pubEntity.fileObjs = listing.children.map((child) => {
                     return {
                         name: child.name,
                         path: child.path,
@@ -61,7 +64,7 @@ class PipelinePublishCtrl {
                     };
                 });
                 if (!publication[attr] ||
-                    _.isEmpty(publication[attr]) ||
+                    publication[attr].length === 0 ||
                     typeof publication[attr] === 'undefined') {
                     publication[attr] = [];
                 }
@@ -69,6 +72,7 @@ class PipelinePublishCtrl {
             });
 
             this.entityListName = '';
+            this.mainEntityUuids = [];
             if (this.project.value.projectType === 'experimental') {
                 this.entityListName = 'experimentsList';
             } else if (this.project.value.projectType === 'simulation') {
@@ -77,9 +81,11 @@ class PipelinePublishCtrl {
                 this.entityListName = 'hybrid_simulations';
             } else if (this.project.value.projectType === 'field_recon') {
                 this.entityListName = 'missions';
+                publication.reports.forEach((report) => {
+                    this.mainEntityUuids.push(report.uuid);
+                });
             }
             publication[this.entityListName] = [];
-            this.mainEntityUuids = [];
             this.resolve.resolveParams.primaryEntities.forEach((entity) => {
                 publication[this.entityListName].push({uuid: entity.uuid});
                 this.mainEntityUuids.push(entity.uuid);
@@ -126,6 +132,18 @@ class PipelinePublishCtrl {
 
 export const PipelinePublishComponent = {
     template: AgreementTemplate,
+    controller: PipelinePublishCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&',
+    },
+    size: 'lg',
+};
+
+export const PipelinePrivacyPublishComponent = {
+    template: PrivacyAgreementTemplate,
     controller: PipelinePublishCtrl,
     controllerAs: '$ctrl',
     bindings: {

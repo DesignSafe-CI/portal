@@ -37,7 +37,7 @@
                         class="btn btn-link"
                         data-ng-click="$ctrl.removeRelation(node)"
                         data-ng-disabled="$ctrl._ui.loading"
-                        data-ng-if="node.parent">
+                        data-ng-if="node.parent && !node.data.primary">
                     Remove
                 </button>
             </div>
