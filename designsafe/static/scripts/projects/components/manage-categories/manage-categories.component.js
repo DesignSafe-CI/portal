@@ -311,6 +311,7 @@ class ManageCategoriesCtrl {
     }
 
     editCategory(cat) {
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.tagType(cat.name);
         if (cat.value.refs){
             if (!cat.value.refs.length) {
@@ -331,7 +332,6 @@ class ManageCategoriesCtrl {
             description: catCopy.value.description
         };
         this.ui.showEditCategory = true;
-        document.getElementById("form-top").scrollIntoView({behavior: "smooth"});
     }
 
     updateCategory() {

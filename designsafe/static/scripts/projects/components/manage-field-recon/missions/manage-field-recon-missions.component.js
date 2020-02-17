@@ -249,6 +249,7 @@ class ManageFieldReconMissionsCtrl {
     }
 
     editMission(mission) {
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.data.editMission = Object.assign({}, mission);
         this.data.editMission.value.dateStart = new Date(
             this.data.editMission.value.dateStart

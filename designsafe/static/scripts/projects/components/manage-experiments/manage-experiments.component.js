@@ -201,6 +201,7 @@ class ManageExperimentsCtrl {
     editExp(experiment) {
         let exp = jQuery.extend(true, {}, experiment);
         let auths = this.configureAuthors(exp);
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
 
         exp.value.procedureStart = new Date(exp.value.procedureStart);
         exp.value.procedureEnd = (exp.value.procedureEnd && exp.value.procedureEnd !== 'None') ? new Date(exp.value.procedureEnd) : '';
@@ -220,7 +221,6 @@ class ManageExperimentsCtrl {
             description: exp.value.description,
         };
         this.ui.showEditExperimentForm = true;
-        document.getElementById('form-top').scrollIntoView({ behavior: 'smooth' });
     }
 
     editAuthors(user, i) {
