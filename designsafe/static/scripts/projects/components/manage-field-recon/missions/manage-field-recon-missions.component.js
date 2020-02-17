@@ -12,6 +12,7 @@ class ManageFieldReconMissionsCtrl {
 
     $onInit() {
         this.project = this.resolve.project;
+        this.edit = this.resolve.edit;
         var members = [this.project.value.pi].concat(
             this.project.value.coPis,
             this.project.value.teamMembers,
@@ -57,6 +58,9 @@ class ManageFieldReconMissionsCtrl {
             form: {}
         };
         this.cleanForm();
+        if (this.edit) {
+            this.editMission(this.edit);
+        }
     }
 
     cleanForm() {
@@ -217,6 +221,7 @@ class ManageFieldReconMissionsCtrl {
         this.data.busy = true;
         let mission = {
             title: this.form.title,
+            event: this.form.event,
             dateStart: this.form.dateStart,
             dateEnd: this.form.dateEnd,
             authors: this.form.authors,
@@ -244,6 +249,7 @@ class ManageFieldReconMissionsCtrl {
     }
 
     editMission(mission) {
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.data.editMission = Object.assign({}, mission);
         this.data.editMission.value.dateStart = new Date(
             this.data.editMission.value.dateStart
@@ -254,6 +260,7 @@ class ManageFieldReconMissionsCtrl {
             authors: auths,
             selectedAuthor: '',
             title: this.data.editMission.value.title,
+            event: this.data.editMission.value.event,
             dateStart: this.data.editMission.value.dateStart,
             dateEnd: this.data.editMission.value.dateEnd,
             location: this.data.editMission.value.location,
@@ -268,6 +275,7 @@ class ManageFieldReconMissionsCtrl {
         this.ui.busy = true;
         this.data.editMission.value.authors = this.form.authors;
         this.data.editMission.value.title = this.form.title;
+        this.data.editMission.value.event = (this.form.event ? this.form.event : '');
         this.data.editMission.value.dateStart = this.form.dateStart;
         this.data.editMission.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : '');
         this.data.editMission.value.location = this.form.location;

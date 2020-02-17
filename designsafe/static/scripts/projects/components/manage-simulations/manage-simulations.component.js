@@ -221,6 +221,7 @@ class ManageSimulationCtrl {
     }
 
     editSim(simulation) {
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         var sim = jQuery.extend(true, {}, simulation);
         var auths = this.configureAuthors(sim);
         this.editSimForm = {
@@ -233,7 +234,6 @@ class ManageSimulationCtrl {
             title: sim.value.title,
         };
         this.ui.showEditSimulationForm = true;
-        document.getElementById("form-top").scrollIntoView({behavior: "smooth"});
     }
 
     editAuthors(user, i) {

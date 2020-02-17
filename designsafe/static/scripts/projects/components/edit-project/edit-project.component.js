@@ -49,6 +49,7 @@ class EditProjectCtrl {
             'Presentation',
             'Report',
             'REU',
+            'Social Sciences',
             'Softwarem',
             'Survey',
             'Video',
@@ -186,10 +187,26 @@ class EditProjectCtrl {
                 if (this.project.value.nhEventEnd) {
                     this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                 }
-                if (this.project.value.nhTypes.length > 0) {
-                    this.form.nhTypes = this.project.value.nhTypes;
+                if (this.project.value.nhTypes && this.project.value.nhTypes.length > 0) {
+                    this.form.nhTypes = [];
+                    this.form.nhTypesOther = [];
+                    this.project.value.nhTypes.forEach((type) => {
+                        if (!this.isNhTypeInDropdown(type)) {
+                            this.form.nhTypes.push("Other");
+                            this.form.nhTypesOther.push(type);
+                        } else {
+                            this.form.nhTypes.push(type);
+                            this.form.nhTypesOther.push(null);
+                        }
+                    });
                 } else {
                     this.form.nhTypes = new Array (1);
+                    this.form.nhTypesOther = [null];
+                }
+                if (this.project.value.nhLocation && this.project.value.nhLatitude && this.project.value.nhLongitude) {
+                    this.form.nhLocation = this.project.value.nhLocation;
+                    this.form.nhLatitude = this.project.value.nhLatitude;
+                    this.form.nhLongitude = this.project.value.nhLongitude;
                 }
             }
         }
@@ -237,6 +254,11 @@ class EditProjectCtrl {
         } else {
             group.pop();
         }
+    }
+
+    dropEventType() {
+        this.form.nhTypes.pop();
+        this.form.nhTypesOther.pop();
     }
 
     addField(group) {
@@ -309,13 +331,20 @@ class EditProjectCtrl {
         if (this.form.nhEventDateEnd) {
             projectData.nhEventEnd = this.form.nhEventDateEnd;
         }
+        if (this.form.nhLocation && this.form.nhLatitude && this.form.nhLongitude) {
+            projectData.nhLocation = this.form.nhLocation;
+            projectData.nhLatitude = this.form.nhLatitude;
+            projectData.nhLongitude = this.form.nhLongitude;
+        }
         if (this.form.nhTypes) {
-            projectData.nhTypes = [];
-            this.form.nhTypes.forEach((nh) => {
-                if (typeof(nh) === 'string') {
-                    projectData.nhTypes.push(nh);
+            projectData.nhTypes = this.form.nhTypes
+            .map((type, index) => {
+                if(type === 'Other') {
+                    return this.form.nhTypesOther[index];
                 }
-            });
+                return type;
+            })
+            .filter(input => input);
         }
 
         // clear any empty inputs...
@@ -466,20 +495,18 @@ class EditProjectCtrl {
 
     }
 
-    isNhTypeInDropdown($index) {
-        return this.rapidEventTypes.includes(
-            this.form.nhTypes[$index]
-        );
+    isNhTypeInDropdown(type) {
+        return this.rapidEventTypes.includes(type) && type !== 'Other';
     }
 
     showNhTypesDropdown($index) {
-        return (this.isNhTypeInDropdown($index) ||
+        return (this.isNhTypeInDropdown(this.form.nhTypes[$index]) ||
                 !this.form.nhTypes[$index]);
     }
 
     showNhTypesInput($index) {
         return (this.form.nhTypes[$index] === 'Other' ||
-                (!this.isNhTypeInDropdown($index) &&
+                (!this.isNhTypeInDropdown(this.form.nhTypes[$index]) &&
                  this.form.nhTypes[$index]));
     }
 
@@ -488,11 +515,6 @@ class EditProjectCtrl {
         if (this.form.nhTypes[last]) {
             this.form.nhTypes.push(null);
         }
-    }
-
-    addInputNhType(value) {
-        this.form.nhTypes[this.form.nhTypes.length - 1] = value;
-        this.form.nhTypeInput = '';
     }
 }
 

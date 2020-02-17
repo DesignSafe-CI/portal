@@ -77,20 +77,24 @@
             <div class="prj-head" style="padding-bottom:20px">
                 Simulation | <strong>{{ primEnt.value.title }}</strong>
             </div>
-            <div style="display:inline-block; width:20%;">Simulation Type</div>
-            <strong ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                    style="display:inline-block; width:78%; text-transform:capitalize;"
-            >
-                {{ primEnt.value.simulationType.replace('_', ' ') }}
-            </strong>
-            <strong ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                    style="display:inline-block; width:78%; text-transform:capitalize;"
-            >
-                {{ primEnt.value.simulationTypeOther }}
-            </strong>
-            <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-            <div style="display:inline-block; width:78%; font-weight: bold;">
-                <ds-author-list authors="primEnt.value.authors"></ds-author-list>
+            <div class="entity-meta-field">
+                <div class="entity-meta-label">Simulation Type</div>
+                <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                        class="entity-meta-data-cap"
+                >
+                    {{ primEnt.value.simulationType.replace('_', ' ') }}
+                </span>
+                <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                        class="entity-meta-data-cap"
+                >
+                    {{ primEnt.value.simulationTypeOther }}
+                </span>
+            </div>
+            <div class="entity-meta-field">
+                <div class="entity-meta-label-multi">Author(s)</div>
+                <div class="entity-meta-data">
+                    <ds-author-list authors="primEnt.value.authors"></ds-author-list>
+                </div>
             </div>
             <div>
                 <br>{{ primEnt.value.description }}

@@ -1,4 +1,4 @@
-<div class="modal-header" style="background: #e6e6e6;">
+<div class="modal-header" id="modal-header" style="background: #e6e6e6;">
   <h4 class="modal-title" style="border:none;">
     <span>Add Hybrid Simulations</span>
     <span class="pull-right" ng-click="$ctrl.cancel()">
@@ -7,7 +7,7 @@
   </h4>
 </div>
 <div class="modal-body">
-  <div class="well" id="form-top">
+  <div class="well">
     <form name='addForm' ng-hide="$ctrl.ui.showEditSimulationForm">
       <!-- Hybrid Simulation Title -->
       <div class="simTitle form-group">
@@ -214,12 +214,16 @@
           </button>
           <div id="files-{{simulation.uuid}}" class="collapse dropdown-spacer-lg">
             <div class="well">
-              <div style="display:inline-block; width:20%;">Hybrid Simulation Type</div>
-              <strong ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationType }}</strong>
-              <strong ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationTypeOther }}</strong>
-              <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-              <div style="display:inline-block; width:78%; font-weight: bold;">
-                <ds-author-list authors="simulation.value.authors"></ds-author-list>
+              <div class="entity-meta-field">
+                <div class="entity-meta-label">Hybrid Simulation Type</div>
+                <span ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" class="entity-meta-data">{{ simulation.value.simulationType }}</span>
+                <span ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" class="entity-meta-data">{{ simulation.value.simulationTypeOther }}</span>
+              </div>
+              <div class="entity-meta-field">
+                <div class="entity-meta-label-multi">Author(s)</div>
+                <div class="entity-meta-data">
+                  <ds-author-list authors="simulation.value.authors"></ds-author-list>
+                </div>
               </div>
               <div>
                 <br>{{ simulation.value.description }}

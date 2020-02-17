@@ -38,7 +38,6 @@ class PipelineSelectionCtrl {
             this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
         ]).then(([project, listing, entities]) => {
             this.browser.project = project;
-            this.prepProject();
             this.browser.project.appendEntitiesRel(entities);
             this.browser.listing = listing;
             this.browser.listing.href = this.$state.href('projects.view.data', {
@@ -71,6 +70,8 @@ class PipelineSelectionCtrl {
                 };
                 allFilePaths = allFilePaths.concat(entity._filePaths);
             });
+
+            this.prepProject();
 
             this.setFilesDetails = (paths) => {
                 let filePaths = [...new Set(paths)];
@@ -176,7 +177,28 @@ class PipelineSelectionCtrl {
             this.matchingGroupKey = 'missions';
             this.projectSet = 'mission_set';
             this.previewDest = 'projects.previewFieldRecon';
-            this.subEntities = ['collection_set'];
+            this.subEntities = [
+                // 'collection_set',
+                'socialscience_set',
+                'geoscience_set',
+                'planning_set',
+            ];
+            this.primaryEnts = [].concat(
+                this.browser.project.mission_set || [],
+                this.browser.project.report_set || []
+            );
+            this.secondaryEnts = [].concat(
+                this.browser.project.socialscience_set || [],
+                this.browser.project.planning_set || [],
+                this.browser.project.geoscience_set || []
+            );
+            this.orderedPrimary = this.ordered(this.browser.project, this.primaryEnts);
+            this.orderedSecondary = {};
+            this.orderedPrimary.forEach((primEnt) => {
+                if (primEnt.name === 'designsafe.project.field_recon.mission') {
+                    this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
+                }
+            });
         }
     }
 
@@ -239,19 +261,46 @@ class PipelineSelectionCtrl {
     }
 
     goProject() {
-        this.gatherSelections(); // need to adjust this for a list of entities...
+        this.gatherSelections();
         this.missing = this.ProjectService.checkSelectedFiles(this.browser.project, this.selectedEnts, this.selectedListings);
+        let primaryNames = [
+            'designsafe.project.experiment',
+            'designsafe.project.simulation',
+            'designsafe.project.hybrid_simulation',
+            'designsafe.project.field_recon.mission',
+        ];
 
         if (this.missing.length) {
             return;
         }
+
+        let primary = this.selectedEnts.filter(ent => primaryNames.includes(ent.name));
+        let secondary = this.selectedEnts.filter(ent => !primaryNames.includes(ent.name));
         window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
         this.$state.go('projects.pipelineProject', {
             projectId: this.projectId,
             project: this.browser.project,
-            primaryEntities: this.selectedEnts,
+            primaryEntities: primary,
+            secondaryEntities: secondary,
             selectedListings: this.selectedListings,
         }, { reload: true });
+    }
+
+    ordered(parent, entities) {
+        let order = (ent) => {
+            if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
+                return ent._ui.orders.find(order => order.parent === parent.uuid);
+            }
+            return 0;
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
     }
 
     selectEntity(ent) {
@@ -266,15 +315,25 @@ class PipelineSelectionCtrl {
         });
 
         // iterate over subEntities and select files related to primary entity...
-        this.subEntities.forEach((subEntSet) => {
-            this.browser.project[subEntSet].forEach((subEnt) => {
-                if (subEnt.associationIds.some(uuid => uuidsToSelect.includes(uuid))){
-                    this.DataBrowserService.select(this.browser.listings[subEnt.uuid].children);
-                } else {
-                    this.DataBrowserService.deselect(this.browser.listings[subEnt.uuid].children);
+        if (ent.name.endsWith('field_recon.report')){
+            if (uuidsToSelect.includes(ent.uuid)) {
+                this.DataBrowserService.select(this.browser.listings[ent.uuid].children);
+            } else {
+                this.DataBrowserService.deselect(this.browser.listings[ent.uuid].children);
+            }
+        } else {
+            this.subEntities.forEach((subEntSet) => {
+                if (this.browser.project[subEntSet]) {
+                    this.browser.project[subEntSet].forEach((subEnt) => {
+                        if (subEnt.associationIds.some(uuid => uuidsToSelect.includes(uuid))){
+                            this.DataBrowserService.select(this.browser.listings[subEnt.uuid].children);
+                        } else {
+                            this.DataBrowserService.deselect(this.browser.listings[subEnt.uuid].children);
+                        }
+                    });
                 }
             });
-        });
+        }
     }
 
     gatherSelections() {
@@ -289,7 +348,7 @@ class PipelineSelectionCtrl {
             };
 
             this.browser.listings[key].children.forEach((child) => {
-                if (typeof child._ui.selected != 'undefined' && child._ui.selected === true) {
+                if (child._ui && child._ui.selected && child._ui.selected === true) {
                     this.selectedListings[key].children.push(child);
                 }
             });
