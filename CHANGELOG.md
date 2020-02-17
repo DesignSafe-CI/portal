@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.8.1-20200204
+Fixes:
+* Set Google Dataset Search tag json type to ld+json
+* Update CMS index non-destructively and only once per day.
+* FR Model bug fixes.
+
 ## v4.8.1-20200203
 Enhancements:
 * FR Model enchancements
