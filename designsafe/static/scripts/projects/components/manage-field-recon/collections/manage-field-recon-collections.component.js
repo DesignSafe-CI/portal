@@ -3,12 +3,13 @@ import ManageFieldReconCollectionsTemplate from './manage-field-recon-collection
 import collectionEquipment from './equipment-list.json';
 
 class ManageFieldReconCollectionsCtrl {
-    constructor($q, $uibModal, UserService, ProjectEntitiesService) {
+    constructor($q, $uibModal, $window, UserService, ProjectEntitiesService) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.UserService = UserService;
         this.$q = $q;
         this.$uibModal = $uibModal;
+        this.$window = $window;
     }
 
     $onInit() {
@@ -412,6 +413,7 @@ class ManageFieldReconCollectionsCtrl {
     }
 
     editCollection(collection) {
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.data.editCollection = Object.assign({}, collection);
         this.data.editCollection.value.dateStart = new Date(
             this.data.editCollection.value.dateStart
