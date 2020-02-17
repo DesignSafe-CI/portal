@@ -174,7 +174,7 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.observationTypes)"
+                            ng-click="$ctrl.removeInput($ctrl.form.observationTypes); $ctrl.removeInput($ctrl.form.observationTypesOther)"
                             ng-disabled="$ctrl.minimumInputs($ctrl.form.observationTypes)">
                             &#x2212; Remove Observation Type
                     </button>
@@ -358,7 +358,7 @@
                         </button>
                         |
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.removeInput($ctrl.form.equipment)"
+                                ng-click="$ctrl.removeInput($ctrl.form.equipment); $ctrl.removeInput($ctrl.form.equipmentOther)"
                                 ng-disabled="$ctrl.minimumInputs($ctrl.form.equipment)">
                                 &#x2212; Remove Equipment
                         </button>

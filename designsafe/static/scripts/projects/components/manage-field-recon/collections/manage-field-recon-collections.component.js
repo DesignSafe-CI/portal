@@ -194,7 +194,7 @@ class ManageFieldReconCollectionsCtrl {
 
     addReferenced() {
         let last = this.form.referencedData.length - 1;
-        if (this.form.referencedData[last].title) {
+        if (this.form.referencedData[last] && this.form.referencedData[last].title) {
             this.form.referencedData.push({});
         }
     }
