@@ -2,9 +2,10 @@ import logging
 from django.apps import AppConfig
 from designsafe.apps.signals.signals import ds_event, generic_event
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 class DataConfig(AppConfig):
     name = 'designsafe.apps.data'
@@ -14,16 +15,12 @@ class DataConfig(AppConfig):
         from elasticsearch_dsl.connections import connections
         from django.conf import settings
         try:
-            connections.configure(
-                default={'hosts': settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],  "http_auth": settings.ES_AUTH},
-                request_timeout=60,
-                sniff_on_start=True,
-                sniffer_timeout=60,
-                sniff_on_connection_fail=True,
-                sniff_timeout=10,
-                max_retries=3,
-                retry_on_timeout=True
-            )
+            connections.create_connection('default',
+                                          hosts=settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
+                                          http_auth=settings.ES_AUTH,
+                                          max_retries=3,
+                                          retry_on_timeout=True,
+                                          )
         except AttributeError as exc:
             logger.error('Missing ElasticSearch config. %s', exc)
             raise
