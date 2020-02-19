@@ -90,13 +90,6 @@ class PipelinePrimaryEntityCtrl {
         return eqt.label;
     }
 
-    hasEndDate(date) {
-        if (Date.parse(date)) {
-            return true;
-        }
-        return false;
-    }
-
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});

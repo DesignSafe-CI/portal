@@ -72,7 +72,7 @@ class ProjectViewCtrl {
         }
     }
     return false;
-}
+  }
 
   editProject($event) {
     if ($event) {

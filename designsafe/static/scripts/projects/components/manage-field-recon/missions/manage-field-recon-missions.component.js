@@ -223,7 +223,7 @@ class ManageFieldReconMissionsCtrl {
             title: this.form.title,
             event: this.form.event,
             dateStart: this.form.dateStart,
-            dateEnd: this.form.dateEnd,
+            dateEnd: (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart),
             authors: this.form.authors,
             location: this.form.location,
             longitude: this.form.longitude,
@@ -251,10 +251,18 @@ class ManageFieldReconMissionsCtrl {
     editMission(mission) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.data.editMission = Object.assign({}, mission);
+        if (this.data.editMission.value.dateEnd && this.data.editMission.value.dateEnd !== 'None') {
+            if (this.data.editMission.value.dateEnd === this.data.editMission.value.dateStart) {
+                this.data.editMission.value.dateEnd = '';
+            } else {
+                this.data.editMission.value.dateEnd = new Date(this.data.editMission.value.dateEnd);
+            }
+        } else {
+            this.data.editMission.value.dateEnd = '';
+        }
         this.data.editMission.value.dateStart = new Date(
             this.data.editMission.value.dateStart
         );
-        this.data.editMission.value.dateEnd = (this.data.editMission.value.dateEnd && this.data.editMission.value.dateEnd !== 'None') ? new Date(this.data.editMission.value.dateEnd) : '';
         let auths = this.configureAuthors(mission);
         this.form = {
             authors: auths,
@@ -277,7 +285,7 @@ class ManageFieldReconMissionsCtrl {
         this.data.editMission.value.title = this.form.title;
         this.data.editMission.value.event = (this.form.event ? this.form.event : '');
         this.data.editMission.value.dateStart = this.form.dateStart;
-        this.data.editMission.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : '');
+        this.data.editMission.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart);
         this.data.editMission.value.location = this.form.location;
         this.data.editMission.value.longitude = this.form.longitude;
         this.data.editMission.value.latitude = this.form.latitude;

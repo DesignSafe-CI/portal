@@ -268,7 +268,7 @@
                                 <div class="entity-meta-label">Date of Mission</div>
                                 <div class="entity-meta-data">
                                     <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                    <span data-ng-if="mission.value.dateEnd">
+                                    <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.calue.dateStart">
                                         &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
                                 </div>
@@ -290,9 +290,6 @@
                                             <span data-ng-if="mission.value.longitude">
                                                 Long {{mission.value.longitude}}
                                             </span>
-                                            <!-- <li data-ng-if="mission.value.elevation">
-                                                Elevation: {{mission.value.elevation}}
-                                            </li> -->
                                         </li>
                                     </ul>
                                 </div>

@@ -185,7 +185,11 @@ class EditProjectCtrl {
                     this.form.nhEventDateStart = new Date(this.project.value.nhEventStart);
                 }
                 if (this.project.value.nhEventEnd) {
-                    this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
+                    if (this.project.value.nhEventStart === this.project.value.nhEventEnd) {
+                        this.form.nhEventDateEnd = '';
+                    } else {
+                        this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
+                    }
                 }
                 if (this.project.value.nhTypes && this.project.value.nhTypes.length > 0) {
                     this.form.nhTypes = [];
@@ -330,6 +334,8 @@ class EditProjectCtrl {
         }
         if (this.form.nhEventDateEnd) {
             projectData.nhEventEnd = this.form.nhEventDateEnd;
+        } else if (this.form.nhEventDateStart && !this.form.nhEventDateEnd) {
+            projectData.nhEventEnd = this.form.nhEventDateStart;
         }
         if (this.form.nhLocation && this.form.nhLatitude && this.form.nhLongitude) {
             projectData.nhLocation = this.form.nhLocation;

@@ -238,13 +238,6 @@ class PublishedViewCtrl {
         return eqt.label;
     }
 
-    hasEndDate(date) {
-        if (Date.parse(date)) {
-            return true;
-        }
-        return false;
-    }
-
     download() {
         var body = {
             action: 'download'

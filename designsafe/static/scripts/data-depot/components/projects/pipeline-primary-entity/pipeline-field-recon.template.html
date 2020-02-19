@@ -97,7 +97,7 @@
                 </div>
                 <div class="entity-meta-data">
                     <span>{{primEnt.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                    <span data-ng-if="primEnt.value.dateEnd">
+                    <span data-ng-if="primEnt.value.dateEnd && primEnt.value.dateEnd !== primEnt.value.dateStart">
                         &#8213; {{primEnt.value.dateEnd | date:'MM-dd-yyyy' }}
                     </span>
                 </div>

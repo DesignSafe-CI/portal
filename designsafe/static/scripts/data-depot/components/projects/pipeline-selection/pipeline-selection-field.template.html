@@ -205,7 +205,7 @@
                                 </div>
                                 <div class="entity-meta-data">
                                     <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                    <span data-ng-if="mission.value.dateEnd">
+                                    <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.value.dateStart">
                                         &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
                                 </div>
@@ -306,7 +306,7 @@
                                                     <div class="entity-meta-label">Date of Collection</div>
                                                     <div class="entity-meta-data">
                                                         <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                                        <span data-ng-if="collection.value.dateEnd">
+                                                        <span data-ng-if="collection.value.dateEnd && collection.value.dateEnd !== collection.value.dateStart">
                                                             &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                                                         </span>
                                                     </div>
@@ -404,7 +404,7 @@
                                                     <div class="entity-meta-label">Date of Collection</div>
                                                     <div class="entity-meta-data">
                                                         <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                                        <span data-ng-if="collection.value.dateEnd">
+                                                        <span data-ng-if="collection.value.dateEnd && collection.value.dateEnd !== collection.value.dateStart">
                                                             &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                                                         </span>
                                                     </div>

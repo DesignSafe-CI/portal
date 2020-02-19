@@ -45,7 +45,7 @@
                     {{ $ctrl.browser.project.value.nhEvent }} |
                     <span ng-if="$ctrl.browser.project.value.nhLocation">{{ $ctrl.browser.project.value.nhLocation }} |</span>
                     {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                    <span ng-if="$ctrl.browser.project.value.nhEventEnd">
+                    <span ng-if="$ctrl.browser.project.value.nhEventEnd && $ctrl.browser.project.value.nhEventStart !== $ctrl.browser.project.value.nhEventEnd">
                         ― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
                     </span>
                     <span ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLatitude">|</span>

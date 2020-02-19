@@ -62,8 +62,8 @@
                 <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
             </h3>
             <div>
-                <li>Project metadata is published alongside your first {{$ctrl.placeholder}} with its own DOI.</li>
-                <li>If you publish additional {{$ctrl.placeholder}}s later, you will skip this step.</li>
+                <li ng-if="$ctrl.placeholder">Project metadata is published alongside your first {{$ctrl.placeholder}} with its own DOI.</li>
+                <li ng-if="!$ctrl.placeholder">Project metadata is published alongside your files.</li>
                 <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
             </div>
         </p>
@@ -109,7 +109,7 @@
                     {{ $ctrl.project.value.nhEvent }} |
                     <span ng-if="$ctrl.project.value.nhLocation">{{ $ctrl.project.value.nhLocation }} |</span>
                     {{$ctrl.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                    <span ng-if="$ctrl.project.value.nhEventEnd">
+                    <span ng-if="$ctrl.project.value.nhEventEnd && $ctrl.project.value.nhEventStart !== $ctrl.project.value.nhEventEnd">
                         ― {{$ctrl.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
                     </span>
                     <span ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">|</span>

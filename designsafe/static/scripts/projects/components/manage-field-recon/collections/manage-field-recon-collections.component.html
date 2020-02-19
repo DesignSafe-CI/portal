@@ -490,10 +490,10 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="entity-meta-label">Date of Collection</div>
+                        <div class="entity-meta-label">Date(s) of Collection</div>
                         <div class="entity-meta-data">
                             <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                            <span data-ng-if="collection.value.dateEnd">
+                            <span data-ng-if="collection.value.dateEnd && collection.value.dateEnd !== collection.value.dateStart">
                                 &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                             </span>
                         </div>
@@ -627,10 +627,10 @@
                             </div>
                         </div>
                         <div class="entity-meta-field">
-                            <div class="entity-meta-label">Date of Collection</div>
+                            <div class="entity-meta-label">Date(s) of Collection</div>
                             <div class="entity-meta-data">
                                 <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                <span data-ng-if="collection.value.dateEnd">
+                                <span data-ng-if="collection.value.dateEnd && collection.value.dateEnd !== collection.value.dateStart">
                                     &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                                 </span>
                             </div>
@@ -751,10 +751,10 @@
                             </div>
                         </div>
                         <div class="entity-meta-field">
-                            <div class="entity-meta-label">Date of Collection</div>
+                            <div class="entity-meta-label">Date(s) of Collection</div>
                             <div class="entity-meta-data">
                                 <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                <span data-ng-if="collection.value.dateEnd">
+                                <span data-ng-if="collection.value.dateEnd && collection.value.dateEnd !== collection.value.dateStart">
                                     &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
                                 </span>
                             </div>

@@ -120,10 +120,10 @@
                 </div>
                 <div ng-show="primEnt.value.procedureStart" class="entity-meta-field">
                     <div class="entity-meta-label">Date of Experiment</div>
-                    <span class="entity-meta-data" ng-if="$ctrl.hasEndDate(primEnt.value.procedureEnd)">
+                    <span class="entity-meta-data" ng-if="primEnt.value.procedureEnd && primEnt.value.procedureStart !== primEnt.value.procedureEnd">
                         {{ primEnt.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ primEnt.value.procedureEnd | date:'MM-dd-yyyy' }}
                     </span>
-                    <span class="entity-meta-data" ng-if="!$ctrl.hasEndDate(primEnt.value.procedureEnd)">
+                    <span class="entity-meta-data" ng-if="!primEnt.value.procedureEnd || primEnt.value.procedureStart === primEnt.value.procedureEnd">
                         {{ primEnt.value.procedureStart | date:'MM-dd-yyyy' }}
                     </span>
                 </div>

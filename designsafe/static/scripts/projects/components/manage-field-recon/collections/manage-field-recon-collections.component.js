@@ -324,7 +324,8 @@ class ManageFieldReconCollectionsCtrl {
                 sampleApproach: this.form.sampleApproach.filter(sample => sample != null),
                 sampleSize: this.form.sampleSize || '',
                 dateStart: this.form.dateStart,
-                dateEnd: this.form.dateEnd,
+                // dateEnd: this.form.dateEnd,
+                dateEnd: (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart),
                 dataCollectors: this.form.dataCollectors,
                 location: this.form.location,
                 latitude: this.form.latitude,
@@ -358,7 +359,8 @@ class ManageFieldReconCollectionsCtrl {
                     })
                     .filter(input => input),
                 dateStart: this.form.dateStart,
-                dateEnd: this.form.dateEnd,
+                // dateEnd: this.form.dateEnd,
+                dateEnd: (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart),
                 dataCollectors: this.form.dataCollectors,
                 location: this.form.location,
                 latitude: this.form.latitude,
@@ -415,14 +417,19 @@ class ManageFieldReconCollectionsCtrl {
     editCollection(collection) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.data.editCollection = Object.assign({}, collection);
-        this.data.editCollection.value.dateStart = new Date(
-            this.data.editCollection.value.dateStart
-        );
+
         if (this.data.editCollection.value.dateEnd && this.data.editCollection.value.dateEnd !== 'None') {
-            this.data.editCollection.value.dateEnd = new Date(this.data.editCollection.value.dateEnd);
+            if (this.data.editCollection.value.dateEnd === this.data.editCollection.value.dateStart) {
+                this.data.editCollection.value.dateEnd = '';
+            } else {
+                this.data.editCollection.value.dateEnd = new Date(this.data.editCollection.value.dateEnd);
+            }
         } else {
             this.data.editCollection.value.dateEnd = '';
         }
+        this.data.editCollection.value.dateStart = new Date(
+            this.data.editCollection.value.dateStart
+        );
         if (!this.data.editCollection.value.modes ||!this.data.editCollection.value.modes.length) {
             this.data.editCollection.value.modes = [null];
         }
@@ -508,7 +515,7 @@ class ManageFieldReconCollectionsCtrl {
         }
         if (['designsafe.project.field_recon.social_science', 'designsafe.project.field_recon.geoscience'].includes(this.form.collectionType)) {
             this.data.editCollection.value.dateStart = this.form.dateStart;
-            this.data.editCollection.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : '');
+            this.data.editCollection.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart);
             this.data.editCollection.value.location = this.form.location;
             this.data.editCollection.value.longitude = this.form.longitude;
             this.data.editCollection.value.latitude = this.form.latitude;

@@ -226,13 +226,6 @@ class PipelineSelectionCtrl {
         return eqt.label;
     }
 
-    hasEndDate(date) {
-        if (Date.parse(date)) {
-            return true;
-        }
-        return false;
-    }
-
     matchingGroup(primaryEnt, subEnt) {
         if (!primaryEnt) {
             // if the sub entity is related to the project and not a primary entity

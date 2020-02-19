@@ -200,11 +200,10 @@
                     </div>
                     <div class="entity-meta-field" ng-show="experiment.value.procedureStart">
                         <div class="entity-meta-label">Date of Experiment</div>
-                        <span class="entity-meta-data" ng-if="$ctrl.hasEndDate(experiment.value.procedureEnd)">
-                            {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213;
-                            {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
+                        <span class="entity-meta-data" ng-if="experiment.value.procedureEnd && experiment.value.procedureStart !== experiment.value.procedureEnd">
+                            {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
                         </span>
-                        <span class="entity-meta-data" ng-if="!$ctrl.hasEndDate(experiment.value.procedureEnd)">
+                        <span class="entity-meta-data" ng-if="!experiment.value.procedureEnd || experiment.value.procedureStart === experiment.value.procedureEnd">
                             {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }}
                         </span>
                     </div>
