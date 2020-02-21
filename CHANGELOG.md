@@ -1,6 +1,6 @@
 # DesignSafe-CI Portal Release Notes
 
-## v4.8.1-20200205
+## v4.8.2-20200205
 Fixes:
 * Merge Field Recon upgrades into Master ahead of production deployment
 * FR Model bug fixes.
