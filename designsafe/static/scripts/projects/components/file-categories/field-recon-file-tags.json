@@ -35,5 +35,91 @@
                 "Elevation"
             ]
         }
+    },
+    "designsafe.project.field_recon.social_science": {
+        "name": "Social Sciences",
+        "tags": {
+            "General": [
+                "Audio",
+                "Data Documentation",
+                "Image",
+                "Instrument",
+                "Raw Data",
+                "Report",
+                "Transcript",
+                "Variables"
+            ]
+        }
+    },
+    "designsafe.project.field_recon.planning": {
+        "name": "Research Planning",
+        "tags": {
+            "General": [
+                "Consent Forms",
+                "Data Management Plan",
+                "IRB Application",
+                "Letters of Support",
+                "Planning Document",
+                "Permits",
+                "Protocol",
+                "Quality Assurance Plan",
+                "Report",
+                "Reflexivity Report",
+                "Team Training"
+            ]
+        }
+    },
+    "designsafe.project.field_recon.geoscience": {
+        "name": "Eng/Geo",
+        "tags": {
+            "General": [
+                "3D Model",
+                "Area",
+                "Audio",
+                "Building Code",
+                "Coastal Observation",
+                "Collapsed",
+                "Cracked",
+                "Data Processing Method",
+                "Erosion",
+                "Forensic Observation",
+                "Ground Investigation",
+                "Geotechnical Observation",
+                "Image",
+                "Lat Long",
+                "Location",
+                "Lidar",
+                "Marker",
+                "Note",
+                "Point Cloud",
+                "Questionnaire",
+                "Report",
+                "Route",
+                "Sample Observation",
+                "Scan",
+                "Structural Observation",
+                "Survey Observation",
+                "Track",
+                "Video",
+                "Virtual Recon",
+                "Wind Observation"
+            ]
+        }
+    },
+    "designsafe.project.field_recon.report": {
+        "name": "Document",
+        "tags": {
+            "General": [
+                "README",
+                "IRB",
+                "Codebook",
+                "Instrument",
+                "Data Report",
+                "Data Dictionary",
+                "Virtual Reconnaissance",
+                "Field Assessment",
+                "Preliminary Virtual Assessment"
+            ]
+        }
     }
 }

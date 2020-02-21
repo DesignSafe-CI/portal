@@ -2,7 +2,7 @@ import ProjectViewTemplate from './project-view.component.html';
 
 class ProjectViewCtrl {
 
-  constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q) {
+  constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q, $uibModal) {
     'ngInject';
 
     this.ProjectEntitiesService = ProjectEntitiesService;
@@ -12,6 +12,7 @@ class ProjectViewCtrl {
     this.browser = this.DataBrowserService.state();
     this.$state = $state;
     this.$q = $q;
+    this.$uibModal = $uibModal;
   }
 
   $onInit() {
@@ -71,7 +72,7 @@ class ProjectViewCtrl {
         }
     }
     return false;
-}
+  }
 
   editProject($event) {
     if ($event) {
@@ -84,7 +85,13 @@ class ProjectViewCtrl {
     if ($event) {
       $event.preventDefault();
     }
-    this.ProjectService.manageProjectType({ 'project': this.browser.project, 'warning': false });
+    this.$uibModal.open({
+      component: 'manageProjectType',
+      resolve: {
+        options: () => { return { 'project': this.browser.project, 'warning': false }; },
+      },
+      size: 'lg',
+    });
   }
 
   workingDirectory() {
@@ -121,6 +128,8 @@ class ProjectViewCtrl {
       this.$state.go('projects.previewFieldRecon', { projectId: this.browser.project.uuid, data: this.browser}).then(() => {
         this.checkState();
       });
+    } else {
+      this.manageProjectType();
     }
   }
 }

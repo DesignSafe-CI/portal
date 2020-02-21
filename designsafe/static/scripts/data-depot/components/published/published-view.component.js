@@ -6,7 +6,7 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl, UserService){
+    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl, UserService, $q){
         'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
@@ -16,6 +16,7 @@ class PublishedViewCtrl {
         this.$http = $http;
         this.djangoUrl = djangoUrl;
         this.UserService = UserService;
+        this.$q = $q;
     }
 
     $onInit() {
@@ -44,6 +45,9 @@ class PublishedViewCtrl {
                     this.browser.listings[evt.uuid] = { children: [] };
                 }
                 this.browser.listings[evt.uuid].children.push(file);
+            });
+            this.browser.listings[evt.uuid].children.forEach((child) => {
+                child._entities.push(evt);
             });
         };
 
@@ -107,20 +111,30 @@ class PublishedViewCtrl {
                         if (typeof this.browser.publication.reports != 'undefined') {
                             this.browser.publication.reports.forEach(this.getFileObjs);
                         }
-                        this.browser.publication.collections.forEach(this.getFileObjs);
+                        if (typeof this.browser.publication.collections != 'undefined') {
+                            this.browser.publication.collections.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.planning != 'undefined') {
+                            this.browser.publication.planning.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.geoscience != 'undefined') {
+                            this.browser.publication.geoscience.forEach(this.getFileObjs);
+                        }
+                        if (typeof this.browser.publication.socialscience != 'undefined') {
+                            this.browser.publication.socialscience.forEach(this.getFileObjs);
+                        }
                     }
-
+                    
                     //add metadata to header
                     this.PublishedService.updateHeaderMetadata(projId, resp);
                     this.version = this.browser.publication.version || 1;
                     this.type = this.browser.publication.project.value.projectType;
                     this.ui.loading = false;
-
-                    // Generate text for PI
-                    this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi)
-                    // Generate CoPI list
-                    this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
-
+                    
+                    // // Generate text for PI
+                    // this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi);
+                    // // Generate CoPI list
+                    // this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
                 }).then( () => {
                     this.prepProject();
                 });
@@ -158,9 +172,46 @@ class PublishedViewCtrl {
         if (this.project.value.projectType === 'field_recon'){
             this.browser.project.mission_set = this.browser.publication.missions;
             this.browser.project.collection_set = this.browser.publication.collections;
+            this.browser.project.socialscience_set = this.browser.publication.socialscience;
+            this.browser.project.planning_set = this.browser.publication.planning;
+            this.browser.project.geoscience_set = this.browser.publication.geoscience;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
+            this.primaryEnts = [].concat(
+                this.browser.publication.missions || [],
+                this.browser.publication.reports || []
+            );
+            this.secondaryEnts = [].concat(
+                this.browser.publication.socialscience || [],
+                this.browser.publication.planning || [],
+                this.browser.publication.geoscience || [],
+                this.browser.publication.collections || []
+            );
+            this.orderedPrimary = this.ordered(this.browser.project, this.primaryEnts);
+            this.orderedSecondary = {};
+            this.orderedPrimary.forEach((primEnt) => {
+                if (primEnt.name === 'designsafe.project.field_recon.mission') {
+                    this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
+                }
+            });
         }
+    }
+
+    ordered(parent, entities) {
+        let order = (ent) => {
+            if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
+                return ent._ui.orders.find(order => order.parent === parent.uuid);
+            }
+            return 0;
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
     }
 
     getEF(str) {
@@ -185,13 +236,6 @@ class PublishedViewCtrl {
             return x.name === exp.value.equipmentType;
         });
         return eqt.label;
-    }
-
-    hasEndDate(date) {
-        if (Date.parse(date)) {
-            return true;
-        }
-        return false;
     }
 
     download() {
@@ -244,7 +288,7 @@ class PublishedViewCtrl {
                 resolve: {
                     author
                 },
-                size: 'sm'
+                size: 'author'
             });
         });
     }

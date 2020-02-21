@@ -25,7 +25,7 @@ app.conf.update(
     CELERYBEAT_SCHEDULE = {
         'update_user_storages': {
             'task': 'designsafe.apps.search.tasks.update_search_index',
-            'schedule': crontab(minute="*/15"),
+            'schedule': crontab(minute=0, hour=0),
         },
         'reindex_projects': {
             'task': 'designsafe.apps.api.tasks.reindex_projects',

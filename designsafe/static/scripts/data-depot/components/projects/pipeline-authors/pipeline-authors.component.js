@@ -15,6 +15,7 @@ class PipelineAuthorsCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
         this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
+        this.secondaryEntities = this.ProjectService.resolveParams.secondaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.curDate = new Date().getFullYear();
         this.selectedAuthor = '';
@@ -42,6 +43,12 @@ class PipelineAuthorsCtrl {
                 this.verifyAuthors(ent.value.authors);
                 this.savedStatus[ent.uuid] = {'saved': false};
             });
+            if (this.secondaryEntities) {
+                this.secondaryEntities.forEach((ent) => {
+                    this.verifyAuthors(ent.value.authors);
+                    this.savedStatus[ent.uuid] = {'saved': false};
+                });
+            }
         }
 
     }
@@ -69,6 +76,7 @@ class PipelineAuthorsCtrl {
             this.selectDest = 'projects.pipelineSelectField';
             this.subEntityDest = 'projects.pipelineSubEntityField';
             this.placeholder = 'Mission';
+            this.placeholderSecondary = 'Report';
         }
     }
 
@@ -82,15 +90,26 @@ class PipelineAuthorsCtrl {
             projectId: this.projectId,
             project: this.project,
             primaryEntities: this.primaryEntities,
+            secondaryEntities: this.secondaryEntities,
             selectedListings: this.selectedListings,
         }, {reload: true});
     }
 
     goLicenses() {
+        this.missing = this.ProjectService.checkSelectedFiles(
+            this.project,
+            [].concat(this.secondaryEntities, this.primaryEntities),
+            this.selectedListings
+        );
+        if (this.missing.length) {
+            return;
+        }
+
         this.$state.go('projects.pipelineLicenses', {
             projectId: this.projectId,
             project: this.project,
             primaryEntities: this.primaryEntities,
+            secondaryEntities: this.secondaryEntities,
             selectedListings: this.selectedListings,
         }, {reload: true});
     }

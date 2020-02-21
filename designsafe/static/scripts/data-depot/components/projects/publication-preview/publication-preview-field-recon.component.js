@@ -35,27 +35,36 @@ class PublicationPreviewFieldReconCtrl {
         if (this.filePath === '/') {
             this.ui.fileNav = false;
         }
-
-        if (this.data && this.data.listing.path == this.filePath) {
-            this.browser = this.data;
-            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }).then((ents) => {
-                this.createListing(ents);
+    
+        this.$q.all([
+            this.ProjectService.get({ uuid: this.projectId }),
+            this.DataBrowserService.browse(
+                { system: 'project-' + this.projectId, path: this.filePath },
+                { query_string: this.$state.params.query_string }
+            ),
+            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
+        ]).then(([project, listing, ents]) => {
+            this.browser.project = project;
+            this.browser.project.appendEntitiesRel(ents);
+            this.browser.listing = listing;
+            this.createListing(ents);
+            this.primaryEnts = [].concat(
+                this.browser.project.mission_set || [],
+                this.browser.project.report_set || []
+            );
+            this.secondaryEnts = [].concat(
+                this.browser.project.socialscience_set || [],
+                this.browser.project.planning_set || [],
+                this.browser.project.geoscience_set || []
+            );
+            this.orderedPrimary = this.ordered(this.browser.project, this.primaryEnts);
+            this.orderedSecondary = {};
+            this.orderedPrimary.forEach((primEnt) => {
+                if (primEnt.name === 'designsafe.project.field_recon.mission') {
+                    this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
+                }
             });
-        } else {
-            this.$q.all([
-                this.ProjectService.get({ uuid: this.projectId }),
-                this.DataBrowserService.browse(
-                    { system: 'project-' + this.projectId, path: this.filePath },
-                    { query_string: this.$state.params.query_string }
-                ),
-                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
-            ]).then(([project, listing, ents]) => {
-                this.browser.project = project;
-                this.browser.project.appendEntitiesRel(ents);
-                this.browser.listing = listing;
-                this.createListing(ents);
-            });
-        }
+        });
 
         this.createListing = (entities) => {
             this.browser.listing.href = this.$state.href('projects.view.data', {
@@ -187,6 +196,23 @@ class PublicationPreviewFieldReconCtrl {
         this.ProjectService.editProject(this.browser.project);
     }
 
+    ordered(parent, entities) {
+        let order = (ent) => {
+            if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
+                return ent._ui.orders.find(order => order.parent === parent.uuid);
+            }
+            return 0;
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
+    }
+
     prepareModal() {
         this.$uibModal.open({
             template: PublicationPopupTemplate,
@@ -209,6 +235,21 @@ class PublicationPreviewFieldReconCtrl {
                 close: '&'
             },
             size: 'lg',
+        });
+    }
+
+    showAuthor(author) {
+        this.UserService.get(author.name).then((res) => {
+            if (res.orcid_id) {
+                author.orcid = res.orcid_id;
+            }
+            this.$uibModal.open({
+                component: 'authorInformationModal',
+                resolve: {
+                    author
+                },
+                size: 'author'
+            });
         });
     }
 

@@ -144,6 +144,14 @@ class BaseESPublication(BaseESResource):
                 dict_obj.get('reports', []) +
                 dict_obj.get('analysiss', [])
             )
+        elif dict_obj['project']['value']['projectType'] == 'field_recon':
+            related_objs = (
+                dict_obj.get('collections', []) +
+                dict_obj.get('socialscience', []) +
+                dict_obj.get('planning', []) +
+                dict_obj.get('reports', []) +
+                dict_obj.get('geoscience', [])
+            )
 
         file_paths = []
         for obj in related_objs:

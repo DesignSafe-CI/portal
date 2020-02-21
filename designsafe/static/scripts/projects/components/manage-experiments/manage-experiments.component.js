@@ -92,13 +92,6 @@ class ManageExperimentsCtrl {
         return false;
     }
 
-    hasEndDate(date) {
-        if (Date.parse(date)) {
-            return true;
-        }
-        return false;
-    }
-
     addExperiment() {
         this.form.addExperiments.push({});
     }
@@ -201,9 +194,16 @@ class ManageExperimentsCtrl {
     editExp(experiment) {
         let exp = jQuery.extend(true, {}, experiment);
         let auths = this.configureAuthors(exp);
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
 
+        if (exp.value.procedureEnd &&
+            exp.value.procedureEnd !== 'None' &&
+            exp.value.procedureEnd !== exp.value.procedureStart) {
+                exp.value.procedureEnd = new Date(exp.value.procedureEnd);
+        } else {
+            exp.value.procedureEnd = '';
+        }
         exp.value.procedureStart = new Date(exp.value.procedureStart);
-        exp.value.procedureEnd = (exp.value.procedureEnd && exp.value.procedureEnd !== 'None') ? new Date(exp.value.procedureEnd) : '';
 
         this.editExpForm = {
             exp: exp,
@@ -220,7 +220,6 @@ class ManageExperimentsCtrl {
             description: exp.value.description,
         };
         this.ui.showEditExperimentForm = true;
-        document.getElementById('form-top').scrollIntoView({ behavior: 'smooth' });
     }
 
     editAuthors(user, i) {
@@ -273,7 +272,11 @@ class ManageExperimentsCtrl {
         exp.value.title = this.editExpForm.title;
         exp.value.description = this.editExpForm.description;
         exp.value.procedureStart = this.editExpForm.start;
-        exp.value.procedureEnd = this.editExpForm.end;
+        if (this.editExpForm.end) {
+            exp.value.procedureEnd = this.editExpForm.end;
+        } else if (this.editExpForm.start && !this.editExpForm.end) {
+            exp.value.procedureEnd = this.editExpForm.start;
+        }
         exp.value.authors = this.editExpForm.authors;
         exp.value.guests = this.editExpForm.guests;
         exp.value.equipmentType = this.editExpForm.equipment;
@@ -330,7 +333,13 @@ class ManageExperimentsCtrl {
     saveExperiment($event) {
         $event.preventDefault();
         this.data.busy = true;
+        // This modal needs to be refactored.
+        // we will never be adding more than one experiment at a time.
+        // there is also no need for entity management within this modal.
         this.form.addExperiments[0].authors = this.data.users;
+        if (this.form.addExperiments[0].procedureStart && !this.form.addExperiments[0].procedureEnd) {
+            this.form.addExperiments[0].procedureEnd = this.form.addExperiments[0].procedureStart;
+        }
         let addActions = this.form.addExperiments.filter((exp) => (exp.title && exp.experimentalFacility && exp.experimentType)).map((exp) => {
             exp.description = exp.description || '';
             return this.ProjectEntitiesService.create({

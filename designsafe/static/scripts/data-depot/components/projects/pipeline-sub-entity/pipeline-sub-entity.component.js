@@ -22,6 +22,7 @@ class PipelineSubEntityCtrl {
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
+        this.secondaryEntities = this.ProjectService.resolveParams.secondaryEntities;
         this.browser.project = this.ProjectService.resolveParams.project;
         this.browser.listings = this.ProjectService.resolveParams.selectedListings;
         this.fl = {
@@ -75,7 +76,36 @@ class PipelineSubEntityCtrl {
             this.primEntDest = 'projects.pipelineField';
             this.modalName = 'fieldReconCollectionsModal';
             this.matchingGroupKey = 'missions';
+            this.secondaryEnts = [].concat(
+                this.browser.project.socialscience_set || [],
+                this.browser.project.planning_set || [],
+                this.browser.project.geoscience_set || []
+            );
+            this.orderedPrimary = this.ordered(this.browser.project, [].concat(this.primaryEntities, this.secondaryEntities));
+            this.orderedSecondary = {};
+            this.orderedPrimary.forEach((primEnt) => {
+                if (primEnt.name === 'designsafe.project.field_recon.mission') {
+                    this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
+                }
+            });
         }
+    }
+
+    ordered(parent, entities) {
+        let order = (ent) => {
+            if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
+                return ent._ui.orders.find(order => order.parent === parent.uuid);
+            }
+            return 0;
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
     }
 
     goWork() {
@@ -88,6 +118,7 @@ class PipelineSubEntityCtrl {
             projectId: this.projectId,
             project: this.browser.project,
             primaryEntities: this.primaryEntities,
+            secondaryEntities: this.secondaryEntities,
             selectedListings: this.browser.listings,
         }, {reload: true});
     }
@@ -97,6 +128,7 @@ class PipelineSubEntityCtrl {
             projectId: this.projectId,
             project: this.browser.project,
             primaryEntities: this.primaryEntities,
+            secondaryEntities: this.secondaryEntities,
             selectedListings: this.browser.listings,
         }, {reload: true});
     }

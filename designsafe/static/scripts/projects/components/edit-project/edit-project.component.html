@@ -18,121 +18,124 @@
     <form name="projForm">
         <!-- Project Title -->
         <div class="form-group">
-            <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
-                <div>
-                    <span for="id_title" class="pull-left"><strong>Project Title </strong></span>
-                    <span class="label label-danger" style="margin-left: 5px">Required</span> 
-                </div>         
-                <div>
-                    Incorporate the project's focus with words indicating the hazard, model, system, and research approach. Do not use acronyms.
+            <label for="id-project-title">
+                <div class="label-form">
+                    <div>
+                        <span class="label-form-name">Project Title</span>
+                        <span class="label label-danger">Required</span>
+                    </div>
+                    <span class="label-form-desc">
+                        Incorporate the project's focus with words indicating the
+                        hazard, model, system, and research approach. Define all acronyms.
+                    </span>
                 </div>
-            </div>
-            <div>
-                <input  class="project-form-input"
-                        type="text"
-                        id="id_title"
-                        name="title"
-                        style="width:100%;"
-                        ng-model="$ctrl.form.title"
-                        ng-required="true"><br>
-            </div>
+            </label>
+            <input  class="project-form-input"
+                    type="text"
+                    id="id_title"
+                    name="title"
+                    style="width:100%;"
+                    ng-model="$ctrl.form.title"
+                    ng-required="true">
         </div>
         <!-- Project Type -->
         <div class="form-group" ng-if="$ctrl.form.uuid">
-            <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
-                <div>
-                    <strong for="id_title" class="pull-left">Project Type</strong>
-                    <span class="label label-danger" style="margin-left: 5px">Required</span>
+            <label for="id-project-type">
+                <div class="label-form">
+                    <div>
+                        <span class="label-form-name">Project Type</span>
+                        <span class="label label-danger">Required</span>
+                    </div>
                 </div>
-            </div>
+            </label>
             <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
-                    <colgroup>
-                        <col style="width: 16.5%">
-                        <col style="width: 16.5%">
-                    </colgroup>
-                    <tr>
-                        <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'experimental'">
-                            <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-experiment" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                                </td>
-                                <td style="width: 80%;">
-                                    <strong>Experimental Project</strong>
-                                    <div>
-                                        For physical work, typically done at an experimental facility or in the field.
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <table style="width: 100%;"  ng-if="$ctrl.project.value.projectType === 'simulation'">
-                            <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-simulation" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                                </td>
-                                <td style="width: 80%;">
-                                    <strong>Simulation Project</strong>
-                                    <div>
-                                        For numerical and/or analytical work, done with software.
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <table style="width: 100%;"  ng-if="$ctrl.project.value.projectType === 'hybrid_simulation'">
-                            <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-hybrid" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                                </td>
-                                <td style="width: 80%;">
-                                    <strong>Hybrid Simulation Project</strong>
-                                    <div>
-                                        For work using both physical and numerical components.
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'field_recon'">
-                            <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-recon" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                                </td>
-                                <td style="width: 80%;">
-                                    <strong>Field Research Project</strong>
-                                    <div>
-                                        For work done by observation in areas affected by a natural hazard.
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'other'">
-                            <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-other" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                                </td>
-                                <td style="width: 80%;">
-                                    <strong>Other Project</strong>
-                                    <div>
-                                        For work that is not an experiment, simulation, or observation.
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'None'">
-                            <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-close-window" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
-                                </td>
-                                <td style="width: 80%;">
-                                    <strong>None</strong>
-                                    <div>
-                                        You have not selected a project type.
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </tr>
-                </table>
-                <a ng-click="$ctrl.type($ctrl.form.uuid && $ctrl.form.projectType)">Change Project Type</a>
-            </div>
+                <colgroup>
+                    <col style="width: 16.5%">
+                    <col style="width: 16.5%">
+                </colgroup>
+                <tr>
+                    <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'experimental'">
+                        <tr>
+                            <td style="width: 9%;">
+                                <span class="curation-experiment" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                            </td>
+                            <td style="width: 80%;">
+                                <strong>Experimental Project</strong>
+                                <div>
+                                    For physical work, typically done at an experimental facility or in the field.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%;"  ng-if="$ctrl.project.value.projectType === 'simulation'">
+                        <tr>
+                            <td style="width: 9%;">
+                                <span class="curation-simulation" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                            </td>
+                            <td style="width: 80%;">
+                                <strong>Simulation Project</strong>
+                                <div>
+                                    For numerical and/or analytical work, done with software.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%;"  ng-if="$ctrl.project.value.projectType === 'hybrid_simulation'">
+                        <tr>
+                            <td style="width: 9%;">
+                                <span class="curation-hybrid" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                            </td>
+                            <td style="width: 80%;">
+                                <strong>Hybrid Simulation Project</strong>
+                                <div>
+                                    For work using both physical and numerical components.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'field_recon'">
+                        <tr>
+                            <td style="width: 9%;">
+                                <span class="curation-recon" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                            </td>
+                            <td style="width: 80%;">
+                                <strong>Field Research Project</strong>
+                                <div>
+                                    For work done by observation in areas affected by a natural hazard.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'other'">
+                        <tr>
+                            <td style="width: 9%;">
+                                <span class="curation-other" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                            </td>
+                            <td style="width: 80%;">
+                                <strong>Other Project</strong>
+                                <div>
+                                    For work that is not an experiment, simulation, or observation.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'None'">
+                        <tr>
+                            <td style="width: 9%;">
+                                <span class="curation-close-window" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                            </td>
+                            <td style="width: 80%;">
+                                <strong>None</strong>
+                                <div>
+                                    You have not selected a project type.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </tr>
+            </table>
+            <a ng-click="$ctrl.type($ctrl.form.uuid && $ctrl.form.projectType)">Change Project Type</a>
+        </div>
         <!-- Add PI and PRJ Members -->
         <div class="form-group" style="width:100%; display:inline-block;">
             <table class="tg" style="table-layout: fixed; width: 100%;">
@@ -141,13 +144,17 @@
                     <col style="width: 50%">
                 </colgroup>
                 <tr class="tg-0lax">
-                    <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
-                        <div>
-                            <strong for="id_pi" class="pull-left">Principal Investigators (PI)</strong>
-                            <span class="label label-danger" style="margin-left: 5px">Required</span> 
+                    <label for="id-project-pis">
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name">Principal Investigators (PI)</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span class="label-form-desc">
+                                These users can view, edit, curate, and publish. Include Co-PI(s).
+                            </span>
                         </div>
-                        <div>Can view, edit, curate, and publish. Include Co-PIs.</div>
-                    </div>
+                    </label>
                 </tr> 
                 <tr class="tg-0lax">
                     <div style="margin-bottom: 20px;">
@@ -181,10 +188,16 @@
                                 >
                             </span>
                             <div>
-                                <a ng-click="$ctrl.addField($ctrl.form.copi)">&#x2b; Add another PI</a>
-                            </div>
-                            <div ng-hide="$ctrl.checkEmpty($ctrl.form.copi)">
-                                <a ng-click="$ctrl.dropField($ctrl.form.copi)">&#x2212; Drop PI</a>
+                                <button class="btn-project-add-rm"
+                                        ng-click="$ctrl.addField($ctrl.form.copi)">
+                                        &#x2b; Add another PI
+                                </button>
+                                |
+                                <button class="btn-project-add-rm"
+                                        ng-click="$ctrl.dropField($ctrl.form.copi)"
+                                        ng-disabled="$ctrl.checkEmpty($ctrl.form.copi)">
+                                        &#x2212; Remove PI
+                                </button>
                             </div>
                     </div>
                 </tr>
@@ -211,19 +224,32 @@
                         >
                     </span>
                     <div>
-                        <a ng-click="$ctrl.addField($ctrl.form.team)">&#x2b; Add another Project Member</a>
-                    </div>
-                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.team)">
-                        <a ng-click="$ctrl.dropField($ctrl.form.team)">&#x2212; Drop Project Member</a>
+                        <button class="btn-project-add-rm"
+                                ng-click="$ctrl.addField($ctrl.form.team)">
+                                &#x2b; Add another Project Member
+                        </button>
+                        |
+                        <button class="btn-project-add-rm"
+                                ng-click="$ctrl.dropField($ctrl.form.team)"
+                                ng-disabled="$ctrl.checkEmpty($ctrl.form.team)">
+                                &#x2212; Remove Project Member
+                        </button>
                     </div>
                 </tr>
             </table>
         </div>
         <div class="expAuthorsAssign form-group" ng-if="$ctrl.form.uuid && $ctrl.form.projectType">
-            <div style="margin-bottom: 5px;">
-                <strong>Unregistered Members</strong>
-                <div>Add members without a DesignSafe account. These names can be selected as authors during the publication process.</div>
-            </div>
+            <label for="id-project-guest">
+                <div class="label-form">
+                    <div>
+                        <span class="label-form-name">Unregistered Members</span>
+                    </div>
+                    <span class="label-form-desc">
+                            Add members without a DesignSafe account. These names
+                            can be selected as authors during the publication process.
+                    </span>
+                </div>
+            </label>
             <table style="table-layout: fixed; width: 100%;">
                 <colgroup>
                     <col span="3" style="width: 20%">
@@ -249,23 +275,35 @@
                     </td>
                 </tr>
             </table>
-            <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
-                + Add another Unregistered Project Member
-            </a>
-            <div ng-hide="$ctrl.checkEmpty($ctrl.form.guests)">
-                <a ng-click="$ctrl.dropField($ctrl.form.guests)">&#x2212; Drop Unregistered Project Member</a>
-            </div>
+            <button class="btn-project-add-rm"
+                    ng-click="$ctrl.addGuests()">
+                    &#x2b; Add another Unregistered Project Member
+            </button>
+            |
+            <button class="btn-project-add-rm"
+                    ng-click="$ctrl.dropField($ctrl.form.guests)"
+                    ng-disabled="$ctrl.checkEmpty($ctrl.form.guests)">
+                    &#x2212; Remove Unregistered Project Member
+            </button>
         </div>
         <!-- Edit Project Section -->
         <div ng-if="$ctrl.form.uuid && $ctrl.form.projectType">
-            <!-- Project Members -->
+            <!-- Project Other Data Types -->
             <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.project.value.projectType === 'other'">
-                <div style="margin-bottom: 5px;">
-                    <strong>Data Type(s)</strong>
-                    <div>The nature or genre of the content.</div>
+                <label for="id-project-data-types">
+                    <div class="label-form">
+                        <div>
+                            <span class="label-form-name">Data Type(s)</span>
+                        </div>
+                        <span class="label-form-desc">
+                            The nature or genre of the content.
+                        </span>
+                    </div>
+                </label>
+                <div>
+                    <select ng-model="$ctrl.form.dataType" ng-options="type for type in $ctrl.otherTypes"></select>
+                    <input class="project-form-input" ng-if="$ctrl.form.dataType === 'Custom'" ng-model="$ctrl.form.dataTypeCustom">
                 </div>
-                <select ng-model="$ctrl.form.dataType" ng-options="type for type in $ctrl.otherTypes"></select>
-                <input class="project-form-input" ng-if="$ctrl.form.dataType === 'Custom'" ng-model="$ctrl.form.dataTypeCustom">
             </div>
             <!-- Project Awards -->
             <div class="form-group" style="width:100%; display:inline-block;">
@@ -275,10 +313,16 @@
                         <col style="width: 28%">
                     </colgroup>
                     <tr>
-                        <div style="margin-bottom: 5px;">
-                            <strong>Award Info</strong>
-                            <div>Recommended for funded projects.</div>
-                        </div>
+                        <label for="id-project-awards">
+                            <div class="label-form">
+                                <div>
+                                    <span class="label-form-name">Award Info</span>
+                                </div>
+                                <span class="label-form-desc">
+                                    Recommended for funded projects.
+                                </span>
+                            </div>
+                        </label>
                     </tr>
                     <tr>
                         <td class="tg-0lax">
@@ -307,13 +351,17 @@
                         </td>
                     </tr>
                 </table>
-                <div style="width:28%; display:inline-block;">
-                    <div>
-                        <a ng-click="$ctrl.addAwardField($ctrl.form.awardNumber)">&#x2b; Add another Award</a>
-                    </div>
-                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.awardNumber)">
-                        <a ng-click="$ctrl.dropField($ctrl.form.awardNumber, true)">&#x2212; Drop Award</a>
-                    </div>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addField($ctrl.form.awardNumber)">
+                            &#x2b; Add another Award
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropField($ctrl.form.awardNumber)"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.awardNumber)">
+                            &#x2212; Remove Award
+                    </button>
                 </div>
             </div>
             <!-- Related Works -->
@@ -324,10 +372,16 @@
                         <col style="width: 50%">
                     </colgroup>
                     <tr>
-                        <div style="margin-bottom: 5px;">
-                            <strong>Related Work</strong>
-                            <div>Other projects, publications, or datasets related to this project.</div>
-                        </div>
+                        <label for="id-project-works">
+                            <div class="label-form">
+                                <div>
+                                    <span class="label-form-name">Related Work</span>
+                                </div>
+                                <span class="label-form-desc">
+                                    Other projects, publications, or datasets related to this project.
+                                </span>
+                            </div>
+                        </label>
                     </tr>
                     <tr>
                         <td class="tg-0lax">
@@ -356,90 +410,145 @@
                         </td>
                     </tr>
                 </table>
-                <div style="width:28%; display:inline-block;">
-                    <div>
-                        <a ng-click="$ctrl.addWorkField($ctrl.form.associatedProjects, true)">&#x2b; Add another Related Work</a>
-                    </div>
-                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.associatedProjects)">
-                        <a ng-click="$ctrl.dropField($ctrl.form.associatedProjects, true)">&#x2212; Drop Related Work</a>
-                    </div>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addWorkField($ctrl.form.associatedProjects, true)">
+                            &#x2b; Add another Related Work
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropField($ctrl.form.associatedProjects, true)"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.associatedProjects)">
+                            &#x2212; Remove Related Work
+                    </button>
                 </div>
             </div>
+            <!-- FR Fields -->
             <div data-ng-if="$ctrl.project.value.projectType === 'field_recon'">
-                <div style="width:45%; display:inline-block;" class="pull-left">
-                    <label for="id-nh-event">
-                        <span class="pull-left">Natural Hazard Event</span>
-                        <span class="label label-danger" style="margin-left: 5px">Required</span>
-                        <span style="font-weight:normal; display:inline-block;">
-                            Name given to the natural hazard (ex. Hurricane Katrina)
-                        </span>
-                    </label>
-                    <input class="project-form-input"
-                           type="text"
-                           id="id-nh-event"
-                           name="nh-event"
-                           style="width:100%"
-                           data-ng-model="$ctrl.form.nhEvent"
-                           data-ng-required="true"/>
-                </div>
-                <div style="width:45%; display: inline-block;" class="pull-right">
-                    <label for="id-nh-event-date">
-                        <span class="pull-left">Natural Hazard Date</span>
-                        <span class="label label-danger" style="margin-left: 5px">Required</span>
-                        <span style="font-weight:normal; display:inline-block;">
-                            If you only want to enter a single date, fill in the first field.
-                        </span>
-                    </label>
-                    <div style="display:flex;">
-                      <span class="input-group" style="width:45%;">
-                        <input  class="project-form-input"
-                                type="text" 
-                                uib-datepicker-popup="MM-dd-yyyy"
-                                ng-model="$ctrl.form.nhEventDateStart"
-                                is-open="isStartOpen"
-                                placeholder="mm-dd-yyyy"
-                                datepicker-options="dateOptions"
-                                date-disabled="disabled(date, mode)"
-                                ng-required="true"
-                                close-text="Close"
-                                class="form-control">
-                        <span class="input-group-btn">
-                          <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
-                            <i class="glyphicon glyphicon-calendar"></i>
-                          </button>
-                        </span>
-                      </span>
-                      <span style="padding:6px;">
-                        &#8213;
-                      </span>
-                      <span class="input-group" style="width:45%;">
-                        <input  type="text"
-                                uib-datepicker-popup="MM-dd-yyyy"
-                                ng-model="$ctrl.form.nhEventDateEnd"
-                                is-open="isEndOpen"
-                                placeholder="mm-dd-yyyy"
-                                datepicker-options="dateOptions"
-                                date-disabled="disabled(date, mode)"
-                                ng-required="false"
-                                close-text="Close"
-                                class="form-control">
-                        <span class="input-group-btn">
-                          <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
-                            <i class="glyphicon glyphicon-calendar"></i>
-                          </button>
-                        </span>
-                      </span>
+                <div style="width: 100%;">
+                    <!-- Event -->
+                    <div style="width:45%; display:inline-block;" class="pull-left form-group">
+                        <label for="id-nh-event">
+                            <span class="pull-left">Event</span>
+                            <span class="label label-danger" style="margin-left: 5px">Required</span>
+                            <br>
+                            <span style="font-weight:normal;">
+                                Name given to the event (ex. Hurricane Katrina)
+                            </span>
+                        </label>
+                        <input class="project-form-input"
+                                type="text"
+                                id="id-nh-event"
+                                name="nh-event"
+                                style="width:100%"
+                                data-ng-model="$ctrl.form.nhEvent"
+                                data-ng-required="true"/>
+                    </div>
+                    <!-- Event Dates -->
+                    <div style="width:50%;" class="form-group">
+                        <label for="id-nh-event-date">
+                            <span class="pull-left">Event Date(s)</span>
+                            <span class="label label-danger" style="margin-left: 5px">Required</span>
+                            <br>
+                            <span style="font-weight:normal;">
+                                If you only want to enter a single date, fill in the first field.
+                            </span>
+                        </label>
+                        <div style="display:flex;">
+                            <span class="input-group" style="width:45%;">
+                            <input  class="project-form-input"
+                                    type="text" 
+                                    uib-datepicker-popup="MM-dd-yyyy"
+                                    ng-model="$ctrl.form.nhEventDateStart"
+                                    is-open="isStartOpen"
+                                    placeholder="mm-dd-yyyy"
+                                    datepicker-options="dateOptions"
+                                    date-disabled="disabled(date, mode)"
+                                    ng-required="true"
+                                    close-text="Close"
+                                    class="form-control">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                                </button>
+                            </span>
+                            </span>
+                            <span style="padding:6px;">
+                            &#8213;
+                            </span>
+                            <span class="input-group" style="width:45%;">
+                            <input  type="text"
+                                    uib-datepicker-popup="MM-dd-yyyy"
+                                    ng-model="$ctrl.form.nhEventDateEnd"
+                                    is-open="isEndOpen"
+                                    placeholder="mm-dd-yyyy"
+                                    datepicker-options="dateOptions"
+                                    date-disabled="disabled(date, mode)"
+                                    ng-required="false"
+                                    close-text="Close"
+                                    class="form-control">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                                </button>
+                            </span>
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <div style="width:100%;">
+                <!-- Event Location -->
+                <div class="form-group">
+                    <label for="id-location">
+                        <div class="label-form">
+                            <div>
+                                <span class="label-form-name pull-left">Event Location</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                        </div>
+                    </label>
+                    <div>
+                        <div style="width: 55%; display:inline-block;">
+                            <label for="id-location" class="label-secondary">
+                                Location
+                            </label>
+                            <input type="text"
+                                    id="id-location"
+                                    data-ng-model="$ctrl.form.nhLocation"
+                                    data-ng-required="true"
+                                    class="form-control"/>
+                        </div>
+                        <div style="width: 21%; display:inline-block; margin-left:5px;">
+                            <label for="id-location" class="label-secondary">
+                                Latitude
+                            </label>
+                            <input type="text"
+                                    id="id-latitude"
+                                    data-ng-model="$ctrl.form.nhLatitude"
+                                    data-ng-required="true"
+                                    class="form-control"/>
+                        </div>
+                        <div style="width: 21%; display:inline-block; margin-left:5px;">
+                            <label for="id-location" class="label-secondary">
+                                Longitude
+                            </label>
+                            <input type="text"
+                                    id="id-longitude"
+                                    data-ng-model="$ctrl.form.nhLongitude"
+                                    data-ng-required="true"
+                                    class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <!-- Event Type -->
+                <div class="form-group" style="width:100%;">
                     <label for="id-nh-event-type">
-                        <span class="pull-left">Natural Hazard Type</span>
+                        <span class="pull-left">Event Type</span>
                         <span class="label label-danger" style="margin-left: 5px">Required</span>
                         <span style="font-weight:normal; display:inline-block;">
                             The hazards occurring from an event. An event can have multiple hazard types (Hurricanes also have storm surge and floods).
                         </span>
                     </label>
-                    <div data-ng-repeat="nhType in $ctrl.form.nhTypes track by $index">
+                    <div ng-repeat="nhType in $ctrl.form.nhTypes track by $index">
                         <select id="id-nh-event-type"
                                 style="margin-bottom: 5px;"
                                 data-ng-options="item for item in $ctrl.rapidEventTypes"
@@ -447,34 +556,41 @@
                                 data-ng-required="$first"
                                 class="form-control"
                                 data-ng-if="$ctrl.showNhTypesDropdown($index)">
-                            <option value="">-- Select Natural Hazard Type --</option>
+                            <option value="">-- Select Event Type --</option>
                         </select>
                         <div class="nh-types-input-wrapper"
                              data-ng-if="$ctrl.showNhTypesInput($index)">
                             <input type="text"
-                                   data-ng-model="$ctrl.form.nhTypes[$index]"
+                                   data-ng-model="$ctrl.form.nhTypesOther[$index]"
                                    class="form-control"
                                />
                         </div>
                     </div>
-                    <button type="button"
-                            class="btn btn-link"
-                            data-ng-click="$ctrl.addNhType()">
-                        <i class="fa fa-plus">&nbsp;</i> Add another Natural Hazard Event Type
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addField($ctrl.form.nhTypes); $ctrl.addField($ctrl.form.nhTypesOther)">
+                            &#x2b; Add another Event Type
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropEventType()"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.nhTypes)">
+                            &#x2212; Remove Event Type
                     </button>
                 </div>
             </div>
             <!-- Project Keywords -->
             <div class="form-group" style="width:100%; display:inline-block;">
-                <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
-                    <div>
-                        <strong for="id_keywords" class="pull-left">Keywords</strong>
-                        <span class="label label-danger" style="margin-left: 5px">Required</span>
+                <label for="id-project-keywords">
+                    <div class="label-form">
+                        <div>
+                            <span class="label-form-name">Keywords</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span class="label-form-desc">
+                            Choose informative words that indicate the content of the project.
+                        </span>
                     </div>
-                    <div>
-                        Choose informative words that indicate the content of the project.
-                    </div>
-                </div>
+                </label>
                 <div>
                     <input  class="project-form-input"
                             type="text"
@@ -486,15 +602,18 @@
             </div>
             <!-- Project Description -->
             <div class="form-group" style="width:100%; display:inline-block;">
-                <div style="display: flex; flex-direction: column; margin-bottom: 5px;">
-                    <div>
-                        <strong for="id_description" class="pull-left">Project Description</strong>
-                        <span class="label label-danger" style="margin-left: 5px">Required</span>
+                <label for="id-project-description">
+                    <div class="label-form">
+                        <div>
+                            <span class="label-form-name">Project Description</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span class="label-form-desc">
+                            Make sure this is understandable to a wider audience.
+                            Answer questions such as what, how, and why. Define all acronyms.
+                        </span>
                     </div>
-                    <div>
-                        Make sure this is understandable to a wider audience. Answer questions such as what, how, and why. Do not use acronyms.
-                    </div>
-                </div>
+                </label>
                 <div>
                     <textarea   type="text"
                                 style="width:100%; height:3em; resize: vertical;"

@@ -1,4 +1,4 @@
-<div class="modal-header" style="background: #e6e6e6;">
+<div class="modal-header" id="modal-header" style="background: #e6e6e6;">
     <h4 class="modal-title" style="border:none;">
         <span>Add Missions</span>
         <span class="pull-right" data-ng-click="$ctrl.close()">
@@ -28,6 +28,22 @@
                        id="id-title"
                        data-ng-model="$ctrl.form.title"
                        data-ng-required="true"
+                       class="form-control"/>
+            </div>
+            <div class="expEvent form-group">
+                <label for="id-event">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Event</span>
+                        </div>
+                        <span style="display: block; font-weight:normal;">
+                            The event to which the mission is associated.
+                        </span>
+                    </div>
+                </label>
+                <input type="text"
+                       id="id-event"
+                       data-ng-model="$ctrl.form.event"
                        class="form-control"/>
             </div>
             <div class="expDate form-group">
@@ -87,11 +103,17 @@
                 </div>
             </div>
             <div class="expAuthors form-group">
-                <label>Assign Authorship</label>
-                <span style="color: #D04348; font-size:14px;">&#9679; </span>
-                <p>
-                    You can order the authors during the publication process.
-                </p>
+                <label for="id-authorship">
+                        <div style="display: flex; flex-direction: column">
+                            <div>
+                                <span class="pull-left" style="margin-right: 5px">Assign Authorship</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span style="display: block; font-weight:normal;">
+                                You can order the authors during the publication process.
+                            </span>
+                        </div>
+                    </label>
                 <div class="form-group">
                     <div ng-repeat="usr in $ctrl.form.authors track by $index"
                         style="width:46%; display:inline-block; white-space: nowrap;">
@@ -216,51 +238,61 @@
                     </button>
                     <div id="files-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
-                            <div style="display: inline-block; width:20%; vertical-align: top;">
-                                Authors
+                            <div class="entity-meta-field">
+                                <div data-ng-if="mission.value.event">
+                                    <div class="entity-meta-label-multi">Event</div>
+                                    <div class="entity-meta-data">
+                                        <div>
+                                            {{mission.value.event}}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div style="display: inline-block; width:78%; font-weight: bold;">
-                                <div data-ng-repeat="author in mission.value.authors | orderBy: 'order'"
-                                     data-ng-if="!author.length && author.authorship">
-                                    <span data-ng-if="!author.guest">
-                                        <ds-user data-username="author.name" data-format="lname">
-                                            {{author}}
-                                        </ds-user>
-                                    </span>
-                                    <span data-ng-if="author.guest">
-                                        {{author.lname}}, {{author.fname}}
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label-multi">Author(s)</div>
+                                <div class="entity-meta-data">
+                                    <div data-ng-repeat="author in mission.value.authors | orderBy: 'order'"
+                                         data-ng-if="!author.length && author.authorship">
+                                        <span data-ng-if="!author.guest">
+                                            <ds-user data-username="author.name" data-format="lname">
+                                                {{author}}
+                                            </ds-user>
+                                        </span>
+                                        <span data-ng-if="author.guest">
+                                            {{author.lname}}, {{author.fname}}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">Date of Mission</div>
+                                <div class="entity-meta-data">
+                                    <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                    <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.calue.dateStart">
+                                        &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
                                 </div>
                             </div>
-                            <div style="display: inline-block; width:20%;">Date of Mission</div>
-                            <div style="display: inline-block; width: 78%; font-weight:bold;">
-                                <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                <span data-ng-if="mission.value.dateEnd">
-                                    &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
-                                </span>
-                            </div>
-                            <div style="display: inline-block; width:20%; vertical-align: top;"
-                                 data-ng-if="mission.value.location">
-                                Site Location
-                            </div>
-                            <div style="display: inline-block; width: 78%; font-weight:bold;"
-                                 data-ng-if="mission.value.location">
-                                <ul style="list-style:none; padding-left:0;">
-                                    <li>
-                                        <span data-ng-if="mission.value.location">
-                                            {{mission.value.location}} | 
-                                        </span>
-                                        <span data-ng-if="mission.value.latitude">
-                                            Lat {{mission.value.latitude}}
-                                        </span>
-                                        <span data-ng-if="mission.value.longitude">
-                                            Long {{mission.value.longitude}}
-                                        </span>
-                                        <!-- <li data-ng-if="mission.value.elevation">
-                                            Elevation: {{mission.value.elevation}}
-                                        </li> -->
-                                    </li>
-                                </ul>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label-multi" data-ng-if="mission.value.location">
+                                    Site Location
+                                </div>
+                                <div class="entity-meta-data"
+                                     data-ng-if="mission.value.location">
+                                    <ul style="list-style:none; padding-left:0;">
+                                        <li>
+                                            <span data-ng-if="mission.value.location">
+                                                {{mission.value.location}} | 
+                                            </span>
+                                            <span data-ng-if="mission.value.latitude">
+                                                Lat {{mission.value.latitude}}
+                                            </span>
+                                            <span data-ng-if="mission.value.longitude">
+                                                Long {{mission.value.longitude}}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                             <div style="margin-top:10px;">
                                 {{ mission.value.description}}
