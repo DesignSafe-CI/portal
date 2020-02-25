@@ -14,21 +14,22 @@ class NcoSchedulerFiltersCtrl {
                 this._ui.error = err.message;
             });
         this._ui.sortBy = [
-            'Project Id A-Z',
-            'Event Title A-Z',
             'Event Start Newer First',
             'Event Start Older First',
+            'Event Title A-Z',
+            'Project Id A-Z',
         ];
         this._ui.timeFilters = [
-            'Happening This Week',
-            'Happening This Month',
             'Event Started Last 7 Days',
             'Event Started Last 14 Days',
             'Event Started Last 30 Days',
             'Event Will Start in 7 Days',
             'Event Will Start in 14 Days',
             'Event Will Start in 30 Days',
+            'Happening This Week',
+            'Happening This Month',
         ];
+        this.sortby = 'Event Start Newer First';
     }
 
     applyFilterAndSort(){

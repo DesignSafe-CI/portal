@@ -1,7 +1,7 @@
 .nco-scheduler-component {
     .nco-scheduler-filters {
         .filter {
-            width: 32%;
+            width: 20%;
             display: inline-block;
             padding: 0px 10px;
         }
@@ -9,8 +9,9 @@
             display: inline-block;
         }
         .sort {
-            width: 32%;
+            width: 20%;
             display: inline-block;
+            padding: 0px 10px;
         }
     }
 }
