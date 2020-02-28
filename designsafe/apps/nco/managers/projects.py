@@ -109,8 +109,8 @@ class NcoProjectsManager(object):
         sort_switch = {
             "Project Id A-Z": ("projectId", 1),
             "Event Title A-Z": ("eventTitle", 1),
-            "Event Start Newer First": ("dateStart", 1),
-            "Event Start Older First": ("dateStart", -1),
+            "Event Start Newer First": ("dateStart", -1),
+            "Event Start Older First": ("dateStart", 1),
         }
         return [
             sort_switch[val] for val in sorts
