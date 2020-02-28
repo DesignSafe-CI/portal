@@ -52,7 +52,7 @@ class PipelinePublishCtrl {
             let uuids = Object.keys(this.selectedListings);
             uuids.forEach((uuid) => {
                 let listing = this.selectedListings[uuid];
-                let entity = this.project.getRelatedByUuid(uuid); // this part is still gathering collections...
+                let entity = this.project.getRelatedByUuid(uuid);
                 let attr = attributeMap[entity.name];
                 let pubEntity = { name: entity.name, uuid: entity.uuid };
                 pubEntity.fileObjs = listing.children.map((child) => {
@@ -81,9 +81,11 @@ class PipelinePublishCtrl {
                 this.entityListName = 'hybrid_simulations';
             } else if (this.project.value.projectType === 'field_recon') {
                 this.entityListName = 'missions';
-                publication.reports.forEach((report) => {
-                    this.mainEntityUuids.push(report.uuid);
-                });
+                if ('reports' in publication) {
+                    publication.reports.forEach((report) => {
+                        this.mainEntityUuids.push(report.uuid);
+                    });
+                }
             }
             publication[this.entityListName] = [];
             this.resolve.resolveParams.primaryEntities.forEach((entity) => {
