@@ -1,4 +1,8 @@
 # DesignSafe-CI Portal Release Notes
+## v4.8.2-20200205
+Fixes: 
+* Updates to NCO schedule page.
+* FR Model bug fix.
 
 ## v4.8.2-20200205
 Fixes:
