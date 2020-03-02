@@ -167,7 +167,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       var trashPath = _trashPath();
       tests.canTrash = ($state.current.name === 'myData' || $state.current.name === 'projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
       tests.canDelete = $state.current.name === 'myData' && files.length >= 1 && currentState.listing.path === trashPath;
-
+      
       return tests;
     }
 
@@ -483,8 +483,18 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     if (! Array.isArray(files)) {
       files = [files];
     }
+    if (permission === 'READ' && (files[0] || {}).system === 'designsafe.storage.community') {
+      return true
+    }
     return _.reduce(files, function(memo, file) {
-      var pem = file.permissions === 'ALL' || file.permissions.indexOf(permission) > -1;
+      var pem;
+      if (Array.isArray(file.permissions)) {
+        var user_pem = file.permissions.filter(p => p.username === Django.user)[0] || {}
+        pem = (user_pem.permission || {})[permission.toLowerCase()] || false
+      }
+      else {
+        pem = file.permissions === 'ALL' || file.permissions.indexOf(permission) > -1;
+      }
       if (memo !== null) {
         pem = memo && pem;
       }
@@ -499,7 +509,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
    */
   function isProtected (file) {
     if (file.system === 'designsafe.storage.default') {
-      if (file.trail.length === 3 && file.name === '.Trash') {
+      if ((file.trail || []).length === 3 && file.name === '.Trash') {
         return true;
       }
     }
