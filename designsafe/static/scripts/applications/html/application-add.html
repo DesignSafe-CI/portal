@@ -4,50 +4,8 @@
   <div>Loading...</div>
 </div>
 <div ng-show="!requesting">
-  <div class="row">
-      <div class="col-md-6">
-        <div class="text-center">
-            <i class="icon-layers font-red"></i>
-            <span>
-                App Builder Wizard - <span class="step-title"> Step {{currentTabIndex + 1}} of 5 </span>
-            </span>
-        </div>
-      </div>
-      <div class="col-md-6">
-          <div class="">
-              <div class="btn-group" data-toggle="buttons">
-                  <label class="btn btn-default btn-sm" uib-btn-radio="'form'" ng-model="wizview">Form</label>
-                  <label class="btn btn-default btn-sm" uib-btn-radio="'code'" ng-model="wizview" >Code</label>
-                  <label class="btn btn-default btn-sm" uib-btn-radio="'split'" ng-model="wizview" >Split</label>
-              </div>
-          </div>
-      </div>
-  </div>
-  <div class="row">
-      <div class="col-md-12">
-        <div ng-show="wizview !== 'code'" class="{{(wizview === 'split') ? 'col-md-6': 'col-md-12'}}">
-            <form
-                    name="myForm"
-                    class="form-wizard"
-                    sf-schema="schema"
-                    sf-form="form"
-                    sf-model="model"
-                    sf-options="{ formDefaults: { ngModelOptions: { updateOn: 'blur' } }}"
-                    ng-submit="submit()"
-                    no-validate>
-            </form>
-            <div class="col-md-12 schema-form-actions top-buffer">
-              <button type="button" class="btn btn-default" ng-disabled="currentTabIndex == 0" ng-click="previousStep()">Previous</button>
-
-              <div class="btn-group pull-right">
-                <button type="button" class="btn btn-default" ng-disabled="currentTabIndex == form[0].tabs.length-1" ng-click="nextStep()">Next</button>
-                <button type="button" class="btn btn-primary" ng-click="submit()">Submit</button>
-              </div>
-            </div>
-        </div>
-        <div ng-show="wizview !== 'form'" class="{{(wizview === 'split') ? 'col-md-6': 'col-md-12'}}">
-            <textarea ui-codemirror ui-codemirror-opts="editorConfig" ng-model="prettyModel"></textarea>
-        </div>
-      </div>
+  <textarea ui-codemirror ui-codemirror-opts="editorConfig" ng-model="prettyModel"></textarea>
+  <div class="btn-group pull-right" style="margin-top: 1rem">
+    <button type="button" class="btn btn-primary" ng-click="submit()">Submit</button>
   </div>
 </div>
