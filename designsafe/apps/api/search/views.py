@@ -25,7 +25,19 @@ class SearchView(BaseApiView):
     """Main view to handle sitewise search requests"""
     def get(self, request):
         """GET handler."""
+        request.GET = request.GET.copy()
         q = request.GET.get('query_string')
+
+        chars_to_sanitize = {'\\': True, '\"': True, '/': True}
+        sanitized_q = ''
+        for c in q:
+            if chars_to_sanitize.get(c, False):
+                sanitized_q += ' '                                                                                                                                                       
+            else:                                                                                                                                                                                  
+                sanitized_q += c
+        q = sanitized_q
+        request.GET['query_string'] = q
+
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 10))
         if limit > 500:
