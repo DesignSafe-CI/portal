@@ -59,18 +59,18 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         request.LANGUAGE_CODE = settings.LANGUAGE_CODE
         self.prepared_data = super(TextPluginIndex, self).prepare(page)
         plugins = CMSPlugin.objects.filter(placeholder__in=obj.page.placeholders.all())
-        text = u''
+        text = ''
         for base_plugin in plugins:
             instance, plugin_type = base_plugin.get_plugin_instance()
             if instance is None:
                 # this is an empty plugin
                 continue
             if hasattr(instance, 'search_fields'):
-                text += u' '.join(force_unicode(strip_tags(getattr(instance, field, ''))) for field in instance.search_fields)
+                text += ' '.join(force_unicode(strip_tags(getattr(instance, field, ''))) for field in instance.search_fields)
             if getattr(instance, 'search_fulltext', False) or getattr(plugin_type, 'search_fulltext', False):
-                text += _strip_tags(instance.render_plugin(context=RequestContext(request))) + u' '
-        text += page.get_meta_description() or u''
-        text += u' '
+                text += _strip_tags(instance.render_plugin(context=RequestContext(request))) + ' '
+        text += page.get_meta_description() or ''
+        text += ' '
         # text += obj.get_meta_keywords() or u''
         self.prepared_data['text'] = text
         self.prepared_data["body"] = text

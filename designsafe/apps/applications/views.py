@@ -82,7 +82,7 @@ def call_api(request, service):
                             }
                             if lic_type is not None:
                                 _, license_models = get_license_info()
-                                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                                license_model = [x for x in license_models if x.license_type == lic_type][0]
                                 lic = license_model.objects.filter(user=request.user).first()
                                 data['license']['enabled'] = lic is not None
                     else:

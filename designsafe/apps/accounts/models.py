@@ -31,7 +31,7 @@ class NEESUser(object):
                 cursor.execute(cls._lookup_sql, [email])
                 columns = [col[0] for col in cursor.description]
                 return [
-                    cls(**dict(zip(columns, row)))
+                    cls(**dict(list(zip(columns, row))))
                     for row in cursor.fetchall()
                 ]
             finally:
@@ -82,6 +82,7 @@ class DesignSafeProfile(models.Model):
                   [self.user.email],
                   html_message=body)
 
+
 class NotificationPreferences(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name='notification_preferences')
@@ -102,3 +103,4 @@ class NotificationPreferences(models.Model):
             ('view_notification_subscribers', 'Can view list of users subscribed to a '
                                               'notification type'),
         )
+        

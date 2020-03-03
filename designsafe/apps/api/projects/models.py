@@ -74,7 +74,7 @@ class Project(BaseMetadataResource):
         """
         Search projects
         """
-        if isinstance(q, basestring):
+        if isinstance(q, str):
             query = q
         else:
             query = json.dumps(q)

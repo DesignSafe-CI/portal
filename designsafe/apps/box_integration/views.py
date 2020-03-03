@@ -75,7 +75,7 @@ def oauth2_callback(request):
         client = Client(oauth)
 
         # save the token
-        box_user = client.user(user_id=u'me').get()
+        box_user = client.user(user_id='me').get()
         token = BoxUserToken(
             user=request.user,
             access_token=access_token,

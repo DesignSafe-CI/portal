@@ -33,10 +33,10 @@ class SearchView(BaseApiView):
         type_filter = request.GET.get('type_filter', 'all')
 
         doc_type_map = {
-            Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys()[0]: 'publication',
-            Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys()[0]: 'publication',
-            Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys()[0]: 'file',
-            Index(settings.ES_INDEX_PREFIX.format('cms')).get_alias().keys()[0]: 'modelresult'
+            list(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())[0]: 'publication',
+            list(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys())[0]: 'publication',
+            list(Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys())[0]: 'file',
+            list(Index(settings.ES_INDEX_PREFIX.format('cms')).get_alias().keys())[0]: 'modelresult'
         }
 
         public_files_query = CommunityDataSearchManager(request).construct_query() | PublishedDataSearchManager(request).construct_query()
@@ -81,7 +81,7 @@ class SearchView(BaseApiView):
             if r.meta.doc_type == 'publication' and hasattr(r, 'users'):
                 users = r.users
                 pi = r.project.value.pi
-                pi_user = filter(lambda x: x.username==pi, users)[0]
+                pi_user = [x for x in users if x.username==pi][0]
                 d["piLabel"] = "{}, {}".format(pi_user.last_name, pi_user.first_name)
             hits.append(d)
 

@@ -35,8 +35,8 @@ def login_options(request):
         agave_status = AgaveServiceStatus()
         ds_oauth_svc_id = getattr(settings, 'AGAVE_DESIGNSAFE_OAUTH_STATUS_ID',
                                   '56bb6d92a216b873280008fd')
-        designsafe_status = (s for s in agave_status.status
-                             if s['id'] == ds_oauth_svc_id).next()
+        designsafe_status = next((s for s in agave_status.status
+                             if s['id'] == ds_oauth_svc_id))
         if designsafe_status and 'status_code' in designsafe_status:
             if designsafe_status['status_code'] == 400:
                 message = {

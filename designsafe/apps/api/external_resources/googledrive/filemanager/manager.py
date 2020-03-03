@@ -54,7 +54,7 @@ class FileManager(object):
 
                 file_type = googledrive_item.type
         else:
-            file_type, file_id = u'folder', u'root'
+            file_type, file_id = 'folder', 'root'
 
         return file_type, file_id
 
