@@ -15,7 +15,7 @@
     <div class="row">
       <div class="col-md-12">
         <h2> Datasets for event: "{{event.title}}" </h2>
-        <a class="btn btn-success" href="{% url 'designsafe_rapid:admin_event_add_dataset' event|private:'_id' %}" target="_self">
+        <a class="btn btn-success" href="{% url 'designsafe_rapid:admin_event_add_dataset' event.meta|private:'id' %}" target="_self">
           <i class="fa fa-plus"> Create New Dataset </i>
         </a>
       </div>
@@ -36,13 +36,13 @@
               <td> {{dataset.url}} </td>
               <td> {{dataset.title}} </td>
               <td> <a class="btn btn-info btn-sm"
-                      href="{% url 'designsafe_rapid:admin_event_edit_dataset' event|private:'_id' dataset.id %}"
+                      href="{% url 'designsafe_rapid:admin_event_edit_dataset' event.meta|private:'id' dataset.id %}"
                       target="_self">
                       Edit
                     </a>
               </td>
               <td>
-                <form method="POST" action="{% url 'designsafe_rapid:admin_event_delete_dataset' event|private:'_id' dataset.id %}">
+                <form method="POST" action="{% url 'designsafe_rapid:admin_event_delete_dataset' event.meta|private:'id' dataset.id %}">
                   {% csrf_token %}
                   <button class="btn btn-danger btn-sm"> Delete </button>
                 </form>
