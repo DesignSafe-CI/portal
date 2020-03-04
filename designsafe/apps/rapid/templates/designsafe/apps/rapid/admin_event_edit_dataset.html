@@ -9,8 +9,8 @@
       <div class="col-md-12">
         <ol class="breadcrumb">
           <li> <a href="{% url 'designsafe_rapid:admin'%}" target="_self"> Admin Home </a></li>
-          <li> <a href="{% url 'designsafe_rapid:admin_edit_event' event|private:'_id' %}" target="_self"> {{ event.title }} </a></li>
-          <li> <a href="{% url 'designsafe_rapid:admin_event_datasets' event|private:'_id' %}" target="_self">  Datasets </a></li>
+          <li> <a href="{% url 'designsafe_rapid:admin_edit_event' event.meta|private:'id' %}" target="_self"> {{ event.title }} </a></li>
+          <li> <a href="{% url 'designsafe_rapid:admin_event_datasets' event.meta|private:'id' %}" target="_self">  Datasets </a></li>
         </ol>
       </div>
     </div>
