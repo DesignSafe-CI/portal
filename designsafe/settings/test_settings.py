@@ -544,7 +544,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'host': 'cloud.corral.tacc.utexas.edu',
         'publicAppsDir': None,
         'proxy': None,
-        'rootDir': '/corral-repl/tacc/NHERI/projects/{}',
+        'rootDir': '/corral-repl/projects/NHERI/projects/{}',
         'auth': json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
     }
 }
