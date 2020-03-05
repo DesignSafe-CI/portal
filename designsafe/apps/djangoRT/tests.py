@@ -35,7 +35,7 @@ class AnonymousViewTests(TestCase):
 
     def test_create(self):
         resp = self.client.get(reverse('djangoRT:ticketcreate'))
-        self.assertEquals(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200)
 
     def test_create_with_error_context(self):
         query = 'error_page=/page/that/failed&http_referer=https://www.google.com'
