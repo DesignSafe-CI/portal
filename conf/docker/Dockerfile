@@ -73,11 +73,13 @@ RUN virtualenv ~/portal_env
 RUN ~/portal_env/bin/pip install --upgrade pip && \
     ~/portal_env/bin/pip install pip-tools
 
-COPY --chown=tg458981:G-816877 requirements.txt /tmp/
+COPY requirements.txt /tmp/
+RUN chown -R tg458981:G-816877 /tmp/requirements.txt
 
 RUN ~/portal_env/bin/pip-sync /tmp/requirements.txt
 
-COPY --chown=tg458981:G-816877 package*.json /srv/www/designsafe/
+COPY package*.json /srv/www/designsafe/
+RUN chown -R tg458981:G-816877 /srv/www/designsafe/package*.json
 RUN cd /srv/www/designsafe npm install
 
 RUN echo "prefix=~/.npm-global" >> ~/.npmrc
