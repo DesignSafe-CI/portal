@@ -573,10 +573,10 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'type': 'STORAGE',
     'storage': {
         'mirror': False,
-        'port': 22,
+        'port': 2222,
         'homeDir': '/',
         'protocol': 'SFTP',
-        'host': 'dtn01.prod.agaveapi.co',
+        'host': 'cloud.corral.tacc.utexas.edu',
         'publicAppsDir': None,
         'proxy': None,
         'rootDir': '/corral-repl/tacc/NHERI/projects/{}',
