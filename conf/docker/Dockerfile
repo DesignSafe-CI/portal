@@ -53,12 +53,15 @@ SHELL ["/usr/bin/scl", "enable", "rh-python36"]
 RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash -
 RUN yum -y install nodejs
 
-# install uwsgi
-RUN pip install uwsgi
-
 # RUN pip install --upgrade pip && pip install uwsgitop
-RUN pip install --upgrade pip
-RUN pip install uwsgitop virtualenv
+RUN pip install --upgrade pip && pip install uwsgi uwsgitop
+
+RUN mkdir -p /opt/uwsgi && \
+    curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
+    tar -xvzf /opt/uwsgi/uwsgi-2.0.15.tar.gz -C /opt/uwsgi && \
+    uwsgi --build-plugin /opt/uwsgi/uwsgi-2.0.15/plugins/zabbix && \
+    mkdir -p /usr/lib/uwsgi/plugins && \
+    mv zabbix_plugin.so /usr/lib/uwsgi/plugins/.
 
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981

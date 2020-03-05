@@ -159,6 +159,7 @@ unicodecsv==0.14.1
 Unidecode==0.4.21
 uritemplate==3.0.0
 urllib3==1.22
+uwsgi==2.0.18
 vine==1.1.4
 virtualenv==13.0.1
 wcwidth==0.1.7
