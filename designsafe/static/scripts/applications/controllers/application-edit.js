@@ -1767,7 +1767,16 @@ export function applicationEditCtrl(window, angular, $, _) {
                     $scope.prettyModel = JSON.stringify(currentModel, undefined, 2);
                 }
             }, true);
-
+            $scope.$watch('customModel', function(m) {
+              if (m) {
+                $scope.prettyModel = JSON.stringify(m, undefined, 2);
+              }
+            }, true)
+            $scope.$watch('prettyModel', function(m) {
+                if (m) {
+                  $scope.customModel = JSON.parse($scope.prettyModel);
+                }
+            }, true)
             // $scope.$watch('model.modules', function(newValue, oldValue){
             //     if (typeof newValue === 'undefined' && $scope.model !== ''){
             //       $scope.model.modules = [];
@@ -1792,8 +1801,6 @@ export function applicationEditCtrl(window, angular, $, _) {
             //     }
             // }, true);
             /******** end Agave form ********/
-
-
 
             $scope.init = function() {
                 $scope.requesting = true;
@@ -1943,6 +1950,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                         if ($scope.edit) {
                                                             // custom app
                                                             $scope.customModel = $scope.editModel.definition;
+                                                            $scope.prettyModel = JSON.stringify($scope.customModel, null, 2)
                                                             $scope.requesting = false;
                                                         } else {
                                                             $scope.error = $translate.instant('error_app_edit_permissions');
