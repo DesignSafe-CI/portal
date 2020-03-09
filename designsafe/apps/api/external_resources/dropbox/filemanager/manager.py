@@ -200,7 +200,7 @@ class FileManager(object):
 
             if not agave_file_path.startswith('/'):
                 agave_file_path = '/' + agave_file_path
-                
+
             agave_indexer.apply_async(kwargs={'username': user.username, 'systemId': agave_system_id, 'filePath': os.path.dirname(agave_file_path), 'recurse':False}, queue='indexing')
             agave_indexer.apply_async(kwargs={'systemId': agave_system_id, 'filePath': agave_file_path, 'recurse': True}, routing_key='indexing')
         except:
@@ -415,7 +415,7 @@ class FileManager(object):
 
                 while f.tell() < file_size:
                     if ((file_size - f.tell()) <= CHUNK_SIZE):
-                        print((self.dropbox_api.files_upload_session_finish(f.read(CHUNK_SIZE), cursor, commit)))
+                        print(self.dropbox_api.files_upload_session_finish(f.read(CHUNK_SIZE), cursor, commit))
                     else:
                         self.dropbox_api.files_upload_session_append(f.read(CHUNK_SIZE), cursor.session_id, cursor.offset)
                         cursor.offset = f.tell()

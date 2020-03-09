@@ -1,6 +1,6 @@
 from django.test import TestCase
 from mock import patch
-from views import redirect_old_nees
+from .views import redirect_old_nees
 
 class RedirectTest(TestCase):
     """
