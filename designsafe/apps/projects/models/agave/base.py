@@ -318,7 +318,7 @@ class Project(MetadataModel):
                 'identifier': self.project_id,
             }
         ]
-        if type(self.award_number[0]) is not dict:
+        if len(self.award_number) and type(self.award_number[0]) is not dict:
             self.award_number = [{'order': 0, 'name': ''.join(self.award_number)}]
         awards = sorted(
             self.award_number,
