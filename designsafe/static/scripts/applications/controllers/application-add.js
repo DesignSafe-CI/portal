@@ -1856,10 +1856,19 @@ export function applicationAddCtrl(window, angular, $, _) {
                 //   $scope.model = {};
                 // }
                 if (currentModel) {
-                    $scope.prettyModel = JSON.stringify(currentModel, undefined, 2);
-                }
+                  $scope.prettyModel = JSON.stringify(currentModel, undefined, 2);
+                } 
             }, true);
-
+            $scope.$watch('customModel', function(m) {
+              if (m) {
+                $scope.prettyModel = JSON.stringify(m, undefined, 2);
+              }
+            }, true)
+            $scope.$watch('prettyModel', function(m) {
+                if (m) {
+                  $scope.customModel = JSON.parse($scope.prettyModel);
+                }
+            }, true)
             // $scope.$watch('model.modules', function(newValue, oldValue){
             //     if (typeof newValue === 'undefined' && $scope.model !== ''){
             //       $scope.model.modules = [];
