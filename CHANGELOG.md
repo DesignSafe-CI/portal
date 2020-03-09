@@ -1,5 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
+
+## v4.8.4
+Fixes:
+* Fix bug presenting legacy publications from displaying.
+
 ## v4.8.3
 Fixes:
 * RAPID admin page hotfix.
