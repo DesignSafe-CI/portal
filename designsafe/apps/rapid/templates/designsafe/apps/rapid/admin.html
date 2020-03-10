@@ -36,17 +36,17 @@
               <td> {{event.location_description}} </td>
               <td> {{event.created_date}} </td>
               <td>
-                <a href="{% url 'designsafe_rapid:admin_edit_event' event|private:'_id' %}" class="btn btn-sm btn-info" target="_self">
+                <a href="{% url 'designsafe_rapid:admin_edit_event' event.meta|private:'id' %}" class="btn btn-sm btn-info" target="_self">
                   <i class="fa fa-file"> </i> Edit
                 </a>
               </td>
               <td>
-                <a href="{% url 'designsafe_rapid:admin_event_datasets' event|private:'_id' %}" class="btn btn-sm btn-info" target="_self">
+                <a href="{% url 'designsafe_rapid:admin_event_datasets' event.meta|private:'id' %}" class="btn btn-sm btn-info" target="_self">
                   <i class="fa fa-database"> </i> Datasets
                 </a>
               </td>
               <td>
-                <form action="{% url 'designsafe_rapid:admin_delete_event' event|private:'_id'  %}" method="POST">
+                <form action="{% url 'designsafe_rapid:admin_delete_event' event.meta|private:'id'  %}" method="POST">
                   {% csrf_token %}
                   <button class="btn btn-sm btn-danger"> <i class="fa fa-trash"> </i> Delete Event </button>
               </td>
