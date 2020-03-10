@@ -111,9 +111,10 @@ class MongoProjectsHelper(object):
         """Return all filters."""
         mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
         cursor = mongo_db.filters.find()
-        return [
-            doc for doc in cursor
-        ]
+        filters = list(cursor)
+        for f in filters:
+            f['value'].sort()
+        return filters
 
     def _update_filter(self, name, value):
         """Update or create filter doc stored in mognodb.

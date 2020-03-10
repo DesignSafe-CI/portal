@@ -77,47 +77,55 @@
                 <div class="prj-head" style="padding-bottom:20px">
                     Experiment | <strong>{{ primEnt.value.title }}</strong>
                 </div>
-                <div style="display:inline-block; width:20%;">Experiment Type</div>
-                <strong ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                        style="display:inline-block; width:78%; text-transform:capitalize;"
-                >
-                    {{ $ctrl.getET(primEnt) }}
-                </strong>
-                <strong ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                        style="display:inline-block; width:78%; text-transform:capitalize;"
-                >
-                    {{ primEnt.value.experimentTypeOther }}
-                </strong>
-                <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-                <div style="display:inline-block; width:78%; font-weight: bold;">
-                    <ds-author-list authors="primEnt.value.authors"></ds-author-list>
+                <div class="entity-meta-field">
+                    <div class="entity-meta-label">Experiment Type</div>
+                    <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                            class="entity-meta-data-cap"
+                    >
+                        {{ $ctrl.getET(primEnt) }}
+                    </span>
+                    <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                            class="entity-meta-data-cap"
+                    >
+                        {{ primEnt.value.experimentTypeOther }}
+                    </span>
                 </div>
-                <div style="display:inline-block; width:20%;">Experimental Facility</div>
-                <strong ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                        style="display:inline-block; width:78%; text-transform:capitalize;">
-                        {{ $ctrl.getEF(primEnt.value.experimentalFacility) }}
-                </strong>
-                <strong ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                        style="display:inline-block; width:78%; text-transform:capitalize;">
-                    {{ primEnt.value.experimentalFacilityOther }}
-                </strong>
-                <div style="display:inline-block; width:20%;">Equipment Type</div>
-                <strong ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                        style="display:inline-block; width:78%; text-transform:capitalize;">
-                    {{ $ctrl.getEQ(primEnt) }}
-                </strong>
-                <strong ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                        style="display:inline-block; width:78%; text-transform:capitalize;">
-                    {{ primEnt.value.equipmentTypeOther }}
-                </strong>
-                <div ng-show="primEnt.value.procedureStart">
-                    <div style="display:inline-block; width:20%;">Date of Experiment</div>
-                    <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate(primEnt.value.procedureEnd)">
+                <div class="entity-meta-field">
+                    <div class="entity-meta-label-multi">Author(s)</div>
+                    <div class="entity-meta-data">
+                        <ds-author-list authors="primEnt.value.authors"></ds-author-list>
+                    </div>
+                </div>
+                <div class="entity-meta-field">
+                    <div class="entity-meta-label">Experimental Facility</div>
+                    <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                            class="entity-meta-data-cap">
+                            {{ $ctrl.getEF(primEnt.value.experimentalFacility) }}
+                    </span>
+                    <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                            class="entity-meta-data-cap">
+                        {{ primEnt.value.experimentalFacilityOther }}
+                    </span>
+                </div>
+                <div class="entity-meta-field">
+                    <div class="entity-meta-label">Equipment Type</div>
+                    <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                            class="entity-meta-data-cap">
+                        {{ $ctrl.getEQ(primEnt) }}
+                    </span>
+                    <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                            class="entity-meta-data-cap">
+                        {{ primEnt.value.equipmentTypeOther }}
+                    </span>
+                </div>
+                <div ng-show="primEnt.value.procedureStart" class="entity-meta-field">
+                    <div class="entity-meta-label">Date of Experiment</div>
+                    <span class="entity-meta-data" ng-if="primEnt.value.procedureEnd && primEnt.value.procedureStart !== primEnt.value.procedureEnd">
                         {{ primEnt.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ primEnt.value.procedureEnd | date:'MM-dd-yyyy' }}
-                    </strong>
-                    <strong style="display:inline-block; width:78%;" ng-if="!$ctrl.hasEndDate(primEnt.value.procedureEnd)">
+                    </span>
+                    <span class="entity-meta-data" ng-if="!primEnt.value.procedureEnd || primEnt.value.procedureStart === primEnt.value.procedureEnd">
                         {{ primEnt.value.procedureStart | date:'MM-dd-yyyy' }}
-                    </strong>
+                    </span>
                 </div>
                 <div>
                     <br>{{ primEnt.value.description }}

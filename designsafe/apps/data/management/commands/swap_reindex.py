@@ -31,8 +31,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
-        connections.configure(default={'hosts': HOSTS, 'http_auth': settings.ES_AUTH})
-        es_client = elasticsearch.Elasticsearch([{'host': HOSTS, 'http_auth': settings.ES_AUTH}])
+        es_client = elasticsearch.Elasticsearch(HOSTS, http_auth=settings.ES_AUTH)
         index = options.get('index')
         cleanup = options.get('cleanup')
         swap_only = options.get('swap-only')
@@ -50,8 +49,8 @@ class Command(BaseCommand):
             setup_index(index_config, force=True, reindex=True)
 
         try:
-            default_index_name = Index(default_index_alias).get_alias().keys()[0]
-            reindex_index_name = Index(reindex_index_alias).get_alias().keys()[0]
+            default_index_name = Index(default_index_alias, using=es_client).get_alias().keys()[0]
+            reindex_index_name = Index(reindex_index_alias, using=es_client).get_alias().keys()[0]
         except Exception as e:
             self.stdout.write('Unable to lookup required indices by alias. Have you set up both a default and a reindexing index?')
             raise SystemExit
@@ -73,5 +72,5 @@ class Command(BaseCommand):
 
         # Re-initialize the new reindexing index to save space.
         if cleanup:
-            reindex_index_name = Index(reindex_index_alias).get_alias().keys()[0]
-            Index(reindex_index_name).delete(ignore=404)
+            reindex_index_name = Index(reindex_index_alias, using=es_client).get_alias().keys()[0]
+            Index(reindex_index_name, using=es_client).delete(ignore=404)

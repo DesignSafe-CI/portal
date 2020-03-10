@@ -120,7 +120,7 @@
             <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                 <table style="width:100%">
                     <tr>
-                        <td style="text-align: left;">
+                        <td class="tab-cell">
                             <span>Report | <strong>{{report.value.title}}</strong></span>
                         </td>
                         <td style="text-align: right;">
@@ -145,7 +145,7 @@
             <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}" style="width:100%;">
                 <table style="width:100%">
                     <tr>
-                        <td style="text-align: left;">
+                        <td class="tab-cell">
                             <span>Hybrid Simulation | <strong>{{hybsim.value.title}}</strong></span>
                         </td>
                         <td style="text-align: right;">
@@ -156,66 +156,76 @@
             </button>
             <div id="data-{{hybsim.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
-                    <div style="display:inline-block; width:20%;">Simulation Type</div>
-                    <strong ng-if="!$ctrl.isValid(hybsim.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ hybsim.value.simulationType.replace('_', ' ') }}
-                    </strong>
-                    <strong ng-if="$ctrl.isValid(hybsim.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ hybsim.value.simulationTypeOther }}
-                    </strong>
-                    <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-                    <div style="display:inline-block; width:78%; font-weight: bold;">
-                        <span ng-if="$ctrl.readOnly">
-                            <span ng-repeat="author in hybsim.authors | filter: { authorship: true }">
-                                <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Simulation Type</div>
+                        <span ng-if="!$ctrl.isValid(hybsim.value.experimentalFacilityOther)" class="entity-meta-data-cap">
+                            {{ hybsim.value.simulationType.replace('_', ' ') }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(hybsim.value.experimentalFacilityOther)" class="entity-meta-data-cap">
+                            {{ hybsim.value.simulationTypeOther }}
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label-multi">Author(s)</div>
+                        <div class="entity-meta-data">
+                            <span ng-if="$ctrl.readOnly">
+                                <span ng-repeat="author in hybsim.authors | filter: { authorship: true }">
+                                    <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
+                                </span>
                             </span>
+                            <span ng-if="!$ctrl.readOnly">
+                                <ds-author-list authors="hybsim.value.authors"></ds-author-list>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Date of Publication</div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
                         </span>
-                        <span ng-if="!$ctrl.readOnly">
-                            <ds-author-list authors="hybsim.value.authors"></ds-author-list>
+                        <span class="entity-meta-data"
+                                data-ng-if="$ctrl.readOnly">
+                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
                         </span>
                     </div>
-                    <div style="display:inline-block; width:20%;">Date of Publication</div>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="!$ctrl.readOnly">
-                        (Appears when published)
-                    </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                        {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
-                    </strong>
-                    <div style="display:inline-block; width:20%;">
-                        DOI
-                        <button class="btn btn-info btn-sm btn-cite"
-                                ng-disabled="!$ctrl.readOnly"
-                                data-ng-click="$ctrl.showCitation(hybsim)">
-                            Citation
-                        </button>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">
+                            DOI
+                            <button class="btn btn-info btn-sm btn-cite"
+                                    ng-disabled="!$ctrl.readOnly"
+                                    data-ng-click="$ctrl.showCitation(hybsim)">
+                                Citation
+                            </button>
+                        </div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </span>
+                        <span class="entity-meta-data"
+                                data-ng-if="$ctrl.readOnly">
+                            {{ hybsim.doi }}
+                        </span>
                     </div>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="!$ctrl.readOnly">
-                        (Appears when published)
-                    </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                        {{ hybsim.doi }}
-                    </strong>
-                    <div style="display:inline-block; width:20%;">License(s)</div>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="!$ctrl.readOnly">
-                        (Appears when published)
-                    </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
-                                {{ $ctrl.browser.publication.licenses.datasets }}
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.works">
-                                {{ $ctrl.browser.publication.licenses.works }}
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.software">
-                                {{ $ctrl.browser.publication.licenses.software }}
-                            </div>
-                    </strong>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">License(s)</div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </span>
+                        <span class="entity-meta-data"
+                                data-ng-if="$ctrl.readOnly">
+                                <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
+                                    {{ $ctrl.browser.publication.licenses.datasets }}
+                                </div>
+                                <div data-ng-if="$ctrl.browser.publication.licenses.works">
+                                    {{ $ctrl.browser.publication.licenses.works }}
+                                </div>
+                                <div data-ng-if="$ctrl.browser.publication.licenses.software">
+                                    {{ $ctrl.browser.publication.licenses.software }}
+                                </div>
+                        </span>
+                    </div>
                     <p>
                         <br>{{ hybsim.value.description }}
                     </p>
@@ -228,7 +238,7 @@
                                 <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                                     <table style="width:100%">
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="tab-cell">
                                                 <span>Report | <strong>{{report.value.title}}</strong></span>
                                             </td>
                                             <td style="text-align: right;">
@@ -254,7 +264,7 @@
                                     style="width:100%;">
                                     <table style="width:100%">
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="tab-cell">
                                                 <span>Global Model | <strong>{{model.value.title}}</strong></span>
                                             </td>
                                             <td style="text-align: right;">
@@ -290,7 +300,7 @@
                                                 style="width:100%;">
                                                 <table style="width:100%">
                                                     <tr>
-                                                        <td style="text-align: left;">
+                                                        <td class="tab-cell">
                                                             <span>Coordinator | <strong>{{coordinator.value.title}}</strong></span>
                                                         </td>
                                                         <td style="text-align: right;">
@@ -327,7 +337,7 @@
                                                         <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{cout.uuid}}{{model.uuid}}" style="width:100%;">
                                                             <table style="width:100%">
                                                                 <tr>
-                                                                    <td style="text-align: left;">
+                                                                    <td class="tab-cell">
                                                                         <span>Coordinator Output | <strong>{{cout.value.title}}</strong></span>
                                                                     </td>
                                                                     <td style="text-align: right;">
@@ -371,7 +381,7 @@
                                                         >
                                                             <table style="width:100%">
                                                                 <tr>
-                                                                    <td style="text-align: left;">
+                                                                    <td class="tab-cell">
                                                                         <span>Simulation Substructure | <strong>{{simsub.value.title}}</strong></span>
                                                                     </td>
                                                                     <td style="text-align: right;">
@@ -415,7 +425,7 @@
                                                                 >
                                                                     <table style="width:100%">
                                                                         <tr>
-                                                                            <td style="text-align: left;">
+                                                                            <td class="tab-cell">
                                                                                 <span>Simulation Output | <strong>{{sout.value.title}}</strong></span>
                                                                             </td>
                                                                             <td style="text-align: right;">
@@ -462,7 +472,7 @@
                                                         >
                                                             <table style="width:100%">
                                                                 <tr>
-                                                                    <td style="text-align: left;">
+                                                                    <td class="tab-cell">
                                                                         <span>Experimental Substrucutre | <strong>{{expsub.value.title}}</strong></span>
                                                                     </td>
                                                                     <td style="text-align: right;">
@@ -506,7 +516,7 @@
                                                                 >
                                                                     <table style="width:100%">
                                                                         <tr>
-                                                                            <td style="text-align: left;">
+                                                                            <td class="tab-cell">
                                                                                 <span>Experimental Output | <strong>{{eout.value.title}}</strong></span>
                                                                             </td>
                                                                             <td style="text-align: right;">
@@ -544,7 +554,7 @@
                                     style="width:100%;">
                                     <table style="width:100%">
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="tab-cell">
                                                 <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
                                             </td>
                                             <td style="text-align: right;">

@@ -707,8 +707,8 @@ def reindex_projects(self):
    
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
-    # Don't copy files if we're in dev.
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+    # Only copy published files while in prod
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
         return
 
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
@@ -838,6 +838,9 @@ def zip_project_files(self, project_uuid):
 @shared_task(bind=True)
 def zip_publication_files(self, project_id):
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
+    # Only create archive in prod
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
+        return
 
     try:
         pub = BaseESPublication(project_id=project_id)
@@ -847,11 +850,32 @@ def zip_publication_files(self, project_id):
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
-def set_publish_status(self, project_id, entity_uuids):
+def swap_file_tag_uuids(self, project_id):
+    """Swap File Tag UUID's
+
+    This task will update each file tag's file uuid from the file in
+    the project directory to the copied file in the published storage system
+
+    :param str project_id: Project Id.
+    """
     from designsafe.apps.projects.managers import publication as PublicationManager
+    try:
+        PublicationManager.fix_file_tags(project_id)
+    except Exception as exc:
+        logger.error('File Tag Correction Error: %s. %s', project_id, exc, exc_info=True)
+        raise self.retry(exc=exc)
+
+@shared_task(bind=True)
+def set_publish_status(self, project_id, entity_uuids, publish_dois=False):
+    from designsafe.apps.projects.managers import publication as PublicationManager
+    # Only publish DOIs created from prod
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
+        publish_dois = True
+
     PublicationManager.publish_resource(
         project_id,
-        entity_uuids
+        entity_uuids,
+        publish_dois
     )
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)

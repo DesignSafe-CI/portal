@@ -122,7 +122,7 @@
             <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                 <table style="width:100%">
                     <tr>
-                        <td style="text-align: left;">
+                        <td class="tab-cell">
                             <span>Report | <strong>{{report.value.title}}</strong></span>
                         </td>
                         <td style="text-align: right;">
@@ -147,7 +147,7 @@
             <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                 <table style="width:100%">
                     <tr>
-                        <td style="text-align: left;">
+                        <td class="tab-cell">
                             <span>Experiment | <strong>{{experiment.value.title}}</strong></span>
                         </td>
                         <td style="text-align: right;">
@@ -158,91 +158,105 @@
             </button>
             <div id="data-{{experiment.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
-                    <div style="display:inline-block; width:20%;">Experiment Type</div>
-                    <strong ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ $ctrl.getET(experiment) }}
-                    </strong>
-                    <strong ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ experiment.value.experimentTypeOther }}
-                    </strong>
-                    <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-                    <div style="display:inline-block; width:78%; font-weight: bold;">
-                        <span ng-if="$ctrl.readOnly">
-                            <!-- <ds-author-list authors="experiment.authors"></ds-author-list> -->
-                            <span ng-repeat="author in experiment.authors | filter: { authorship: true }">
-                                <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span> 
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Experiment Type</div>
+                        <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                            {{ $ctrl.getET(experiment) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                            {{ experiment.value.experimentTypeOther }}
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label-multi">Author(s)</div>
+                        <div class="entity-meta-data">
+                            <span ng-if="$ctrl.readOnly">
+                                <span ng-repeat="author in experiment.authors | filter: { authorship: true }">
+                                    <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span> 
+                                </span>
                             </span>
+                            <span ng-if="!$ctrl.readOnly">
+                                <ds-author-list authors="experiment.value.authors"></ds-author-list>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Experimental Facility</div>
+                        <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                            {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
                         </span>
-                        <span ng-if="!$ctrl.readOnly">
-                            <ds-author-list authors="experiment.value.authors"></ds-author-list>
+                        <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                            {{ experiment.value.experimentalFacilityOther }}
                         </span>
                     </div>
-                    <div style="display:inline-block; width:20%;">Experimental Facility</div>
-                    <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
-                    </strong>
-                    <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ experiment.value.experimentalFacilityOther }}
-                    </strong>
-                    <div style="display:inline-block; width:20%;">Equipment Type</div>
-                    <strong ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ $ctrl.getEQ(experiment) }}
-                    </strong>
-                    <strong ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
-                        {{ experiment.value.equipmentTypeOther }}
-                    </strong>
-                    <div ng-show="experiment.value.procedureStart">
-                        <div style="display:inline-block; width:20%;">Date of Experiment</div>
-                        <strong style="display:inline-block; width:78%;" ng-if="$ctrl.hasEndDate(experiment.value.procedureEnd)">
-                            {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213;
-                            {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
-                        </strong>
-                        <strong style="display:inline-block; width:78%;" ng-if="!$ctrl.hasEndDate(experiment.value.procedureEnd)">
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Equipment Type</div>
+                        <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                            {{ $ctrl.getEQ(experiment) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                            {{ experiment.value.equipmentTypeOther }}
+                        </span>
+                    </div>
+                    <div class="entity-meta-field" ng-show="experiment.value.procedureStart">
+                        <div class="entity-meta-label">Date of Experiment</div>
+                        <span class="entity-meta-data" ng-if="experiment.value.procedureEnd && experiment.value.procedureStart !== experiment.value.procedureEnd">
+                            {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
+                        </span>
+                        <span class="entity-meta-data" ng-if="!experiment.value.procedureEnd || experiment.value.procedureStart === experiment.value.procedureEnd">
                             {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }}
-                        </strong>
+                        </span>
                     </div>
-                    <div style="display:inline-block; width:20%;">Date of Publication</div>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="!$ctrl.readOnly">
-                        (Appears when published)
-                    </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                        {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
-                    </strong>
-                    <div style="display:inline-block; width:20%;">
-                        DOI
-                        <button class="btn btn-info btn-sm btn-cite"
-                                ng-disabled="!$ctrl.readOnly"
-                                data-ng-click="$ctrl.showCitation(experiment)">
-                            Citation
-                        </button>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Date of Publication</div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </span>
+                        <span class="entity-meta-data"
+                                data-ng-if="$ctrl.readOnly">
+                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
+                        </span>
                     </div>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="!$ctrl.readOnly">
-                        (Appears when published)
-                    </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                        {{ experiment.doi }}
-                    </strong>
-                    <div style="display:inline-block; width:20%;">License(s)</div>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="!$ctrl.readOnly">
-                        (Appears when published)
-                    </strong>
-                    <strong style="display:inline-block; width:78%;"
-                            data-ng-if="$ctrl.readOnly">
-                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
-                                {{ $ctrl.browser.publication.licenses.datasets }}
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.works">
-                                {{ $ctrl.browser.publication.licenses.works }}
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.software">
-                                {{ $ctrl.browser.publication.licenses.software }}
-                            </div>
-                    </strong>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">
+                            DOI
+                            <button class="btn btn-info btn-sm btn-cite"
+                                    ng-disabled="!$ctrl.readOnly"
+                                    data-ng-click="$ctrl.showCitation(experiment)">
+                                Citation
+                            </button>
+                        </div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </span>
+                        <span class="entity-meta-data"
+                                data-ng-if="$ctrl.readOnly">
+                            {{ experiment.doi }}
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">License(s)</div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
+                        <span class="entity-meta-data"
+                                data-ng-if="$ctrl.readOnly">
+                                <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
+                                    {{ $ctrl.browser.publication.licenses.datasets }}
+                                </div>
+                                <div data-ng-if="$ctrl.browser.publication.licenses.works">
+                                    {{ $ctrl.browser.publication.licenses.works }}
+                                </div>
+                                <div data-ng-if="$ctrl.browser.publication.licenses.software">
+                                    {{ $ctrl.browser.publication.licenses.software }}
+                                </div>
+                        </span>
+                    </div>
                     <p>
                         <br>{{ experiment.value.description }}
                     </p>
@@ -253,7 +267,7 @@
                                 <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                                     <table style="width:100%">
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="tab-cell">
                                                 <span>Report | <strong>{{report.value.title}}</strong></span>
                                             </td>
                                             <td style="text-align: right;">
@@ -279,7 +293,7 @@
                                     style="width:100%;">
                                     <table style="width:100%">
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="tab-cell">
                                                 <span>Model Configuration | <strong>{{modelConfig.value.title}}</strong></span>
                                             </td>
                                             <td style="text-align: right;">
@@ -318,7 +332,7 @@
                                                 >
                                                 <table style="width:100%">
                                                     <tr>
-                                                        <td style="text-align: left;">
+                                                        <td class="tab-cell">
                                                             <span>Sensor Information | <strong>{{sensorList.value.title}}</strong></span>
                                                         </td>
                                                         <td style="text-align: right;">
@@ -355,7 +369,7 @@
                                                         <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}{{modelConfig.uuid}}" style="width:100%;">
                                                             <table style="width:100%">
                                                                 <tr>
-                                                                    <td style="text-align: left;">
+                                                                    <td class="tab-cell">
                                                                         <span>Event | <strong>{{event.value.title}}</strong></span>
                                                                     </td>
                                                                     <td style="text-align: right;">
@@ -388,7 +402,7 @@
                                     style="width:100%;">
                                     <table style="width:100%">
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="tab-cell">
                                                 <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
                                             </td>
                                             <td style="text-align: right;">

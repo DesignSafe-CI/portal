@@ -16,6 +16,7 @@ class PipelineProjectCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
         this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
+        this.secondaryEntities = this.ProjectService.resolveParams.secondaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
 
         if (!this.project) {
@@ -46,7 +47,7 @@ class PipelineProjectCtrl {
             } else if (this.projType === 'simulation') {
                 this.placeholder = 'Simulation';
             } else if (this.projType === 'hybrid_simulation') {
-                this.placeholder = 'Hybrid Simulation';
+                this.placeholder = 'Hybrid Sim';
             } else if (this.projType === 'field_recon') {
                 this.placeholder = 'Mission';
             }
@@ -100,6 +101,7 @@ class PipelineProjectCtrl {
                 projectId: this.projectId,
                 project: this.project,
                 primaryEntities: this.primaryEntities,
+                secondaryEntities: this.secondaryEntities,
                 selectedListings: this.selectedListings,
             }, {reload: true});
         } else if (this.projType === 'other') {

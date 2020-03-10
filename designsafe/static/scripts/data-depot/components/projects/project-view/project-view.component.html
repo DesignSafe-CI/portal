@@ -28,29 +28,40 @@
           <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
               {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}
           </td>
-          <!-- FR -->
           <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>
         </tr>
         <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
           <td>Data Type</td>
           <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
         </tr>
+        <!-- FR -->
         <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
-          <td>Natural Hazard</td>
-          <td class="prj-data">
-            {{ $ctrl.browser.project.value.nhEvent }} | {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-            <span ng-if="$ctrl.browser.project.value.nhEventEnd">― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}</span>
-          </td>
+            <td>Event</td>
+            <td class="prj-data">
+                {{ $ctrl.browser.project.value.nhEvent }} |
+                <span ng-if="$ctrl.browser.project.value.nhLocation">{{ $ctrl.browser.project.value.nhLocation }} |</span>
+                {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+                <span ng-if="$ctrl.browser.project.value.nhEventEnd && $ctrl.browser.project.value.nhEventStart !== $ctrl.browser.project.value.nhEventEnd">
+                    ― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
+                </span>
+                <span ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLatitude">|</span>
+                <a href="http://www.google.com/maps/place/{{ $ctrl.browser.project.value.nhLatitude }},{{ $ctrl.browser.project.value.nhLongitude }}"
+                    rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLongitude">
+                    Lat {{ $ctrl.browser.project.value.nhLatitude }} Long {{ $ctrl.browser.project.value.nhLongitude }}
+                </a>
+            </td>
         </tr>
-        <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes">
-          <td>Natural Hazard Type</td>
-          <td class="prj-data">
-            <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
-                <span ng-if="!$last">{{ nhtype }},</span>
-                <span ng-if="$last">{{ nhtype }}</span>
-            </span>
-          </td>
+        <tr class="prj-row"
+            ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes.length">
+            <td>Event Type</td>
+            <td class="prj-data">
+                <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
+                    <span ng-if="!$last">{{ nhtype }},</span>
+                    <span ng-if="$last">{{ nhtype }}</span>
+                </span>
+            </td>
         </tr>
+        <!-- FR -->
         <!-- older projects will have awards listed as strings -->
         <tr ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
           <td>Awards</td>

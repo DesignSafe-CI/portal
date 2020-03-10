@@ -37,16 +37,12 @@ class ManageProjectTypeCtrl {
             this.loading = true;
             var projectData = {};
             projectData.projectType = this.prjType;
-            projectData.projectId = this.project.value.projectId;
             projectData.title = this.project.value.title;
-            projectData.uuid = this.project.uuid;
-            projectData.description = this.project.value.description;
-            projectData.keywords = this.project.value.keywords;
             projectData.pi = this.project.value.pi;
             projectData.coPis = this.project.value.coPis;
             projectData.teamMembers = this.project.value.teamMembers;
-            projectData.associatedProjects = this.project.value.associatedProjects;
-            projectData.awardNumber = this.project.value.awardNumber;
+            projectData.projectId = this.project.value.projectId;
+            projectData.uuid = this.project.uuid;
 
             this.savePrj(projectData).then((project) => {
                 this.DataBrowserService.state().project.value.projectType = project.value.projectType;

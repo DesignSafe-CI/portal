@@ -186,16 +186,6 @@ class CurationDirectoryCtrl {
             size: 'lg',
         });
     }
-
-    manageFieldReconReports() {
-        this.$uibModal.open({
-            component: 'fieldReconReportsModal',
-            resolve: {
-                project: () => { return this.browser.project; },
-            },
-            size: 'lg',
-        });
-    }
 }
 
 export const CurationDirectoryComponent = {
