@@ -4,6 +4,7 @@ from designsafe.apps.api.views import LoggerApi
 from django.http import JsonResponse
 
 urlpatterns = [
+    url(r'^mongodb/', include('designsafe.apps.api.mongodb.urls')),
     url(r'^projects/', include('designsafe.apps.api.projects.urls',
                                namespace='ds_projects_api')),
 
