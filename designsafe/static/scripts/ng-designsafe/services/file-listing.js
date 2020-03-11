@@ -176,6 +176,14 @@ export function FileListing($http, $q) {
         return urlParts.join('/');
     };
 
+    FileListing.prototype.mongoMetaUrl = function () {
+        var urlParts = ['/api/mongodb/files/mongometa/', this.system + '/'];
+        if (this.path) {
+            urlParts.push(this.path.replace('#', '%23'));
+        }
+        return urlParts.join('');
+    };
+
     FileListing.prototype.searchUrl = function () {
         var urlParts = [this._baseUrl(), 'search', this.fileMgr()];
         if (this.system){
@@ -273,6 +281,29 @@ export function FileListing($http, $q) {
     FileListing.prototype.getAssociatedMetadata = function() {
         var url = this.metaUrl() + '?all=true';
         return $http.get(url).then((resp)=>{
+            return resp.data;
+        });
+    };
+
+    FileListing.prototype.getMongoMetadata = function() {
+        let url = this.mongoMetaUrl();
+        return $http.get(url).then((resp)=>{
+            return resp.data;
+        });
+    };
+
+    FileListing.prototype.addMongoMetadata = function(meta) {
+        let url = this.mongoMetaUrl();
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        return $http.post(url, meta, {headers: headers}).then((resp)=>{
+            return resp.data;
+        });
+    };
+
+    FileListing.prototype.deleteMongoMetadata = function(meta) {
+        let url = this.mongoMetaUrl();
+        return $http.delete(url).then((resp)=>{
             return resp.data;
         });
     };
@@ -524,6 +555,10 @@ export function FileListing($http, $q) {
      * @param {FormData} data The Multipart FormData
      */
     FileListing.prototype.upload = function (data) {
+        console.log('uploading something...');
+        console.log(data);
+        console.log('url');
+        console.log(this.mediaUrl());
         return $http.post(this.mediaUrl(), data, { headers: { 'Content-Type': undefined } })
             .then(function (result) {
                 return result.data;

@@ -28,6 +28,8 @@ from requests import HTTPError
 from designsafe.apps.api.agave.filemanager.lookups import FileLookupManager
 from designsafe.apps.api.search.searchmanager.lookups import SearchLookupManager
 
+from designsafe.apps.api.mongodb.manager.metamanager import MongoMetaManager
+
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
@@ -163,6 +165,14 @@ class FileMediaView(View):
 
     @profile_fn
     def post(self, request, file_mgr_name, system_id, file_path):
+        logger.info('UPLOADING DATA TO T3H SERV4R')
+        logger.info('REQUEST.FILES ~~~~~~~~~~~~~~~> %s', request.FILES)
+        logger.info('REQUEST.FILES.file ~~~~~~~~~~~~~~~> %s', request.FILES['file'])
+        logger.info('FILE_MGR_NAME ~~~~~~~~~~~~~~~> %s', file_mgr_name)
+        logger.info('SYSTEM_ID ~~~~~~~~~~~~~~~> %s', system_id)
+        logger.info('FILE_PATH ~~~~~~~~~~~~~~~> %s', file_path)
+
+
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
             if not request.user.is_authenticated:
