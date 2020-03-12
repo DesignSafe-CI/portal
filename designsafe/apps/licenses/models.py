@@ -32,14 +32,14 @@ class BaseLicense(models.Model):
         abstract = True
 
     def __str__(self):
-        return str(self).encode('utf-8')
+        return str(self)
 
     def __unicode__(self):
         return "%s: %s" % (self.license_type, self.user.username)
 
     def license_as_str(self):
         self.license_file_content = self.license_file_content.replace('\r\n', '\n')
-        return self.license_file_content.encode('utf-8')
+        return self.license_file_content
 
 
 class MATLABLicense(BaseLicense):

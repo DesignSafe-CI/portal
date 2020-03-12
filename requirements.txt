@@ -11,7 +11,7 @@ backports.shutil-get-terminal-size==1.0.0
 backports.ssl-match-hostname==3.4.0.2
 beautifulsoup4==4.5.3
 billiard==3.5.0.3
-boxsdk==2.6.0
+boxsdk==1.5.5
 cachetools==2.0.1
 celery==4.1.0
 certifi==2017.7.27.1

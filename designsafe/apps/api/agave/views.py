@@ -126,7 +126,7 @@ class FileMediaView(View):
                 elif f.ext in BaseFileResource.SUPPORTED_TEXT_PREVIEW_EXTS:
                     content = f.download()
                     try:
-                        encoded = content.encode('utf-8')
+                        encoded = content
                     except UnicodeError:
                         try:
                             encoding = chardet.detect(content)['encoding']
