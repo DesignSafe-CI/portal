@@ -95,18 +95,12 @@
                 <a ng-click="$ctrl.selectEntity(mission)">Select this Report and all of its files</a>
                 <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
                 <div class="dropdown dropdown-spacer-lg" id="details-{{mission.uuid}}">
-                    <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
-                        style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Documents | <strong>{{mission.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                    <button class="btn collapsed tab-report" data-toggle="collapse"
+                            data-target="#files-{{mission.uuid}}" style="width:100%;">
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Documents | <strong>{{mission.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{mission.uuid}}" class="collapse">
                         <div class="well">
@@ -170,18 +164,12 @@
                 <div class="dropdown dropdown-spacer-lg" id="details-{{experiment.uuid}}">
                     <a ng-click="$ctrl.selectEntity(mission)">Select this Mission and all of its files</a>
                     <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
-                    <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}"
-                        style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Mission | <strong>{{mission.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                    <button class="btn tab-experiment collapsed" data-toggle="collapse"
+                            data-target="#data-{{mission.uuid}}" style="width:100%;">
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Mission | <strong>{{mission.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
@@ -255,18 +243,12 @@
                             <!-- Social Science -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
-                                            style="width:100%;">
-                                            <table style="width:100%">
-                                                <tr>
-                                                    <td style="text-align: left;">
-                                                        <span>Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
-                                                    </td>
-                                                    <td style="text-align: right;">
-                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse"
+                                                data-target="#files-{{collection.uuid}}" style="width:100%;">
+                                            <div class="collapse-tab">
+                                                <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                                <span class="collapse-tab-content-right curation-chevron"></span>
+                                            </div>
                                         </button>
                                         <div id="files-{{collection.uuid}}" class="collapse">
                                             <div class="well">
@@ -375,18 +357,12 @@
                                 <!-- GeoscienceEngineering -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.geoscience'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
-                                            style="width:100%;">
-                                            <table style="width:100%">
-                                                <tr>
-                                                    <td style="text-align: left;">
-                                                        <span>Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
-                                                    </td>
-                                                    <td style="text-align: right;">
-                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse"
+                                                data-target="#files-{{collection.uuid}}" style="width:100%;">
+                                            <div class="collapse-tab">
+                                                <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                                <span class="collapse-tab-content-right curation-chevron"></span>
+                                            </div>
                                         </button>
                                         <div id="files-{{collection.uuid}}" class="collapse">
                                             <div class="well">
@@ -466,18 +442,12 @@
                                 <!-- Research Planning Collection -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.planning'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
-                                            style="width:100%;">
-                                            <table style="width:100%">
-                                                <tr>
-                                                    <td style="text-align: left;">
-                                                        <span>Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
-                                                    </td>
-                                                    <td style="text-align: right;">
-                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                        <button class="btn collapsed tab-sensor-info" data-toggle="collapse"
+                                                data-target="#files-{{collection.uuid}}" style="width:100%;">
+                                            <div class="collapse-tab">
+                                                <span class="collapse-tab-content-left">Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
+                                                <span class="collapse-tab-content-right curation-chevron"></span>
+                                            </div>
                                         </button>
                                         <div id="files-{{collection.uuid}}" class="collapse">
                                             <div class="well">

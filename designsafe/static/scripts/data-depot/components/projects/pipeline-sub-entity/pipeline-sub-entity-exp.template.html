@@ -79,18 +79,12 @@
             <!-- Reports -->
             <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(primEnt, report) && $ctrl.browser.listings[report.uuid]">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                    <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
-                        style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Report | <strong>{{report.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                    <button class="btn tab-report" data-toggle="collapse"
+                            data-target="#files-{{report.uuid}}" style="width:100%;">
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{report.uuid}}" class="collapse in">
                         <div class="well">
@@ -106,18 +100,12 @@
             <!-- Model Configs -->
             <div ng-repeat="modelConfig in $ctrl.browser.project.modelconfig_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(primEnt, modelConfig)">
                     <div class="dropdown dropdown-spacer-sm" id="details-{{modelConfig.uuid}}">
-                        <button class="btn tab-model-conf" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
-                            style="width:100%;">
-                            <table style="width:100%">
-                                <tr>
-                                    <td style="text-align: left;">
-                                        <span>Model Configuration | <strong>{{modelConfig.value.title}}</strong></span>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                    </td>
-                                </tr>
-                            </table>
+                        <button class="btn tab-model-conf" data-toggle="collapse"
+                                data-target="#files-{{modelConfig.uuid}}" style="width:100%;">
+                            <div class="collapse-tab">
+                                <span class="collapse-tab-content-left">Model Configuration | <strong>{{modelConfig.value.title}}</strong></span>
+                                <span class="collapse-tab-content-right curation-chevron"></span>
+                            </div>
                         </button>
                         <div id="files-{{modelConfig.uuid}}" class="collapse in">
                             <div class="well">
@@ -143,18 +131,12 @@
                                         </span>
                                     </td>
                                     <td style="width: 100%;">
-                                        <button class="btn tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}{{modelConfig.uuid}}"
-                                        style="width:100%;">
-                                        <table style="width:100%">
-                                            <tr>
-                                                <td style="text-align: left;">
-                                                    <span>Sensor Information | <strong>{{sensorList.value.title}}</strong></span>
-                                                </td>
-                                                <td style="text-align: right;">
-                                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                        <button class="btn tab-sensor-info dropdown-spacer-sm" data-toggle="collapse"
+                                                data-target="#files-{{sensorList.uuid}}{{modelConfig.uuid}}" style="width:100%;">
+                                        <div class="collapse-tab">
+                                            <span class="collapse-tab-content-left">Sensor Information | <strong>{{sensorList.value.title}}</strong></span>
+                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                        </div>
                                     </button>
                                     <div id="files-{{sensorList.uuid}}{{modelConfig.uuid}}" class="collapse in">
                                         <div class="well">
@@ -168,12 +150,8 @@
                             </table>
                             <!-- Events -->
                             <div ng-repeat="event in $ctrl.browser.project.event_set | orderBy: 'value.title'"
-                                 ng-if="$ctrl.matchingGroup(primEnt, event) && $ctrl.matchingGroup(modelConfig, event) && $ctrl.matchingGroup(sensorList, event)"
-                            >
-                                <div class="dropdown dropdown-spacer-sm"
-                                     id="details-{{event.uuid}}"
-                                     style="margin-left: 30px"
-                                >
+                                 ng-if="$ctrl.matchingGroup(primEnt, event) && $ctrl.matchingGroup(modelConfig, event) && $ctrl.matchingGroup(sensorList, event)">
+                                <div class="dropdown dropdown-spacer-sm" id="details-{{event.uuid}}" style="margin-left: 30px">
                                     <table>
                                         <tr>
                                             <td style="padding-right: 10px" valign="top">
@@ -182,17 +160,12 @@
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
-                                                <button class="btn tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}{{modelConfig.uuid}}" style="width:100%;">
-                                                    <table style="width:100%">
-                                                        <tr>
-                                                            <td style="text-align: left;">
-                                                                <span>Event | <strong>{{event.value.title}}</strong></span>
-                                                            </td>
-                                                            <td style="text-align: right;">
-                                                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                                <button class="btn tab-event" data-toggle="collapse"
+                                                        data-target="#files-{{event.uuid}}{{modelConfig.uuid}}" style="width:100%;">
+                                                    <div class="collapse-tab">
+                                                        <span class="collapse-tab-content-left">Event | <strong>{{event.value.title}}</strong></span>
+                                                        <span class="collapse-tab-content-right curation-chevron"></span>
+                                                    </div>
                                                 </button>
                                                 <div id="files-{{event.uuid}}{{modelConfig.uuid}}" class="collapse in">
                                                     <div class="well">
@@ -214,21 +187,14 @@
                 <!-- Model Configs -->
                 <!-- Analysis -->
                 <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'"
-                     ng-if="$ctrl.matchingGroup(primEnt, analysis) && $ctrl.browser.listings[analysis.uuid]"
-                >
+                     ng-if="$ctrl.matchingGroup(primEnt, analysis) && $ctrl.browser.listings[analysis.uuid]">
                     <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                        <button class="btn tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
-                            style="width:100%;">
-                            <table style="width:100%">
-                                <tr>
-                                    <td style="text-align: left;">
-                                        <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                    </td>
-                                </tr>
-                            </table>
+                        <button class="btn tab-analysis" data-toggle="collapse"
+                                data-target="#files-{{analysis.uuid}}" style="width:100%;">
+                            <div class="collapse-tab">
+                                <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
+                                <span class="collapse-tab-content-right curation-chevron"></span>
+                            </div>
                         </button>
                         <div id="files-{{analysis.uuid}}" class="collapse in">
                             <div class="well">

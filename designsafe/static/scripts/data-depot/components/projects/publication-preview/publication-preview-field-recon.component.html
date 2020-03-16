@@ -144,18 +144,11 @@
             <!-- Reports -->
             <div ng-if="mission.name == 'designsafe.project.field_recon.report' && !$ctrl.ui.loading">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
-                    <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
-                        style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td class="tab-cell">
-                                    <span>Documents | <strong>{{mission.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                    <button class="btn collapsed tab-report" style="width:100%;" data-toggle="collapse" data-target="#files-{{mission.uuid}}">
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Documents | <strong>{{mission.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{mission.uuid}}" class="collapse">
                         <div class="well">
@@ -240,16 +233,10 @@
             <div ng-if="!$ctrl.ui.fileNav && mission.name == 'designsafe.project.field_recon.mission' && !$ctrl.ui.loading">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
                     <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td class="tab-cell">
-                                    <span>Mission | <strong>{{mission.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Mission | <strong>{{mission.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
@@ -347,16 +334,10 @@
                                 <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
                                     <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                                         style="width:100%;">
-                                        <table style="width:100%">
-                                            <tr>
-                                                <td class="tab-cell">
-                                                    <span>Collection | <strong>{{collection.value.title}}</strong></span>
-                                                </td>
-                                                <td style="text-align: right;">
-                                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                        <div class="collapse-tab">
+                                            <span class="collapse-tab-content-left">Collection | <strong>{{collection.value.title}}</strong></span>
+                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                        </div>
                                     </button>
                                     <div id="files-{{collection.uuid}}" class="collapse dropdown-spacer-lg">
                                         <div class="well">
@@ -426,16 +407,10 @@
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
                                         <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                                             style="width:100%;">
-                                            <table style="width:100%">
-                                                <tr>
-                                                    <td style="text-align: left;">
-                                                        <span>Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
-                                                    </td>
-                                                    <td style="text-align: right;">
-                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                            <div class="collapse-tab">
+                                                <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                                <span class="collapse-tab-content-right curation-chevron"></span>
+                                            </div>
                                         </button>
                                         <div id="files-{{collection.uuid}}" class="collapse">
                                             <div class="well">
@@ -546,16 +521,10 @@
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
                                         <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                                             style="width:100%;">
-                                            <table style="width:100%">
-                                                <tr>
-                                                    <td style="text-align: left;">
-                                                        <span>Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
-                                                    </td>
-                                                    <td style="text-align: right;">
-                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                            <div class="collapse-tab">
+                                                <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                                <span class="collapse-tab-content-right curation-chevron"></span>
+                                            </div>
                                         </button>
                                         <div id="files-{{collection.uuid}}" class="collapse">
                                             <div class="well">
@@ -637,16 +606,10 @@
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
                                         <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                                             style="width:100%;">
-                                            <table style="width:100%">
-                                                <tr>
-                                                    <td style="text-align: left;">
-                                                        <span>Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
-                                                    </td>
-                                                    <td style="text-align: right;">
-                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                            <div class="collapse-tab">
+                                                <span class="collapse-tab-content-left">Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
+                                                <span class="collapse-tab-content-right curation-chevron"></span>
+                                            </div>
                                         </button>
                                         <div id="files-{{collection.uuid}}" class="collapse">
                                             <div class="well">

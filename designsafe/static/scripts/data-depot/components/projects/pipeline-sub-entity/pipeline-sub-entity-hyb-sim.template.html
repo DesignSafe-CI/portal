@@ -81,16 +81,10 @@
             ng-if="$ctrl.matchingGroup(primEnt, report) && $ctrl.browser.listings[report.uuid]">
             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                 <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
-                    <table style="width:100%">
-                        <tr>
-                            <td style="text-align: left;">
-                                <span>Report | <strong>{{report.value.title}}</strong></span>
-                            </td>
-                            <td style="text-align: right;">
-                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="collapse-tab">
+                        <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
+                        <span class="collapse-tab-content-right curation-chevron"></span>
+                    </div>
                 </button>
                 <div id="files-{{report.uuid}}" class="collapse in">
                     <div class="well">
@@ -107,18 +101,12 @@
         <div ng-repeat="model in $ctrl.browser.project.globalmodel_set | orderBy: 'value.title'"
             ng-if="$ctrl.matchingGroup(primEnt, model)">
             <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
-                <button class="btn tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
-                    style="width:100%;">
-                    <table style="width:100%">
-                        <tr>
-                            <td style="text-align: left;">
-                                <span>Global Model | <strong>{{model.value.title}}</strong></span>
-                            </td>
-                            <td style="text-align: right;">
-                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                            </td>
-                        </tr>
-                    </table>
+                <button class="btn tab-model-conf" data-toggle="collapse"
+                        data-target="#files-{{model.uuid}}" style="width:100%;">
+                    <div class="collapse-tab">
+                        <span class="collapse-tab-content-left">Global Model | <strong>{{model.value.title}}</strong></span>
+                        <span class="collapse-tab-content-right curation-chevron"></span>
+                    </div>
                 </button>
                 <div id="files-{{model.uuid}}" class="collapse in">
                     <div class="well">
@@ -142,16 +130,10 @@
                             <td style="width: 100%;">
                                 <button class="btn tab-sensor-info dropdown-spacer-sm" data-toggle="collapse"
                                     data-target="#files-{{coordinator.uuid}}{{model.uuid}}" style="width:100%;">
-                                    <table style="width:100%">
-                                        <tr>
-                                            <td style="text-align: left;">
-                                                <span>Coordinator | <strong>{{coordinator.value.title}}</strong></span>
-                                            </td>
-                                            <td style="text-align: right;">
-                                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    <div class="collapse-tab">
+                                        <span class="collapse-tab-content-left">Coordinator | <strong>{{coordinator.value.title}}</strong></span>
+                                        <span class="collapse-tab-content-right curation-chevron"></span>
+                                    </div>
                                 </button>
                                 <div id="files-{{coordinator.uuid}}{{model.uuid}}" class="collapse in">
                                     <div class="well">
@@ -177,16 +159,10 @@
                                     <td style="width: 100%;">
                                         <button class="btn tab-event" data-toggle="collapse"
                                             data-target="#files-{{cout.uuid}}{{model.uuid}}" style="width:100%;">
-                                            <table style="width:100%">
-                                                <tr>
-                                                    <td style="text-align: left;">
-                                                        <span>Coordinator Output | <strong>{{cout.value.title}}</strong></span>
-                                                    </td>
-                                                    <td style="text-align: right;">
-                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                            <div class="collapse-tab">
+                                                <span class="collapse-tab-content-left">Coordinator Output | <strong>{{cout.value.title}}</strong></span>
+                                                <span class="collapse-tab-content-right curation-chevron"></span>
+                                            </div>
                                         </button>
                                         <div id="files-{{cout.uuid}}{{model.uuid}}" class="collapse in">
                                             <div class="well">
@@ -366,18 +342,12 @@
         <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'"
             ng-if="$ctrl.matchingGroup(primEnt, analysis) && $ctrl.browser.listings[analysis.uuid]">
             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                <button class="btn tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
-                    style="width:100%;">
-                    <table style="width:100%">
-                        <tr>
-                            <td style="text-align: left;">
-                                <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
-                            </td>
-                            <td style="text-align: right;">
-                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                            </td>
-                        </tr>
-                    </table>
+                <button class="btn tab-analysis" data-toggle="collapse"
+                        data-target="#files-{{analysis.uuid}}" style="width:100%;">
+                    <div class="collapse-tab">
+                        <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
+                        <span class="collapse-tab-content-right curation-chevron"></span>
+                    </div>
                 </button>
                 <div id="files-{{analysis.uuid}}" class="collapse in">
                     <div class="well">

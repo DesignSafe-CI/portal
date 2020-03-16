@@ -2743,6 +2743,19 @@ input[type="search"] {
 .curation-tools {
   vertical-align: middle;
 }
+.collapse-tab {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.collapse-tab-content-left {
+  float: left;
+}
+.collapse-tab-content-right {
+  float: right;
+  font-size: 18px;
+}
 .collection-sample {
   width: 65%;
   display:inline-block;
