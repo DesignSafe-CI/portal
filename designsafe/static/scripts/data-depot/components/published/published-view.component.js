@@ -6,17 +6,15 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl, UserService, $q){
+    constructor($stateParams, $uibModal, $http, DataBrowserService, PublishedService, UserService, FileListing){
         'ngInject';
         this.$stateParams = $stateParams;
-        this.DataBrowserService = DataBrowserService;
-        this.PublishedService = PublishedService;
-        this.FileListing = FileListing;
         this.$uibModal = $uibModal;
         this.$http = $http;
-        this.djangoUrl = djangoUrl;
+        this.DataBrowserService = DataBrowserService;
+        this.PublishedService = PublishedService;
         this.UserService = UserService;
-        this.$q = $q;
+        this.FileListing = FileListing;
     }
 
     $onInit() {
@@ -239,19 +237,16 @@ class PublishedViewCtrl {
     }
 
     download() {
-        var body = {
-            action: 'download'
-        };
-        var system = this.$stateParams.systemId;
-        var projectId = this.project.value.projectId;
+        let body = { action: 'download' };
+        let projectId = this.project.value.projectId;
+        let baseUrl = this.browser.listing.mediaUrl();
+        baseUrl = baseUrl.split('/').filter(x =>  x != '' && x != projectId).join('/');
         
-        var url = this.djangoUrl.reverse('designsafe_api:public_files_media', ['published', system, `archives/${projectId}_archive.zip`]);
+        let url = `/${baseUrl}/archives/${projectId}_archive.zip`;
 
         this.$http.put(url, body).then(function (resp) {
-            var postit = resp.data.href;
-
-            // Is there a better way of doing this?
-            var link = document.createElement('a');
+            let postit = resp.data.href;
+            let link = document.createElement('a');
             link.style.display = 'none';
             link.setAttribute('href', postit);
             link.setAttribute('download', "null");
