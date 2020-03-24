@@ -46,7 +46,7 @@ RUN apt-get update && apt-get install -y \
 
 # install node 12.x
 RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash -
-RUN apt-get -y install nodejs
+RUN apt-get -y install nodejs npm
 
 # RUN pip install --upgrade pip && pip install uwsgitop
 RUN pip3 install --upgrade pip && pip3 install uwsgi uwsgitop
