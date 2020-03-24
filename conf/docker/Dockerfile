@@ -1,42 +1,37 @@
-FROM centos:7
+FROM python:3.6-buster
 
 MAINTAINER DesignSafe-CI <designsafe-ci@tacc.utexas.edu>
 
 EXPOSE 8000
 
 ENV TERM xterm
+USER root
+
+# install locales for en_us.utf-8
+RUN apt-get update && apt-get install -y \
+    dialog \
+    apt-utils \
+    locales \
+    && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
 ENV LC_ALL en_US.utf-8
 ENV LANG en_US.utf-8
 
-USER root
 
-RUN yum upgrade -y
-# add EPEL repo
-RUN yum install -y epel-release
 
-RUN yum install -y python-pip \
-    python-setuptools \
-    gcc \
-    python-devel \
+RUN apt-get update && apt-get install -y \ 
+    gawk \
     unzip \
     wget \
     git \
     mysql-devel \
     vim \
     nfs-utils \
-    libsemanage-python \
-    postgresql-devel --enablerepo=epel \
     openssl-devel \
     bzip2-devel \
-    libffi-devel \
-    centos-release-scl
 
-RUN yum install -y rh-python36
 
-RUN yum groupinstall -y 'Development Tools'
-
-SHELL ["/usr/bin/scl", "enable", "rh-python36"]
 
 # Install python 3.7
 # CentOS supports 3.6 but not 3. yet. Although we can install it 
@@ -51,10 +46,10 @@ SHELL ["/usr/bin/scl", "enable", "rh-python36"]
 
 # install node 12.x
 RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash -
-RUN yum -y install nodejs
+RUN apt-get -y install nodejs
 
 # RUN pip install --upgrade pip && pip install uwsgitop
-RUN pip install --upgrade pip && pip install uwsgi uwsgitop
+RUN pip3 install --upgrade pip && pip3 install uwsgi uwsgitop
 
 RUN mkdir -p /opt/uwsgi && \
     curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
@@ -67,18 +62,21 @@ RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
 
 COPY . /srv/www/designsafe
+
 RUN chown -R tg458981:G-816877 /srv/www/designsafe
+RUN mkdir /src
+RUN chown -R tg458981:G-816877 /src
 
 USER tg458981
 
-RUN virtualenv ~/portal_env
 
-RUN ~/portal_env/bin/pip install --upgrade pip && \
-    ~/portal_env/bin/pip install pip-tools
+RUN pip3 install --upgrade pip && \
+    pip3 install pip-tools
 
 COPY requirements.txt /tmp/
 
-RUN ~/portal_env/bin/pip-sync /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt
+ENV PATH="/home/tg458981/.local/bin:${PATH}"
 
 COPY package*.json /srv/www/designsafe/
 RUN cd /srv/www/designsafe npm install
