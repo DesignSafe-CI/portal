@@ -1,4 +1,4 @@
-  #!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # Run Celery as the DesignSafe Community Account
 celery -A designsafe beat -l info --pidfile= --schedule=/tmp/celerybeat-schedule &
