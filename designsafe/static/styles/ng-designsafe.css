@@ -985,7 +985,5 @@ i[class^="icon-ls-pre/post"]:before,
     }
     .curation-download:before {
         content: "\e913";
-        color:#1568C9;
         font-size: 18px;
-        margin-left: 10px;
     }

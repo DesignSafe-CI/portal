@@ -6,11 +6,10 @@ import OtherPublicationTemplate from '../projects/publication-preview/publicatio
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 
 class PublishedViewCtrl {
-    constructor($stateParams, $uibModal, $http, DataBrowserService, PublishedService, UserService, FileListing){
+    constructor($stateParams, $uibModal, DataBrowserService, PublishedService, UserService, FileListing){
         'ngInject';
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
-        this.$http = $http;
         this.DataBrowserService = DataBrowserService;
         this.PublishedService = PublishedService;
         this.UserService = UserService;
@@ -237,23 +236,31 @@ class PublishedViewCtrl {
     }
 
     download() {
-        let body = { action: 'download' };
-        let projectId = this.project.value.projectId;
-        let baseUrl = this.browser.listing.mediaUrl();
-        baseUrl = baseUrl.split('/').filter(x =>  x != '' && x != projectId).join('/');
-        
-        let url = `/${baseUrl}/archives/${projectId}_archive.zip`;
-
-        this.$http.put(url, body).then(function (resp) {
-            let postit = resp.data.href;
-            let link = document.createElement('a');
-            link.style.display = 'none';
-            link.setAttribute('href', postit);
-            link.setAttribute('download', "null");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        this.$uibModal.open({
+            component: 'publicationDownloadModal',
+            resolve: {
+                project: () => {return this.browser.project;},
+                mediaUrl: () => {return this.browser.listing.mediaUrl();},
+            },
+            size: 'lg'
         });
+        // let body = { action: 'download' };
+        // let projectId = this.project.value.projectId;
+        // let baseUrl = this.browser.listing.mediaUrl();
+        // baseUrl = baseUrl.split('/').filter(x =>  x != '' && x != projectId).join('/');
+        
+        // let url = `/${baseUrl}/archives/${projectId}_archive.zip`;
+
+        // this.$http.put(url, body).then(function (resp) {
+        //     let postit = resp.data.href;
+        //     let link = document.createElement('a');
+        //     link.style.display = 'none';
+        //     link.setAttribute('href', postit);
+        //     link.setAttribute('download', "null");
+        //     document.body.appendChild(link);
+        //     link.click();
+        //     document.body.removeChild(link);
+        // });
     }
 
     matchingGroup(exp, model) {

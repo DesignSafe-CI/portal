@@ -1,0 +1,41 @@
+<div class="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        Download
+        <span class="pull-right" ng-click="$ctrl.close()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <p>
+        This download is a ZIP file of the complete project dataset. The size of the ZIP file is <strong>{{$ctrl.archiveSize || "N/A"}}</strong>.
+        <!-- A JSON file is included that contains all of the metadata. -->
+    </p>
+    <hr>
+    <p>
+        The files are licensed by the following:
+        <br>
+        <strong>{{$ctrl.license || "N/A"}}</strong>
+        <ul>
+            <li>
+                You must attribute for any public use of the data/database.
+            </li>
+            <li>
+                Derived work from the reuse of this data/database must carry the same terms and conditions of this license.
+            </li>
+            <li>
+                Please read the <a href="{{$ctrl.licenseUrl}}">License Website</a>.
+            </li>
+        </ul>
+    </p>
+    <br>
+    <div class="text-right">
+        <button class="btn btn-add" ng-click="$ctrl.download()">
+            <div class="btn-container">
+                <span class="curation-download"></span>
+                &ensp;
+                <span><strong>Download</strong></span>
+            </div>
+        </button>
+    </div>
+</div>
