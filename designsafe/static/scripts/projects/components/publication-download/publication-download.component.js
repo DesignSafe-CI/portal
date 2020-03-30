@@ -2,31 +2,39 @@ import PublicationDownloadModalTemplate from './publication-download.template.ht
 
 class PublicationDownloadModalCtrl {
 
-    constructor(ProjectEntitiesService, ProjectModel, $http) {
+    constructor(FileListing, $http) {
         'ngInject';
-        this.ProjectEntitiesService = ProjectEntitiesService;
-        this.ProjectModel = ProjectModel;
+        this.FileListing = FileListing;
         this.$http = $http;
     }
 
     $onInit() {
-        this.project = this.resolve.project;
+        this.loaded = null;
+        this.error = null;
+        this.publication = this.resolve.publication;
         this.mediaUrl = this.resolve.mediaUrl;
-        console.log(this.project);
-        console.log(this.mediaUrl);
+        this.prjId = this.publication.project.value.projectId;
+        
+        let archive = {};
+        archive.type = 'file';
+        archive.path = `/archives/${this.prjId}_archive.zip`;
+        archive.name = `${this.prjId}_archive.zip`;
+        archive.system = 'designsafe.storage.published'
+
+        this.archiveListing = this.FileListing.init(archive, {fileMgr: 'published', baseUrl: '/api/public/files'});
+        this.archiveListing.fetch().then((resp) => {
+            this.arcData = resp;
+        }).finally(() => {
+            if (!this.arcData) {
+                this.error = true;
+            }
+            this.loaded = true;
+        });
     }
 
     download() {
-        let body = { action: 'download' };
-        let projectId = this.project.value.projectId;
-        let baseUrl = this.mediaUrl.split('/').filter(x =>  x != '' && x != projectId).join('/');
-        
-        let url = `/${baseUrl}/archives/${projectId}_archive.zip`;
-
-        console.log(url);
-
-        this.$http.put(url, body).then(function (resp) {
-            let postit = resp.data.href;
+        this.archiveListing.download().then(function (resp) {
+            let postit = resp.href;
             let link = document.createElement('a');
             link.style.display = 'none';
             link.setAttribute('href', postit);

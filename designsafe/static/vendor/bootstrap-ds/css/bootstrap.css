@@ -2726,13 +2726,14 @@ input[type="search"] {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 }
 .prj-head-container {
   display: flex;
   flex-direction: row;
   align-items: start;
   justify-content: space-between;
+  padding-bottom:20px;
 }
 .prj-head-title {
   width: 75%;

@@ -239,28 +239,11 @@ class PublishedViewCtrl {
         this.$uibModal.open({
             component: 'publicationDownloadModal',
             resolve: {
-                project: () => {return this.browser.project;},
+                publication: () => {return this.browser.publication;},
                 mediaUrl: () => {return this.browser.listing.mediaUrl();},
             },
             size: 'lg'
         });
-        // let body = { action: 'download' };
-        // let projectId = this.project.value.projectId;
-        // let baseUrl = this.browser.listing.mediaUrl();
-        // baseUrl = baseUrl.split('/').filter(x =>  x != '' && x != projectId).join('/');
-        
-        // let url = `/${baseUrl}/archives/${projectId}_archive.zip`;
-
-        // this.$http.put(url, body).then(function (resp) {
-        //     let postit = resp.data.href;
-        //     let link = document.createElement('a');
-        //     link.style.display = 'none';
-        //     link.setAttribute('href', postit);
-        //     link.setAttribute('download', "null");
-        //     document.body.appendChild(link);
-        //     link.click();
-        //     document.body.removeChild(link);
-        // });
     }
 
     matchingGroup(exp, model) {

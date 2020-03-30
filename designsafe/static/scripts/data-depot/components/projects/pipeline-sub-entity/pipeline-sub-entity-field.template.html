@@ -77,7 +77,7 @@
         <div ng-if="mission.name == 'designsafe.project.field_recon.report' && !$ctrl.ui.loading"
             class="well"
             style="margin-bottom: 40px;">
-            <div class="prj-head" style="padding-bottom:20px">
+            <div class="prj-head-title" style="padding-bottom:20px">
                 Documents | <strong>{{ mission.value.title }}</strong>
             </div>
             <div class="entity-meta-field">
@@ -132,14 +132,14 @@
             </div>
             <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[mission.uuid]" params="$ctrl.fl"></files-listing>
             <div><br>
-                <span class="prj-head" ng-click="$ctrl.editSubEntity(mission)"><a>Edit</a></span>
+                <span class="prj-head-title" ng-click="$ctrl.editSubEntity(mission)"><a>Edit</a></span>
             </div>
         </div>
         <!-- Missions -->
         <div ng-if="mission.name == 'designsafe.project.field_recon.mission' && !$ctrl.ui.loading"
             class="well"
             style="margin-bottom: 40px;">
-            <div class="prj-head" style="padding-bottom:20px">
+            <div class="prj-head-title" style="padding-bottom:20px">
                 Mission | <strong>{{ mission.value.title }}</strong>
             </div>
             <div ng-repeat="collection in $ctrl.orderedSecondary[mission.uuid]" ng-if="$ctrl.matchingGroup(mission, collection)">
@@ -253,7 +253,7 @@
                                     <p>{{ collection.value.description }}</p>
                                 </div>
                                 <div><br>
-                                    <span class="prj-head" ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
+                                    <span class="prj-head-title" ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
                                 </div>
                             </div>
                             <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
@@ -341,7 +341,7 @@
                                     <p>{{ collection.value.description }}</p>
                                 </div>
                                 <div><br>
-                                    <span class="prj-head" ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
+                                    <span class="prj-head-title" ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
                                 </div>
                             </div>
                             <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
@@ -384,7 +384,7 @@
                                     <p>{{ collection.value.description }}</p>
                                 </div>
                                 <div><br>
-                                    <span class="prj-head" ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
+                                    <span class="prj-head-title" ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
                                 </div>
                             </div>
                             <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>

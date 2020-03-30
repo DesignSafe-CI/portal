@@ -2,9 +2,11 @@
   <div ng-if="$ctrl.browser.project" class="project-detail" style="background:white;">
     <!-- Project Header Start -->
     <div>
-      <div>
-        <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
-        <a class="edit-link" ng-click="$ctrl.editProject($event)">Edit Project</a>
+      <div class="prj-head-container">
+        <span class="prj-head-title">
+            {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
+            <a class="prj-head-edit" ng-click="$ctrl.editProject($event)"><strong>Edit Project</strong></a>
+        </span>
       </div>
       <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
         <colgroup>
