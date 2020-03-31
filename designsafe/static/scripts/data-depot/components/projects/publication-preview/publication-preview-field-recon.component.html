@@ -66,7 +66,9 @@
                 ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes.length">
                 <td>Event Type</td>
                 <td class="prj-data">
-                    <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
+                    <span
+                        ng-repeat="nhtype in $ctrl.rmEmpty($ctrl.browser.project.value.nhTypes)"
+                    >
                         <span ng-if="!$last">{{ nhtype }},</span>
                         <span ng-if="$last">{{ nhtype }}</span>
                     </span>
@@ -84,6 +86,21 @@
                 <td ng-if="$first">Awards</td>
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+            </tr>
+            <tr ng-repeat="doi in $ctrl.frDOIList">
+                <td ng-if="$first">DOI(s) in Dataset</td>
+                <td ng-if="!$first"></td>
+                <td>
+                    <strong>
+                        <a 
+                            ng-click="$ctrl.goToHash(doi.hash)"
+                            data-toggle="collapse"
+                            data-target="{{ doi.type === 'mission' ? '#data-' : '#files-' }}{{doi.uuid}}"
+                        >
+                            {{ doi.value }} {{ doi.type }}
+                        </a>
+                    </strong>
+                </td>
             </tr>
             <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
                 <td ng-if="$first">Related Work</td>
@@ -146,7 +163,7 @@
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
                     <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
+                        <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
                                 <td class="tab-cell">
                                     <span>Documents | <strong>{{mission.value.title}}</strong></span>
@@ -240,7 +257,7 @@
             <div ng-if="!$ctrl.ui.fileNav && mission.name == 'designsafe.project.field_recon.mission' && !$ctrl.ui.loading">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
                     <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
-                        <table style="width:100%">
+                        <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
                                 <td class="tab-cell">
                                     <span>Mission | <strong>{{mission.value.title}}</strong></span>

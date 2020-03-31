@@ -965,8 +965,8 @@ ddModule
         '$rootScope',
         '$location',
         '$state',
-        'Django',
-        function($rootScope, $location, $state, Django) {
+        'Django', '$anchorScroll',
+        function($rootScope, $location, $state, Django, $anchorScroll) {
             $rootScope.$state = $state;
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
                 if (toState.name === 'myData' || toState.name === 'sharedData') {
