@@ -378,16 +378,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{modelConf.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Model Configuration | <strong>{{modelConf.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Model Configuration | <strong>{{modelConf.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{modelConf.uuid}}" class="collapse">
                         <div class="well">
@@ -406,16 +400,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{sensorInfo.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Sensor Information | <strong>{{sensorInfo.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Sensor Information | <strong>{{sensorInfo.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{sensorInfo.uuid}}" class="collapse">
                         <div class="well">
@@ -434,16 +422,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Event | <strong>{{event.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Event | <strong>{{event.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{event.uuid}}" class="collapse">
                         <div class="well">
@@ -462,16 +444,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Simulation Model | <strong>{{model.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Simulation Model | <strong>{{model.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{model.uuid}}" class="collapse">
                         <div class="well">
@@ -490,16 +466,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{input.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Simulation Input | <strong>{{input.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Simulation Input | <strong>{{input.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{input.uuid}}" class="collapse">
                         <div class="well">
@@ -518,16 +488,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{output.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Simulation Output | <strong>{{output.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Simulation Output | <strong>{{output.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{output.uuid}}" class="collapse">
                         <div class="well">
@@ -546,16 +510,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{gm.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Global Model | <strong>{{gm.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Global Model | <strong>{{gm.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{gm.uuid}}" class="collapse">
                         <div class="well">
@@ -574,16 +532,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Coordinator | <strong>{{coordinator.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Coordinator | <strong>{{coordinator.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{coordinator.uuid}}" class="collapse">
                         <div class="well">
@@ -602,16 +554,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-sim-subst" data-toggle="collapse" data-target="#files-{{simsub.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Simulation Substructure | <strong>{{simsub.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Simulation Substructure | <strong>{{simsub.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{simsub.uuid}}" class="collapse">
                         <div class="well">
@@ -630,16 +576,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-exp-subst" data-toggle="collapse" data-target="#files-{{expsub.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Experimental Substructure | <strong>{{expsub.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Experimental Substructure | <strong>{{expsub.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{expsub.uuid}}" class="collapse">
                         <div class="well">
@@ -658,16 +598,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{cout.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Coordinator Output | <strong>{{cout.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Coordinator Output | <strong>{{cout.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{cout.uuid}}" class="collapse">
                         <div class="well">
@@ -686,16 +620,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{eout.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Experiment Output | <strong>{{eout.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Experiment Output | <strong>{{eout.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{eout.uuid}}" class="collapse">
                         <div class="well">
@@ -714,16 +642,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{sout.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Simulation Output | <strong>{{sout.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Simulation Output | <strong>{{sout.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{sout.uuid}}" class="collapse">
                         <div class="well">
@@ -742,16 +664,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{analysis.uuid}}" class="collapse">
                         <div class="well">
@@ -781,16 +697,10 @@
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                         style="width:100%;">
-                        <table style="width:100%">
-                            <tr>
-                                <td style="text-align: left;">
-                                    <span>Report | <strong>{{report.value.title}}</strong></span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
+                            <span class="collapse-tab-content-right curation-chevron"></span>
+                        </div>
                     </button>
                     <div id="files-{{report.uuid}}" class="collapse">
                         <div class="well">
