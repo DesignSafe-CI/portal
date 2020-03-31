@@ -12,6 +12,11 @@ body.navbar-fixed {
   /*margin-top: 0.75em;*/
 }
 
+#main-navigation {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .cms-toolbar-expanded .navbar-ds.navbar-fixed-top {
   top: 29px;
 }
