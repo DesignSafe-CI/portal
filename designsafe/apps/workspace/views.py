@@ -14,12 +14,12 @@ from designsafe.apps.api.tasks import index_or_update_project
 from designsafe.apps.workspace import utils as WorkspaceUtils
 from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from requests import HTTPError
-from urlparse import urlparse
+from urllib.parse import urlparse
 from datetime import datetime
 import json
 import six
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ def call_api(request, service):
                 }
                 if lic_type is not None:
                     _, license_models = get_license_info()
-                    license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                    license_model = [x for x in license_models if x.license_type == lic_type][0]
                     lic = license_model.objects.filter(user=request.user).first()
                     data['license']['enabled'] = lic is not None
 
@@ -80,7 +80,7 @@ def call_api(request, service):
                     }
                     if lic_type is not None:
                         _, license_models = get_license_info()
-                        license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                        license_model = [x for x in license_models if x.license_type == lic_type][0]
                         lic = license_model.objects.filter(user=request.user).first()
                         data['license']['enabled'] = lic is not None
 
@@ -146,7 +146,7 @@ def call_api(request, service):
                     lic_type = _app_license_type(job_post['appId'])
                     if lic_type is not None:
                         _, license_models = get_license_info()
-                        license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                        license_model = [x for x in license_models if x.license_type == lic_type][0]
                         lic = license_model.objects.filter(user=request.user).first()
                         job_post['parameters']['_license'] = lic.license_as_str()
 
@@ -159,17 +159,17 @@ def call_api(request, service):
                                     parsed = urlparse(val)
                                     if parsed.scheme:
                                         inputs.append('{}://{}{}'.format(
-                                            parsed.scheme, parsed.netloc, urllib.quote(parsed.path)))
+                                            parsed.scheme, parsed.netloc, urllib.parse.quote(parsed.path)))
                                     else:
-                                        inputs.append(urllib.quote(parsed.path))
+                                        inputs.append(urllib.parse.quote(parsed.path))
                                 job_post['inputs'][key] = inputs
                             else:
                                 parsed = urlparse(value)
                                 if parsed.scheme:
                                     job_post['inputs'][key] = '{}://{}{}'.format(
-                                        parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                                        parsed.scheme, parsed.netloc, urllib.parse.quote(parsed.path))
                                 else:
-                                    job_post['inputs'][key] = urllib.quote(parsed.path)
+                                    job_post['inputs'][key] = urllib.parse.quote(parsed.path)
 
                     if settings.DEBUG:
                         wh_base_url = settings.WEBHOOK_POST_URL.strip('/') + '/webhooks/'
@@ -181,7 +181,7 @@ def call_api(request, service):
                     job_post['parameters']['_webhook_base_url'] = wh_base_url
 
                     # Remove any params from job_post that are not in appDef
-                    for param, _ in job_post['parameters'].items():
+                    for param, _ in list(job_post['parameters'].items()):
                         if not any(p['id'] == param for p in job_post['appDefinition']['parameters']):
                             del job_post['parameters'][param]
 

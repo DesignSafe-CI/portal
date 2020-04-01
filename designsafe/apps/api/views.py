@@ -42,7 +42,7 @@ class BaseApiView(View):
                                           'sessionId': request.session.session_key})
             else:
                 logger.error('%s', e, exc_info=True)
-                message = unicode(e)
+                message = str(e)
                 status = 500
         
         resp = {'message': message}

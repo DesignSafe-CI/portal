@@ -2,7 +2,7 @@
 .. module: portal.libs.elasticsearch.docs.base
    :synopsis: Wrapper classes for ES different doc types.
 """
-from __future__ import unicode_literals, absolute_import
+
 from future.utils import python_2_unicode_compatible
 import logging
 import json
@@ -48,7 +48,7 @@ def setup_index(index_config, force=False, reindex=False):
         # If an index exists under the alias and force=True, delete any indices
         # with that alias.
         while index.exists():
-            Index(index.get_alias().keys()[0]).delete(ignore=404)
+            Index(list(index.get_alias().keys())[0]).delete(ignore=404)
             index = Index(alias)
         # Create a new index with the provided name.
         index = Index(index_name, using=es_client)

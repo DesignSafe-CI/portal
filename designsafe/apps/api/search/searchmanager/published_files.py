@@ -3,7 +3,7 @@
    :synopsis: Manager handling published file searches.
 """
 
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedFile
@@ -28,7 +28,7 @@ class PublishedDataSearchManager(BaseSearchManager):
 
     def construct_query(self, system=None, file_path=None):
 
-        files_index_name = Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys()[0]
+        files_index_name = list(Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys())[0]
         ngram_query = Q("query_string", query=self.query_string,
                         fields=["name"],
                         minimum_should_match='80%',

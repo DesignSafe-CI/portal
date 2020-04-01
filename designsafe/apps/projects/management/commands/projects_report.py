@@ -136,4 +136,4 @@ class Command(BaseCommand):
                     award_number = award_numbers
                 row.append(award_number)
                 row.append(project.created)
-                writer.writerow([data.encode('utf-8') for data in row])
+                writer.writerow([data for data in row])

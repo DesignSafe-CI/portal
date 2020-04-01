@@ -1,7 +1,7 @@
 import uuid
 import os
 import json
-import StringIO
+import io
 from datetime import datetime
 from PIL import Image
 from elasticsearch import TransportError, ConnectionTimeout
@@ -24,7 +24,7 @@ from designsafe import settings
 def thumbnail_image(fobj, size=(400, 400)):
     im = Image.open(fobj)
     im.thumbnail( (400, 400), Image.ANTIALIAS)
-    file_buffer = StringIO.StringIO()
+    file_buffer = io.StringIO()
     im.save(file_buffer, format='JPEG')
     return file_buffer
 

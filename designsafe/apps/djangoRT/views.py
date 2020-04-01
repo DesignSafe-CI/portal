@@ -46,8 +46,7 @@ def ticketdetail(request, ticketId):
 
     for history in ticket_history:
         # remove bogus "untitled" attachments
-        history['Attachments'] = filter(lambda a: not a[1].startswith('untitled ('),
-                                        history['Attachments'])
+        history['Attachments'] = [a for a in history['Attachments'] if not a[1].startswith('untitled (')]
 
     return render(request, 'djangoRT/ticketDetail.html', {
         'ticket': ticket,

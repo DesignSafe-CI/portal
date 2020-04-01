@@ -138,16 +138,10 @@
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
             <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
-                <table style="width:100%">
-                    <tr>
-                        <td class="tab-cell">
-                            <span>Report | <strong>{{report.value.title}}</strong></span>
-                        </td>
-                        <td style="text-align: right;">
-                            <span class="curation-chevron" style="font-size: 18px;"></span>
-                        </td>
-                    </tr>
-                </table>
+                <div class="collapse-tab">
+                    <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
+                    <span class="collapse-tab-content-right curation-chevron"></span>
+                </div>
             </button>
             <div id="files-{{report.uuid}}" class="collapse">
                 <div class="well" ng-if="report.value.description">
@@ -257,16 +251,10 @@
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                                 <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
-                                    <table style="width:100%">
-                                        <tr>
-                                            <td class="tab-cell">
-                                                <span>Report | <strong>{{report.value.title}}</strong></span>
-                                            </td>
-                                            <td style="text-align: right;">
-                                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    <div class="collapse-tab">
+                                        <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
+                                        <span class="collapse-tab-content-right curation-chevron"></span>
+                                    </div>
                                 </button>
                                 <div id="files-{{report.uuid}}" class="collapse">
                                     <div class="well" ng-if="report.value.description">
@@ -279,18 +267,11 @@
                         <!-- Models -->
                         <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, model)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
-                                <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
-                                    style="width:100%;">
-                                    <table style="width:100%">
-                                        <tr>
-                                            <td class="tab-cell">
-                                                <span>Simulation Model | <strong>{{model.value.title}}</strong></span>
-                                            </td>
-                                            <td style="text-align: right;">
-                                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}" style="width:100%;">
+                                    <div class="collapse-tab">
+                                        <span class="collapse-tab-content-left">Simulation Model | <strong>{{model.value.title}}</strong></span>
+                                        <span class="collapse-tab-content-right curation-chevron"></span>
+                                    </div>
                                 </button>
                                 <div id="files-{{model.uuid}}" class="collapse">
                                     <div class="well" ng-if="model.value.description">
@@ -315,18 +296,11 @@
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
-                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{input.uuid}}{{model.uuid}}"
-                                                style="width:100%;">
-                                                <table style="width:100%">
-                                                    <tr>
-                                                        <td class="tab-cell">
-                                                            <span>Simulation Input | <strong>{{input.value.title}}</strong></span>
-                                                        </td>
-                                                        <td style="text-align: right;">
-                                                            <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                        </td>
-                                                    </tr>
-                                                </table>
+                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{input.uuid}}{{model.uuid}}" style="width:100%;">
+                                                <div class="collapse-tab">
+                                                    <span class="collapse-tab-content-left">Simulation Input | <strong>{{input.value.title}}</strong></span>
+                                                    <span class="collapse-tab-content-right curation-chevron"></span>
+                                                </div>
                                             </button>
                                             <div id="files-{{input.uuid}}{{model.uuid}}" class="collapse">
                                                 <div class="well" ng-if="input.value.description">
@@ -354,16 +328,10 @@
                                                     </td>
                                                     <td style="width: 100%;">
                                                         <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{output.uuid}}{{model.uuid}}" style="width:100%;">
-                                                            <table style="width:100%">
-                                                                <tr>
-                                                                    <td class="tab-cell">
-                                                                        <span>Simulation Output | <strong>{{output.value.title}}</strong></span>
-                                                                    </td>
-                                                                    <td style="text-align: right;">
-                                                                        <span class="curation-chevron" style="font-size: 18px;"></span>
-                                                                    </td>
-                                                                </tr>
-                                                            </table>
+                                                            <div class="collapse-tab">
+                                                                <span class="collapse-tab-content-left">Simulation Output | <strong>{{output.value.title}}</strong></span>
+                                                                <span class="collapse-tab-content-right curation-chevron"></span>
+                                                            </div>
                                                         </button>
                                                         <div id="files-{{output.uuid}}{{model.uuid}}" class="collapse">
                                                             <div class="well" ng-if="output.value.description">
@@ -385,18 +353,11 @@
                         <!-- Analysis -->
                         <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, analysis)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
-                                    style="width:100%;">
-                                    <table style="width:100%">
-                                        <tr>
-                                            <td class="tab-cell">
-                                                <span>Analysis | <strong>{{analysis.value.title}}</strong></span>
-                                            </td>
-                                            <td style="text-align: right;">
-                                                <span class="curation-chevron" style="font-size: 18px;"></span>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}" style="width:100%;">
+                                    <div class="collapse-tab">
+                                        <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
+                                        <span class="collapse-tab-content-right curation-chevron"></span>
+                                    </div>
                                 </button>
                                 <div id="files-{{analysis.uuid}}" class="collapse">
                                     <div class="well" ng-if="analysis.value.refs && analysis.value.description">

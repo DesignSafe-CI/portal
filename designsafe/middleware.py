@@ -67,18 +67,16 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
         protected_path = is_path_protected(current_path)
 
         if request.user.is_authenticated and protected_path:
-            for term in TermsAndConditions.get_active_list():
-                if not TermsAndConditions.agreed_to_latest(request.user, term):
-                    accept_url = getattr(settings, 'ACCEPT_TERMS_PATH',
-                                         '/terms/accept/') + term
-                    messages.warning(
-                        request, '<h4>Please Accept the Terms of Use</h4>'
-                                 'You have not yet agreed to the current Terms of Use. '
-                                 'Please <a href="%s">CLICK HERE</a> to review and '
-                                 'accept the Terms of Use.<br>Acceptance of the Terms of '
-                                 'Use is required for continued use of DesignSafe '
-                                 'resources.' % accept_url)
-                    #return redirect(reverse('designsafe_accounts:profile_edit'))
+            if TermsAndConditions.get_active_terms_not_agreed_to(request.user):
+                accept_url = getattr(settings, 'ACCEPT_TERMS_PATH',
+                                     '/terms/accept/')
+                messages.warning(
+                    request, '<h4>Please Accept the Terms of Use</h4>'
+                             'You have not yet agreed to the current Terms of Use. '
+                             'Please <a href="%s">CLICK HERE</a> to review and '
+                             'accept the Terms of Use.<br>Acceptance of the Terms of '
+                             'Use is required for continued use of DesignSafe '
+                             'resources.' % accept_url)
         return None
 
 class RequestProfilingMiddleware(object):

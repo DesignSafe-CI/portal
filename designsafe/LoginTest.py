@@ -72,7 +72,7 @@ class LoginTestClass(TestCase):
     session.save()
     
     request_without_agave = self.client.post("/auth/agave/callback/?state=test&code=test", follow = True)
-    print 'Initial Query Status: ' + str(request_without_agave.status_code)
+    print('Initial Query Status: ' + str(request_without_agave.status_code))
     """ request_without_agave.get.return_value = {
       'state': 'test',
       'session': {'auth_state': 'test'},
@@ -86,7 +86,7 @@ class LoginTestClass(TestCase):
         } """
         
     resp = agave_oauth_callback(request_without_agave)
-    print 'Oauth Callback Status: ' + str(resp)
+    print('Oauth Callback Status: ' + str(resp))
     self.assertEqual(resp.status_code, 200)
 
   """ def test_user_without_agave_homedir_gets_redirected(self, mock_client, mock_Agave):

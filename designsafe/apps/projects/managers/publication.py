@@ -4,7 +4,7 @@
     :synopsis: Python interface to Datacite's rest API.
         Visit: https://support.datacite.org/docs/api for more info.
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -395,8 +395,8 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
         # clear any existing sub entities in publication and keep updated fileObjs
         fields_to_clear = []
         entities_with_files = []
-        for key in FIELD_MAP.keys():
-            if FIELD_MAP[key] in publication.keys():
+        for key in list(FIELD_MAP.keys()):
+            if FIELD_MAP[key] in list(publication.keys()):
                 fields_to_clear.append(FIELD_MAP[key])
         fields_to_clear = set(fields_to_clear)
 
