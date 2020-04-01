@@ -294,6 +294,9 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                     if (data.missing.length < 2 && (data.missing.includes('Social Sciences Collection') || data.missing.includes('Engineering/Geosciences Collection'))) {
                         return false;
                     }
+                    if (data.missing.length < 3 && data.missing.includes('Research Planning Collection')) {
+                        data.missing = ['Research Planning Collection'];
+                    }
                     return true;
                 });
             }
