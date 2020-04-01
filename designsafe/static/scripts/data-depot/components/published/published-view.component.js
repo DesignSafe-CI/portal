@@ -178,6 +178,11 @@ class PublishedViewCtrl {
             this.browser.project.expoutput_set = this.browser.publication.exp_outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
+            this.hsDOIList = this.browser.project.hybridsimlation_set.map(({ doi, uuid }) => ({
+                value: doi,
+                uuid,
+                hash: `details-${uuid}`,
+            }));
         }
         if (this.project.value.projectType === 'field_recon'){
             this.browser.project.mission_set = this.browser.publication.missions;

@@ -48,6 +48,21 @@
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
+            <tr ng-repeat="doi in $ctrl.hsDOIList">
+                <td ng-if="$first">DOI(s) in Dataset</td>
+                <td ng-if="!$first"></td>
+                <td>
+                    <strong>
+                        <a 
+                            ng-click="$ctrl.goToHash(doi.hash)"
+                            data-toggle="collapse"
+                            data-target="#data-{{ uuid }}"
+                        >
+                            {{ doi.value }}
+                        </a>
+                    </strong>
+                </td>
+            </tr>
             <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
                 <td ng-if="$first">Related Work</td>
                 <td ng-if="!$first"></td>
