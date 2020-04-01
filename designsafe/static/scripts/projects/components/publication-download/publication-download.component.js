@@ -11,6 +11,7 @@ class PublicationDownloadModalCtrl {
     $onInit() {
         this.loaded = null;
         this.error = null;
+        this.retrievingPostit = null;
         this.publication = this.resolve.publication;
         this.mediaUrl = this.resolve.mediaUrl;
         this.prjId = this.publication.project.value.projectId;
@@ -33,6 +34,7 @@ class PublicationDownloadModalCtrl {
     }
 
     download() {
+        this.retrievingPostit = true;
         this.archiveListing.download().then(function (resp) {
             let postit = resp.href;
             let link = document.createElement('a');
@@ -42,6 +44,9 @@ class PublicationDownloadModalCtrl {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }).finally(() => {
+            this.retrievingPostit = false;
+            this.cancel();
         });
     }
 

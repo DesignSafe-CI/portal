@@ -68,11 +68,18 @@
     </p>
     <br>
     <div class="text-right" ng-if="!$ctrl.error">
-        <button class="btn btn-add" ng-click="$ctrl.download()" ng-disabled="!$ctrl.loaded">
+        <button class="btn btn-add" ng-click="$ctrl.download()" ng-disabled="!$ctrl.loaded || $ctrl.retrievingPostit">
             <div class="btn-container">
-                <span class="curation-download"></span>
-                &ensp;
-                <span><strong>Download</strong></span>
+                <div ng-if="!$ctrl.retrievingPostit">
+                    <span class="curation-download"></span>
+                    &ensp;
+                    <span>
+                        <strong>Download</strong>
+                    </span>
+                </div>
+                <span ng-if="$ctrl.retrievingPostit" style="font-size:18px">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
             </div>
         </button>
     </div>
