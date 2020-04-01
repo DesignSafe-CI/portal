@@ -24,7 +24,7 @@ cookies==2.2.1
 coverage==4.5.1
 cryptography==2.3.1
 decorator==4.1.2
-Django==1.10.7
+Django==1.11.28
 django-angular==0.8.4
 django-appconf==1.0.2
 django-bootstrap3==9.0.0
