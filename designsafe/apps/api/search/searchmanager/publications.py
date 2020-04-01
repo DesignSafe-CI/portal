@@ -3,7 +3,7 @@
    :synopsis: Manager handling Publications searches.
 """
 
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
@@ -42,8 +42,8 @@ class PublicationsSearchManager(BaseSearchManager):
             "project.value.dois",
             "name"
             ]
-        published_index_name = Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys()[0]
-        legacy_index_name = Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys()[0]
+        published_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())[0]
+        legacy_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys())[0]
         filter_queries = []
         if kwargs.get('type_filters'):
             for type_filter in kwargs['type_filters']:

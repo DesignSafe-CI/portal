@@ -46,7 +46,7 @@ class FileManager(object):
 
     def parse_file_id(self, path):
         if path == '/' or path == '':
-            file_type, path = u'folder', u''
+            file_type, path = 'folder', ''
         else:
             try:
                 file_type, path = DropboxFile.parse_file_id(path)
@@ -94,7 +94,7 @@ class FileManager(object):
                 entries = dropbox_item.entries
 
                 while True:
-                    children.extend([DropboxFile(item, item.path_display.encode('utf-8'), parent=dropbox_item).to_dict(default_pems=default_pems)
+                    children.extend([DropboxFile(item, item.path_display, parent=dropbox_item).to_dict(default_pems=default_pems)
                                 for item in entries])
                     if has_more:
                         folder = self.dropbox_api.files_list_folder_continue(cursor)
@@ -200,7 +200,7 @@ class FileManager(object):
 
             if not agave_file_path.startswith('/'):
                 agave_file_path = '/' + agave_file_path
-                
+
             agave_indexer.apply_async(kwargs={'username': user.username, 'systemId': agave_system_id, 'filePath': os.path.dirname(agave_file_path), 'recurse':False}, queue='indexing')
             agave_indexer.apply_async(kwargs={'systemId': agave_system_id, 'filePath': agave_file_path, 'recurse': True}, routing_key='indexing')
         except:
@@ -415,7 +415,7 @@ class FileManager(object):
 
                 while f.tell() < file_size:
                     if ((file_size - f.tell()) <= CHUNK_SIZE):
-                        print self.dropbox_api.files_upload_session_finish(f.read(CHUNK_SIZE), cursor, commit)
+                        print(self.dropbox_api.files_upload_session_finish(f.read(CHUNK_SIZE), cursor, commit))
                     else:
                         self.dropbox_api.files_upload_session_append(f.read(CHUNK_SIZE), cursor.session_id, cursor.offset)
                         cursor.offset = f.tell()

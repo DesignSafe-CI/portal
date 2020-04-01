@@ -126,7 +126,7 @@ class FileMediaView(View):
                 elif f.ext in BaseFileResource.SUPPORTED_TEXT_PREVIEW_EXTS:
                     content = f.download()
                     try:
-                        encoded = content.encode('utf-8')
+                        encoded = content
                     except UnicodeError:
                         try:
                             encoding = chardet.detect(content)['encoding']
@@ -136,9 +136,9 @@ class FileMediaView(View):
                                              extra={'file_mgr_name': file_mgr_name,
                                                     'system_id': system_id,
                                                     'file_path': file_path})
-                            encoded = u'Sorry! We were unable to preview this file due ' \
-                                      u'to an unrecognized content encoding. Please ' \
-                                      u'download the file to view its contents.'
+                            encoded = 'Sorry! We were unable to preview this file due ' \
+                                      'to an unrecognized content encoding. Please ' \
+                                      'download the file to view its contents.'
                     context['text_preview'] = encoded
                 elif f.ext in BaseFileResource.SUPPORTED_OBJECT_PREVIEW_EXTS:
                     context['object_preview'] = f.download_postit(force=False, lifetime=360)

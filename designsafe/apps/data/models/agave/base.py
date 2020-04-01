@@ -35,7 +35,6 @@ class RelatedQuery(object):
     @property
     def query(self):
         """JSON query to submit to agave metadata endpoint.
-
         This class represents both a forward-lookup field and a reverse-lookup field.
         There are two class attributes ``uuid`` and ``uuids`` (notice the 's').
         IF ``self.uuid`` has a valid value then it means this is a reverse-lookup field
@@ -44,7 +43,6 @@ class RelatedQuery(object):
         IF ``self.uuids`` has a valid value (it could be a string or an array of strings) means
         this is a forward-lookup field and we need to retrieve every object for every UUID
         in the ``self.uuids`` attribute: ``{"uuid": {"$in": ["UUID1", "UUID2"]}}``.
-
         ..todo:: This class should be separated in two classes, one for reverse-lookup fields
         and another one for forward-lookup fields. The reason why it was first implemented like this
         is because the implementation of a reverse-lookup field was not completely clear.
@@ -53,7 +51,7 @@ class RelatedQuery(object):
         if self.uuid:
             self._query['associationIds'] = self.uuid
         elif self.uuids is not None:
-            if isinstance(self.uuids, basestring):
+            if isinstance(self.uuids, str):
                 self.uuid = [self.uuids]
             elif len(self.uuids) == 0:
                 return []
@@ -207,7 +205,7 @@ class BaseModel(type):
             setattr(new_class, 'model_name', model_name)
 
         setattr(new_class, '_is_nested', attrs.pop('_is_nested', False))
-        for obj_name, obj in attrs.items():
+        for obj_name, obj in list(attrs.items()):
             new_class.add_to_class(obj_name, obj)
 
         new_class._prepare()
@@ -241,9 +239,8 @@ class BaseModel(type):
             raise ValueError("Model Manager must be a Manager class.")
 
 
-class Model(object):
+class Model(object, metaclass=BaseModel):
     """Metadata model"""
-    __metaclass__ = BaseModel
 
     def __init__(self, **kwargs):
         if not self._is_nested:
@@ -359,7 +356,7 @@ class Model(object):
         if not val['permission'].get('read', False) and \
             not val['permission'].get('write', False) and \
             not val['permission'].get('execute', False):
-            pems = filter(lambda x: x['username'] == val['username'], pems)
+            pems = [x for x in pems if x['username'] == val['username']]
         
         else:
             pems.append(val)
@@ -368,7 +365,7 @@ class Model(object):
 
     def permission(self, username):
         pems = self.permission
-        pem = filter(lambda x: x['username'] == username, pems)
+        pem = [x for x in pems if x['username'] == username]
         if len(pem):
             return pem[0]['permission']
         else:
@@ -463,7 +460,7 @@ class Model(object):
 
     def associate(self, value):
         _aids = self.association_ids[:]
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             _aids.append(value)
         else:
             _aids += value

@@ -1,5 +1,5 @@
 try:
-    import urlparse
+    import urllib.parse
 except ImportError:
     from urllib import parse as urlparse
 
@@ -22,7 +22,7 @@ class CMSResponsiveEmbedPlugin(CMSPluginBase):
         return context
 
     def icon_src(self, instance):
-        return urlparse.urljoin(
+        return urllib.parse.urljoin(
             settings.STATIC_URL, "cms/img/icons/plugins/image.png")
 
 plugin_pool.register_plugin(CMSResponsiveEmbedPlugin)  # register the plugin

@@ -1,6 +1,5 @@
-from __future__ import unicode_literals, absolute_import
 from future.utils import python_2_unicode_compatible
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import logging
 import os 
 
@@ -46,13 +45,13 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False, path
     listing = []
     offset = 0
     page = client.files.list(systemId=system,
-                             filePath=urllib.quote(path),
+                             filePath=urllib.parse.quote(path),
                              offset=offset)
     while page:
         listing += page
         offset += 100
         page = client.files.list(systemId=system,
-                                 filePath=urllib.quote(path),
+                                 filePath=urllib.parse.quote(path),
                                  offset=offset)
 
     folders = []
@@ -182,11 +181,11 @@ def full_dedup(limit=1000):
             if hit.name is None or hit.path is None:
                 continue
 
-            print hit.meta.id
+            print((hit.meta.id))
             try:
                 IndexedFile.from_path(hit.system, hit.path)
             except Exception as e:
-                print e
+                print(e)
         
         search_after = res.hits.hits[-1]['sort']
         logger.debug(search_after)

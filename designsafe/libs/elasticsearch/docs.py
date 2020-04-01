@@ -2,7 +2,7 @@
 .. module: portal.libs.elasticsearch.docs.base
    :synopsis: Wrapper classes for ES different doc types.
 """
-from __future__ import unicode_literals, absolute_import
+
 from future.utils import python_2_unicode_compatible
 import logging
 import json

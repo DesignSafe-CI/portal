@@ -2,7 +2,7 @@
 .. module: designsafe.libs.elasticsearch.analyzers
    :synopsis: Elastic Search Analyzers
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from elasticsearch_dsl import analyzer, tokenizer
 

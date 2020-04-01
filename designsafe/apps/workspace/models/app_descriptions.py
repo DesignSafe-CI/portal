@@ -10,10 +10,10 @@ class AppDescription(models.Model):
     appDescription = models.TextField(help_text='App dropdown description text for apps that have a dropdown.')
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self)
 
     def __unicode__(self):
-        return u"%s" % (self.appId)
+        return "%s" % (self.appId)
 
     def desc_to_dict(self):
         return {'appId': self.appId, 'appDescription': self.appDescription}

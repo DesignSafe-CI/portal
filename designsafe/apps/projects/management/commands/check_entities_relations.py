@@ -91,7 +91,7 @@ class Command(BaseCommand):
                     self.stdout.write(e.response.text)
                     uuids.append(uuid)
             #self.stdout.write('uuids: %s' % uuids)
-        none_files = filter(lambda x: x['href'] is None, ent._links.associationIds)
+        none_files = [x for x in ent._links.associationIds if x['href'] is None]
         file_uuids = [nfl['rel'] for nfl in none_files]
         uuids += file_uuids
         if len(uuids):
