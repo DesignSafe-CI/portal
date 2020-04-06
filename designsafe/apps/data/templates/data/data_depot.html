@@ -68,6 +68,14 @@
     {% else %}
     <meta name="identifier" content="{{doi}}">
     {% endif %}
+    <!-- Dublin Core Metatags -->
+    <meta name="DC.identifier" content="{{doi}}">
+    <meta name="DC.publisher" content="DesignSafe-CI">
+    <meta name="DC.title" content="{{citation_title}}">
+    <meta name="DC.date" content="{{citation_date}}">
+    <meta name="DC.language" content="en">
+    <meta name="DC.creator" content="{% for author in authors %}{{author.full_name}}; {% endfor %}">
+    <meta name="DC.type" content="dataset">
 {% endblock %}
 {% block title %}
 {% if citation_title %}{{citation_title}} 
