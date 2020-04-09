@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { $IsStateFilter, $IncludedByStateFilter } from 'angular-ui-router/lib/stateFilters';
-import experimentalData from "../../projects/components/manage-experiments/experimental-data.json";
+import experimentalData from '../../projects/components/manage-experiments/experimental-data.json';
 
 export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Logging, ProjectModel, ProjectEntitiesService) {
     'ngInject';
@@ -159,16 +159,16 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
         let addMissing = (missingEnt, fields) => {
             if (!fields){
                 missingData.push({
-                    'title': missingEnt.value.title,
-                    'missing': ['Associated files/data are missing or not selected'],
-                    'type': errMsg[missingEnt.name.split('.').pop()]
+                    title: missingEnt.value.title,
+                    missing: ['Associated files/data are missing or not selected'],
+                    type: errMsg[missingEnt.name.split('.').pop()]
                 });
             } else {
-                let readableFields = fields.map(f => errMsg[f]);
+                let readableFields = fields.map((f) => errMsg[f]);
                 missingData.push({
-                    'title': missingEnt.value.title,
-                    'missing': readableFields,
-                    'type': errMsg[missingEnt.name.split('.').pop()]
+                    title: missingEnt.value.title,
+                    missing: readableFields,
+                    type: errMsg[missingEnt.name.split('.').pop()]
                 });
             }
         };
@@ -182,7 +182,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 });
             } else {
                 set.forEach((s) => {
-                    let related =  subsets.filter(subset => subset.associationIds.includes(s.uuid));
+                    let related =  subsets.filter((subset) => subset.associationIds.includes(s.uuid));
                     let checklist = [];
 
                     related.forEach((relEnt) => {
@@ -192,7 +192,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                             checklist.push(relEnt.name.split('.').pop());
                         }
                     });
-                    let missing = required.filter(req => !checklist.includes(req));
+                    let missing = required.filter((req) => !checklist.includes(req));
                     if (missing.length) {
                         addMissing(s, missing);
                     }
@@ -216,7 +216,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 project.sensorlist_set || [],
                 project.event_set || []
             );
-            let experiments = selPrimEnts.filter(ent => ent.name.endsWith('experiment'));
+            let experiments = selPrimEnts.filter((ent) => ent.name.endsWith('experiment'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (experiments.length) {
                 checkRequirements(experiments, subentities, requirements);
@@ -237,7 +237,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 project.input_set || [],
                 project.output_set || []
             );
-            let simulations = selPrimEnts.filter(ent => ent.name.endsWith('simulation'));
+            let simulations = selPrimEnts.filter((ent) => ent.name.endsWith('simulation'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (simulations.length) {
                 checkRequirements(simulations, subentities, requirements);
@@ -260,7 +260,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 project.simsubstructure_set || [],
                 project.expsubstructure_set || []
             );
-            let hybSimulations = selPrimEnts.filter(ent => ent.name.endsWith('hybrid_simulation'));
+            let hybSimulations = selPrimEnts.filter((ent) => ent.name.endsWith('hybrid_simulation'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (hybSimulations.length) {
                 checkRequirements(hybSimulations, subentities, requirements);
@@ -279,8 +279,8 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                     - Files within all Sets
             */
             let requirements = ['planning', 'social_science', 'geoscience'];
-            let missions = selPrimEnts.filter(ent => ent.name.endsWith('mission'));
-            let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
+            let missions = selPrimEnts.filter((ent) => ent.name.endsWith('mission'));
+            let reports = selPrimEnts.filter((ent) => ent.name.endsWith('report'));
             let subentities = [].concat(
                 project.planning_set || [],
                 project.socialscience_set || [],

@@ -84,7 +84,7 @@ class EditProjectCtrl {
             let inc = 0;
             for (let i = 0; i < items.length; i++) {
                 items[i].order = inc;
-                inc ++;
+                inc++;
             }
         };
 
@@ -114,7 +114,7 @@ class EditProjectCtrl {
                 this.project.value.awardNumber.forEach((awrd) => {
                     if (typeof awrd != 'object') {
                         if (awrd) {
-                            this.form.awardNumber = [{name: '', number: awrd}];
+                            this.form.awardNumber = [{ name: '', number: awrd }];
                         }
                     } else {
                         this.form.awardNumber.push(awrd);
@@ -124,7 +124,7 @@ class EditProjectCtrl {
                     this.setOrder(this.form.awardNumber);
                 }
             } else {
-                this.form.awardNumber = [{name: this.project.value.awardNumber, number: ''}];
+                this.form.awardNumber = [{ name: this.project.value.awardNumber, number: '' }];
             }
             // related work
             if (this.project.value.associatedProjects.length && typeof this.project.value.associatedProjects != 'string') {
@@ -132,7 +132,7 @@ class EditProjectCtrl {
                 this.project.value.associatedProjects.forEach((aprj) => {
                     if (typeof aprj != 'object') {
                         if (aprj) {
-                            this.form.associatedProjects = [{title: '', href: aprj}];
+                            this.form.associatedProjects = [{ title: '', href: aprj }];
                         }
                     } else {
                         this.form.associatedProjects.push(aprj);
@@ -142,7 +142,7 @@ class EditProjectCtrl {
                     this.setOrder(this.form.associatedProjects);
                 }
             } else {
-                this.form.associatedProjects = [{title: '', href: ''}];
+                this.form.associatedProjects = [{ title: '', href: '' }];
             }
             // pi
             this.UserService.get(this.project.value.pi).then((user) => {
@@ -196,7 +196,7 @@ class EditProjectCtrl {
                     this.form.nhTypesOther = [];
                     this.project.value.nhTypes.forEach((type) => {
                         if (!this.isNhTypeInDropdown(type)) {
-                            this.form.nhTypes.push("Other");
+                            this.form.nhTypes.push('Other');
                             this.form.nhTypesOther.push(type);
                         } else {
                             this.form.nhTypes.push(type);
@@ -235,9 +235,9 @@ class EditProjectCtrl {
     checkEmpty(group) {
         if (group.length <= 1 && group) {
             return true;
-        } else {
-            return false;
-        }
+        } 
+        return false;
+        
     }
 
     checkValid(usr) {
@@ -271,17 +271,17 @@ class EditProjectCtrl {
 
     addAwardField(group) {
         group.push({
-            "name": undefined,
-            "number": undefined,
-            "order": group.length + 1
+            name: undefined,
+            number: undefined,
+            order: group.length + 1
         });
     }
 
     addWorkField(group) {
         group.push({
-            "title": undefined,
-            "href": undefined,
-            "order": group.length + 1
+            title: undefined,
+            href: undefined,
+            order: group.length + 1
         });
     }
 
@@ -303,7 +303,7 @@ class EditProjectCtrl {
         this.$uibModal.open({
             component: 'manageProjectType',
             resolve: {
-                options: () => { return {'project': this.project, 'warning': warn}; },
+                options: () => { return { project: this.project, warning: warn }; },
             },
             size: 'lg',
         });
@@ -344,13 +344,13 @@ class EditProjectCtrl {
         }
         if (this.form.nhTypes) {
             projectData.nhTypes = this.form.nhTypes
-            .map((type, index) => {
-                if(type === 'Other') {
-                    return this.form.nhTypesOther[index];
-                }
-                return type;
-            })
-            .filter(input => input);
+                .map((type, index) => {
+                    if(type === 'Other') {
+                        return this.form.nhTypesOther[index];
+                    }
+                    return type;
+                })
+                .filter((input) => input);
         }
 
         // clear any empty inputs...
@@ -425,7 +425,7 @@ class EditProjectCtrl {
             this.form.guests.forEach((g, i) => {
                 // create a "username" for guests
                 if (!g.user) {
-                    g.user = "guest" + g.fname + g.lname.charAt(0) + i;
+                    g.user = 'guest' + g.fname + g.lname.charAt(0) + i;
                 }
                 if (g.lname && g.fname) {
                     projectData.guestMembers.push(g);
@@ -460,7 +460,7 @@ class EditProjectCtrl {
             this.modalInstance = this.$uibModal.open({
                 component: 'confirmMessage',
                 resolve: {
-                    message: () => "Are you sure you want to remove yourself from the project?",
+                    message: () => 'Are you sure you want to remove yourself from the project?',
                 },
                 size: 'sm'
             });

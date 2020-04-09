@@ -1,28 +1,28 @@
 export function applicationEditCtrl(window, angular, $, _) {
     'ngInject';
-    "use strict";
+    'use strict';
     angular.module('designsafe').controller('ApplicationEditCtrl',
         ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$stateParams', '$state', 'Apps', 'AppsSimpleList', 'MultipleList', 'AppsWizard', 'Django', 'appCategories', 'appIcons', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $stateParams, $state, Apps, AppsSimpleList, MultipleList, AppsWizard, Django, appCategories, appIcons) {
 
             /****** customForm *********/
             $scope.customSchema = {
-                "type": "object",
-                "title": "Interactive registration form for DesignSafe Application",
-                "properties": {
-                    "label": {
-                        "type": "string",
-                        "description": "The name of the application. The name does not have to be unique, but the combination of name and version does",
-                        "title": "Name",
-                        "minLength": 3,
-                        "maxLength": 64
+                type: 'object',
+                title: 'Interactive registration form for DesignSafe Application',
+                properties: {
+                    label: {
+                        type: 'string',
+                        description: 'The name of the application. The name does not have to be unique, but the combination of name and version does',
+                        title: 'Name',
+                        minLength: 3,
+                        maxLength: 64
                     },
-                    "version": {
-                        "type": "string",
-                        "description": "The version of the application in #.#.# format. While the version does not need to be unique, the combination of name and version does have to be unique",
-                        "title": "Version",
-                        "validator": "\\d+(\\.\\d+)+",
-                        "minLength": 3,
-                        "maxLength": 16
+                    version: {
+                        type: 'string',
+                        description: 'The version of the application in #.#.# format. While the version does not need to be unique, the combination of name and version does have to be unique',
+                        title: 'Version',
+                        validator: '\\d+(\\.\\d+)+',
+                        minLength: 3,
+                        maxLength: 16
                     },
                     // "type": {
                     //   "title": "Select application type",
@@ -33,45 +33,45 @@ export function applicationEditCtrl(window, angular, $, _) {
                     //   "default": "html",
                     //   "readonly": true
                     // },
-                    "shortDescription": {
-                        "type": "string",
-                        "description": "Short description of this app",
-                        "maxLength": 128,
-                        "title": "Short description"
+                    shortDescription: {
+                        type: 'string',
+                        description: 'Short description of this app',
+                        maxLength: 128,
+                        title: 'Short description'
                     },
-                    "appCategory": {
-                        "type": "string",
-                        "description": "Categorization for this app if made public",
-                        "enum": appCategories,
-                        "title": "Category"
+                    appCategory: {
+                        type: 'string',
+                        description: 'Categorization for this app if made public',
+                        enum: appCategories,
+                        title: 'Category'
                     },
-                    "appIcon": {
-                        "type": "string",
-                        "description": "The icon to associate with this app",
-                        "enum": [''].concat(appIcons.sort()),
-                        "title": "Icon"
+                    appIcon: {
+                        type: 'string',
+                        description: 'The icon to associate with this app',
+                        enum: [''].concat(appIcons.sort()),
+                        title: 'Icon'
                     },
-                    "isPublic": {
-                        "title": "Public",
-                        "type": "boolean",
-                        "enum": [
+                    isPublic: {
+                        title: 'Public',
+                        type: 'boolean',
+                        enum: [
                             false,
                             true
                         ],
-                        "default": false,
-                        "readonly": true
+                        default: false,
+                        readonly: true
                     },
-                    "html": {
-                        "type": "string",
-                        "description": "Custom HTML for your app",
-                        "title": "HTML",
+                    html: {
+                        type: 'string',
+                        description: 'Custom HTML for your app',
+                        title: 'HTML',
                     },
 
                 }
             };
             $scope.customForm = [
                 {
-                    "key": "label",
+                    key: 'label',
                     ngModelOptions: {
                         updateOnDefault: true
                     },
@@ -88,12 +88,12 @@ export function applicationEditCtrl(window, angular, $, _) {
                         // },
                     },
                     validationMessage: {
-                        "required": "Missing required",
+                        required: 'Missing required',
                         // "invalidCharacters": "Invalid parameter id. Parameters must be alphanumeric strings with no spaces and may include underscores"
                     },
                 },
                 {
-                    "key": "version",
+                    key: 'version',
                     $validators: {
                         required: function(value) {
                             return value ? true : false;
@@ -107,14 +107,14 @@ export function applicationEditCtrl(window, angular, $, _) {
                         },
                     },
                     validationMessage: {
-                        "required": "Missing required",
-                        "invalidCharacters": "Invalid version format. Should be #.#.#"
+                        required: 'Missing required',
+                        invalidCharacters: 'Invalid version format. Should be #.#.#'
                     },
                 },
                 // "type",
-                "shortDescription",
+                'shortDescription',
                 {
-                    "key": "appCategory",
+                    key: 'appCategory',
                     ngModelOptions: {
                         updateOnDefault: true
                     },
@@ -125,24 +125,24 @@ export function applicationEditCtrl(window, angular, $, _) {
                     }
                 },
                 {
-                    "key": "appIcon",
-                    "type": "select",
+                    key: 'appIcon',
+                    type: 'select',
                     ngModelOptions: {
                         updateOnDefault: true
                     },
                 },
-                "isPublic",
+                'isPublic',
                 {
-                    "key": "html",
-                    "type": "codemirror",
-                    "codemirrorOptions": {
-                        "lineWrapping": true,
-                        "lineNumbers": true,
-                        "matchBrackets": true,
-                        "styleActiveLine": false,
-                        "theme": "neat",
-                        "mode": "html",
-                        "statementIndent": 2,
+                    key: 'html',
+                    type: 'codemirror',
+                    codemirrorOptions: {
+                        lineWrapping: true,
+                        lineNumbers: true,
+                        matchBrackets: true,
+                        styleActiveLine: false,
+                        theme: 'neat',
+                        mode: 'html',
+                        statementIndent: 2,
                     },
                     $validators: {
                         required: function(value) {
@@ -150,7 +150,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                         }
                     },
                     validationMessage: {
-                        "required": "Missing required"
+                        required: 'Missing required'
                     },
                 }
             ];
@@ -159,441 +159,441 @@ export function applicationEditCtrl(window, angular, $, _) {
 
             /******** Agave form ********/
             $scope.schema = {
-                "type": "object",
-                "title": "Interactive registration form for DesignSafe Agave Application",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "The name of the application. The name does not have to be unique, but the combination of name and version does",
-                        "title": "Name",
-                        "validator": "[a-zA-Z_\\-\\.]+",
-                        "minLength": 3,
-                        "maxLength": 64
+                type: 'object',
+                title: 'Interactive registration form for DesignSafe Agave Application',
+                properties: {
+                    name: {
+                        type: 'string',
+                        description: 'The name of the application. The name does not have to be unique, but the combination of name and version does',
+                        title: 'Name',
+                        validator: '[a-zA-Z_\\-\\.]+',
+                        minLength: 3,
+                        maxLength: 64
                     },
-                    "version": {
-                        "type": "string",
-                        "description": "The version of the application in #.#.# format. While the version does not need to be unique, the combination of name and version does have to be unique",
-                        "title": "Version",
-                        "validator": "\\d+(\\.\\d+)+",
-                        "minLength": 3,
-                        "maxLength": 16
+                    version: {
+                        type: 'string',
+                        description: 'The version of the application in #.#.# format. While the version does not need to be unique, the combination of name and version does have to be unique',
+                        title: 'Version',
+                        validator: '\\d+(\\.\\d+)+',
+                        minLength: 3,
+                        maxLength: 16
                     },
-                    "helpURI": {
-                        "type": "string",
-                        "description": "The URL where users can go for more information about the app",
-                        "format": "url",
-                        "title": "Help URL",
+                    helpURI: {
+                        type: 'string',
+                        description: 'The URL where users can go for more information about the app',
+                        format: 'url',
+                        title: 'Help URL',
                         // "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
                     },
-                    "label": {
-                        "type": "string",
-                        "description": "Label for use in forms generated by the jobs service",
-                        "title": "Label"
+                    label: {
+                        type: 'string',
+                        description: 'Label for use in forms generated by the jobs service',
+                        title: 'Label'
                     },
-                    "appCategory": {
-                        "type": "string",
-                        "description": "Categorization for this app if made public",
-                        "enum": appCategories,
-                        "title": "Category"
+                    appCategory: {
+                        type: 'string',
+                        description: 'Categorization for this app if made public',
+                        enum: appCategories,
+                        title: 'Category'
                     },
-                    "appIcon": {
-                        "type": "string",
-                        "description": "The icon to associate with this app",
-                        "title": "Icon",
-                        "enum": [''].concat(appIcons.sort()),
+                    appIcon: {
+                        type: 'string',
+                        description: 'The icon to associate with this app',
+                        title: 'Icon',
+                        enum: [''].concat(appIcons.sort()),
                         //   "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
                     },
-                    "shortDescription": {
-                        "type": "string",
-                        "description": "Short description of this app",
-                        "maxLength": 128,
-                        "title": "Short description"
+                    shortDescription: {
+                        type: 'string',
+                        description: 'Short description of this app',
+                        maxLength: 128,
+                        title: 'Short description'
                     },
-                    "longDescription": {
-                        "type": "string",
-                        "description": "Full description of this app",
-                        "maxLength": 32768,
-                        "title": "Long description"
+                    longDescription: {
+                        type: 'string',
+                        description: 'Full description of this app',
+                        maxLength: 32768,
+                        title: 'Long description'
                     },
-                    "defaultQueue": {
-                        "type": [null, "string"],
-                        "description": "Default queue to use when submitting this job if none is provided in the job request. Can be left blank and a queue will be determined at run time",
-                        "maxLength": 128,
-                        "title": "Default queue"
+                    defaultQueue: {
+                        type: [null, 'string'],
+                        description: 'Default queue to use when submitting this job if none is provided in the job request. Can be left blank and a queue will be determined at run time',
+                        maxLength: 128,
+                        title: 'Default queue'
                     },
-                    "defaultNodeCount": {
-                        "type": "integer",
-                        "description": "Default number of nodes to be used when running this app if no node count is given in the job request",
-                        "maxLength": 12,
-                        "minimum": 0,
-                        "exclusiveMinimum": true,
-                        "title": "Default node count",
-                        "x-schema-form": {
-                            "type": "number",
-                            "placeholder": 1
+                    defaultNodeCount: {
+                        type: 'integer',
+                        description: 'Default number of nodes to be used when running this app if no node count is given in the job request',
+                        maxLength: 12,
+                        minimum: 0,
+                        exclusiveMinimum: true,
+                        title: 'Default node count',
+                        'x-schema-form': {
+                            type: 'number',
+                            placeholder: 1
                         }
                     },
-                    "defaultMemoryPerNode": {
-                        "type": "number",
-                        "description": "Default memory in GB to be used when running this app if no memory is given in the job request",
-                        "maxLength": 9,
-                        "minimum": 0,
-                        "exclusiveMinimum": true,
-                        "title": "Default memory (GB)",
-                        "x-schema-form": {
-                            "type": "number",
-                            "placeholder": 4
+                    defaultMemoryPerNode: {
+                        type: 'number',
+                        description: 'Default memory in GB to be used when running this app if no memory is given in the job request',
+                        maxLength: 9,
+                        minimum: 0,
+                        exclusiveMinimum: true,
+                        title: 'Default memory (GB)',
+                        'x-schema-form': {
+                            type: 'number',
+                            placeholder: 4
                         }
                     },
-                    "defaultProcessorsPerNode": {
-                        "type": "integer",
-                        "description": "Default number of processors per node to be used when running this app if no processor count is given in the job request",
-                        "maxLength": 12,
-                        "title": "Default processor count",
-                        "x-schema-form": {
-                            "type": "number",
-                            "placeholder": 1
+                    defaultProcessorsPerNode: {
+                        type: 'integer',
+                        description: 'Default number of processors per node to be used when running this app if no processor count is given in the job request',
+                        maxLength: 12,
+                        title: 'Default processor count',
+                        'x-schema-form': {
+                            type: 'number',
+                            placeholder: 1
                         }
                     },
-                    "defaultMaxRunTime": {
-                        "type": "string",
-                        "description": "Default max run time to be used when running this app if no requested run time is given in the job request",
-                        "maxLength": 10,
-                        "title": "Default run time",
-                        "validator": "^(?:[0-9]{1,3}?[0-9]):[0-5][0-9]:[0-5][0-9]$",
-                        "x-schema-form": {
-                            "type": "input",
-                            "placeholder": "24:00:00"
+                    defaultMaxRunTime: {
+                        type: 'string',
+                        description: 'Default max run time to be used when running this app if no requested run time is given in the job request',
+                        maxLength: 10,
+                        title: 'Default run time',
+                        validator: '^(?:[0-9]{1,3}?[0-9]):[0-5][0-9]:[0-5][0-9]$',
+                        'x-schema-form': {
+                            type: 'input',
+                            placeholder: '24:00:00'
                         }
                     },
-                    "ontology": {
-                        "type": "array",
-                        "description": "An array of ontology values describing this app.",
-                        "items": {
-                            "type": "string"
+                    ontology: {
+                        type: 'array',
+                        description: 'An array of ontology values describing this app.',
+                        items: {
+                            type: 'string'
                         },
-                        "title": "Ontology"
+                        title: 'Ontology'
                     },
-                    "executionSystem": {
-                        "type": "string",
-                        "description": "The ID of the execution system where this app should run.",
-                        "items": [],
-                        "title": "Execution system"
+                    executionSystem: {
+                        type: 'string',
+                        description: 'The ID of the execution system where this app should run.',
+                        items: [],
+                        title: 'Execution system'
                     },
-                    "executionType": {
-                        "type": "string",
-                        "description": "The execution type of the application. If you're unsure, it's probably HPC",
-                        "enum": [
-                            "CLI", "HPC", "CONDOR"
+                    executionType: {
+                        type: 'string',
+                        description: "The execution type of the application. If you're unsure, it's probably HPC",
+                        enum: [
+                            'CLI', 'HPC', 'CONDOR'
                         ],
-                        "title": "Execution type"
+                        title: 'Execution type'
                     },
-                    "parallelism": {
-                        "type": "string",
-                        "description": "The parallelism type of the application. If you're unsure, it's probably SERIAL",
-                        "enum": [
-                            "SERIAL",
-                            "PARALLEL",
-                            "PTHREAD"
+                    parallelism: {
+                        type: 'string',
+                        description: "The parallelism type of the application. If you're unsure, it's probably SERIAL",
+                        enum: [
+                            'SERIAL',
+                            'PARALLEL',
+                            'PTHREAD'
                         ],
-                        "title": "Parallelism"
+                        title: 'Parallelism'
                     },
-                    "deploymentPath": {
-                        "type": "string",
-                        "description": "The path to the folder on the deployment system containing the application wrapper and dependencies",
-                        "title": "Deployment path"
+                    deploymentPath: {
+                        type: 'string',
+                        description: 'The path to the folder on the deployment system containing the application wrapper and dependencies',
+                        title: 'Deployment path'
                     },
-                    "deploymentSystem": {
-                        "type": "string",
-                        "description": "The ID of the storage system where this app's assets should be stored.",
-                        "items": [],
-                        "title": "Deployment system"
+                    deploymentSystem: {
+                        type: 'string',
+                        description: "The ID of the storage system where this app's assets should be stored.",
+                        items: [],
+                        title: 'Deployment system'
                     },
-                    "templatePath": {
-                        "type": "string",
-                        "description": "The path to the wrapper script relative to the deploymentPath",
-                        "title": "Wrapper script"
+                    templatePath: {
+                        type: 'string',
+                        description: 'The path to the wrapper script relative to the deploymentPath',
+                        title: 'Wrapper script'
                     },
-                    "testPath": {
-                        "type": "string",
-                        "description": "The path to the test script relative to the deploymentPath",
-                        "title": "Test script"
+                    testPath: {
+                        type: 'string',
+                        description: 'The path to the test script relative to the deploymentPath',
+                        title: 'Test script'
                     },
-                    "checkpointable": {
-                        "type": "boolean",
-                        "description": "Does this app support checkpointing?",
-                        "title": "Checkpointable"
+                    checkpointable: {
+                        type: 'boolean',
+                        description: 'Does this app support checkpointing?',
+                        title: 'Checkpointable'
                     },
-                    "tags": {
-                        "type": "array",
-                        "description": "Array of terms you may associate with this app",
-                        "items": {
-                            "type": "string"
+                    tags: {
+                        type: 'array',
+                        description: 'Array of terms you may associate with this app',
+                        items: {
+                            type: 'string'
                         },
-                        "title": "Tags"
+                        title: 'Tags'
                     },
-                    "modules": {
-                        "type": "array",
-                        "description": "An array of modules to load prior to the execution of the application. This is only relevant when you use the unix Modules or LMOD utilities to manage dependencies on the app execution system",
-                        "items": {
-                            "type": "string",
+                    modules: {
+                        type: 'array',
+                        description: 'An array of modules to load prior to the execution of the application. This is only relevant when you use the unix Modules or LMOD utilities to manage dependencies on the app execution system',
+                        items: {
+                            type: 'string',
                         },
-                        "title": "Modules"
+                        title: 'Modules'
                     },
-                    "parameters": {
-                        "type": "array",
-                        "description": "Non-file inputs supported by this application.",
-                        "items": {
-                            "type": "object",
-                            "title": "Parameter",
-                            "properties": {
-                                "id": {
-                                    "type": "string",
-                                    "maxLength": 256,
-                                    "minLength": 1,
-                                    "description": "The unique identifier for this parameter. This will be referenced in the wrapper script",
-                                    "title": "Parameter ID"
+                    parameters: {
+                        type: 'array',
+                        description: 'Non-file inputs supported by this application.',
+                        items: {
+                            type: 'object',
+                            title: 'Parameter',
+                            properties: {
+                                id: {
+                                    type: 'string',
+                                    maxLength: 256,
+                                    minLength: 1,
+                                    description: 'The unique identifier for this parameter. This will be referenced in the wrapper script',
+                                    title: 'Parameter ID'
                                 },
-                                "details": {
-                                    "type": "object",
-                                    "description": "Descriptive details about this app parameter used in form generation",
-                                    "title": "Details",
-                                    "properties": {
-                                        "label": {
-                                            "type": "string",
-                                            "description": "The label displayed for this parameter",
-                                            "title": "Label"
+                                details: {
+                                    type: 'object',
+                                    description: 'Descriptive details about this app parameter used in form generation',
+                                    title: 'Details',
+                                    properties: {
+                                        label: {
+                                            type: 'string',
+                                            description: 'The label displayed for this parameter',
+                                            title: 'Label'
                                         },
-                                        "description": {
-                                            "type": "string",
-                                            "description": "Verbose information on what this parameter does",
-                                            "title": "Description",
-                                            "default": true
+                                        description: {
+                                            type: 'string',
+                                            description: 'Verbose information on what this parameter does',
+                                            title: 'Description',
+                                            default: true
                                         },
-                                        "showArgument": {
-                                            "type": "boolean",
-                                            "description": "Should this command line argument be injected into the submit script preceding the parameter?",
-                                            "title": "Prepend command line argument?"
+                                        showArgument: {
+                                            type: 'boolean',
+                                            description: 'Should this command line argument be injected into the submit script preceding the parameter?',
+                                            title: 'Prepend command line argument?'
                                         },
-                                        "argument": {
-                                            "type": "string",
-                                            "description": "Name of the command line flag or argument (including dashes) for this parameter",
-                                            "title": "Argument value"
+                                        argument: {
+                                            type: 'string',
+                                            description: 'Name of the command line flag or argument (including dashes) for this parameter',
+                                            title: 'Argument value'
                                         },
-                                        "repeatArgument": {
-                                            "type": "boolean",
-                                            "description": "In instances where multiple values are supplied for this parameter, should this command line argument be repeatedly injected into the submit script preceding every instance of the parameter value?",
-                                            "title": "Repeat argument for every value?",
-                                            "default": false
+                                        repeatArgument: {
+                                            type: 'boolean',
+                                            description: 'In instances where multiple values are supplied for this parameter, should this command line argument be repeatedly injected into the submit script preceding every instance of the parameter value?',
+                                            title: 'Repeat argument for every value?',
+                                            default: false
                                         }
                                     }
                                 },
-                                "semantics": {
-                                    "type": "object",
-                                    "description": "Semantic information about the parameter field",
-                                    "title": "Semantics",
-                                    "properties": {
-                                        "minCardinality": {
-                                            "type": "integer",
-                                            "description": "Minimum number of instances of this parameter per job",
-                                            "title": "Min cardinality",
-                                            "default": 0,
-                                            "minimum": 0,
-                                            "required": false
+                                semantics: {
+                                    type: 'object',
+                                    description: 'Semantic information about the parameter field',
+                                    title: 'Semantics',
+                                    properties: {
+                                        minCardinality: {
+                                            type: 'integer',
+                                            description: 'Minimum number of instances of this parameter per job',
+                                            title: 'Min cardinality',
+                                            default: 0,
+                                            minimum: 0,
+                                            required: false
                                         },
-                                        "maxCardinality": {
-                                            "title": "Max cardinality",
-                                            "type": "integer",
-                                            "description": "Max number of instances of this parameter per job",
-                                            "default": -1,
-                                            "minimum": -1,
-                                            "required": false
+                                        maxCardinality: {
+                                            title: 'Max cardinality',
+                                            type: 'integer',
+                                            description: 'Max number of instances of this parameter per job',
+                                            default: -1,
+                                            minimum: -1,
+                                            required: false
                                         },
-                                        "ontology": {
-                                            "title": "Ontology",
-                                            "type": "array",
-                                            "description": "Array of ontology terms describing this parameter.",
-                                            "items": {
-                                                "type": "string"
+                                        ontology: {
+                                            title: 'Ontology',
+                                            type: 'array',
+                                            description: 'Array of ontology terms describing this parameter.',
+                                            items: {
+                                                type: 'string'
                                             }
                                         }
                                     }
                                 },
-                                "value": {
-                                    "type": "object",
-                                    "description": "Default value and validations for the parameter field",
-                                    "title": "Value",
-                                    "properties": {
-                                        "default": {
-                                            "type": ["number", "string"],
-                                            "description": "Default value",
-                                            "title": "Default value"
+                                value: {
+                                    type: 'object',
+                                    description: 'Default value and validations for the parameter field',
+                                    title: 'Value',
+                                    properties: {
+                                        default: {
+                                            type: ['number', 'string'],
+                                            description: 'Default value',
+                                            title: 'Default value'
                                         },
-                                        "type": {
-                                            "type": "string",
-                                            "description": "The content type of the parameter",
-                                            "enum": ["string", "number", "bool", "enumeration", "flag"],
-                                            "title": "Parameter type",
+                                        type: {
+                                            type: 'string',
+                                            description: 'The content type of the parameter',
+                                            enum: ['string', 'number', 'bool', 'enumeration', 'flag'],
+                                            title: 'Parameter type',
                                         },
-                                        "validator": {
-                                            "type": "string",
-                                            "description": "The regular expression used to validate this parameter value",
-                                            "title": "Validator regex"
+                                        validator: {
+                                            type: 'string',
+                                            description: 'The regular expression used to validate this parameter value',
+                                            title: 'Validator regex'
                                         },
-                                        "enum_values": {
-                                            "type": "array",
-                                            "description": "The possible values this parameter accepts. A JSON array of string values should be provided",
-                                            "title": "Enumerated values",
-                                            "items": {
-                                                "type": "string"
+                                        enum_values: {
+                                            type: 'array',
+                                            description: 'The possible values this parameter accepts. A JSON array of string values should be provided',
+                                            title: 'Enumerated values',
+                                            items: {
+                                                type: 'string'
                                             }
                                         },
-                                        "required": {
-                                            "type": "boolean",
-                                            "description": "Is this parameter required? If visible is false, this must be true",
-                                            "title": "Required",
-                                            "default": true
+                                        required: {
+                                            type: 'boolean',
+                                            description: 'Is this parameter required? If visible is false, this must be true',
+                                            title: 'Required',
+                                            default: true
                                         },
-                                        "visible": {
-                                            "type": "boolean",
-                                            "description": "Should this parameter be visible? If not, there must be a default and it will be required",
-                                            "title": "Visible",
-                                            "default": true
+                                        visible: {
+                                            type: 'boolean',
+                                            description: 'Should this parameter be visible? If not, there must be a default and it will be required',
+                                            title: 'Visible',
+                                            default: true
                                         },
-                                        "order": {
-                                            "type": "integer",
-                                            "description": "The order in which this parameter should be printed when generating an execution command for forked execution. This will also be the order in which paramters are returned in the response json",
-                                            "title": "Order",
+                                        order: {
+                                            type: 'integer',
+                                            description: 'The order in which this parameter should be printed when generating an execution command for forked execution. This will also be the order in which paramters are returned in the response json',
+                                            title: 'Order',
                                         }
                                     }
                                 }
                             }
                         }
                     },
-                    "inputs": {
-                        "type": "array",
-                        "description": "Inputs supported by this application.",
-                        "items": {
-                            "type": "object",
-                            "title": "Input",
-                            "properties": {
-                                "id": {
-                                    "type": "string",
-                                    "description": "The unique identifier for this input file. This will be referenced in the wrapper script.",
-                                    "title": "ID",
-                                    "valueInLegend": true
+                    inputs: {
+                        type: 'array',
+                        description: 'Inputs supported by this application.',
+                        items: {
+                            type: 'object',
+                            title: 'Input',
+                            properties: {
+                                id: {
+                                    type: 'string',
+                                    description: 'The unique identifier for this input file. This will be referenced in the wrapper script.',
+                                    title: 'ID',
+                                    valueInLegend: true
                                 },
-                                "details": {
-                                    "type": "object",
-                                    "description": "Descriptive details about this app input used in form generation.",
-                                    "title": "Details",
-                                    "properties": {
-                                        "argument": {
-                                            "type": "string",
-                                            "description": "Name of the command line flag or argument (including dashes) for this input.",
-                                            "title": "Argument value"
+                                details: {
+                                    type: 'object',
+                                    description: 'Descriptive details about this app input used in form generation.',
+                                    title: 'Details',
+                                    properties: {
+                                        argument: {
+                                            type: 'string',
+                                            description: 'Name of the command line flag or argument (including dashes) for this input.',
+                                            title: 'Argument value'
                                         },
-                                        "description": {
-                                            "type": "string",
-                                            "description": "Verbose information on what this input does.",
-                                            "title": "Description"
+                                        description: {
+                                            type: 'string',
+                                            description: 'Verbose information on what this input does.',
+                                            title: 'Description'
                                         },
-                                        "label": {
-                                            "type": "string",
-                                            "description": "The label displayed for this input.",
-                                            "title": "Label"
+                                        label: {
+                                            type: 'string',
+                                            description: 'The label displayed for this input.',
+                                            title: 'Label'
                                         },
-                                        "showArgument": {
-                                            "type": "boolean",
-                                            "description": "Should this command line argument be injected into the submit script preceding the input?",
-                                            "title": "Prepend command line argument?",
-                                            "default": true
+                                        showArgument: {
+                                            type: 'boolean',
+                                            description: 'Should this command line argument be injected into the submit script preceding the input?',
+                                            title: 'Prepend command line argument?',
+                                            default: true
                                         },
-                                        "repeatArgument": {
-                                            "type": "boolean",
-                                            "description": "In instances where multiple values are supplied for this input, should this command line argument be repeatedly injected into the submit script preceding every instance of the input value?",
-                                            "title": "Repeat argument for every value?",
-                                            "default": false
+                                        repeatArgument: {
+                                            type: 'boolean',
+                                            description: 'In instances where multiple values are supplied for this input, should this command line argument be repeatedly injected into the submit script preceding every instance of the input value?',
+                                            title: 'Repeat argument for every value?',
+                                            default: false
                                         }
                                     }
                                 },
-                                "semantics": {
-                                    "type": "object",
-                                    "description": "Semantic information about the input field.",
-                                    "title": "Semantics",
-                                    "properties": {
-                                        "fileTypes": {
-                                            "type": "array",
-                                            "description": "Array of file types required for this input.",
-                                            "items": {
-                                                "type": "string"
+                                semantics: {
+                                    type: 'object',
+                                    description: 'Semantic information about the input field.',
+                                    title: 'Semantics',
+                                    properties: {
+                                        fileTypes: {
+                                            type: 'array',
+                                            description: 'Array of file types required for this input.',
+                                            items: {
+                                                type: 'string'
                                             },
-                                            "title": "File types"
+                                            title: 'File types'
                                         },
-                                        "minCardinality": {
-                                            "type": "integer",
-                                            "description": "Minimum number of instances of this input per job.",
-                                            "title": "Min cardinality",
-                                            "default": 0,
-                                            "minimum": 0,
-                                            "required": false
+                                        minCardinality: {
+                                            type: 'integer',
+                                            description: 'Minimum number of instances of this input per job.',
+                                            title: 'Min cardinality',
+                                            default: 0,
+                                            minimum: 0,
+                                            required: false
                                         },
-                                        "maxCardinality": {
-                                            "title": "Max cardinality",
-                                            "type": "integer",
-                                            "description": "Max number of instances of this input per job.",
-                                            "default": -1,
-                                            "minimum": -1,
-                                            "required": false
+                                        maxCardinality: {
+                                            title: 'Max cardinality',
+                                            type: 'integer',
+                                            description: 'Max number of instances of this input per job.',
+                                            default: -1,
+                                            minimum: -1,
+                                            required: false
                                         },
-                                        "ontology": {
-                                            "title": "Ontology",
-                                            "type": "array",
-                                            "description": "Array of ontology terms describing this input.",
-                                            "items": {
-                                                "type": "string"
+                                        ontology: {
+                                            title: 'Ontology',
+                                            type: 'array',
+                                            description: 'Array of ontology terms describing this input.',
+                                            items: {
+                                                type: 'string'
                                             }
                                         }
                                     }
                                 },
-                                "value": {
-                                    "type": "object",
-                                    "description": "Default value and validations for the parameter field.",
-                                    "title": "Value",
-                                    "properties": {
-                                        "default": {
-                                            "type": ["number", "string"],
-                                            "description": "Default value",
-                                            "title": "Default value"
+                                value: {
+                                    type: 'object',
+                                    description: 'Default value and validations for the parameter field.',
+                                    title: 'Value',
+                                    properties: {
+                                        default: {
+                                            type: ['number', 'string'],
+                                            description: 'Default value',
+                                            title: 'Default value'
                                         },
-                                        "order": {
-                                            "type": "integer",
-                                            "description": "The order in which this parameter should be printed when generating an execution command for forked execution. This will also be the order in which paramters are returned in the response json.",
-                                            "title": "Order",
+                                        order: {
+                                            type: 'integer',
+                                            description: 'The order in which this parameter should be printed when generating an execution command for forked execution. This will also be the order in which paramters are returned in the response json.',
+                                            title: 'Order',
                                         },
-                                        "validator": {
-                                            "type": "string",
-                                            "description": "The regular expression used to validate this parameter value.",
-                                            "title": "Validator regex"
+                                        validator: {
+                                            type: 'string',
+                                            description: 'The regular expression used to validate this parameter value.',
+                                            title: 'Validator regex'
                                         },
-                                        "required": {
-                                            "type": "boolean",
-                                            "description": "Is this parameter required? If visible is false, this must be true.",
-                                            "title": "Required",
-                                            "default": true
+                                        required: {
+                                            type: 'boolean',
+                                            description: 'Is this parameter required? If visible is false, this must be true.',
+                                            title: 'Required',
+                                            default: true
                                         },
-                                        "visible": {
-                                            "type": "boolean",
-                                            "description": "Should this parameter be visible? If not, there must be a default and it will be required.",
-                                            "title": "Visible",
-                                            "default": true
+                                        visible: {
+                                            type: 'boolean',
+                                            description: 'Should this parameter be visible? If not, there must be a default and it will be required.',
+                                            title: 'Visible',
+                                            default: true
                                         },
-                                        "enquote": {
-                                            "type": "boolean",
-                                            "description": "Should this value be double quoted prior to injection in the wrapper template.",
-                                            "title": "Visible",
-                                            "default": true,
-                                            "required": true
+                                        enquote: {
+                                            type: 'boolean',
+                                            description: 'Should this value be double quoted prior to injection in the wrapper template.',
+                                            title: 'Visible',
+                                            default: true,
+                                            required: true
                                         }
                                     }
                                 }
@@ -605,14 +605,14 @@ export function applicationEditCtrl(window, angular, $, _) {
 
             $scope.form = [
                 {
-                    "type": "wizard",
-                    "legend": "General Info",
-                    "tabs": [
+                    type: 'wizard',
+                    legend: 'General Info',
+                    tabs: [
                         {
-                            "title": "Basics",
-                            "items": [
+                            title: 'Basics',
+                            items: [
                                 {
-                                    "key": "name",
+                                    key: 'name',
                                     ngModelOptions: {
                                         updateOnDefault: true
                                     },
@@ -627,12 +627,12 @@ export function applicationEditCtrl(window, angular, $, _) {
                                         return true;
                                     },
                                     validationMessage: {
-                                        "required": "Missing required",
-                                        "invalidCharacters": "Invalid parameter id. Parameters must be alphanumeric strings with no spaces and may include underscores"
+                                        required: 'Missing required',
+                                        invalidCharacters: 'Invalid parameter id. Parameters must be alphanumeric strings with no spaces and may include underscores'
                                     },
                                 },
                                 {
-                                    "key": "version",
+                                    key: 'version',
                                     ngModelOptions: {
                                         updateOnDefault: true
                                     },
@@ -649,13 +649,13 @@ export function applicationEditCtrl(window, angular, $, _) {
                                         },
                                     },
                                     validationMessage: {
-                                        "required": "Missing required",
-                                        "invalidCharacters": "Invalid version format. Should be #.#.#"
+                                        required: 'Missing required',
+                                        invalidCharacters: 'Invalid version format. Should be #.#.#'
                                     }
                                 },
-                                "label",
+                                'label',
                                 {
-                                    "key": "appCategory",
+                                    key: 'appCategory',
                                     ngModelOptions: {
                                         updateOnDefault: true
                                     },
@@ -666,27 +666,27 @@ export function applicationEditCtrl(window, angular, $, _) {
                                     }
                                 },
                                 {
-                                    "key": "appIcon",
-                                    "type": "select",
+                                    key: 'appIcon',
+                                    type: 'select',
                                     ngModelOptions: {
                                         updateOnDefault: true
                                     },
                                 },
-                                "shortDescription",
-                                "longDescription",
+                                'shortDescription',
+                                'longDescription',
                                 {
-                                    "key": "tags",
-                                    "placeholder": "One or more tags",
-                                    "options": {
-                                        "tagging": true,
-                                        "taggingLabel": '(new)',
-                                        "taggingTokens": 'SPACE|ENTER|,'
+                                    key: 'tags',
+                                    placeholder: 'One or more tags',
+                                    options: {
+                                        tagging: true,
+                                        taggingLabel: '(new)',
+                                        taggingTokens: 'SPACE|ENTER|,'
                                     }
                                 },
                                 {
-                                    "key": "helpURI",
-                                    "title": "Help URL",
-                                    "description": "The URL where users can go for more information about the app",
+                                    key: 'helpURI',
+                                    title: 'Help URL',
+                                    description: 'The URL where users can go for more information about the app',
                                     // ngModelOptions: {
                                     //     updateOnDefault: true
                                     // },
@@ -704,22 +704,22 @@ export function applicationEditCtrl(window, angular, $, _) {
                                     // }
                                 },
                                 {
-                                    "key": 'ontology',
-                                    "placeholder": 'Semantic terms',
-                                    "startEmpty": true
+                                    key: 'ontology',
+                                    placeholder: 'Semantic terms',
+                                    startEmpty: true
                                 }
                             ]
                         },
                         {
-                            "title": "Dependencies",
-                            "items": [
+                            title: 'Dependencies',
+                            items: [
                                 {
-                                    "key": "deploymentPath",
-                                    "type": "template",
-                                    "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.deploymentPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
+                                    key: 'deploymentPath',
+                                    type: 'template',
+                                    template: '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.deploymentPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
                                     validate: function(form) {
                                         if (!$scope.model.deploymentPath) {
-                                            form.description = 'Missing required'
+                                            form.description = 'Missing required';
                                         }
                                     },
                                     validatePath: function(event, form) {
@@ -749,10 +749,10 @@ export function applicationEditCtrl(window, angular, $, _) {
                                     }
                                 },
                                 {
-                                    "key": "deploymentSystem",
-                                    "placeholder": "designsafe.storage.default",
-                                    "type": "select",
-                                    "titleMap": [],
+                                    key: 'deploymentSystem',
+                                    placeholder: 'designsafe.storage.default',
+                                    type: 'select',
+                                    titleMap: [],
                                     ngModelOptions: {
                                         updateOnDefault: true
                                     },
@@ -762,16 +762,16 @@ export function applicationEditCtrl(window, angular, $, _) {
                                         }
                                     },
                                     validationMessage: {
-                                        'required': 'Missing required'
+                                        required: 'Missing required'
                                     }
                                 },
                                 {
-                                    "key": "templatePath",
-                                    "type": "template",
-                                    "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.templatePath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
+                                    key: 'templatePath',
+                                    type: 'template',
+                                    template: '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.templatePath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
                                     validate: function(form) {
                                         if (!$scope.model.templatePath) {
-                                            form.description = 'Missing required'
+                                            form.description = 'Missing required';
                                         }
                                     },
                                     validatePath: function(event, form) {
@@ -801,12 +801,12 @@ export function applicationEditCtrl(window, angular, $, _) {
                                     }
                                 },
                                 {
-                                    "key": "testPath",
-                                    "type": "template",
-                                    "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.testPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
+                                    key: 'testPath',
+                                    type: 'template',
+                                    template: '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.testPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
                                     validate: function(form) {
                                         if (!$scope.model.testPath) {
-                                            form.description = 'Missing required'
+                                            form.description = 'Missing required';
                                         }
                                     },
                                     validatePath: function(event, form) {
@@ -836,14 +836,14 @@ export function applicationEditCtrl(window, angular, $, _) {
                                     }
                                 },
                                 {
-                                    "key": 'modules',
-                                    "startEmpty": true,
-                                    "placeholder": 'Module command(s)',
-                                    "title": "Modules",
-                                    "options": {
-                                        "tagging": '',
-                                        "taggingLabel": '(new)',
-                                        "taggingTokens": ',|ENTER|,'
+                                    key: 'modules',
+                                    startEmpty: true,
+                                    placeholder: 'Module command(s)',
+                                    title: 'Modules',
+                                    options: {
+                                        tagging: '',
+                                        taggingLabel: '(new)',
+                                        taggingTokens: ',|ENTER|,'
                                     },
                                     ngModelOptions: {
                                         updateOnDefault: true
@@ -852,10 +852,10 @@ export function applicationEditCtrl(window, angular, $, _) {
                             ]
                         },
                         {
-                            "title": "Environment",
-                            "items": [
+                            title: 'Environment',
+                            items: [
                                 {
-                                    "key": "executionType",
+                                    key: 'executionType',
                                     ngModelOptions: {
                                         updateOnDefault: true
                                     },
@@ -865,13 +865,13 @@ export function applicationEditCtrl(window, angular, $, _) {
                                         }
                                     },
                                     validationMessage: {
-                                        'required': 'Missing required'
+                                        required: 'Missing required'
                                     }
                                 },
                                 {
-                                    "key": "executionSystem",
-                                    "type": "select",
-                                    "titleMap": [],
+                                    key: 'executionSystem',
+                                    type: 'select',
+                                    titleMap: [],
                                     onChange: function(value, form) {
                                         Apps.getSystems(value, '', 'EXECUTION')
                                             .then(
@@ -879,8 +879,8 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                     $scope.form[0].tabs[2].items[2].titleMap = [];
                                                     angular.forEach(response.data.queues, function(queue, key) {
                                                         $scope.form[0].tabs[2].items[2].titleMap.push({
-                                                            "value": queue.name,
-                                                            "name": queue.name
+                                                            value: queue.name,
+                                                            name: queue.name
                                                         });
                                                     });
                                                 },
@@ -898,41 +898,41 @@ export function applicationEditCtrl(window, angular, $, _) {
                                         }
                                     },
                                     validationMessage: {
-                                        'required': 'Missing required'
+                                        required: 'Missing required'
                                     }
                                 },
                                 {
-                                    "key": "defaultQueue",
-                                    "title": "Default queue",
-                                    "description": "Default queue to use when submitting this job if none is provided in the job request. Can be left blank and a queue will be determined at run time",
-                                    "type": "select",
-                                    "condition": "model.executionSystem !== ''",
+                                    key: 'defaultQueue',
+                                    title: 'Default queue',
+                                    description: 'Default queue to use when submitting this job if none is provided in the job request. Can be left blank and a queue will be determined at run time',
+                                    type: 'select',
+                                    condition: "model.executionSystem !== ''",
                                     ngModelOptions: {
                                         updateOnDefault: true
                                     },
                                     titleMap: []
                                 },
-                                "defaultNodeCount",
-                                "defaultMemoryPerNode",
-                                "defaultProcessorsPerNode",
-                                "defaultMaxRunTime",
+                                'defaultNodeCount',
+                                'defaultMemoryPerNode',
+                                'defaultProcessorsPerNode',
+                                'defaultMaxRunTime',
                                 {
-                                    "key": "parallelism",
-                                    "type": "select",
+                                    key: 'parallelism',
+                                    type: 'select',
                                     ngModelOptions: {
                                         updateOnDefault: true
                                     },
                                 },
                                 {
-                                    "key": "checkpointable",
-                                    "type": "radiobuttons",
-                                    "style": {
-                                        "selected": "btn-success",
-                                        "unselected": "btn-default"
+                                    key: 'checkpointable',
+                                    type: 'radiobuttons',
+                                    style: {
+                                        selected: 'btn-success',
+                                        unselected: 'btn-default'
                                     },
-                                    "titleMap": [
-                                        { value: true, name: "True" },
-                                        { value: false, name: "False" }
+                                    titleMap: [
+                                        { value: true, name: 'True' },
+                                        { value: false, name: 'False' }
                                     ],
                                     ngModelOptions: {
                                         updateOnDefault: true
@@ -941,21 +941,21 @@ export function applicationEditCtrl(window, angular, $, _) {
                             ]
                         },
                         {
-                            "title": "Parameters",
-                            "items": [
+                            title: 'Parameters',
+                            items: [
                                 {
-                                    "type": "tabarray",
-                                    "title": "{{value.id || ('Parameter ' + $index)}}",
-                                    "tabType": "top",
-                                    "key": "parameters",
+                                    type: 'tabarray',
+                                    title: "{{value.id || ('Parameter ' + $index)}}",
+                                    tabType: 'top',
+                                    key: 'parameters',
                                     //remove: "Delete",
-                                    "style": {
-                                        remove: "btn-danger"
+                                    style: {
+                                        remove: 'btn-danger'
                                     },
-                                    "add": "Add parameter",
-                                    "items": [
+                                    add: 'Add parameter',
+                                    items: [
                                         {
-                                            key: "parameters[].id",
+                                            key: 'parameters[].id',
                                             ngModelOptions: {
                                                 updateOnDefault: true
                                             },
@@ -969,50 +969,50 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                 };
                                             },
                                             validationMessage: {
-                                                'invalidCharacters': "Invalid parameter id. Parameters must be alphanumeric strings and may include underscores."
+                                                invalidCharacters: 'Invalid parameter id. Parameters must be alphanumeric strings and may include underscores.'
                                             }
                                         },
                                         {
-                                            "key": "parameters[].details",
-                                            "type": "fieldset",
-                                            "title": "Details",
-                                            "description": "Descriptive details about this app parameter used in form generation.",
-                                            "items": [
-                                                "parameters[].details.label",
+                                            key: 'parameters[].details',
+                                            type: 'fieldset',
+                                            title: 'Details',
+                                            description: 'Descriptive details about this app parameter used in form generation.',
+                                            items: [
+                                                'parameters[].details.label',
                                                 // "parameters[].details.description",
                                                 {
-                                                    "key": "parameters[].details.showArgument",
-                                                    "type": "radiobuttons",
+                                                    key: 'parameters[].details.showArgument',
+                                                    type: 'radiobuttons',
                                                     // ngModelOptions: { updateOn: 'click' },
                                                     ngModelOptions: {
                                                         updateOnDefault: true
                                                     },
-                                                    "style": {
-                                                        "selected": "btn-success",
-                                                        "unselected": "btn-default"
+                                                    style: {
+                                                        selected: 'btn-success',
+                                                        unselected: 'btn-default'
                                                     },
-                                                    "titleMap": [
-                                                        { "value": true, "name": "True" },
-                                                        { "value": false, "name": "False" }
+                                                    titleMap: [
+                                                        { value: true, name: 'True' },
+                                                        { value: false, name: 'False' }
                                                     ]
                                                 },
                                                 {
-                                                    "key": "parameters[].details.argument",
-                                                    "condition": "model.parameters[arrayIndex].details.showArgument",
-                                                    "title": "Command line argument"
+                                                    key: 'parameters[].details.argument',
+                                                    condition: 'model.parameters[arrayIndex].details.showArgument',
+                                                    title: 'Command line argument'
                                                 },
                                                 {
-                                                    "key": "parameters[].details.repeatArgument",
-                                                    "type": "radiobuttons",
+                                                    key: 'parameters[].details.repeatArgument',
+                                                    type: 'radiobuttons',
                                                     // ngModelOptions: { updateOn: 'click' },
-                                                    "condition": "model.parameters[arrayIndex].details.showArgument",
-                                                    "style": {
-                                                        "selected": "btn-success",
-                                                        "unselected": "btn-default"
+                                                    condition: 'model.parameters[arrayIndex].details.showArgument',
+                                                    style: {
+                                                        selected: 'btn-success',
+                                                        unselected: 'btn-default'
                                                     },
-                                                    "titleMap": [
-                                                        { "value": true, "name": "True" },
-                                                        { "value": false, "name": "False" }
+                                                    titleMap: [
+                                                        { value: true, name: 'True' },
+                                                        { value: false, name: 'False' }
                                                     ],
                                                     ngModelOptions: {
                                                         updateOnDefault: true
@@ -1021,24 +1021,24 @@ export function applicationEditCtrl(window, angular, $, _) {
                                             ]
                                         },
                                         {
-                                            "key": "parameters[].semantics",
-                                            "type": "fieldset",
-                                            "title": "Semantics",
-                                            "description": "Semantic information about the parameter field.",
-                                            "items": [
+                                            key: 'parameters[].semantics',
+                                            type: 'fieldset',
+                                            title: 'Semantics',
+                                            description: 'Semantic information about the parameter field.',
+                                            items: [
                                                 {
-                                                    "key": "parameters[].semantics.ontology",
-                                                    "startEmpty": true,
+                                                    key: 'parameters[].semantics.ontology',
+                                                    startEmpty: true,
                                                 },
                                                 {
-                                                    "key": "parameters[].semantics.minCardinality",
-                                                    "type": "number",
+                                                    key: 'parameters[].semantics.minCardinality',
+                                                    type: 'number',
                                                     ngModelOptions: {
                                                         updateOnDefault: true
                                                     },
                                                     validationMessage: {
-                                                        'minLessThanMax': 'Minimum number of values allowed by this parameter must be a non-negative integer value less than or equal to the maximum number of values.',
-                                                        'gtzeroWhenRequired': 'Minimum number of values allowed by this parameter must be greater than zero when required.',
+                                                        minLessThanMax: 'Minimum number of values allowed by this parameter must be a non-negative integer value less than or equal to the maximum number of values.',
+                                                        gtzeroWhenRequired: 'Minimum number of values allowed by this parameter must be greater than zero when required.',
                                                     },
                                                     $validators: {
                                                         minLessThanMax: function(value) {
@@ -1066,14 +1066,14 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                     },
                                                 },
                                                 {
-                                                    "key": "parameters[].semantics.maxCardinality",
-                                                    "type": "number",
+                                                    key: 'parameters[].semantics.maxCardinality',
+                                                    type: 'number',
                                                     ngModelOptions: {
                                                         updateOnDefault: true
                                                     },
                                                     validationMessage: {
-                                                        "maxGreaterThanMax": "Maximum number of values allowed by this parameter must be a non-negative integer value less than or equal to the maximum number of values",
-                                                        "oneWhenBoolish": "Maximum number of values is one when parameter is of type bool or flag",
+                                                        maxGreaterThanMax: 'Maximum number of values allowed by this parameter must be a non-negative integer value less than or equal to the maximum number of values',
+                                                        oneWhenBoolish: 'Maximum number of values is one when parameter is of type bool or flag',
                                                     },
                                                     $validators: {
                                                         minLessThanMax: function(value) {
@@ -1104,36 +1104,36 @@ export function applicationEditCtrl(window, angular, $, _) {
                                             ]
                                         },
                                         {
-                                            "key": "parameters[].value",
-                                            "type": "fieldset",
-                                            "title": "Values",
-                                            "description": "Default value and validations for the parameter field.",
-                                            "items": [
+                                            key: 'parameters[].value',
+                                            type: 'fieldset',
+                                            title: 'Values',
+                                            description: 'Default value and validations for the parameter field.',
+                                            items: [
                                                 {
-                                                    "key": "parameters[].value.type",
-                                                    "type": "select",
+                                                    key: 'parameters[].value.type',
+                                                    type: 'select',
 
                                                 },
                                                 {
-                                                    "key": "parameters[].value.default",
-                                                    "description": "Default value",
-                                                    "title": "Default value"
+                                                    key: 'parameters[].value.default',
+                                                    description: 'Default value',
+                                                    title: 'Default value'
                                                 },
                                                 {
-                                                    "key": "parameters[].value.validator",
-                                                    "condition": "[string,number].indexOf(model.parameters[arrayIndex].value.type) !== -1",
+                                                    key: 'parameters[].value.validator',
+                                                    condition: '[string,number].indexOf(model.parameters[arrayIndex].value.type) !== -1',
                                                     ngModelOptions: {
                                                         updateOnDefault: true
                                                     }
                                                 },
                                                 {
-                                                    "key": "parameters[].value.enum_values",
-                                                    "condition": "model.parameters[arrayIndex].value.type === 'enum'",
+                                                    key: 'parameters[].value.enum_values',
+                                                    condition: "model.parameters[arrayIndex].value.type === 'enum'",
                                                     ngModelOptions: {
                                                         updateOnDefault: true
                                                     },
                                                     validationMessage: {
-                                                        'enumNotSupported': 'Enumerated values are only supported for parameters of type enum.',
+                                                        enumNotSupported: 'Enumerated values are only supported for parameters of type enum.',
                                                     },
                                                     $validators: {
                                                         enumNotSupported: function(value) {
@@ -1142,15 +1142,15 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                     }
                                                 },
                                                 {
-                                                    "key": "parameters[].value.visible",
-                                                    "type": "radiobuttons",
-                                                    "style": {
-                                                        "selected": "btn-success",
-                                                        "unselected": "btn-default"
+                                                    key: 'parameters[].value.visible',
+                                                    type: 'radiobuttons',
+                                                    style: {
+                                                        selected: 'btn-success',
+                                                        unselected: 'btn-default'
                                                     },
-                                                    "titleMap": [
-                                                        { "value": true, "name": "Yes" },
-                                                        { "value": false, "name": "No" }
+                                                    titleMap: [
+                                                        { value: true, name: 'Yes' },
+                                                        { value: false, name: 'No' }
                                                     ],
                                                     ngModelOptions: {
                                                         updateOnDefault: true
@@ -1166,16 +1166,16 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                     }
                                                 },
                                                 {
-                                                    "key": "parameters[].value.required",
-                                                    "type": "radiobuttons",
-                                                    "condition": "model.parameters[arrayIndex].value.visible",
-                                                    "style": {
-                                                        "selected": "btn-success",
-                                                        "unselected": "btn-default"
+                                                    key: 'parameters[].value.required',
+                                                    type: 'radiobuttons',
+                                                    condition: 'model.parameters[arrayIndex].value.visible',
+                                                    style: {
+                                                        selected: 'btn-success',
+                                                        unselected: 'btn-default'
                                                     },
-                                                    "titleMap": [
-                                                        { "value": true, "name": "Yes" },
-                                                        { "value": false, "name": "No" }
+                                                    titleMap: [
+                                                        { value: true, name: 'Yes' },
+                                                        { value: false, name: 'No' }
                                                     ],
                                                     ngModelOptions: {
                                                         updateOnDefault: true
@@ -1193,7 +1193,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                     }
                                                 },
                                                 {
-                                                    "key": "parameters[].value.order"
+                                                    key: 'parameters[].value.order'
                                                 }
                                             ]
                                         }
@@ -1202,21 +1202,21 @@ export function applicationEditCtrl(window, angular, $, _) {
                             ]
                         },
                         {
-                            "title": "Inputs",
-                            "items": [
+                            title: 'Inputs',
+                            items: [
                                 {
-                                    "type": "tabarray",
-                                    "title": "{{value.id || ('Input ' + $index)}}",
-                                    "tabType": "top",
-                                    "key": "inputs",
-                                    "style": {
-                                        "remove": "btn-danger"
+                                    type: 'tabarray',
+                                    title: "{{value.id || ('Input ' + $index)}}",
+                                    tabType: 'top',
+                                    key: 'inputs',
+                                    style: {
+                                        remove: 'btn-danger'
                                     },
-                                    "add": "Add input",
-                                    "startEmpty": true,
-                                    "items": [
+                                    add: 'Add input',
+                                    startEmpty: true,
+                                    items: [
                                         {
-                                            "key": "inputs[].id",
+                                            key: 'inputs[].id',
                                             ngModelOptions: {
                                                 updateOnDefault: true
                                             },
@@ -1230,49 +1230,49 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                 };
                                             },
                                             validationMessage: {
-                                                'invalidCharacters': "Invalid input id. Inputs must be alphanumeric strings and may include underscores."
+                                                invalidCharacters: 'Invalid input id. Inputs must be alphanumeric strings and may include underscores.'
                                             }
                                         },
                                         {
-                                            "key": "inputs[].details",
-                                            "type": "fieldset",
-                                            "title": "Details",
-                                            "description": "Descriptive details about this app inputs used in form generation.",
-                                            "items": [
+                                            key: 'inputs[].details',
+                                            type: 'fieldset',
+                                            title: 'Details',
+                                            description: 'Descriptive details about this app inputs used in form generation.',
+                                            items: [
                                                 {
-                                                    "key": "inputs[].details.label"
+                                                    key: 'inputs[].details.label'
                                                 },
                                                 {
-                                                    "key": "inputs[].details.showArgument",
-                                                    "type": "radiobuttons",
-                                                    "style": {
-                                                        "selected": "btn-success",
-                                                        "unselected": "btn-default"
+                                                    key: 'inputs[].details.showArgument',
+                                                    type: 'radiobuttons',
+                                                    style: {
+                                                        selected: 'btn-success',
+                                                        unselected: 'btn-default'
                                                     },
-                                                    "titleMap": [
-                                                        { "value": true, "name": "True" },
-                                                        { "value": false, "name": "False" }
+                                                    titleMap: [
+                                                        { value: true, name: 'True' },
+                                                        { value: false, name: 'False' }
                                                     ],
                                                     ngModelOptions: {
                                                         updateOnDefault: true
                                                     }
                                                 },
                                                 {
-                                                    "key": "inputs[].details.argument",
-                                                    "condition": "model.parameters[arrayIndex].details.showArgument",
-                                                    "title": "Command line argument"
+                                                    key: 'inputs[].details.argument',
+                                                    condition: 'model.parameters[arrayIndex].details.showArgument',
+                                                    title: 'Command line argument'
                                                 },
                                                 {
-                                                    "key": "inputs[].details.repeatArgument",
-                                                    "type": "radiobuttons",
-                                                    "condition": "model.inputs[arrayIndex].details.showArgument",
-                                                    "style": {
-                                                        "selected": "btn-success",
-                                                        "unselected": "btn-default"
+                                                    key: 'inputs[].details.repeatArgument',
+                                                    type: 'radiobuttons',
+                                                    condition: 'model.inputs[arrayIndex].details.showArgument',
+                                                    style: {
+                                                        selected: 'btn-success',
+                                                        unselected: 'btn-default'
                                                     },
-                                                    "titleMap": [
-                                                        { "value": true, "name": "True" },
-                                                        { "value": false, "name": "False" }
+                                                    titleMap: [
+                                                        { value: true, name: 'True' },
+                                                        { value: false, name: 'False' }
                                                     ],
                                                     ngModelOptions: {
                                                         updateOnDefault: true
@@ -1281,24 +1281,24 @@ export function applicationEditCtrl(window, angular, $, _) {
                                             ]
                                         },
                                         {
-                                            "key": "inputs[].semantics",
-                                            "type": "fieldset",
-                                            "title": "Semantics",
-                                            "description": "Semantic information about the input field.",
-                                            "items": [
+                                            key: 'inputs[].semantics',
+                                            type: 'fieldset',
+                                            title: 'Semantics',
+                                            description: 'Semantic information about the input field.',
+                                            items: [
                                                 {
-                                                    "key": "inputs[].semantics.ontology",
-                                                    "startEmpty": true,
+                                                    key: 'inputs[].semantics.ontology',
+                                                    startEmpty: true,
                                                 },
                                                 {
-                                                    "key": "inputs[].semantics.minCardinality",
-                                                    "type": "number",
+                                                    key: 'inputs[].semantics.minCardinality',
+                                                    type: 'number',
                                                     ngModelOptions: {
                                                         updateOnDefault: true
                                                     },
                                                     validationMessage: {
-                                                        'minLessThanMax': 'Minimum number of values allowed by this input must be a non-negative integer value less than or equal to the maximum number of values.',
-                                                        'gtzeroWhenRequired': 'Minimum number of values allowed by this input must be greater than zero when required.',
+                                                        minLessThanMax: 'Minimum number of values allowed by this input must be a non-negative integer value less than or equal to the maximum number of values.',
+                                                        gtzeroWhenRequired: 'Minimum number of values allowed by this input must be greater than zero when required.',
                                                     },
                                                     $validators: {
                                                         minLessThanMax: function(value) {
@@ -1326,14 +1326,14 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                     },
                                                 },
                                                 {
-                                                    "key": "inputs[].semantics.maxCardinality",
-                                                    "type": "number",
+                                                    key: 'inputs[].semantics.maxCardinality',
+                                                    type: 'number',
                                                     ngModelOptions: {
                                                         updateOnDefault: true
                                                     },
                                                     validationMessage: {
-                                                        'maxGreaterThanMax': 'Maximum number of values allowed by this parameter must be a non-negative integer value less than or equal to the maximum number of values.',
-                                                        'oneWhenBoolish': 'Maximum number of values is one when parameter is of type bool or flag.',
+                                                        maxGreaterThanMax: 'Maximum number of values allowed by this parameter must be a non-negative integer value less than or equal to the maximum number of values.',
+                                                        oneWhenBoolish: 'Maximum number of values is one when parameter is of type bool or flag.',
                                                     },
                                                     $validators: {
                                                         minLessThanMax: function(value) {
@@ -1364,33 +1364,33 @@ export function applicationEditCtrl(window, angular, $, _) {
                                             ]
                                         },
                                         {
-                                            "key": "inputs[].value",
-                                            "type": "fieldset",
-                                            "title": "Values",
-                                            "description": "Default value and validations for the input field.",
-                                            "items": [
+                                            key: 'inputs[].value',
+                                            type: 'fieldset',
+                                            title: 'Values',
+                                            description: 'Default value and validations for the input field.',
+                                            items: [
                                                 {
-                                                    "key": "inputs[].value.default",
-                                                    "description": "Default value",
-                                                    "title": "Default value"
+                                                    key: 'inputs[].value.default',
+                                                    description: 'Default value',
+                                                    title: 'Default value'
                                                 },
                                                 {
-                                                    "key": "inputs[].value.validator",
-                                                    "condition": "[string,number].indexOf(model.inputs[arrayIndex].value.type) !== -1",
+                                                    key: 'inputs[].value.validator',
+                                                    condition: '[string,number].indexOf(model.inputs[arrayIndex].value.type) !== -1',
                                                     ngModelOptions: {
                                                         updateOnDefault: true
                                                     }
                                                 },
                                                 {
-                                                    "key": "inputs[].value.visible",
-                                                    "type": "radiobuttons",
-                                                    "style": {
-                                                        "selected": "btn-success",
-                                                        "unselected": "btn-default"
+                                                    key: 'inputs[].value.visible',
+                                                    type: 'radiobuttons',
+                                                    style: {
+                                                        selected: 'btn-success',
+                                                        unselected: 'btn-default'
                                                     },
-                                                    "titleMap": [
-                                                        { "value": true, "name": "Yes" },
-                                                        { "value": false, "name": "No" }
+                                                    titleMap: [
+                                                        { value: true, name: 'Yes' },
+                                                        { value: false, name: 'No' }
                                                     ],
                                                     ngModelOptions: {
                                                         updateOnDefault: true
@@ -1406,16 +1406,16 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                     }
                                                 },
                                                 {
-                                                    "key": "inputs[].value.required",
-                                                    "type": "radiobuttons",
-                                                    "condition": "model.inputs[arrayIndex].value.visible",
-                                                    "style": {
-                                                        "selected": "btn-success",
-                                                        "unselected": "btn-default"
+                                                    key: 'inputs[].value.required',
+                                                    type: 'radiobuttons',
+                                                    condition: 'model.inputs[arrayIndex].value.visible',
+                                                    style: {
+                                                        selected: 'btn-success',
+                                                        unselected: 'btn-default'
                                                     },
-                                                    "titleMap": [
-                                                        { "value": true, "name": "Yes" },
-                                                        { "value": false, "name": "No" }
+                                                    titleMap: [
+                                                        { value: true, name: 'Yes' },
+                                                        { value: false, name: 'No' }
                                                     ],
                                                     ngModelOptions: {
                                                         updateOnDefault: true
@@ -1433,7 +1433,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                     }
                                                 },
                                                 {
-                                                    "key": "inputs[].value.order"
+                                                    key: 'inputs[].value.order'
                                                 }
                                             ]
                                         }
@@ -1476,7 +1476,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                             // Add formatted appCategory entry to tags, and replace old appCategory if it exists
                             if ($scope.model.hasOwnProperty('appCategory')) {
                                 if ($scope.simpleList.tagIncludesParam($scope.model, 'appCategory')) {
-                                    $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter(s => s.includes('appCategory'))[0]));
+                                    $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter((s) => s.includes('appCategory'))[0]));
                                 }
                                 $scope.model.tags.push(`appCategory:${$scope.model.appCategory}`);
                             }
@@ -1484,7 +1484,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                             // Add formatted icon entry to tags, and replace old icon if it exists
                             if ($scope.model.hasOwnProperty('appIcon')) {
                                 if ($scope.simpleList.tagIncludesParam($scope.model, 'appIcon')) {
-                                    $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter(s => s.includes('appIcon'))[0]));
+                                    $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter((s) => s.includes('appIcon'))[0]));
                                 }
                                 $scope.model.tags.push(`appIcon:${$scope.model.appIcon}`);
                             }
@@ -1519,12 +1519,12 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                                             '$scope', '$uibModalInstance', '$translate', 'appMeta', function($scope, $uibModalInstance, $translate, appMeta) {
                                                                                 // Define appCategory if it exists in tags
                                                                                 if ($scope.simpleList.tagIncludesParam(appMeta.definition, 'appCategory')) {
-                                                                                    appMeta.definition.appCategory = appMeta.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                                                                    appMeta.definition.appCategory = appMeta.definition.tags.filter((s) => s.includes('appCategory'))[0].split(':')[1];
                                                                                 }
 
                                                                                 // Define appIcon if it exists in tags
                                                                                 if ($scope.simpleList.tagIncludesParam(appMeta.definition, 'appIcon')) {
-                                                                                    appMeta.definition.appIcon = appMeta.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                                                                                    appMeta.definition.appIcon = appMeta.definition.tags.filter((s) => s.includes('appIcon'))[0].split(':')[1];
                                                                                 }
 
                                                                                 $scope.appMeta = appMeta;
@@ -1562,12 +1562,12 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                                             '$scope', '$uibModalInstance', '$translate', 'appMeta', function($scope, $uibModalInstance, $translate, appMeta) {
                                                                                 // Define appCategory if it exists in tags
                                                                                 if ($scope.simpleList.tagIncludesParam(appMeta.definition, 'appCategory')) {
-                                                                                    appMeta.definition.appCategory = appMeta.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                                                                    appMeta.definition.appCategory = appMeta.definition.tags.filter((s) => s.includes('appCategory'))[0].split(':')[1];
                                                                                 }
 
                                                                                 // Define appIcon if it exists in tags
                                                                                 if ($scope.simpleList.tagIncludesParam(appMeta.definition, 'appIcon')) {
-                                                                                    appMeta.definition.appIcon = appMeta.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                                                                                    appMeta.definition.appIcon = appMeta.definition.tags.filter((s) => s.includes('appIcon'))[0].split(':')[1];
                                                                                 }
 
                                                                                 $scope.appMeta = appMeta;
@@ -1608,7 +1608,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                     case 'html':
                         if ($scope.myCustomForm.$valid) {
 
-                            var metadata = { 'name': $translate.instant('apps_metadata_name') };
+                            var metadata = { name: $translate.instant('apps_metadata_name') };
                             metadata.value = {};
                             metadata.value.definition = {};
                             metadata.value.definition.id = $scope.customModel.label + '-' + $scope.customModel.version;
@@ -1719,7 +1719,7 @@ export function applicationEditCtrl(window, angular, $, _) {
 
             $scope.codemirrorLoaded = function(_editor) {
                 // Events
-                _editor.on("change", function() {
+                _editor.on('change', function() {
                     $timeout(function() {
                         if (_editor.getValue() === '') {
                             $scope.model = '';
@@ -1733,7 +1733,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                         }
                     }, 0);
                 });
-                _editor.on("blur", function() {
+                _editor.on('blur', function() {
                     if (_editor.hasFocus()) {
                         try {
                             $scope.model = JSON.parse(_editor.getValue());
@@ -1834,7 +1834,7 @@ export function applicationEditCtrl(window, angular, $, _) {
 
                                                                         // Define appIcon if it exists in tags, and remove from tags displayed to user to prevent multiple icons
                                                                         if ($scope.simpleList.tagIncludesParam(app, 'appIcon')) {
-                                                                            const appIcon = app.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                                                                            const appIcon = app.tags.filter((s) => s.includes('appIcon'))[0].split(':')[1];
 
                                                                             // Overwrite icon string with correct formatting if icon is in supported appIcons list
                                                                             appIcons.some(function(icon) {
@@ -1856,14 +1856,14 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                                         }
 
                                                                         if (app.appIcon) {
-                                                                            app.tags.splice(app.tags.indexOf(app.tags.filter(s => s.includes('appIcon'))[0]));
+                                                                            app.tags.splice(app.tags.indexOf(app.tags.filter((s) => s.includes('appIcon'))[0]));
                                                                         } else {
                                                                             $scope.editModel.definition.appIcon = '';
                                                                         }
 
                                                                         // Define appCategory if it exists in tags, and remove from tags displayed to user to prevent multiple Categories
                                                                         if ($scope.simpleList.tagIncludesParam(app, 'appCategory')) {
-                                                                            let appCategory = app.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                                                            let appCategory = app.tags.filter((s) => s.includes('appCategory'))[0].split(':')[1];
 
                                                                             if (appCategories.includes(appCategory)) {
                                                                                 app.appCategory = appCategory;
@@ -1871,7 +1871,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                                                 app.appCategory = 'Partner Data Apps';
                                                                             }
                                                                             if (app.appCategory) {
-                                                                                app.tags.splice(app.tags.indexOf(app.tags.filter(s => s.includes('appCategory'))[0]));
+                                                                                app.tags.splice(app.tags.indexOf(app.tags.filter((s) => s.includes('appCategory'))[0]));
                                                                             }
                                                                         }
 
@@ -1880,23 +1880,23 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                                         Apps.getSystems()
                                                                             .then(
                                                                                 function(response) {
-                                                                                    $scope.form[0].tabs[1].items[1].titleMap = [{ "value": '', "name": 'Select a system' }];
-                                                                                    $scope.form[0].tabs[2].items[1].titleMap = [{ "value": '', "name": 'Select a system' }];
+                                                                                    $scope.form[0].tabs[1].items[1].titleMap = [{ value: '', name: 'Select a system' }];
+                                                                                    $scope.form[0].tabs[2].items[1].titleMap = [{ value: '', name: 'Select a system' }];
                                                                                     angular.forEach(response.data, function(system) {
                                                                                         if (system.type === 'STORAGE') {
-                                                                                            $scope.form[0].tabs[1].items[1].titleMap.push({ "value": system.id, "name": system.id });
+                                                                                            $scope.form[0].tabs[1].items[1].titleMap.push({ value: system.id, name: system.id });
                                                                                         } else {
-                                                                                            $scope.form[0].tabs[2].items[1].titleMap.push({ "value": system.id, "name": system.id });
+                                                                                            $scope.form[0].tabs[2].items[1].titleMap.push({ value: system.id, name: system.id });
                                                                                         }
                                                                                     });
                                                                                     AppsWizard.activateTab($scope, $scope.currentTabIndex);
                                                                                 },
                                                                                 function(response) {
-                                                                                    $scope.form[0].tabs[1].items[1].titleMap = [{ "value": '', "name": 'Select a system' }];
-                                                                                    $scope.form[0].tabs[1].items[1].titleMap.push({ "value": $scope.model.deploymentSystem, "name": $scope.model.deploymentSystem });
+                                                                                    $scope.form[0].tabs[1].items[1].titleMap = [{ value: '', name: 'Select a system' }];
+                                                                                    $scope.form[0].tabs[1].items[1].titleMap.push({ value: $scope.model.deploymentSystem, name: $scope.model.deploymentSystem });
 
-                                                                                    $scope.form[0].tabs[2].items[1].titleMap = [{ "value": '', "name": 'Select a system' }];
-                                                                                    $scope.form[0].tabs[2].items[1].titleMap.push({ "value": $scope.model.executionSystem, "name": $scope.model.executionSystem });
+                                                                                    $scope.form[0].tabs[2].items[1].titleMap = [{ value: '', name: 'Select a system' }];
+                                                                                    $scope.form[0].tabs[2].items[1].titleMap.push({ value: $scope.model.executionSystem, name: $scope.model.executionSystem });
                                                                                     AppsWizard.activateTab($scope, $scope.currentTabIndex);
                                                                                 }
                                                                             );
@@ -1981,7 +1981,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                         let app = $scope.editModel.definition;
                         // Define appCategory if it exists in tags, and remove from tags displayed to user to prevent multiple Categories
                         if ($scope.simpleList.tagIncludesParam(app, 'appCategory')) {
-                            let appCategory = app.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                            let appCategory = app.tags.filter((s) => s.includes('appCategory'))[0].split(':')[1];
 
                             if (appCategories.includes(appCategory)) {
                                 app.appCategory = appCategory;
@@ -1989,13 +1989,13 @@ export function applicationEditCtrl(window, angular, $, _) {
                                 app.appCategory = 'Partner Data Apps';
                             }
                             if (app.appCategory) {
-                                app.tags.splice(app.tags.indexOf(app.tags.filter(s => s.includes('appCategory'))[0]));
+                                app.tags.splice(app.tags.indexOf(app.tags.filter((s) => s.includes('appCategory'))[0]));
                             }
                         }
 
                         // Define appIcon if it exists in tags, and remove from tags displayed to user to prevent multiple Icons
                         if ($scope.simpleList.tagIncludesParam(app, 'appIcon')) {
-                            const appIcon = app.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                            const appIcon = app.tags.filter((s) => s.includes('appIcon'))[0].split(':')[1];
 
                             // Overwrite icon string with correct formatting if icon is in supported appIcons list
                             appIcons.some(function(icon) {
@@ -2017,7 +2017,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                         }
 
                         if (app.appIcon) {
-                            app.tags.splice(app.tags.indexOf(app.tags.filter(s => s.includes('appIcon'))[0]));
+                            app.tags.splice(app.tags.indexOf(app.tags.filter((s) => s.includes('appIcon'))[0]));
                         } else {
                             app.appIcon = '';
                         }
@@ -2027,24 +2027,24 @@ export function applicationEditCtrl(window, angular, $, _) {
                         Apps.getSystems()
                             .then(
                                 function(response) {
-                                    $scope.form[0].tabs[1].items[1].titleMap = [{ "value": '', "name": 'Select a system' }];
-                                    $scope.form[0].tabs[2].items[1].titleMap = [{ "value": '', "name": 'Select a system' }];
+                                    $scope.form[0].tabs[1].items[1].titleMap = [{ value: '', name: 'Select a system' }];
+                                    $scope.form[0].tabs[2].items[1].titleMap = [{ value: '', name: 'Select a system' }];
                                     angular.forEach(response.data, function(system) {
                                         if (system.type === 'STORAGE') {
-                                            $scope.form[0].tabs[1].items[1].titleMap.push({ "value": system.id, "name": system.id });
+                                            $scope.form[0].tabs[1].items[1].titleMap.push({ value: system.id, name: system.id });
                                         } else {
-                                            $scope.form[0].tabs[2].items[1].titleMap.push({ "value": system.id, "name": system.id });
+                                            $scope.form[0].tabs[2].items[1].titleMap.push({ value: system.id, name: system.id });
                                         }
                                     });
                                     AppsWizard.activateTab($scope, $scope.currentTabIndex);
                                     $scope.requesting = false;
                                 },
                                 function(response) {
-                                    $scope.form[0].tabs[1].items[1].titleMap = [{ "value": '', "name": 'Select a system' }];
-                                    $scope.form[0].tabs[1].items[1].titleMap.push({ "value": $scope.model.deploymentSystem, "name": $scope.model.deploymentSystem });
+                                    $scope.form[0].tabs[1].items[1].titleMap = [{ value: '', name: 'Select a system' }];
+                                    $scope.form[0].tabs[1].items[1].titleMap.push({ value: $scope.model.deploymentSystem, name: $scope.model.deploymentSystem });
 
-                                    $scope.form[0].tabs[2].items[1].titleMap = [{ "value": '', "name": 'Select a system' }];
-                                    $scope.form[0].tabs[2].items[1].titleMap.push({ "value": $scope.model.executionSystem, "name": $scope.model.executionSystem });
+                                    $scope.form[0].tabs[2].items[1].titleMap = [{ value: '', name: 'Select a system' }];
+                                    $scope.form[0].tabs[2].items[1].titleMap.push({ value: $scope.model.executionSystem, name: $scope.model.executionSystem });
                                     AppsWizard.activateTab($scope, $scope.currentTabIndex);
                                     $scope.requesting = false;
                                 }

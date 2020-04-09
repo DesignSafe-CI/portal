@@ -36,7 +36,7 @@ class DataDepotBrowserCtrl {
                 child.href = this.$state.href(
                     stateName,
                     { systemId: child.system, filePath: child.path.replace(/^\/+/, '') },
-                    {inherit: false}
+                    { inherit: false }
                 );
             });
             this.data = {
@@ -46,7 +46,7 @@ class DataDepotBrowserCtrl {
 
         this.DataBrowserService.browse({
             system: this.$stateParams.systemId,
-            path: this.path}, {
+            path: this.path }, {
             query_string: this.$stateParams.query_string,
             typeFilters: this.$stateParams.typeFilters,
             offset: this.$stateParams.offset,

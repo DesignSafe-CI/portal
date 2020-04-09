@@ -1,5 +1,5 @@
 import angular from 'angular';
-import {AppTrayComponent} from './application-tray/application-tray.component';
+import { AppTrayComponent } from './application-tray/application-tray.component';
 
 
 let workspaceComponents = angular.module('workspace.components', []);

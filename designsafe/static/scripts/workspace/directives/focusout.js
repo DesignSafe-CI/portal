@@ -6,7 +6,7 @@ function focusout($parse) {
             return function handler(scope, element) {
                 element.on('focusout', function(event) {
                     scope.$apply(function() {
-                        fn(scope, {$event: event});
+                        fn(scope, { $event: event });
                     });
                 });
             };

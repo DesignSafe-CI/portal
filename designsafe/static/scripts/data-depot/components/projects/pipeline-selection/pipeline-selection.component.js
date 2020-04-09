@@ -79,7 +79,7 @@ class PipelineSelectionCtrl {
                     var results = [];
                     var index = 0;
                     var size = 5;
-                    var fileCalls = filePaths.map(filePath => {
+                    var fileCalls = filePaths.map((filePath) => {
                         return this.FileListing.get(
                             { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
                         ).then((resp) => {
@@ -267,8 +267,8 @@ class PipelineSelectionCtrl {
             return;
         }
 
-        let primary = this.selectedEnts.filter(ent => primaryNames.includes(ent.name));
-        let secondary = this.selectedEnts.filter(ent => !primaryNames.includes(ent.name));
+        let primary = this.selectedEnts.filter((ent) => primaryNames.includes(ent.name));
+        let secondary = this.selectedEnts.filter((ent) => !primaryNames.includes(ent.name));
         window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
         this.$state.go('projects.pipelineProject', {
             projectId: this.projectId,
@@ -282,7 +282,7 @@ class PipelineSelectionCtrl {
     ordered(parent, entities) {
         let order = (ent) => {
             if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
-                return ent._ui.orders.find(order => order.parent === parent.uuid);
+                return ent._ui.orders.find((order) => order.parent === parent.uuid);
             }
             return 0;
         };
@@ -298,8 +298,8 @@ class PipelineSelectionCtrl {
 
     selectEntity(ent) {
         let uuidsToSelect = [];
-        if (this.selectedEnts.find(selEnt => selEnt.uuid === ent.uuid)) {
-            this.selectedEnts = this.selectedEnts.filter(selEnt => selEnt.uuid !== ent.uuid);
+        if (this.selectedEnts.find((selEnt) => selEnt.uuid === ent.uuid)) {
+            this.selectedEnts = this.selectedEnts.filter((selEnt) => selEnt.uuid !== ent.uuid);
         } else {
             this.selectedEnts.push(ent);
         }
@@ -318,7 +318,7 @@ class PipelineSelectionCtrl {
             this.subEntities.forEach((subEntSet) => {
                 if (this.browser.project[subEntSet]) {
                     this.browser.project[subEntSet].forEach((subEnt) => {
-                        if (subEnt.associationIds.some(uuid => uuidsToSelect.includes(uuid))){
+                        if (subEnt.associationIds.some((uuid) => uuidsToSelect.includes(uuid))){
                             this.DataBrowserService.select(this.browser.listings[subEnt.uuid].children);
                         } else {
                             this.DataBrowserService.deselect(this.browser.listings[subEnt.uuid].children);

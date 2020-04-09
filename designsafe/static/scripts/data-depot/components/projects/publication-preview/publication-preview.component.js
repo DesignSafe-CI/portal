@@ -99,7 +99,7 @@ class PublicationPreviewCtrl {
                         var results = [];
                         var index = 0;
                         var size = 5;
-                        var fileCalls = filePaths.map(filePath => {
+                        var fileCalls = filePaths.map((filePath) => {
                             return this.FileListing.get(
                                 { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
                             ).then((resp) => {
@@ -158,14 +158,14 @@ class PublicationPreviewCtrl {
                 return true;
             }
             return false;
-        } else {
-            // if the category is related to the experiment level
-            // match appropriate data to corresponding experiment
-            if(model.associationIds.indexOf(exp.uuid) > -1) {
-                return true;
-            }
-            return false;
+        } 
+        // if the category is related to the experiment level
+        // match appropriate data to corresponding experiment
+        if(model.associationIds.indexOf(exp.uuid) > -1) {
+            return true;
         }
+        return false;
+        
     }
 
     getEF(str) {
@@ -193,11 +193,11 @@ class PublicationPreviewCtrl {
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser});
+        this.$state.go('projects.view.data', { projectId: this.browser.project.uuid, data: this.browser });
     }
 
     goCuration() {
-        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, data: this.browser});
+        this.$state.go('projects.curation', { projectId: this.browser.project.uuid, data: this.browser });
     }
 
     editProject() {
@@ -215,7 +215,7 @@ class PublicationPreviewCtrl {
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineSelectExp', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineSelectExp', { projectId: browser.project.uuid }, { reload: true });
                 };
             }],
             resolve: {

@@ -1,4 +1,4 @@
-import PublicationDescriptionModalTemplate from './publication-description.component.html'
+import PublicationDescriptionModalTemplate from './publication-description.component.html';
 class PublicationDescriptionModalCtrl {
     constructor() {
     }
@@ -13,4 +13,4 @@ export const PublicationDescriptionModalComponent = {
         close: '&',
         dismiss: '&'
     },
-}
+};

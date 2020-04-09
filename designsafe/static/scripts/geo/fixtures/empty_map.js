@@ -1,4 +1,4 @@
- let map = {
+let map = {
     type: 'FeatureCollection',
     features: [],
     ds_map: true,
@@ -8,4 +8,4 @@
     layer_groups: ['New Group']
 };
 
-export default map
+export default map;

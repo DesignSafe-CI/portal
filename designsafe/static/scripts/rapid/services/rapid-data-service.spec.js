@@ -1,8 +1,8 @@
 describe('RapidDataService', function() {
     var RapidDataService, $httpBackend;
     var events = [
-        { title: 'test1', location:{ lat:0, lon:0 }, event_date: "2018-01-01", event_type: 'Earthquake' },
-        { title: 'test2 earthquake', location:{ lat:0, lon:0 }, event_date: "2018-02-01", event_type: 'Tsunami' }
+        { title: 'test1', location:{ lat:0, lon:0 }, event_date: '2018-01-01', event_type: 'Earthquake' },
+        { title: 'test2 earthquake', location:{ lat:0, lon:0 }, event_date: '2018-02-01', event_type: 'Tsunami' }
     ];
     var eventTypes = [{ type: 'Earthquake' }, { type: 'Tsunami' } ];
 

@@ -62,10 +62,10 @@ class ManageFieldReconCollectionsCtrl {
             project: this.project,
             users: [... new Set(members)],
             collectionTypes: [
-                {name: 'designsafe.project.field_recon.planning', label:'Research Planning Collection'},
-                {name: 'designsafe.project.field_recon.geoscience', label:'Engineering/Geosciences Collection'},
-                {name: 'designsafe.project.field_recon.social_science', label:'Social Sciences Collection'},
-                {name: 'designsafe.project.field_recon.report', label:'Documents Collection'},
+                { name: 'designsafe.project.field_recon.planning', label:'Research Planning Collection' },
+                { name: 'designsafe.project.field_recon.geoscience', label:'Engineering/Geosciences Collection' },
+                { name: 'designsafe.project.field_recon.social_science', label:'Social Sciences Collection' },
+                { name: 'designsafe.project.field_recon.report', label:'Documents Collection' },
             ],
             observationTypes: [
                 'Wind',
@@ -114,9 +114,9 @@ class ManageFieldReconCollectionsCtrl {
             return socialFields.includes(field);
         } else if (this.form.collectionType === 'designsafe.project.field_recon.report') {
             return reportFields.includes(field);
-        } else {
-            return reportFields.includes(field);
-        }
+        } 
+        return reportFields.includes(field);
+        
     }
 
     clearForm(colType) {
@@ -320,8 +320,8 @@ class ManageFieldReconCollectionsCtrl {
             'designsafe.project.field_recon.social_science': {
                 title: this.form.title,
                 unit: this.form.unit || '',
-                modes: this.form.modes.filter(mode => mode != null),
-                sampleApproach: this.form.sampleApproach.filter(sample => sample != null),
+                modes: this.form.modes.filter((mode) => mode != null),
+                sampleApproach: this.form.sampleApproach.filter((sample) => sample != null),
                 sampleSize: this.form.sampleSize || '',
                 dateStart: this.form.dateStart,
                 // dateEnd: this.form.dateEnd,
@@ -337,15 +337,15 @@ class ManageFieldReconCollectionsCtrl {
                         }
                         return type;
                     })
-                    .filter(input => input),
+                    .filter((input) => input),
                 restriction: this.form.restriction || '',
-                referencedData: this.form.referencedData.filter(input => input.title && input.url),
+                referencedData: this.form.referencedData.filter((input) => input.title && input.url),
                 description: this.form.description,
             },
             'designsafe.project.field_recon.planning': {
                 title: this.form.title,
                 dataCollectors: this.form.dataCollectors,
-                referencedData: this.form.referencedData.filter(input => input.title && input.url),
+                referencedData: this.form.referencedData.filter((input) => input.title && input.url),
                 description: this.form.description,
             },
             'designsafe.project.field_recon.geoscience': {
@@ -357,7 +357,7 @@ class ManageFieldReconCollectionsCtrl {
                         }
                         return type;
                     })
-                    .filter(input => input),
+                    .filter((input) => input),
                 dateStart: this.form.dateStart,
                 // dateEnd: this.form.dateEnd,
                 dateEnd: (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart),
@@ -372,17 +372,17 @@ class ManageFieldReconCollectionsCtrl {
                         }
                         return type;
                     })
-                    .filter(input => input),
-                referencedData: this.form.referencedData.filter(input => input.title && input.url),
+                    .filter((input) => input),
+                referencedData: this.form.referencedData.filter((input) => input.title && input.url),
                 description: this.form.description,
             },
             'designsafe.project.field_recon.report': {
                 title: this.form.title,
                 authors: this.form.dataCollectors,
-                referencedData: this.form.referencedData.filter(input => input.title && input.url),
+                referencedData: this.form.referencedData.filter((input) => input.title && input.url),
                 description: this.form.description,
             },
-        }
+        };
         return collection[type];
     }
 
@@ -446,7 +446,7 @@ class ManageFieldReconCollectionsCtrl {
         if (this.data.editCollection.value.equipment) {
             this.data.editCollection.value.equipment.forEach((equip) => {
                 if (!this.isEquipmentInDropdown(equip)) {
-                    formEquipment.push("Other");
+                    formEquipment.push('Other');
                     formEquipmentOther.push(equip);
                 } else {
                     formEquipment.push(equip);
@@ -460,7 +460,7 @@ class ManageFieldReconCollectionsCtrl {
         if (this.data.editCollection.value.observationTypes) {
             this.data.editCollection.value.observationTypes.forEach((obs) => {
                 if (!this.isObservationInDropdown(obs)) {
-                    formObservationTypes.push("Other");
+                    formObservationTypes.push('Other');
                     formObservationTypesOther.push(obs);
                 } else {
                     formObservationTypes.push(obs);
@@ -504,12 +504,12 @@ class ManageFieldReconCollectionsCtrl {
                     }
                     return type;
                 })
-                .filter(input => input);
+                .filter((input) => input);
         }
         if (['designsafe.project.field_recon.social_science'].includes(this.form.collectionType)) {
             this.data.editCollection.value.unit = this.form.unit;
-            this.data.editCollection.value.modes = this.form.modes.filter(mode => mode != null);
-            this.data.editCollection.value.sampleApproach = this.form.sampleApproach.filter(sample => sample != null);
+            this.data.editCollection.value.modes = this.form.modes.filter((mode) => mode != null);
+            this.data.editCollection.value.sampleApproach = this.form.sampleApproach.filter((sample) => sample != null);
             this.data.editCollection.value.sampleSize = this.form.sampleSize;
             this.data.editCollection.value.restriction = this.form.restriction;
         }
@@ -520,20 +520,20 @@ class ManageFieldReconCollectionsCtrl {
             this.data.editCollection.value.longitude = this.form.longitude;
             this.data.editCollection.value.latitude = this.form.latitude;
             this.data.editCollection.value.equipment = this.form.equipment
-            .map((type, index) => {
-                if(type === 'Other') {
-                    return this.form.equipmentOther[index];
-                }
-                return type;
-            })
-            .filter(input => input);
+                .map((type, index) => {
+                    if(type === 'Other') {
+                        return this.form.equipmentOther[index];
+                    }
+                    return type;
+                })
+                .filter((input) => input);
         }
         if (['designsafe.project.field_recon.report'].includes(this.form.collectionType)) {
             this.data.editCollection.value.authors = this.form.dataCollectors;
         } else {
             this.data.editCollection.value.dataCollectors = this.form.dataCollectors;
         }
-        this.data.editCollection.value.referencedData = this.form.referencedData.filter(input => input.title && input.url);
+        this.data.editCollection.value.referencedData = this.form.referencedData.filter((input) => input.title && input.url);
         this.data.editCollection.value.description = this.form.description;
 
         this.ProjectEntitiesService.update({
@@ -591,7 +591,7 @@ class ManageFieldReconCollectionsCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete('Are you sure you want to delete ' + ent.value.title + '?');
     }
 }
 

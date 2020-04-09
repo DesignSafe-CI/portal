@@ -17,13 +17,13 @@ export class PublishedService {
     }
 
     updateHeaderMetadata(projId, resp) {
-        this.$window.document.title = resp.data.project.value.title + " | DesignSafe-CI";
+        this.$window.document.title = resp.data.project.value.title + ' | DesignSafe-CI';
         this.$window.document.getElementsByName('keywords')[0].content = resp.data.project.value.keywords;
         this.$window.document.getElementsByName('description')[0].content = resp.data.project.value.description;
         this.$window.document.getElementsByName('citation_title')[0].content = resp.data.project.value.title;
         this.$window.document.getElementsByName('citation_publication_date')[0].content = this.$filter('date')(resp.data.created, 'yyyy/M/d');
         this.$window.document.getElementsByName('citation_doi')[0].content = resp.data.project.doi;
-        this.$window.document.getElementsByName('citation_abstract_html_url')[0].content = "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published//" + projId;
+        this.$window.document.getElementsByName('citation_abstract_html_url')[0].content = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published//' + projId;
 
 
         var elements = this.$window.document.getElementsByName('citation_author');
@@ -34,8 +34,8 @@ export class PublishedService {
         while (elements[0]) elements[0].parentNode.removeChild(elements[0]);
 
         resp.data.project.value.keywords.split(/[,\s]+/).forEach((keyword) => {
-            var meta = this.$window.document.createElement("meta");
-            meta.name = "citation_keywords";
+            var meta = this.$window.document.createElement('meta');
+            meta.name = 'citation_keywords';
             meta.content = keyword;
             this.$window.document.getElementsByTagName('head')[0].appendChild(meta);
         });
@@ -47,9 +47,9 @@ export class PublishedService {
             if (resp.data.project.name === 'designsafe.project' || prj.name === 'designsafe.project.analysis') {
                 return _.contains(resp.data.project.value.coPis, usr.username) ||
                     usr.username === resp.data.project.value.pi;
-            } else {
-                return _.contains(resp.data.project.value.authors, usr.username);
-            }
+            } 
+            return _.contains(resp.data.project.value.authors, usr.username);
+            
         });
         if (typeof resp.data.project.value.projectType !== 'undefined' && resp.data.project.value.projectType === 'other') {
             publishers = resp.data.users;
@@ -57,17 +57,17 @@ export class PublishedService {
         publishers = _.sortBy(publishers, (p) => {
             if (typeof p._ui[resp.data.project.uuid] !== 'undefined') {
                 return p._ui[resp.data.project.uuid];
-            } else {
-                return p._ui.order;
-            }
+            } 
+            return p._ui.order;
+            
         });
         _.each(publishers, (usr, index, list) => {
             var str = usr.last_name + ', ' + usr.first_name;
             var usr_institution = _.filter(resp.data.institutions, (inst) => {
                 return inst.name === usr.username;
             });
-            var meta = this.$window.document.createElement("meta");
-            meta.name = "citation_author";
+            var meta = this.$window.document.createElement('meta');
+            meta.name = 'citation_author';
             meta.content = str;
             this.$window.document.getElementsByTagName('head')[0].appendChild(meta);
 
@@ -80,8 +80,8 @@ export class PublishedService {
             }
 
             if (usr_institution[0]) {
-                var meta = this.$window.document.createElement("meta");
-                meta.name = "citation_author_institution";
+                var meta = this.$window.document.createElement('meta');
+                meta.name = 'citation_author_institution';
                 meta.content = usr_institution[0].label;
                 this.$window.document.getElementsByTagName('head')[0].appendChild(meta);
 

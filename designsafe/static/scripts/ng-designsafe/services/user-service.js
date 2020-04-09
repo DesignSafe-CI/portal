@@ -8,10 +8,10 @@ export function UserService($http, $q) {
      * @returns {Promise}
      */
     this.get = function (username) {
-      return $http.get("/api/users", {params: {username: username}})
-        .then(function (resp) {
-          return resp.data;
-        });
+        return $http.get('/api/users', { params: { username: username } })
+            .then(function (resp) {
+                return resp.data;
+            });
     };
 
     /**
@@ -20,10 +20,10 @@ export function UserService($http, $q) {
      * @returns {Promise}
      */
     this.getPublic = function (users) {
-      return $http.get("/api/users/public/", {params: {usernames: JSON.stringify(users)}})
-        .then(function (resp) {
-          return resp.data;
-        });
+        return $http.get('/api/users/public/', { params: { usernames: JSON.stringify(users) } })
+            .then(function (resp) {
+                return resp.data;
+            });
     };
 
     /**
@@ -33,10 +33,10 @@ export function UserService($http, $q) {
      * @returns {Promise}
      */
     this.search = function (options) {
-      return $http.get("/api/users", {params: {q: options.q, role:options.role}})
-        .then(function (resp) {
-          return resp.data;
-        });
+        return $http.get('/api/users', { params: { q: options.q, role:options.role } })
+            .then(function (resp) {
+                return resp.data;
+            });
     };
 
     /**
@@ -45,10 +45,10 @@ export function UserService($http, $q) {
      * @returns {Promise}
      */
     this.authenticate = function () {
-      return $http.get('/api/users/auth').then(function (resp) {
-        user = resp.data;
-        return resp.data;
-      });
+        return $http.get('/api/users/auth').then(function (resp) {
+            user = resp.data;
+            return resp.data;
+        });
     };
 
     /**
@@ -56,7 +56,7 @@ export function UserService($http, $q) {
       * @returns {boolean}
     */
     this.userAuthenticated = function () {
-      return user ? true : false;
+        return user ? true : false;
     };
 
     /**
@@ -64,13 +64,13 @@ export function UserService($http, $q) {
       * @returns {object} currentUser
     */
     this.currentUser = function () {
-      return user;
+        return user;
     };
 
     this.usage = function () {
-      return $http.get('/api/users/usage/').then(function (resp) {
-        return resp.data;
-      });
+        return $http.get('/api/users/usage/').then(function (resp) {
+            return resp.data;
+        });
     };
 
-  }
+}

@@ -127,7 +127,7 @@ class FilesListingCtrl {
         let deselect = false;
         this.listing().children.forEach((file) => {
             if (typeof file._ui === 'undefined') {
-                file._ui = {selected: false};
+                file._ui = { selected: false };
             }
             if (file._ui.selected === true){
                 deselect = true;
@@ -159,7 +159,7 @@ class FilesListingCtrl {
     }
 
     scrollToBottom() {
-        return this.DataBrowserService.scrollToBottom({queryString: this.$stateParams.query_string, typeFilters: this.$stateParams.typeFilters,});
+        return this.DataBrowserService.scrollToBottom({ queryString: this.$stateParams.query_string, typeFilters: this.$stateParams.typeFilters, });
     }
 
     renderName(file) {
@@ -194,54 +194,53 @@ class FilesListingCtrl {
     getType(meta) {
         if (typeof meta.dataType != 'undefined' && meta.dataType != 'None') {
             return meta.dataType;
-        } else {
-            if (meta.type === 'field_recon') {
-                return 'Field Research';
-            }
-            if (meta.type === 'hybrid_simulation') {
-                return 'Hybrid Simulation';
-            }
-            return meta.type;
+        } 
+        if (meta.type === 'field_recon') {
+            return 'Field Research';
         }
+        if (meta.type === 'hybrid_simulation') {
+            return 'Hybrid Simulation';
+        }
+        return meta.type;
+        
     }
 
     showDescription(title, description) {
         var modal = this.$uibModal.open({
-          component: 'publicationDescriptionModalComponent',
-          resolve: {
-            title: () => title,
-            description: () => description,
-          },
-          size: 'lg'
+            component: 'publicationDescriptionModalComponent',
+            resolve: {
+                title: () => title,
+                description: () => description,
+            },
+            size: 'lg'
         });
-      }
+    }
 
-      onTypeFilterSelect(typeFilter) {
+    onTypeFilterSelect(typeFilter) {
         //Need to handle typeFilters being array, string, or undefined
-        let typeFilters = this.$stateParams.typeFilters || [] 
-        typeFilters = [typeFilters].flat()
+        let typeFilters = this.$stateParams.typeFilters || []; 
+        typeFilters = [typeFilters].flat();
 
         if (typeFilters.includes(typeFilter)) {
-            typeFilters = typeFilters.filter(x => x != typeFilter)
-        }
-        else {
-            typeFilters.push(typeFilter)
+            typeFilters = typeFilters.filter((x) => x != typeFilter);
+        } else {
+            typeFilters.push(typeFilter);
         }
         if (typeFilters.length === 0) {
-            typeFilters = null
+            typeFilters = null;
         }
-        this.$state.go(this.$state.current, {typeFilters: typeFilters}, {reload: true})
-      }
+        this.$state.go(this.$state.current, { typeFilters: typeFilters }, { reload: true });
+    }
 
-      checkTypeFilterSelected(typeFilter) {
-        let typeFilters = this.$stateParams.typeFilters || [] 
-        typeFilters = [typeFilters].flat()
-        return typeFilters.includes(typeFilter)
-      }
+    checkTypeFilterSelected(typeFilter) {
+        let typeFilters = this.$stateParams.typeFilters || []; 
+        typeFilters = [typeFilters].flat();
+        return typeFilters.includes(typeFilter);
+    }
 
-      clearTypeFilters() {
-        this.$state.go(this.$state.current, {typeFilters: null}, {reload: true})
-      }
+    clearTypeFilters() {
+        this.$state.go(this.$state.current, { typeFilters: null }, { reload: true });
+    }
 }
 
 export const FilesListingComponent = {

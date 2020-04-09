@@ -1,11 +1,11 @@
-import angular from 'angular'
+import angular from 'angular';
 
 import { dsFileUrl, dsFileDisplayName, dsListingDisplayName, 
-         dsTrailDisplayName, dsSharedFilePath} from './data-browser-filters';
+    dsTrailDisplayName, dsSharedFilePath } from './data-browser-filters';
 
 import { bytes, keys, length, toTrusted } from './ng-designsafe-filters';
 
-let designsafeFilters = angular.module('designsafe.filters', [])
+let designsafeFilters = angular.module('designsafe.filters', []);
 
 designsafeFilters.filter('dsFileUrl', dsFileUrl);
 designsafeFilters.filter('dsFileDisplayName', dsFileDisplayName);
@@ -17,4 +17,4 @@ designsafeFilters.filter('keys', keys);
 designsafeFilters.filter('length', length);
 designsafeFilters.filter('toTrusted', toTrusted);
 
-export default designsafeFilters
+export default designsafeFilters;

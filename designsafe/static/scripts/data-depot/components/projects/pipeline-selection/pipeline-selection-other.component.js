@@ -60,11 +60,11 @@ class PipelineSelectionOtherCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.projectId}, {reload: true});
+        this.$state.go('projects.view.data', { projectId: this.projectId }, { reload: true });
     }
 
     goPreview() {
-        this.$state.go('projects.previewOther', {projectId: this.projectId}, {reload: true});
+        this.$state.go('projects.previewOther', { projectId: this.projectId }, { reload: true });
     }
 
     goProject() {
@@ -73,7 +73,7 @@ class PipelineSelectionOtherCtrl {
             projectId: this.projectId,
             project: this.browser.project,
             selectedListings: this.selectedFiles,
-        }, {reload: true});
+        }, { reload: true });
     }
 
     saveSelections() {

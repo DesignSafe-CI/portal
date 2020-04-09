@@ -7,8 +7,8 @@ describe('PublishedComponent', () => {
 
     
     beforeEach(() => {
-        angular.mock.module('ds-data')
-    })
+        angular.mock.module('ds-data');
+    });
     
 
     beforeEach(() => {
@@ -26,7 +26,7 @@ describe('PublishedComponent', () => {
             FileListing = _FileListing_;
             $uibModal = _$uibModal_;
             $http = _$http_;
-            $stateParams = {filePath: '/'};
+            $stateParams = { filePath: '/' };
             $q = _$q_;
 
             deferred = _$q_.defer();
@@ -49,30 +49,30 @@ describe('PublishedComponent', () => {
             $http,
             $stateParams
         );
-    })
+    });
     
     it('Should define controller', () => {
         expect(ctrl).toBeDefined();
     });
 
     it('Should define template', () => {
-        expect(PublishedComponent.template).toBeDefined()
-    })
+        expect(PublishedComponent.template).toBeDefined();
+    });
 
     it('Should resolve promises', () => {
-        spyOn(DataBrowserService, 'state').and.returnValue({listing: {path: '/PRJ-2110'}})
-        spyOn(PublishedService, 'getPublished').and.returnValue(deferred.promise)
-        spyOn(FileListing, 'get').and.returnValue($q.defer().promise)
-        spyOn(PublishedService, 'updateHeaderMetadata').and.returnValue({})
-        ctrl.$stateParams = {filePath: '/PRJ-2110'}
-        ctrl.$onInit()
-        deferred.resolve(fixture)
-        $rootScope.$digest()
+        spyOn(DataBrowserService, 'state').and.returnValue({ listing: { path: '/PRJ-2110' } });
+        spyOn(PublishedService, 'getPublished').and.returnValue(deferred.promise);
+        spyOn(FileListing, 'get').and.returnValue($q.defer().promise);
+        spyOn(PublishedService, 'updateHeaderMetadata').and.returnValue({});
+        ctrl.$stateParams = { filePath: '/PRJ-2110' };
+        ctrl.$onInit();
+        deferred.resolve(fixture);
+        $rootScope.$digest();
 
-        expect(PublishedService.getPublished).toHaveBeenCalledWith('PRJ-2110')
-        expect(PublishedService.updateHeaderMetadata).toHaveBeenCalledWith('PRJ-2110', fixture)
+        expect(PublishedService.getPublished).toHaveBeenCalledWith('PRJ-2110');
+        expect(PublishedService.updateHeaderMetadata).toHaveBeenCalledWith('PRJ-2110', fixture);
 
 
-    })
+    });
     
-})
+});

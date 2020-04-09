@@ -1,6 +1,6 @@
 
 
-describe("FileMetadataComponent", ()=> {
+describe('FileMetadataComponent', ()=> {
     var FileListing,
         $rootScope,
         $compile,

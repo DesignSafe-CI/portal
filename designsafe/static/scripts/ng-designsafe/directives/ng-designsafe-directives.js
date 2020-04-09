@@ -4,421 +4,420 @@ import { $q } from '@uirouter/core';
 export function fileModel($parse) {
     'ngInject';
     return {
-      restrict: 'A',
-      link: function(scope, element, attrs) {
-        var model = $parse(attrs.fileModel);
-        var modelSetter = model.assign;
-        element.bind('change', function(){
-          scope.$apply(function(){
-            if (attrs.multiple) {
-              modelSetter(scope, element[0].files);
-            }
-            else {
-              modelSetter(scope, element[0].files[0]);
-            }
-          });
-        });
-      }
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    if (attrs.multiple) {
+                        modelSetter(scope, element[0].files);
+                    } else {
+                        modelSetter(scope, element[0].files[0]);
+                    }
+                });
+            });
+        }
     };
-  };
+}
 
-  export function spinnerOnLoad() {
+export function spinnerOnLoad() {
     return {
-      restrict: 'A',
-      link: function (scope, element) {
-        element.parent().prepend("<div class='text-center spinner'><i class='fa fa-spinner fa-pulse fa-3x fa-fw'></i></div>");
-        element.css('display', 'none');
-        element.on('load', function (ev) {
-          element.parent().find(".spinner").remove();
-          element.css('display', 'block');
-        });
+        restrict: 'A',
+        link: function (scope, element) {
+            element.parent().prepend("<div class='text-center spinner'><i class='fa fa-spinner fa-pulse fa-3x fa-fw'></i></div>");
+            element.css('display', 'none');
+            element.on('load', function (ev) {
+                element.parent().find('.spinner').remove();
+                element.css('display', 'block');
+            });
 
-      }
+        }
     };
 
-  }
+}
 
 export function httpSrc($http) {
     'ngInject';
-   return {
-      restrict: 'A',
-      link: function (scope, element, attrs) {
-        var conf = {
-            responseType: 'arraybuffer',
-        };
-
-        $http.get(attrs.httpSrc, conf)
-          .then(function(data) {
-            var arr = new Uint8Array(data);
-
-            var raw = '';
-            var i, j, subArray, chunk = 5000;
-            for (i = 0, j = arr.length; i < j; i += chunk) {
-                subArray = arr.subarray(i, i + chunk);
-                raw += String.fromCharCode.apply(null, subArray);
-            }
-
-            var b64 = btoa(raw);
-            attrs.$set('src', "data:image/jpeg;base64," + b64);
-        }, function (error) {
-        });
-      }
-    };
-  }
-
- export function accessfiles() {
     return {
-      scope: {
-        accessfiles: '='
-      },
-      link: function(scope, element, attributes) {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            var conf = {
+                responseType: 'arraybuffer',
+            };
 
-        element.bind('change', function(event) {
-          scope.$apply(function() {
-            scope.accessfiles = event.target.files;
-          });
-        });
-      }
+            $http.get(attrs.httpSrc, conf)
+                .then(function(data) {
+                    var arr = new Uint8Array(data);
+
+                    var raw = '';
+                    var i, j, subArray, chunk = 5000;
+                    for (i = 0, j = arr.length; i < j; i += chunk) {
+                        subArray = arr.subarray(i, i + chunk);
+                        raw += String.fromCharCode.apply(null, subArray);
+                    }
+
+                    var b64 = btoa(raw);
+                    attrs.$set('src', 'data:image/jpeg;base64,' + b64);
+                }, function (error) {
+                });
+        }
     };
-  }
+}
 
-  export function selectOnFocus() {
+export function accessfiles() {
     return {
-      restrict: 'A',
-      link: function(scope, element, attrs) {
-        element.on('focus', function() {
-          this.select();
-        });
-      }
+        scope: {
+            accessfiles: '='
+        },
+        link: function(scope, element, attributes) {
+
+            element.bind('change', function(event) {
+                scope.$apply(function() {
+                    scope.accessfiles = event.target.files;
+                });
+            });
+        }
     };
-  }
+}
+
+export function selectOnFocus() {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            element.on('focus', function() {
+                this.select();
+            });
+        }
+    };
+}
 
 export function dsDataDraggable() {
     function dragStart(e) {
-      var ele = this;
-      ele.style.opacity = '0.4';
-      e.dataTransfer.effectAllowed = 'copyLink';
-      e.dataTransfer.setData('text/plain', ele.getAttribute('data-ds-data'));
-      this.classList.add('drag');
+        var ele = this;
+        ele.style.opacity = '0.4';
+        e.dataTransfer.effectAllowed = 'copyLink';
+        e.dataTransfer.setData('text/plain', ele.getAttribute('data-ds-data'));
+        this.classList.add('drag');
     }
 
     function dragOver(e) {
-      e.preventDefault();
-      var ele = this;
-      ele.style.opacity = '1';
+        e.preventDefault();
+        var ele = this;
+        ele.style.opacity = '1';
     }
 
     function onDrop(e) {
-      e.stopPropagation();
-      var ele = this;
-      ele.style.opacity = '1';
+        e.stopPropagation();
+        var ele = this;
+        ele.style.opacity = '1';
     }
 
     function dataDraggable($scope, $element) {
-      var el = $element[0];
-      el.draggable = true;
-      el.addEventListener('dragstart', dragStart);
-      el.addEventListener('dragover', dragOver);
-      el.addEventListener('dragend', dragOver);
-      el.addEventListener('drop', onDrop);
+        var el = $element[0];
+        el.draggable = true;
+        el.addEventListener('dragstart', dragStart);
+        el.addEventListener('dragover', dragOver);
+        el.addEventListener('dragend', dragOver);
+        el.addEventListener('drop', onDrop);
     }
     return dataDraggable;
-  }
+}
 
 export function dsDraggable() {
 
     return {
-      restrict: 'A',
-      scope: {
-        transferData: '=dsDragTransfer',
-        dragStart: '&dsDragStart',
-        dragEnter: '&dsDragEnter',
-        dragOver: '&dsDragOver',
-        dragLeave: '&dsDragLeave',
-        dragEnd: '&dsDragEnd',
-        dragDrop: '&dsDragDrop',
-        allowDrag: '=dsDragEnabled'
-      },
-      link: function(scope, element) {
-        if (scope.allowDrag) {
-          element[0].draggable = true;
+        restrict: 'A',
+        scope: {
+            transferData: '=dsDragTransfer',
+            dragStart: '&dsDragStart',
+            dragEnter: '&dsDragEnter',
+            dragOver: '&dsDragOver',
+            dragLeave: '&dsDragLeave',
+            dragEnd: '&dsDragEnd',
+            dragDrop: '&dsDragDrop',
+            allowDrag: '=dsDragEnabled'
+        },
+        link: function(scope, element) {
+            if (scope.allowDrag) {
+                element[0].draggable = true;
+            }
+
+            element.addClass('ds-drop-target');
+
+            element[0].addEventListener('dragstart', function (e) {
+                var handler = scope.dragStart();
+                if (handler) {
+                    handler(e, scope.transferData);
+                }
+            });
+
+            element[0].addEventListener('dragenter', function (e) {
+                var handler = scope.dragEnter();
+                if (handler) {
+                    handler(e, scope.transferData);
+                }
+            });
+
+            element[0].addEventListener('dragover', function (e) {
+                var handler = scope.dragOver();
+                if (handler) {
+                    handler(e, scope.transferData);
+                }
+            });
+
+            var dragLeaveHandler = function(e) {
+                var handler = scope.dragLeave();
+                if (handler) {
+                    handler(e, scope.transferData);
+                }
+            };
+            element[0].addEventListener('dragleave', dragLeaveHandler);
+            element[0].addEventListener('dragexit', dragLeaveHandler);
+
+            element[0].addEventListener('dragend', function (e) {
+                var handler = scope.dragEnd();
+                if (handler) {
+                    handler(e, scope.transferData);
+                }
+            });
+
+            element[0].addEventListener('drop', function (e) {
+                var handler = scope.dragDrop();
+                if (handler) {
+                    handler(e, scope.transferData);
+                }
+            });
         }
-
-        element.addClass('ds-drop-target');
-
-        element[0].addEventListener('dragstart', function (e) {
-          var handler = scope.dragStart();
-          if (handler) {
-            handler(e, scope.transferData);
-          }
-        });
-
-        element[0].addEventListener('dragenter', function (e) {
-          var handler = scope.dragEnter();
-          if (handler) {
-            handler(e, scope.transferData);
-          }
-        });
-
-        element[0].addEventListener('dragover', function (e) {
-          var handler = scope.dragOver();
-          if (handler) {
-            handler(e, scope.transferData);
-          }
-        });
-
-        var dragLeaveHandler = function(e) {
-          var handler = scope.dragLeave();
-          if (handler) {
-            handler(e, scope.transferData);
-          }
-        };
-        element[0].addEventListener('dragleave', dragLeaveHandler);
-        element[0].addEventListener('dragexit', dragLeaveHandler);
-
-        element[0].addEventListener('dragend', function (e) {
-          var handler = scope.dragEnd();
-          if (handler) {
-            handler(e, scope.transferData);
-          }
-        });
-
-        element[0].addEventListener('drop', function (e) {
-          var handler = scope.dragDrop();
-          if (handler) {
-            handler(e, scope.transferData);
-          }
-        });
-      }
     };
-  }
+}
 
 export function dsInfiniteScroll(){
-  return {
-    restrict: 'A',
-    scope: {
-      scrollBottom: '&',
-      scrollTop: '&',
-      bottomHeight: '='
-    },
-    link: function(scope, element, attrs){
-      var el = element[0];
-      el.addEventListener('scroll', function(e){
-        var pos = el.offsetHeight + el.scrollTop;
-        if (pos >= el.scrollHeight - scope.bottomHeight){
-          scope.scrollBottom(el, pos);
+    return {
+        restrict: 'A',
+        scope: {
+            scrollBottom: '&',
+            scrollTop: '&',
+            bottomHeight: '='
+        },
+        link: function(scope, element, attrs){
+            var el = element[0];
+            el.addEventListener('scroll', function(e){
+                var pos = el.offsetHeight + el.scrollTop;
+                if (pos >= el.scrollHeight - scope.bottomHeight){
+                    scope.scrollBottom(el, pos);
+                }
+                if (pos <= el.offsetHeight){
+                    if (scope.scrollTop){
+                        scope.scrollTop(el, pos);
+                    }
+                }
+            });
         }
-        if (pos <= el.offsetHeight){
-          if (scope.scrollTop){
-            scope.scrollTop(el, pos);
-          }
-        }
-      });
-    }
-  };
+    };
 }
 
 export function dsUser(UserService) {
-  'ngInject';
-  return {
-    restrict: 'EA',
-    scope: {
-      username: '=',
-      format: '@'
-    },
-    link: function(scope, element) {
-      scope.$watch('username', function() {
-        var format = scope.format || 'name';
+    'ngInject';
+    return {
+        restrict: 'EA',
+        scope: {
+            username: '=',
+            format: '@'
+        },
+        link: function(scope, element) {
+            scope.$watch('username', function() {
+                var format = scope.format || 'name';
 
-        UserService.get(scope.username).then((user) => {
-          switch (format) {
-            case 'hname':
-              element.text(user.last_name + ', ' + user.first_name[0] + '.');
-              break;
-            case 'lname':
-              element.text(user.last_name + ', ' + user.first_name);
-              break;
-            case 'name':
-              element.text(user.first_name + ' ' + user.last_name);
-              break;
-            case 'email':
-              element.text(user.email);
-              break;
-            case 'name-email':
-              element.text(user.first_name + ' ' + user.last_name + ' <' + user.email + '>');
-              break;
-            case 'name-username':
-              element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ')');
-              break;
-            case 'name-username-email':
-              element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ') <' + user.email + '>');
-              break;
-            default:
-              element.text(user.username);
-          }
-        });
-      });
-    }
-  };
+                UserService.get(scope.username).then((user) => {
+                    switch (format) {
+                        case 'hname':
+                            element.text(user.last_name + ', ' + user.first_name[0] + '.');
+                            break;
+                        case 'lname':
+                            element.text(user.last_name + ', ' + user.first_name);
+                            break;
+                        case 'name':
+                            element.text(user.first_name + ' ' + user.last_name);
+                            break;
+                        case 'email':
+                            element.text(user.email);
+                            break;
+                        case 'name-email':
+                            element.text(user.first_name + ' ' + user.last_name + ' <' + user.email + '>');
+                            break;
+                        case 'name-username':
+                            element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ')');
+                            break;
+                        case 'name-username-email':
+                            element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ') <' + user.email + '>');
+                            break;
+                        default:
+                            element.text(user.username);
+                    }
+                });
+            });
+        }
+    };
 }
 
 export function dsUserList(UserService) {
-  'ngInject';
-  return {
-    restrict: 'EA',
-    scope: {
-      usernames: '=',
-      format: '@'
-    },
-    link: function (scope, element) {
-      scope.$watch('usernames', function () {
-        if (typeof scope.usernames === 'undefined') {
-          return;
+    'ngInject';
+    return {
+        restrict: 'EA',
+        scope: {
+            usernames: '=',
+            format: '@'
+        },
+        link: function (scope, element) {
+            scope.$watch('usernames', function () {
+                if (typeof scope.usernames === 'undefined') {
+                    return;
+                }
+                let userReq = [];
+                let guests = [];
+  
+                scope.usernames.forEach((user) => {
+                    if (typeof user === 'undefined') {
+                        return;
+                    } else if (typeof user === 'string') {
+                        userReq.push(user);
+                    } else if (typeof user === 'object' && !user.guest) {
+                        userReq.push(user.name);
+                    } else if (user.guest) {
+                        guests.push(user);
+                    }
+                });
+
+                let otherData;
+                let formattedNames = '';
+
+                if (scope.format === 'other') {
+                    UserService.getPublic(userReq).then((res) => {
+                        let userData = res.userData;
+  
+                        userData.forEach((user) => {
+                            let otherMember = scope.usernames.find( (u) => u.name === user.username );
+                            user.order = otherMember.order;
+                        });
+                        otherData = userData.concat(guests);
+                        otherData.sort((a, b) => {
+                            return a.order - b.order;
+                        });
+
+                        otherData.forEach((u, i, arr) => {
+                            if (i === (arr.length - 1)) {
+                                formattedNames += u.lname + ', ' + u.fname;
+                            } else {
+                                formattedNames += u.lname + ', ' + u.fname + '; ';
+                            }
+                        });
+                        element.text(formattedNames);
+                    });
+                } else {
+                    UserService.getPublic(userReq).then((res) => {
+                        let userData = res.userData;
+  
+                        userData.forEach((u, i, arr) => {
+                            if (i === (arr.length -1)) {
+                                formattedNames += u.lname + ', ' + u.fname;
+                            } else {
+                                formattedNames += u.lname + ', ' + u.fname + '; ';
+                            }
+                        });
+                        element.text(formattedNames);
+                    });
+                }
+            });
         }
-        let userReq = [];
-        let guests = [];
-  
-        scope.usernames.forEach((user) => {
-          if (typeof user === 'undefined') {
-            return;
-          } else if (typeof user === 'string') {
-            userReq.push(user);
-          } else if (typeof user === 'object' && !user.guest) {
-            userReq.push(user.name);
-          } else if (user.guest) {
-            guests.push(user);
-          }
-        });
-
-        let otherData;
-        let formattedNames = '';
-
-        if (scope.format === 'other') {
-          UserService.getPublic(userReq).then((res) => {
-            let userData = res.userData;
-  
-            userData.forEach((user) => {
-              let otherMember = scope.usernames.find( u => u.name === user.username );
-              user.order = otherMember.order;
-            });
-            otherData = userData.concat(guests);
-            otherData.sort((a, b) => {
-              return a.order - b.order;
-            });
-
-            otherData.forEach((u, i, arr) => {
-              if (i === (arr.length - 1)) {
-                formattedNames += u.lname + ', ' + u.fname;
-              } else {
-                formattedNames += u.lname + ', ' + u.fname + '; ';
-              }
-            });
-            element.text(formattedNames);
-          });
-        } else {
-          UserService.getPublic(userReq).then((res) => {
-            let userData = res.userData;
-  
-            userData.forEach((u, i, arr) => {
-              if (i === (arr.length -1)) {
-                formattedNames += u.lname + ', ' + u.fname;
-              } else {
-                formattedNames += u.lname + ', ' + u.fname + '; ';
-              }
-            });
-            element.text(formattedNames);
-          });
-        }
-      });
-    }
-  };
+    };
 }
 
 export function dsAuthorList(UserService) {
-  'ngInject';
-  return {
-    restrict: 'EA',
-    scope: {
-      authors: '=',
-      format: '@'
-    },
-    link: function (scope, element) {
-      scope.$watch('authors', function () {
-        if (!scope.authors){
-          return;
+    'ngInject';
+    return {
+        restrict: 'EA',
+        scope: {
+            authors: '=',
+            format: '@'
+        },
+        link: function (scope, element) {
+            scope.$watch('authors', function () {
+                if (!scope.authors){
+                    return;
+                }
+                let userReq = [];
+                let guests = [];
+
+                scope.authors.forEach((user) => {
+                    if (user.authorship && !user.guest) {
+                        userReq.push(user.name);
+                    } else if (user.authorship && user.guest) {
+                        guests.push(user);
+                    }
+                });
+
+                UserService.getPublic(userReq).then((res) => {
+                    let userData = res.userData;
+                    let authorData;
+                    let formattedNames = '';
+
+                    userData.forEach((user) => {
+                        let relAuthor = scope.authors.find( (author) => author.name === user.username );
+                        user.order = relAuthor.order;
+                    });
+                    authorData = userData.concat(guests);
+                    authorData.sort((a, b) => {
+                        return a.order - b.order;
+                    });
+
+
+                    if (scope.format === 'hname') {
+                        authorData.forEach((u) => {
+                            formattedNames += u.lname + ', ' + u.fname[0] + '. ';
+                        });
+                        element.text(formattedNames);
+                    } else {
+                        authorData.forEach((u, i, arr) => {
+                            if (i === (arr.length - 1)) {
+                                formattedNames += u.lname + ', ' + u.fname;
+                            } else {
+                                formattedNames += u.lname + ', ' + u.fname + '; ';
+                            }
+                        });
+                        element.text(formattedNames);
+                    }
+                });
+            });
         }
-        let userReq = [];
-        let guests = [];
-
-        scope.authors.forEach((user) => {
-          if (user.authorship && !user.guest) {
-            userReq.push(user.name);
-          } else if (user.authorship && user.guest) {
-            guests.push(user);
-          }
-        });
-
-        UserService.getPublic(userReq).then((res) => {
-          let userData = res.userData;
-          let authorData;
-          let formattedNames = '';
-
-          userData.forEach((user) => {
-            let relAuthor = scope.authors.find( author => author.name === user.username );
-            user.order = relAuthor.order;
-          });
-          authorData = userData.concat(guests);
-          authorData.sort((a, b) => {
-            return a.order - b.order;
-          });
-
-
-          if (scope.format === 'hname') {
-            authorData.forEach((u) => {
-              formattedNames += u.lname + ', ' + u.fname[0] + '. ';
-            });
-            element.text(formattedNames);
-          } else {
-            authorData.forEach((u, i, arr) => {
-              if (i === (arr.length - 1)) {
-                formattedNames += u.lname + ', ' + u.fname;
-              } else {
-                formattedNames += u.lname + ', ' + u.fname + '; ';
-              }
-            });
-            element.text(formattedNames);
-          }
-        });
-      });
-    }
-  };
+    };
 }
 
- export function dsFixTop($window) {
+export function dsFixTop($window) {
     'ngInject';
     var $win = angular.element($window); // wrap window object as jQuery object
 
     return {
-      restrict: 'A',
-      link: function (scope, element, attrs) {
-        var topClass = attrs.dsFixTop; // get CSS class from directive's attribute value
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            var topClass = attrs.dsFixTop; // get CSS class from directive's attribute value
 
-        var navbar = $('.navbar-ds');
-		var offsetTop = 0;
-        $win.on('scroll', function (e) {
-            offsetTop = $('.site-banner').outerHeight() + parseInt(navbar.css('margin-bottom'));
-           if ($win.scrollTop() > offsetTop) {
-            element.addClass(topClass);
-			element.css({top: navbar.position().top + navbar.outerHeight()});
-          } else {
-            element.removeClass(topClass);
-          }
-        });
-      }
+            var navbar = $('.navbar-ds');
+            var offsetTop = 0;
+            $win.on('scroll', function (e) {
+                offsetTop = $('.site-banner').outerHeight() + parseInt(navbar.css('margin-bottom'));
+                if ($win.scrollTop() > offsetTop) {
+                    element.addClass(topClass);
+                    element.css({ top: navbar.position().top + navbar.outerHeight() });
+                } else {
+                    element.removeClass(topClass);
+                }
+            });
+        }
     };
-  }
+}
 
-  export function yamzTerm($http){
+export function yamzTerm($http){
     'ngInject';
     return {
         restrict: 'EA',
@@ -427,41 +426,41 @@ export function dsAuthorList(UserService) {
             title: '='
         },
         link: function(scope, element, attrs){
-          element.attr('data-toggle', 'tooltip');
-          element.tooltip({container: 'body',
-                           html: true,
-                           title:'Loading...',
-                           placement: function(tip, el){
-                               var $el = $(el);
-                               var pos = $el.position();
-                               if (pos.left > $el.width() + 10 && pos.top > $el.height() + 10){
-                                   return "left";
-                               } else if (pos.left < $el.width() + 10 && pos.top > $el.height() + 10){
-                                   return "right";
-                               }else if (pos.top < $el.height() + 10 && pos){
-                                   return "bottom";
-                               } else {
-                                   return "top";
-                               }
-                           }});
-          element.on('mouseover', function(env){
-              var title = element.attr('data-original-title');
-              if (typeof title === 'undefined' || title.length === 0 || title === 'Loading...'){
-                $http.get('/api/projects/yamz/' + scope.termId)
-                  .then(function(res){
-                      var data = res.data;
-                      var content = '<p> <strong>Definition: </strong>' + data.definition +
+            element.attr('data-toggle', 'tooltip');
+            element.tooltip({ container: 'body',
+                html: true,
+                title:'Loading...',
+                placement: function(tip, el){
+                    var $el = $(el);
+                    var pos = $el.position();
+                    if (pos.left > $el.width() + 10 && pos.top > $el.height() + 10){
+                        return 'left';
+                    } else if (pos.left < $el.width() + 10 && pos.top > $el.height() + 10){
+                        return 'right';
+                    }else if (pos.top < $el.height() + 10 && pos){
+                        return 'bottom';
+                    } 
+                    return 'top';
+                               
+                } });
+            element.on('mouseover', function(env){
+                var title = element.attr('data-original-title');
+                if (typeof title === 'undefined' || title.length === 0 || title === 'Loading...'){
+                    $http.get('/api/projects/yamz/' + scope.termId)
+                        .then(function(res){
+                            var data = res.data;
+                            var content = '<p> <strong>Definition: </strong>' + data.definition +
                                     '<br/> <br/>' +
                                     '<strong>Examples: </strong>' + data.examples + '</p>';
-                      element.attr('title', content);
-                      element.tooltip('fixTitle');
-                      //element.tooltip('show');
-                  });
-              }
-          });
-          element.on('mouseleave', function(){
+                            element.attr('title', content);
+                            element.tooltip('fixTitle');
+                            //element.tooltip('show');
+                        });
+                }
+            });
+            element.on('mouseleave', function(){
             //element.tooltip('hide');
-          });
+            });
         }
     };
-  }
+}

@@ -58,7 +58,7 @@ export class WSBusServiceProvider {
      */
     constructor() {
         this.configURL = '';
-        this.setUrl = url => {
+        this.setUrl = (url) => {
             this.configURL = url;
         };
     }

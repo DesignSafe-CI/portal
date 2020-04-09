@@ -45,7 +45,7 @@ class DataBrowserServicePreviewCtrl {
                         (data) => {
                             var postit = data.href;
                             var oReq = new XMLHttpRequest();
-                            oReq.open("GET", postit, true);
+                            oReq.open('GET', postit, true);
                             oReq.responseType = 'blob';
 
                             oReq.onload = () => {
@@ -54,9 +54,9 @@ class DataBrowserServicePreviewCtrl {
                                     var vid = URL.createObjectURL(videoBlob);
 
                                     // set video source and mimetype
-                                    document.getElementById("videoPlayer").src = vid;
-                                    document.getElementById("videoPlayer").setAttribute('type', `video/${fileExt}`);
-                                };
+                                    document.getElementById('videoPlayer').src = vid;
+                                    document.getElementById('videoPlayer').setAttribute('type', `video/${fileExt}`);
+                                }
                             };
                             oReq.onerror = () => {
                                 this.previewError = err.data;
@@ -81,10 +81,10 @@ class DataBrowserServicePreviewCtrl {
                             var postit = data.href;
                             var oReq = new XMLHttpRequest();
 
-                            oReq.open("GET", postit, true);
+                            oReq.open('GET', postit, true);
 
                             oReq.onload = (oEvent) => {
-                                var blob = new Blob([oReq.response], { type: "application/json" });
+                                var blob = new Blob([oReq.response], { type: 'application/json' });
                                 var reader = new FileReader();
 
                                 reader.onload = (e) => {
@@ -162,10 +162,10 @@ class DataBrowserServicePreviewCtrl {
         let designsafePath = this.file.href;
         if (this.notInJupyterTree()) {
             return false;
-        } else {
-            let fileExtension = this.file.name.split('.').pop();
-            return fileExtension == 'ipynb';
-        }
+        } 
+        let fileExtension = this.file.name.split('.').pop();
+        return fileExtension == 'ipynb';
+        
     }
 
     openInJupyter() {
@@ -189,7 +189,7 @@ class DataBrowserServicePreviewCtrl {
         if (this.file.system === 'designsafe.storage.published') { 
             specificLocation = 'NHERI-Published';
         }
-        const fileLocation = specificLocation + "/" + pathToFile;
+        const fileLocation = specificLocation + '/' + pathToFile;
         const jupyterPath = `http://jupyter.designsafe-ci.org/user/${this.Django.user}/notebooks/${fileLocation}`;
         window.open(jupyterPath);
     }

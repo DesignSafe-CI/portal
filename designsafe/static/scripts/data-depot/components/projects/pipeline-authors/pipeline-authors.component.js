@@ -27,7 +27,7 @@ class PipelineAuthorsCtrl {
             this.ProjectService.get({ uuid: this.projectId }).then((project) => {
                 this.project = project;
                 this.prepProject();
-                this.$state.go(this.selectDest, {projectId: this.projectId}, {reload: true});
+                this.$state.go(this.selectDest, { projectId: this.projectId }, { reload: true });
             });
         } else {
             this.projType = this.project.value.projectType;
@@ -41,12 +41,12 @@ class PipelineAuthorsCtrl {
             };
             this.primaryEntities.forEach((ent) => {
                 this.verifyAuthors(ent.value.authors);
-                this.savedStatus[ent.uuid] = {'saved': false};
+                this.savedStatus[ent.uuid] = { saved: false };
             });
             if (this.secondaryEntities) {
                 this.secondaryEntities.forEach((ent) => {
                     this.verifyAuthors(ent.value.authors);
-                    this.savedStatus[ent.uuid] = {'saved': false};
+                    this.savedStatus[ent.uuid] = { saved: false };
                 });
             }
         }
@@ -82,7 +82,7 @@ class PipelineAuthorsCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.view.data', { projectId: this.project.uuid }, { reload: true });
     }
 
     goCategories() {
@@ -92,7 +92,7 @@ class PipelineAuthorsCtrl {
             primaryEntities: this.primaryEntities,
             secondaryEntities: this.secondaryEntities,
             selectedListings: this.selectedListings,
-        }, {reload: true});
+        }, { reload: true });
     }
 
     goLicenses() {
@@ -111,7 +111,7 @@ class PipelineAuthorsCtrl {
             primaryEntities: this.primaryEntities,
             secondaryEntities: this.secondaryEntities,
             selectedListings: this.selectedListings,
-        }, {reload: true});
+        }, { reload: true });
     }
 
     setSavedStatus(entity, status) {
@@ -127,8 +127,8 @@ class PipelineAuthorsCtrl {
                 return;
             }
             // move up
-            a = entity.value.authors.find(x => x.order === this.selectedAuthor.order - 1);
-            b = entity.value.authors.find(x => x.order === this.selectedAuthor.order);
+            a = entity.value.authors.find((x) => x.order === this.selectedAuthor.order - 1);
+            b = entity.value.authors.find((x) => x.order === this.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
@@ -137,8 +137,8 @@ class PipelineAuthorsCtrl {
                 return;
             }
             // move down
-            a = entity.value.authors.find(x => x.order === this.selectedAuthor.order + 1);
-            b = entity.value.authors.find(x => x.order === this.selectedAuthor.order);
+            a = entity.value.authors.find((x) => x.order === this.selectedAuthor.order + 1);
+            b = entity.value.authors.find((x) => x.order === this.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;

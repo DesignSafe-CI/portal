@@ -14,7 +14,7 @@ class ConfirmMessageCtrl {
     }
 
     delete () {
-        this.close({$value: true});
+        this.close({ $value: true });
     }
 
     cancel() {

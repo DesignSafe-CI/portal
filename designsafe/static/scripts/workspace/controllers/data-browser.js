@@ -133,10 +133,10 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
             }
         }
         if (file.system === 'designsafe.storage.published' && file.path !== '/') {
-            DataBrowserService.apiParams.fileMgr = 'published'
+            DataBrowserService.apiParams.fileMgr = 'published';
         }
         if ( (file.system === 'designsafe.storage.published' || file.system === 'nees.public') && file.path === '/') {
-            DataBrowserService.apiParams.fileMgr = 'public'
+            DataBrowserService.apiParams.fileMgr = 'public';
         }
         DataBrowserService.browse(file)
             .then(function(listing) {
@@ -156,7 +156,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
                     // Trim path
                     $scope.data.filePath = $scope.data.filePath.replace(/^\/+/g, '');
                     if (file.system.includes('public') || file.system.includes('published')) {
-                        $scope.data.dirPath = $scope.data.dirPath.slice(0, 1).concat($scope.data.filePath.split('/')).filter(x => x!== '');
+                        $scope.data.dirPath = $scope.data.dirPath.slice(0, 1).concat($scope.data.filePath.split('/')).filter((x) => x!== '');
                     } else {
                         $scope.data.dirPath = (file.name ? $scope.data.dirPath.concat(file.name) : $scope.data.filePath.split('/'));
                     }
@@ -189,7 +189,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
 
     $scope.renderName = function(file) {
         if (file.meta) {
-            return file.meta.title
+            return file.meta.title;
         }
         if (typeof file.metadata === 'undefined' ||
             file.metadata === null ||

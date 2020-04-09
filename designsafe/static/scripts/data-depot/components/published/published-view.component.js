@@ -41,7 +41,7 @@ class PublishedViewCtrl {
                 f.system = 'designsafe.storage.published';
                 f.path = this.browser.publication.projectId + f.path;
                 f.permissions = 'READ';
-                return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
+                return this.FileListing.init(f, { fileMgr: 'published', baseUrl: '/api/public/files' });
             });
             evt.files.forEach((file) => {
                 if (!this.browser.listings[evt.uuid]) {
@@ -221,7 +221,7 @@ class PublishedViewCtrl {
     ordered(parent, entities) {
         let order = (ent) => {
             if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
-                return ent._ui.orders.find(order => order.parent === parent.uuid);
+                return ent._ui.orders.find((order) => order.parent === parent.uuid);
             }
             return 0;
         };
@@ -275,7 +275,7 @@ class PublishedViewCtrl {
             var link = document.createElement('a');
             link.style.display = 'none';
             link.setAttribute('href', postit);
-            link.setAttribute('download', "null");
+            link.setAttribute('download', 'null');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -289,14 +289,14 @@ class PublishedViewCtrl {
                 return true;
             }
             return false;
-        } else {
-            // if the category is related to the experiment level
-            // match appropriate data to corresponding experiment
-            if(model.associationIds.indexOf(exp.uuid) > -1) {
-                return true;
-            }
-            return false;
+        } 
+        // if the category is related to the experiment level
+        // match appropriate data to corresponding experiment
+        if(model.associationIds.indexOf(exp.uuid) > -1) {
+            return true;
         }
+        return false;
+        
     }
 
     showAuthor(author) {

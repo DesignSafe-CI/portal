@@ -89,7 +89,7 @@ class PipelinePublishCtrl {
             }
             publication[this.entityListName] = [];
             this.resolve.resolveParams.primaryEntities.forEach((entity) => {
-                publication[this.entityListName].push({uuid: entity.uuid});
+                publication[this.entityListName].push({ uuid: entity.uuid });
                 this.mainEntityUuids.push(entity.uuid);
             });
         }

@@ -4,9 +4,9 @@ export function SystemsService($rootScope, $http, $q, $uibModal, $state, Django,
     var _baseUrl = '/api/agave/systems/';
 
     var service = {
-      currentState: currentState,
-      state: state,
-      list: list
+        currentState: currentState,
+        state: state,
+        list: list
     };
 
 
@@ -14,10 +14,10 @@ export function SystemsService($rootScope, $http, $q, $uibModal, $state, Django,
      * @type {{busy: boolean, listing: FileListing, selected: Array}}
      */
     var currentState = {
-      busy: false,
-      error: null,
-      listing: null,
-      selected: []
+        busy: false,
+        error: null,
+        listing: null,
+        selected: []
     };
 
     /**
@@ -26,17 +26,17 @@ export function SystemsService($rootScope, $http, $q, $uibModal, $state, Django,
      * @return {{busy: boolean, listing: FileListing, selected: Array}}
      */
     function state() {
-      return currentState;
+        return currentState;
     }
 
     function list(options){
-      return $http.get(_baseUrl, {params: options})
-        .then(function(resp){
-            return resp.data;
-        });
+        return $http.get(_baseUrl, { params: options })
+            .then(function(resp){
+                return resp.data;
+            });
     }
 
     return service;
-  }
+}
 
 

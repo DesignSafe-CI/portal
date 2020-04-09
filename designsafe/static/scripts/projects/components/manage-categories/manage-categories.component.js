@@ -70,7 +70,7 @@ class ManageCategoriesCtrl {
                     var results = [];
                     var index = 0;
                     var size = 5;
-                    var fileCalls = filePaths.map(filePath => {
+                    var fileCalls = filePaths.map((filePath) => {
                         return this.FileListing.get(
                             { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
                         ).then((resp) => {
@@ -241,7 +241,7 @@ class ManageCategoriesCtrl {
         group.pop();
     }
 
-     addEntity(group) {
+    addEntity(group) {
         group.push(undefined);
     }
 
@@ -261,9 +261,9 @@ class ManageCategoriesCtrl {
         if (group) {
             if (group.length <= 1) {
                 return true;
-            } else {
-                return false;
-            }
+            } 
+            return false;
+            
         }
         return false;
     }
@@ -388,7 +388,7 @@ class ManageCategoriesCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete('Are you sure you want to delete ' + ent.value.title + '?');
     }
 }
 
@@ -401,4 +401,4 @@ export const ManageCategoriesComponent = {
         close: '&',
         dismiss: '&'
     },
-}
+};

@@ -3,8 +3,8 @@ describe('neesPublishedComponent', () => {
         FileListing, $uibModal, $http, $stateParams, $q, ctrl, deferred, browsePromise, neesPromise;
 
     beforeEach(() => {
-        angular.mock.module('ds-data')
-    })
+        angular.mock.module('ds-data');
+    });
     
     beforeEach(() => {
         angular.module('django.context', []).constant('Django', { user: 'test_user' });
@@ -21,7 +21,7 @@ describe('neesPublishedComponent', () => {
             FileListing = _FileListing_;
             $uibModal = _$uibModal_;
             $http = _$http_;
-            $stateParams = {filePath: '/NEES-0000-0000.groups'};
+            $stateParams = { filePath: '/NEES-0000-0000.groups' };
             $q = _$q_;
             deferred = _$q_.defer();
 
@@ -30,14 +30,14 @@ describe('neesPublishedComponent', () => {
 
             spyOn(DataBrowserService, 'browse').and.returnValue(browsePromise.promise);
             spyOn(PublishedService, 'getNeesPublished').and.returnValue(neesPromise.promise);
-            spyOn($state, 'go')
+            spyOn($state, 'go');
             
             const mockedServices = {
                 $stateParams: $stateParams,
                 DataBrowserService: DataBrowserService,
                 PublishedService, PublishedService,
                 $state: $state
-            }
+            };
             ctrl = $componentController(
                 'neesPublicationComponent',
                 mockedServices
@@ -59,29 +59,29 @@ describe('neesPublishedComponent', () => {
         expect(ctrl.resolveBreadcrumbHref).toBeDefined();
     });
     it('should call DataBrowserService and ProjectService with correct args', () => {
-        expect(DataBrowserService.browse).toHaveBeenCalledWith({system: 'nees.public', path: '/NEES-0000-0000.groups' })
-        expect(PublishedService.getNeesPublished).toHaveBeenCalledWith('NEES-0000-0000')
-    })
+        expect(DataBrowserService.browse).toHaveBeenCalledWith({ system: 'nees.public', path: '/NEES-0000-0000.groups' });
+        expect(PublishedService.getNeesPublished).toHaveBeenCalledWith('NEES-0000-0000');
+    });
     it('onBrowse should browse to publication listing if path is root', () => {
         ctrl.onBrowse({
             preventDefault: ()=>{return;},
             stopPropagation: ()=>{return;}
         },
-            {path: '/'}
-        )
+        { path: '/' }
+        );
         expect(ctrl.$state.go).toHaveBeenCalledWith('publicData');
-    })
+    });
     it('onBrowse should browse to a NEES publication if path is provided', () => {
         ctrl.onBrowse({
             preventDefault: ()=>{return;},
             stopPropagation: ()=>{return;}
         },
-            {path: '/NEES-0000-0000.groups/path/to/file'}
-        )
+        { path: '/NEES-0000-0000.groups/path/to/file' }
+        );
         expect(ctrl.$state.go).toHaveBeenCalledWith(
             'neesPublished', 
-            {filePath: '/NEES-0000-0000.groups/path/to/file'},
-            {reload: true});
-    })
+            { filePath: '/NEES-0000-0000.groups/path/to/file' },
+            { reload: true });
+    });
     
-})
+});

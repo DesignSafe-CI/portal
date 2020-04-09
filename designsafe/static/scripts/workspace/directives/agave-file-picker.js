@@ -30,7 +30,7 @@ export function agaveFilePicker(window, angular, $, _) {
 
                 function stopWant() {
                     $element.parent().removeClass('wants');
-                    $scope.$emit('cancel-wants-file', {requestKey: formKey});
+                    $scope.$emit('cancel-wants-file', { requestKey: formKey });
                     $scope.requesting = false;
                 }
 

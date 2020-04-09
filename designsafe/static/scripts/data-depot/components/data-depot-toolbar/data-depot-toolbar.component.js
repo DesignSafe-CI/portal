@@ -1,4 +1,4 @@
-import dataDepotToolbarTemplate from './data-depot-toolbar.component.html'
+import dataDepotToolbarTemplate from './data-depot-toolbar.component.html';
 
 class DataDepotToolbarCtrl {
     constructor($state, $uibModal, Django, DataBrowserService, UserService) {
@@ -17,26 +17,26 @@ class DataDepotToolbarCtrl {
 
     placeholder() {
         var stateNames = {
-            'myData': 'My Data',
+            myData: 'My Data',
             'projects.list': 'My Projects',
-            'sharedData': 'Shared Data',
-            'boxData': 'Box',
-            'dropboxData': 'Dropbox',
-            'googledriveData': 'Google Drive',
-            'publicData': 'Published Projects',
-            'communityData': 'Community Data',
+            sharedData: 'Shared Data',
+            boxData: 'Box',
+            dropboxData: 'Dropbox',
+            googledriveData: 'Google Drive',
+            publicData: 'Published Projects',
+            communityData: 'Community Data',
             'projects.view': 'Project View',
             'projects.view.data': 'Project Data View',
-            'neesPublished': 'NEES Published'
+            neesPublished: 'NEES Published'
         };
 
         if (stateNames[this.$state.current.name]) {
             return (stateNames[this.$state.current.name]);
         }
-        else {
-            return ('Data Depot');
-        }
-    };
+        
+        return ('Data Depot');
+        
+    }
 
     details() {
         // preview the last selected file or current listing if none selected
@@ -103,17 +103,17 @@ class DataDepotToolbarCtrl {
     ddSearch() {
         var state = this.apiParams.searchState;
         this.$state.go(state, {
-            'query_string': this.search.queryString,
-            'systemId': this.browser.listing.system,
+            query_string: this.search.queryString,
+            systemId: this.browser.listing.system,
         });
     }
 }
 
-DataDepotToolbarCtrl.$inject = ['$state', '$uibModal', 'Django', 'DataBrowserService', 'UserService'] 
+DataDepotToolbarCtrl.$inject = ['$state', '$uibModal', 'Django', 'DataBrowserService', 'UserService']; 
 
 
 export const DataDepotToolbarComponent = {
     controller: DataDepotToolbarCtrl,
     controllerAs: '$ctrl',
     template: dataDepotToolbarTemplate
-}
+};

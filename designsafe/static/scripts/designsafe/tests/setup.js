@@ -1,7 +1,7 @@
 (function(angular) {
     var django = angular.module('django.context', []);
     django.constant('Django', {
-        user: "AnonymousUser",
+        user: 'AnonymousUser',
         context: {}
     });
 })(angular);

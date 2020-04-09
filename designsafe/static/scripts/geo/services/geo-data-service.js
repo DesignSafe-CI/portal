@@ -227,7 +227,7 @@ export default class GeoDataService {
                     res([marker]);
                 });
             } catch (e) {
-                console.log(e)
+                console.log(e);
                 rej(e);
             }
         });

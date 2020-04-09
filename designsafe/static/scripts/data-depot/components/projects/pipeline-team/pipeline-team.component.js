@@ -28,7 +28,7 @@ class PipelineTeamCtrl {
             rebuild the project and selected files if a refresh occurs...
             for now we can send them back to the selection area
             */
-            this.$state.go('projects.pipelineSelectOther', {projectId: this.projectId}, {reload: true});
+            this.$state.go('projects.pipelineSelectOther', { projectId: this.projectId }, { reload: true });
         } else {
             // create a sortable list of team members if none exists...
             this.selectedMember = '';
@@ -102,8 +102,8 @@ class PipelineTeamCtrl {
                 return;
             }
             // move up
-            a = this.team.find(x => x.order === this.selectedMember.order - 1);
-            b = this.team.find(x => x.order === this.selectedMember.order);
+            a = this.team.find((x) => x.order === this.selectedMember.order - 1);
+            b = this.team.find((x) => x.order === this.selectedMember.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
@@ -112,8 +112,8 @@ class PipelineTeamCtrl {
                 return;
             }
             // move down
-            a = this.team.find(x => x.order === this.selectedMember.order + 1);
-            b = this.team.find(x => x.order === this.selectedMember.order);
+            a = this.team.find((x) => x.order === this.selectedMember.order + 1);
+            b = this.team.find((x) => x.order === this.selectedMember.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
@@ -122,7 +122,7 @@ class PipelineTeamCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.view.data', { projectId: this.project.uuid }, { reload: true });
     }
 
     goData() {
@@ -130,7 +130,7 @@ class PipelineTeamCtrl {
             projectId: this.projectId,
             project: this.project,
             selectedListings: this.selectedListings,
-        }, {reload: true});
+        }, { reload: true });
     }
 
     goLicenses() {
@@ -138,7 +138,7 @@ class PipelineTeamCtrl {
             projectId: this.projectId,
             project: this.project,
             selectedListings: this.selectedListings,
-        }, {reload: true});
+        }, { reload: true });
     }
 
 }

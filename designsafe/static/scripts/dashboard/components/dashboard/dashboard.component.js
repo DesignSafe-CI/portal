@@ -30,10 +30,10 @@ class DashboardCtrl {
         let chartStartDate = moment(this.first_jobs_date).subtract(1, 'days').toDate();
         this.chart = new DSTSBarChart('#ds_jobs_chart');
         this.chart.height(250);
-        this.chart.xSelector(d => {
+        this.chart.xSelector((d) => {
             return d.key;
         });
-        this.chart.ySelector(d => {
+        this.chart.ySelector((d) => {
             return d.values.length;
         });
         this.chart.startDate(chartStartDate);
@@ -47,37 +47,37 @@ class DashboardCtrl {
     }
 
     $onInit() {
-        this.NotificationService.list({ limit: 5 }).then(resp => {
+        this.NotificationService.list({ limit: 5 }).then((resp) => {
             this.notifications = resp.notifs;
             this.notification_count = resp.total;
         });
 
-        this.UserService.usage().then(resp => {
+        this.UserService.usage().then((resp) => {
             this.usage = resp;
         });
 
-        this.Jobs.list({ limit: 100, offset: 0 }).then(resp => {
+        this.Jobs.list({ limit: 100, offset: 0 }).then((resp) => {
             this.jobs = resp;
-            this.jobs = _.filter(this.jobs, d => {
+            this.jobs = _.filter(this.jobs, (d) => {
                 return moment(d.created).isAfter(this.first_jobs_date);
             });
             this.chart_data = this.Jobs.jobsByDate(this.jobs);
             this.chart.data(this.chart_data);
-            let tmp = _.groupBy(this.jobs, d => {
+            let tmp = _.groupBy(this.jobs, (d) => {
                 return d.appId;
             });
             this.recent_apps = Object.keys(tmp);
             this.loading_jobs = false;
         });
 
-        this.Apps.list({ $and: [{ name: 'ds_apps' }, { 'value.definition.available': true }] }).then(resp => {
+        this.Apps.list({ $and: [{ name: 'ds_apps' }, { 'value.definition.available': true }] }).then((resp) => {
             this.apps = resp.data;
         });
 
-        this.TicketsService.get().then(resp => {
+        this.TicketsService.get().then((resp) => {
             this.my_tickets = resp;
             this.loading_tickets = false;
-        }, err => {
+        }, (err) => {
             this.loading_tickets = false;
         });
     }

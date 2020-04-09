@@ -84,41 +84,41 @@ class PublicationDataCtrl {
             return file.metadata.experiments[0].title;
         }
         return file.name;
-    };
+    }
     showDescription(title, description) {
-      var modal = this.$uibModal.open({
-        component: 'publicationDescriptionModalComponent',
-        resolve: {
-          title: () => title,
-          description: () => description,
-        },
-        size: 'lg'
-      })
+        var modal = this.$uibModal.open({
+            component: 'publicationDescriptionModalComponent',
+            resolve: {
+                title: () => title,
+                description: () => description,
+            },
+            size: 'lg'
+        });
     }
     areFiltersEmpty() {
-        let noneToggled = true
+        let noneToggled = true;
         for (const key of Object.keys(this.toggles)) {
             if (this.toggles[key]) {
-                noneToggled = false
+                noneToggled = false;
             }
         }
         if (noneToggled) {
-            return true
+            return true;
         }
-        return false
+        return false;
     }
     typeFilter(item, x, y) {
         if (this.areFiltersEmpty()) {
-            return true
+            return true;
         }
         if (item.metadata && this.toggles['nees']) {
-            return true
+            return true;
         }
         return this.toggles[(item.meta || {}).type]; 
     }
     clearFilters() {
         for (const key of Object.keys(this.toggles)) {
-            this.toggles[key] = false
+            this.toggles[key] = false;
         }
         
     }

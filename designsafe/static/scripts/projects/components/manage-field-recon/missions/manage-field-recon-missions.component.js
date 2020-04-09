@@ -64,7 +64,7 @@ class ManageFieldReconMissionsCtrl {
     }
 
     cleanForm() {
-        this.form = {'authors' : angular.copy(this.data.users)};
+        this.form = { authors : angular.copy(this.data.users) };
     }
 
     configureAuthors(mission) {
@@ -333,7 +333,7 @@ class ManageFieldReconMissionsCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete('Are you sure you want to delete ' + ent.value.title + '?');
     }
 }
 

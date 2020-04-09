@@ -1,4 +1,4 @@
-import SearchHelpModalTemplate from './search-help-modal.component.html'
+import SearchHelpModalTemplate from './search-help-modal.component.html';
 class SearchHelpModalCtrl {
     constructor() {
     }
@@ -13,4 +13,4 @@ export const SearchHelpModalComponent = {
         close: '&',
         dismiss: '&'
     },
-}
+};

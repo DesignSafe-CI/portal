@@ -13,8 +13,8 @@ import { ddSharedListing } from './dd-shared-listing';
 import { metadataListing } from './metadata-listing';
 // import { myDataBrowser } from './my-data-browser';
 import { fileModel, spinnerOnLoad, httpSrc, accessfiles,
-         selectOnFocus, dsDataDraggable, dsDraggable, dsInfiniteScroll,
-         dsUser, dsUserList, dsAuthorList, dsFixTop, yamzTerm, } from './ng-designsafe-directives';
+    selectOnFocus, dsDataDraggable, dsDraggable, dsInfiniteScroll,
+    dsUser, dsUserList, dsAuthorList, dsFixTop, yamzTerm, } from './ng-designsafe-directives';
 
 designsafeDirectives.directive('ddAltmetrics', ['$sce', '$filter', ddAltmetrics]);
 designsafeDirectives.directive('ddBoxListing', ddBoxListing);

@@ -484,7 +484,7 @@ export default class MapSidebarCtrl {
             }
         });
         modal.result.then( (res) => {
-            console.log(res)
+            console.log(res);
             let newname = res.saveas;
             this.project.name = newname.split('.')[0];
             res.location.name = res.saveas;

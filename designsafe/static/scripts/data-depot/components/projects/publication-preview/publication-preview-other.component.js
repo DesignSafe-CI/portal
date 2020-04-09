@@ -62,22 +62,22 @@ class PublicationPreviewOtherCtrl {
                 return true;
             }
             return false;
-        } else {
-            // if the category is related to the experiment level
-            // match appropriate data to corresponding experiment
-            if(model.associationIds.indexOf(exp.uuid) > -1) {
-                return true;
-            }
-            return false;
+        } 
+        // if the category is related to the experiment level
+        // match appropriate data to corresponding experiment
+        if(model.associationIds.indexOf(exp.uuid) > -1) {
+            return true;
         }
+        return false;
+        
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
+        this.$state.go('projects.view.data', { projectId: this.browser.project.uuid, data: this.browser }, { reload: true });
     }
 
     goCuration() {
-        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
+        this.$state.go('projects.curation', { projectId: this.browser.project.uuid, data: this.browser }, { reload: true });
     }
 
     editProject() {
@@ -95,7 +95,7 @@ class PublicationPreviewOtherCtrl {
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineSelectOther', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineSelectOther', { projectId: browser.project.uuid }, { reload: true });
                 };
             }],
             resolve: {

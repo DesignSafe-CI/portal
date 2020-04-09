@@ -20,11 +20,11 @@ export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, Loggi
      *
      */
     service.listEntities = function(options){
-      return entitiesResource.get({params: options}).then(function(resp){
-        return _.map(resp.data, function(entity){
-            return new ProjectEntityModel(entity);
+        return entitiesResource.get({ params: options }).then(function(resp){
+            return _.map(resp.data, function(entity){
+                return new ProjectEntityModel(entity);
             });
-      });
+        });
     };
 
     /**
@@ -33,9 +33,9 @@ export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, Loggi
      *
      */
     service.get = function(options){
-      return entityResource.get({params: options}).then(function(resp){
-        return new ProjectEntityModel(resp.data);
-      });
+        return entityResource.get({ params: options }).then(function(resp){
+            return new ProjectEntityModel(resp.data);
+        });
     };
 
     /**
@@ -50,9 +50,9 @@ export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, Loggi
      *
      */
     service.create = function(options){
-      return entitiesResource.post(options).then(function(resp){
-        return new ProjectEntityModel(resp.data);
-      });
+        return entitiesResource.post(options).then(function(resp){
+            return new ProjectEntityModel(resp.data);
+        });
     };
 
     /**
@@ -61,9 +61,9 @@ export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, Loggi
      *
      */
     service.update = function(options){
-      return entityResource.put(options).then(function(resp){
-        return new ProjectEntityModel(resp.data);
-      });
+        return entityResource.put(options).then(function(resp){
+            return new ProjectEntityModel(resp.data);
+        });
     };
 
     /**
@@ -72,10 +72,10 @@ export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, Loggi
      *
      */
     service.delete = function(options){
-      return entityResource.delete(options).then(function(resp){
-        return new ProjectEntityModel(resp.data);
-      });
+        return entityResource.delete(options).then(function(resp){
+            return new ProjectEntityModel(resp.data);
+        });
     };
 
     return service;
-  }
+}

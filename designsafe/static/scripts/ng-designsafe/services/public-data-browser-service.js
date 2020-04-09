@@ -1,7 +1,7 @@
 export const publicDataBrowserService = function(angular, window, $, _){
     'ngInject';
-  "use strict";
+    'use strict';
 
-  var module = angular.module('designsafe');
+    var module = angular.module('designsafe');
 
-}
+};

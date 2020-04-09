@@ -32,7 +32,7 @@ class PipelinePrimaryEntityCtrl {
                 this.project = project;
                 this.prepProject();
                 this.ui.loading = false;
-                this.$state.go(this.selectDest, {projectId: this.projectId}, {reload: true});
+                this.$state.go(this.selectDest, { projectId: this.projectId }, { reload: true });
             });
         } else {
             this.ui.loading = false;
@@ -92,7 +92,7 @@ class PipelinePrimaryEntityCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.view.data', { projectId: this.project.uuid }, { reload: true });
     }
 
     goProject() {
@@ -102,7 +102,7 @@ class PipelinePrimaryEntityCtrl {
             primaryEntities: this.primaryEntities,
             secondaryEntities: this.secondaryEntities,
             selectedListings: this.selectedListings,
-        }, {reload: true});
+        }, { reload: true });
     }
 
     goSubEntities() {
@@ -112,7 +112,7 @@ class PipelinePrimaryEntityCtrl {
             primaryEntities: this.primaryEntities,
             secondaryEntities: this.secondaryEntities,
             selectedListings: this.selectedListings,
-        }, {reload: true});
+        }, { reload: true });
     }
 
     managePrimaryEntity(selectedEnt) {

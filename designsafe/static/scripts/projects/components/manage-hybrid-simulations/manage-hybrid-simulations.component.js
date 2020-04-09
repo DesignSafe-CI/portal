@@ -19,13 +19,13 @@ class ManageHybridSimCtrl {
         var members = [this.project.value.pi].concat(
             this.project.value.coPis,
             this.project.value.teamMembers,
-            this.project.value.guestMembers.map(g => g.user)
+            this.project.value.guestMembers.map((g) => g.user)
         );
         members.forEach((m, i) => {
             if (typeof m == 'string') {
                 // if user is guest append their data
                 if(m.slice(0,5) === 'guest') {
-                    var guestData = this.project.value.guestMembers.find(x => x.user === m);
+                    var guestData = this.project.value.guestMembers.find((x) => x.user === m);
                     members[i] = {
                         name: m,
                         order: i,
@@ -85,7 +85,7 @@ class ManageHybridSimCtrl {
     }
 
     isValid(ent) {
-        if (ent && ent != "" && ent != "None") {
+        if (ent && ent != '' && ent != 'None') {
             return true;
         }
         return false;
@@ -150,7 +150,7 @@ class ManageHybridSimCtrl {
                 if (typeof auth == 'string') {
                     // if user is guest append their data
                     if(auth.slice(0,5) === 'guest') {
-                        var guestData = this.project.value.guestMembers.find(x => x.user === auth);
+                        var guestData = this.project.value.guestMembers.find((x) => x.user === auth);
                         usersToClean[i] = {
                             name: auth,
                             order: i,
@@ -162,7 +162,7 @@ class ManageHybridSimCtrl {
                             inst: guestData.inst,
                         };
                     } else {
-                        usersToClean[i] = {name: auth, order: i, authorship: false};
+                        usersToClean[i] = { name: auth, order: i, authorship: false };
                     }
                 } else {
                     auth.order = i;
@@ -190,16 +190,16 @@ class ManageHybridSimCtrl {
         */
         var rmList = [];
         usersToClean.forEach((m) => {
-          var person = this.data.users.find(u => u.name === m.name);
-          if (!person) {
-            rmList.push(m);
-          }
+            var person = this.data.users.find((u) => u.name === m.name);
+            if (!person) {
+                rmList.push(m);
+            }
         });
         rmList.forEach((m) => {
-          var index = usersToClean.indexOf(m);
-          if (index > -1) {
-            usersToClean.splice(index, 1);
-          }
+            var index = usersToClean.indexOf(m);
+            if (index > -1) {
+                usersToClean.splice(index, 1);
+            }
         });
         usersToClean.forEach((u, i) => {
             u.order = i;
@@ -246,8 +246,8 @@ class ManageHybridSimCtrl {
                 return;
             }
             // move up
-            a = this.editSimForm.authors.find(x => x.order === this.editSimForm.selectedAuthor.order - 1);
-            b = this.editSimForm.authors.find(x => x.order === this.editSimForm.selectedAuthor.order);
+            a = this.editSimForm.authors.find((x) => x.order === this.editSimForm.selectedAuthor.order - 1);
+            b = this.editSimForm.authors.find((x) => x.order === this.editSimForm.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
@@ -256,8 +256,8 @@ class ManageHybridSimCtrl {
                 return;
             }
             // move down
-            a = this.editSimForm.authors.find(x => x.order === this.editSimForm.selectedAuthor.order + 1);
-            b = this.editSimForm.authors.find(x => x.order === this.editSimForm.selectedAuthor.order);
+            a = this.editSimForm.authors.find((x) => x.order === this.editSimForm.selectedAuthor.order + 1);
+            b = this.editSimForm.authors.find((x) => x.order === this.editSimForm.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
@@ -313,7 +313,7 @@ class ManageHybridSimCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete('Are you sure you want to delete ' + ent.value.title + '?');
     }
 }
 
@@ -326,4 +326,4 @@ export const ManageHybridSimComponent = {
         close: '&',
         dismiss: '&'
     },
-}
+};

@@ -41,7 +41,7 @@ class PipelineSubEntityCtrl {
                 this.browser.project = project;
                 this.prepProject();
                 this.ui.loading = false;
-                this.$state.go(this.selectDest, {projectId: this.projectId}, {reload: true});
+                this.$state.go(this.selectDest, { projectId: this.projectId }, { reload: true });
             });
         } else {
             this.ui.loading = false;
@@ -94,7 +94,7 @@ class PipelineSubEntityCtrl {
     ordered(parent, entities) {
         let order = (ent) => {
             if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
-                return ent._ui.orders.find(order => order.parent === parent.uuid);
+                return ent._ui.orders.find((order) => order.parent === parent.uuid);
             }
             return 0;
         };
@@ -110,7 +110,7 @@ class PipelineSubEntityCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.view.data', { projectId: this.browser.project.uuid }, { reload: true });
     }
     
     goPrimaryEntity() {
@@ -120,7 +120,7 @@ class PipelineSubEntityCtrl {
             primaryEntities: this.primaryEntities,
             secondaryEntities: this.secondaryEntities,
             selectedListings: this.browser.listings,
-        }, {reload: true});
+        }, { reload: true });
     }
     
     goAuthors() {
@@ -130,7 +130,7 @@ class PipelineSubEntityCtrl {
             primaryEntities: this.primaryEntities,
             secondaryEntities: this.secondaryEntities,
             selectedListings: this.browser.listings,
-        }, {reload: true});
+        }, { reload: true });
     }
 
     editSubEntity(selection) {

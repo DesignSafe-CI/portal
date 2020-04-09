@@ -54,7 +54,7 @@ class PublicationCitationCtrl {
     }
 
     downloadCitation() {
-        let url = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + this.doiCitation;
+        let url = 'https://data.datacite.org/application/vnd.datacite.datacite+xml/' + this.doiCitation;
         this.$window.open(url);
     }
 }

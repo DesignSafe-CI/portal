@@ -4,55 +4,55 @@ import DataDepotNewTemplate from './data-depot-new.component.html';
 export function DataDepotNewCtrl($scope, $state, $sce, Django, ProjectService, DataBrowserService) {
     'ngInject';
     $scope.test = {
-      enabled: Django.context.authenticated,
-      createFiles: false,
-      createProject: Django.context.authenticated
+        enabled: Django.context.authenticated,
+        createFiles: false,
+        createProject: Django.context.authenticated
     };
 
     $scope.browser = DataBrowserService.state();
 
     $scope.$watch('browser.listing', function() {
-      $scope.test.createFiles = false;
-      if ( ($scope.browser.listing || {}).permissions ) {
-        $scope.test.createFiles = $scope.browser.listing.permissions === 'ALL' ||
+        $scope.test.createFiles = false;
+        if ( ($scope.browser.listing || {}).permissions ) {
+            $scope.test.createFiles = $scope.browser.listing.permissions === 'ALL' ||
                                   $scope.browser.listing.permissions.indexOf('WRITE') > -1;
-      }
+        }
     });
 
     $scope.createFolder = function($event) {
-      if ($scope.test.createFiles) {
-        DataBrowserService.mkdir();
-      } else {
-        $event.preventDefault();
-        $event.stopPropagation();
-      }
+        if ($scope.test.createFiles) {
+            DataBrowserService.mkdir();
+        } else {
+            $event.preventDefault();
+            $event.stopPropagation();
+        }
     };
 
     $scope.createProject = function($event) {
-      if ($scope.test.createProject) {
-        ProjectService.editProject();
-      } else {
-        $event.preventDefault();
-        $event.stopPropagation();
-      }
+        if ($scope.test.createProject) {
+            ProjectService.editProject();
+        } else {
+            $event.preventDefault();
+            $event.stopPropagation();
+        }
     };
 
     $scope.uploadFiles = function($event) {
-      if ($scope.test.createFiles) {
-        DataBrowserService.upload(false);
-      } else {
-        $event.preventDefault();
-        $event.stopPropagation();
-      }
+        if ($scope.test.createFiles) {
+            DataBrowserService.upload(false);
+        } else {
+            $event.preventDefault();
+            $event.stopPropagation();
+        }
     };
 
     $scope.uploadFolders = function($event) {
-      if ($scope.test.createFiles) {
-        DataBrowserService.upload(true);
-      } else {
-        $event.preventDefault();
-        $event.stopPropagation();
-      }
+        if ($scope.test.createFiles) {
+            DataBrowserService.upload(true);
+        } else {
+            $event.preventDefault();
+            $event.stopPropagation();
+        }
     };
 
     var popoverHTML = `
@@ -61,10 +61,10 @@ export function DataDepotNewCtrl($scope, $state, $sce, Django, ProjectService, D
     
     $scope.popoverHTML = $sce.trustAsHtml(popoverHTML);
 
-  }
+}
 
 export const DataDepotNewComponent = {
     controller: DataDepotNewCtrl,
     controllerAs: '$ctrl',
     template: DataDepotNewTemplate
-}
+};

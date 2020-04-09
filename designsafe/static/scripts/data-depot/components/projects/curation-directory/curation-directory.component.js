@@ -86,20 +86,20 @@ class CurationDirectoryCtrl {
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser, filePath: this.filePath});
+        this.$state.go('projects.view.data', { projectId: this.browser.project.uuid, data: this.browser, filePath: this.filePath });
     }
 
     goPreview() {
         if (this.browser.project.value.projectType === 'experimental') {
-            this.$state.go('projects.preview', {projectId: this.browser.project.uuid, data: this.browser});
+            this.$state.go('projects.preview', { projectId: this.browser.project.uuid, data: this.browser });
         } else if (this.browser.project.value.projectType === 'simulation') {
-            this.$state.go('projects.previewSim', {projectId: this.browser.project.uuid, data: this.browser});
+            this.$state.go('projects.previewSim', { projectId: this.browser.project.uuid, data: this.browser });
         } else if (this.browser.project.value.projectType === 'hybrid_simulation') {
-            this.$state.go('projects.previewHybSim', {projectId: this.browser.project.uuid, data: this.browser});
+            this.$state.go('projects.previewHybSim', { projectId: this.browser.project.uuid, data: this.browser });
         } else if (this.browser.project.value.projectType === 'other') {
-            this.$state.go('projects.previewOther', {projectId: this.browser.project.uuid, data: this.browser});
+            this.$state.go('projects.previewOther', { projectId: this.browser.project.uuid, data: this.browser });
         } else if (this.browser.project.value.projectType === 'field_recon') {
-            this.$state.go('projects.previewFieldRecon', {projectId: this.browser.project.uuid, data: this.browser});
+            this.$state.go('projects.previewFieldRecon', { projectId: this.browser.project.uuid, data: this.browser });
         }
     }
 
@@ -111,7 +111,7 @@ class CurationDirectoryCtrl {
         this.$uibModal.open({
             component: 'manageProjectType',
             resolve: {
-                options: () => { return {'project': this.browser.project, 'preview': true, 'warning': false}; },
+                options: () => { return { project: this.browser.project, preview: true, warning: false }; },
             },
             size: 'lg',
         });
@@ -158,13 +158,13 @@ class CurationDirectoryCtrl {
     }
 
     relateData() {
-      this.$uibModal.open({
-        component: 'projectTree',
-        resolve: {
-            project: () => {return this.browser.project; },
-        },
-        size: 'lg',
-      });
+        this.$uibModal.open({
+            component: 'projectTree',
+            resolve: {
+                project: () => {return this.browser.project; },
+            },
+            size: 'lg',
+        });
     }
 
     manageFieldReconMissions() {

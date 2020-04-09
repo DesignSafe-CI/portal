@@ -120,7 +120,7 @@ export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job,
     $scope.deleteJob = function() {
         logger.log('deleteJob button clicked with jobId=', job.id);
         $http.delete(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
-            params: {job_id: job.id},
+            params: { job_id: job.id },
 
         }).then(function(response) {
             $uibModalInstance.dismiss('cancel');
@@ -134,7 +134,7 @@ export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job,
         logger.log('cancelJob button clicked with jobId=', job.id);
         $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
             job_id: job.id,
-            params: {job_id: job.id, action: 'cancel', body: '{"action":"stop"}'},
+            params: { job_id: job.id, action: 'cancel', body: '{"action":"stop"}' },
         }).then(function(response) {
             $uibModalInstance.dismiss('cancel');
             $scope.$parent.$broadcast('jobs-refresh');

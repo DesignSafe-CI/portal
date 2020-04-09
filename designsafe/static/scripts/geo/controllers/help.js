@@ -1,7 +1,7 @@
 export default class HelpCtrl {
 
-  constructor ($scope) {
-    'ngInject';
-    this.$scope = $scope;
-  }
+    constructor ($scope) {
+        'ngInject';
+        this.$scope = $scope;
+    }
 }

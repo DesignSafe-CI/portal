@@ -46,7 +46,7 @@ class ManageProjectTypeCtrl {
 
             this.savePrj(projectData).then((project) => {
                 this.DataBrowserService.state().project.value.projectType = project.value.projectType;
-                this.close({$value: project});
+                this.close({ $value: project });
                 this.loading = false;
                 this.$state.go('projects.curation', { projectId: project.uuid }, { reload: true }).then(() => {
                     this.ProjectService.editProject(project);

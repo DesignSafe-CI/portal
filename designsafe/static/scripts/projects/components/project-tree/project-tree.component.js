@@ -108,7 +108,7 @@ class ProjectTreeCtrl {
         this._ui.loading = true;
         nodes.forEach((node) => {
             let entity = this.project.getRelatedByUuid(node.data.uuid);
-            let entOrder = entity._ui.orders.find(order => order.parent === node.parent.data.uuid);
+            let entOrder = entity._ui.orders.find((order) => order.parent === node.parent.data.uuid);
             node.data.order -= 1;
             entity.setOrderFor(this.project.uuid, entOrder.value -= 1);
         });
@@ -129,7 +129,7 @@ class ProjectTreeCtrl {
             return this.$q.deferred();
         }
         if (node.data.secondary) {
-            let nodesToUpdate = nodeParent.children.filter(child => child.data.order > node.data.order);
+            let nodesToUpdate = nodeParent.children.filter((child) => child.data.order > node.data.order);
             this.shiftOrder(nodesToUpdate);
         }
         entity.value.missions = _.without(
@@ -149,7 +149,7 @@ class ProjectTreeCtrl {
      */
     unrelateEntityToHybridSimProject(node, entity){
         let nodeParent = node.parent;
-        let nodesToUpdate = nodeParent.children.filter(child => child.data.order > node.data.order);
+        let nodesToUpdate = nodeParent.children.filter((child) => child.data.order > node.data.order);
         this.shiftOrder(nodesToUpdate);
         if (entity.name === 'designsafe.project.hybrid_simulation.coordinator_output') {
             entity.value.coordinators = _.without(
@@ -206,7 +206,7 @@ class ProjectTreeCtrl {
      */
     unrelateEntityToSimProject(node, entity){
         let nodeParent = node.parent;
-        let nodesToUpdate = nodeParent.children.filter(child => child.data.order > node.data.order);
+        let nodesToUpdate = nodeParent.children.filter((child) => child.data.order > node.data.order);
         this.shiftOrder(nodesToUpdate);
         if (entity.name === 'designsafe.project.simulation.output') {
             entity.value.simInputs = _.without(
@@ -240,7 +240,7 @@ class ProjectTreeCtrl {
      */
     unrelateEntityToExperimental(node, entity){
         let nodeParent = node.parent;
-        let nodesToUpdate = nodeParent.children.filter(child => child.data.order > node.data.order);
+        let nodesToUpdate = nodeParent.children.filter((child) => child.data.order > node.data.order);
         this.shiftOrder(nodesToUpdate);
         if (entity.name === 'designsafe.project.event') {
             entity.value.sensorLists = _.without(
@@ -453,11 +453,11 @@ class ProjectTreeCtrl {
         let promises = [];
 
         let getOrder = (ent) => {
-            return ent._ui.orders.find(order => order.parent === this.project.uuid);
+            return ent._ui.orders.find((order) => order.parent === this.project.uuid);
         };
 
-        let ordered = entities.filter(entity => getOrder(entity));
-        let unordered = entities.filter(entity => !getOrder(entity));
+        let ordered = entities.filter((entity) => getOrder(entity));
+        let unordered = entities.filter((entity) => !getOrder(entity));
 
         ordered.sort((a, b) => (getOrder(a).value > getOrder(b).value) ? 1 : -1);
 
@@ -1679,7 +1679,7 @@ class ProjectTreeCtrl {
                     });
                 }
                 if (d.data.uuid && d.depth) {
-                    d3plus.textwrap().container("#entity-name" + d.data.uuid).draw();
+                    d3plus.textwrap().container('#entity-name' + d.data.uuid).draw();
                 }
             });
 
@@ -1785,7 +1785,7 @@ class ProjectTreeCtrl {
             { parent: parentUuid }
         );
         if (!order) {
-            order = { value: 0 , parent: parentUuid};
+            order = { value: 0 , parent: parentUuid };
         }
         return order;
     }

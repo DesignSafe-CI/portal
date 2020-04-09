@@ -38,12 +38,12 @@ function NotificationService(
             if (msg.event_type == 'job') {
                 url=djangoUrl.reverse(
                     'designsafe_workspace:process_notification',
-                    {pk: msg.pk}
+                    { pk: msg.pk }
                 );
             } else if (msg.event_type == 'data_depot') {
                 url=djangoUrl.reverse(
                     'designsafe_api:process_notification',
-                    {pk: msg.pk}
+                    { pk: msg.pk }
                 );
             }
         }
@@ -98,14 +98,14 @@ function NotificationService(
                 method: 'GET',
                 params: opts,
             }
-        ).then(resp => {
+        ).then((resp) => {
             resp.data.notifs.forEach(
-                d => {
+                (d) => {
                     d.datetime = new Date(d.datetime *1000);
                 }
             );
             return resp.data;
-        }, err => {
+        }, (err) => {
             return err;
         });
     }
@@ -120,7 +120,7 @@ function NotificationService(
         return $http.delete(
             djangoUrl.reverse(
                 'designsafe_api:delete_notification',
-                {pk: encodeURIComponent(pk)})
+                { pk: encodeURIComponent(pk) })
         );
     }
 
@@ -141,7 +141,7 @@ function NotificationService(
         // Convert operation name to title case.
         // Operation name might be something like 'copy_file', 'job_submission' or 'publish'
         const toastTitle = msg.operation.replace(/_/g, ' ').replace(/\w\S*/,
-            s => {
+            (s) => {
                 return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
             });
 

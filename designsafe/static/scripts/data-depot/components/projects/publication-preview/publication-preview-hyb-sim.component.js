@@ -97,7 +97,7 @@ class PublicationPreviewHybSimCtrl {
                         var results = [];
                         var index = 0;
                         var size = 5;
-                        var fileCalls = filePaths.map(filePath => {
+                        var fileCalls = filePaths.map((filePath) => {
                             return this.FileListing.get(
                                 { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
                             ).then((resp) => {
@@ -156,22 +156,22 @@ class PublicationPreviewHybSimCtrl {
                 return true;
             }
             return false;
-        } else {
-            // if the category is related to the simulation level
-            // match appropriate data to corresponding simulation
-            if(model.associationIds.indexOf(sim.uuid) > -1) {
-                return true;
-            }
-            return false;
+        } 
+        // if the category is related to the simulation level
+        // match appropriate data to corresponding simulation
+        if(model.associationIds.indexOf(sim.uuid) > -1) {
+            return true;
         }
+        return false;
+        
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser});
+        this.$state.go('projects.view.data', { projectId: this.browser.project.uuid, data: this.browser });
     }
 
     goCuration() {
-        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, data: this.browser});
+        this.$state.go('projects.curation', { projectId: this.browser.project.uuid, data: this.browser });
     }
 
     editProject() {
@@ -189,7 +189,7 @@ class PublicationPreviewHybSimCtrl {
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineSelectHybSim', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineSelectHybSim', { projectId: browser.project.uuid }, { reload: true });
                 };
             }],
             resolve: {

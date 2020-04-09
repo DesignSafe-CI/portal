@@ -48,7 +48,7 @@ export class PublishedDataCtrl {
                 f.system = 'designsafe.storage.published';
                 f.path = this.browser.publication.projectId + f.path;
                 f.permissions = 'READ';
-                return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
+                return this.FileListing.init(f, { fileMgr: 'published', baseUrl: '/api/public/files' });
             });
         };
 
@@ -108,7 +108,7 @@ export class PublishedDataCtrl {
                     'publishedData.view', {
                         system: child.system,
                         filePath: child.path.replace(/^\/+/, '')
-                });
+                    });
             });
         }
 
@@ -139,7 +139,7 @@ export class PublishedDataCtrl {
     }
 
     getTitle() {
-        this.$window.document.getElementsByName('citation_author_institution')[0].content = 'dingus'
+        this.$window.document.getElementsByName('citation_author_institution')[0].content = 'dingus';
     }
 
     makeRequest() {
@@ -214,9 +214,9 @@ export class PublishedDataCtrl {
             item.parentPath() != this.browser.listing.path &&
             item.parentPath() != '/') {
             return true;
-        } else {
-            return false;
-        }
+        } 
+        return false;
+        
     }
 
     onDetail($event, file) {
@@ -234,8 +234,7 @@ export class PublishedDataCtrl {
         var experiment_re = /^experiment/;
         if (file.path[0] === '/' && pathComps.length === 2) {
             return file.metadata.project.title;
-        }
-        else if (file.path[0] !== '/' &&
+        } else if (file.path[0] !== '/' &&
             pathComps.length === 2 &&
             experiment_re.test(file.name.toLowerCase())) {
             return file.metadata.experiments[0].title;
@@ -280,9 +279,9 @@ export class PublishedDataCtrl {
         if (user) {
             if (!noEmail) {
                 return user.last_name + ', ' + user.first_name + ' <' + user.email + '>';
-            } else {
-                return user.last_name + ', ' + user.first_name;
-            }
+            } 
+            return user.last_name + ', ' + user.first_name;
+            
         }
     }
 
@@ -296,9 +295,9 @@ export class PublishedDataCtrl {
         return (user) => {
             if (typeof user._ui[entity.uuid] !== 'undefined') {
                 return user._ui[entity.uuid];
-            } else {
-                return user._ui.order;
-            }
+            } 
+            return user._ui.order;
+            
         };
     }
 
@@ -391,9 +390,9 @@ export class PublishedDataCtrl {
                 $ctrl.isSelected = function (entityUuid) {
                     if (entityUuid === $ctrl.data.selectedUuid) {
                         return true;
-                    } else {
-                        return false;
-                    }
+                    } 
+                    return false;
+                    
                 };
                 $ctrl.close = function () {
                     $uibModalInstance.dismiss('close');
@@ -424,9 +423,9 @@ export class PublishedDataCtrl {
                 $ctrl.isSelected = function (entityUuid) {
                     if (entityUuid === $ctrl.data.selectedUuid) {
                         return true;
-                    } else {
-                        return false;
-                    }
+                    } 
+                    return false;
+                    
                 };
                 $ctrl.close = function () {
                     $uibModalInstance.dismiss('close');
@@ -457,9 +456,9 @@ export class PublishedDataCtrl {
                 $ctrl.isSelected = function (entityUuid) {
                     if (entityUuid === $ctrl.data.selectedUuid) {
                         return true;
-                    } else {
-                        return false;
-                    }
+                    } 
+                    return false;
+                    
                 };
                 $ctrl.close = function () {
                     $uibModalInstance.dismiss('close');

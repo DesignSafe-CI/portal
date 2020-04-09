@@ -18,7 +18,7 @@ class ManageExperimentsCtrl {
         this.edit = this.resolve.edit;
 
         let remData = (data) => {
-            data.atlss = data.atlss.filter(a => a.name != "hybrid_simulation"); 
+            data.atlss = data.atlss.filter((a) => a.name != 'hybrid_simulation'); 
             return data;
         };
 
@@ -199,7 +199,7 @@ class ManageExperimentsCtrl {
         if (exp.value.procedureEnd &&
             exp.value.procedureEnd !== 'None' &&
             exp.value.procedureEnd !== exp.value.procedureStart) {
-                exp.value.procedureEnd = new Date(exp.value.procedureEnd);
+            exp.value.procedureEnd = new Date(exp.value.procedureEnd);
         } else {
             exp.value.procedureEnd = '';
         }
