@@ -1,3 +1,5 @@
+import L from 'leaflet';
+
 export default class LayerGroup {
 
     constructor (label, fg) {
@@ -19,8 +21,8 @@ export default class LayerGroup {
             return 'Point';
         } else if (f instanceof L.Polygon) {
             return 'Polygon';
-        } 
+        }
         return 'Path';
-    
+
     }
 }

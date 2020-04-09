@@ -1,4 +1,3 @@
-import L from 'leaflet';
 import * as GeoUtils from '../utils/geo-utils';
 import angular from 'angular';
 
@@ -24,11 +23,12 @@ export default class MapProject {
         return bounds;
     }
 
-    numFeatures () {
-        total = 0;
+    numFeatures() {
+        let total = 0;
         this.layer_groups.forEach( (lg) => {
             total += lg.numFeatures();
         });
+        return total;
     }
 
     toJson() {
@@ -43,11 +43,6 @@ export default class MapProject {
         };
         this.layer_groups.forEach( (lg, lg_idx) => {
             out.layer_groups.push(lg.label);
-            let tmp = {
-                type: 'FeatureCollection',
-                features: [],
-                label: lg.label
-            };
             lg.feature_group.getLayers().forEach( (feature) => {
                 let json = feature.toGeoJSON();
                 // These are all the keys in the options object that we need to
