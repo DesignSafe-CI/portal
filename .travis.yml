@@ -9,7 +9,7 @@ cache:
   - node_modules
   - static
 python:
-- '2.7'
+- '3.6'
 os:
 - linux
 stages:
@@ -21,7 +21,7 @@ matrix:
   - name: webpack build
     language: python
     python:
-    - '2.7'
+    - '3.6'
     stage: build
     install:
     - pip install -r requirements.txt
@@ -35,7 +35,7 @@ matrix:
   - name: npm test
     language: python
     python:
-    - '2.7'
+    - '3.6'
     stage: test
     install:
     - pip install -r requirements.txt
@@ -52,7 +52,7 @@ matrix:
   - name: unittests
     language: python
     python:
-    - '2.7'
+    - '3.6'
     stage: test
     install:
     - pip install -r requirements.txt
@@ -69,7 +69,7 @@ matrix:
   - name: Flake8
     language: python
     python:
-    - '2.7'
+    - '3.6'
     stage: lint
     install:
     - pip install -r requirements.txt
@@ -82,7 +82,7 @@ matrix:
   - name: pylint
     language: python
     python:
-    - '2.7'
+    - '3.6'
     stage: lint
     install:
     - pip install -r requirements.txt
@@ -95,7 +95,7 @@ matrix:
   - name: pydocstyle
     language: python
     python:
-    - '2.7'
+    - '3.6'
     stage: lint
     install:
     - pip install -r requirements.txt
@@ -119,7 +119,7 @@ matrix:
   - name: Flake8
     language: python
     python:
-    - '2.7'
+    - '3.6'
     stage: lint
     install:
     - pip install -r requirements.txt
@@ -132,7 +132,7 @@ matrix:
   - name: pylint
     language: python
     python:
-    - '2.7'
+    - '3.6'
     stage: lint
     install:
     - pip install -r requirements.txt
@@ -145,7 +145,7 @@ matrix:
   - name: pydocstyle
     language: python
     python:
-    - '2.7'
+    - '3.6'
     stage: lint
     install:
     - pip install -r requirements.txt
