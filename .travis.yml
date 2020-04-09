@@ -18,20 +18,42 @@ stages:
 - build
 matrix:
   include:
-  - name: webpack build
+  - name: Flake8
     language: python
     python:
     - '3.6'
-    stage: build
+    stage: lint
     install:
     - pip install -r requirements.txt
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
       --link -i demo > /dev/null"
+    script:
+    - flake8 designsafe
+  - name: pydocstyle
+    language: python
+    python:
+    - '3.6'
+    stage: lint
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i demo > /dev/null"
+    script:
+    - pydocstyle designsafe
+  - name: eslint
+    language: node_js
+    node_js:
+    - node
+    stage: lint
+    install:
+    - npm install sync-exec
     - npm install
     script:
-    - npm run build
+    - npm run-script lint
   - name: npm test
     language: python
     python:
@@ -66,55 +88,20 @@ matrix:
     after_script:
     - coverage xml
     - codecov
-  - name: Flake8
+  - name: webpack build
     language: python
     python:
     - '3.6'
-    stage: lint
+    stage: build
     install:
     - pip install -r requirements.txt
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
       --link -i demo > /dev/null"
-    script:
-    - flake8 designsafe
-  - name: pylint
-    language: python
-    python:
-    - '3.6'
-    stage: lint
-    install:
-    - pip install -r requirements.txt
-    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
-      done;
-    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i demo > /dev/null"
-    script:
-    - pylint designsafe
-  - name: pydocstyle
-    language: python
-    python:
-    - '3.6'
-    stage: lint
-    install:
-    - pip install -r requirements.txt
-    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
-      done;
-    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i demo > /dev/null"
-    script:
-    - pydocstyle designsafe
-  - name: eslint
-    language: node_js
-    node_js:
-    - node
-    stage: lint
-    install:
-    - npm install sync-exec
     - npm install
     script:
-    - npm run-script lint
+    - npm run build
   allow_failures:
   - name: Flake8
     language: python
@@ -129,19 +116,6 @@ matrix:
       --link -i demo > /dev/null"
     script:
     - flake8 designsafe
-  - name: pylint
-    language: python
-    python:
-    - '3.6'
-    stage: lint
-    install:
-    - pip install -r requirements.txt
-    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
-      done;
-    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i demo > /dev/null"
-    script:
-    - pylint designsafe
   - name: pydocstyle
     language: python
     python:
