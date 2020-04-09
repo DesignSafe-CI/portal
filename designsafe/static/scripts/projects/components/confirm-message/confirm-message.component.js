@@ -1,5 +1,4 @@
 import ConfirmMessageTemplate from './confirm-message.template.html';
-import _ from 'underscore';
 
 class ConfirmMessageCtrl {
 
