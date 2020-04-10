@@ -1,14 +1,15 @@
-import google_auth_oauthlib.flow
 import requests
+import google_auth_oauthlib.flow
+
 from django.db import IntegrityError
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
-                         Http404)
+from django.http import (HttpResponseRedirect, HttpResponseBadRequest)
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
+
 from designsafe.apps.googledrive_integration.models import GoogleDriveUserToken
 from designsafe.apps.googledrive_integration.tasks import check_connection
 

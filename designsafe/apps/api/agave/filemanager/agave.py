@@ -3,8 +3,7 @@ import os
 from datetime import datetime
 from designsafe.apps.api.agave.filemanager.base import BaseFileManager
 from designsafe.apps.data.models.agave.files import (BaseFileResource,
-                                                     BaseFilePermissionResource,
-                                                     BaseAgaveFileHistoryRecord)
+                                                     BaseFilePermissionResource)
 from designsafe.apps.data.tasks import agave_indexer
 from requests import HTTPError
 import logging

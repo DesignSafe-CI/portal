@@ -1,3 +1,5 @@
+import logging
+
 from dropbox.oauth import BadRequestException, BadStateException, DropboxOAuth2Flow
 from dropbox.exceptions import AuthError
 from dropbox.dropbox import Dropbox
@@ -6,13 +8,11 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
-                         Http404)
+from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from designsafe.apps.dropbox_integration.models import DropboxUserToken
 
-import logging
+from designsafe.apps.dropbox_integration.models import DropboxUserToken
 
 
 logger = logging.getLogger(__name__)

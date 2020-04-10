@@ -2,9 +2,7 @@ import logging
 
 from django.conf import settings
 
-from elasticsearch_dsl import (Document, Date, Nested,
-                               Boolean, GeoPoint, MetaField, Text,
-                               Keyword)
+from elasticsearch_dsl import (Document, Date, Nested, GeoPoint, MetaField, Text, Keyword)
 
 logger = logging.getLogger(__name__)
 

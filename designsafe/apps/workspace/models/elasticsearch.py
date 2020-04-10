@@ -1,11 +1,11 @@
+import logging
 
 from future.utils import python_2_unicode_compatible
-import logging
+
 from django.conf import settings
-from elasticsearch_dsl import (Search, DocType, Date, Nested,
-                               analyzer, Object, Text, Long,
-                               Boolean, Keyword,
-                               GeoPoint, MetaField)
+
+from elasticsearch_dsl import (DocType, Date, Nested,
+                               Text, Keyword, MetaField)
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)

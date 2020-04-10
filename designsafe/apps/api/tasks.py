@@ -7,7 +7,6 @@ import urllib.request
 import urllib.parse
 import urllib.error
 from celery import shared_task
-from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.conf import settings
 

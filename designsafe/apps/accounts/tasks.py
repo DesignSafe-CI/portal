@@ -7,8 +7,6 @@ from celery import shared_task
 from requests import HTTPError
 from django.contrib.auth import get_user_model
 from pytas.models import User as TASUser
-from designsafe.apps.accounts.models import (DesignSafeProfile,
-                                             NotificationPreferences)
 
 
 logger = logging.getLogger(__name__)

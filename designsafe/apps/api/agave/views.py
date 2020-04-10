@@ -7,7 +7,7 @@ import os
 import chardet
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponseRedirect, HttpResponseBadRequest,
-                         HttpResponseForbidden, HttpResponseServerError)
+                         HttpResponseForbidden)
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import JsonResponse
