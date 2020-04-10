@@ -1,17 +1,22 @@
 # DesignSafe-CI Portal Release Notes
+
+## v4.9.0-20200402
+Fixes:
+* Update Markupsafe to fix issue with setuptools
+
 ## v4.9.0-20200401
-Enhancements: 
-* Python 3 Migration 
+Enhancements:
+* Python 3 Migration
 * Add ability to download published file archives
-Fixes: 
+Fixes:
 * Publications and Data Files display bugfixes
 
 ## v4.8.2-20200207
-Fixes: 
+Fixes:
 * RAPID admin page bugfix
 
 ## v4.8.2-20200206
-Fixes: 
+Fixes:
 * Updates to NCO schedule page.
 * FR Model bug fix.
 
