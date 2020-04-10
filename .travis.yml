@@ -91,28 +91,7 @@ matrix:
     - npm run build
   allow_failures:
   - name: pydocstyle
-    language: python
-    python:
-    - '3.6'
-    stage: lint
-    install:
-    - pip install -r requirements.txt
-    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
-      done;
-    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i demo > /dev/null"
-    script:
-    - pydocstyle designsafe
   - name: eslint
-    language: node_js
-    node_js:
-    - node
-    stage: lint
-    install:
-    - npm install sync-exec
-    - npm install
-    script:
-    - npm run-script lint
 before_script:
 - df -h
 notifications:
