@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from django.conf import settings
 
 
-
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
 
