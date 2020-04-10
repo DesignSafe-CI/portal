@@ -74,7 +74,7 @@
     <!-- Missions -->
     <div ng-repeat="primEnt in $ctrl.primaryEntities | orderBy: primEnt.value.title" style="padding-bottom:20px">
         <div class="well" ng-if="!$ctrl.ui.loading">
-            <div class="prj-head" style="padding-bottom:20px">
+            <div class="prj-head-title" style="padding-bottom:20px">
                 Mission | <strong>{{ primEnt.value.title }}</strong>
             </div>
             <div class="entity-meta-field" ng-if="primEnt.value.event">
@@ -143,7 +143,7 @@
                 <br>{{ primEnt.value.description }}
             </p>
             <div><br>
-                <span class="prj-head" ng-click="$ctrl.managePrimaryEntity(primEnt)"><a>Edit</a></span>
+                <span class="prj-head-title" ng-click="$ctrl.managePrimaryEntity(primEnt)"><a>Edit</a></span>
             </div>
         </div>
     </div>

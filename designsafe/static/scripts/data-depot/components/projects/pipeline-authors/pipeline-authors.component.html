@@ -89,7 +89,7 @@
     <div ng-repeat="primEnt in $ctrl.primaryEntities | orderBy: primEnt.value.title" style="margin-bottom: 40px;">
         <!-- Order Authors -->
         <div class="well">
-            <div class="prj-head" style="padding-bottom:20px">
+            <div class="prj-head-title" style="padding-bottom:20px">
                 {{$ctrl.placeholder}} | <strong>{{ primEnt.value.title }}</strong>
             </div>
             <!-- Success Alert -->
@@ -150,7 +150,7 @@
     <div ng-repeat="secEnt in $ctrl.secondaryEntities | orderBy: secEnt.value.title" style="margin-bottom: 40px;">
         <!-- Order Authors -->
         <div class="well">
-            <div class="prj-head" style="padding-bottom:20px">
+            <div class="prj-head-title" style="padding-bottom:20px">
                 {{$ctrl.placeholderSecondary}} | <strong>{{ secEnt.value.title }}</strong>
             </div>
             <!-- Success Alert -->

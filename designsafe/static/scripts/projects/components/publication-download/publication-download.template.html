@@ -1,0 +1,86 @@
+<div class="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        Download
+        <span class="pull-right" ng-click="$ctrl.close()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div ng-if="!$ctrl.loaded">
+    <h3 class="text-center">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+    </h3>
+</div>
+<div class="modal-body" ng-if="$ctrl.loaded">
+    <div ng-if="!$ctrl.error">
+        <p>
+            This download is a ZIP file of the complete project dataset. The size of the ZIP file is <strong>{{$ctrl.arcData.length|bytes}}</strong>.
+            <!-- A JSON file is included that contains all of the metadata. -->
+        </p>
+    </div>
+    <div class="alert alert-danger" ng-if="$ctrl.error">
+        There has been an error while trying to retrieve this publication's archive. Please
+        <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Publication+archive+failed+to+load:+{{$ctrl.prjId}}">
+            submit a ticket
+        </a>, and we will assist you with downloading the published documents.
+    </div>
+    <hr>
+    <p>
+        The files are licensed by the following:
+        <br>
+        <div class="btn-container" ng-if="$ctrl.publication.licenses.datasets">
+            <span class="curation-odc" style="font-size:32px;"></span>
+            &ensp;
+            <strong>{{$ctrl.publication.licenses.datasets}}</strong>
+            &ensp;
+            (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+        </div>
+        <div class="btn-container" ng-if="$ctrl.publication.licenses.works">
+            <span class="curation-cc-share"
+                  style="font-size:32px;"
+                  ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+            </span>
+            <span class="curation-cc-zero"
+                  style="font-size:32px;"
+                  ng-if="$ctrl.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
+            </span>
+            &ensp;
+            <strong>{{$ctrl.publication.licenses.works}}</strong>
+            &ensp;
+            (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">License Website</a>)
+        </div>
+        <div class="btn-container" ng-if="$ctrl.publication.licenses.software">
+            <span class="curation-gpl" style="font-size:32px;"></span>
+            &ensp;
+            <strong>{{$ctrl.publication.licenses.software}}</strong>
+            &ensp;
+            (<a href="http://www.gnu.org/licenses/gpl.html" target="_blank">License Website</a>)
+        </div>
+        <br>
+        <ul>
+            <li>
+                You must attribute for any public use of the data/database.
+            </li>
+            <li>
+                Derived work from the reuse of this data/database must carry the same terms and conditions of this license.
+            </li>
+        </ul>
+    </p>
+    <br>
+    <div class="text-right" ng-if="!$ctrl.error">
+        <button class="btn btn-add" ng-click="$ctrl.download()" ng-disabled="!$ctrl.loaded || $ctrl.retrievingPostit">
+            <div class="btn-container">
+                <div ng-if="!$ctrl.retrievingPostit">
+                    <span class="curation-download"></span>
+                    &ensp;
+                    <span>
+                        <strong>Download</strong>
+                    </span>
+                </div>
+                <span ng-if="$ctrl.retrievingPostit" style="font-size:18px">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
+            </div>
+        </button>
+    </div>
+</div>

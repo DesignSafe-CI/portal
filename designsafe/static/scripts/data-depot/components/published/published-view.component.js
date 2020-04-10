@@ -7,19 +7,16 @@ import experimentalData from '../../../projects/components/manage-experiments/ex
 import { isEqual } from 'underscore';
 
 class PublishedViewCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing, $uibModal, $http, djangoUrl, UserService, $q, $anchorScroll, $location){
+    constructor($anchorScroll, $location, $stateParams, $uibModal, DataBrowserService, PublishedService, UserService, FileListing){
         'ngInject';
-        this.$stateParams = $stateParams;
-        this.DataBrowserService = DataBrowserService;
-        this.PublishedService = PublishedService;
-        this.FileListing = FileListing;
-        this.$uibModal = $uibModal;
-        this.$http = $http;
-        this.djangoUrl = djangoUrl;
-        this.UserService = UserService;
-        this.$q = $q;
         this.$anchorScroll = $anchorScroll;
         this.$location = $location;
+        this.$stateParams = $stateParams;
+        this.$uibModal = $uibModal;
+        this.DataBrowserService = DataBrowserService;
+        this.PublishedService = PublishedService;
+        this.UserService = UserService;
+        this.FileListing = FileListing;
     }
 
     $onInit() {
@@ -260,25 +257,13 @@ class PublishedViewCtrl {
     }
 
     download() {
-        var body = {
-            action: 'download'
-        };
-        var system = this.$stateParams.systemId;
-        var projectId = this.project.value.projectId;
-        
-        var url = this.djangoUrl.reverse('designsafe_api:public_files_media', ['published', system, `archives/${projectId}_archive.zip`]);
-
-        this.$http.put(url, body).then(function (resp) {
-            var postit = resp.data.href;
-
-            // Is there a better way of doing this?
-            var link = document.createElement('a');
-            link.style.display = 'none';
-            link.setAttribute('href', postit);
-            link.setAttribute('download', "null");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        this.$uibModal.open({
+            component: 'publicationDownloadModal',
+            resolve: {
+                publication: () => {return this.browser.publication;},
+                mediaUrl: () => {return this.browser.listing.mediaUrl();},
+            },
+            size: 'lg'
         });
     }
 

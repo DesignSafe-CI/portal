@@ -1316,13 +1316,6 @@ mark,
   background-color: #fcf8e3;
   padding: .2em;
 }
-.prj-head {
-  font-size: 20px;
-}
-
-.edit-link {
-  font-weight: bold;
-}
 .prj-row {
   padding-bottom: 2px;
 }
@@ -2729,6 +2722,30 @@ input[type="search"] {
     line-height: 46px;
   }
 }
+.btn-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+}
+.prj-head-container {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  justify-content: space-between;
+  padding-bottom:20px;
+}
+.prj-head-title {
+  width: 75%;
+  font-size: 20px;
+}
+.prj-head-edit {
+  font-size: 14px;
+}
+.prj-head-download {
+  float: right;
+  font-size: 20px;
+}
 .project-form-input {
   height: 32px;
   margin-bottom: 2px;
@@ -3365,6 +3382,8 @@ fieldset[disabled] .btn-primary.active {
   color: #ffffff;
   background-color: #1CB500;
   border-color: #158600;
+  padding-left: 40px;
+  padding-right: 40px;
 }
 .btn-add:focus,
 .btn-add.focus {
