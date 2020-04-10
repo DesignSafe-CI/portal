@@ -4,10 +4,13 @@ import HybSimPublicationTemplate from '../projects/publication-preview/publicati
 import FieldReconPublicationTemplate from '../projects/publication-preview/publication-preview-field-recon.component.html';
 import OtherPublicationTemplate from '../projects/publication-preview/publication-preview-other.component.html';
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
+import { isEqual } from 'underscore';
 
 class PublishedViewCtrl {
-    constructor($stateParams, $uibModal, DataBrowserService, PublishedService, UserService, FileListing){
+    constructor($anchorScroll, $location, $stateParams, $uibModal, DataBrowserService, PublishedService, UserService, FileListing){
         'ngInject';
+        this.$anchorScroll = $anchorScroll;
+        this.$location = $location;
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
         this.DataBrowserService = DataBrowserService;
@@ -145,6 +148,10 @@ class PublishedViewCtrl {
             this.browser.project.event_set = this.browser.publication.eventsList;
             this.browser.project.report_set = this.browser.publication.reportsList;
             this.browser.project.experiment_set = this.browser.publication.experimentsList;
+            this.expDOIList = this.browser.project.experiment_set.map(({ doi, uuid }) => {
+                return { value: doi, uuid, hash: `anchor-${uuid}` };
+            });
+            
         }
         if (this.project.value.projectType === 'simulation'){
             this.browser.project.simulation_set = this.browser.publication.simulations;
@@ -153,6 +160,9 @@ class PublishedViewCtrl {
             this.browser.project.output_set = this.browser.publication.outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
+            this.simDOIList = this.browser.project.simulation_set.map(({ doi, uuid }) => {
+                return { value: doi, uuid, hash: `anchor-${uuid}` };
+            });
         }
         if (this.project.value.projectType === 'hybrid_simulation'){
             this.browser.project.hybridsimlation_set = this.browser.publication.hybrid_simulations;
@@ -165,6 +175,11 @@ class PublishedViewCtrl {
             this.browser.project.expoutput_set = this.browser.publication.exp_outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
+            this.hsDOIList = this.browser.project.hybridsimlation_set.map(({ doi, uuid }) => ({
+                value: doi,
+                uuid,
+                hash: `details-${uuid}`,
+            }));
         }
         if (this.project.value.projectType === 'field_recon'){
             this.browser.project.mission_set = this.browser.publication.missions;
@@ -191,6 +206,12 @@ class PublishedViewCtrl {
                     this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
                 }
             });
+            this.frDOIList = this.orderedPrimary.map(({ doi, uuid, name }) => ({
+                type: name.split('.').pop(),
+                value: doi,
+                uuid,
+                hash: `anchor-${uuid}`
+            }));
         }
     }
 
@@ -297,6 +318,23 @@ class PublishedViewCtrl {
                 entity: () => { return entity; },
             }
         });
+    }
+
+    goToHash(hash) {
+        this.$location.hash(hash);
+        this.$anchorScroll.yOffset = 64;
+        return setTimeout(() => this.$anchorScroll(), 750);
+    }
+
+    relatedWorkEmpty() {
+        const relatedWork = this.browser.project.value.associatedProjects.slice();
+        const emptyArray = relatedWork.length === 0;
+        const emptyListing = isEqual(relatedWork.shift(),{ order: 0, title: '' });
+        return emptyArray || emptyListing;
+    }
+
+    rmEmpty(arr) {
+        return arr.filter(Boolean);
     }
 }
 

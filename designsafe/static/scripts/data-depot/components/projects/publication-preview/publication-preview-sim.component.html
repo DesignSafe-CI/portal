@@ -46,6 +46,21 @@
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
+            <tr ng-repeat="doi in $ctrl.simDOIList">
+                <td ng-if="$first">DOI(s) in Dataset</td>
+                <td ng-if="!$first"></td>
+                <td>
+                    <strong>
+                        <a 
+                            ng-click="$ctrl.goToHash(doi.hash)"
+                            data-toggle="collapse"
+                            data-target="#data-{{doi.uuid}}"
+                        >
+                            {{ doi.value }}
+                        </a>
+                    </strong>
+                </td>
+            </tr>
             <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
                 ng-if="!$ctrl.readOnly">
                 <td ng-if="$first">Awards</td>
@@ -146,10 +161,16 @@
     <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="simulation in $ctrl.browser.project.simulation_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{simulation.uuid}}">
             <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
-                <div class="collapse-tab">
-                    <span class="collapse-tab-content-left">Simulation | <strong>{{simulation.value.title}}</strong></span>
-                    <span class="collapse-tab-content-right curation-chevron"></span>
-                </div>
+                <table style="width:100%" id="anchor-{{ simulation.uuid }}">
+                    <tr>
+                        <td class="tab-cell">
+                            <span>Simulation | <strong>{{simulation.value.title}}</strong></span>
+                        </td>
+                        <td style="text-align: right;">
+                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                        </td>
+                    </tr>
+                </table>
             </button>
             <div id="data-{{simulation.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
