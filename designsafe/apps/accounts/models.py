@@ -47,11 +47,13 @@ class DesignSafeProfileNHInterests(models.Model):
     def __unicode__(self):
         return self.description
 
+
 class DesignSafeProfileNHTechnicalDomains(models.Model):
     description = models.CharField(max_length=300)
 
     def __unicode__(self):
         return self.description
+
 
 class DesignSafeProfileResearchActivities(models.Model):
     description = models.CharField(max_length=300)
@@ -103,4 +105,3 @@ class NotificationPreferences(models.Model):
             ('view_notification_subscribers', 'Can view list of users subscribed to a '
                                               'notification type'),
         )
-        

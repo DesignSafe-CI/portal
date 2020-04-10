@@ -39,85 +39,85 @@ from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitem
 from designsafe import views
 
 sitemaps = {
-        'home': HomeSitemap,
-        'subsite': SubSitemap,
-        'static': StaticViewSitemap,
-        'dynamic': DynamicViewSitemap,
-        'projects': ProjectSitemap,
-        'cmspages': DesignSafeCMSSitemap,
-        }
+    'home': HomeSitemap,
+    'subsite': SubSitemap,
+    'static': StaticViewSitemap,
+    'dynamic': DynamicViewSitemap,
+    'projects': ProjectSitemap,
+    'cmspages': DesignSafeCMSSitemap,
+}
 
 urlpatterns = [
-        # admin
-        url(r'^admin/', include(admin.site.urls)),
-        url(r'^admin/impersonate/', include('impersonate.urls')),
+    # admin
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/impersonate/', include('impersonate.urls')),
 
-        # sitemap
-        url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    # sitemap
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
-        # terms-and-conditions
-        url(r'^terms/', include('termsandconditions.urls')),
+    # terms-and-conditions
+    url(r'^terms/', include('termsandconditions.urls')),
 
-        # RAMP verification
-        url(r'{}.html$'.format(settings.RAMP_VERIFICATION_ID), TemplateView.as_view(template_name='ramp_verification.html')),
+    # RAMP verification
+    url(r'{}.html$'.format(settings.RAMP_VERIFICATION_ID), TemplateView.as_view(template_name='ramp_verification.html')),
 
-        # api urls, just for the samples.
-        url(r'^applications/', include('designsafe.apps.applications.urls',
-            namespace='designsafe_applications')),
-        url(r'^data/', include('designsafe.apps.data.urls', namespace='designsafe_data')),
-        url(r'^rw/workspace/', include('designsafe.apps.workspace.urls',
-            namespace='designsafe_workspace')),
-        url(r'^notifications/', include('designsafe.apps.notifications.urls',
-            namespace='designsafe_notifications')),
-        url(r'^search/', include('designsafe.apps.search.urls',
-            namespace='designsafe_search')),
-        url(r'^geo/', include('designsafe.apps.geo.urls',
-            namespace='designsafe_geo')),
-        url(r'^recon-portal/', include('designsafe.apps.rapid.urls',
-            namespace='designsafe_rapid')),
+    # api urls, just for the samples.
+    url(r'^applications/', include('designsafe.apps.applications.urls',
+                                   namespace='designsafe_applications')),
+    url(r'^data/', include('designsafe.apps.data.urls', namespace='designsafe_data')),
+    url(r'^rw/workspace/', include('designsafe.apps.workspace.urls',
+                                   namespace='designsafe_workspace')),
+    url(r'^notifications/', include('designsafe.apps.notifications.urls',
+                                    namespace='designsafe_notifications')),
+    url(r'^search/', include('designsafe.apps.search.urls',
+                             namespace='designsafe_search')),
+    url(r'^geo/', include('designsafe.apps.geo.urls',
+                          namespace='designsafe_geo')),
+    url(r'^recon-portal/', include('designsafe.apps.rapid.urls',
+                                   namespace='designsafe_rapid')),
 
-        url(r'^nco/api/', include('designsafe.apps.nco.api_urls', namespace='nco_api')),
+    url(r'^nco/api/', include('designsafe.apps.nco.api_urls', namespace='nco_api')),
 
-        url(r'^nco/', include('designsafe.apps.nco.urls',
-            namespace='nco')),
-
-
-        url(r'^api/', include('designsafe.apps.api.urls', namespace='designsafe_api')),
+    url(r'^nco/', include('designsafe.apps.nco.urls',
+                          namespace='nco')),
 
 
-        # auth
-        url(r'^account/', include('designsafe.apps.accounts.urls',
-            namespace='designsafe_accounts')),
-        url(r'^register/$', RedirectView.as_view(
-            pattern_name='designsafe_accounts:register', permanent=True), name='register'),
+    url(r'^api/', include('designsafe.apps.api.urls', namespace='designsafe_api')),
 
-        # dashboard
+
+    # auth
+    url(r'^account/', include('designsafe.apps.accounts.urls',
+                              namespace='designsafe_accounts')),
+    url(r'^register/$', RedirectView.as_view(
+        pattern_name='designsafe_accounts:register', permanent=True), name='register'),
+
+    # dashboard
     url(r'^dashboard/', include('designsafe.apps.dashboard.urls',
-        namespace='designsafe_dashboard')),
+                                namespace='designsafe_dashboard')),
 
     # need a fancier redirect here to pass the code param along
     url(r'^activate/(?:(?P<code>.+)/)?$',
         lambda x, code: HttpResponseRedirect(
             reverse('designsafe_accounts:email_confirmation',
-                args=[code] if code else None)
-            )),
-        url(r'^password-reset/(?:(?P<code>.+)/)?$',
-                lambda x, code: HttpResponseRedirect(
-                    reverse('designsafe_accounts:password_reset',
-                        args=[code] if code else None)
-                    )),
+                    args=[code] if code else None)
+        )),
+    url(r'^password-reset/(?:(?P<code>.+)/)?$',
+        lambda x, code: HttpResponseRedirect(
+            reverse('designsafe_accounts:password_reset',
+                    args=[code] if code else None)
+        )),
 
-                # box
+    # box
     url(r'^account/applications/box/', include('designsafe.apps.box_integration.urls',
-        namespace='box_integration')),
+                                               namespace='box_integration')),
 
     # dropbox
     url(r'^account/applications/dropbox/', include('designsafe.apps.dropbox_integration.urls',
-        namespace='dropbox_integration')),
+                                                   namespace='dropbox_integration')),
 
     # googledrive
     url(r'^account/applications/googledrive/', include('designsafe.apps.googledrive_integration.urls',
-        namespace='googledrive_integration')),
+                                                       namespace='googledrive_integration')),
 
     # google site verification
     url(r'{}.html$'.format(settings.GOOGLE_SITE_VERIFICATION_ID), TemplateView.as_view(template_name='google_verification.html')),
@@ -127,7 +127,7 @@ urlpatterns = [
 
     url(r'^login/$', des_login_options, name='login'),
     url(r'^logout/$', des_logout,
-            {'next_page': '/auth/logged-out/'}, name='logout'),
+        {'next_page': '/auth/logged-out/'}, name='logout'),
 
     # help
     url(r'^help/', include('designsafe.apps.djangoRT.urls', namespace='djangoRT')),

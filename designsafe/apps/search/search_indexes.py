@@ -4,7 +4,7 @@ from haystack import indexes
 from django.db.models import Q
 from django.template import RequestContext
 from django.utils import timezone
-#rom djangocms_text_ckeditor.models import Text
+# rom djangocms_text_ckeditor.models import Text
 #from django.utils.text import smart_split
 from django.test import RequestFactory
 
@@ -16,6 +16,7 @@ from cms.models import Title, CMSPlugin, Page
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
 
 def _strip_tags(value):
     """
@@ -51,7 +52,7 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         return queryset
 
     def prepare(self, obj):
-        #logger.info(self.prepared_data)
+        # logger.info(self.prepared_data)
         page = obj.page
         rf = RequestFactory()
         request = rf.get("/")

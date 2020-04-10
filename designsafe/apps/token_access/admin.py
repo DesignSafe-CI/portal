@@ -6,4 +6,5 @@ class TokenAdmin(admin.ModelAdmin):
     list_display = ('user', 'nickname', 'token')
     exclude = ['token']
 
+
 admin.site.register(Token, TokenAdmin)

@@ -22,7 +22,8 @@ import json
 
 logger = logging.getLogger(__name__)
 
-class  BasePublicTemplate(TemplateView):
+
+class BasePublicTemplate(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(BasePublicTemplate, self).get_context_data(**kwargs)
         context['unreadNotifications'] = 0
@@ -64,6 +65,7 @@ class DataDepotView(BasePublicTemplate):
             })
 
         return context
+
 
 class DataBrowserTestView(BasePublicTemplate):
 
@@ -166,7 +168,7 @@ class FileMediaView(View):
 
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name not in ['public', 'community'] and \
-            not request.user.is_authenticated:
+                not request.user.is_authenticated:
             raise Http404('Resource not Found')
 
         filename = file_path.rsplit('/', 1)[1]
@@ -201,9 +203,9 @@ class DataDepotPublishedView(TemplateView):
         context['projectId'] = pub.projectId
         context['citation_title'] = pub.project.value.title
         context['citation_date'] = pub.created
-        if pub.project.value.to_dict().get('dois') != None: #This is for newer publications
+        if pub.project.value.to_dict().get('dois') != None:  # This is for newer publications
             context['doi'] = pub.project.value.dois[0]
-        elif pub.project.to_dict().get('doi') != None: #This is for older publications
+        elif pub.project.to_dict().get('doi') != None:  # This is for older publications
             context['doi'] = pub.project.doi
         context['keywords'] = pub.project.value.keywords.split(',')
         if 'users' in pub.to_dict():
@@ -219,7 +221,7 @@ class DataDepotPublishedView(TemplateView):
                     last_name=author['lname'], first_name=author['fname']
                 ),
                 'institution': getattr(author, 'inst', '')
-            } for author in getattr(pub, 'authors',[])]
+            } for author in getattr(pub, 'authors', [])]
         else:
             context['authors'] = [{
                 'full_name': '{last_name}, {first_name}'.format(
@@ -232,7 +234,7 @@ class DataDepotPublishedView(TemplateView):
         context['experiments'] = getattr(pub, 'experimentsList', [])
         context['missions'] = getattr(pub, 'missions', [])
         context['simulations'] = getattr(pub, 'simulations', [])
-        context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
+        context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations', [])
 
         proj = ProjectsManager(service_account()).get_project_by_id(pub.projectId)
         context['dc_json'] = json.dumps(proj.to_datacite_json())
@@ -274,7 +276,7 @@ class DataDepotLegacyPublishedView(TemplateView):
         if experiments and len(experiments):
             context['doi'] = getattr(pub.experiments[0], 'doi', '')
             exp_users = [getattr(exp, 'creators', []) for exp in experiments]
-            users  = [user for users in exp_users for user in users]
+            users = [user for users in exp_users for user in users]
             context['authors'] = [{
                 'full_name': '{last_name}, {first_name}'.format(
                     last_name=getattr(user, 'lastName', ''),

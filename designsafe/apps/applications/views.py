@@ -40,6 +40,7 @@ def _app_license_type(app_id):
     lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
     return lic_type
 
+
 @profile_fn
 def call_api(request, service):
     """Serves as agave api for apps, files, systems, meta
@@ -405,20 +406,20 @@ def call_api(request, service):
             try:
                 json_response = e.response.json()
                 metrics.info('Failed to execute {0} API call due to HTTPError={1}'.format(
-                service, json_response.get('message')), extra={
+                    service, json_response.get('message')), extra={
                     'operation': 'agave.meta.listMetadata',
                     'user': request.user.username,
                     'info': {}
                 })
                 logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
-                service, json_response.get('message')))
+                    service, json_response.get('message')))
                 return HttpResponse(json.dumps(json_response.get('message')),
-                        content_type='application/json',
-                        status=400)
+                                    content_type='application/json',
+                                    status=400)
             except Exception as e:
                 return HttpResponse(json.dumps(e.message),
-                        content_type='application/json',
-                        status=400)
+                                    content_type='application/json',
+                                    status=400)
 
         except Exception as e:
             metrics.info('Failed to execute {0} API call due to Exception={1}'.format(
@@ -426,11 +427,11 @@ def call_api(request, service):
                     'operation': 'agave.meta.listMetadata',
                     'user': request.user.username,
                     'info': {}
-                })
+            })
             logger.error('Failed to execute {0} API call due to Exception={1}'.format(
                 service, e.message), extra={
                     'user': request.user.username
-                })
+            })
             return HttpResponse(
                 json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
                 content_type='application/json', status=400)

@@ -10,6 +10,7 @@ from elasticsearch import TransportError
 
 logger = logging.getLogger(__name__)
 
+
 class Command(BaseCommand):
     """This command uses elasticsearch's reindex api
     https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
@@ -22,9 +23,9 @@ class Command(BaseCommand):
         parser.add_argument('--doc-type', help="Document type to reindex")
         parser.add_argument('--all-docs', help="Reindex all documents", action="store_true",
                             default=True)
-        parser.add_argument('--remote-host', help="Remote host where 'from_index' resides." \
-                            "Use this if we need to copy data from a remote cluster." \
-                            "You can use http(s)?://<url>:<port> or a 'ES_CONNECTIONS' "\
+        parser.add_argument('--remote-host', help="Remote host where 'from_index' resides."
+                            "Use this if we need to copy data from a remote cluster."
+                            "You can use http(s)?://<url>:<port> or a 'ES_CONNECTIONS' "
                             "key (e.g. 'default' or 'staging')")
         parser.add_argument('--timeout', help="Reindexing request timeout", type=int)
         parser.add_argument('--sample', help="set to True to take a random sample", default=False, type=bool)
@@ -78,10 +79,9 @@ class Command(BaseCommand):
                 }
             }
 
-
         if remote_host:
             if remote_host.startswith('http://') \
-                or remote_host.startswith('https://'):
+                    or remote_host.startswith('https://'):
                 hosts = [remote_host]
                 body['source']['remote'] = {'host': '{}:9200'.format(hosts[0])}
             else:
@@ -91,8 +91,8 @@ class Command(BaseCommand):
             hosts = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
 
         if not hosts:
-            raise CommandError('No valid remote hosts given. Remote host value given: {}'.\
-                format(remote_host))
+            raise CommandError('No valid remote hosts given. Remote host value given: {}'.
+                               format(remote_host))
 
         if doc_type:
             body['source']['type'] = doc_type

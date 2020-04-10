@@ -9,7 +9,7 @@ import copy
 logger = logging.getLogger(__name__)
 
 
-@receiver(ds_event, dispatch_uid = __name__)
+@receiver(ds_event, dispatch_uid=__name__)
 def ds_event_callback(sender, **kwargs):
     WEBSOCKETS_FACILITY = 'websockets'
     event_type = kwargs.get('event_type', '')
@@ -24,7 +24,7 @@ def ds_event_callback(sender, **kwargs):
     logger.info('Event kwargs: {0}'.format(kwargs))
 
     if users:
-        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=users)
+        rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, users=users)
     else:
         rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, broadcast=True)
 

@@ -1,4 +1,4 @@
-import logging 
+import logging
 from django.core.management import BaseCommand, CommandError
 from django.utils.six.moves import input
 from django.conf import settings
@@ -7,6 +7,7 @@ from elasticsearch import TransportError
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
 from designsafe.libs.elasticsearch.indices import setup_index
+
 
 class Command(BaseCommand):
     """

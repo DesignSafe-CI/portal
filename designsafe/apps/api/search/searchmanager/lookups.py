@@ -11,6 +11,7 @@ from designsafe.apps.api.exceptions import ApiException
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 def SearchLookupManager(name):
     """Lookup data depot manager class"""
 

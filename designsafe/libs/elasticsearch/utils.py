@@ -1,7 +1,9 @@
 from future.utils import python_2_unicode_compatible
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import logging
-import os 
+import os
 
 from django.conf import settings
 
@@ -84,6 +86,7 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False, path
     if bottom_up:
         yield (path, folders, files)
 
+
 @python_2_unicode_compatible
 def index_level(client, path, folders, files, systemId, username, reindex=False, update_pems=True):
     """
@@ -92,20 +95,20 @@ def index_level(client, path, folders, files, systemId, username, reindex=False,
     """
     from designsafe.libs.elasticsearch.docs.files import BaseESFile
     for obj in folders + files:
-            obj_dict = obj.to_dict()
-            obj_dict.pop('permissions')
-            obj_dict.pop('trail')
-            obj_dict.pop('_links')
-            obj_dict['basePath'] = os.path.dirname(obj.path)
-            doc = BaseESFile(username, reindex=reindex, **obj_dict)
-            
-            saved = doc.save()
-            
-            if update_pems:
-                permissions = client.files.listPermissions(systemId=systemId, filePath=obj.path)
-                for pem in permissions:
-                    pem.pop('_links')
-                doc.update(**{'permissions': permissions})
+        obj_dict = obj.to_dict()
+        obj_dict.pop('permissions')
+        obj_dict.pop('trail')
+        obj_dict.pop('_links')
+        obj_dict['basePath'] = os.path.dirname(obj.path)
+        doc = BaseESFile(username, reindex=reindex, **obj_dict)
+
+        saved = doc.save()
+
+        if update_pems:
+            permissions = client.files.listPermissions(systemId=systemId, filePath=obj.path)
+            for pem in permissions:
+                pem.pop('_links')
+            doc.update(**{'permissions': permissions})
 
     children_paths = [_file.path for _file in folders + files]
     es_root = BaseESFile(username, systemId, path, reindex=reindex)
@@ -113,12 +116,14 @@ def index_level(client, path, folders, files, systemId, username, reindex=False,
         if doc is not None and doc.path not in children_paths and doc.path != path:
             doc.delete()
 
+
 @python_2_unicode_compatible
 def repair_path(name, path):
     if not path.endswith(name):
         path = path + '/' + name
     path = path.strip('/')
     return '/{path}'.format(path=path)
+
 
 @python_2_unicode_compatible
 def repair_paths(limit=1000):
@@ -135,7 +140,7 @@ def repair_paths(limit=1000):
     while res.hits:
         update_ops = []
         for hit in res.hits:
-            
+
             if hit.name is None or hit.path is None:
                 continue
 
@@ -152,10 +157,10 @@ def repair_paths(limit=1000):
                     'basePath': new_basepath
                 }
             })
-            
+
             # use from_path to remove any duplicates.
             # IndexedFile.from_path(hit.system, hit.path)
-        
+
         bulk(es_client, update_ops)
         search_after = res.hits.hits[-1]['sort']
         logger.debug(search_after)
@@ -177,7 +182,7 @@ def full_dedup(limit=1000):
 
     while res.hits:
         for hit in res.hits:
-            
+
             if hit.name is None or hit.path is None:
                 continue
 
@@ -186,10 +191,8 @@ def full_dedup(limit=1000):
                 IndexedFile.from_path(hit.system, hit.path)
             except Exception as e:
                 print(e)
-        
+
         search_after = res.hits.hits[-1]['sort']
         logger.debug(search_after)
         file_search = IndexedFile.search().sort('_id').extra(size=limit, search_after=search_after)
         res = file_search.execute()
-
-

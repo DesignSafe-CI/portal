@@ -17,6 +17,7 @@ from django.shortcuts import redirect, reverse
 
 logger = logging.getLogger(__name__)
 
+
 class DesignSafeSupportedBrowserMiddleware:
     """
     Middleware to check if the user is running Chrome or Firefox and 
@@ -34,6 +35,7 @@ class DesignSafeSupportedBrowserMiddleware:
                                       'or <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a> '
                                       'if you experience issues.')
 
+
 class DesignsafeProfileUpdateMiddleware:
 
     """
@@ -48,7 +50,7 @@ class DesignsafeProfileUpdateMiddleware:
         if request.user.is_authenticated and request.user.profile.update_required and blocked_path:
             messages.warning(
                 request, '<h4>Profile Update Required</h4>'
-                            'To better understand our user demographics, we ask you to update your  selections for Natural Hazards Interests and Technical Domain at the bottom of the Professional Profile.' )
+                'To better understand our user demographics, we ask you to update your  selections for Natural Hazards Interests and Technical Domain at the bottom of the Professional Profile.')
             return redirect(reverse('designsafe_accounts:profile_edit'))
         return None
 
@@ -78,6 +80,7 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
                              'Use is required for continued use of DesignSafe '
                              'resources.' % accept_url)
         return None
+
 
 class RequestProfilingMiddleware(object):
     """Middleware to run cProfiler on each request"""
@@ -119,7 +122,7 @@ class RequestProfilingMiddleware(object):
         prof_outpath = os.path.join(req_dirpath, currtime + '.prof')
         det_outpath = os.path.join(req_dirpath, currtime + '.json')
         self.prfs[reqid].dump_stats(prof_outpath)
-        #with open(prof_outpath, 'w+') as flo:
+        # with open(prof_outpath, 'w+') as flo:
         #    pstats.Stats(prf, stream=flo).sort_stats('cumtime', 'time')
         with open(det_outpath, 'w+') as flo:
             dets = {

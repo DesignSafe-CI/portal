@@ -17,6 +17,7 @@ from cryptography.hazmat.primitives.serialization import load_der_public_key
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 def _decode_jwt(jwt):
     """Verified signature on a jwt
 
@@ -30,7 +31,8 @@ def _decode_jwt(jwt):
     key_der = b64decode(pubkey)
     key = load_der_public_key(key_der, backend=default_backend())
     return pyjwt.decode(jwt, key, issuer=settings.AGAVE_JWT_ISSUER)
-    #return pyjwt.decode(jwt, key, verify=False)
+    # return pyjwt.decode(jwt, key, verify=False)
+
 
 def _get_jwt_payload(request):
     """Return JWT payload as a string
@@ -46,9 +48,10 @@ def _get_jwt_payload(request):
 
     return payload
 
+
 def agave_jwt_login(func):
     """Decorator to login user with a jwt
-    
+
     ..note::
         It will sliently fail and continue executing the wrapped function
         if the JWT payload header IS NOT present in the request. If the JWT payload

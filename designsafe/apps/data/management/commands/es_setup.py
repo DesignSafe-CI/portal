@@ -37,8 +37,7 @@ class Command(BaseCommand):
 
         local_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[local]['hosts'])
         remote_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[remote]['hosts'],
-            **{'http_auth': "designsafe_{}:{}".format(remote, password)})
-
+                                                       **{'http_auth': "designsafe_{}:{}".format(remote, password)})
 
         elasticsearch.helpers.reindex(
             client=remote_es_client,
@@ -68,7 +67,5 @@ class Command(BaseCommand):
             source_index="designsafe-{}-projects".format(remote),
             target_index="designsafe-{}-projects".format(local)
         )
-
-
 
         logger.debug(remote_es_client.info())

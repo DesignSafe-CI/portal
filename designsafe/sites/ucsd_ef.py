@@ -1,2 +1,2 @@
 from designsafe.settings import *
-SITE_ID=6
+SITE_ID = 6

@@ -7,6 +7,7 @@ from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
 
 logger = logging.getLogger(__name__)
 
+
 class SimulationProject(Project):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
@@ -23,10 +24,12 @@ class SimulationProject(Project):
     keywords = fields.CharField('Keywords', default='')
     dois = fields.ListField('Dois')
 
+
 class FileModel(MetadataModel):
     model_name = 'designsafe.file'
     keywords = fields.ListField('Keywords')
     project_UUID = fields.RelatedObjectField(SimulationProject, default=[])
+
 
 class DataTag(MetadataModel):
     _is_nested = True

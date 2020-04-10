@@ -15,6 +15,7 @@ from requests.exceptions import ConnectionError, HTTPError
 
 logger = logging.getLogger(__name__)
 
+
 class JSONResponseMixin(object):
     """
     View mixin to return a JSON response. 
@@ -25,6 +26,7 @@ class JSONResponseMixin(object):
         response_kwargs['status'] = response_kwargs.get('status', 200)
         response_kwargs['content_type'] = 'application/json'
         return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder), **response_kwargs)
+
 
 class SecureMixin(object):
     """

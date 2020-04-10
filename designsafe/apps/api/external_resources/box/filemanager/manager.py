@@ -31,7 +31,7 @@ class FileManager(object):
         try:
             self.box_api = user_obj.box_user_token.client
         except BoxUserToken.DoesNotExist:
-            message = 'Connect your Box account <a href="'+ reverse('box_integration:index') + '">here</a>'
+            message = 'Connect your Box account <a href="' + reverse('box_integration:index') + '">here</a>'
             raise ApiException(status=400, message=message, extra={
                 'action_url': reverse('box_integration:index'),
                 'action_label': 'Connect Box.com Account'
@@ -215,11 +215,11 @@ class FileManager(object):
                 agave_file_path = downloaded_file_path.replace(project_dir, '', 1).strip('/')
             else:
                 agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
-            
+
             if not agave_file_path.startswith('/'):
                 agave_file_path = '/' + agave_file_path
-                
-            agave_indexer.apply_async(kwargs={'username': user.username, 'systemId': agave_system_id, 'filePath': os.path.dirname(agave_file_path), 'recurse':False}, queue='indexing')
+
+            agave_indexer.apply_async(kwargs={'username': user.username, 'systemId': agave_system_id, 'filePath': os.path.dirname(agave_file_path), 'recurse': False}, queue='indexing')
             agave_indexer.apply_async(kwargs={'systemId': agave_system_id, 'filePath': agave_file_path, 'recurse': True}, routing_key='indexing')
         except:
             logger.exception('Unexpected task failure: box_download', extra={
@@ -258,12 +258,12 @@ class FileManager(object):
             preview_url = reverse('designsafe_api:box_files_media',
                                   args=[file_mgr_name, file_id.strip('/')])
             return JsonResponse({'href':
-                                   '{}?preview=true'.format(preview_url)})
+                                 '{}?preview=true'.format(preview_url)})
         else:
             return HttpResponseBadRequest('Preview not available for this item.')
         # except HTTPError as e:
-                # logger.exception('Unable to preview file')
-                # return HttpResponseBadRequest(e.response.text)
+            # logger.exception('Unable to preview file')
+            # return HttpResponseBadRequest(e.response.text)
 
     def get_download_url(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
@@ -272,7 +272,7 @@ class FileManager(object):
             return {'href': download_url}
         return None
 
-    #def import_file(self, file_id, from_resource, import_file_id, **kwargs):
+    # def import_file(self, file_id, from_resource, import_file_id, **kwargs):
     #    box_upload.apply_async(args=(self._user.username,
     #                                 file_id,
     #                                 from_resource,
@@ -414,7 +414,6 @@ class FileManager(object):
             logger.info('Successfully uploaded %s to box:folder/%s as box:file/%s',
                         file_real_path, box_folder_id, uploaded_file.object_id)
 
-
     def upload_directory(self, box_parent_folder_id, dir_real_path):
         """
         Recursively uploads the directory and all of its contents (subdirectories and files)
@@ -445,4 +444,3 @@ class FileManager(object):
             subdirnames[:] = []
 
         return box_folder
-

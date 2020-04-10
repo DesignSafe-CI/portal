@@ -3,7 +3,9 @@ import logging
 import re
 import os
 import six
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import urllib.parse
 from requests.exceptions import HTTPError
 from designsafe.apps.data.models.agave.base import BaseAgaveResource
@@ -14,6 +16,7 @@ from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)
+
 
 class BaseFileMetadata(BaseMetadataResource):
     """
@@ -85,12 +88,12 @@ class BaseFileMetadata(BaseMetadataResource):
                 pem.username = username
 
             if role == system_roles_list.GUEST and \
-                (not pem.read or pem.write):
+                    (not pem.read or pem.write):
                 pem.read = True
                 pem.save()
                 logger.debug('Created or Updated %s', pem)
             elif role == system_roles_list.USER and \
-                (not pem.read or pem.write):
+                    (not pem.read or pem.write):
                 pem.read = True
                 pem.write = True
                 pem.save()
@@ -98,7 +101,7 @@ class BaseFileMetadata(BaseMetadataResource):
 
         return meta_pems_users
 
-    def match_pems_to_project(self, project_uuid = None):
+    def match_pems_to_project(self, project_uuid=None):
         project_uuid = project_uuid or self.value.get('projectUUID', self.value.get('projectUuid'))
         logger.debug('matchins pems to project: %s', project_uuid)
         if not project_uuid:
@@ -116,11 +119,12 @@ class BaseFileMetadata(BaseMetadataResource):
     def save(self):
         if self.uuid is None:
             super(BaseFileMetadata, self).save()
-            #self.match_pems_to_project()
+            # self.match_pems_to_project()
             if self.value.get('projectUUID'):
                 tasks.check_project_meta_pems.apply_async(args=[self.uuid], queue='api')
         else:
             super(BaseFileMetadata, self).save()
+
 
 class BaseFileResource(BaseAgaveResource):
     """Represents an Agave Files API Resource"""
@@ -157,9 +161,9 @@ class BaseFileResource(BaseAgaveResource):
     ]
 
     SUPPORTED_VIDEO_MIMETYPES = {
-        '.webm' : 'video/webm',
-        '.ogg' : 'video/ogg',
-        '.mp4' : 'video/mp4'
+        '.webm': 'video/webm',
+        '.ogg': 'video/ogg',
+        '.mp4': 'video/mp4'
     }
 
     SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS_EXCEL
@@ -238,7 +242,7 @@ class BaseFileResource(BaseAgaveResource):
         # the first item in path_comps is '', which represents '/'
         trail_comps = [{'name': path_comps[i] or '/',
                         'system': self.system,
-                        'path': '/'.join(path_comps[0:i+1]) or '/',
+                        'path': '/'.join(path_comps[0:i + 1]) or '/',
                         } for i in range(0, len(path_comps))]
         return trail_comps
 
@@ -352,7 +356,7 @@ class BaseFileResource(BaseAgaveResource):
             ensure_result = cls.listing(agave_client, system, ensured_path)
         except HTTPError as err:
             if err.response.status_code == 400 or err.response.status_code == 403\
-                 and len(path_comps) >= 2:
+                    and len(path_comps) >= 2:
                 ensured_path = path_comps[1]
                 path_index_start = 2
                 ensure_result = cls.listing(agave_client, system, ensured_path)

@@ -64,12 +64,12 @@ class SharedDataSearchManager(BaseSearchManager):
                         fields=[
                             "name._exact", "name._pattern"],
                         default_operator='and')
-        
+
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=user_context))
         search = search.query(ngram_query | match_query)
-        
-        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '/'+user_context}})]))
+
+        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '/' + user_context}})]))
         search = search.filter("term", system=system)
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(user_context)}})]))
         res = search.execute()
@@ -88,5 +88,3 @@ class SharedDataSearchManager(BaseSearchManager):
             'permissions': 'READ'
         }
         return result
-
-

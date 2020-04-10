@@ -56,6 +56,8 @@ from designsafe.apps.googledrive_integration import urls as googledrive_integrat
 from cms.sitemaps import CMSSitemap
 
 # Home
+
+
 class HomeSitemap(sitemaps.Sitemap):
     priority = 1.0
     changefreq = 'weekly'
@@ -63,7 +65,7 @@ class HomeSitemap(sitemaps.Sitemap):
     def get_urls(self, site=None, **kwargs):
         site = Site(domain='www.designsafe-ci.org')
         return super(HomeSitemap, self).get_urls(site=site, **kwargs)
-    
+
     def items(self):
         return ['']
 
@@ -71,6 +73,8 @@ class HomeSitemap(sitemaps.Sitemap):
         return item
 
 # Subsites
+
+
 class SubSitemap(sitemaps.Sitemap):
     priority = 0.8
     changefreq = 'weekly'
@@ -78,7 +82,7 @@ class SubSitemap(sitemaps.Sitemap):
     # redefine 'get_urls' so we can set 'domain' and 'name' to empty
     # then feed in the subsite urls
     def get_urls(self, site=None, **kwargs):
-        site = Site(domain='' , name= '')
+        site = Site(domain='', name='')
         return super(SubSitemap, self).get_urls(site=site, **kwargs)
 
     def items(self):
@@ -91,6 +95,8 @@ class SubSitemap(sitemaps.Sitemap):
         return item
 
 # Static - for base urls with 'name'
+
+
 class StaticViewSitemap(sitemaps.Sitemap):
     priority = 0.7
     changefreq = 'weekly'
@@ -114,6 +120,7 @@ class StaticViewSitemap(sitemaps.Sitemap):
     def location(self, item):
         return reverse(item)
 
+
 # Dynamic - every new url w/ 'namespace' needs to be added to this dictionary
 # rapid not included due to admin links
 dynamic_apps = {
@@ -132,6 +139,7 @@ dynamic_apps = {
     'googledrive_integration': googledrive_integration_urls.urlpatterns,
 }
 
+
 class DynamicViewSitemap(sitemaps.Sitemap):
     priority = 0.8
     changefreq = 'weekly'
@@ -143,7 +151,7 @@ class DynamicViewSitemap(sitemaps.Sitemap):
     def items(self):
 
         names_list = []
- 
+
         for app in dynamic_apps:
             for item in dynamic_apps[app]:
                 if hasattr(item, 'name') and item.name is not None:
@@ -159,6 +167,8 @@ class DynamicViewSitemap(sitemaps.Sitemap):
         return reverse(item)
 
 # public projects - pulling in urls from agave
+
+
 class ProjectSitemap(sitemaps.Sitemap):
     priority = 0.6
     changefreq = 'weekly'
@@ -179,17 +189,17 @@ class ProjectSitemap(sitemaps.Sitemap):
                 if 'project' in proj:
                     # designsafe projects
                     subpath = {
-                        'root' : reverse('designsafe_data:data_depot'),
-                        'project' : proj['project'],
-                        'system' : proj['system']
+                        'root': reverse('designsafe_data:data_depot'),
+                        'project': proj['project'],
+                        'system': proj['system']
                     }
                     projPath.append('{root}public/{system}/{project}'.format(**subpath))
                 elif 'system' in proj and 'path' in proj:
                     # nees projects
                     subpath = {
-                        'root' : reverse('designsafe_data:data_depot'),
-                        'project' : proj['path'],
-                        'system' : proj['system']
+                        'root': reverse('designsafe_data:data_depot'),
+                        'project': proj['path'],
+                        'system': proj['system']
                     }
                     projPath.append('{root}public/{system}{project}'.format(**subpath))
                 else:
@@ -212,5 +222,3 @@ class DesignSafeCMSSitemap(CMSSitemap):
     def get_urls(self, site=None, **kwargs):
         site = Site(domain='www.designsafe-ci.org')
         return super(DesignSafeCMSSitemap, self).get_urls(site=site, **kwargs)
-
-

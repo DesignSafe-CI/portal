@@ -7,6 +7,7 @@ from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
 
 logger = logging.getLogger(__name__)
 
+
 class FieldReconProject(Project):
     def __init__(self, *args, **kwargs):
         """Override init to move nh_type to nh_types list.
@@ -85,6 +86,7 @@ class Instrument(MetadataModel):
     name = fields.CharField('Instrument Name', max_length=1024, default='')
     model = fields.CharField('Instrument Model', max_length=2048, default='')
 
+
 class Equipment(MetadataModel):
     _is_nested = True
     name = fields.CharField('Equipment Name', max_length=1024, default='')
@@ -97,6 +99,8 @@ class ReferencedData(MetadataModel):
     doi_url = fields.CharField('Doi or Url', max_length=2048, default='')
 
 # FR ver1 Collections
+
+
 class Collection(RelatedEntity):
     model_name = 'designsafe.project.field_recon.collection'
     title = fields.CharField('Title', max_length=1024)
@@ -116,6 +120,7 @@ class Collection(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 
 class SocialScience(RelatedEntity):
     model_name = 'designsafe.project.field_recon.social_science'
@@ -139,6 +144,7 @@ class SocialScience(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
 
+
 class Planning(RelatedEntity):
     model_name = 'designsafe.project.field_recon.planning'
     title = fields.CharField('Title', max_length=1024)
@@ -149,6 +155,7 @@ class Planning(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 
 class Geoscience(RelatedEntity):
     model_name = 'designsafe.project.field_recon.geoscience'
@@ -168,6 +175,7 @@ class Geoscience(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
 
+
 class Report(RelatedEntity):
     model_name = 'designsafe.project.field_recon.report'
     title = fields.CharField('Title', max_length=1024)
@@ -185,4 +193,3 @@ class Report(RelatedEntity):
         attributes = super(Report, self).to_datacite_json()
         attributes['types']['resourceType'] = "Project/Report"
         return attributes
-

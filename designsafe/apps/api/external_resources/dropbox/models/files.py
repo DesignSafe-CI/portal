@@ -9,26 +9,26 @@ class DropboxFile(object):
     """Represents a Dropbox file"""
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
-      '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
-      '.dcm', '.dicm', '.dicom', '.svs', '.tga',
+        '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
+        '.dcm', '.dicm', '.dicom', '.svs', '.tga',
     ]
 
     SUPPORTED_TEXT_PREVIEWS = [
-      '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css', '.csv', '.cxx',
-      '.diff', '.doc', '.docx', '.erb', '.gdoc', '.groovy', '.gsheet', '.h', '.haml', '.hh', '.htm',
-      '.html', '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.ods', '.odt', '.odp',
-      '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
-      '.scm', '.script', '.sh', '.sml', '.sql', '.txt', '.vi', '.vim', '.wpd', '.xls', '.xlsm',
-      '.xlsx', '.xml', '.xsd', '.xsl', '.yaml',
+        '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css', '.csv', '.cxx',
+        '.diff', '.doc', '.docx', '.erb', '.gdoc', '.groovy', '.gsheet', '.h', '.haml', '.hh', '.htm',
+        '.html', '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.ods', '.odt', '.odp',
+        '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
+        '.scm', '.script', '.sh', '.sml', '.sql', '.txt', '.vi', '.vim', '.wpd', '.xls', '.xlsm',
+        '.xlsx', '.xml', '.xsd', '.xsl', '.yaml',
     ]
 
     SUPPORTED_OBJECT_PREVIEW_EXTS = [
-      '.pdf',
-      '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
+        '.pdf',
+        '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
 
-      # VIDEO
-      '.3g2', '.3gp', '.avi', '.m2v', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
-      '.ogg', '.mts', '.qt', '.wmv',
+        # VIDEO
+        '.3g2', '.3gp', '.avi', '.m2v', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
+        '.ogg', '.mts', '.qt', '.wmv',
     ]
 
     SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
@@ -92,7 +92,7 @@ class DropboxFile(object):
         trail_comps = [{'name': path_comps[i] or '/',
                         'system': None,
                         'resource': 'dropbox',
-                        'path': '/'.join(path_comps[0:i+1]) or '/',
+                        'path': '/'.join(path_comps[0:i + 1]) or '/',
                         } for i in range(0, len(path_comps))]
 
         # trail = [DropboxFile(File(None, e['id'], e)).to_dict()
@@ -128,7 +128,7 @@ class DropboxFile(object):
         assert len(parts) == 2, 'The file path should be in the format {type}/{path}'
         assert parts[0] in ['folder', 'file'], '{type} must be one of ["folder", "file"]'
 
-        return parts[0], '/'+parts[1]
+        return parts[0], '/' + parts[1]
 
     def to_dict(self, trail=True, **kwargs):
         pems = kwargs.get('default_pems', [])

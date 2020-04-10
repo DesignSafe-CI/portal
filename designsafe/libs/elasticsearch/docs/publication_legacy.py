@@ -17,6 +17,7 @@ from django.contrib.auth import get_user_model
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 @python_2_unicode_compatible
 class BaseESPublicationLegacy(BaseESResource):
     """Wrapper class for Elastic Search indexed NEES publication.
@@ -31,6 +32,7 @@ class BaseESPublicationLegacy(BaseESResource):
     we avoid the use of ``AttrDict`` and ``AttrList``.
 
     """
+
     def __init__(self, wrapped_doc=None, nees_id=None, **kwargs):
         """Elastic Search File representation.
 
@@ -50,10 +52,10 @@ class BaseESPublicationLegacy(BaseESResource):
         except DocumentNotFound:
             self._wrapped = self._index_cls(project_id=nees_id,
                                             **dict(kwargs))
+
     @property
     def _index_cls(self):
         return IndexedPublicationLegacy
-
 
     def save(self, using=None, index=None, validate=True, **kwargs):
         """Save document
@@ -67,10 +69,10 @@ class BaseESPublicationLegacy(BaseESResource):
         publication_dict = self.to_dict()
 
         project_dict = {}
-        for key in ['deleted', 'description', 'endDate', 'facility', 'name', 
-            'organization', 'pis', 'project', 'projectPath', 'publications',
-            'startDate', 'system', 'title', 'sponsor']:
-            
+        for key in ['deleted', 'description', 'endDate', 'facility', 'name',
+                    'organization', 'pis', 'project', 'projectPath', 'publications',
+                    'startDate', 'system', 'title', 'sponsor']:
+
             if key in publication_dict:
                 project_dict[key] = publication_dict[key]
 
@@ -80,22 +82,22 @@ class BaseESPublicationLegacy(BaseESResource):
         if 'experiments' in publication_dict:
             experiments = publication_dict['experiments']
 
-        dict_obj = {'agavePath': 'agave://nees.public/{}'.\
+        dict_obj = {'agavePath': 'agave://nees.public/{}'.
                                  format(self.path),
-                     'children': [],
-                     'deleted': False,
-                     'format': 'folder',
-                     'length': 24731027,
-                     'name': project_dict['name'],
-                     'path': '/{}'.format(self.path),
-                     'permissions': 'READ',
-                     # project': project_dict['project'],
-                     'system': project_dict['system'],
-                     'systemId': project_dict['system'],
-                     'type': 'dir',
-                     'metadata': {
-                         'experiments': experiments,
-                         'project': project_dict
-                     }}
-                
+                    'children': [],
+                    'deleted': False,
+                    'format': 'folder',
+                    'length': 24731027,
+                    'name': project_dict['name'],
+                    'path': '/{}'.format(self.path),
+                    'permissions': 'READ',
+                    # project': project_dict['project'],
+                    'system': project_dict['system'],
+                    'systemId': project_dict['system'],
+                    'type': 'dir',
+                    'metadata': {
+                                     'experiments': experiments,
+                                     'project': project_dict
+                                 }}
+
         return dict_obj

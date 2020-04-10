@@ -3,7 +3,8 @@ import re
 import time
 import warnings
 import functools
-import cProfile, pstats
+import cProfile
+import pstats
 import inspect
 import logging
 from django.conf import settings
@@ -28,6 +29,7 @@ def deprecated(func):
         )
         return func(*args, **kwargs)
     return new_func
+
 
 def profile(func):
     @functools.wraps(func)
@@ -77,7 +79,7 @@ def profile(func):
                             path=request.path,
                             post=request.POST.dict(),
                             get=request.GET.dict())
-                        )
+                    )
                 prfs = pstats.Stats(prf, stream=flo).sort_stats('cumtime')
                 prfs.print_stats()
         else:

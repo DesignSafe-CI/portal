@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^notification/process/(?P<pk>\d+)', views.process_notification, name='process_notification'),
 ]
 
+
 def menu_items(**kwargs):
     if 'type' in kwargs and kwargs['type'] == 'research_workbench':
         return [

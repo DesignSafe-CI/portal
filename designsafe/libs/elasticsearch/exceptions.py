@@ -15,6 +15,7 @@ class ESException(Exception):
     """
     pass
 
+
 class DocumentNotFound(ESException):
     """Document not found exception.
 

@@ -15,6 +15,7 @@ from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 @python_2_unicode_compatible
 class BaseESFile(BaseESResource):
     """Wrapper class for Elastic Search indexed file.
@@ -29,6 +30,7 @@ class BaseESFile(BaseESResource):
     we avoid the use of ``AttrDict`` and ``AttrList``.
 
     """
+
     def __init__(self, username, system=settings.AGAVE_STORAGE_SYSTEM,
                  path='/', wrapped_doc=None, reindex=False, **kwargs):
         """Elastic Search File representation.
@@ -49,14 +51,15 @@ class BaseESFile(BaseESResource):
             self._wrapped = self._index_cls(self._reindex).from_path(system, path)
         except DocumentNotFound:
             self._wrapped = self._index_cls(self._reindex)(system=system,
-                                            path=path,
-                                            **dict(kwargs))
+                                                           path=path,
+                                                           **dict(kwargs))
+
     @classmethod
     def _index_cls(cls, reindex):
         return IndexedFile
-        #if reindex:
+        # if reindex:
         #    return ReindexedFile
-        #else:
+        # else:
         #    return IndexedFile
 
     def children(self, limit=100):
@@ -66,22 +69,22 @@ class BaseESFile(BaseESResource):
 
         """
         res, search_after = self._index_cls(self._reindex).children(
-                                                self.username,
-                                                self.system,
-                                                self.path, 
-                                                limit=limit)
+            self.username,
+            self.system,
+            self.path,
+            limit=limit)
         for doc in res:
-                yield BaseESFile(self.username, wrapped_doc=doc)
+            yield BaseESFile(self.username, wrapped_doc=doc)
 
-        while not len(res) < limit: # If the number or results doesn't match the limit, we're done paginating.
-            # Retrieve the sort key from the last element then use  
+        while not len(res) < limit:  # If the number or results doesn't match the limit, we're done paginating.
+            # Retrieve the sort key from the last element then use
             # search_after to get the next page of results
             res, search_after = self._index_cls(self._reindex).children(
-                                                self.username,
-                                                self.system,
-                                                self.path, 
-                                                limit=limit,
-                                                search_after=search_after)
+                self.username,
+                self.system,
+                self.path,
+                limit=limit,
+                search_after=search_after)
             for doc in res:
                 yield BaseESFile(self.username, wrapped_doc=doc)
 

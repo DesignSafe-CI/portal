@@ -18,6 +18,7 @@ def index(request):
         return HttpResponseRedirect(reverse('djangoRT:mytickets'))
     return HttpResponseRedirect(reverse('djangoRT:ticketcreate'))
 
+
 @login_required
 def mytickets(request):
     rt = rtUtil.DjangoRt()
@@ -33,6 +34,7 @@ def mytickets(request):
         return JsonResponse(tickets, safe=False)
     else:
         return render(request, 'djangoRT/ticketList.html', context)
+
 
 @login_required
 def ticketdetail(request, ticketId):
@@ -135,6 +137,7 @@ def ticketcreate(request):
         form = form_cls(initial=initial_data)
     return render(request, template_name, {'form': form})
 
+
 @login_required
 def ticketreply(request, ticketId):
     rt = rtUtil.DjangoRt()
@@ -158,9 +161,9 @@ def ticketreply(request, ticketId):
             if 'attachment' in request.FILES:
                 attachments.append(
                     (
-                       request.FILES['attachment'].name,
-                       request.FILES['attachment'],
-                       mimetypes.guess_type(request.FILES['attachment'].name),
+                        request.FILES['attachment'].name,
+                        request.FILES['attachment'],
+                        mimetypes.guess_type(request.FILES['attachment'].name),
                     ))
             if rt.replyToTicket(ticketId, text=reply_text, files=attachments):
                 return HttpResponseRedirect(reverse('djangoRT:ticketdetail',
@@ -173,6 +176,7 @@ def ticketreply(request, ticketId):
         'ticket': ticket,
         'form': form
     })
+
 
 @login_required
 def ticketclose(request, ticketId):
@@ -204,7 +208,7 @@ def ticketclose(request, ticketId):
 def ticketattachment(request, ticketId, attachmentId):
     title, attachment = rtUtil.DjangoRt().getAttachment(ticketId, attachmentId)
     if attachment['Headers']['Content-Disposition'] == 'inline':
-        return render(request, 'djangoRT/attachment.html', {'attachment' : attachment['Content'], 'ticketId' : ticketId, 'title' : title});
+        return render(request, 'djangoRT/attachment.html', {'attachment': attachment['Content'], 'ticketId': ticketId, 'title': title})
     else:
         response = HttpResponse(attachment['Content'], content_type=attachment['Headers']['Content-Type'])
         response['Content-Disposition'] = attachment['Headers']['Content-Disposition']

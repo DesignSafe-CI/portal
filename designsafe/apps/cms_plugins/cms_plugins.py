@@ -25,4 +25,5 @@ class CMSResponsiveEmbedPlugin(CMSPluginBase):
         return urllib.parse.urljoin(
             settings.STATIC_URL, "cms/img/icons/plugins/image.png")
 
+
 plugin_pool.register_plugin(CMSResponsiveEmbedPlugin)  # register the plugin

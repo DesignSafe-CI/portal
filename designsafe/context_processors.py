@@ -38,6 +38,7 @@ def messages(request):
         'DEFAULT_MESSAGE_LEVELS': DEFAULT_LEVELS,
     }
 
+
 def debug(request):
     context = {}
     if settings.DEBUG:
@@ -45,6 +46,7 @@ def debug(request):
             'debug': True
         }
     return context
+
 
 def site_verification(request):
     context = {}

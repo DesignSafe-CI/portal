@@ -12,4 +12,3 @@ NEES_USER_DATABASE = {
     'USER': os.environ.get('NEES_DATABASE_USER'),
     'PASSWORD': os.environ.get('NEES_DATABASE_PASSWORD'),
 }
-

@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     """Returns a csv file with necessary details for report"""
+
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
         self.client = None
@@ -91,7 +92,7 @@ class Command(BaseCommand):
                 if len(ascs):
                     row.append(
                         ', '.join(
-                           ['{title}:{href}'.format(
+                            ['{title}:{href}'.format(
                                 title=asc.get('title', '-').decode('utf-8'),
                                 href=asc.get('href', '-').decode('utf-8')
                             ) for asc in ascs]
@@ -121,7 +122,7 @@ class Command(BaseCommand):
                 team_members_str = ', '.join(
                     [self.user_full_name(
                         team_member
-                     ) for team_member in team_members]
+                    ) for team_member in team_members]
                 )
                 row.append(team_members_str)
                 award_numbers = project.value.get('awardNumber', '-')

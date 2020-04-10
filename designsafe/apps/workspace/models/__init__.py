@@ -28,6 +28,6 @@ def _interactive_job_callback(sender, **kwargs):
             event_type=event_type, user=job_owner, body=json.dumps(event_data))
         notification.save()
 
-        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=users)
+        rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, users=users)
         msg = RedisMessage(json.dumps(event_data))
         rp.publish_message(msg)

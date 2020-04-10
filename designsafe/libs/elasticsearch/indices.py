@@ -25,6 +25,7 @@ except AttributeError as exc:
     logger.error('Missing ElasticSearch config. %s', exc)
     raise
 
+
 def setup_index(index_config, force=False, reindex=False):
     """
     Set up an index from a config dict. The behavior of the function is as follows:
@@ -63,6 +64,7 @@ def setup_index(index_config, force=False, reindex=False):
         index.settings(**index_config['kwargs'])
 
         index.create()
+
 
 def init(name='all', force=False):
     if name != 'all':

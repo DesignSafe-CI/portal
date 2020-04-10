@@ -41,7 +41,6 @@ class BoxInitializationTestCase(TestCase):
     @mock.patch('boxsdk.object.user.User.get')
     @mock.patch('boxsdk.auth.oauth2.OAuth2.authenticate')
     def test_oauth2_callback(self, m_box_oauth_authenticate, m_user_get):
-
         """
         Tests the Box OAuth2 Callback handler. After completing the OAuth auth code flow,
         the user has a BoxUserToken and BoxUserStreamPosition object and calls can be made

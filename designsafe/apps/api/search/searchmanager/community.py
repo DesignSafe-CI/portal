@@ -52,7 +52,7 @@ class CommunityDataSearchManager(BaseSearchManager):
                 Q({'term': {'_index': files_index_name}}),
                 Q('term', system="designsafe.storage.community"),
                 (ngram_query | match_query),
-                Q("term", type="file") | Q("term", type="dir") 
+                Q("term", type="file") | Q("term", type="dir")
             ],
             must_not=[
                 Q({"prefix": {"path._exact": "/Trash"}})
@@ -69,7 +69,7 @@ class CommunityDataSearchManager(BaseSearchManager):
         listing_search = listing_search.query(query)
         listing_search = listing_search.extra(from_=offset, size=limit)
         res = listing_search.execute()
-        
+
         children = []
 
         if res.hits.total.value:

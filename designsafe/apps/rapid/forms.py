@@ -6,7 +6,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class RapidNHEventForm(forms.Form):
 
     event_date = forms.DateField(label="Date of hazard event", required=True)

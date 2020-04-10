@@ -1,5 +1,6 @@
 from elasticsearch import TransportError, ConnectionTimeout
 
+
 class BaseSearchManager(object):
     """ Wraps elastic search result object
 

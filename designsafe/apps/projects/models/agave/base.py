@@ -73,6 +73,7 @@ class RelatedEntity(MetadataModel):
         ]
         return attributes
 
+
 class Project(MetadataModel):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
@@ -195,8 +196,8 @@ class Project(MetadataModel):
     def related_entities(self, offset=0, limit=100):
         from designsafe.apps.projects.models.utils import lookup_model
         relattrs = self._meta._reverse_fields
-        rel_names = [getattr(self, attrname).related_obj_name for attrname in relattrs \
-                         if getattr(self, attrname).related_obj_name != 'designsafe.file']
+        rel_names = [getattr(self, attrname).related_obj_name for attrname in relattrs
+                     if getattr(self, attrname).related_obj_name != 'designsafe.file']
         resp = self.manager().agave_client.meta.listMetadata(
             q=json.dumps({'name': {'$in': rel_names}, 'associationIds': self.uuid}),
             offset=offset,
@@ -214,9 +215,7 @@ class Project(MetadataModel):
 
                 # create archive within the project directory
                 archive_path = os.path.join(project_directory, ARCHIVE_NAME)
-                abs_path = project_directory.rsplit('/',1)[0]
-
-                
+                abs_path = project_directory.rsplit('/', 1)[0]
 
                 zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
                 for dirs, _, files in os.walk(project_directory):
@@ -224,11 +223,11 @@ class Project(MetadataModel):
                         if f == ARCHIVE_NAME:
                             continue
                         # write files without abs file path
-                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path,''), f))
+                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path, ''), f))
                 zf.close()
             except:
-                logger.debug("Creating archive failed for " % 
-                    project_directory)
+                logger.debug("Creating archive failed for " %
+                             project_directory)
 
         def update_archive(project_directory):
             try:
@@ -247,16 +246,16 @@ class Project(MetadataModel):
                             if file_path in zf.namelist():
                                 zf.close()
                                 logger.debug(
-                                    "Modified file, deleting archive and " \
-                                    "re-archiving project directory %s" % 
+                                    "Modified file, deleting archive and "
+                                    "re-archiving project directory %s" %
                                     project_directory)
                                 os.remove(archive_path)
                                 create_archive(project_directory)
                                 break
             except:
-                logger.debug("Updating archive failed for project directory" % 
-                    project_directory)
-        
+                logger.debug("Updating archive failed for project directory" %
+                             project_directory)
+
         if ARCHIVE_NAME not in os.listdir(proj_dir):
             create_archive(proj_dir)
         else:

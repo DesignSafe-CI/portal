@@ -10,8 +10,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class NOT_PROVIDED(object):
     pass
+
 
 class BaseField(object):
     """ Base field class """
@@ -37,11 +39,11 @@ class BaseField(object):
         self.attname = None
         self.related_name = related_name
         self.list_cls = list_cls
-        
+
         if not isinstance(self.choices, collections.Iterator):
             self.choices = []
         else:
-            self.choices = list( self.choices)
+            self.choices = list(self.choices)
 
         if not self.name and self.verbose_name:
             self.name = self.verbose_name.lower()
@@ -73,10 +75,12 @@ class BaseField(object):
         return value
 
     def clean(self, value):
-            return self.to_python(value)            
+        return self.to_python(value)
+
 
 class CharField(BaseField):
     """ Char Field """
+
     def __init__(self, *args, **kwargs):
         super(CharField, self).__init__(*args, **kwargs)
 
@@ -86,14 +90,18 @@ class CharField(BaseField):
     def serialize(self, value):
         return self.to_python(value)
 
+
 class UuidField(CharField):
     """ Uuid Field """
+
     def __init__(self, *args, **kwargs):
         kwargs['schema_field'] = True
         super(UuidField, self).__init__(*args, **kwargs)
 
+
 class DateTimeField(BaseField):
     """ Date Time Field """
+
     def __init__(self, *args, **kwargs):
         super(DateTimeField, self).__init__(*args, **kwargs)
 
@@ -107,8 +115,10 @@ class DateTimeField(BaseField):
         val = self.to_python(value)
         return val.isoformat()
 
+
 class IntField(BaseField):
     """ Int Field """
+
     def __init__(self, *args, **kwargs):
         super(IntField, self).__init__(*args, **kwargs)
 
@@ -118,8 +128,10 @@ class IntField(BaseField):
     def serialize(self, value):
         return self.to_python(value)
 
+
 class DecimalField(BaseField):
     """ Decimal Field """
+
     def __init__(self, *args, **kwargs):
         super(DecimalField, self).__init__(*args, **kwargs)
 
@@ -130,8 +142,10 @@ class DecimalField(BaseField):
         val = self.to_python(value)
         return str(val)
 
+
 class ListField(BaseField):
     """ List Field """
+
     def __init__(self, verbose_name, list_cls=None, *args, **kwargs):
         kwargs['default'] = kwargs.get('default', [])
         kwargs['list_cls'] = list_cls
@@ -155,12 +169,12 @@ class ListField(BaseField):
         try:
             return list(set(val))
         except TypeError:
-            #We cannot create a set out of this list.
+            # We cannot create a set out of this list.
             pass
         try:
             val_list = [o.to_body_dict() for o in val]
         except AttributeError:
-            #objects do not have `to_body_dict` attribute
+            # objects do not have `to_body_dict` attribute
             val_list = val
         try:
             seen = set()
@@ -171,13 +185,15 @@ class ListField(BaseField):
                     seen.add(_tuple)
                     resp.append(obj)
         except TypeError:
-            #dict is a bit more complicated, let's just return it.
+            # dict is a bit more complicated, let's just return it.
             resp = val_list
 
         return resp
 
+
 class NestedObjectField(BaseField):
     """ Nested Object Field """
+
     def __init__(self, nested_cls, *args, **kwargs):
         kwargs['nested_cls'] = nested_cls
         kwargs['default'] = kwargs.get('default', {})
@@ -186,8 +202,10 @@ class NestedObjectField(BaseField):
     def serialize(self, value):
         return value.to_body_dict()
 
+
 class RelatedObjectField(BaseField):
     """ Related Object Field """
+
     def __init__(self, related, multiple=False, related_name=None, *args, **kwargs):
         kwargs['related_name'] = related_name
         kwargs['related'] = related

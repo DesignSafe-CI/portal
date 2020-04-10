@@ -7,6 +7,7 @@ from elasticsearch_dsl import (Document, Text, Date, Nested,
 #from designsafe.connections import connections
 logger = logging.getLogger(__name__)
 
+
 class RapidNHEventType(Document):
     class Index:
         name = settings.ES_INDICES['rapid_event_type']['alias']
@@ -24,7 +25,7 @@ class RapidNHEventType(Document):
 
 class RapidNHEvent(Document):
     class Index:
-        name = settings.ES_INDICES['rapid_event']['alias'] 
+        name = settings.ES_INDICES['rapid_event']['alias']
 
     class Meta:
         dynamic = MetaField('strict')
@@ -33,8 +34,8 @@ class RapidNHEvent(Document):
     created_date = Date()
     title = Text(analyzer='english')
     event_type = Text(fields={
-                '_exact': Keyword()
-            })
+        '_exact': Keyword()
+    })
     location_description = Text(
         analyzer='english',
         fields={

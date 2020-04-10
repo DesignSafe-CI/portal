@@ -21,6 +21,7 @@ from future.utils import python_2_unicode_compatible
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 @python_2_unicode_compatible
 class FileManager(object):
 
@@ -35,7 +36,7 @@ class FileManager(object):
         try:
             self.googledrive_api = user_obj.googledrive_user_token.client
         except GoogleDriveUserToken.DoesNotExist:
-            message = 'Connect your Google Drive account <a href="'+ reverse('googledrive_integration:index') + '">here</a>'
+            message = 'Connect your Google Drive account <a href="' + reverse('googledrive_integration:index') + '">here</a>'
             raise ApiException(status=400, message=message, extra={
                 'action_url': reverse('googledrive_integration:index'),
                 'action_label': 'Connect Google Drive Account'
@@ -57,7 +58,6 @@ class FileManager(object):
             file_type, file_id = 'folder', 'root'
 
         return file_type, file_id
-
 
     def listing(self, file_id=None, **kwargs):
         """
@@ -163,7 +163,6 @@ class FileManager(object):
                 dest_real_path = os.path.join(base_mounted_path, dest_real_path.strip('/'))
             logger.debug('dest_real_path: {}'.format(dest_real_path))
 
-
             downloaded_file_path = None
             if file_type == 'file':
                 downloaded_file_path = self.download_file(file_id, dest_real_path, username)
@@ -237,14 +236,14 @@ class FileManager(object):
             # googledrive_file = GoogleDriveFile(self.googledrive_api.files().get(fileId=file_id, fields=fields).execute(), drive=self.googledrive_api)
             if file_type == 'file':  # googledrive_file.previewable:
                 preview_url = reverse('designsafe_api:box_files_media',
-                                    args=[file_mgr_name, file_id.strip('/')])
+                                      args=[file_mgr_name, file_id.strip('/')])
                 return JsonResponse({'href':
-                                    '{}?preview=true'.format(preview_url)})
+                                     '{}?preview=true'.format(preview_url)})
             else:
                 return HttpResponseBadRequest('Preview not available for this item.')
         except HTTPError as e:
-                logger.exception('Unable to preview file:{}'.format(e))
-                return HttpResponseBadRequest(e.response.text)
+            logger.exception('Unable to preview file:{}'.format(e))
+            return HttpResponseBadRequest(e.response.text)
 
     def get_download_url(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
@@ -335,12 +334,12 @@ class FileManager(object):
                         return None
                 elif "Only files with binary content can be downloaded" in str(e):
                     n = Notification(event_type='data',
-                                    status=Notification.ERROR,
-                                    operation='googledrive_download_error',
-                                    message='Only files with binary content can be downloaded. Convert the file to'
-                                    ' a standard format and try again.',
-                                    user=username,
-                                    extra={'path': "'{}' of type {}".format(googledrive_file['name'], googledrive_file['mimeType'])})
+                                     status=Notification.ERROR,
+                                     operation='googledrive_download_error',
+                                     message='Only files with binary content can be downloaded. Convert the file to'
+                                     ' a standard format and try again.',
+                                     user=username,
+                                     extra={'path': "'{}' of type {}".format(googledrive_file['name'], googledrive_file['mimeType'])})
                     n.save()
                     return None
                 else:
@@ -390,12 +389,12 @@ class FileManager(object):
                         'error': str(e)
                     })
                     n = Notification(event_type='data',
-                                    status=Notification.ERROR,
-                                    operation='googledrive_download_error',
-                                    message='We were unable to download file from Google Drive. '
-                                            'Please try again...',
-                                    user=username,
-                                    extra={'path': item['name']})
+                                     status=Notification.ERROR,
+                                     operation='googledrive_download_error',
+                                     message='We were unable to download file from Google Drive. '
+                                     'Please try again...',
+                                     user=username,
+                                     extra={'path': item['name']})
                     n.save()
                     raise
 
@@ -481,14 +480,14 @@ class FileManager(object):
             # Required for files with names like '.astylerc'
             mimetype = "text/plain"
 
-        CHUNK_SIZE = 5 * 1024 * 1024 # 5MB
+        CHUNK_SIZE = 5 * 1024 * 1024  # 5MB
         file_size = os.path.getsize(file_path)
 
         if file_size < CHUNK_SIZE:
             media = MediaFileUpload(file_real_path, mimetype=mimetype)
             uploaded_file = self.googledrive_api.files().create(body=file_metadata, media_body=media, fields='id').execute()
             logger.info('Successfully uploaded %s to googledrive:folder/%s as googledrive:file/%s',
-                    file_real_path, folder_id, uploaded_file.get('id'))
+                        file_real_path, folder_id, uploaded_file.get('id'))
         else:
             media = MediaFileUpload(file_real_path, mimetype=mimetype, resumable=True)
             request = self.googledrive_api.files().create(body=file_metadata, media_body=media, fields='id').execute()
@@ -499,8 +498,7 @@ class FileManager(object):
                 if status:
                     logger.debug("Uploaded {}%% to google drive".format(status.progress() * 100))
             logger.info('Successfully uploaded %s to googledrive:folder/%s as googledrive:file/%s',
-                    file_real_path, folder_id, response['id'])
-
+                        file_real_path, folder_id, response['id'])
 
     def upload_directory(self, parent_folder_id, dir_real_path):
         """
@@ -515,7 +513,7 @@ class FileManager(object):
         dirparentpath, dirname = os.path.split(dir_real_path)
         logger.info('Create directory %s in Google Drive folder/%s', dirname, parent_folder_id)
 
-        folder_metadata = {'name': dirname, 'parents': parent_folder_id, 'mimeType':'application/vnd.google-apps.folder'}
+        folder_metadata = {'name': dirname, 'parents': parent_folder_id, 'mimeType': 'application/vnd.google-apps.folder'}
 
         googledrive_folder = self.googledrive_api.files().create(body=folder_metadata, fields='id').execute()
 

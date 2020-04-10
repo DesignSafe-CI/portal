@@ -7,6 +7,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 def is_jwt(request):
     """Checks if a request is authenticated with a JWT
 

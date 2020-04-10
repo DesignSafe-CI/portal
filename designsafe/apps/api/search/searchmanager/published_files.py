@@ -55,13 +55,13 @@ class PublishedDataSearchManager(BaseSearchManager):
 
     def listing(self, system, file_path, offset=0, limit=100, **kwargs):
         """Perform the search and output in a serializable format."""
-        
+
         query = self.construct_query(system, file_path)
         listing_search = Search()
         listing_search = listing_search.query(query)
         listing_search = listing_search.extra(from_=offset, size=limit)
         res = listing_search.execute()
-        
+
         children = []
         if res.hits.total.value:
             children = [o.to_dict() for o in res]

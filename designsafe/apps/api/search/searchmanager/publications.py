@@ -31,17 +31,17 @@ class PublicationsSearchManager(BaseSearchManager):
     def construct_query(self, system=None, file_path=None, **kwargs):
         project_query_fields = [
             "projectId",
-            "title", 
-            "description", 
+            "title",
+            "description",
             "doi",
-            "project.value.title", 
+            "project.value.title",
             "project.value.keywords",
             "project.value.description",
             "project.value.dataType",
             "project.value.projectType",
             "project.value.dois",
             "name"
-            ]
+        ]
         published_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())[0]
         legacy_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys())[0]
         filter_queries = []
@@ -54,24 +54,24 @@ class PublicationsSearchManager(BaseSearchManager):
                 filter_queries.append(type_query)
 
         ds_user_query = Q({"nested":
-                        {"path": "users",
-                         "ignore_unmapped": True,
-                         "query": {"query_string":
-                                   {"query": self.query_string,
-                                    "fields": ["users.first_name",
-                                               "users.last_name",
-                                               "user.username"],
-                                    "lenient": True}}}
-                        })
+                           {"path": "users",
+                            "ignore_unmapped": True,
+                            "query": {"query_string":
+                                      {"query": self.query_string,
+                                       "fields": ["users.first_name",
+                                                  "users.last_name",
+                                                  "user.username"],
+                                       "lenient": True}}}
+                           })
         nees_pi_query = Q({"nested":
-                        {"path": "pis",
-                         "ignore_unmapped": True,
-                         "query": {"query_string":
-                                   {"query": self.query_string,
-                                    "fields": ["pis.firstName",
-                                               "pis.lastName"],
-                                    "lenient": True}}}
-                        })
+                           {"path": "pis",
+                            "ignore_unmapped": True,
+                            "query": {"query_string":
+                                      {"query": self.query_string,
+                                       "fields": ["pis.firstName",
+                                                  "pis.lastName"],
+                                       "lenient": True}}}
+                           })
         pub_query = Q('query_string', query=self.query_string, default_operator='and', fields=project_query_fields)
 
         published_query = Q(

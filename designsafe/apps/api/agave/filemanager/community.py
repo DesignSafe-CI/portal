@@ -9,10 +9,11 @@ import datetime
 from django.conf import settings
 from .base import BaseFileManager
 from future.utils import python_2_unicode_compatible
-from designsafe.apps.api.agave.filemanager.agave import  AgaveFileManager
+from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.exceptions import ApiException
 
 logger = logging.getLogger(__name__)
+
 
 @python_2_unicode_compatible
 class CommunityFileManager(AgaveFileManager):
@@ -26,7 +27,7 @@ class CommunityFileManager(AgaveFileManager):
         If this is a public data file manager, it should return False.
         """
         return False
-        
+
     def copy(self, *args, **kwargs):
         raise ApiException('Invalid action.', 400)
 

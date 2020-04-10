@@ -12,6 +12,7 @@ from designsafe.apps.projects.models.utils import lookup_model
 
 logger = logging.getLogger(__name__)
 
+
 class Command(BaseCommand):
     """Removes any invalid relation from a project's entities
 
@@ -20,13 +21,14 @@ class Command(BaseCommand):
     If a parent entity is deleted without first deleting any relation to
     a child entity then the child entity will endup with an invalid
     pointer to a non-existent entity. This needs to be deleted aumtomatically.
-    
+
     Since entities are agave metadata records (mongo documents) there is no
     automatic deletion of these relations. Relations are managed by
     using `associationIds` array. When an entity is saved Agave (or mongo)
     checks every UUID in `associationIds` and if any UUID is invalid an
     error is raised.
     """
+
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
         self.prj = None
@@ -81,7 +83,7 @@ class Command(BaseCommand):
         uuids = []
         for attrname, field in six.iteritems(ent._meta._related_fields):
             if attrname == 'files':
-                continue;
+                continue
 
             attr = getattr(ent, attrname)
             for uuid in getattr(attr, 'uuids', []):

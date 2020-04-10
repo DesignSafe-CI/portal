@@ -24,6 +24,7 @@ from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)
 
+
 class FilesListView(SecureMixin, BaseApiView):
     """Listing view"""
 
@@ -40,6 +41,7 @@ class FilesListView(SecureMixin, BaseApiView):
 
         listing = fmgr.listing(file_id)
         return JsonResponse(listing, safe=False)
+
 
 class FileMediaView(SecureMixin, BaseApiView):
     """File Media View"""
@@ -88,7 +90,7 @@ class FileMediaView(SecureMixin, BaseApiView):
 
         if action == 'preview':
             try:
-                return fmgr.preview(file_id,file_mgr_name=file_mgr_name)
+                return fmgr.preview(file_id, file_mgr_name=file_mgr_name)
             except HTTPError as e:
                 logger.exception('Unable to preview file')
                 return HttpResponseBadRequest(e.response.text)
@@ -118,6 +120,7 @@ class FileMediaView(SecureMixin, BaseApiView):
                 return HttpResponseBadRequest(err.response.text)
 
         return HttpResponseBadRequest("Operation not implemented.")
+
 
 class FilePermissionsView(SecureMixin, BaseApiView):
     """File Permissions View"""

@@ -12,11 +12,20 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # -*- coding: utf-8 -*-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from designsafe.settings.nco_mongo import *
+from designsafe.settings.external_resource_secrets import *
+from designsafe.settings.rt_settings import *
+from designsafe.settings.elasticsearch_settings import *
+from designsafe.settings.external_resource_settings import *
+from designsafe.settings.celery_settings import *
+from designsafe.settings.nees_settings import NEES_USER_DATABASE
 import os
 import json
 
 
-gettext = lambda s: s
+def gettext(s): return s
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SITE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -54,7 +63,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
 
-    'djng', #TODO: djng
+    'djng',  # TODO: djng
     'djng.urls',
     'cms',
     'treebeard',
@@ -68,10 +77,10 @@ INSTALLED_APPS = (
     'djangocms_video',
     'djangocms_forms',
 
-    #django recaptcha
+    # django recaptcha
     'snowpenguin.django.recaptcha2',
 
-    #'pipeline',
+    # 'pipeline',
     'filer',
     'easy_thumbnails',
     'reversion',
@@ -81,7 +90,7 @@ INSTALLED_APPS = (
 
     'oauth2client.contrib.django_util',
 
-    #websockets
+    # websockets
     'ws4redis',
 
     # custom
@@ -112,7 +121,7 @@ INSTALLED_APPS = (
     'designsafe.apps.geo',
     'designsafe.apps.rapid',
 
-    #haystack integration
+    # haystack integration
     'haystack'
 )
 
@@ -125,10 +134,10 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
 
 CACHES = {
-  'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-      'LOCATION': 'memcached:11211',
-  },
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'memcached:11211',
+    },
 }
 
 MIDDLEWARE_CLASSES = (
@@ -217,8 +226,7 @@ HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
-from designsafe.settings.nees_settings import NEES_USER_DATABASE
-#if NEES_USER_DATABASE['NAME']:
+# if NEES_USER_DATABASE['NAME']:
 #    DATABASES['nees_users'] = NEES_USER_DATABASE
 
 
@@ -270,7 +278,7 @@ STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    #'pipeline.finders.PipelineFinder',
+    # 'pipeline.finders.PipelineFinder',
 )
 MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
@@ -316,7 +324,7 @@ TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'sr
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
-    #'easy_thumbnails.processors.scale_and_crop',
+    # 'easy_thumbnails.processors.scale_and_crop',
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
     'easy_thumbnails.processors.filters',
 )
@@ -325,7 +333,7 @@ CKEDITOR_SETTINGS = {
     'allowedContent': True
 }
 
-#MIGRATION_MODULES = {
+# MIGRATION_MODULES = {
 #    'djangocms_flash': 'djangocms_flash.migrations_django',
 #    'djangocms_file': 'djangocms_file.migrations_django',
 #    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
@@ -335,7 +343,7 @@ CKEDITOR_SETTINGS = {
 #    'djangocms_teaser': 'djangocms_teaser.migrations_django',
 #    'djangocms_video': 'djangocms_video.migrations_django',
 #    'djangocms_style': 'djangocms_style.migrations_django',
-#}
+# }
 
 LOGIN_URL = os.environ.get('LOGIN_URL', '/login/')
 
@@ -454,7 +462,7 @@ DEFAULT_TERMS_SLUG = 'terms'
 #
 PIPELINE = {
     'PIPELINE_ENABLED': False
-    }
+}
 PIPELINE['COMPILERS'] = (
     'pipeline.compilers.sass.SASSCompiler',
 )
@@ -590,10 +598,10 @@ PUBLISHED_SYSTEM = 'designsafe.storage.published'
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
 RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
 NOCAPTCHA = True
 
-#FOR RAPID UPLOADS
+# FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
 DATACITE_URI = os.environ.get('DATACITE_URI', 'https://ez.test.datacite.org')
 DATACITE_USER = os.environ.get('DATACITE_USER')
@@ -606,12 +614,6 @@ if os.environ.get('PORTAL_PROFILE') == 'True':
 else:
     PORTAL_PROFILE = False
 
-from designsafe.settings.celery_settings import *
-from designsafe.settings.external_resource_settings import *
-from designsafe.settings.elasticsearch_settings import *
-from designsafe.settings.rt_settings import *
-from designsafe.settings.external_resource_secrets import *
-from designsafe.settings.nco_mongo import *
 
 PORTAL_DATA_DEPOT_MANAGERS = {
     'agave': 'designsafe.apps.api.agave.filemanager.private_data.PrivateDataFileManager',

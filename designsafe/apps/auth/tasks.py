@@ -5,14 +5,14 @@ from designsafe.apps.api.tasks import agave_indexer
 from celery import shared_task
 
 from requests import HTTPError
-from django.contrib.auth import get_user_model 
+from django.contrib.auth import get_user_model
 import logging
 
 
 logger = logging.getLogger(__name__)
 
 
-@shared_task(default_retry_delay=1*30, max_retries=3)
+@shared_task(default_retry_delay=1 * 30, max_retries=3)
 def check_or_create_agave_home_dir(username):
     try:
         # TODO should use OS calls to create directory.
@@ -35,8 +35,8 @@ def check_or_create_agave_home_dir(username):
                 logger.info("Creating the home directory for user=%s then going to run setfacl", username)
                 body = {'action': 'mkdir', 'path': username}
                 fm_response = ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
-                                filePath='',
-                                body=body)
+                                              filePath='',
+                                              body=body)
                 logger.info('mkdir response: {}'.format(fm_response))
 
                 ds_admin_client = Agave(
@@ -65,13 +65,13 @@ def check_or_create_agave_home_dir(username):
                 agave_indexer.apply_async(kwargs={'username': username, 'systemId': settings.AGAVE_STORAGE_SYSTEM, 'filePath': username}, queue='indexing')
 
     except(AgaveException):
-    #except (HTTPError, AgaveException):
+        # except (HTTPError, AgaveException):
         logger.exception('Failed to create home directory.',
                          extra={'user': username,
                                 'systemId': settings.AGAVE_STORAGE_SYSTEM})
 
 
-@shared_task(default_retry_delay=1*30, max_retries=3)
+@shared_task(default_retry_delay=1 * 30, max_retries=3)
 def new_user_alert(username):
     user = get_user_model().objects.get(username=username)
     send_mail('New User in DesignSafe, need Slack', 'Username: ' + user.username + '\n' +

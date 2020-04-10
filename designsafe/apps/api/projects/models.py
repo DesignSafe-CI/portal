@@ -4,10 +4,10 @@ import logging
 import xml.etree.ElementTree as ET
 
 from designsafe.apps.data.models.agave.metadata import (BaseMetadataResource,
-                                                       BaseMetadataPermissionResource)
+                                                        BaseMetadataPermissionResource)
 from designsafe.apps.data.models.agave.files import (BaseFileResource,
-                                                    BaseFilePermissionResource,
-                                                    BaseFileMetadata)
+                                                     BaseFilePermissionResource,
+                                                     BaseFileMetadata)
 from designsafe.apps.data.models.agave.systems import BaseSystemResource
 from designsafe.apps.data.models.agave.systems import roles as system_roles
 from designsafe.apps.api.agave import to_camel_case
@@ -52,20 +52,20 @@ class Project(BaseMetadataResource):
             'name': Project.NAME
         }
         records = agave_client.meta.listMetadata(q=json.dumps(
-            query), privileged=False, offset=kwargs.get('offset', 0), limit=kwargs.get('limit',100))
+            query), privileged=False, offset=kwargs.get('offset', 0), limit=kwargs.get('limit', 100))
         return [cls(agave_client=agave_client, **dict(r, **kwargs)) for r in records]
 
     @classmethod
     def ES_search(cls, agave_client, query_string, username, **kwargs):
         from designsafe.apps.projects.models.elasticsearch import IndexedProject
         from elasticsearch_dsl import Q
-   
+
         pi_query = Q({'term': {'value.pi._exact': username}})
         copi_query = Q({'term': {'value.coPis._exact': username}})
         team_query = Q({'term': {'value.teamMembers._exact': username}})
         records = IndexedProject.search().query('query_string', query=query_string, default_operator='and')
-        records = records.filter(pi_query | copi_query | team_query )
-        records = records.extra(from_=kwargs.get('offset', 0), size=kwargs.get('limit',100))
+        records = records.filter(pi_query | copi_query | team_query)
+        records = records.extra(from_=kwargs.get('offset', 0), size=kwargs.get('limit', 100))
         records = records.execute()
         return [cls(agave_client=agave_client, **r.to_dict()) for r in records]
 
@@ -192,7 +192,6 @@ class Project(BaseMetadataResource):
         # logger.info(self.value)
         # Set permissions on the metadata record
         self.remove_collaborator(username)
-
 
     @co_pis.setter
     def co_pis(self, value):

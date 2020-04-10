@@ -19,13 +19,14 @@ class UsageView(SecureMixin, View):
     def get(self, request):
         current_user = request.user
         q = Search(index="designsafe")\
-                .query('bool', must=[Q("match", **{"path._path": current_user.username})])\
-                .extra(size=0)
+            .query('bool', must=[Q("match", **{"path._path": current_user.username})])\
+            .extra(size=0)
         q.aggs.metric('total_storage_bytes', 'sum', field="length")
         result = q.execute()
         agg = result.to_dict()["aggregations"]
         out = {"total_storage_bytes": agg["total_storage_bytes"]["value"]}
         return JsonResponse(out)
+
 
 class AuthenticatedView(View):
 

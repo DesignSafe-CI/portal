@@ -15,6 +15,7 @@ from designsafe.libs.elasticsearch.analyzers import path_analyzer
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 def reindex(from_index, from_doc_type, to_index, to_doc_type,
             remote_host=None, script=None, request_timeout=240):
     body = {

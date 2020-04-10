@@ -18,6 +18,7 @@ from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 @python_2_unicode_compatible
 class IndexedFile(Document):
     name = Text(analyzer=file_analyzer, fields={
@@ -38,7 +39,7 @@ class IndexedFile(Document):
         '_exact': Keyword()
     })
     systemId = Text()
-    basePath=Text(fields={ '_exact': Keyword() })
+    basePath = Text(fields={'_exact': Keyword()})
     dsMeta = Nested()
     permissions = Nested(properties={
         'username': Keyword(),
@@ -79,7 +80,7 @@ class IndexedFile(Document):
         except Exception as exc:
             raise exc
         if res.hits.total.value > 1:
-            id_filter = Q('term', **{'_id': res[0].meta.id}) 
+            id_filter = Q('term', **{'_id': res[0].meta.id})
             # Delete all files indexed with the same system/path, except the first result
             delete_query = sys_filter & path_filter & ~id_filter
             cls.search().filter(delete_query).delete()
@@ -113,25 +114,27 @@ class IndexedFile(Document):
 
     class Index:
         name = settings.ES_INDICES['files']['alias']
+
     class Meta:
         dynamic = MetaField('strict')
+
 
 @python_2_unicode_compatible
 class IndexedPublication(Document):
     analysisList = Nested(properties={
-        'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
+        'associationIds': Text(multi=True, fields={'_exact': Keyword()}),
         'created': Date(),
-        'doi': Text(fields={'_exact':Keyword()}),
+        'doi': Text(fields={'_exact': Keyword()}),
         'fileObjs': Nested(properties={
             'lenght': Long(),
-            'name': Text(fields={'_exact':Keyword()}),
+            'name': Text(fields={'_exact': Keyword()}),
             'path': Text(fields={'_exact': Keyword(),
-                                   '_path': Text(analyzer=path_analyzer)}),
+                                 '_path': Text(analyzer=path_analyzer)}),
         }),
         'lastUpdated': Date(),
-        'name': Text({'_exact':Keyword()}),
+        'name': Text({'_exact': Keyword()}),
         'owner': Text(),
-        'uuid': Text({'_exact':Keyword()}),
+        'uuid': Text({'_exact': Keyword()}),
         'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english')
@@ -139,23 +142,23 @@ class IndexedPublication(Document):
     })
     created = Date()
     eventsList = Nested(properties={
-        'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
+        'associationIds': Text(multi=True, fields={'_exact': Keyword()}),
         'created': Date(),
-        'doi': Text(fields={'_exact':Keyword()}),
+        'doi': Text(fields={'_exact': Keyword()}),
         'fileObjs': Nested(properties={
             'lenght': Long(),
-            'name': Text(fields={'_exact':Keyword()}),
+            'name': Text(fields={'_exact': Keyword()}),
             'path': Text(fields={'_exact': Keyword(),
-                                   '_path': Text(analyzer=path_analyzer)}),
+                                 '_path': Text(analyzer=path_analyzer)}),
         }),
         'lastUpdated': Date(),
-        'name': Text({'_exact':Keyword()}),
+        'name': Text({'_exact': Keyword()}),
         'owner': Text(),
-        'uuid': Text({'_exact':Keyword()}),
+        'uuid': Text({'_exact': Keyword()}),
         'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english'),
-            'experiments': Text(multi=True, fields={'_exact':Keyword()}),
+            'experiments': Text(multi=True, fields={'_exact': Keyword()}),
             'files': Text(multi=True, fields={'_exact': Keyword()}),
             'modelConfigs': Text(multi=True, fields={'_exact': Keyword()}),
             'project': Text(fields={'_exact': Keyword()}),
@@ -163,19 +166,19 @@ class IndexedPublication(Document):
         })
     })
     experimentsList = Nested(properties={
-        'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
+        'associationIds': Text(multi=True, fields={'_exact': Keyword()}),
         'created': Date(),
-        'doi': Text(fields={'_exact':Keyword()}),
+        'doi': Text(fields={'_exact': Keyword()}),
         'fileObjs': Nested(properties={
             'lenght': Long(),
-            'name': Text(fields={'_exact':Keyword()}),
+            'name': Text(fields={'_exact': Keyword()}),
             'path': Text(fields={'_exact': Keyword(),
-                                   '_path': Text(analyzer=path_analyzer)}),
+                                 '_path': Text(analyzer=path_analyzer)}),
         }),
         'lastUpdated': Date(),
-        'name': Text({'_exact':Keyword()}),
+        'name': Text({'_exact': Keyword()}),
         'owner': Text(),
-        'uuid': Text({'_exact':Keyword()}),
+        'uuid': Text({'_exact': Keyword()}),
         'value': Nested(properties={
             'authors': Text(multi=True, fields={'_exact': Keyword()}),
             'description': Text(analyzer='english'),
@@ -192,35 +195,35 @@ class IndexedPublication(Document):
         'name': Text(fields={'_exact': Keyword()})
     })
     modelConfigs = Nested(properties={
-        'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
+        'associationIds': Text(multi=True, fields={'_exact': Keyword()}),
         'created': Date(),
-        'doi': Text(fields={'_exact':Keyword()}),
+        'doi': Text(fields={'_exact': Keyword()}),
         'fileObjs': Nested(properties={
             'lenght': Long(),
-            'name': Text(fields={'_exact':Keyword()}),
+            'name': Text(fields={'_exact': Keyword()}),
             'path': Text(fields={'_exact': Keyword(),
-                                   '_path': Text(analyzer=path_analyzer)}),
+                                 '_path': Text(analyzer=path_analyzer)}),
         }),
         'lastUpdated': Date(),
-        'name': Text({'_exact':Keyword()}),
+        'name': Text({'_exact': Keyword()}),
         'owner': Text(),
-        'uuid': Text({'_exact':Keyword()}),
+        'uuid': Text({'_exact': Keyword()}),
         'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english'),
-            'experiments': Text(multi=True, fields={'_exact':Keyword()}),
+            'experiments': Text(multi=True, fields={'_exact': Keyword()}),
             'files': Text(multi=True, fields={'_exact': Keyword()}),
             'project': Text(fields={'_exact': Keyword()}),
         })
     })
     project = Object(properties={
-        'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
+        'associationIds': Text(multi=True, fields={'_exact': Keyword()}),
         'created': Date(),
-        'doi': Text(fields={'_exact':Keyword()}),
+        'doi': Text(fields={'_exact': Keyword()}),
         'lastUpdated': Date(),
-        'name': Text({'_exact':Keyword()}),
+        'name': Text({'_exact': Keyword()}),
         'owner': Text(),
-        'uuid': Text({'_exact':Keyword()}),
+        'uuid': Text({'_exact': Keyword()}),
         'value': Object(properties={
             'assocaitedProjects': Nested(properties={
                 'href': Text(fields={'_exact': Keyword()}),
@@ -240,47 +243,47 @@ class IndexedPublication(Document):
     })
     projectId = Text(fields={'_exact': Keyword()})
     reportsList = Nested(properties={
-        'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
+        'associationIds': Text(multi=True, fields={'_exact': Keyword()}),
         'created': Date(),
-        'doi': Text(fields={'_exact':Keyword()}),
+        'doi': Text(fields={'_exact': Keyword()}),
         'fileObjs': Nested(properties={
             'lenght': Long(),
-            'name': Text(fields={'_exact':Keyword()}),
+            'name': Text(fields={'_exact': Keyword()}),
             'path': Text(fields={'_exact': Keyword(),
-                                   '_path': Text(analyzer=path_analyzer)}),
+                                 '_path': Text(analyzer=path_analyzer)}),
         }),
         'lastUpdated': Date(),
-        'name': Text({'_exact':Keyword()}),
+        'name': Text({'_exact': Keyword()}),
         'owner': Text(),
-        'uuid': Text({'_exact':Keyword()}),
+        'uuid': Text({'_exact': Keyword()}),
         'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english'),
-            'experiments': Text(multi=True, fields={'_exact':Keyword()}),
+            'experiments': Text(multi=True, fields={'_exact': Keyword()}),
             'files': Text(multi=True, fields={'_exact': Keyword()}),
             'project': Text(fields={'_exact': Keyword()}),
         })
     })
     sensorLists = Nested(properties={
-        'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
+        'associationIds': Text(multi=True, fields={'_exact': Keyword()}),
         'created': Date(),
-        'doi': Text(fields={'_exact':Keyword()}),
+        'doi': Text(fields={'_exact': Keyword()}),
         'fileObjs': Nested(properties={
             'lenght': Long(),
-            'name': Text(fields={'_exact':Keyword()}),
+            'name': Text(fields={'_exact': Keyword()}),
             'path': Text(fields={'_exact': Keyword(),
-                                   '_path': Text(analyzer=path_analyzer)}),
+                                 '_path': Text(analyzer=path_analyzer)}),
         }),
         'lastUpdated': Date(),
-        'name': Text({'_exact':Keyword()}),
+        'name': Text({'_exact': Keyword()}),
         'owner': Text(),
-        'uuid': Text({'_exact':Keyword()}),
+        'uuid': Text({'_exact': Keyword()}),
         'value': Nested(properties={
             'description': Text(analyzer='english'),
             'title': Text(analyzer='english'),
-            'experiments': Text(multi=True, fields={'_exact':Keyword()}),
-            'modelConfigs': Text(multi=True, fields={'_exact':Keyword()}),
-            'sensorListType': Text(multi=True, fields={'_exact':Keyword()}),
+            'experiments': Text(multi=True, fields={'_exact': Keyword()}),
+            'modelConfigs': Text(multi=True, fields={'_exact': Keyword()}),
+            'sensorListType': Text(multi=True, fields={'_exact': Keyword()}),
             'files': Text(multi=True, fields={'_exact': Keyword()}),
             'project': Text(fields={'_exact': Keyword()}),
         })
@@ -307,7 +310,7 @@ class IndexedPublication(Document):
         except Exception as e:
             raise e
         if res.hits.total.value > 1:
-            id_filter = Q('term', **{'_id': res[0].meta.id}) 
+            id_filter = Q('term', **{'_id': res[0].meta.id})
             # Delete all files indexed with the same system/path, except the first result
             delete_query = id_filter & ~id_filter
             cls.search().filter(delete_query).delete()
@@ -320,6 +323,7 @@ class IndexedPublication(Document):
 
     class Index:
         name = settings.ES_INDICES['publications']['alias']
+
 
 @python_2_unicode_compatible
 class IndexedCMSPage(Document):
@@ -337,8 +341,10 @@ class IndexedCMSPage(Document):
 
     class Index:
         name = settings.ES_INDICES['web_content']['alias']
+
     class Meta:
         dynamic = MetaField('strict')
+
 
 @python_2_unicode_compatible
 class IndexedPublicationLegacy(Document):
@@ -352,8 +358,8 @@ class IndexedPublicationLegacy(Document):
             'state': Text(analyzer='english')
         })
     deleted = Boolean()
-    path = Text(fields={'_exact':Keyword(), '_path':Text(analyzer=path_analyzer)})
-    title = Text(analyzer='english', fields={'_exact':Keyword()})
+    path = Text(fields={'_exact': Keyword(), '_path': Text(analyzer=path_analyzer)})
+    title = Text(analyzer='english', fields={'_exact': Keyword()})
     name = Text(fields={'_exact': Keyword()})
     equipment = Nested(
         properties={
@@ -362,7 +368,7 @@ class IndexedPublicationLegacy(Document):
             'equipmentClass': Text(analyzer='english'),
             'facility': Text(analyzer='english')
         })
-    system = Text(fields={'_exact':Keyword()})
+    system = Text(fields={'_exact': Keyword()})
     organization = Nested(
         properties={
             'country': Text(analyzer='english'),
@@ -374,7 +380,7 @@ class IndexedPublicationLegacy(Document):
             'lastName': Text(analyzer='english'),
             'firstName': Text(analyzer='english')
         })
-    project = Text(fields={'_exact':Keyword()})
+    project = Text(fields={'_exact': Keyword()})
     sponsor = Nested(
         properties={
             'name': Text(analyzer='english'),
@@ -397,13 +403,13 @@ class IndexedPublicationLegacy(Document):
                 'country': Text(analyzer='english'),
                 'state': Text(analyzer='english'),
                 'name': Text(analyzer='english'),
-                }),
+            }),
             'deleted': Boolean(),
-            'path': Text(fields={'_exact': Keyword(), '_path':Text(analyzer=path_analyzer)}),
+            'path': Text(fields={'_exact': Keyword(), '_path': Text(analyzer=path_analyzer)}),
             'material': Nested(properties={
                 'materials': Text(analyzer='english', multi=True),
                 'component': Text(analyzer='english')
-                }),
+            }),
             'equipment': Nested(properties={
                 'component': Text(analyzer='english'),
                 'equipment': Text(analyzer='english'),
@@ -416,7 +422,7 @@ class IndexedPublicationLegacy(Document):
             'specimenType': Nested(properties={
                 'name': Text(analyzer='english'),
                 'description': Text(analyzer='english')
-                }),
+            }),
             'name': Text(analyzer='english'),
             'creators': Nested(properties={
                 'lastName': Text(analyzer='english'),
@@ -435,7 +441,7 @@ class IndexedPublicationLegacy(Document):
         except Exception as e:
             raise e
         if res.hits.total.value > 1:
-            id_filter = Q('term', **{'_id': res[0].meta.id}) 
+            id_filter = Q('term', **{'_id': res[0].meta.id})
             # Delete all files indexed with the same system/path, except the first result
             delete_query = id_filter & ~id_filter
             cls.search().filter(delete_query).delete()
@@ -448,5 +454,6 @@ class IndexedPublicationLegacy(Document):
 
     class Index:
         name = settings.ES_INDICES['publications_legacy']['alias']
+
     class Meta:
         dynamic = MetaField('strict')

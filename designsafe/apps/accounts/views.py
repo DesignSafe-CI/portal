@@ -56,6 +56,7 @@ def manage_profile(request):
     }
     return render(request, 'designsafe/apps/accounts/profile.html', context)
 
+
 @login_required
 def manage_authentication(request):
     if request.method == 'POST':
@@ -180,8 +181,8 @@ def nees_migration(request, step=None):
             email_address = request.POST.get('email_address')
             nees_user_match = NEESUser.lookup_user(email_address)
             countries = tas_api.countries()
-            country_residence = next((c for c in countries if c['abbrev'] == nees_user_match[0].countryresident), {'id':None})
-            country_origin = next((c for c in countries if c['abbrev'] == nees_user_match[0].countryorigin), {'id':None})
+            country_residence = next((c for c in countries if c['abbrev'] == nees_user_match[0].countryresident), {'id': None})
+            country_origin = next((c for c in countries if c['abbrev'] == nees_user_match[0].countryorigin), {'id': None})
             initial_data = {
                 'firstName': nees_user_match[0].givenName,
                 'lastName': nees_user_match[0].surname,
@@ -353,9 +354,9 @@ def profile_edit(request):
                 ds_profile.website = pro_data['website']
                 ds_profile.orcid_id = pro_data['orcid_id']
                 ds_profile.professional_level = pro_data['professional_level']
-                
+
             except ObjectDoesNotExist as e:
-                logger.info('exception e: {} {}'.format(type(e), e ))
+                logger.info('exception e: {} {}'.format(type(e), e))
                 ds_profile = DesignSafeProfile(
                     user=user,
                     ethnicity=data['ethnicity'],
@@ -364,7 +365,7 @@ def profile_edit(request):
                     website=pro_data['website'],
                     orcid_id=pro_data['orcid_id'],
                     professional_level=pro_data['professional_level']
-                    )
+                )
 
             ds_profile.update_required = False
             ds_profile.save()
@@ -538,7 +539,7 @@ def mailing_list_subscription(request, list_name):
             Q(notification_preferences__isnull=True) |
             Q(**{"notification_preferences__{}".format(list_name): True}))
         subscribers += list('"{0}","{1}"'.format(u.get_full_name(),
-        u.email) for u in su)
+                                                 u.email) for u in su)
 
     except TypeError as e:
         logger.warning('Invalid list name: {}'.format(list_name))
@@ -551,10 +552,10 @@ def user_report(request, list_name):
     django_user = request.user
 
     create_report.apply_async(
-                args=(
-                    (django_user.username, list_name)
-                )
-            )
+        args=(
+            (django_user.username, list_name)
+        )
+    )
 
     context = {
         'title': 'Generating Report',

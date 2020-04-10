@@ -1,5 +1,5 @@
 """Elastic search connection configuration"""
-import os 
+import os
 
 ES_INDEX_PREFIX = os.environ.get('ES_INDEX_PREFIX', 'designsafe-dev-{}')
 ES_AUTH = os.environ.get('ES_AUTH', 'username:password')
@@ -10,8 +10,8 @@ ES_CONNECTIONS = {
             'https://wma-es-client.tacc.utexas.edu:9200',
         ],
     },
-    'staging': { #dev/qa
-        'hosts':  [
+    'staging': {  # dev/qa
+        'hosts': [
             'https://wma-es-client.tacc.utexas.edu:9200',
         ]
     },
@@ -69,18 +69,18 @@ ES_INDICES = {
         'kwargs': {}
 
     },
-    #'apps': {
+    # 'apps': {
     #    'name': 'des-apps_a',
     #    'alias': ['des-apps'],
     #    'documents': [{'name': 'app',
     #                   'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedApp'}]
-    #},
-    #'jobs': {
+    # },
+    # 'jobs': {
     #    'name': 'des-jobs_a',
     #    'alias': ['des-jobs'],
     #    'documents': [{'name': 'job',
     #                   'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedJob'}]
-    #}
+    # }
 }
 
 HAYSTACK_CONNECTIONS = {

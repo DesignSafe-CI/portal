@@ -52,4 +52,3 @@ class DataConfig(AppConfig):
         from designsafe.apps.data.models.agave.base import set_lazy_rels
         set_lazy_rels()
         super(DataConfig, self).ready()
-

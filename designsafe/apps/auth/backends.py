@@ -32,7 +32,7 @@ def on_user_logged_out(sender, request, user, **kwargs):
     logger = logging.getLogger(__name__)
     logger.debug("attempting call to revoke agave token function: %s", user.agave_oauth.token)
     a = AgaveOAuthBackend()
-    AgaveOAuthBackend.revoke(a,user.agave_oauth)
+    AgaveOAuthBackend.revoke(a, user.agave_oauth)
 
     logout_message = '<h4>You are Logged Out!</h4>' \
                      'You are now logged out of DesignSafe! However, you may still ' \
@@ -90,7 +90,7 @@ class TASBackend(ModelBackend):
                         first_name=tas_user['firstName'],
                         last_name=tas_user['lastName'],
                         email=tas_user['email']
-                        )
+                    )
                 try:
                     profile = DesignSafeProfile.objects.get(user=user)
                 except DesignSafeProfile.DoesNotExist:
@@ -148,7 +148,7 @@ class AgaveOAuthBackend(ModelBackend):
                         first_name=agave_user['first_name'],
                         last_name=agave_user['last_name'],
                         email=agave_user['email']
-                        )
+                    )
 
                 try:
                     profile = DesignSafeProfile.objects.get(user=user)
@@ -170,7 +170,7 @@ class AgaveOAuthBackend(ModelBackend):
     def revoke(self, user):
         base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         self.logger.info("attempting to revoke agave token %s" % user.masked_token)
-        response = requests.post('{base_url}/revoke'.format(base_url = base_url),
-            auth=HTTPBasicAuth(settings.AGAVE_CLIENT_KEY, settings.AGAVE_CLIENT_SECRET),
-            data={'token': user.access_token})
+        response = requests.post('{base_url}/revoke'.format(base_url=base_url),
+                                 auth=HTTPBasicAuth(settings.AGAVE_CLIENT_KEY, settings.AGAVE_CLIENT_SECRET),
+                                 data={'token': user.access_token})
         self.logger.info("revoke response is %s" % response)

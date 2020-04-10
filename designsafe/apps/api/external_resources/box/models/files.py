@@ -9,26 +9,26 @@ class BoxFile(object):
     """Represents a box file"""
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
-      '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
-      '.dcm', '.dicm', '.dicom', '.svs', '.tga',
+        '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
+        '.dcm', '.dicm', '.dicom', '.svs', '.tga',
     ]
 
     SUPPORTED_TEXT_PREVIEWS = [
-      '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css', '.csv', '.cxx',
-      '.diff', '.doc', '.docx', '.erb', '.gdoc', '.groovy', '.gsheet', '.h', '.haml', '.hh', '.htm',
-      '.html', '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.ods', '.odt', '.odp',
-      '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
-      '.scm', '.script', '.sh', '.sml', '.sql', '.txt', '.vi', '.vim', '.wpd', '.xls', '.xlsm',
-      '.xlsx', '.xml', '.xsd', '.xsl', '.yaml',
+        '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css', '.csv', '.cxx',
+        '.diff', '.doc', '.docx', '.erb', '.gdoc', '.groovy', '.gsheet', '.h', '.haml', '.hh', '.htm',
+        '.html', '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.ods', '.odt', '.odp',
+        '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
+        '.scm', '.script', '.sh', '.sml', '.sql', '.txt', '.vi', '.vim', '.wpd', '.xls', '.xlsm',
+        '.xlsx', '.xml', '.xsd', '.xsl', '.yaml',
     ]
 
     SUPPORTED_OBJECT_PREVIEW_EXTS = [
-      '.pdf',
-      '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
+        '.pdf',
+        '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
 
-      # VIDEO
-      '.3g2', '.3gp', '.avi', '.m2v', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
-      '.ogg', '.mts', '.qt', '.wmv',
+        # VIDEO
+        '.3g2', '.3gp', '.avi', '.m2v', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
+        '.ogg', '.mts', '.qt', '.wmv',
     ]
 
     SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
@@ -91,7 +91,7 @@ class BoxFile(object):
     def trail(self):
         try:
             trail = [BoxFile(File(None, e['id'], e)).to_dict()
-                    for e in self._item.path_collection['entries']]
+                     for e in self._item.path_collection['entries']]
             trail.append(self.to_dict(trail=False))
             return trail
         except AttributeError as e:

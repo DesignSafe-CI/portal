@@ -112,7 +112,7 @@ def draft_publication(
                 )
                 ent_datacite_json = entity.to_datacite_json()
                 ent_datacite_json['url'] = entity_url
-            
+
             if entity and upsert_main_entity_doi and main_entity_doi:
                 me_res = DataciteManager.create_or_update_doi(
                     ent_datacite_json,
@@ -200,16 +200,15 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
             entity = None
             if ent_uuid:
                 entity = mgr.get_entity_by_uuid(ent_uuid)
-            
+
             if entity:
                 for doi in entity.dois:
                     res = DataciteManager.publish_doi(doi)
                     responses.append(res)
-        
+
         for doi in prj.dois:
             res = DataciteManager.publish_doi(doi)
             responses.append(res)
-
 
     pub = BaseESPublication(project_id=project_id)
     pub.update(status='published')
@@ -338,7 +337,7 @@ def fix_file_tags(project_id):
                     for tag in entity['value']['fileTags']:
                         if tag['fileUuid'] == proj_file.uuid:
                             tag['fileUuid'] = pub_file.uuid
-                    
+
                 except Exception as err:
                     LOG.info('error: {}'.format(err))
                     continue
@@ -350,7 +349,7 @@ def fix_file_tags(project_id):
                     for tag in entity['value']['fileTags']:
                         if tag['fileUuid'] == proj_file.uuid:
                             tag['fileUuid'] = pub_file.uuid
-                    
+
                 except Exception as err:
                     LOG.info('error: {}'.format(err))
                     continue
@@ -427,7 +426,7 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
 
                 if entity_json['value']['dois']:
                     entity_json['doi'] = entity_json['value']['dois'][-1]
-                
+
                 _delete_unused_fields(entity_json)
                 publication[pub_entities_field_name].append(entity_json)
 

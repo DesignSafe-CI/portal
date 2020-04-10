@@ -18,6 +18,7 @@ from designsafe.apps.data.tasks import agave_indexer
 
 logger = logging.getLogger(__name__)
 
+
 class JobSubmitError(Exception):
 
     def __init__(self, *args, **kwargs):
@@ -155,7 +156,6 @@ def handle_webhook_request(job):
         elif job_status == 'FINISHED':
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
 
-
             logger.debug('archivePath: {}'.format(job['archivePath']))
             target_path = reverse('designsafe_data:data_depot')
             os.path.join(target_path, 'agave', archive_id.strip('/'))
@@ -186,7 +186,7 @@ def handle_webhook_request(job):
                         logger.debug('Preparing to Index Job Output job=%s', job_name)
 
                         archivePath = '/'.join([job['archiveSystem'], job['archivePath']])
-                        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': job['archiveSystem'], 'filePath': job['archivePath'], 'recurse':True}, queue='indexing')
+                        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': job['archiveSystem'], 'filePath': job['archivePath'], 'recurse': True}, queue='indexing')
                         logger.debug('Finished Indexing Job Output job=%s', job_name)
                     except Exception as e:
                         logger.exception('Error indexing job output')
@@ -223,7 +223,7 @@ def handle_webhook_request(job):
     except HTTPError as e:
         if e.response.status_code == 404:
             logger.warning('Job not found. Cancelling job watch.',
-                        extra={'job_id': job_id})
+                           extra={'job_id': job_id})
         else:
             logger.warning('Agave API error. Retrying...')
 

@@ -4,6 +4,7 @@ from django.db import models
 
 class CategoryManager(models.Manager):
     """Category Manager"""
+
     def get_or_create_from_json(self, uuid, dict_obj):
         """Get or Create from JSON"""
         record, _ = self.get_or_create(uuid=uuid)

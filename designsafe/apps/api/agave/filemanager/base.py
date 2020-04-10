@@ -1,6 +1,5 @@
 
 
-
 class BaseFileManager(object):
 
     pass

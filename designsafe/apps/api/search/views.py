@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 class SearchView(BaseApiView):
     """Main view to handle sitewise search requests"""
+
     def get(self, request):
         """GET handler."""
         q = request.GET.get('query_string')
@@ -49,19 +50,19 @@ class SearchView(BaseApiView):
             es_query = Search().query(publications_query)
         elif type_filter == 'cms':
             es_query = Search().query(cms_query).highlight(
-                    'body',
-                    fragment_size=100).highlight_options(
-                    pre_tags=["<b>"],
-                    post_tags=["</b>"],
-                    require_field_match=False)
+                'body',
+                fragment_size=100).highlight_options(
+                pre_tags=["<b>"],
+                post_tags=["</b>"],
+                require_field_match=False)
         elif type_filter == 'all':
             es_query = Search().query(public_files_query | publications_query | cms_query).highlight(
-                    'body',
-                    fragment_size=100).highlight_options(
-                    pre_tags=["<b>"],
-                    post_tags=["</b>"],
-                    require_field_match=False)
-            
+                'body',
+                fragment_size=100).highlight_options(
+                pre_tags=["<b>"],
+                post_tags=["</b>"],
+                require_field_match=False)
+
         try:
             res = es_query.execute()
         except (TransportError, ConnectionTimeout) as err:
@@ -81,7 +82,7 @@ class SearchView(BaseApiView):
             if r.meta.doc_type == 'publication' and hasattr(r, 'users'):
                 users = r.users
                 pi = r.project.value.pi
-                pi_user = [x for x in users if x.username==pi][0]
+                pi_user = [x for x in users if x.username == pi][0]
                 d["piLabel"] = "{}, {}".format(pi_user.last_name, pi_user.first_name)
             hits.append(d)
 

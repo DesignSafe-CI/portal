@@ -14,6 +14,7 @@ class JSONResponseMixin(object):
     View mixin to return a JSON response. 
     We're building one so we can put any extra code in here.
     """
+
     def render_to_json_response(self, context, **response_kwargs):
         response_kwargs['status'] = response_kwargs.get('status', 200)
         response_kwargs['content_type'] = 'application/json'

@@ -7,6 +7,7 @@ from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
 
 logger = logging.getLogger(__name__)
 
+
 class ExperimentalProject(Project):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
@@ -23,16 +24,19 @@ class ExperimentalProject(Project):
     keywords = fields.CharField('Keywords', default='')
     dois = fields.ListField('Dois')
 
+
 class FileModel(MetadataModel):
     model_name = 'designsafe.file'
     keywords = fields.ListField('Keywords')
     project_UUID = fields.RelatedObjectField(ExperimentalProject, default=[])
+
 
 class DataTag(MetadataModel):
     _is_nested = True
     file_uuid = fields.CharField('File Uuid', max_length=1024, default='')
     tag_name = fields.CharField('Tag Name', max_length=512, default='')
     value = fields.CharField('Value', max_length=512, default='')
+
 
 class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'
@@ -83,6 +87,7 @@ class Analysis(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
 
+
 class ModelConfig(RelatedEntity):
     model_name = 'designsafe.project.model_config'
     title = fields.CharField('Title', max_length=512)
@@ -91,6 +96,7 @@ class ModelConfig(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 
 class SensorList(RelatedEntity):
     model_name = 'designsafe.project.sensor_list'
@@ -102,6 +108,7 @@ class SensorList(RelatedEntity):
     model_configs = fields.RelatedObjectField(ModelConfig)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 
 class Event(RelatedEntity):
     model_name = 'designsafe.project.event'
@@ -115,6 +122,7 @@ class Event(RelatedEntity):
     sensor_lists = fields.RelatedObjectField(SensorList)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
 
 class Report(RelatedEntity):
     model_name = 'designsafe.project.report'

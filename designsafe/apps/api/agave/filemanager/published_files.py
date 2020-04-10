@@ -8,11 +8,12 @@ import re
 import datetime
 from django.conf import settings
 from .base import BaseFileManager
-from designsafe.apps.api.agave.filemanager.agave import  AgaveFileManager
+from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.exceptions import ApiException
 
 
 logger = logging.getLogger(__name__)
+
 
 class PublishedFileManager(AgaveFileManager):
     NAME = 'published_files'
@@ -28,7 +29,7 @@ class PublishedFileManager(AgaveFileManager):
 
     def listing(self, system, file_path='/', offset=0, limit=100, **kwargs):
         return super(PublishedFileManager, self).\
-                listing(system, file_path, offset, limit)
+            listing(system, file_path, offset, limit)
 
     def delete(self, *args, **kwargs):
         raise ApiException('Invalid Action', status=400)

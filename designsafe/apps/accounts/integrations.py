@@ -22,4 +22,3 @@ def get_integrations():
             continue
 
     return app_integrations
-

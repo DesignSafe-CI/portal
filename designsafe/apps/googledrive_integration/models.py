@@ -10,13 +10,13 @@ logger = logging.getLogger(__name__)
 
 CLIENT_SECRETS_FILE = os.path.join(settings.SITE_DIR, 'client_secrets.json')
 
+
 class GoogleDriveUserToken(models.Model):
     """
     Represents an OAuth Token for a Google Drive user
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='googledrive_user_token')
     credential = CredentialsField()
-
 
     @property
     def client(self):

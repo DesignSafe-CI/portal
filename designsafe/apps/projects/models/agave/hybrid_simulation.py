@@ -32,10 +32,12 @@ class HybridSimulationProject(Project):
     keywords = fields.CharField('Keywords', default='')
     dois = fields.ListField('Dois')
 
+
 class FileModel(MetadataModel):
     model_name = 'designsafe.file'
     keywords = fields.ListField('Keywords')
     project_UUID = fields.RelatedObjectField(HybridSimulationProject, default=[])
+
 
 class DataTag(MetadataModel):
     _is_nested = True

@@ -2,6 +2,7 @@
 from django.contrib.staticfiles.storage import CachedStaticFilesStorage, StaticFilesStorage
 from django.core.files.storage import FileSystemStorage
 
+
 class CustomPipelineCachedStorage(CachedStaticFilesStorage):
     def url(self, name, force=False):
         """

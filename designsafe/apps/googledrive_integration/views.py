@@ -25,6 +25,7 @@ CLIENT_CONFIG = {'web': {
     "client_secret": settings.GOOGLE_OAUTH2_CLIENT_SECRET
 }}
 
+
 @login_required
 def index(request):
     context = {}
@@ -53,7 +54,7 @@ def initialize_token(request):
     redirect_uri = reverse('googledrive_integration:oauth2_callback')
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         CLIENT_CONFIG,
-        scopes=['https://www.googleapis.com/auth/drive',])
+        scopes=['https://www.googleapis.com/auth/drive', ])
     flow.redirect_uri = request.build_absolute_uri(redirect_uri)
 
     logger.debug(request.build_absolute_uri(redirect_uri))
@@ -83,7 +84,7 @@ def oauth2_callback(request):
         redirect_uri = reverse('googledrive_integration:oauth2_callback')
         flow = google_auth_oauthlib.flow.Flow.from_client_config(
             CLIENT_CONFIG,
-            scopes=['https://www.googleapis.com/auth/drive',],
+            scopes=['https://www.googleapis.com/auth/drive', ],
             state=state)
         flow.redirect_uri = request.build_absolute_uri(redirect_uri)
 
@@ -106,8 +107,8 @@ def oauth2_callback(request):
 
         logger.debug('GoogleDriveUserToken refresh_token cannot be null, revoking previous access and restart flow.')
         revoke = requests.post('https://accounts.google.com/o/oauth2/revoke',
-                params={'token': credentials.token},
-                headers = {'content-type': 'application/x-www-form-urlencoded'})
+                               params={'token': credentials.token},
+                               headers={'content-type': 'application/x-www-form-urlencoded'})
 
         HttpResponseRedirect(reverse('googledrive_integration:initialize_token'))
 
@@ -127,20 +128,20 @@ def disconnect(request):
             googledrive_user_token = GoogleDriveUserToken.objects.get(user=request.user)
 
             revoke = requests.post('https://accounts.google.com/o/oauth2/revoke',
-                params={'token': googledrive_user_token.credential.token},
-                headers = {'content-type': 'application/x-www-form-urlencoded'})
+                                   params={'token': googledrive_user_token.credential.token},
+                                   headers={'content-type': 'application/x-www-form-urlencoded'})
 
             status_code = getattr(revoke, 'status_code')
 
             googledrive_user_token.delete()
 
             if status_code == 200:
-                messages.success(request,'Your Google Drive account has been disconnected from DesignSafe.')
+                messages.success(request, 'Your Google Drive account has been disconnected from DesignSafe.')
                 return HttpResponseRedirect(reverse('googledrive_integration:index'))
 
             else:
                 logger.error('Disconnect Google Drive; google drive account revoke error.',
-                         extra={'user': request.user})
+                             extra={'user': request.user})
                 logger.debug('status code:{}'.format(status_code))
 
                 return HttpResponseRedirect(reverse('googledrive_integration:index'))

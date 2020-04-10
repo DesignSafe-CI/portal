@@ -19,7 +19,7 @@ urlpatterns = [
     #
     #     GET     /search/<file_mgr_name>/
     #     POST    /search/<file_mgr_name>/
-    #url(r'^files/search/(?P<file_mgr_name>[\w.-]+)/$',
+    # url(r'^files/search/(?P<file_mgr_name>[\w.-]+)/$',
     #    FileSearchView.as_view(), name='files_search'),
 
     # File operations:

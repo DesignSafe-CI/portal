@@ -27,7 +27,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class JobsWebhookView(JSONResponseMixin, BaseApiView):
     """
     Dispatches notifications when receiving a POST request from the Agave

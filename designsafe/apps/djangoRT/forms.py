@@ -56,6 +56,7 @@ class TicketForm(BaseTicketForm):
                          help_text='You can copy other people on this ticket. '
                                    'Multiple emails should be comma-separated')
 
+
 class TicketGuestForm(BaseTicketForm):
     """
     Anonymous users ticket form. Adds a CAPTCHA to reduce spam submissions.
@@ -63,12 +64,14 @@ class TicketGuestForm(BaseTicketForm):
     captcha = ReCaptchaField(widget=ReCaptchaWidget)
     pass
 
+
 class ReplyForm(forms.Form):
     """
     Ticket Reply form.
     """
     reply = forms.CharField(required=True, widget=forms.Textarea(), label="Enter Reply")
     attachment = forms.FileField(required=False)
+
 
 class CloseForm(forms.Form):
     """

@@ -19,9 +19,12 @@ from datetime import datetime
 import json
 import six
 import logging
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 
 logger = logging.getLogger(__name__)
+
 
 @login_required
 def index(request):
@@ -101,7 +104,6 @@ def call_api(request, service):
                 meta_uuid = request.GET.get('uuid')
                 if meta_uuid:
                     data = agave.meta.deleteMetadata(uuid=meta_uuid)
-
 
         # TODO: Need auth on this DELETE business
         elif service == 'jobs':
@@ -189,7 +191,7 @@ def call_api(request, service):
 
                     job_post['notifications'] = [
                         {'url': jobs_wh_url,
-                        'event': e}
+                         'event': e}
                         for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED", "BLOCKED"]]
 
                     try:

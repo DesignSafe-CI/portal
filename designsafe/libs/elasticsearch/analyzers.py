@@ -18,9 +18,9 @@ file_analyzer = analyzer('file_analyzer',
                          filter='lowercase')
 
 file_pattern_analyzer = analyzer('file_ext_analyzer',
-                        tokenizer=tokenizer('file_pattern', 'pattern', pattern='\\.'),
-                        filter='lowercase')
+                                 tokenizer=tokenizer('file_pattern', 'pattern', pattern='\\.'),
+                                 filter='lowercase')
 
 reverse_file_analyzer = analyzer('file_reverse',
-                        tokenizer=tokenizer('keyword'),
-                        filter=['lowercase', 'reverse'])
+                                 tokenizer=tokenizer('keyword'),
+                                 filter=['lowercase', 'reverse'])

@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 from designsafe.apps.api.agave.filemanager.base import BaseFileManager
 from designsafe.apps.data.models.agave.files import (BaseFileResource,
-                                                    BaseFilePermissionResource,
-                                                    BaseAgaveFileHistoryRecord)
+                                                     BaseFilePermissionResource,
+                                                     BaseAgaveFileHistoryRecord)
 from designsafe.apps.data.tasks import agave_indexer
 from requests import HTTPError
 import logging
@@ -89,7 +89,7 @@ class AgaveFileManager(BaseFileManager):
         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(copied_file.path), 'recurse': False}, queue='indexing')
         if copied_file.format == 'folder':
             agave_indexer.apply_async(kwargs={'systemId': system, 'filePath': copied_file.path, 'recurse': True}, routing_key='indexing')
-        
+
         return copied_file
 
     def delete(self, system, path):
@@ -134,7 +134,7 @@ class AgaveFileManager(BaseFileManager):
         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(f.path), 'recurse': False}, queue='indexing')
         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(resp.path), 'recurse': False}, queue='indexing')
         if resp.format == 'folder':
-             agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': resp.path}, queue='indexing')
+            agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': resp.path}, queue='indexing')
         return resp
 
     def rename(self, system, file_path, rename_to):
@@ -186,5 +186,5 @@ class AgaveFileManager(BaseFileManager):
         f = BaseFileResource(self._ag, system, file_path)
         resp = f.upload(upload_file)
 
-        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(resp.path), 'recurse': False}, queue='indexing') 
+        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(resp.path), 'recurse': False}, queue='indexing')
         return resp

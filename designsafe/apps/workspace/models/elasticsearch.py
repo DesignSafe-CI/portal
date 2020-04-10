@@ -17,6 +17,7 @@ from designsafe.libs.elasticsearch.analyzers import path_analyzer
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 @python_2_unicode_compatible
 class IndexedApp(DocType):
     uuid = Text(fields={'_exact': Keyword()})
@@ -42,7 +43,7 @@ class IndexedApp(DocType):
         })
 
     class Index:
-        name = settings.ES_INDICES['project_entities']['alias'] 
-        
+        name = settings.ES_INDICES['project_entities']['alias']
+
     class Meta:
         dynamic = MetaField('strict')

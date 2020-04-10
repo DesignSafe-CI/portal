@@ -44,9 +44,9 @@ class BaseApiView(View):
                 logger.error('%s', e, exc_info=True)
                 message = str(e)
                 status = 500
-        
+
         resp = {'message': message}
-                                      
+
         return HttpResponse(json.dumps(resp),
                             status=status, content_type='application/json')
 
@@ -73,12 +73,10 @@ class LoggerApi(BaseApiView):
         log_json = request.body.decode('utf-8')
         log_data = json.loads(log_json)
         level = getLevelName(log_data.pop('level', 'INFO'))
-        name = log_data.pop('name');
+        name = log_data.pop('name')
 
         logger.log(level, '%s: %s', name, json.dumps(log_data), extra={
             'user': request.user.username,
             'referer': request.META.get('HTTP_REFERER')
         })
         return HttpResponse('OK', status=202)
-
-

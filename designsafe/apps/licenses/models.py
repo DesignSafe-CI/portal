@@ -58,5 +58,5 @@ class LSDYNALicense(BaseLicense):
                                                       'Please ensure you paste the '
                                                       'license exactly as it is in the '
                                                       'license file.')
-                                                      
+
     license_type = 'LS-DYNA'

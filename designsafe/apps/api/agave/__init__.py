@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
+
 def get_service_account_client():
     """Return service account agave client.
 
@@ -27,11 +28,13 @@ def get_service_account_client():
                  token=settings.AGAVE_SUPER_TOKEN,
                  resources=AGAVE_RESOURCES)
 
+
 def get_sandbox_service_account_client():
     """Return sandbox service account"""
     return Agave(api_server=settings.AGAVE_SANDBOX_TENANT_BASEURL,
                  token=settings.AGAVE_SANDBOX_SUPER_TOKEN,
                  resources=AGAVE_RESOURCES)
+
 
 def service_account():
     """Return prod or sandbox service client depending on setting.AGAVE_USE_SANDBOX"""
@@ -39,6 +42,7 @@ def service_account():
         return get_sandbox_service_account_client()
 
     return get_service_account_client()
+
 
 def impersonate_service_account(username):
     """Return agave client as username.
