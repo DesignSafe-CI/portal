@@ -98,7 +98,7 @@ def draft_publication(
     prj = mgr.get_project_by_id(project_id)
     responses = []
 
-    ### Draft Entity DOI(s) ###
+    # Draft Entity DOI(s)
     if main_entity_uuids:
         for ent_uuid in main_entity_uuids:
             entity = None
@@ -139,7 +139,7 @@ def draft_publication(
     else:
         upsert_project_doi = True
 
-    ### Draft Project DOI ###
+    # Draft Project DOI
     prj_url = TARGET_BASE.format(project_id=project_id)
     prj_datacite_json = prj.to_datacite_json()
     prj_datacite_json['url'] = prj_url
