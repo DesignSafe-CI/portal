@@ -3,13 +3,13 @@
 import logging
 import json
 import os
+
 from requests import HTTPError
-from requests import HTTPError
-from requests import HTTPError
-from requests import HTTPError
+
 from django.http import (JsonResponse, HttpResponseBadRequest,
                          HttpResponseRedirect)
 from django.shortcuts import render
+
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.external_resources.box.filemanager.manager \

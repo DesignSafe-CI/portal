@@ -1,9 +1,11 @@
-from django.conf import settings
 import logging
-from elasticsearch_dsl import (Document, Text, Date, Nested,
+
+from django.conf import settings
+
+from elasticsearch_dsl import (Document, Date, Nested,
                                Boolean, GeoPoint, MetaField, Text,
                                Keyword)
-#from designsafe.connections import connections
+
 logger = logging.getLogger(__name__)
 
 
