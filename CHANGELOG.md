@@ -1,5 +1,5 @@
 # DesignSafe-CI Portal Release Notes
-## v4.8.2-20200401
+## v4.9.0-20200401
 Enhancements: 
 * Python 3 Migration 
 * Add ability to download published file archives
