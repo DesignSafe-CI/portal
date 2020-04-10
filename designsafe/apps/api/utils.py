@@ -3,9 +3,9 @@
 import logging
 from django.conf import settings
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 def is_jwt(request):

@@ -7,9 +7,9 @@ import logging
 from django.conf import settings
 from designsafe.apps.api.exceptions import ApiException
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 def SearchLookupManager(name):

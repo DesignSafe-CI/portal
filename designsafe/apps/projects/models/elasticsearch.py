@@ -7,9 +7,9 @@ from elasticsearch_dsl import (Document, Date, Nested,
                                Boolean, Keyword,
                                MetaField)
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 @python_2_unicode_compatible

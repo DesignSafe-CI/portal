@@ -7,7 +7,6 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.external_resources.dropbox.models.files import DropboxFile
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.data.tasks import agave_indexer
-#from designsafe.apps.api.tasks import dropbox_upload
 from designsafe.apps.dropbox_integration.models import DropboxUserToken
 from dropbox.exceptions import ApiError, AuthError
 from dropbox.files import FileMetadata, FolderMetadata

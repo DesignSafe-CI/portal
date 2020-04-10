@@ -266,10 +266,8 @@ class Model(object, metaclass=BaseModel):
         self._permissions = None
         self.name = None
         self.parent = None
-        #logger.debug('kwargs: %s', json.dumps(kwargs, indent=4))
         self.__class__
         self._meta
-        #logger.debug('_is_nested: %s', self._is_nested)
         self.update(**kwargs)
 
     def update(self, **kwargs):
@@ -418,7 +416,6 @@ class Model(object, metaclass=BaseModel):
             for attrname, value in six.iteritems(self._links.__dict__):
                 dict_obj['_links'][spinal_to_camelcase(attrname)] = value
 
-        #dict_obj['value'] = {}
         value_dict = {}
         for field in self._meta._fields:
             value = getattr(self, field.attname)

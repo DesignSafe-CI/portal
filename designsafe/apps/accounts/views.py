@@ -568,5 +568,4 @@ def termsandconditions(request):
         'title': 'Terms and Conditions',
         'terms': TermsAndConditions.get_active(),
     }
-    #context['terms'] = TermsAndConditions.get_active()
     return render(request, 'designsafe/apps/accounts/termsandconditions.html', context)

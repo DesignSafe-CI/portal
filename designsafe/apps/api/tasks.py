@@ -897,7 +897,6 @@ def save_to_fedora(self, project_id):
             requests.put(fedora_project_base)
 
         headers = {'Content-Type': 'text/plain'}
-        #logger.debug('walking: %s', _root)
         for root, dirs, files in os.walk(_root):
             for name in files:
                 mime = magic.Magic(mime=True)
@@ -908,7 +907,6 @@ def save_to_fedora(self, project_id):
                 _path = _path.replace('[', '-')
                 _path = _path.replace(']', '-')
                 url = ''.join([fedora_project_base, urllib.parse.quote(_path)])
-                #logger.debug('uploading: %s', url)
                 with open(os.path.join(root, name), 'rb') as _file:
                     requests.put(url, data=_file, headers=headers)
 
@@ -917,7 +915,6 @@ def save_to_fedora(self, project_id):
                 full_path = os.path.join(root, name)
                 _path = full_path.replace(_root, '', 1)
                 url = ''.join([fedora_project_base, _path])
-                #logger.debug('creating: %s', _path)
                 requests.put(url)
 
     except Exception as exc:

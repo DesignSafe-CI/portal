@@ -7,9 +7,9 @@ import logging
 from django.conf import settings
 from elasticsearch import Elasticsearch
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 def reindex(from_index, from_doc_type, to_index, to_doc_type,

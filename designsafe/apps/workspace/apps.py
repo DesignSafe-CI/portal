@@ -1,9 +1,9 @@
 import logging
 from django.apps import AppConfig
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 class WorkspaceConfig(AppConfig):

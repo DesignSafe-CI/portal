@@ -11,9 +11,9 @@ from elasticsearch import TransportError
 from designsafe.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 @python_2_unicode_compatible

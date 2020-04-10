@@ -12,9 +12,9 @@ import jwt as pyjwt
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_der_public_key
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 def _decode_jwt(jwt):
@@ -25,12 +25,10 @@ def _decode_jwt(jwt):
     :param str jwt: JWT string
     :return: base64-decoded message
     """
-    #pubkey = settings.AGAVE_JWT_PUBKEY
     pubkey = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzO\nM4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe\n0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXn\nRS4HrKGJTzxaCcU7OQIDAQAB'
     key_der = b64decode(pubkey)
     key = load_der_public_key(key_der, backend=default_backend())
     return pyjwt.decode(jwt, key, issuer=settings.AGAVE_JWT_ISSUER)
-    # return pyjwt.decode(jwt, key, verify=False)
 
 
 def _get_jwt_payload(request):
@@ -60,7 +58,7 @@ def agave_jwt_login(func):
         :func:`django.contrib.auth.decorators.login_required` decorator. This way we do
         not disrupt your usual Django login config.
     """
-    #pylint: disable=missing-docstring
+    # pylint: disable=missing-docstring
     @wraps(func)
     def decorated_function(request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -79,4 +77,4 @@ def agave_jwt_login(func):
         return func(request, *args, **kwargs)
 
     return decorated_function
-    #pylint: enable=missing-docstring
+    # pylint: enable=missing-docstring

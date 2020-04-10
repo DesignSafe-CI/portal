@@ -44,9 +44,7 @@ class Command(BaseCommand):
         if project_id.startswith('PRJ-'):
             res = client.meta.listMetadata(q=json.dumps(
                 {"value.projectId": project_id}))
-            #prj = Project._meta.model_manager.get(client, project_id=project_id)
         else:
-            #prj = Project._meta.model_manager.get(client, uuid=options.get('project_id'))
             res = client.meta.getMetadata(uuid=project_id)
 
         if len(res):
@@ -68,11 +66,7 @@ class Command(BaseCommand):
     def _delete_relations(self, ent, uuids):
         for attrname, field in six.iteritems(ent._meta._related_fields):
             attr = getattr(ent, attrname)
-            #self.stdout.write('uuids before: %s' % attr.uuids)
-            #self.stdout.write('ascs before: %s' % ascs)
             attr.uuids = [uuid for uuid in attr.uuids if uuid not in uuids]
-            #self.stdout.write('uuids after: %s' % attr.uuids)
-            #self.stdout.write('ascs after: %s' % ascs)
         ent.association_ids = [uuid for uuid in ent.association_ids if uuid not in uuids]
         ent.save(self.client)
 
@@ -89,7 +83,6 @@ class Command(BaseCommand):
                 except HTTPError as e:
                     self.stdout.write(e.response.text)
                     uuids.append(uuid)
-            #self.stdout.write('uuids: %s' % uuids)
         none_files = [x for x in ent._links.associationIds if x['href'] is None]
         file_uuids = [nfl['rel'] for nfl in none_files]
         uuids += file_uuids
@@ -99,9 +92,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         project_id = options.get('project_id', '').upper()
         prj = self.get_project(project_id)
-        #self.stdout.write('getting entities')
         rel_names = self.get_related_entities_names()
-        #self.stdout.write('rel_names: %s' % rel_names)
         entities = self.client.meta.listMetadata(q=json.dumps(
             {'name': {'$in': rel_names}, 'associationIds': prj.uuid}))
         self.stdout.write('entities length: %d' % len(entities))
@@ -110,4 +101,3 @@ class Command(BaseCommand):
             ent = cls(**entity)
             self.stdout.write('Entity: %s' % ent.uuid)
             self._check_related_uuids(ent)
-            #self.stdout.write('%s: %s' % (attrname, fld.uuids))

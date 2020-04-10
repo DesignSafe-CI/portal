@@ -4,15 +4,12 @@ from haystack import indexes
 from django.db.models import Q
 from django.template import RequestContext
 from django.utils import timezone
-# rom djangocms_text_ckeditor.models import Text
-#from django.utils.text import smart_split
 from django.test import RequestFactory
 
 from django.utils.html import strip_tags
 from django.utils.encoding import force_unicode
 
 from cms.models import CMSPlugin, Title
-# from cms.toolbar.toolbar import CMSToolbar
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -32,7 +29,6 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True)
     body = indexes.CharField()
     url = indexes.CharField()
-    # cmsplugin_ptr_id = indexes.IntegerField(model_attr='cmsplugin_ptr_id')
     slug = indexes.CharField()
     page_id = indexes.IntegerField()
     title = indexes.CharField()
@@ -47,12 +43,9 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
             Q(redirect__exact='') | Q(redirect__isnull=True)
         ).select_related('page').distinct()
 
-        # queryset = Title.objects.public().all()
-        # queryset = Page.objects.published().filter(publisher_is_draft=False).distinct()
         return queryset
 
     def prepare(self, obj):
-        # logger.info(self.prepared_data)
         page = obj.page
         rf = RequestFactory()
         request = rf.get("/")
@@ -72,12 +65,10 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
                 text += _strip_tags(instance.render_plugin(context=RequestContext(request))) + ' '
         text += page.get_meta_description() or ''
         text += ' '
-        # text += obj.get_meta_keywords() or u''
         self.prepared_data['text'] = text
         self.prepared_data["body"] = text
         self.prepared_data["slug"] = obj.slug
         self.prepared_data["url"] = "https://" + obj.page.site.domain + '/' + obj.path
         self.prepared_data["title"] = obj.title
 
-        # self.prepared_data['language'] = self._language
         return self.prepared_data

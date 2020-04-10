@@ -153,7 +153,6 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         :return: A list of Projects to which the current user has access
         :rtype: JsonResponse
         """
-        #raise HTTPError('Custom Error')
         ag = request.user.agave_oauth.client
         query_string = request.GET.get('query_string', None)
         if query_string is not None:
@@ -310,7 +309,6 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         :rtype: JsonResponse
         """
         ag = request.user.agave_oauth.client
-        #project = Project.from_uuid(agave_client=ag, uuid=project_id)
         meta_obj = ag.meta.getMetadata(uuid=project_id)
         cls = project_lookup_model(meta_obj)
         project = cls(**meta_obj)
