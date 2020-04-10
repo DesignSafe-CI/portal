@@ -32,7 +32,7 @@ def redirect_old_nees(request, nees_prj):
     Returns: call to redirect method to a search page
     """
     nees_prj = str(nees_prj)
-    if len(nees_prj) is not 4:
+    if len(nees_prj) != 4:
         nees_prj = '0' * (4 - len(nees_prj)) + nees_prj
     url = '/search/?query_string=NEES {}'.format(nees_prj)
     return redirect(url)
