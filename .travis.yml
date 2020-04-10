@@ -33,11 +33,7 @@ matrix:
     - '3.6'
     stage: lint
     install:
-    - pip install -r requirements.txt
-    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
-      done;
-    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i demo > /dev/null"
+    - pip3 install -r requirements.txt
     script:
     - pydocstyle designsafe
   - name: eslint
@@ -51,16 +47,11 @@ matrix:
     script:
     - npm run-script lint
   - name: npm test
-    language: python
-    python:
-    - '3.6'
+    language: node_js
+    node_js:
+    - node
     stage: test
     install:
-    - pip install -r requirements.txt
-    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
-      done;
-    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i demo > /dev/null"
     - npm install
     - npm install -g codecov
     script:
@@ -73,7 +64,7 @@ matrix:
     - '3.6'
     stage: test
     install:
-    - pip install -r requirements.txt
+    - pip3 install -r requirements.txt
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
@@ -99,19 +90,6 @@ matrix:
     script:
     - npm run build
   allow_failures:
-  - name: Flake8
-    language: python
-    python:
-    - '3.6'
-    stage: lint
-    install:
-    - pip install -r requirements.txt
-    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
-      done;
-    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i demo > /dev/null"
-    script:
-    - flake8 designsafe
   - name: pydocstyle
     language: python
     python:
