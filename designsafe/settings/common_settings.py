@@ -16,7 +16,8 @@ import os
 import json
 
 
-def gettext(s): return s
+def gettext(s):
+    return s
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
