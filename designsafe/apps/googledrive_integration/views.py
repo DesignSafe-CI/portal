@@ -103,9 +103,10 @@ def oauth2_callback(request):
         # another refresh_token.
 
         logger.debug('GoogleDriveUserToken refresh_token cannot be null, revoking previous access and restart flow.')
-        requests.post('https://accounts.google.com/o/oauth2/revoke',
-                               params={'token': credentials.token},
-                               headers={'content-type': 'application/x-www-form-urlencoded'})
+        requests.post(
+            'https://accounts.google.com/o/oauth2/revoke',
+            params={'token': credentials.token},
+            headers={'content-type': 'application/x-www-form-urlencoded'})
 
         HttpResponseRedirect(reverse('googledrive_integration:initialize_token'))
 
