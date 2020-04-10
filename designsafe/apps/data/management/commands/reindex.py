@@ -50,7 +50,7 @@ class Command(BaseCommand):
         from_index = options.get('from_index')
         to_index = options.get('to_index')
         doc_type = options.get('doc_type')
-        all_docs = options.get('all_docs')
+        options.get('all_docs')
         remote_host = options.get('remote_host')
         sample = options.get('sample')
         size = options.get('size')

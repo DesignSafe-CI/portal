@@ -1,21 +1,18 @@
-from dropbox.oauth import DropboxOAuth2Flow, BadRequestException, BadStateException, CsrfException, NotApprovedException, ProviderException
+from dropbox.oauth import BadRequestException, BadStateException, DropboxOAuth2Flow
 from dropbox.exceptions import AuthError
 from dropbox.dropbox import Dropbox
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
                          Http404)
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
 from django.shortcuts import render
 from designsafe.apps.dropbox_integration.models import DropboxUserToken
 
 import logging
-import json
 
 
 logger = logging.getLogger(__name__)
@@ -78,7 +75,7 @@ def oauth2_callback(request):
         )
         token.save()
 
-    except BadStateException as e:
+    except BadStateException:
         # Start the auth flow again.
         HttpResponseRedirect(reverse('dropbox_integration:initialize_token'))
     except Exception as e:
@@ -104,7 +101,7 @@ def disconnect(request):
         except DropboxUserToken.DoesNotExist:
             logger.warn('Disconnect Dropbox; DropboxUserToken does not exist.',
                         extra={'user': request.user})
-        except:
+        except BaseException:
             logger.error('Disconnect Dropbox; DropboxUserToken delete error.',
                          extra={'user': request.user})
         messages.success(

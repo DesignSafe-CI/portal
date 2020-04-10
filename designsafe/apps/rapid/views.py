@@ -11,7 +11,6 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model, models
-from django.db.models import Q
 
 import logging
 from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
@@ -130,7 +129,7 @@ def admin_create_event(request):
                     thumb = thumbnail_image(f)
                     handle_uploaded_image(thumb, image_uuid)
                     ev.main_image_uuid = image_uuid
-                except:
+                except BaseException:
                     return HttpResponseBadRequest("Hmm, a bad file perhaps?")
             try:
                 ev.save(refresh=True)
@@ -155,7 +154,7 @@ def admin_create_event(request):
 def admin_edit_event(request, event_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except BaseException:
         return HttpResponseNotFound()
 
     metrics_logger.info('Rapid Admin edit event',
@@ -199,7 +198,7 @@ def admin_edit_event(request, event_id):
                     thumb = thumbnail_image(f)
                     handle_uploaded_image(thumb, image_uuid)
                     event.main_image_uuid = image_uuid
-                except:
+                except BaseException:
                     return HttpResponseBadRequest("Hmm, a bad file perhaps?")
                 if old_image_uuid:
                     os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', old_image_uuid))
@@ -235,13 +234,13 @@ def admin_delete_event(request, event_id):
 
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except BaseException:
         return HttpResponseNotFound()
     if request.method == 'POST':
         image_uuid = event.main_image_uuid
         try:
             os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', image_uuid))
-        except:
+        except BaseException:
             pass
         event.delete(refresh=True)
         return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
@@ -252,7 +251,7 @@ def admin_delete_event(request, event_id):
 def admin_event_datasets(request, event_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except BaseException:
         return HttpResponseNotFound()
 
     context = {
@@ -266,7 +265,7 @@ def admin_event_datasets(request, event_id):
 def admin_event_add_dataset(request, event_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except BaseException:
         return HttpResponseNotFound()
 
     form = rapid_forms.RapidNHEventDatasetForm(request.POST or None)
@@ -296,7 +295,7 @@ def admin_event_add_dataset(request, event_id):
 def admin_event_edit_dataset(request, event_id, dataset_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except BaseException:
         return HttpResponseNotFound()
 
     dataset = next((d for d in event.datasets if d.id == dataset_id), None)
@@ -334,7 +333,7 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
 def admin_event_delete_dataset(request, event_id, dataset_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except BaseException:
         return HttpResponseNotFound()
     if request.method == 'POST':
         event.datasets = [ds for ds in event.datasets if ds.id != dataset_id]

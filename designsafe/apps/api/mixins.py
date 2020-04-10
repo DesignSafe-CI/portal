@@ -11,7 +11,7 @@ logger = logging.getLevelName(__name__)
 
 class JSONResponseMixin(object):
     """
-    View mixin to return a JSON response. 
+    View mixin to return a JSON response.
     We're building one so we can put any extra code in here.
     """
 

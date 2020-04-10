@@ -5,8 +5,6 @@ from django.db.models.signals import post_save
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 import logging
 import json
-import six
-import cgi
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +24,7 @@ def send_notification_ws(sender, instance, created, **kwargs):
         msg = RedisMessage(instance_dict)
         rp.publish_message(msg)
         # logger.debug('WS socket msg sent: {}'.format(instance_dict))
-    except Exception as e:
+    except Exception:
         # logger.debug('Exception sending websocket message',
         #              exc_info=True,
         #              extra = instance.to_dict())
@@ -46,7 +44,7 @@ def send_broadcast_ws(sender, instance, created, **kwargs):
         msg = RedisMessage(instance_dict)
         rp.publish_message(msg)
         logger.debug('WS socket msg sent: {}'.format(instance_dict))
-    except Exception as e:
+    except Exception:
         logger.debug('Exception sending websocket message',
                      exc_info=True,
                      extra=instance.to_dict())

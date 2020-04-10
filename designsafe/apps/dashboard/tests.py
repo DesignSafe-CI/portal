@@ -3,8 +3,7 @@ import logging
 from unittest import skip
 from elasticsearch_dsl import Q
 from django.test import TestCase
-from django.contrib.auth import get_user_model, signals
-from django.contrib.auth.models import Permission
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 

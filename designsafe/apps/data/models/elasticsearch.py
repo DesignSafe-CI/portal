@@ -1,16 +1,13 @@
 
 from future.utils import python_2_unicode_compatible
 import logging
-import json
 from django.conf import settings
-from django.db import models
-from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Search, Document, Date, Nested,
                                analyzer, Object, Text, Long,
                                Boolean, Keyword,
                                GeoPoint, MetaField, Index)
 from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError, ConnectionTimeout
+from elasticsearch import TransportError
 from designsafe.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 

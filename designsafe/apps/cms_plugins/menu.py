@@ -1,6 +1,5 @@
 from menus.base import NavigationNode
 from cms.menu_bases import CMSAttachMenu
-from menus.menu_pool import menu_pool
 from django.conf import settings
 from importlib import import_module
 from django.utils.translation import ugettext_lazy as _
@@ -35,9 +34,9 @@ def _menu_nodes_for_apps(menu_type):
                 continue
             except TypeError:
                 logger.warning('Call to %s.cms_menu_nodes should return an iterable!')
-            except:
+            except BaseException:
                 logger.warning('Call to %s.cms_menu_nodes failed!' % mod.__name__)
-        except:
+        except BaseException:
             continue
     return nodes
 

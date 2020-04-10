@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import migrations
 
 def add_research_activities_data(apps, schema_editor):
     DesignSafeProfileResearchActivities = apps.get_model("designsafe_accounts", "DesignSafeProfileResearchActivities")

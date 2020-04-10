@@ -11,7 +11,6 @@ from .models import AgaveOAuthToken, AgaveServiceStatus
 from agavepy.agave import Agave
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir, new_user_alert
 import logging
-import os
 import requests
 import time
 from requests import HTTPError

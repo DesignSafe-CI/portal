@@ -62,7 +62,6 @@ class TicketGuestForm(BaseTicketForm):
     Anonymous users ticket form. Adds a CAPTCHA to reduce spam submissions.
     """
     captcha = ReCaptchaField(widget=ReCaptchaWidget)
-    pass
 
 
 class ReplyForm(forms.Form):

@@ -1,13 +1,10 @@
 """Command to print NSF report"""
-import six
 import json
 import csv
 import logging
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
+from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from requests.exceptions import HTTPError
 from designsafe.apps.api.agave import get_service_account_client
 
 logger = logging.getLogger(__name__)

@@ -1,16 +1,13 @@
 import google_auth_oauthlib.flow
 import requests
-import os
 from django.db import IntegrityError
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
                          Http404)
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
 from django.shortcuts import render
 from designsafe.apps.googledrive_integration.models import GoogleDriveUserToken
 from designsafe.apps.googledrive_integration.tasks import check_connection
@@ -42,7 +39,7 @@ def index(request):
                            request.user.username)
             context['googledrive_connection'] = False
 
-    except:
+    except BaseException:
         logger.debug('GoogleDriveUserToken does not exist for user=%s' % request.user.username)
 
     return render(request, 'designsafe/apps/googledrive_integration/index.html', context)
@@ -101,7 +98,7 @@ def oauth2_callback(request):
 
         token.save()
 
-    except IntegrityError as e:
+    except IntegrityError:
         # Auth flow completed previously, and no refresh_token granted. Need to disconnect to get
         # another refresh_token.
 

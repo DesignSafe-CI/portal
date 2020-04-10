@@ -1,23 +1,12 @@
-from django.http.response import HttpResponseBadRequest
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.shortcuts import render
 from django.http import HttpResponse
-from django.contrib.sessions.models import Session
 from django.conf import settings
 
-from celery import shared_task
-from requests import ConnectionError, HTTPError
-from agavepy.agave import Agave, AgaveException
 
-from designsafe.apps.api.notifications.models import Notification
 
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
-from designsafe.apps.api.exceptions import ApiException
 
 from designsafe.apps.workspace.tasks import handle_webhook_request
 

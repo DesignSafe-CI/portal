@@ -1,10 +1,8 @@
 # python manage.py test designsafe.LoginTest --settings=designsafe.settings.test_settings
 from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
 import mock
 from designsafe.apps.auth.models import AgaveOAuthToken
-from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
 from designsafe.apps.auth.views import agave_oauth_callback
 
 
@@ -43,19 +41,19 @@ class LoginTestClass(TestCase):
   def test_has_agave_file_listing(self, agave_client, agave):
     #agaveclient.return_value.files.list.return_value = [] // whatever the listing should look like
     #request.post.return_value = {} // some object that looks like a requests response
-    
+
     self.client.login(username='test_with_agave', password='test')
 
     agave_client.files.list.return_value = {
         "name": "test",
         "system": "designsafe.storage.default",
-        "trail": [{"path": "/", "name": "/", "system": "designsafe.storage.default"}, 
+        "trail": [{"path": "/", "name": "/", "system": "designsafe.storage.default"},
                   {"path": "/test", "name": "test", "system": "designsafe.storage.default"}],
         "path": "test",
         "type": "dir",
         "children": [],
         "permissions": "READ"
-      } 
+      }
 
     resp = self.client.get('/api/agave/files/listing/agave/designsafe.storage.default/test', follow=True)
 
@@ -79,8 +77,8 @@ class LoginTestClass(TestCase):
       } """
 
         """ agave_client.files.list.return_value = {
-        "status": "error", 
-        "message": "File/folder does not exist", 
+        "status": "error",
+        "message": "File/folder does not exist",
         "version": "test"
         } """
 

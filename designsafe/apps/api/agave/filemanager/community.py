@@ -2,12 +2,6 @@
 """
 
 import logging
-import json
-import os
-import re
-import datetime
-from django.conf import settings
-from .base import BaseFileManager
 from future.utils import python_2_unicode_compatible
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.exceptions import ApiException

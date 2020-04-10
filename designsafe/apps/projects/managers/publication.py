@@ -355,7 +355,7 @@ def fix_file_tags(project_id):
                     continue
 
     for entname in entities_to_check:
-        if type(pub_dict[entname]) == list:
+        if isinstance(pub_dict[entname], list):
             for entity in pub_dict[entname]:
                 if 'value' in entity and 'fileTags' in entity['value'] and check_complete_tags(entity['value']['fileTags']):
                     fix_tags_path(entity)

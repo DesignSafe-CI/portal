@@ -1,7 +1,6 @@
 
 
 import os
-import json
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,7 +9,6 @@ from designsafe.apps.api.agave import impersonate_service_account
 from designsafe.apps.api.notifications.models import Notification
 from django.db import transaction
 from agavepy.agave import AgaveException
-from celery import shared_task
 from requests import ConnectionError, HTTPError
 import logging
 
@@ -108,13 +106,13 @@ def handle_webhook_request(job):
         job_id = job['id']
 
         user = get_user_model().objects.get(username=username)
-        ag = user.agave_oauth.client
+        user.agave_oauth.client
         # ag_job = ag.jobs.get(jobId=job_id)
 
         try:
             job['remoteSubmitted'] = str(job['remoteSubmitted'])
             job['ended'] = str(job['ended'])
-        except KeyError as e:
+        except KeyError:
             pass
 
         job_status = job['status']
@@ -185,10 +183,10 @@ def handle_webhook_request(job):
                     try:
                         logger.debug('Preparing to Index Job Output job=%s', job_name)
 
-                        archivePath = '/'.join([job['archiveSystem'], job['archivePath']])
+                        '/'.join([job['archiveSystem'], job['archivePath']])
                         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': job['archiveSystem'], 'filePath': job['archivePath'], 'recurse': True}, queue='indexing')
                         logger.debug('Finished Indexing Job Output job=%s', job_name)
-                    except Exception as e:
+                    except Exception:
                         logger.exception('Error indexing job output')
 
         else:
@@ -227,5 +225,5 @@ def handle_webhook_request(job):
         else:
             logger.warning('Agave API error. Retrying...')
 
-    except AgaveException as e:
+    except AgaveException:
         logger.warning('Agave API error. Retrying...')

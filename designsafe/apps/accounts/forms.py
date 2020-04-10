@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
 from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
@@ -223,7 +222,7 @@ class PasswordResetConfirmForm(forms.Form):
         try:
             tas = TASClient()
             user = tas.get_user(username=username)
-        except:
+        except BaseException:
             msg = 'The username provided does not match an existing user.'
             self.add_error('username', msg)
             raise forms.ValidationError(msg)
@@ -431,7 +430,7 @@ class UserRegistrationForm(forms.Form):
             terms = TermsAndConditions.get_active()
             user_terms = UserTermsAndConditions(user=user, terms=terms)
             user_terms.save()
-        except:
+        except BaseException:
             logger.exception('Error saving UserTermsAndConditions for user=%s', user)
 
         return tas_user

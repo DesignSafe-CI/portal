@@ -1,6 +1,5 @@
-from django.db import migrations, models
+from django.db import migrations
 from django.conf import settings
-from django.apps import apps
 from django.db.models import Q
 
 

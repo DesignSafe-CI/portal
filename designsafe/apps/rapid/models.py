@@ -1,5 +1,4 @@
 from django.conf import settings
-from datetime import datetime
 import logging
 from elasticsearch_dsl import (Document, Text, Date, Nested,
                                Boolean, GeoPoint, MetaField, Text,

@@ -1,5 +1,4 @@
 from django import forms
-from designsafe.apps.rapid.models import RapidNHEvent, RapidNHEventType
 import logging
 
 

@@ -61,7 +61,7 @@ class AgaveFileManager(BaseFileManager):
         from_file_path = from_file_path.strip('/')
         f = BaseFileResource.listing(self._ag, system, file_path)
         res = f.import_data(from_system, from_file_path)
-        file_name = from_file_path.split('/')[-1]
+        from_file_path.split('/')[-1]
 
         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(res.path), 'recurse': False}, queue='indexing')
         if res.format == 'folder':

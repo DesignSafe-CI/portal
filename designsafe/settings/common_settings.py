@@ -12,13 +12,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # -*- coding: utf-8 -*-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from designsafe.settings.nco_mongo import *
-from designsafe.settings.external_resource_secrets import *
-from designsafe.settings.rt_settings import *
-from designsafe.settings.elasticsearch_settings import *
-from designsafe.settings.external_resource_settings import *
-from designsafe.settings.celery_settings import *
-from designsafe.settings.nees_settings import NEES_USER_DATABASE
 import os
 import json
 

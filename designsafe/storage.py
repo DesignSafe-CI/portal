@@ -1,5 +1,5 @@
 #from pipeline.storage import PipelineCachedStorage
-from django.contrib.staticfiles.storage import CachedStaticFilesStorage, StaticFilesStorage
+from django.contrib.staticfiles.storage import CachedStaticFilesStorage
 from django.core.files.storage import FileSystemStorage
 
 

@@ -1,6 +1,5 @@
 import logging
 from designsafe.apps.data.models.agave.base import BaseAgaveResource
-from . import roles
 
 logger = logging.getLogger(__name__)
 

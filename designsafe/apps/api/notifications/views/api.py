@@ -1,14 +1,10 @@
 import logging
-from django.http.response import HttpResponseBadRequest
 from django.http import HttpResponse
-from django.core.urlresolvers import reverse
-from django.shortcuts import render
 
 from designsafe.apps.api.notifications.models import Notification
 
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
-from designsafe.apps.api.exceptions import ApiException
 
 import json
 

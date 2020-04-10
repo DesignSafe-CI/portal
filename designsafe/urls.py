@@ -28,7 +28,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView, TemplateView
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from designsafe.apps.auth.views import login_options as des_login_options
 from django.contrib.auth.views import logout as des_logout
 from designsafe.views import project_version as des_version, redirect_old_nees
@@ -36,7 +36,6 @@ from designsafe.views import project_version as des_version, redirect_old_nees
 # sitemap - classes must be imported and added to sitemap dictionary
 from django.contrib.sitemaps.views import sitemap
 from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, DesignSafeCMSSitemap
-from designsafe import views
 
 sitemaps = {
     'home': HomeSitemap,

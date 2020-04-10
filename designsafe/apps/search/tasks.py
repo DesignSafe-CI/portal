@@ -1,5 +1,4 @@
 from celery import shared_task
-import datetime
 import logging
 from django.core.management import call_command
 from django.conf import settings

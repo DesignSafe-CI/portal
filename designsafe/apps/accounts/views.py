@@ -158,11 +158,11 @@ def nees_migration(request, step=None):
                 tas_api = TASClient()
                 try:
                     tas_by_username = tas_api.get_user(username=nees_user_match[0].username)
-                except:
+                except BaseException:
                     logger.exception('Error checking for existing TAS users')
                 try:
                     tas_by_email = tas_api.get_user(email=nees_user_match[0].email)
-                except:
+                except BaseException:
                     logger.exception('Error checking for existing TAS users')
 
                 context = {
@@ -445,7 +445,7 @@ def _process_password_reset_request(request, form):
             logger.info('Processing password reset request for username: "%s"', username)
             resp = tas.request_password_reset(user['username'], source='DesignSafe')
             logger.debug(resp)
-        except Exception as e:
+        except Exception:
             logger.exception('Failed password reset request')
 
         return True
@@ -504,7 +504,7 @@ def email_confirmation(request, code=None):
                                    '<a href="/help">open a support ticket</a>.')
                     form = forms.EmailConfirmationForm(
                         initial={'code': code, 'username': username})
-            except:
+            except BaseException:
                 logger.exception('TAS Account activation failed')
                 form.add_error('__all__',
                                'Account activation failed. Please confirm your '
@@ -541,7 +541,7 @@ def mailing_list_subscription(request, list_name):
         subscribers += list('"{0}","{1}"'.format(u.get_full_name(),
                                                  u.email) for u in su)
 
-    except TypeError as e:
+    except TypeError:
         logger.warning('Invalid list name: {}'.format(list_name))
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
 

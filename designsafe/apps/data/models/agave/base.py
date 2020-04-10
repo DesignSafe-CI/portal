@@ -267,13 +267,13 @@ class Model(object, metaclass=BaseModel):
         self.name = None
         self.parent = None
         #logger.debug('kwargs: %s', json.dumps(kwargs, indent=4))
-        cls = self.__class__
-        opts = self._meta
+        self.__class__
+        self._meta
         #logger.debug('_is_nested: %s', self._is_nested)
         self.update(**kwargs)
 
     def update(self, **kwargs):
-        cls = self.__class__
+        self.__class__
         opts = self._meta
         _setattr = setattr
         if self._is_nested:
@@ -405,7 +405,6 @@ class Model(object, metaclass=BaseModel):
         return dict_obj
 
     def to_body_dict(self):
-        from designsafe.apps.data.models.agave.fields import ListField
         dict_obj = {}
 
         if not self._is_nested:

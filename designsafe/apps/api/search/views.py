@@ -5,8 +5,7 @@
    access.
 """
 import logging
-import operator
-from elasticsearch_dsl import Q, Search, Index
+from elasticsearch_dsl import Index, Search
 from elasticsearch import TransportError, ConnectionTimeout
 from django.http import (HttpResponseBadRequest,
                          JsonResponse)
@@ -26,8 +25,8 @@ class SearchView(BaseApiView):
 
     def get(self, request):
         """GET handler."""
-        q = request.GET.get('query_string')
-        offset = int(request.GET.get('offset', 0))
+        request.GET.get('query_string')
+        int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 10))
         if limit > 500:
             return HttpResponseBadRequest("limit must not exceed 500")

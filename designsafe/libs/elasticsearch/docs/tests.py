@@ -1,8 +1,5 @@
-from mock import Mock, patch, MagicMock, PropertyMock, call
+from mock import MagicMock, call, patch
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.conf import settings
-import datetime
 from elasticsearch_dsl import Q
 from designsafe.libs.elasticsearch.docs.files import BaseESFile
 from designsafe.apps.data.models.elasticsearch import IndexedFile

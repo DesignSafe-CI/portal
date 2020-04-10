@@ -1,20 +1,17 @@
 import shutil
 import logging
-import re
 import os
 import sys
 import json
 import urllib.request
 import urllib.parse
 import urllib.error
-from datetime import datetime
 from celery import shared_task
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from requests.exceptions import HTTPError
 
-from designsafe.apps.api.notifications.models import Notification, Broadcast
+from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.projects.models.elasticsearch import IndexedProject
 from designsafe.apps.data.tasks import agave_indexer
@@ -86,7 +83,7 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                          extra={'id': dest_file_id}
                          )
         n.save()
-    except:
+    except BaseException:
         logger.exception('Unexpected task failure: box_download', extra={
             'username': username,
             'box_file_id': src_file_id,
@@ -221,7 +218,7 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                 else:
                     logger.error('Unable to upload %s: file does not exist!',
                                  file_real_path)
-            except:
+            except BaseException:
                 logger.exception('Upload to Box failed!')
 
         logger.debug('Box upload task complete.')
@@ -234,7 +231,7 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                          extra={'id': src_file_id})
         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), dest_resource, dest_file_id)})
         n.save()
-    except:
+    except BaseException:
         logger.exception('Unexpected task failure: box_upload', extra={
             'username': username,
             'src_resource': src_resource,
@@ -368,7 +365,7 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                              })
             # extra = {})
             n.save()
-    except:
+    except BaseException:
         logger.exception('Unexpected task failure')
 
         n = Notification(event_type='data',
@@ -652,7 +649,7 @@ def set_project_id(self, project_uuid):
 @shared_task(bind=True)
 def index_or_update_project(self, uuid):
     """
-    Takes a project UUID and either creates a new document in the 
+    Takes a project UUID and either creates a new document in the
     des-projects index or updates the document if one already exists for that
     project.
     """
@@ -697,7 +694,7 @@ def index_or_update_project(self, uuid):
 @shared_task(bind=True)
 def reindex_projects(self):
     """
-    Performs a listing of all projects using the service account client, then 
+    Performs a listing of all projects using the service account client, then
     indexes each project using the index_or_update_project task.
     """
     client = get_service_account_client()
@@ -741,7 +738,7 @@ def copy_publication_files_to_corral(self, project_id):
 
     filepaths = list(set(filepaths))
     filepaths = sorted(filepaths)
-    base_path = ''.join(['/', publication.projectId])
+    ''.join(['/', publication.projectId])
     os.chmod('/corral-repl/tacc/NHERI/published', 0o755)
     prefix_dest = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
     if not os.path.isdir(prefix_dest):
@@ -960,7 +957,7 @@ def set_facl_project(self, project_uuid, usernames):
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def email_collaborator_added_to_project(self, project_id, project_uuid, project_title, project_url, team_members_to_add, co_pis_to_add):
-    service = get_service_account_client()
+    get_service_account_client()
     for username in team_members_to_add + co_pis_to_add:
         collab_users = get_user_model().objects.filter(username=username)
         if collab_users:

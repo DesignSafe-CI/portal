@@ -2,12 +2,11 @@ import csv
 import io
 import logging
 from django.conf import settings
-from agavepy.agave import Agave, AgaveException
+from agavepy.agave import AgaveException
 from celery import shared_task
 from requests import HTTPError
 from django.contrib.auth import get_user_model
 from pytas.models import User as TASUser
-from django.db.models import Q
 from designsafe.apps.accounts.models import (DesignSafeProfile,
                                              NotificationPreferences)
 
@@ -18,8 +17,8 @@ logger = logging.getLogger(__name__)
 @shared_task(default_retry_delay=1 * 30, max_retries=3)
 def create_report(username, list_name):
     """
-    This task runs a celery task that creates a report of all DesignSafe users. 
-    It pulls data from both TAS and the Django user model, writes them to a CSV, and 
+    This task runs a celery task that creates a report of all DesignSafe users.
+    It pulls data from both TAS and the Django user model, writes them to a CSV, and
     imports the CSV to the top-level of the user's My Data directory.
     """
 
@@ -80,7 +79,7 @@ def create_report(username, list_name):
                 else:
                     writer.writerow(['Unable to find user data for username "' +
                                      user.username + '"', ])
-            except:
+            except BaseException:
                 continue
 
         User = get_user_model().objects.get(username=username)

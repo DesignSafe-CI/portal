@@ -10,7 +10,6 @@ from requests import HTTPError
 from django.http import (JsonResponse, HttpResponseBadRequest,
                          HttpResponseRedirect)
 from django.shortcuts import render
-from django.core.urlresolvers import reverse
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.external_resources.box.filemanager.manager \
@@ -19,7 +18,6 @@ from designsafe.apps.api.external_resources.dropbox.filemanager.manager \
     import FileManager as DropboxFileManager
 from designsafe.apps.api.external_resources.googledrive.filemanager.manager \
     import FileManager as GoogleDriveFileManager
-from designsafe.apps.api.external_resources.box.models.files import BoxFile
 from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)
@@ -124,4 +122,3 @@ class FileMediaView(SecureMixin, BaseApiView):
 
 class FilePermissionsView(SecureMixin, BaseApiView):
     """File Permissions View"""
-    pass

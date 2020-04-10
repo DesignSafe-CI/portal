@@ -12,10 +12,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # -*- coding: utf-8 -*-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from .external_resource_secrets import *
-from .rt_settings import *
-from .elasticsearch_settings import *
-from .nees_settings import NEES_USER_DATABASE
 import os
 import json
 

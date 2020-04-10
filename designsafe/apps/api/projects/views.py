@@ -8,7 +8,6 @@ from django.conf import settings
 from django.http.response import HttpResponseForbidden
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from designsafe.apps.api.decorators import agave_jwt_login
@@ -22,7 +21,6 @@ from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
-from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.api.agave.filemanager.publications import PublicationsManager

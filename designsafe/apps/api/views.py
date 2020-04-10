@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse, HttpResponseForbidden
+from django.http.response import HttpResponse
 from django.views.generic import View
 from requests.exceptions import ConnectionError, HTTPError
 from .exceptions import ApiException
@@ -15,8 +15,8 @@ class BaseApiView(View):
         """
         Dispatch override to centralize error handling.
         If the error is instance of :class: `ApiException <designsafe.apps.api.exceptions.ApiException>`.
-        An extra dictionary object will be used when calling `logger.error()`. 
-        This allows to use any information in the `extra` dictionary object on the 
+        An extra dictionary object will be used when calling `logger.error()`.
+        This allows to use any information in the `extra` dictionary object on the
         logger output.
         """
         try:

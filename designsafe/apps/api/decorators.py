@@ -10,7 +10,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 import jwt as pyjwt
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.serialization import load_der_public_key
 
 #pylint: disable=invalid-name

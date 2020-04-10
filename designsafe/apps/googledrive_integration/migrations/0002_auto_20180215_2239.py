@@ -6,8 +6,6 @@ from django.db import migrations
 from django.conf import settings
 from google.oauth2.credentials import Credentials
 from oauth2client.contrib.django_util.models import CredentialsField
-import os
-import json
 
 
 def create_credential_model(apps, schema_editor):

@@ -11,8 +11,7 @@ from requests.exceptions import HTTPError
 from designsafe.apps.data.models.agave.base import BaseAgaveResource
 from designsafe.apps.data.models.agave.metadata import BaseMetadataResource, BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.systems import roles as system_roles_list
-from agavepy.agave import AgaveException
-from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
+from agavepy.async import AgaveAsyncResponse
 from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)

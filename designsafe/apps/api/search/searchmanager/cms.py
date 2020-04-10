@@ -4,7 +4,6 @@
 """
 
 
-import logging
 from future.utils import python_2_unicode_compatible
 from elasticsearch_dsl import Q, Index
 from django.conf import settings

@@ -2,12 +2,9 @@
 import six
 import json
 import logging
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
+from django.core.management.base import BaseCommand
 from requests.exceptions import HTTPError
-from designsafe.apps.projects.models.agave.base import Project
 from designsafe.apps.api.agave import get_service_account_client
-from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.projects.models.utils import lookup_model
 
 logger = logging.getLogger(__name__)

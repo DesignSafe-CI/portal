@@ -225,7 +225,7 @@ class Project(MetadataModel):
                         # write files without abs file path
                         zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path, ''), f))
                 zf.close()
-            except:
+            except BaseException:
                 logger.debug("Creating archive failed for " %
                              project_directory)
 
@@ -252,7 +252,7 @@ class Project(MetadataModel):
                                 os.remove(archive_path)
                                 create_archive(project_directory)
                                 break
-            except:
+            except BaseException:
                 logger.debug("Updating archive failed for project directory" %
                              project_directory)
 
@@ -317,7 +317,7 @@ class Project(MetadataModel):
                 'identifier': self.project_id,
             }
         ]
-        if len(self.award_number) and type(self.award_number[0]) is not dict:
+        if len(self.award_number) and not isinstance(self.award_number[0], dict):
             self.award_number = [{'order': 0, 'name': ''.join(self.award_number)}]
         awards = sorted(
             self.award_number,

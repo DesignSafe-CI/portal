@@ -1,10 +1,6 @@
-from mock import Mock, patch, MagicMock, PropertyMock
+from mock import patch
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.conf import settings
 from django.core.urlresolvers import reverse
-from designsafe.apps.api.search.views import SearchView
-import json
 
 class SearchViewTests(TestCase):
 

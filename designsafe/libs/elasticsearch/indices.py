@@ -3,17 +3,12 @@
    :synopsis: Wrapper classes for ES different doc types.
 """
 
-from future.utils import python_2_unicode_compatible
 import logging
-import json
 import six
 from importlib import import_module
 from django.conf import settings
-from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Index)
-from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError, ConnectionTimeout, Elasticsearch
-from designsafe.libs.elasticsearch.analyzers import path_analyzer
+from elasticsearch import Elasticsearch
 from datetime import datetime
 
 logger = logging.getLogger(__name__)

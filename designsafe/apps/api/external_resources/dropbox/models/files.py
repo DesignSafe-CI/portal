@@ -77,7 +77,7 @@ class DropboxFile(object):
     def type(self):
         if type(self._item) in [FolderMetadata, ListFolderResult]:
             return 'folder'
-        elif type(self._item) == FileMetadata:
+        elif isinstance(self._item, FileMetadata):
             return 'file'
 
     @property

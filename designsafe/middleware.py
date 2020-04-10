@@ -3,12 +3,10 @@ import logging
 import re
 import os
 import cProfile
-import pstats
 import time
 import json
 from django.contrib import messages
 from django.conf import settings
-from django.http import HttpResponse
 from django.core.exceptions import MiddlewareNotUsed
 from termsandconditions.middleware import (TermsAndConditionsRedirectMiddleware,
                                            is_path_protected)
@@ -20,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class DesignSafeSupportedBrowserMiddleware:
     """
-    Middleware to check if the user is running Chrome or Firefox and 
+    Middleware to check if the user is running Chrome or Firefox and
     flash a warning otherwise.
     """
 
@@ -39,7 +37,7 @@ class DesignSafeSupportedBrowserMiddleware:
 class DesignsafeProfileUpdateMiddleware:
 
     """
-    Middleware to check if a user's profile has the update_required flag set to 
+    Middleware to check if a user's profile has the update_required flag set to
     True, and force them to update their profile if so.
     """
 
@@ -105,7 +103,7 @@ class RequestProfilingMiddleware(object):
         args = (request,) + callback_args
         try:
             return callback(*args, **callback_args)
-        except:
+        except BaseException:
             return
 
     def process_response(self, request, response):
@@ -113,7 +111,7 @@ class RequestProfilingMiddleware(object):
         if not self.prfs.get(reqid):
             return response
         self.prfs[reqid].disable()
-        prf = self.prfs[reqid]
+        self.prfs[reqid]
         req_dirname = re.sub(r"\/", "-", request.path.strip('/'))
         req_dirpath = os.path.join(self.stats_dirpath, req_dirname)
         if not os.path.isdir(req_dirpath):

@@ -2,14 +2,7 @@
 """
 
 import logging
-import json
-import os
-import re
-import datetime
-from django.conf import settings
-from .base import BaseFileManager
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
-from designsafe.apps.api.exceptions import ApiException
 
 logger = logging.getLogger(__name__)
 

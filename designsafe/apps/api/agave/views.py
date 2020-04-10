@@ -4,7 +4,6 @@
 import logging
 import json
 import os
-import re
 import chardet
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponseRedirect, HttpResponseBadRequest,
@@ -13,10 +12,8 @@ from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
-from designsafe.apps.api.agave import get_service_account_client, impersonate_service_account
+from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.systems import BaseSystemResource

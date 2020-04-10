@@ -5,13 +5,9 @@
 
 from future.utils import python_2_unicode_compatible
 import logging
-import os
-import zipfile
-from django.conf import settings
 from designsafe.apps.data.models.elasticsearch import IndexedPublicationLegacy
 from designsafe.libs.elasticsearch.docs.base import BaseESResource
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
-from django.contrib.auth import get_user_model
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)

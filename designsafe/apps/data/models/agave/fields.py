@@ -1,5 +1,4 @@
 """ Base field classes  """
-import six
 import datetime
 import dateutil.parser
 import collections

@@ -1,4 +1,3 @@
-from designsafe.common_settings import *
 import warnings
 
 # Turn on warnings for debugging!

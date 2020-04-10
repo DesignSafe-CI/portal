@@ -11,7 +11,7 @@ from django.test import RequestFactory
 from django.utils.html import strip_tags
 from django.utils.encoding import force_unicode
 
-from cms.models import Title, CMSPlugin, Page
+from cms.models import CMSPlugin, Title
 # from cms.toolbar.toolbar import CMSToolbar
 from django.conf import settings
 

@@ -1,6 +1,5 @@
 
 from future.utils import python_2_unicode_compatible
-import logging
 
 
 @python_2_unicode_compatible

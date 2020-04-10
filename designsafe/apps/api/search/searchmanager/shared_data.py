@@ -7,7 +7,7 @@
 import logging
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedFile
-from elasticsearch_dsl import Q, search, Index
+from elasticsearch_dsl import Index, Q
 from django.conf import settings
 
 logger = logging.getLogger(__name__)

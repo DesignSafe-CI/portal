@@ -1,6 +1,5 @@
 import logging
 from celery import shared_task
-from django.conf import settings
 from designsafe.apps.api.agave import get_service_account_client
 
 logger = logging.getLogger(__name__)
@@ -11,7 +10,7 @@ def agave_indexer(self, systemId, filePath='/', username=None, recurse=True, upd
     from designsafe.libs.elasticsearch.utils import index_level
     from designsafe.libs.elasticsearch.utils import walk_levels
 
-    if username != None:
+    if username is not None:
         pems_username = username
     else:
         pems_username = 'ds_admin'

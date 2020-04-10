@@ -59,7 +59,7 @@ class SearchView(SecureMixin, View):
         if q:
             try:
                 user = model.objects.get(username=q)
-            except ObjectDoesNotExist as err:
+            except ObjectDoesNotExist:
                 return HttpResponseNotFound()
             res_dict = {
                 'first_name': user.first_name,
@@ -74,7 +74,7 @@ class SearchView(SecureMixin, View):
                 res_dict['profile'] = {
                     'institution': user_tas['institution']
                 }
-            except Exception as err:
+            except Exception:
                 logger.info('No Profile.')
 
             return JsonResponse(res_dict)
@@ -115,7 +115,7 @@ class PublicView(View):
                     'username': user.username,
                 }
                 res_list.append(data)
-        except ObjectDoesNotExist as err:
+        except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
         res_dict = {"userData": res_list}

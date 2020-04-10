@@ -1,11 +1,5 @@
-import os
-import json
-import datetime
 from mock import patch, MagicMock
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.conf import settings
-from datetime import timedelta
 from designsafe.apps.api.agave.filemanager.lookups import FileLookupManager
 
 from designsafe.apps.api.agave.filemanager.private_data import PrivateDataFileManager

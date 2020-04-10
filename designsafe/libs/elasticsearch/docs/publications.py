@@ -109,7 +109,7 @@ class BaseESPublication(BaseESResource):
                 pi_user = get_user_model().objects.get(username=pi)
                 dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
                     last_name=pi_user.last_name, first_name=pi_user.first_name)
-            except:
+            except BaseException:
                 dict_obj['meta']['piLabel'] = '({pi})'.format(pi=pi)
         return dict_obj
 
@@ -177,7 +177,7 @@ class BaseESPublication(BaseESResource):
                             os.chmod(os.path.join(root, d), octal)
                         for f in files:
                             os.chmod(os.path.join(root, f), octal)
-            except Exception as e:
+            except Exception:
                 logger.exception("Failed to set permissions for {}".format(dir))
                 os.chmod(dir, 0o555)
 
@@ -195,7 +195,7 @@ class BaseESPublication(BaseESResource):
                             continue
                         zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(pub_dir, ''), f))
                 zf.close()
-            except Exception as e:
+            except Exception:
                 logger.exception("Archive creation failed for {}".format(arc_source))
             finally:
                 set_perms(pub_dir, 0o555, arc_source)
@@ -205,5 +205,5 @@ class BaseESPublication(BaseESResource):
             set_perms(pub_dir, 0o755, os.path.join(pub_dir, self.projectId))
             set_perms(arc_dir, 0o755)
             create_archive()
-        except Exception as e:
+        except Exception:
             logger.exception('Failed to archive publication!')

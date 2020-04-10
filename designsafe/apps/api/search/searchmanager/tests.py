@@ -1,11 +1,5 @@
-import os
-import json
-import datetime
 from mock import patch, MagicMock
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.conf import settings
-from datetime import timedelta
 from elasticsearch_dsl import Search 
 
 from designsafe.apps.api.search.searchmanager.lookups import SearchLookupManager
@@ -19,7 +13,6 @@ from designsafe.apps.api.search.searchmanager.publications import PublicationsSe
 from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 
-from designsafe.apps.api.exceptions import ApiException
 
 class TestLookupManager(TestCase):
 
@@ -41,7 +34,7 @@ class TestPrivateDataSearchMgr(TestCase):
         request.query_string = 'test_query'
         request.username = 'test_user'
 
-        sm = PrivateDataSearchManager(request)
+        PrivateDataSearchManager(request)
         mock_base.assert_called_with(IndexedFile, IndexedFile.search())
 
     @patch('designsafe.apps.api.search.searchmanager.private_data.BaseSearchManager.__init__')
@@ -77,7 +70,7 @@ class TestCommunitySearchMgr(TestCase):
         request.query_string = 'test_query'
         request.username = 'test_user'
 
-        sm = CommunityDataSearchManager(request)
+        CommunityDataSearchManager(request)
         mock_base.assert_called_with(IndexedFile, IndexedFile.search())
 
     @patch('designsafe.apps.api.search.searchmanager.community.BaseSearchManager.__init__')
@@ -113,7 +106,7 @@ class TestPublishedDataSearchMgr(TestCase):
         request.query_string = 'test_query'
         request.username = 'test_user'
 
-        sm = PublishedDataSearchManager(request)
+        PublishedDataSearchManager(request)
         mock_base.assert_called_with(IndexedFile, IndexedFile.search())
 
     @patch('designsafe.apps.api.search.searchmanager.published_files.BaseSearchManager.__init__')
@@ -149,7 +142,7 @@ class TestPublicationSearchMgr(TestCase):
         request.query_string = 'test_query'
         request.username = 'test_user'
 
-        sm = PublicationsSearchManager(request)
+        PublicationsSearchManager(request)
         mock_base.assert_called_with(IndexedPublication, Search())
 
     @patch('designsafe.apps.api.search.searchmanager.publications.BaseESPublicationLegacy')

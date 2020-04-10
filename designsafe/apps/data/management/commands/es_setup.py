@@ -1,6 +1,5 @@
 import logging
-from django.core.management import BaseCommand, CommandError
-from django.utils.six.moves import input
+from django.core.management import BaseCommand
 from django.conf import settings
 import elasticsearch
 import getpass
@@ -9,16 +8,16 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     """
-    This command reindexes all documents in the default files index in order to 
+    This command reindexes all documents in the default files index in order to
     apply new mappings/analyzers. It does NOT crawl Agave for file metadata, it
-    only uses data that already exists in the file index. Usage is as simple as 
-    running `./manage.py reindex-files`. 
+    only uses data that already exists in the file index. Usage is as simple as
+    running `./manage.py reindex-files`.
 
     This works by resetting the index aliased as settings.ES_REINDEX_INDEX_ALIAS
     (applying any new mappings/analyzers defined in the portal.libs.elasticsearch.docs.base.IndexedFile
-     class) and reindexing from the default files index to this new index. The 
-     aliases are then swapped so that any Elasticsearch queries on the backend now 
-     target the reindexed documents. 
+     class) and reindexing from the default files index to this new index. The
+     aliases are then swapped so that any Elasticsearch queries on the backend now
+     target the reindexed documents.
     """
 
     help = "Reindex all files into a fresh index, then swap aliases with the current default index."
@@ -29,7 +28,7 @@ class Command(BaseCommand):
         parser.add_argument('--local', help='Remote role to index from, either staging or default', default="dev")
 
     def handle(self, *args, **options):
-        HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
+        settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
         password = getpass.getpass('Enter password for remote ES cluster ')
         username = options.get('username')
         remote = options.get('remote')

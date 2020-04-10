@@ -1,6 +1,5 @@
 """Rapid project models"""
 import logging
-import json
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
 from designsafe.apps.projects.models.agave.base import RelatedEntity, Project

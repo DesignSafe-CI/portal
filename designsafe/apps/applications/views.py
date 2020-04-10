@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from requests import HTTPError
 import json
 import logging

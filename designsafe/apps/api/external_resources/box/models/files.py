@@ -94,7 +94,7 @@ class BoxFile(object):
                      for e in self._item.path_collection['entries']]
             trail.append(self.to_dict(trail=False))
             return trail
-        except AttributeError as e:
+        except AttributeError:
             return []
 
     @property

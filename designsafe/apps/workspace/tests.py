@@ -1,5 +1,4 @@
 import json
-import os
 from mock import patch
 from django.test import TestCase
 from .models.app_descriptions import AppDescription

@@ -1,11 +1,8 @@
-from django.test import TestCase, RequestFactory
-from django.conf import settings
+from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 from designsafe.apps.projects.models.agave.experimental import ExperimentalProject, ModelConfig, FileModel
 
-from agavepy.agave import Agave
-import mock
 import json
 
 import logging
@@ -43,7 +40,7 @@ class InitExperimentalModels(ProjectDataModelsTestCase):
         """
         #logger.debug('project_meta: %s',
         #             json.dumps(self.project_meta, indent=4))
-        exp = ExperimentalProject(**self.project_meta)
+        ExperimentalProject(**self.project_meta)
         #logger.debug('experiment dict: %s',
         #             json.dumps(exp.to_body_dict(), indent=4))
 
@@ -53,7 +50,7 @@ class InitModelConfigurationModel(ProjectDataModelsTestCase):
         """
         #logger.debug('model_config_meta: %s',
         #             json.dumps(self.model_config_meta, indent=4))
-        model_config = ModelConfig(**self.model_config_meta)
+        ModelConfig(**self.model_config_meta)
         #logger.debug('model_config dict: %s',
         #             json.dumps(model_config.to_body_dict(), indent=4))
 
@@ -63,7 +60,7 @@ class InitFileModel(ProjectDataModelsTestCase):
         """
         #logger.debug('file meta: %s',
         #             json.dumps(self.file_meta, indent=4))
-        file_meta = FileModel(**self.file_meta)
+        FileModel(**self.file_meta)
         #logger.debug('dict: %s', file_meta._meta._reverse_fields)
         #file_meta.modelconfiguration_set()
         #logger.debug('file meta dict: %s',

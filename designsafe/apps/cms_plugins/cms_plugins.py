@@ -1,7 +1,7 @@
 try:
     import urllib.parse
 except ImportError:
-    from urllib import parse as urlparse
+    pass
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool

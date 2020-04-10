@@ -1,15 +1,12 @@
-import requests
 import json
 import os
 from django.test import TestCase
 from django.test import Client
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
-from mock import Mock, patch
-from designsafe.apps.auth.models import AgaveOAuthToken
+from mock import patch
 from urllib.parse import urlencode
 from unittest import skip
-from django.dispatch import receiver
 from django.core.urlresolvers import reverse
 from designsafe.apps.api.notifications.models import Notification
 from .receivers import send_notification_ws

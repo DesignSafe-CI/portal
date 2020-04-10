@@ -5,7 +5,6 @@
 
 from future.utils import python_2_unicode_compatible
 import logging
-import os
 from django.conf import settings
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.libs.elasticsearch.docs.base import BaseESResource
@@ -64,7 +63,7 @@ class BaseESFile(BaseESResource):
 
     def children(self, limit=100):
         """
-        Yield all children (i.e. documents whose basePath matches self.path) by 
+        Yield all children (i.e. documents whose basePath matches self.path) by
         paginating with the search_after api.
 
         """

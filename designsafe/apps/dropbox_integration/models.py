@@ -2,7 +2,6 @@ from dropbox import DropboxOAuth2Flow, Dropbox
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-import json
 
 
 class DropboxUserToken(models.Model):

@@ -8,7 +8,6 @@ from django.contrib import messages
 from django.conf import settings
 import logging
 import mimetypes
-import pytz
 
 logger = logging.getLogger(__name__)
 

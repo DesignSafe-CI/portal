@@ -1,8 +1,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user_model, signals
+from django.contrib.auth import get_user_model
 from unittest import skip
-import mock
 import requests_mock
 
 

@@ -1,5 +1,5 @@
-from django.test import TestCase, RequestFactory
-from mock import patch, Mock
+from django.test import TestCase
+from mock import patch
 from designsafe.apps.api.projects.managers import publication
 
 import logging

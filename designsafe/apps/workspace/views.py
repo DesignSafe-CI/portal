@@ -155,7 +155,7 @@ def call_api(request, service):
                     # url encode inputs
                     if job_post['inputs']:
                         for key, value in six.iteritems(job_post['inputs']):
-                            if type(value) == list:
+                            if isinstance(value, list):
                                 inputs = []
                                 for val in value:
                                     parsed = urlparse(val)

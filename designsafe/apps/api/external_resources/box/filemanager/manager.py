@@ -12,7 +12,6 @@ from boxsdk.exception import BoxException, BoxOAuthException
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import (JsonResponse, HttpResponseBadRequest)
-from requests import HTTPError
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -194,11 +193,9 @@ class FileManager(object):
             # box_fm = BoxFileManager(user)
             box_file_type, box_file_id = self.parse_file_id(file_id=src_file_id)
 
-            levels = 0
             downloaded_file_path = None
             if box_file_type == 'file':
                 downloaded_file_path = self.download_file(box_file_id, dest_real_path)
-                levels = 1
             elif box_file_type == 'folder':
                 downloaded_file_path = self.download_folder(box_file_id, dest_real_path)
 
@@ -221,7 +218,7 @@ class FileManager(object):
 
             agave_indexer.apply_async(kwargs={'username': user.username, 'systemId': agave_system_id, 'filePath': os.path.dirname(agave_file_path), 'recurse': False}, queue='indexing')
             agave_indexer.apply_async(kwargs={'systemId': agave_system_id, 'filePath': agave_file_path, 'recurse': True}, routing_key='indexing')
-        except:
+        except BaseException:
             logger.exception('Unexpected task failure: box_download', extra={
                 'username': username,
                 'box_file_id': src_file_id,
@@ -390,7 +387,7 @@ class FileManager(object):
                              user=username,
                              extra={})
             n.save()
-        except Exception as err:
+        except Exception:
             logger.exception('Unexpected task failure: box_upload', extra={
                 'username': username,
                 'src_file_id': src_file_id,

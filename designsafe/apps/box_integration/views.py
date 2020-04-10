@@ -102,7 +102,7 @@ def disconnect(request):
         except BoxUserToken.DoesNotExist:
             logger.warn('Disconnect Box; BoxUserToken does not exist.',
                         extra={'user': request.user})
-        except:
+        except BaseException:
             logger.error('Disconnect Box; BoxUserToken delete error.',
                          extra={'user': request.user})
         messages.success(

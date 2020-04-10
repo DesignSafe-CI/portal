@@ -16,9 +16,9 @@ def get_integrations():
                 app_integrations += mod.provide_integrations()
             except AttributeError:
                 continue
-            except:
+            except BaseException:
                 logger.warning('Call to module.provide_integrations fail for module: %s' % mod.__name__)
-        except:
+        except BaseException:
             continue
 
     return app_integrations

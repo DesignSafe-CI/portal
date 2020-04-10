@@ -8,8 +8,8 @@ For more information on django sitemap:
 
 **Adding dynamic urls**
 
-Urls in ``designsafe.urls`` with a ``namespace`` variable need to be imported. 
-Once the ``urls.py`` is added from apps assign it to the ``dynamic_apps`` 
+Urls in ``designsafe.urls`` with a ``namespace`` variable need to be imported.
+Once the ``urls.py`` is added from apps assign it to the ``dynamic_apps``
 dictionary like so:
 
  * ``'namespace_name': imported_urls,``
@@ -21,7 +21,7 @@ New sitemaps must be added to ``designsafe.urls`` sitemap dictionary
 
 **Public Projects**
 
-Adding Public Projects requires the use of ``PublicElasticFileManager`` to 
+Adding Public Projects requires the use of ``PublicElasticFileManager`` to
 access items within ``nees.public`` on Agave.
 
 **Priority and Changefreq preferences**
@@ -113,7 +113,7 @@ class StaticViewSitemap(sitemaps.Sitemap):
                 try:
                     reverse(str(pattern.name))
                     names_list.append(str(pattern.name))
-                except:
+                except BaseException:
                     pass
         return names_list
 
@@ -158,7 +158,7 @@ class DynamicViewSitemap(sitemaps.Sitemap):
                     try:
                         reverse(str(app) + ":" + str(item.name))
                         names_list.append(str(app) + ":" + str(item.name))
-                    except:
+                    except BaseException:
                         pass
 
         return names_list
@@ -178,7 +178,7 @@ class ProjectSitemap(sitemaps.Sitemap):
         return super(ProjectSitemap, self).get_urls(site=site, **kwargs)
 
     def items(self):
-        client = get_service_account_client()
+        get_service_account_client()
         projPath = []
 
         # pefm - PublicElasticFileManager to grab public projects

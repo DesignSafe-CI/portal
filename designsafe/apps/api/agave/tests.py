@@ -1,16 +1,8 @@
-import os
-import json
-import datetime
-from mock import patch, MagicMock
+from mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.conf import settings
-from datetime import timedelta
-from designsafe.apps.api.agave.filemanager.lookups import FileLookupManager
-from django.contrib.auth.models import User
 
 from designsafe.apps.api.agave import to_camel_case
-from designsafe.apps.api.exceptions import ApiException
 
 class MiscTests(TestCase):
 
@@ -36,7 +28,7 @@ class TestListingViews_auth(TestCase):
         self.client.force_login(get_user_model().objects.get(username="ds_user"))
         mock_lookup()().listing.return_value = {'resp': 'data'}
         mock_lookup()().requires_auth = True
-        resp = self.client.get('/api/agave/files/listing/agave/designsafe.storage.default/ds_user')
+        self.client.get('/api/agave/files/listing/agave/designsafe.storage.default/ds_user')
         mock_lookup.assert_called_with('agave')
         mock_lookup()().listing.assert_called_with(
             system='designsafe.storage.default', 
@@ -46,7 +38,7 @@ class TestListingViews_auth(TestCase):
         self.client.logout()
 
         mock_lookup()().requires_auth = False
-        resp = self.client.get('/api/public/files/listing/community/designsafe.storage.community//')
+        self.client.get('/api/public/files/listing/community/designsafe.storage.community//')
         mock_lookup.assert_called_with('community')
         mock_lookup()().listing.assert_called_with(
             system='designsafe.storage.community', 

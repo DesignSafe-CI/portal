@@ -6,7 +6,6 @@ from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from designsafe.apps.accounts.models import DesignSafeProfile, NotificationPreferences
-from designsafe.apps.api.agave import get_service_account_client
 from pytas.http import TASClient
 import logging
 import re

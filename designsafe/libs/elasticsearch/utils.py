@@ -90,7 +90,7 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False, path
 @python_2_unicode_compatible
 def index_level(client, path, folders, files, systemId, username, reindex=False, update_pems=True):
     """
-    Index a set of folders and files corresponding to the output from one 
+    Index a set of folders and files corresponding to the output from one
     iteration of walk_levels
     """
     from designsafe.libs.elasticsearch.docs.files import BaseESFile
@@ -102,7 +102,7 @@ def index_level(client, path, folders, files, systemId, username, reindex=False,
         obj_dict['basePath'] = os.path.dirname(obj.path)
         doc = BaseESFile(username, reindex=reindex, **obj_dict)
 
-        saved = doc.save()
+        doc.save()
 
         if update_pems:
             permissions = client.files.listPermissions(systemId=systemId, filePath=obj.path)
@@ -172,9 +172,8 @@ def repair_paths(limit=1000):
 def full_dedup(limit=1000):
     from designsafe.apps.data.models.elasticsearch import IndexedFile
     from elasticsearch import Elasticsearch
-    from elasticsearch.helpers import bulk
 
-    files_alias = settings.ES_INDICES['files']['alias']
+    settings.ES_INDICES['files']['alias']
     HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
     es_client = Elasticsearch(hosts=HOSTS)
     file_search = IndexedFile.search().sort('_id').extra(size=limit)
