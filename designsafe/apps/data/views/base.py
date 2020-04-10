@@ -18,7 +18,6 @@ from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicat
 
 from designsafe.apps.projects.managers.base import ProjectsManager
 from designsafe.apps.api.agave import service_account
-import json
 
 logger = logging.getLogger(__name__)
 
