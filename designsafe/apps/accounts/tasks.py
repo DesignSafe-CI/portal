@@ -39,8 +39,7 @@ def create_report(username, list_name):
 
         for user in user_list:
             if user.username == 'EF-UF':
-                writer.writerow(['Unable to find user data for username "' +
-                                 user.username + '"', ])
+                writer.writerow(['Unable to find user data for username "' + user.username + '"'])
                 continue
             try:
                 user_profile = TASUser(username=user)
@@ -75,8 +74,7 @@ def create_report(username, list_name):
                                      designsafe_user.date_joined.date()
                                      ])
                 else:
-                    writer.writerow(['Unable to find user data for username "' +
-                                     user.username + '"', ])
+                    writer.writerow(['Unable to find user data for username "' + user.username + '"'])
             except BaseException:
                 continue
 

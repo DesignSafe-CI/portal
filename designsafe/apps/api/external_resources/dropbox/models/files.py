@@ -31,9 +31,9 @@ class DropboxFile(object):
         '.ogg', '.mts', '.qt', '.wmv',
     ]
 
-    SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
-                                    SUPPORTED_TEXT_PREVIEWS +
-                                    SUPPORTED_OBJECT_PREVIEW_EXTS)
+    SUPPORTED_PREVIEW_EXTENSIONS = (*SUPPORTED_IMAGE_PREVIEW_EXTS,
+                                    *SUPPORTED_TEXT_PREVIEWS,
+                                    *SUPPORTED_OBJECT_PREVIEW_EXTS)
 
     def __init__(self, dropbox_item, path=None, parent=None):
         self._item = dropbox_item

@@ -29,9 +29,9 @@ class GoogleDriveFile(object):
         '.ogg', '.mts', '.qt', '.wmv',
     ]
 
-    SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
-                                    SUPPORTED_TEXT_PREVIEWS +
-                                    SUPPORTED_OBJECT_PREVIEW_EXTS)
+    SUPPORTED_PREVIEW_EXTENSIONS = (*SUPPORTED_IMAGE_PREVIEW_EXTS,
+                                    *SUPPORTED_TEXT_PREVIEWS,
+                                    *SUPPORTED_OBJECT_PREVIEW_EXTS)
 
     def __init__(self, googledrive_item, parent=None, drive=None):
         self._item = googledrive_item

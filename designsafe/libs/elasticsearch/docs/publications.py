@@ -118,39 +118,39 @@ class BaseESPublication(BaseESResource):
         related_objs = []
         if dict_obj['project']['value']['projectType'] == 'experimental':
             related_objs = (
-                dict_obj.get('modelConfigs', []) +
-                dict_obj.get('analysisList', []) +
-                dict_obj.get('sensorLists', []) +
-                dict_obj.get('eventsList', []) +
-                dict_obj.get('reportsList', [])
+                *dict_obj.get('modelConfigs', []),
+                *dict_obj.get('analysisList', []),
+                *dict_obj.get('sensorLists', []),
+                *dict_obj.get('eventsList', []),
+                *dict_obj.get('reportsList', []),
             )
         elif dict_obj['project']['value']['projectType'] == 'simulation':
             related_objs = (
-                dict_obj.get('models', []) +
-                dict_obj.get('inputs', []) +
-                dict_obj.get('outputs', []) +
-                dict_obj.get('analysiss', []) +
-                dict_obj.get('reports', [])
+                *dict_obj.get('models', []),
+                *dict_obj.get('inputs', []),
+                *dict_obj.get('outputs', []),
+                *dict_obj.get('analysiss', []),
+                *dict_obj.get('reports', []),
             )
         elif dict_obj['project']['value']['projectType'] == 'hybrid_simulation':
             related_objs = (
-                dict_obj.get('global_models', []) +
-                dict_obj.get('coordinators', []) +
-                dict_obj.get('sim_substructures', []) +
-                dict_obj.get('exp_substructures', []) +
-                dict_obj.get('coordinator_outputs', []) +
-                dict_obj.get('sim_outputs', []) +
-                dict_obj.get('exp_outputs', []) +
-                dict_obj.get('reports', []) +
-                dict_obj.get('analysiss', [])
+                *dict_obj.get('global_models', []),
+                *dict_obj.get('coordinators', []),
+                *dict_obj.get('sim_substructures', []),
+                *dict_obj.get('exp_substructures', []),
+                *dict_obj.get('coordinator_outputs', []),
+                *dict_obj.get('sim_outputs', []),
+                *dict_obj.get('exp_outputs', []),
+                *dict_obj.get('reports', []),
+                *dict_obj.get('analysiss', []),
             )
         elif dict_obj['project']['value']['projectType'] == 'field_recon':
             related_objs = (
-                dict_obj.get('collections', []) +
-                dict_obj.get('socialscience', []) +
-                dict_obj.get('planning', []) +
-                dict_obj.get('reports', []) +
-                dict_obj.get('geoscience', [])
+                *dict_obj.get('collections', []),
+                *dict_obj.get('socialscience', []),
+                *dict_obj.get('planning', []),
+                *dict_obj.get('reports', []),
+                *dict_obj.get('geoscience', []),
             )
 
         file_paths = []

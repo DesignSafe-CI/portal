@@ -167,10 +167,10 @@ class BaseFileResource(BaseAgaveResource):
 
     SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS_EXCEL
 
-    SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
-                                    SUPPORTED_TEXT_PREVIEW_EXTS +
-                                    SUPPORTED_OBJECT_PREVIEW_EXTS +
-                                    SUPPORTED_MS_OFFICE)
+    SUPPORTED_PREVIEW_EXTENSIONS = (*SUPPORTED_IMAGE_PREVIEW_EXTS,
+                                    *SUPPORTED_TEXT_PREVIEW_EXTS,
+                                    *SUPPORTED_OBJECT_PREVIEW_EXTS,
+                                    *SUPPORTED_MS_OFFICE)
 
     def __init__(self, agave_client, system, path, **kwargs):
         super(BaseFileResource, self).__init__(agave_client, system=system, path=path,

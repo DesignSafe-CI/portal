@@ -190,8 +190,11 @@ def ticketclose(request, ticketId):
     if request.method == 'POST':
         form = forms.CloseForm(request.POST)
         if form.is_valid():
-            if (rt.commentOnTicket(ticketId, text=form.cleaned_data['reply']) and
-                    rt.closeTicket(ticketId)):
+            comment_on_ticket = rt.commentOnTicket(
+                ticketId,
+                text=form.cleaned_data['reply'],
+            )
+            if (comment_on_ticket and rt.closeTicket(ticketId)):
                 return HttpResponseRedirect(reverse('djangoRT:ticketdetail',
                                                     args=[ticketId]))
     else:

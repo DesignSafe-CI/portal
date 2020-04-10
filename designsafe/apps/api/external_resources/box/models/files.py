@@ -31,9 +31,9 @@ class BoxFile(object):
         '.ogg', '.mts', '.qt', '.wmv',
     ]
 
-    SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
-                                    SUPPORTED_TEXT_PREVIEWS +
-                                    SUPPORTED_OBJECT_PREVIEW_EXTS)
+    SUPPORTED_PREVIEW_EXTENSIONS = (*SUPPORTED_IMAGE_PREVIEW_EXTS,
+                                    *SUPPORTED_TEXT_PREVIEWS,
+                                    *SUPPORTED_OBJECT_PREVIEW_EXTS)
 
     def __init__(self, box_item, parent=None):
         self._item = box_item

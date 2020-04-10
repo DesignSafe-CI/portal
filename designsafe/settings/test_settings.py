@@ -597,8 +597,8 @@ CELERY_ALWAYS_EAGER = True
 BROKER_BACKEND = 'memory'
 
 # No token refreshes during testing
-MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c !=
-                      'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
+agave_token_refresh_middleware = 'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware'
+MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c != agave_token_refresh_middleware]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '.media')

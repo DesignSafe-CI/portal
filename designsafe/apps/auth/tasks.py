@@ -74,8 +74,18 @@ def check_or_create_agave_home_dir(username):
 @shared_task(default_retry_delay=1 * 30, max_retries=3)
 def new_user_alert(username):
     user = get_user_model().objects.get(username=username)
-    send_mail('New User in DesignSafe, need Slack', 'Username: ' + user.username + '\n' +
-                                                    'Email: ' + user.email + '\n' +
-                                                    'Name: ' + user.first_name + ' ' + user.last_name + '\n' +
-                                                    'Id: ' + str(user.id) + '\n',
-              settings.DEFAULT_FROM_EMAIL, [settings.NEW_ACCOUNT_ALERT_EMAIL],)
+
+    msg = 'Username: {}\nEmail: {}\nName: {} {}\nId: {}\n'.format(
+        user.username,
+        user.email,
+        user.first_name,
+        user.last_name,
+        str(user.id),
+    )
+
+    send_mail(
+        'New User in DesignSafe, need Slack',
+        msg,
+        settings.DEFAULT_FROM_EMAIL,
+        [settings.NEW_ACCOUNT_ALERT_EMAIL],
+    )

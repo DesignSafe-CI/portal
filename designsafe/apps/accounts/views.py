@@ -536,8 +536,7 @@ def mailing_list_subscription(request, list_name):
 
     try:
         su = get_user_model().objects.filter(
-            Q(notification_preferences__isnull=True) |
-            Q(**{"notification_preferences__{}".format(list_name): True}))
+            Q(notification_preferences__isnull=True) | Q(**{"notification_preferences__{}".format(list_name): True}))
         subscribers += list('"{0}","{1}"'.format(u.get_full_name(),
                                                  u.email) for u in su)
 
