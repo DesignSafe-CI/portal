@@ -3,15 +3,19 @@ import logging
 import re
 import os
 import six
+
 import urllib.request
 import urllib.parse
 import urllib.error
 import urllib.parse
+
 from requests.exceptions import HTTPError
+
+from agavepy.async import AgaveAsyncResponse  # noqa
+
 from designsafe.apps.data.models.agave.base import BaseAgaveResource
 from designsafe.apps.data.models.agave.metadata import BaseMetadataResource, BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.systems import roles as system_roles_list
-from agavepy.async import AgaveAsyncResponse
 from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)
