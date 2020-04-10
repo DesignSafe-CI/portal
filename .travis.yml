@@ -24,11 +24,7 @@ matrix:
     - '3.6'
     stage: lint
     install:
-    - pip install -r requirements.txt
-    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
-      done;
-    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i demo > /dev/null"
+    - pip3 install -r requirements.txt
     script:
     - flake8 designsafe
   - name: pydocstyle
