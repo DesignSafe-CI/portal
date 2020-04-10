@@ -87,3 +87,6 @@ venv/
 
 # vscode
 .vscode/
+
+# pyenv local versions
+.python-version
