@@ -2,7 +2,9 @@
 import copy
 import logging
 import json
+
 from celery import group, chain
+
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http.response import HttpResponseForbidden
@@ -10,6 +12,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+
 from designsafe.apps.api.decorators import agave_jwt_login
 from designsafe.apps.api import tasks
 from designsafe.apps.api.views import BaseApiView
@@ -26,6 +29,8 @@ from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.api.agave.filemanager.publications import PublicationsManager
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
+
+
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
 
@@ -60,40 +65,41 @@ class PublicationView(BaseApiView):
         else:
             data = request.POST
 
-        #logger.debug('publication: %s', json.dumps(data, indent=2))
         status = data.get('status', 'saved')
         pub = PublicationsManager(None).save_publication(
             data['publication'],
             status
         )
         if data.get('status', 'save').startswith('publish'):
-            (
-                tasks.freeze_publication_meta.s(
-                    pub.projectId,
-                    data.get('mainEntityUuids')
-                ).set(queue='api') |
-                group(
-                    tasks.save_publication.si(
-                        pub.projectId,
-                        data.get('mainEntityUuids')
-                    ).set(
-                        queue='files',
-                        countdown=60
-                    ),
-                    tasks.copy_publication_files_to_corral.si(
-                        pub.projectId
-                    ).set(
-                        queue='files',
-                        countdown=60
-                    )
-                ) |
-                tasks.swap_file_tag_uuids.si(pub.project_id) |
-                tasks.set_publish_status.si(
-                    pub.projectId,
-                    data.get('mainEntityUuids')
-                ) |
-                tasks.zip_publication_files.si(pub.projectId)
-            ).apply_async()
+            freeze_publication_meta_task = tasks.freeze_publication_meta.s(
+                pub.projectId,
+                data.get('mainEntityUuids')
+            ).set(queue='api')
+
+            save_publication_task = tasks.save_publication.si(
+                pub.projectId,
+                data.get('mainEntityUuids')
+            ).set(queue='files', countdown=60)
+
+            copy_publication_files_to_corral_task = tasks.copy_publication_files_to_corral.si(
+                pub.projectId
+            ).set(queue='files', countdown=60)
+
+            grouped_publication_tasks = group(save_publication_task, copy_publication_files_to_corral_task)
+
+            swap_file_tag_uuids_task = tasks.swap_file_tag_uuids.si(pub.project_id)
+
+            set_publish_status_task = tasks.set_publish_status.si(pub.projectId, data.get('mainEntityUuids'))
+
+            zip_publication_files_task = tasks.zip_publication_files.si(pub.projectId)
+
+            # this is broken up with named intermediates because the linter
+            # is complaining about newlines breaking up the `|` operator chain
+            all_tasks = freeze_publication_meta_task | grouped_publication_tasks
+            all_tasks = all_tasks | swap_file_tag_uuids_task
+            all_tasks = all_tasks | set_publish_status_task
+            all_tasks = all_tasks | zip_publication_files_task
+            all_tasks.apply_async()
 
         return JsonResponse({'status': 200,
                              'response': {
@@ -269,16 +275,18 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
             prj.add_team_members([request.user.username])
 
         # Email collaborators
-        chain(
-            tasks.set_project_id.s(prj.uuid).set(queue="api") |
-            tasks.email_collaborator_added_to_project.s(
-                prj.uuid,
-                prj.title,
-                request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), prj.uuid)),
-                [u for u in list(set(prj.co_pis + prj.team_members + [prj.pi])) if u != request.user.username],
-                []
-            )
-        ).apply_async()
+
+        set_project_id_task = tasks.set_project_id.s(prj.uuid).set(queue="api")
+
+        email_collaborator_added_to_project_task = tasks.email_collaborator_added_to_project.s(
+            prj.uuid,
+            prj.title,
+            request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), prj.uuid)),
+            [u for u in list(set(prj.co_pis + prj.team_members + [prj.pi])) if u != request.user.username],
+            []
+        )
+
+        chain(set_project_id_task | email_collaborator_added_to_project_task).apply_async()
 
         tasks.set_facl_project.apply_async(
             args=[
