@@ -3,19 +3,25 @@ import logging
 import os
 import sys
 import json
+
 import urllib.request
 import urllib.parse
 import urllib.error
+
 from celery import shared_task
+
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.core.mail import send_mail
 
+from elasticsearch_dsl.query import Q
+
+from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.projects.models.elasticsearch import IndexedProject
 from designsafe.apps.data.tasks import agave_indexer
-from elasticsearch_dsl.query import Q
-from django.core.mail import send_mail
+
 
 logger = logging.getLogger(__name__)
 
@@ -963,4 +969,4 @@ def email_collaborator_added_to_project(self, project_id, project_uuid, project_
                         email_body,
                         settings.DEFAULT_FROM_EMAIL,
                         [collab_user.email],
-                        html_message=body)
+                        html_message=email_body)

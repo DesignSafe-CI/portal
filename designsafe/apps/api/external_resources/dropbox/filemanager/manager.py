@@ -3,18 +3,23 @@ import os
 import re
 import sys
 import logging
-from designsafe.apps.api.exceptions import ApiException
-from designsafe.apps.api.external_resources.dropbox.models.files import DropboxFile
-from designsafe.apps.api.notifications.models import Notification
-from designsafe.apps.data.tasks import agave_indexer
-from designsafe.apps.dropbox_integration.models import DropboxUserToken
+
+from urllib.error import HTTPError
+
 from dropbox.exceptions import ApiError, AuthError
-from dropbox.files import FileMetadata, FolderMetadata
+from dropbox.files import FileMetadata, FolderMetadata, UploadSessionCursor, CommitInfo
 from dropbox.dropbox import Dropbox
 
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import (JsonResponse, HttpResponseBadRequest)
+
+from designsafe.apps.api.exceptions import ApiException
+from designsafe.apps.api.external_resources.dropbox.models.files import DropboxFile
+from designsafe.apps.api.notifications.models import Notification
+from designsafe.apps.data.tasks import agave_indexer
+from designsafe.apps.dropbox_integration.models import DropboxUserToken
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -252,15 +257,6 @@ class FileManager(object):
             return {'href': download_url.link}
         return None
 
-    # def import_file(self, file_id, from_resource, import_file_id, **kwargs):
-    #    dropbox_upload.apply_async(args=(self._user.username,
-    #                                 file_id,
-    #                                 from_resource,
-    #                                 import_file_id),
-    #                           countdown=10)
-
-    #    return {'message': 'Your file(s) have been scheduled for upload to box.'}
-
     def download_file(self, dropbox_file_path, download_directory_path):
         """
         Downloads the file for dropbox_file_path to the given download_path.
@@ -403,9 +399,8 @@ class FileManager(object):
             else:
 
                 upload_session_start_result = self.dropbox_api.files_upload_session_start(f.read(CHUNK_SIZE))
-                cursor = dropbox.files.UploadSessionCursor(session_id=upload_session_start_result.session_id,
-                                                           offset=f.tell())
-                commit = dropbox.files.CommitInfo(path=file_path)
+                cursor = UploadSessionCursor(session_id=upload_session_start_result.session_id, offset=f.tell())
+                commit = CommitInfo(path=file_path)
 
                 while f.tell() < file_size:
                     if ((file_size - f.tell()) <= CHUNK_SIZE):
