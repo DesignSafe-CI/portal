@@ -7,7 +7,7 @@ class NeesDoiListCtrl {
     $onInit() {
         this.project = this.resolve.project;
         this.experimentDois = this.project.metadata.experiments.map((exp)=> {
-            const authors = exp.creators.map((author) => `${author.lastName}, ${author.firstName}`).join('; ');
+            const authors = (exp.creators ? exp.creators.map((author) => `${author.lastName}, ${author.firstName}`).join('; ') : '')
             const year = exp.endDate.split('T')[0].split('-')[0];
             const doi = exp.doi;
             const doiUrl = `https://doi.org/${exp.doi}`;
