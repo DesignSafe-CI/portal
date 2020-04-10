@@ -225,7 +225,7 @@ class FileManager(object):
                 if 'anyoneWithLink' not in [pem['id'] for pem in file_pems]:
                     body = {'role': 'reader',
                             'type': 'anyone'}
-                    update_pems = self.googledrive_api.permissions().create(fileId=file_id, body=body).execute()
+                    self.googledrive_api.permissions().create(fileId=file_id, body=body).execute()
             return {'href': googledrive_file['webViewLink'].replace('view?usp=drivesdk', 'preview').replace('edit?usp=drivesdk', 'preview')}
         return None
 
@@ -255,7 +255,7 @@ class FileManager(object):
                 if 'anyoneWithLink' not in [pem['id'] for pem in file_pems]:
                     body = {'role': 'reader',
                             'type': 'anyone'}
-                    update_pems = self.googledrive_api.permissions().create(fileId=file_id, body=body).execute()
+                    self.googledrive_api.permissions().create(fileId=file_id, body=body).execute()
 
             if 'webContentLink' in googledrive_file:
                 return {'href': googledrive_file['webContentLink']}

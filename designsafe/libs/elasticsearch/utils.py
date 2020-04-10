@@ -171,11 +171,7 @@ def repair_paths(limit=1000):
 @python_2_unicode_compatible
 def full_dedup(limit=1000):
     from designsafe.apps.data.models.elasticsearch import IndexedFile
-    from elasticsearch import Elasticsearch
 
-    settings.ES_INDICES['files']['alias']
-    HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
-    es_client = Elasticsearch(hosts=HOSTS)
     file_search = IndexedFile.search().sort('_id').extra(size=limit)
     res = file_search.execute()
 

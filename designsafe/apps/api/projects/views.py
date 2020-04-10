@@ -570,7 +570,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         else:
             post_data = request.POST.copy()
         entity = post_data.get('entity')
-        category = Category.objects.get_or_create_from_json(
+        Category.objects.get_or_create_from_json(
             uuid=entity['uuid'],
             dict_obj=entity['_ui']
         )

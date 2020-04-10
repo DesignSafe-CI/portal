@@ -37,14 +37,11 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                  src_resource, src_file_id, username, dest_resource, dest_file_id)
 
     try:
-        target_path = reverse('designsafe_data:data_depot',
-                              args=[src_resource, src_file_id])
         n = Notification(event_type='data',
                          status=Notification.INFO,
                          operation='box_download_start',
                          message='Starting download of file %s from box.' % (src_file_id,),
                          user=username,
-                         # extra={'target_path': target_path})
                          extra={'id': dest_file_id}
                          )
         n.save()
@@ -73,8 +70,6 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                                    pems_indexing=True, index_full_path=True,
                                    levels=levels)
 
-        target_path = reverse('designsafe_data:data_depot',
-                              args=[dest_resource, dest_file_id])
         n = Notification(event_type='data',
                          status=Notification.SUCCESS,
                          operation='box_download_end',
@@ -90,8 +85,6 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
             'to_resource': dest_resource,
             'dest_file_id': dest_file_id
         })
-        target_path = reverse('designsafe_data:data_depot',
-                              args=[src_resource, src_file_id])
         n = Notification(event_type='data',
                          status=Notification.ERROR,
                          operation='box_download_error',
@@ -186,7 +179,6 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                          operation='box_upload_start',
                          message='Starting import of file %s into box.' % src_file_id,
                          user=username,
-                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), src_resource, src_file_id)})
                          extra={'id': src_file_id})
         n.save()
         user = get_user_model().objects.get(username=username)
@@ -229,7 +221,6 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                          message='File(s) %s succesfully uploaded into box!' % src_file_id,
                          user=username,
                          extra={'id': src_file_id})
-        # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), dest_resource, dest_file_id)})
         n.save()
     except BaseException:
         logger.exception('Unexpected task failure: box_upload', extra={
@@ -250,7 +241,6 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                              'dest_resource': dest_resource,
                              'dest_file_id': dest_file_id,
                          })
-        # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), src_resource, src_file_id)})
         n.save()
 
 
@@ -312,7 +302,6 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                              'system': dest_resource,
                              'id': dest_file_id,
                          })
-        # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_depot'), src_file_id)})
         n.save()
         notify_status = 'SUCCESS'
         from designsafe.apps.api.data import lookup_file_manager
@@ -347,7 +336,6 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                                  'system': dest_resource,
                                  'id': dest_file_id,
                              })
-            # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_depot'), dest_file_id)})
             n.save()
         else:
             logger.error('Unable to load file managers for both source=%s and destination=%s',
@@ -638,7 +626,6 @@ def set_project_id(self, project_uuid):
     project.save(service)
     logger.debug('updated project id=%s', project.uuid)
     id_meta['value']['id'] = project_id
-    new_metadata = service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
     logger.debug('updated id record=%s', id_meta['uuid'])
 
     index_or_update_project.apply_async(args=[project.uuid], queue='api')
@@ -973,7 +960,7 @@ def email_collaborator_added_to_project(self, project_id, project_uuid, project_
                         """.format(name=collab_user.get_full_name(), title=project_title, prjID=project_id, url=project_url)
                 try:
                     collab_user.profile.send_mail("You have been added to a DesignSafe project!", email_body)
-                except DesignSafeProfile.DoesNotExist as err:
+                except DesignSafeProfile.DoesNotExist:
                     logger.info("Could not send email to user {}".format(collab_user))
                     send_mail(
                         "You have been added to a project!",

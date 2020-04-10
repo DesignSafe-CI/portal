@@ -105,7 +105,7 @@ class Command(BaseCommand):
         self.stdout.write('remote conn: %s' % hosts)
         remote_index = es_remote.indices.get(from_index)
         try:
-            local_index = es_local.indices.get(to_index)
+            es_local.indices.get(to_index)
         except TransportError as err:
             if err.status_code == 404:
                 self.stdout.write('Creating index: %s' % to_index)
@@ -118,7 +118,7 @@ class Command(BaseCommand):
                 index_settings['index'].pop('provided_name', None)
                 self.remove_fielddata(index_mapping)
                 self.stdout.write('Using mapping: %s' % json.dumps(index_mapping))
-                local_index = es_local.indices.create(
+                es_local.indices.create(
                     to_index,
                     body={
                         "settings": index_settings,

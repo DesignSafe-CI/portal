@@ -95,7 +95,6 @@ class AgaveFileManager(BaseFileManager):
     def delete(self, system, path):
         f = BaseFileResource(self._ag, system, path)
         resp = f.delete()
-        parent_path = '/'.join(path.strip('/').split('/')[:-1])
 
         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(f.path), 'recurse': False}, queue='indexing')
         return resp
@@ -104,12 +103,6 @@ class AgaveFileManager(BaseFileManager):
         file_obj = BaseFileResource.listing(self._ag, system, path)
         postit = file_obj.download_postit()
         return postit
-
-    # def import_url(self):
-    #     pass
-    #
-    # def index(self):
-    #     pass
 
     def listing(self, system, file_path, offset=0, limit=100, **kwargs):
         return BaseFileResource.listing(self._ag, system, file_path, offset, limit)
@@ -128,8 +121,6 @@ class AgaveFileManager(BaseFileManager):
     def move(self, system, file_path, dest_path, dest_name=None):
         f = BaseFileResource.listing(self._ag, system, file_path)
         resp = f.move(dest_path, dest_name)
-        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
-        parent_path = parent_path.strip('/') or '/'
 
         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(f.path), 'recurse': False}, queue='indexing')
         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(resp.path), 'recurse': False}, queue='indexing')
@@ -140,7 +131,6 @@ class AgaveFileManager(BaseFileManager):
     def rename(self, system, file_path, rename_to):
         f = BaseFileResource.listing(self._ag, system, file_path)
         resp = f.rename(rename_to)
-        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
 
         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(resp.path), 'recurse': False}, queue='indexing')
         return resp
@@ -176,8 +166,6 @@ class AgaveFileManager(BaseFileManager):
                 raise
 
         resp = f.move(trash_path, name)
-        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
-        parent_path = parent_path.strip('/') or '/'
 
         agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': system, 'filePath': os.path.dirname(f.path), 'recurse': False}, queue='indexing')
         return resp
