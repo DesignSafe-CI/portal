@@ -898,8 +898,11 @@ function config(
             },
             onExit: ($window) => {
                 'ngInject';
-                ['description', 'citation_title', 'citation_publication_date',
-                    'citation_doi', 'citation_abstract_html_url'].forEach(
+                [
+                    'description', 'citation_title', 'citation_publication_date',
+                    'citation_doi', 'citation_abstract_html_url', 'DC.identifier', 
+                    'DC.creator', 'DC.title', 'DC.date'
+                ].forEach(
                     (name) => {
                         let el = $window.document.getElementsByName(name);
                         el[0].content = '';

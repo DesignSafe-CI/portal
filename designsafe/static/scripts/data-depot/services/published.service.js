@@ -20,9 +20,16 @@ export class PublishedService {
         this.$window.document.title = resp.data.project.value.title + " | DesignSafe-CI";
         this.$window.document.getElementsByName('keywords')[0].content = resp.data.project.value.keywords;
         this.$window.document.getElementsByName('description')[0].content = resp.data.project.value.description;
+
         this.$window.document.getElementsByName('citation_title')[0].content = resp.data.project.value.title;
+        this.$window.document.getElementsByName('DC.title')[0].content = resp.data.project.value.title;
+
         this.$window.document.getElementsByName('citation_publication_date')[0].content = this.$filter('date')(resp.data.created, 'yyyy/M/d');
-        this.$window.document.getElementsByName('citation_doi')[0].content = resp.data.project.doi;
+        this.$window.document.getElementsByName('DC.date')[0].content = this.$filter('date')(resp.data.created, 'yyyy/M/d');
+
+        this.$window.document.getElementsByName('citation_doi')[0].content = resp.data.project.doi || '';
+        this.$window.document.getElementsByName('DC.identifier')[0].content = resp.data.project.doi || '';
+
         this.$window.document.getElementsByName('citation_abstract_html_url')[0].content = "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published//" + projId;
 
 
@@ -89,6 +96,7 @@ export class PublishedService {
 
         });
         this.$window.document.getElementsByName('author')[0].content = authors;
+        this.$window.document.getElementsByName('DC.creator')[0].content = authors;
 
     }
 }
