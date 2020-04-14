@@ -503,6 +503,17 @@ export class PublishedDataCtrl {
         this.DataBrowserService.showCitation(publication, project);
     }
 
+    download() {
+        this.$uibModal.open({
+            component: 'publicationDownloadModal',
+            resolve: {
+                publication: () => {return this.browser.publication;},
+                mediaUrl: () => {return this.browser.listing.mediaUrl();},
+            },
+            size: 'lg'
+        });
+    }
+
 }
 
 export const PublishedComponent = {

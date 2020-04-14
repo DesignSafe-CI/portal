@@ -28,6 +28,13 @@
     <p>
         The files are licensed by the following:
         <br>
+        <div class="btn-container" ng-if="!$ctrl.publication.licenses">
+            <span class="curation-odc" style="font-size:32px;"></span>
+            &ensp;
+            <strong>Open Data Commons Attribution</strong>
+            &ensp;
+            (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+        </div>
         <div class="btn-container" ng-if="$ctrl.publication.licenses.datasets">
             <span class="curation-odc" style="font-size:32px;"></span>
             &ensp;
