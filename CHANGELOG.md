@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.1
+Fixes:
+* Add download button to legacy publications.
+
 ## v4.9.0-20200402
 Fixes:
 * Update Markupsafe to fix issue with setuptools
