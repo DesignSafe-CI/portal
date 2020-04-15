@@ -43,11 +43,27 @@
                             ng-if="!$last && !$first">/</span>
                 </caption>
                 <thead>
-                <th>File name</th>
-                <th>Size</th>
+                <th ng-if="data.filesListing.system === 'nees.public'">Project ID</th>
+                <th ng-if="data.filesListing.system === 'nees.public'">Project name</th>
+                <th ng-if="data.filesListing.system !== 'nees.public'">File name</th>
+                <th ng-if="data.filesListing.system !== 'nees.public'">Size</th>
                 </thead>
                 <tbody>
-                <tr ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']">
+                    <tr ng-if="data.filesListing.system === 'nees.public'" ng-repeat="f in data.filesListing.children">
+                        <td>
+                            <button ng-if="f.name !== '.' && data.wants"
+                                    type="button"
+                                    class="btn btn-xs btn-info"
+                                    ng-click="chooseFile(f)">Select</button>
+                            <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="agave://{{f.system}}/{{f.path}}">
+                                <i class="fa {{f.icon()}}"></i>
+                                <span>{{f.name}}</span>
+                            </a>
+                        </td>
+                        <td ng-if="f.meta">{{f.meta.title}}</td>
+                        <td ng-if="f.metadata">{{f.metadata.project.title}}</td>
+                    </tr>
+                <tr ng-if="data.filesListing.system !== 'nees.public'" ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']">
                     <td>
                         <button ng-if="f.name !== '.' && data.wants"
                                 type="button"

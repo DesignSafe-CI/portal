@@ -28,13 +28,17 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
         $scope.data.loading = true;
         $scope.data.filePath = '';
         $scope.data.dirPath = [];
-
+        $scope.data.reachedEnd = false;
+        $scope.data.loadingMore = false;
+        $scope.data.page = 0
         /* initialize the browser */
 
         DataBrowserService.apiParams.fileMgr = $scope.data.system.fileMgr;
         DataBrowserService.apiParams.baseUrl = $scope.data.system.baseUrl;
         DataBrowserService.browse({ system: $scope.data.system.id, path: $scope.data.filePath })
             .then(function(listing) {
+                $scope.data.page = 0
+                $scope.data.reachedEnd = false;
                 $scope.data.filesListing = listing;
                 if ($scope.data.filesListing.path == '/') {
                     $scope.data.dirPath = ['/'];
@@ -43,10 +47,12 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
                     $scope.data.dirPath = $scope.data.filePath.split('/');
                 }
                 $scope.data.loading = false;
+                $scope.data.loadingMore = false;
             }, function(err) {
                 logger.log(err);
                 $scope.data.error = 'Unable to list the selected data source: ' + err.config.url;
                 $scope.data.loading = false;
+                $scope.data.loadingMore = false;
             });
     };
 
@@ -62,7 +68,6 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
         if ($scope.data.loadingMore || $scope.data.reachedEnd) {
             return;
         }
-        $scope.data.loadingMore = true;
         if ($scope.data.filesListing && $scope.data.filesListing.children &&
             $scope.data.filesListing.children.length < 95) {
             $scope.data.reachedEnd = true;
@@ -77,7 +82,8 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
                 page: $scope.data.page,
             })
             .then(function(listing) {
-                $scope.data.filesListing = listing;
+                $scope.data.loadingMore = false;
+                $scope.data.filesListing.children.concat(listing.children)
                 $scope.data.filePath = $scope.data.filesListing.path;
                 $scope.data.dirPath = $scope.data.filePath.split('/');
                 $scope.data.loadingMore = false;
@@ -100,6 +106,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
         if (($scope.data.filesListing.system === 'designsafe.storage.published' ||
             $scope.data.filesListing.system === 'nees.public') && index == 0 ){
             $scope.data.dirPath = ['/'];
+            $scope.data.filesListing.system = 'nees.public'
 
         // Switch back to designsafe.storage.projects system when calling main projects listing
         } else if ($scope.data.filesListing.system.startsWith('project-') && index == 0) {
@@ -138,6 +145,9 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
         if ( (file.system === 'designsafe.storage.published' || file.system === 'nees.public') && file.path === '/') {
             DataBrowserService.apiParams.fileMgr = 'public'
         }
+        if(file.system === 'nees.public' && file.path.includes('NEES')) {
+            DataBrowserService.apiParams.fileMgr = 'published'
+        }
         DataBrowserService.browse(file)
             .then(function(listing) {
                 $scope.data.filesListing = listing;
@@ -167,10 +177,16 @@ function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataB
                 }
                 $scope.browser.listing = $scope.data.filesListing;
                 $scope.data.loading = false;
+                $scope.data.page = 0;
+                $scope.data.loadingMore = false;
+                $scope.data.reachedEnd = false;
             }, function(error) {
                 logger.log(error);
                 $scope.data.error = 'Unable to list the selected data source: ' + error.config.url;
                 $scope.data.loading = false;
+                $scope.data.page = 0;
+                $scope.data.loadingMore = false;
+                $scope.data.reachedEnd = false;
             });
     };
 

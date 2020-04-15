@@ -68,6 +68,52 @@ class BaseESPublication(BaseESResource):
         """Delete."""
         self._wrapped.delete()
 
+    @staticmethod
+    def hit_to_file(hit):
+        dict_obj = {
+            'agavePath': 'agave://designsafe.storage.published/{}'.format(
+                hit.project.value.projectId
+            ),
+            'children': [],
+            'deleted': False,
+            'format': 'folder',
+            'length': 24731027,
+            'meta': {
+                'title': hit.project['value']['title'],
+                'pi': hit.project['value']['pi'],
+                'dateOfPublication': hit.created,
+                'type': hit.project['value']['projectType'],
+                'projectId': hit.project['value']['projectId'],
+                'keywords': hit.project['value']['keywords'],
+                'description': hit.project['value']['description']
+            },
+            'name': hit.project.value.projectId,
+            'path': '/{}'.format(hit.project.value.projectId),
+            'permissions': 'READ',
+            'project': hit.project.value.projectId,
+            'system': 'designsafe.storage.published',
+            'systemId': 'designsafe.storage.published',
+            'type': 'dir',
+            'version': getattr(hit, 'version', 1)
+        }
+        if 'dataType' in hit.project['value']:
+            dict_obj['meta']['dataType'] = hit.project['value']['dataType']
+        pi = hit.project['value']['pi']
+        pi_user = [x for x in getattr(hit, 'users', []) if x['username'] == pi]
+        if pi_user:
+            pi_user = pi_user[0]
+            dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
+                last_name=pi_user['last_name'], first_name=pi_user['first_name'])
+        else:
+            try:
+                pi_user = get_user_model().objects.get(username=pi)
+                dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
+                    last_name=pi_user.last_name, first_name=pi_user.first_name)
+            except:
+                dict_obj['meta']['piLabel'] = '({pi})'.format(pi=pi)
+        return dict_obj
+
+
     def to_file(self):
         """To file."""
         dict_obj = {
