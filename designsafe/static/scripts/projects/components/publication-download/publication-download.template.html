@@ -1,6 +1,6 @@
 <div class="modal-header" style="background: #e6e6e6;">
     <h4 class="modal-title" style="border:none;">
-        Download
+        Download Dataset
         <span class="pull-right" ng-click="$ctrl.close()">
             <i class="fa fa-times"></i>
         </span>
@@ -12,7 +12,7 @@
     </h3>
 </div>
 <div class="modal-body" ng-if="$ctrl.loaded">
-    <div ng-if="!$ctrl.error">
+    <div ng-if="!$ctrl.error" style="margin-top: 5px;">
         <p>
             This download is a ZIP file of the complete project dataset. The size of the ZIP file is <strong>{{$ctrl.arcData.length|bytes}}</strong>.
             <!-- A JSON file is included that contains all of the metadata. -->
@@ -28,62 +28,97 @@
     <p>
         The files are licensed by the following:
         <br>
-        <div class="btn-container" ng-if="!$ctrl.publication.licenses">
-            <span class="curation-odc" style="font-size:32px;"></span>
-            &ensp;
-            <strong>Open Data Commons Attribution</strong>
-            &ensp;
-            (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+        <div ng-if="!$ctrl.publication.licenses">
+            <div class="btn-container">
+                <span class="curation-odc" style="font-size:32px;"></span>
+                &ensp;
+                <strong>Open Data Commons Attribution</strong>
+                &ensp;
+                (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+            </div>
+            <ul>
+                <li>You may freely share, reuse, and adapt this data/database.</li>
+                <li>You must attribute for any public use of this data/database.</li>
+                <li>Derived work from the reuse of this data/database must carry the same terms and conditions of this license.</li>
+            </ul>
         </div>
-        <div class="btn-container" ng-if="$ctrl.publication.licenses.datasets">
-            <span class="curation-odc" style="font-size:32px;"></span>
-            &ensp;
-            <strong>{{$ctrl.publication.licenses.datasets}}</strong>
-            &ensp;
-            (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+        <div ng-if="$ctrl.publication.licenses.datasets">
+            <div class="btn-container">
+                <span class="curation-odc" style="font-size:32px;"></span>
+                &ensp;
+                <strong>{{$ctrl.publication.licenses.datasets}}</strong>
+                &ensp;
+                <span ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Attribution' ">
+                    (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+                </span>
+                <span ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Public Domain Dedication' ">
+                    (<a href="https://opendatacommons.org/licenses/pddl/1-0/" target="_blank">License Website</a>)
+                </span>
+            </div>
+            <ul ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Attribution' ">
+                <li>You may freely share, reuse, and adapt this data/database.</li>
+                <li>You must attribute for any public use of this data/database.</li>
+                <li>Derived work from the reuse of this data/database must carry the same terms and conditions of this license.</li>
+            </ul>
+            <ul ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Public Domain Dedication' ">
+                <li>You may freely share, modify, and use this data/database for any purpose without any restrictions.</li>
+                <li>You do not need to attribute for any public use of this data/database.</li>
+            </ul>
         </div>
-        <div class="btn-container" ng-if="$ctrl.publication.licenses.works">
-            <span class="curation-cc-share"
-                  style="font-size:32px;"
-                  ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
-            </span>
-            <span class="curation-cc-zero"
-                  style="font-size:32px;"
-                  ng-if="$ctrl.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
-            </span>
-            &ensp;
-            <strong>{{$ctrl.publication.licenses.works}}</strong>
-            &ensp;
-            (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">License Website</a>)
+        <div ng-if="$ctrl.publication.licenses.works">
+            <div class="btn-container">
+                <span class="curation-cc-share"
+                      style="font-size:32px;"
+                      ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+                </span>
+                <span class="curation-cc-zero"
+                      style="font-size:32px;"
+                      ng-if="$ctrl.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
+                </span>
+                &ensp;
+                <strong>{{$ctrl.publication.licenses.works}}</strong>
+                &ensp;
+                <span ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+                    (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">License Website</a>)
+                </span>
+                <span ng-if="$ctrl.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
+                    (<a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">License Website</a>)
+                </span>
+            </div>
+            <ul ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+                <li>You may freely share, reuse, and adapt this work.</li>
+                <li>You must attribute for any public use of this work.</li>
+                <li>Derived work that is published must carry the same terms and conditions of this license.</li>
+            </ul>
+            <ul ng-if="$ctrl.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
+                <li>You may freely share, modify, and use this work for any purpose without any restrictions.</li>
+                <li>You do not need to be attributed for any public use of this work.</li>
+            </ul>
         </div>
-        <div class="btn-container" ng-if="$ctrl.publication.licenses.software">
-            <span class="curation-gpl" style="font-size:32px;"></span>
-            &ensp;
-            <strong>{{$ctrl.publication.licenses.software}}</strong>
-            &ensp;
-            (<a href="http://www.gnu.org/licenses/gpl.html" target="_blank">License Website</a>)
+        <div ng-if="$ctrl.publication.licenses.software">
+            <div class="btn-container">
+                <span class="curation-gpl" style="font-size:32px;"></span>
+                &ensp;
+                <strong>{{$ctrl.publication.licenses.software}}</strong>
+                &ensp;
+                (<a href="http://www.gnu.org/licenses/gpl.html" target="_blank">License Website</a>)
+            </div>
+            <ul>
+                <li>You may modify, copy, and redistribute this work or any derivative version.</li>
+                <li>The licensee is free to choose whether or not to charge a fee for services that use this work.</li>
+                <li>They cannot impose further restrictions on the rights imposed by this license.</li>
+            </ul>
         </div>
-        <br>
-        <ul>
-            <li>
-                You must attribute for any public use of the data/database.
-            </li>
-            <li>
-                Derived work from the reuse of this data/database must carry the same terms and conditions of this license.
-            </li>
-        </ul>
     </p>
     <br>
     <div class="text-right" ng-if="!$ctrl.error">
         <button class="btn btn-add" ng-click="$ctrl.download()" ng-disabled="!$ctrl.loaded || $ctrl.retrievingPostit">
-            <div class="btn-container">
-                <div ng-if="!$ctrl.retrievingPostit">
-                    <span class="curation-download"></span>
-                    &ensp;
-                    <span>
-                        <strong>Download</strong>
-                    </span>
-                </div>
+            <div class="btn-container" ng-if="!$ctrl.retrievingPostit">
+                <span class="curation-download"></span>
+                &ensp;
+                <strong>Download</strong>
+            </div>
+            <div class="btn-container" ng-if="$ctrl.retrievingPostit">
                 <span ng-if="$ctrl.retrievingPostit" style="font-size:18px">
                     <i class="fa fa-spinner fa-spin"></i> Loading...
                 </span>

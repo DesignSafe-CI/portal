@@ -6,9 +6,10 @@
                 {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
                 <a class="prj-head-edit" ng-click="$ctrl.editProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
             </span>
-            <span class="prj-head-download">
-                <a class="curation-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly"> <strong>Download Dataset</strong></a>
-            </span>
+            <a class="prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
+                <span class="curation-download"></span>
+                <strong>&nbsp;Download Dataset</strong>
+            </a>
         </div>
         <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
             <colgroup>
@@ -253,25 +254,21 @@
                         </span>
                     </div>
                     <div class="entity-meta-field">
-                        <div class="entity-meta-label">License(s)</div>
-                        <span class="entity-meta-data"
-                                data-ng-if="!$ctrl.readOnly">
-                            (Appears when published)
-                        </span>
-                    </div>
-                    <div class="entity-meta-field">
-                        <span class="entity-meta-data"
-                                data-ng-if="$ctrl.readOnly">
-                                <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
-                                    {{ $ctrl.browser.publication.licenses.datasets }}
-                                </div>
-                                <div data-ng-if="$ctrl.browser.publication.licenses.works">
-                                    {{ $ctrl.browser.publication.licenses.works }}
-                                </div>
-                                <div data-ng-if="$ctrl.browser.publication.licenses.software">
-                                    {{ $ctrl.browser.publication.licenses.software }}
-                                </div>
-                        </span>
+                        <div class="entity-meta-label-multi">License(s)</div>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                            <span>(Appears when published)</span>
+                        </div>
+                        <div class="entity-meta-data" ng-if="$ctrl.readOnly">
+                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
+                                {{ $ctrl.browser.publication.licenses.datasets }}
+                            </div>
+                            <div data-ng-if="$ctrl.browser.publication.licenses.works">
+                                {{ $ctrl.browser.publication.licenses.works }}
+                            </div>
+                            <div data-ng-if="$ctrl.browser.publication.licenses.software">
+                                {{ $ctrl.browser.publication.licenses.software }}
+                            </div>
+                        </div>
                     </div>
                     <p>
                         <br>{{ experiment.value.description }}

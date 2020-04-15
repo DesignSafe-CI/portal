@@ -2733,18 +2733,18 @@ input[type="search"] {
   flex-direction: row;
   align-items: start;
   justify-content: space-between;
-  padding-bottom:20px;
 }
 .prj-head-title {
-  width: 75%;
+  width: 83%;
   font-size: 20px;
 }
 .prj-head-edit {
   font-size: 14px;
 }
 .prj-head-download {
-  float: right;
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .project-form-input {
   height: 32px;
@@ -6351,11 +6351,13 @@ button.close {
   .modal-sm {
     width: 300px;
   }
-}
-@media (min-width: 992px) {
   .modal-author {
     width: 500px;
     top: 35%;
+  }
+  .modal-download {
+    width: 900px;
+    top: 20%;
   }
 }
 @media (min-width: 992px) {

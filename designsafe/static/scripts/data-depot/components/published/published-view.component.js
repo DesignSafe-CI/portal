@@ -263,7 +263,7 @@ class PublishedViewCtrl {
                 publication: () => {return this.browser.publication;},
                 mediaUrl: () => {return this.browser.listing.mediaUrl();},
             },
-            size: 'lg'
+            size: 'download'
         });
     }
 
