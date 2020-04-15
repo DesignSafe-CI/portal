@@ -1,4 +1,8 @@
 # DesignSafe-CI Portal Release Notes
+## v4.9.2-20200403
+Fixes: 
+* Publications display and paginate properly in the workspace.
+* Speed up publications listings.
 
 ## v4.9.1
 Fixes:
