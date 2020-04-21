@@ -41,7 +41,11 @@ class PipelinePublishCtrl {
     $onInit() {
         this.project = this.resolve.project;
         this.selectedListings = this.resolve.resolveParams.selectedListings;
-        this.existingPub = null;
+        this.ui = {
+            published: null,
+            submitted: null,
+            loading: true,
+        }
 
         let publication = {
             project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
@@ -97,10 +101,11 @@ class PipelinePublishCtrl {
         this.PublishedService.getPublished(this.project.value.projectId).then((resp) => {
             let data = resp.data;
             if (data.project) {
-                this.existingPub = true;
+                this.ui.published = true;
             } else {
-                this.existingPub = false;
+                this.ui.published = false;
             }
+            this.ui.loading = false;
         });
     }
 
@@ -125,7 +130,7 @@ class PipelinePublishCtrl {
             }
         ).then((resp) => {
             this.DataBrowserService.state().publicationStatus = resp.data.response.status;
-            this.published = true;
+            this.ui.submitted = true;
         }).finally( () => {
             this.busy = false;
         });
