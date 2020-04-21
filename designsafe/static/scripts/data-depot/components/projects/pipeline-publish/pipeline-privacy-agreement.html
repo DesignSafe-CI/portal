@@ -44,8 +44,10 @@
                 data publication.
             </p>
             <span class="prj-agree-select" ng-if="!$ctrl.ui.submitted && !$ctrl.ui.published">
-                <input type="checkbox" id="agreement1" name="agreement1" ng-model="$ctrl.agreed1">
-                <label for="agreement1"> The data I am publishing adheres to the procedures listed above </label>
+                <span>
+                    <input type="checkbox" id="agreement1" name="agreement1" ng-model="$ctrl.agreed1">
+                    <label for="agreement1"> The data I am publishing adheres to the procedures listed above </label>
+                </span>
             </span>
         </div>
         <div class="prj-agree-body">
@@ -65,12 +67,12 @@
                 publication that cannot be changed. If I have revisions this will result in a new
                 version of the publication including a new DOI.
             </p>
-            <div ng-if="!$ctrl.ui.submitted && !$ctrl.ui.published">
-                <span class="prj-agree-select">
+            <div class="prj-agree-select" ng-if="!$ctrl.ui.submitted && !$ctrl.ui.published">
+                <span>
                     <input type="checkbox" id="agreement2" name="agreement2" ng-model="$ctrl.agreed2">
                     <label for="agreement2"> I agree </label>
                 </span>
-                <button class="btn btn-add prj-agree-publish"
+                <button class="btn btn-add"
                         ng-click="$ctrl.publish()"
                         ng-disabled="!$ctrl.agreed1 || !$ctrl.agreed2 || $ctrl.busy">
                     <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish

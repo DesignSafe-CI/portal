@@ -29,12 +29,12 @@
             publication that cannot be changed. If I have revisions this will result in a new
             version of the publication including a new DOI.
         </p>
-        <div ng-if="!$ctrl.ui.submitted && !$ctrl.ui.published">
+        <div class="prj-agree-select" ng-if="!$ctrl.ui.submitted && !$ctrl.ui.published">
             <span style="display:inline-block; width:75%;">
                 <input type="checkbox" id="agreement" name="agreement" ng-model="$ctrl.agreed">
                 <label for="agreement"> I agree </label>
             </span>
-            <button class="btn btn-add prj-agree-publish"
+            <button class="btn btn-add"
                     ng-click="$ctrl.publish()"
                     ng-disabled="!$ctrl.agreed || $ctrl.busy">
                 <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish
@@ -47,7 +47,7 @@
                 You will find your published project in the "Published" ared of the Data Depot soon.
             </div>
             <div style="text-align: center">
-                    <button class="btn btn-add prj-agree-publish"
+                    <button class="btn btn-add"
                             ng-click="$ctrl.return()"
                     >
                         Complete Submission

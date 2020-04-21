@@ -196,14 +196,16 @@
                         type="submit"
                         data-ng-if="$ctrl.data.editMission"
                         data-ng-click="addForm.$valid && $ctrl.updateMission($event)"
-                        style="width:18%;">Update</button>
+                >
+                    Update
+                </button>
             </div>
             <div class="text-right">
             <button class="btn btn-add"
                     data-ng-click="addForm.$valid && $ctrl.saveMission($event)"
                     data-ng-if="!$ctrl.data.editMission"
-                    style="width:18%;"
-                    type="submit">
+                    type="submit"
+            >
                 <i class="fa fa-plus">&nbsp;</i>
                 Add Mission
             </button>
