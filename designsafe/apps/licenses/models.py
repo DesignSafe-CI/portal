@@ -32,14 +32,11 @@ class BaseLicense(models.Model):
         abstract = True
 
     def __str__(self):
-        return str(self)
-
-    def __unicode__(self):
         return "%s: %s" % (self.license_type, self.user.username)
 
     def license_as_str(self):
         self.license_file_content = self.license_file_content.replace('\r\n', '\n')
-        return self.license_file_content
+        return self.license_file_content.encode('utf-8')
 
 
 class MATLABLicense(BaseLicense):
@@ -58,5 +55,5 @@ class LSDYNALicense(BaseLicense):
                                                       'Please ensure you paste the '
                                                       'license exactly as it is in the '
                                                       'license file.')
-                                                      
+
     license_type = 'LS-DYNA'
