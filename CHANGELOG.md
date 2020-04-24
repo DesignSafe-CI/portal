@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.2-20200404
+Fixes:
+* Fixes an issue where license management would not render in the admin panel
+
 ##v4.9.3
 Enhancements: 
 * Visual updates to the publication download feature.
