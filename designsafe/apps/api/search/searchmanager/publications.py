@@ -111,7 +111,8 @@ class PublicationsSearchManager(BaseSearchManager):
         for hit in res:
             try:
                 getattr(hit, 'projectId')
-                children.append(BaseESPublication(**hit.to_dict()).to_file())
+                hit_to_file = BaseESPublication.hit_to_file(hit)
+                children.append(hit_to_file)
             except AttributeError:
                 children.append(BaseESPublicationLegacy(**hit.to_dict()).to_file())
 
