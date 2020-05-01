@@ -36,7 +36,7 @@ class BaseLicense(models.Model):
 
     def license_as_str(self):
         self.license_file_content = self.license_file_content.replace('\r\n', '\n')
-        return self.license_file_content.encode('utf-8')
+        return self.license_file_content
 
 
 class MATLABLicense(BaseLicense):
