@@ -145,7 +145,7 @@ class FileManager(object):
                       'to continue using Box data.' % reverse('box_integration:index')
             raise ApiException(status=403, message=message)
         except BoxException as e:
-            message = 'Unable to communicate with Box: %s' % e.message
+            message = 'Unable to communicate with Box: %s' % e
             raise ApiException(status=500, message=message)
 
     def file(self, file_id, action, path=None, **kwargs):
@@ -215,10 +215,10 @@ class FileManager(object):
                 agave_file_path = downloaded_file_path.replace(project_dir, '', 1).strip('/')
             else:
                 agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
-            
+
             if not agave_file_path.startswith('/'):
                 agave_file_path = '/' + agave_file_path
-                
+
             agave_indexer.apply_async(kwargs={'username': user.username, 'systemId': agave_system_id, 'filePath': os.path.dirname(agave_file_path), 'recurse':False}, queue='indexing')
             agave_indexer.apply_async(kwargs={'systemId': agave_system_id, 'filePath': agave_file_path, 'recurse': True}, routing_key='indexing')
         except:
