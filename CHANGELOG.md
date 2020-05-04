@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.5
+Fixes:
+* Fixes an issue preventing the license string from submitting to an app correctly
+
 ## v4.9.4-20200501
 Fixes:
 * Fixes an issue preventing the license string from submitting to an app correctly
