@@ -25,6 +25,7 @@
                     </th>
                     <th>Size</th>
                     <th>Last modified</th>
+                    <th ng-if="$ctrl.hasNotebooks()">Open with</th>
                 </tr>
             </thead>
             <tbody>
@@ -72,6 +73,11 @@
                     <td data-ng-if="item.format== 'folder'">--</td>
                     <td data-ng-if="item.format== 'raw'">{{ item.length|bytes }}</td>
                     <td ng-hide="!$ctrl._ui.showHeader">{{ item.lastModified|date:"short" }}</td>
+                    <td ng-if="$ctrl.hasNotebooks()">
+                        <a ng-href="{{ $ctrl.openInApp(item) }}" target="_blank" rel="noopener" ng-if="item.ext === 'ipynb'">
+                            Jupyter
+                        </a>
+                    </td>
                 </tr>
                 <tr data-ng-if="$ctrl.browser.busyListingPage">
                     <td>

@@ -3,12 +3,13 @@ import FilesListingTemplate from './files-listing.template.html';
 import PublicationsListingTemplate from './publications-listing.template.html';
 
 class FilesListingCtrl {
-    constructor($state, DataBrowserService, $stateParams, $uibModal){
+    constructor($state, DataBrowserService, $stateParams, $uibModal, Django){
         'ngInject';
         this.$state = $state;
         this.DataBrowserService = DataBrowserService;
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
+        this.Django = Django;
         this.renderName = this.renderName.bind(this);
     }
 
@@ -242,6 +243,40 @@ class FilesListingCtrl {
       clearTypeFilters() {
         this.$state.go(this.$state.current, {typeFilters: null}, {reload: true})
       }
+    /**
+     * Check if folder has any python notebooks
+     */
+    hasNotebooks() {
+        if (!this.listing()) return false;
+        const listing = this.listing().children;
+        const pyNb = listing.filter((item)=> item.ext === 'ipynb');
+        if (_.isEmpty(pyNb)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Modified version of DataBrowserServicePreviewCtrl.openInJupyter
+     */
+    openInApp(file) {
+        const pathToFile = file.path;
+        let specificLocation = this.$state.current.name;
+        if (specificLocation === 'myData' || specificLocation === 'communityData') {
+            specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1));
+        } else if (specificLocation.includes('projects')) {
+            const prjNumber = this.DataBrowserService.state().project.value.projectId;
+            specificLocation = 'projects/' + prjNumber;
+        } else if (specificLocation === 'publishedData.view') {
+            specificLocation = 'Published';
+        } 
+        if (file.system === 'designsafe.storage.published') { 
+            specificLocation = 'NHERI-Published';
+        }
+        const fileLocation = `${specificLocation}/${pathToFile}`;
+        const jupyterPath = `http://jupyter.designsafe-ci.org/user/${this.Django.user}/notebooks/${fileLocation}`;
+        return jupyterPath;
+    }
 }
 
 export const FilesListingComponent = {
