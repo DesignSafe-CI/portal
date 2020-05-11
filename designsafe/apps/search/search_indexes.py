@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.test import RequestFactory
 
 from django.utils.html import strip_tags
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 
 from cms.models import Title, CMSPlugin, Page
 # from cms.toolbar.toolbar import CMSToolbar
@@ -24,7 +24,7 @@ def _strip_tags(value):
     whitespace in between replaced tags to make sure words are not erroneously
     concatenated.
     """
-    return re.sub(r'<[^>]*?>', ' ', force_unicode(value))
+    return re.sub(r'<[^>]*?>', ' ', force_text(value))
 
 
 class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
@@ -66,7 +66,7 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
                 # this is an empty plugin
                 continue
             if hasattr(instance, 'search_fields'):
-                text += ' '.join(force_unicode(strip_tags(getattr(instance, field, ''))) for field in instance.search_fields)
+                text += ' '.join(force_text(strip_tags(getattr(instance, field, ''))) for field in instance.search_fields)
             if getattr(instance, 'search_fulltext', False) or getattr(plugin_type, 'search_fulltext', False):
                 text += _strip_tags(instance.render_plugin(context=RequestContext(request))) + ' '
         text += page.get_meta_description() or ''
