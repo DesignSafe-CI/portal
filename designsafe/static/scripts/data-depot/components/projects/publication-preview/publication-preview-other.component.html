@@ -53,7 +53,9 @@
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
-            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
+            <tr ng-if="!$ctrl.relatedWorkEmpty()"
+                ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index"
+            >
                 <td ng-if="$first">Related Work</td>
                 <td ng-if="!$first"></td>
                 <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>

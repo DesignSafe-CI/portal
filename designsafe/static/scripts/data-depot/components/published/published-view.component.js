@@ -335,7 +335,7 @@ class PublishedViewCtrl {
     relatedWorkEmpty() {
         const relatedWork = this.browser.project.value.associatedProjects.slice();
         const emptyArray = relatedWork.length === 0;
-        const emptyListing = isEqual(relatedWork.shift(),{ order: 0, title: '' });
+        const emptyListing = isEqual(relatedWork.shift(),{ order: 0, title: '', href: ''});
         return emptyArray || emptyListing;
     }
 
