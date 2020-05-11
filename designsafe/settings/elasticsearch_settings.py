@@ -17,7 +17,7 @@ ES_CONNECTIONS = {
     },
     'dev': {
         'hosts': [
-            'elasticsearch'
+            'elasticsearch:9200'
         ]
     },
     'localhost': {
@@ -87,7 +87,7 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         # 'URL': 'des_elasticsearch:9200/',
-        'URL': ES_CONNECTIONS[os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev')]['hosts'][0] + ':9200/',
+        'URL': ES_CONNECTIONS[os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev')]['hosts'][0],
         'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
         'KWARGS': {'http_auth': ES_AUTH}
     }
