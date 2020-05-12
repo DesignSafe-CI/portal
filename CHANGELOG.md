@@ -1,5 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.5-20200502
+Fixes:
+* Expose authors of Other/FR publications in search.
+* Fix pagination in site search.
+
 ## v4.9.5
 Fixes:
 * Fixes an issue preventing the license string from submitting to an app correctly
