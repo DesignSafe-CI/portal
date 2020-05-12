@@ -1,7 +1,7 @@
 # DesignSafe-CI Portal Release Notes
 
 ## v4.9.6
-Fixes
+Fixes:
 * Fix string representation of some models.
 * Error messages should log correctly.
 * Expose authors of Other/FR publications in search.
