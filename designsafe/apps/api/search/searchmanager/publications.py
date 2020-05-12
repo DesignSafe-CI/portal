@@ -31,15 +31,22 @@ class PublicationsSearchManager(BaseSearchManager):
     def construct_query(self, system=None, file_path=None, **kwargs):
         project_query_fields = [
             "projectId",
-            "title", 
-            "description", 
+            "title",
+            "description",
             "doi",
-            "project.value.title", 
+            "project.value.title",
             "project.value.keywords",
             "project.value.description",
             "project.value.dataType",
             "project.value.projectType",
             "project.value.dois",
+            "project.value.nhLocation",
+            "project.value.pi",
+            "project.value.teamOrder.fname",
+            "project.value.teamOrder.lname",
+            "project.value.teamOrder.name",
+            "authors.fname",
+            "authors.lname",
             "name"
             ]
         published_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())[0]
@@ -104,7 +111,8 @@ class PublicationsSearchManager(BaseSearchManager):
         for hit in res:
             try:
                 getattr(hit, 'projectId')
-                children.append(BaseESPublication(**hit.to_dict()).to_file())
+                hit_to_file = BaseESPublication.hit_to_file(hit)
+                children.append(hit_to_file)
             except AttributeError:
                 children.append(BaseESPublicationLegacy(**hit.to_dict()).to_file())
 

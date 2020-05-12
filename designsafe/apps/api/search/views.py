@@ -61,7 +61,7 @@ class SearchView(BaseApiView):
                     pre_tags=["<b>"],
                     post_tags=["</b>"],
                     require_field_match=False)
-            
+        es_query = es_query.extra(from_=offset, size=limit)
         try:
             res = es_query.execute()
         except (TransportError, ConnectionTimeout) as err:
