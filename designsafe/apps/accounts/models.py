@@ -44,19 +44,19 @@ class NEESUser(object):
 class DesignSafeProfileNHInterests(models.Model):
     description = models.CharField(max_length=300)
 
-    def str(self):
+    def __str__(self):
         return self.description
 
 class DesignSafeProfileNHTechnicalDomains(models.Model):
     description = models.CharField(max_length=300)
 
-    def str(self):
+    def __str__(self):
         return self.description
 
 class DesignSafeProfileResearchActivities(models.Model):
     description = models.CharField(max_length=300)
 
-    def str(self):
+    def __str__(self):
         return self.description
 
 
