@@ -7,5 +7,5 @@ class ResponsiveEmbedPlugin(CMSPlugin):
         choices=(("16by9","16by9"),("4by3","4by3"),("podcast","podcast")))
     allowfullscreen = models.BooleanField(verbose_name='Allow Fullscreen', default=True)
 
-    def __unicode__(self):
+    def str(self):
         return self.url
