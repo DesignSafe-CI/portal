@@ -27,5 +27,5 @@ class Token(models.Model):
     def header(self):
         return 'Token {0}'.format(self.token)
 
-    def str(self):
+    def __str__(self):
         return self.token
