@@ -128,7 +128,7 @@ class FileManager(object):
                 list_data = DropboxFile(dropbox_item, path)
                 return list_data
 
-            message = 'Unable to communicate with Dropbox: %s' % e.message
+            message = 'Unable to communicate with Dropbox: %s' % e
             raise ApiException(status=500, message=message)
 
     def file(self, file_id, action, path=None, **kwargs):

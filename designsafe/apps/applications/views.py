@@ -398,8 +398,8 @@ def call_api(request, service):
                 return HttpResponse('Unexpected service: %s' % service, status=400)
         except AgaveException as e:
             logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
-                service, e.message))
-            return HttpResponse(json.dumps(e.message), content_type='application/json',
+                service, e))
+            return HttpResponse(json.dumps(e), content_type='application/json',
                                 status=400)
         except HTTPError as e:
             try:
@@ -416,23 +416,23 @@ def call_api(request, service):
                         content_type='application/json',
                         status=400)
             except Exception as e:
-                return HttpResponse(json.dumps(e.message),
+                return HttpResponse(json.dumps(e),
                         content_type='application/json',
                         status=400)
 
         except Exception as e:
             metrics.info('Failed to execute {0} API call due to Exception={1}'.format(
-                service, e.message), extra={
+                service, e), extra={
                     'operation': 'agave.meta.listMetadata',
                     'user': request.user.username,
                     'info': {}
                 })
             logger.error('Failed to execute {0} API call due to Exception={1}'.format(
-                service, e.message), extra={
+                service, e), extra={
                     'user': request.user.username
                 })
             return HttpResponse(
-                json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
+                json.dumps({'status': 'error', 'message': '{}'.format(e)}),
                 content_type='application/json', status=400)
 
         return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),

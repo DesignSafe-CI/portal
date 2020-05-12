@@ -96,7 +96,7 @@ def generic_webhook_handler(request):
     except (HTTPError, AgaveException, ApiException) as e:
         LOGGER.exception(
             "Could not find valid corresponding Agave job for interactive event")
-        return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
+        return HttpResponse(json.dumps(e), content_type='application/json', status=400)
 
     n = Notification.objects.create(**event_data)
     n.save()
@@ -114,7 +114,7 @@ def generic_webhook_handler(request):
 
     except (HTTPError, AgaveException) as e:
         LOGGER.exception('Could not add interactive connection data to metadata')
-        return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
+        return HttpResponse(json.dumps(e), content_type='application/json', status=400)
 
     return HttpResponse('OK')
 

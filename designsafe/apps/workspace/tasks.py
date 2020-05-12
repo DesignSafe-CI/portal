@@ -62,7 +62,7 @@ def submit_job(request, username, job_post):
     except ConnectionError as e:
         logger.exception(
             'ConnectionError while submitting job: %s',
-            e.message,
+            e,
             extra={'job': job_post}
         )
         raise JobSubmitError(status='error',
@@ -73,7 +73,7 @@ def submit_job(request, username, job_post):
     except HTTPError as e:
         logger.exception(
             'HTTPError while submitting job: %s\n%s',
-            e.message,
+            e,
             e.response.content,
             extra={'job': job_post}
         )

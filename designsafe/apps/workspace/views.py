@@ -253,22 +253,22 @@ def call_api(request, service):
         logger.exception(
             'Failed to execute %s API call due to HTTPError=%s\n%s',
             service,
-            e.message,
+            e,
             e.response.content
         )
-        return HttpResponse(json.dumps(e.message),
+        return HttpResponse(json.dumps(e),
                             content_type='application/json',
                             status=400)
     except AgaveException as e:
         logger.exception('Failed to execute {0} API call due to AgaveException={1}'.format(
-            service, e.message))
-        return HttpResponse(json.dumps(e.message), content_type='application/json',
+            service, e))
+        return HttpResponse(json.dumps(e), content_type='application/json',
                             status=400)
     except Exception as e:
         logger.exception('Failed to execute {0} API call due to Exception={1}'.format(
             service, e))
         return HttpResponse(
-            json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
+            json.dumps({'status': 'error', 'message': '{}'.format(e)}),
             content_type='application/json', status=400)
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
