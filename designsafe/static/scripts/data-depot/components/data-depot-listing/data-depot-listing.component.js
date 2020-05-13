@@ -247,7 +247,7 @@ class FilesListingCtrl {
      * Check if folder has any python notebooks
      */
     hasNotebooks() {
-        if (!this.listing()) return false;
+        if (!this.listing() || window.location.href.includes('agave')) return false;
         const listing = this.listing().children;
         const pyNb = listing.filter((item)=> item.ext === 'ipynb');
         if (_.isEmpty(pyNb)) {
