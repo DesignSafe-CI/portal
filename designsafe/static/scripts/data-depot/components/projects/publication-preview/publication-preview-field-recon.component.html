@@ -187,7 +187,7 @@
                                 </div>
                                 <div class="entity-meta-data" data-ng-if="mission.value.authors.length">
                                     <span ng-if="$ctrl.readOnly">
-                                        <span ng-repeat="author in mission.authors | filter: { authorship: true }">
+                                        <span ng-repeat="author in $ctrl.sortAuthors(mission.authors) | filter: { authorship: true }">
                                             <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
                                         </span>
                                     </span>
@@ -283,7 +283,7 @@
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi" data-ng-if="mission.value.authors.length">
-                                    Author(s)
+                                    Author(s) - DEBUG
                                 </div>
                                 <div class="entity-meta-data" data-ng-if="mission.value.authors.length">
                                     <span ng-if="$ctrl.readOnly">
