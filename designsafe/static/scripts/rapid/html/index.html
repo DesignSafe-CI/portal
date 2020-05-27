@@ -31,7 +31,7 @@
           <div class="input-group">
             <input type="text" class="form-control" ng-model="vm.filter_options.search_text" ng-change="vm.search()"></input>
             <span class="input-group-btn">
-              <button class="btn btn-default"> <i class="fa fa-trash"></i></button>
+              <button class="btn btn-default"> <i class="fa fa-trash" ng-click="vm.clear_filter_text()"></i></button>
             </span>
           </div>
         </div>
