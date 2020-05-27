@@ -89,7 +89,4 @@ export default class RapidMainCtrl {
         this.search();
     }
 
-    clear_filter_text() {
-        this.filter_options.search_text = '';
-    }
 }
