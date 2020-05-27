@@ -439,20 +439,22 @@
             </div>
             <div ng-if="$ctrl.form.collectionType">
                 <div class="text-right">
-                    <button class="btn btn-add"
-                            type="submit"
-                            data-ng-click="addForm.$valid &&
-                                            $ctrl.updateCollection($event)"
-                            data-ng-if="$ctrl.data.editCollection"
-                            style="width:18%;">Update</button>
+                    <button 
+                        class="btn btn-add"
+                        type="submit"
+                        data-ng-click="addForm.$valid && $ctrl.updateCollection($event)"
+                        data-ng-if="$ctrl.data.editCollection"
+                    >
+                        Update
+                    </button>
                 </div>
                 <div class="text-right">
-                    <button class="btn btn-add"
-                            data-ng-click="addForm.$valid &&
-                                            $ctrl.saveCollection($event)"
-                            data-ng-if="!$ctrl.data.editCollection"
-                            style="width:18%;"
-                            type="submit">
+                    <button
+                        class="btn btn-add"
+                        data-ng-click="addForm.$valid && $ctrl.saveCollection($event)"
+                        data-ng-if="!$ctrl.data.editCollection"
+                        type="submit"
+                    >
                         <i class="fa fa-plus">&nbsp;</i>
                         Add Collection
                     </button>
