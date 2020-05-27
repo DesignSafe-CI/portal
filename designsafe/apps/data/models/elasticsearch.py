@@ -116,6 +116,28 @@ class IndexedFile(Document):
     class Meta:
         dynamic = MetaField('strict')
 
+    
+class IndexedFileLegacy(Document):
+    name = Text(analyzer=file_analyzer, fields={
+        '_exact': Keyword(),
+        '_pattern': Text(analyzer=file_pattern_analyzer),
+        '_reverse': Text(analyzer=reverse_file_analyzer)
+    })
+    path = Text(fields={
+        '_exact': Keyword(),
+        '_path': Text(analyzer=path_analyzer)
+    })
+    deleted = Boolean()
+    length = Long()
+    format = Keyword()
+    type = Keyword()
+    systemId = Keyword()
+
+    class Index:
+        name = settings.ES_INDICES['files_legacy']['alias']
+    class Meta:
+        dynamic = MetaField('strict')
+
 @python_2_unicode_compatible
 class IndexedPublication(Document):
     analysisList = Nested(properties={

@@ -33,6 +33,11 @@ ES_INDICES = {
         'document': 'designsafe.apps.data.models.elasticsearch.IndexedFile',
         'kwargs': {'number_of_shards': 3}
     },
+    'files_legacy': {
+        'alias': ES_INDEX_PREFIX.format('files-legacy'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedFileLegacy',
+        'kwargs': {'number_of_shards': 3}
+    },
     'publications': {
         'alias': ES_INDEX_PREFIX.format('publications'),
         'document': 'designsafe.apps.data.models.elasticsearch.IndexedPublication',
