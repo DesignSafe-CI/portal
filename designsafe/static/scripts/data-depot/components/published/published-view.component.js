@@ -4,7 +4,7 @@ import HybSimPublicationTemplate from '../projects/publication-preview/publicati
 import FieldReconPublicationTemplate from '../projects/publication-preview/publication-preview-field-recon.component.html';
 import OtherPublicationTemplate from '../projects/publication-preview/publication-preview-other.component.html';
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
-import { isEqual } from 'underscore';
+import { isEqual, has } from 'underscore';
 
 class PublishedViewCtrl {
     constructor($anchorScroll, $location, $stateParams, $uibModal, DataBrowserService, PublishedService, UserService, FileListing){
@@ -282,6 +282,12 @@ class PublishedViewCtrl {
             }
             return false;
         }
+    }
+
+    sortAuthors(authors) {
+        if (!has(authors[0], 'order')) return authors;
+        const sortedAuthors = authors.sort((a, b) => a.order - b.order);
+        return sortedAuthors;
     }
 
     showAuthor(author) {

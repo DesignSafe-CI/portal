@@ -188,7 +188,7 @@
                         <div class="entity-meta-label-multi">Author(s)</div>
                         <div class="entity-meta-data">
                             <span ng-if="$ctrl.readOnly">
-                                <span ng-repeat="author in experiment.authors | filter: { authorship: true }">
+                                <span ng-repeat="author in $ctrl.sortAuthors(experiment.authors) | filter: { authorship: true }">
                                     <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span> 
                                 </span>
                             </span>
