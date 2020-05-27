@@ -27,6 +27,7 @@ class HybridSimulationProject(Project):
     title = fields.CharField('Title', max_length=255, default='')
     pi = fields.CharField('PI', max_length=255)
     award_number = fields.ListField('Award Number')
+    award_numbers = fields.ListField('Award Numbers')
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
     keywords = fields.CharField('Keywords', default='')
