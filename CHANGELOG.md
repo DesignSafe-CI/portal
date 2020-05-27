@@ -1,5 +1,16 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.6-20200504
+Enchancements:
+* Added Dublin Core meta tags for Google Scholar citation.
+* Added an Elasticsearch index for legacy NEES files.
+
+Fixes:
+* Fixed an issue saving awards to publication metadata.
+* Project Curation Directory UI fixes.
+* Fixed an issue with publication submission.
+* Fixed an issue preventing published authors not displaying in the correct order.
+
 ## v4.9.6
 Fixes:
 * Fix string representation of some models.
