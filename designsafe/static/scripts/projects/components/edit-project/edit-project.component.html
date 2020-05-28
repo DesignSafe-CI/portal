@@ -300,9 +300,7 @@
                     </span>
                 </label>
                 <div>
-                    <select name="mySelect" 
-                            id="mySelect"
-                            ng-options="type as type for type in $ctrl.otherTypes"
+                    <select ng-options="type as type for type in $ctrl.otherTypes"
                             ng-model="$ctrl.form.dataType"
                             required
                     >

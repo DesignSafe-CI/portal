@@ -386,7 +386,6 @@ class EditProjectCtrl {
             i = this.form.awardNumber.length;
             this.form.awardPrune = [];
             while(i--) {
-                console.log(i);
                 if (typeof this.form.awardNumber[i] === 'undefined') {
                     this.form.awardNumber.splice(i, 1);
                 } else if (typeof this.form.awardNumber[i].name === 'undefined' &&
@@ -394,7 +393,6 @@ class EditProjectCtrl {
                     this.form.awardNumber.splice(i, 1);
                 } else if (this.form.awardNumber[i].name === "" &&
                            this.form.awardNumber[i].number === "" ) {
-                    console.log('this');
                     this.form.awardNumber.splice(i, 1);
                 } else {
                     this.form.awardPrune.push(this.form.awardNumber[i]);
