@@ -290,19 +290,27 @@
         <div ng-if="$ctrl.form.uuid && $ctrl.form.projectType">
             <!-- Project Other Data Types -->
             <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.project.value.projectType === 'other'">
-                <label for="id-project-data-types">
-                    <div class="label-form">
-                        <div>
-                            <span class="label-form-name">Data Type(s)</span>
-                        </div>
-                        <span class="label-form-desc">
-                            The nature or genre of the content.
-                        </span>
+                <label class="label-form">
+                    <div>
+                        <span class="label-form-name">Data Type(s)</span>
+                        <span class="label label-danger">Required</span>
                     </div>
+                    <span class="label-form-desc">
+                        The nature or genre of the content.
+                    </span>
                 </label>
                 <div>
-                    <select ng-model="$ctrl.form.dataType" ng-options="type for type in $ctrl.otherTypes"></select>
-                    <input class="project-form-input" ng-if="$ctrl.form.dataType === 'Custom'" ng-model="$ctrl.form.dataTypeCustom">
+                    <select ng-options="type as type for type in $ctrl.otherTypes"
+                            ng-model="$ctrl.form.dataType"
+                            required
+                    >
+                        <option value="" disabled selected>--Data Type--</option>
+                    </select>
+                    <input type="text"
+                           class="project-form-input"
+                           ng-model="$ctrl.form.dataTypeCustom"
+                           ng-if="$ctrl.form.dataType === 'Custom'"
+                    />
                 </div>
             </div>
             <!-- Project Awards -->
@@ -353,12 +361,12 @@
                 </table>
                 <div>
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.addField($ctrl.form.awardNumber)">
+                            ng-click="$ctrl.addAwardField($ctrl.form.awardNumber)">
                             &#x2b; Add another Award
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.dropField($ctrl.form.awardNumber)"
+                            ng-click="$ctrl.dropField($ctrl.form.awardNumber, true)"
                             ng-disabled="$ctrl.checkEmpty($ctrl.form.awardNumber)">
                             &#x2212; Remove Award
                     </button>
@@ -412,7 +420,7 @@
                 </table>
                 <div>
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.addWorkField($ctrl.form.associatedProjects, true)">
+                            ng-click="$ctrl.addWorkField($ctrl.form.associatedProjects)">
                             &#x2b; Add another Related Work
                     </button>
                     |

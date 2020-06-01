@@ -96,7 +96,7 @@ class EditProjectCtrl {
             this.form.description = this.project.value.description || '';
             this.form.experimentalFacility = this.project.value.experimentalFacility || '';
             this.form.keywords = this.project.value.keywords || '';
-            this.form.dataType = this.project.value.dataType || '';
+            this.form.dataType = this.project.value.dataType || null;
             this.form.fileTags = this.project.value.fileTags || [];
             if (this.form.dataType && this.otherTypes.indexOf(this.form.dataType) === -1) {
                 this.form.dataTypeCustom = this.form.dataType;
@@ -391,6 +391,9 @@ class EditProjectCtrl {
                 } else if (typeof this.form.awardNumber[i].name === 'undefined' &&
                            typeof this.form.awardNumber[i].number === 'undefined' ) {
                     this.form.awardNumber.splice(i, 1);
+                } else if (this.form.awardNumber[i].name === "" &&
+                           this.form.awardNumber[i].number === "" ) {
+                    this.form.awardNumber.splice(i, 1);
                 } else {
                     this.form.awardPrune.push(this.form.awardNumber[i]);
                 }
@@ -402,6 +405,9 @@ class EditProjectCtrl {
                     this.form.associatedProjects.splice(i, 1);
                 } else if (typeof this.form.associatedProjects[i].title === 'undefined' &&
                            typeof this.form.associatedProjects[i].href === 'undefined' ) {
+                    this.form.associatedProjects.splice(i, 1);
+                } else if (this.form.associatedProjects[i].title === '' &&
+                           this.form.associatedProjects[i].href === '' ) {
                     this.form.associatedProjects.splice(i, 1);
                 } else {
                     this.form.workPrune.push(this.form.associatedProjects[i]);
