@@ -14,18 +14,18 @@ class AuthorInformationModalCtrl {
         this.institution = this.author.inst;
         this.username = this.author.name;
         this.loading = true;
-        this.getOrcid(this.username, this);
+        this.getOrcid(this.username);
     }
 
-    getOrcid(username, self) {
-        return self.UserService.get(username)
+    getOrcid(username) {
+        return this.UserService.get(username)
             .then((res) => {
                 if (res.orcid_id) {
-                    self.orcid = res.orcid_id;
+                    this.orcid = res.orcid_id;
                 }
             })
             .finally(() => {
-                self.loading = false;
+                this.loading = false;
             });
     }
 
