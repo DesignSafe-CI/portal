@@ -1,7 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.6-20200601
+Fixes:
+* Fix Recon Portal "Clear Filters" button.
+* Edit Project Modal fixes for awards, works, and data type.
+
 ## v4.9.6-20200504
-Enchancements:
+Enhancements:
 * Added Dublin Core meta tags for Google Scholar citation.
 * Added an Elasticsearch index for legacy NEES files.
 
