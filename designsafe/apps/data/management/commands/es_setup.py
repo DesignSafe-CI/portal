@@ -69,6 +69,18 @@ class Command(BaseCommand):
             target_index="designsafe-{}-projects".format(local)
         )
 
+        elasticsearch.helpers.reindex(
+            client=remote_es_client,
+            target_client=local_es_client,
+            source_index="designsafe-{}-rapid-events".format(remote),
+            target_index="designsafe-{}-rapid-events".format(local)
+        )
 
+        elasticsearch.helpers.reindex(
+            client=remote_es_client,
+            target_client=local_es_client,
+            source_index="designsafe-{}-rapid-event-types".format(remote),
+            target_index="designsafe-{}-rapid-event-types".format(local)
+        )
 
         logger.debug(remote_es_client.info())
