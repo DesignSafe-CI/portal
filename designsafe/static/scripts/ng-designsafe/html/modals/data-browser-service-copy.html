@@ -24,7 +24,10 @@
             <dd-breadcrumb skip-root="true" custom-root="customRoot" listing="listing" on-browse="onBrowse"></dd-breadcrumb>
         </div>
     </div>
-    <div class="table-responsive" ng-if="!state.listingProjects">
+    <div class="table-responsive" style="height: 500px" ng-if="!state.listingProjects" ds-infinite-scroll
+    data-scroll-bottom="!state.reachedEnd && scrollToBottom()"
+    data-scroll-top="scrollToTop()"
+    data-bottom-height="0">
         <table class="table table-bordered table-striped" style="background-color: #fff;">
             <thead>
             <th>Name</th>
@@ -45,6 +48,13 @@
                        ng-click="chooseDestination(item)">
                         Copy to {{ item.name }}
                     </a>
+                </td>
+            </tr>
+            <tr>
+                <td ng-if="state.loadingMore" colspan=2>
+                    <span class="bg-info text-info">
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                    </span>
                 </td>
             </tr>
             </tbody>
@@ -72,13 +82,17 @@
         </table>
     </div>
 
-    <div class="table-responsive" ng-if="state.listingProjects">
+    <div class="table-responsive" ng-if="state.listingProjects" style="height: 500px"
+    ds-infinite-scroll
+    data-scroll-bottom="!state.reachedEnd && scrollToBottom()"
+    data-scroll-top="scrollToTop()"
+    data-bottom-height="0">
       <table class="table table-bordered tables-striped" style="background-color: #fff;">
         <thead>
          <th>Name</th>
          <th>PI</th>
         </thead>
-        <tbody ng-if="!sate.busy">
+        <tbody ng-if="!state.busy">
           <tr ng-repeat="item in projects">
             <td>
               <i class="fa fa-briefcase"></i>
@@ -90,6 +104,13 @@
                 {{ data.names[item.value.pi] }}
             </td>
           </tr>
+          <tr>
+            <td ng-if="state.loadingMore" colspan=2>
+                <span class="bg-info text-info">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
+            </td>
+        </tr>
         </tbody>
       </table>
       <caption style="padding:0">
@@ -106,7 +127,7 @@
               </p>
           </div>
 
-          <div ng-if="! state.busy && ! state.error && (listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
+          <div ng-if="! state.busy && ! state.error && (projects|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
               <p class="lead">
                   This folder is empty!
                   <br><i class="fa fa-folder-open-o"></i>
