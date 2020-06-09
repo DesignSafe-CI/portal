@@ -367,14 +367,14 @@
                             <!-- Old Collections -->
                             <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
                                 <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                    <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                                    <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                         style="width:100%;">
                                         <div class="collapse-tab">
                                             <span class="collapse-tab-content-left">Collection | <strong>{{collection.value.title}}</strong></span>
                                             <span class="collapse-tab-content-right curation-chevron"></span>
                                         </div>
                                     </button>
-                                    <div id="files-{{collection.uuid}}" class="collapse dropdown-spacer-lg">
+                                    <div id="files-{{collection.uuid}}-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                                         <div class="well">
                                             <div style="display: inline-block; width:20%;">Observation Type</div>
                                             <div style="display: inline-block; width: 78%; font-weight:bold;">
