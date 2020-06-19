@@ -27,7 +27,6 @@ class DataBrowserServiceMoveCtrl {
             busy: false,
             error: null,
             listingProjects: false,
-            listingProjects: false,
             loadingMore: false,
             reachedEnd: false,
         };
@@ -198,6 +197,5 @@ export const DataBrowserServiceMoveComponent = {
         dismiss: '&'
     }
 };
-
 
 
