@@ -3,7 +3,10 @@
     <strong ng-click="$ctrl.close()" class="fa fa-times"></strong>
 </div>
 <div class="modal-body">
-    <table style="width: 95%">
+    <div data-ng-if="$ctrl.loading">
+        <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading ...
+    </div>
+    <table ng-if="!$ctrl.loading" style="width: 95%">
         <tbody>
             <tr>
                 <td style="width: 45%"><p>Name</p></td>
