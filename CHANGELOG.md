@@ -1,5 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.7-20200602
+Fixes: 
+* Enable expansion of multiple tabs of the same type in Publications.
+* Fixes to the Authors window in the publication pipeline.
+
 ## v4.9.7
 Fixes:
 * Fix Recon Portal "Clear Filters" button.
