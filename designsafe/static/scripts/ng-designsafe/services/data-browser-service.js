@@ -285,7 +285,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
         $scope.data = data;
         $scope.data.names = {};
         $scope.offset = 0;
-        $scope.limit = 20;
+        $scope.limit = 100;
         $scope.state = {
           busy: false,
           error: null,
@@ -354,10 +354,11 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
           }
         });
         $scope.currentOption = $scope.options[0];
-        $scope.scrollToBottom = function() {
+        $scope.scrollToBottom = function(fileListing) {
           $scope.offset += $scope.limit;
           $scope.state.loadingMore = true;
           var cOption = $scope.currentOption;
+          cOption.conf.path = (fileListing || {}).path
           if (cOption.conf.system != 'projects'){
             $scope.state.listingProjects = false;
             FileListing.get(cOption.conf, cOption.apiParams, {offset: $scope.offset, limit: $scope.limit})
@@ -411,7 +412,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
           }
 
           $scope.state.busy = true;
-          FileListing.get({system: system, path: path}, $scope.currentOption.apiParams)
+          FileListing.get({system: system, path: path}, $scope.currentOption.apiParams, {offset: $scope.offset, limit: $scope.limit})
             .then(function (listing) {
               $scope.listing = listing;
               $scope.state.busy = false;

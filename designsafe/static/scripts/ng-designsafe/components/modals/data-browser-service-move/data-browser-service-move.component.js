@@ -20,7 +20,7 @@ class DataBrowserServiceMoveCtrl {
             files: this.files,
             names: {},
         };
-
+        this.currentParams = null;
         this.listing = this.initialDestination;
 
         this.state = {
@@ -62,6 +62,7 @@ class DataBrowserServiceMoveCtrl {
         this.$scope.$watch('currentOption', (opt) => {
             let conf = opt.conf;
             let params = opt.apiParams;
+            this.currentParams = params;
             this.state.reachedEnd = false;
             this.state.busy = true;
             this.offset = 0;
@@ -102,10 +103,11 @@ class DataBrowserServiceMoveCtrl {
 
     }
 
-    scrollToBottom() {
+    scrollToBottom(fileListing) {
         this.offset += this.limit;
         this.state.loadingMore = true;
         var cOption = this.$scope.currentOption;
+        cOption.conf.path = (fileListing || {}).path
         if (cOption.conf.system != 'projects'){
           this.state.listingProjects = false;
           this.FileListing.get(cOption.conf, cOption.apiParams, {offset: this.offset, limit: this.limit})
@@ -161,7 +163,7 @@ class DataBrowserServiceMoveCtrl {
 
         this.state.busy = true;
         this.state.error = null;
-        this.FileListing.get({ system: system, path: path }).then(
+        this.FileListing.get({ system: system, path: path }, this.currentParams, {offset: this.offset, limit: this.limit}).then(
             (listing) => {
                 this.listing = listing;
                 this.state.busy = false;
