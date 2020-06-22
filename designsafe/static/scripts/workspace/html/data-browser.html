@@ -63,7 +63,7 @@
                         <td ng-if="f.meta">{{f.meta.title}}</td>
                         <td ng-if="f.metadata">{{f.metadata.project.title}}</td>
                     </tr>
-                    <tr ng-if="data.filesListing.system !== 'nees.public' && data.filesListing.system === 'designsafe.storage.projects'" 
+                    <tr ng-if="data.filesListing.system === 'designsafe.storage.projects'" 
                         ng-repeat="f in data.filesListing.children | orderBy : ['lastModified']">
                         <td>
                             <button ng-if="f.name !== '.' && data.wants" 
