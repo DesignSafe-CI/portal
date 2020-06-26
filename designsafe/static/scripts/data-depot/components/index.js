@@ -20,6 +20,8 @@ import { ExpPublishedViewComponent,
 } from './published/published-view.component.js';
 import { NeesCitationModalComponent } from './modals/nees-citation-modal.component';
 import { NeesDoiListComponent } from './modals/nees-doi-list.component'
+import { publicationAdvancedSearchComponent } from './data-depot-listing/publication-advanced-search/publication-advanced-search.component';
+import { publicationAdvancedSearchCheckbox } from './data-depot-listing/publication-advanced-search/publication-advanced-search-checkbox.component';
 
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);
 
@@ -44,5 +46,7 @@ ddComponents.component('fieldReconPublishedView', FieldReconPublishedViewCompone
 ddComponents.component('otherPublishedView', OtherPublishedViewComponent);
 ddComponents.component('neesCitationModal', NeesCitationModalComponent);
 ddComponents.component('neesDoiList', NeesDoiListComponent);
+ddComponents.component('publicationAdvancedSearch', publicationAdvancedSearchComponent);
+ddComponents.component('publicationAdvancedSearchCheckbox', publicationAdvancedSearchCheckbox);
 
 export default ddComponents;

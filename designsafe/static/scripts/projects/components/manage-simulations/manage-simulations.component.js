@@ -1,4 +1,5 @@
 import ManageSimulationTemplate from './manage-simulations.component.html';
+const simulationTypes = require('./simulation-types.json');
 import _ from 'underscore';
 
 class ManageSimulationCtrl {
@@ -64,32 +65,7 @@ class ManageSimulationCtrl {
             addGuest: [{}],
             entitiesToAdd: []
         };
-        this.ui.simulationTypes = [
-            {
-                name: 'Geotechnical',
-                label: 'Geotechnical'
-            },
-            {
-                name: 'Structural',
-                label: 'Structural'
-            },
-            {
-                name: 'Soil Structure System',
-                label: 'Soil Structure System'
-            },
-            {
-                name: 'Storm Surge',
-                label: 'Storm Surge'
-            },
-            {
-                name: 'Wind',
-                label: 'Wind'
-            },
-            {
-                name: 'Other',
-                label: 'Other'
-            }
-        ];
+        this.ui.simulationTypes = simulationTypes.simulationTypes;
 
         if (this.edit) {
             this.editSim(this.edit);

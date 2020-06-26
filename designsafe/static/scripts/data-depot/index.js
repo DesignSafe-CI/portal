@@ -841,6 +841,30 @@ function config(
                 },
             },
         })
+        .state('publicDataLegacy', {
+            url: '/public-legacy/?typeFilters&query_string',
+            component: 'dataDepotPublicationsBrowser',
+            params: {
+                systemId: 'nees.public',
+                filePath: '',
+            },
+            resolve: {
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'public-legacy',
+                        baseUrl: '/api/public/files',
+                        searchState: 'publicDataLegacy',
+                    };
+                },
+                path: ($stateParams)=>{
+                    'ngInject';
+                    return $stateParams.filePath || '/';
+                },
+                auth: () => {
+                    return true;
+                },
+            },
+        })
         .state('neesPublished', {
             url: '/public/nees.public/{filePath:any}',
             component: 'neesPublished',

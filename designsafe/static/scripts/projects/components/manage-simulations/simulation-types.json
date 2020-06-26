@@ -1,0 +1,28 @@
+{
+    "simulationTypes": [
+        {
+            "name": "Geotechnical",
+            "label": "Geotechnical"
+        },
+        {
+            "name": "Structural",
+            "label": "Structural"
+        },
+        {
+            "name": "Soil Structure System",
+            "label": "Soil Structure System"
+        },
+        {
+            "name": "Storm Surge",
+            "label": "Storm Surge"
+        },
+        {
+            "name": "Wind",
+            "label": "Wind"
+        },
+        {
+            "name": "Other",
+            "label": "Other"
+        }
+    ]
+}
