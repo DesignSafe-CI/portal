@@ -400,6 +400,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
         $scope.onBrowse = function ($event, fileListing) {
           $event.preventDefault();
           $event.stopPropagation();
+          $scope.offset = 0;
           $scope.state.listingProjects = false;
           var system = fileListing.system || fileListing.systemId;
           var path = fileListing.path;
@@ -416,6 +417,8 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
             .then(function (listing) {
               $scope.listing = listing;
               $scope.state.busy = false;
+              $scope.state.reachedEnd = listing.children.length < ($scope.limit - 1);
+              $scope.currentOption.conf.system = listing.system;
             });
         };
 

@@ -151,6 +151,8 @@ class DataBrowserServiceMoveCtrl {
         $event.preventDefault();
         $event.stopPropagation();
         this.state.listingProjects = false;
+        this.state.reachedEnd = false;
+        this.offset=0;
         var system = fileListing.system || fileListing.systemId;
         var path = fileListing.path;
         if (typeof system === 'undefined' && typeof path === 'undefined' && fileListing.value) {
@@ -167,6 +169,8 @@ class DataBrowserServiceMoveCtrl {
             (listing) => {
                 this.listing = listing;
                 this.state.busy = false;
+                this.state.reachedEnd = listing.children.length < (this.limit - 1);
+                this.$scope.currentOption.conf.system = listing.system;
             },
             (error) => {
                 this.state.busy = false;
