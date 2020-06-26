@@ -49,13 +49,17 @@
                 <th ng-if="data.filesListing.system !== 'nees.public'">Size</th>
                 </thead>
                 <tbody>
-                    <tr ng-if="data.filesListing.system === 'nees.public'" ng-repeat="f in data.filesListing.children">
+                    <tr ng-if="data.filesListing.system === 'nees.public'" 
+                        ng-repeat="f in data.filesListing.children">
                         <td>
                             <button ng-if="f.name !== '.' && data.wants"
                                     type="button"
                                     class="btn btn-xs btn-info"
                                     ng-click="chooseFile(f)">Select</button>
-                            <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="agave://{{f.system}}/{{f.path}}">
+                            <a ng-click="browseFile(f)" 
+                                class="btn btn-xs btn-link" 
+                                ds-data-draggable 
+                                data-ds-data="agave://{{f.system}}/{{f.path}}">
                                 <i class="fa {{f.icon()}}"></i>
                                 <span>{{f.name}}</span>
                             </a>
