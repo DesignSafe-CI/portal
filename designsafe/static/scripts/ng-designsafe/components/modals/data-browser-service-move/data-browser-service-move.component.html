@@ -25,8 +25,9 @@
         </div>
     </div>
     <div class="table-responsive" style="height: 500px" ng-if="!$ctrl.state.listingProjects" ds-infinite-scroll
-    data-scroll-bottom="!$ctrl.state.reachedEnd && $ctrl.scrollToBottom($ctrl.listing)"
+    data-scroll-bottom="!$ctrl.state.busy && !$ctrl.state.reachedEnd && $ctrl.scrollToBottom($ctrl.listing)"
     data-scroll-top="$ctrl.scrollToTop()"
+    ng-scroll=""
     data-bottom-height="0">
         <table class="table table-bordered table-striped" style="background-color: #fff;">
             <thead>
@@ -91,7 +92,7 @@
         </div>
         <div class="table-responsive" ng-if="$ctrl.state.listingProjects" style="height: 500px"
             ds-infinite-scroll
-            data-scroll-bottom="!$ctrl.state.reachedEnd && $ctrl.scrollToBottom($ctrl.listing)"
+            data-scroll-bottom="!$ctrl.state.busy && !$ctrl.state.reachedEnd && $ctrl.scrollToBottom($ctrl.listing)"
             data-scroll-top="$ctrl.scrollToTop()"
             data-bottom-height="0">
       <table class="table table-bordered tables-striped" style="background-color: #fff;">
