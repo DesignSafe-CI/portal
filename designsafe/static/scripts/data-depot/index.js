@@ -904,6 +904,7 @@ function config(
                     'citation_publication_date',
                     'citation_doi',
                     'citation_abstract_html_url',
+                    'identifier',
                     'DC.identifier',
                     'DC.creator',
                     'DC.title',

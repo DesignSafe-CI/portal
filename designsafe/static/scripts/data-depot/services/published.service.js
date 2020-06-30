@@ -16,8 +16,47 @@ export class PublishedService {
         return this.$http.get('/api/projects/nees-publication/' + neesId);
     }
 
+    updateNeesMetatags(data) {
+        const header = this.$window.document.getElementsByTagName('head')[0];
+        console.log(data);
+        // Project Level
+        // Title
+        this.$window.document.getElementsByName('citation_title')[0].content = data.project.title || '';
+        this.$window.document.getElementsByName('DC.title')[0].content = data.project.title || '';
+
+        // Description
+        const descTag = this.$window.document.createElement('meta');
+        descTag.name = 'citation_description';
+        descTag.content = data.project.description;
+        header.appendChild(descTag);
+        // Authors - PI
+        const prjAuthors = data.project.pis || [];
+        prjAuthors.forEach((author) => {
+            const authorTag = this.$window.document.createElement('meta');
+            authorTag.name = 'citation_author';
+            authorTag.content = `${author.lastName}, ${author.firstName}`;
+            header.appendChild(authorTag);
+        });
+
+
+        // Experiments
+        const experiments = data.experiments || [];
+        experiments.forEach((exp) => {
+            const titleTag = this.$window.document.createElement('meta');
+            titleTag.name = 'citation_title';
+            titleTag.content = exp.title || '';
+            header.appendChild(titleTag);
+
+            const descTag = this.$window.document.createElement('meta');
+            descTag.name = 'citation_description';
+            descTag.content = exp.description || '';
+            header.appendChild(descTag);
+        });
+
+    }
+    
     updateHeaderMetadata(projId, resp) {
-        this.$window.document.title = resp.data.project.value.title + " | DesignSafe-CI";
+        this.$window.document.title = resp.data.project.value.title + ' | DesignSafe-CI';
         this.$window.document.getElementsByName('keywords')[0].content = resp.data.project.value.keywords;
         this.$window.document.getElementsByName('description')[0].content = resp.data.project.value.description;
 
@@ -128,19 +167,19 @@ export class PublishedService {
             // Title
             const entTitleTag = this.$window.document.createElement('meta');
             entTitleTag.name = 'citation_title';
-            entTitleTag.content = entity.value.title;
+            entTitleTag.content = entity.value.title || '';
             this.$window.document.getElementsByTagName('head')[0].appendChild(entTitleTag);
            
             // Doi
             const entDoiTag = this.$window.document.createElement('meta');
             entDoiTag.name = 'citation_doi';
-            entDoiTag.content = entity.doi;
+            entDoiTag.content = entity.doi || '';
             this.$window.document.getElementsByTagName('head')[0].appendChild(entDoiTag);
 
             // Description
             const entDescTag = this.$window.document.createElement('meta');
             entDescTag.name = 'citation_description';
-            entDescTag.content = entity.value.description;
+            entDescTag.content = entity.value.description || '';
             this.$window.document.getElementsByTagName('head')[0].appendChild(entDescTag);
 
             // Authors (with Institutions)
@@ -159,5 +198,6 @@ export class PublishedService {
                     this.$window.document.getElementsByTagName('head')[0].appendChild(authorInstTag);
                 });
         });
+        
     }
 }
