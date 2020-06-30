@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _, { has } from 'underscore';
 export class PublishedService {
     constructor($http, $q, $window, $filter) {
         'ngInject';
@@ -95,8 +95,69 @@ export class PublishedService {
             }
 
         });
+
+        if (!authors && _.has(resp.data.project.value, 'teamOrder')) {
+            authors = resp.data.project.value.teamOrder.reduce((prev, curr, idx) => {
+                const last = idx === resp.data.project.value.teamOrder.length - 1;
+                const currentName = `${curr.lname}, ${curr.fname}`;
+                if (last && idx > 0) {
+                    return `${prev}, and ${currentName}`;
+                }
+                return `${prev} ${currentName}`;
+            }, '');
+        } 
+        
         this.$window.document.getElementsByName('author')[0].content = authors;
         this.$window.document.getElementsByName('DC.creator')[0].content = authors;
 
+        const entities = [];
+        if (has(resp.data, 'experimentsList')) {
+            entities.push(...resp.data.experimentsList);
+        } else if(has(resp.data, 'simulations')) {
+            entities.push(...resp.data.simulations);
+        } else if(has(resp.data, 'missions')) {
+            entities.push(...resp.data.missions);
+        } else if (has(resp.data, 'hybrid_simulations')) {
+            entities.push(...resp.data, 'hybrid_simulations');
+        }
+
+        // Check for reports
+        if(has(resp.data, 'reports')) entities.push(...resp.data.reports);
+
+        entities.forEach((entity) => {
+            // Title
+            const entTitleTag = this.$window.document.createElement('meta');
+            entTitleTag.name = 'citation_title';
+            entTitleTag.content = entity.value.title;
+            this.$window.document.getElementsByTagName('head')[0].appendChild(entTitleTag);
+           
+            // Doi
+            const entDoiTag = this.$window.document.createElement('meta');
+            entDoiTag.name = 'citation_doi';
+            entDoiTag.content = entity.doi;
+            this.$window.document.getElementsByTagName('head')[0].appendChild(entDoiTag);
+
+            // Description
+            const entDescTag = this.$window.document.createElement('meta');
+            entDescTag.name = 'citation_description';
+            entDescTag.content = entity.value.description;
+            this.$window.document.getElementsByTagName('head')[0].appendChild(entDescTag);
+
+            // Authors (with Institutions)
+            entity.authors
+                .filter((author) => author.authorship === true)
+                .forEach((author) => {
+                    const authorTag = this.$window.document.createElement('meta');
+                    authorTag.name = 'citation_author';
+                    authorTag.content = `${author.lname} ${author.fname}`;
+
+                    const authorInstTag = this.$window.document.createElement('meta');
+                    authorInstTag.name = 'citation_author_institution';
+                    authorInstTag.content = author.inst;
+
+                    this.$window.document.getElementsByTagName('head')[0].appendChild(authorTag);
+                    this.$window.document.getElementsByTagName('head')[0].appendChild(authorInstTag);
+                });
+        });
     }
 }

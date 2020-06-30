@@ -898,25 +898,41 @@ function config(
             },
             onExit: ($window) => {
                 'ngInject';
-                [
-                    'description', 'citation_title', 'citation_publication_date',
-                    'citation_doi', 'citation_abstract_html_url', 'DC.identifier', 
-                    'DC.creator', 'DC.title', 'DC.date'
-                ].forEach(
+                const projectLevelTags = [
+                    'description',
+                    'citation_title',
+                    'citation_publication_date',
+                    'citation_doi',
+                    'citation_abstract_html_url',
+                    'DC.identifier',
+                    'DC.creator',
+                    'DC.title',
+                    'DC.date',
+                    'authors'
+                ];
+                projectLevelTags.forEach(
                     (name) => {
                         let el = $window.document.getElementsByName(name);
-                        el[0].content = '';
-                    }
-                );
-                ['citation_author', 'citation_author_institution',
-                    'citation_keywords'].forEach(
-                    (name) => {
-                        let els = $window.document.getElementsByName(name);
-                        while(els[0]){
-                            els[0].parentNode.removeChild(els[0]);
+                        if (el) {
+                            el[0].content = '';
+                            // citation_doi is also an entity tag
+                            while(el[1]) el[1].parentNode.removeChild(el[1]);
                         }
+                        
                     }
                 );
+                const entityTags = [
+                    'citation_author',
+                    'citation_author_institution',
+                    'citation_description',
+                    'citation_keywords',
+                ];
+                entityTags.forEach((name) => {
+                    let els = $window.document.getElementsByName(name);
+                    while (els[0]) {
+                        els[0].parentNode.removeChild(els[0]);
+                    }
+                });
             },
             resolve: {
                 listing: ($stateParams, DataBrowserService)=>{
