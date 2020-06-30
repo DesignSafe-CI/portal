@@ -18,7 +18,6 @@ export class PublishedService {
 
     updateNeesMetatags(data) {
         const header = this.$window.document.getElementsByTagName('head')[0];
-        console.log(data);
         // Project Level
         // Title
         this.$window.document.getElementsByName('citation_title')[0].content = data.project.title || '';
