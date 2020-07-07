@@ -1,8 +1,8 @@
 <div class="file-categories-content">
-    <div class="loading" data-ng-if="$ctrl._ui.busy">
+    <div class="loading" ng-if="$ctrl._ui.busy">
         <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </div>
-    <div ng-if="!$ctrl._ui.isOther">
+    <div ng-if="!$ctrl._ui.isOther && !$ctrl._ui.busy">
         <div ng-if="$ctrl._ui.editTags">
             <div class="tag-item" data-ng-repeat="entityTag in $ctrl.file._entityTags">
                 {{entityTag}}
