@@ -159,7 +159,7 @@
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
         <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" params="$ctrl.fl"></files-listing>
     </div>
-    <div ng-if="!$ctrl.ui.fileNav">
+    <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading">
         <!-- Root Sets -->
         <!-- <div ng-repeat="mission in $ctrl.ordered($ctrl.browser.project, $ctrl.primaryEnts)"> -->
         <div ng-repeat="mission in $ctrl.orderedPrimary">
@@ -259,7 +259,7 @@
                 </div>
             </div>
             <!-- Missions -->
-            <div ng-if="!$ctrl.ui.fileNav && mission.name == 'designsafe.project.field_recon.mission' && !$ctrl.ui.loading">
+            <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading && mission.name == 'designsafe.project.field_recon.mission'">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
                     <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
                         <table style="width:100%" id="anchor-{{ mission.uuid }}">

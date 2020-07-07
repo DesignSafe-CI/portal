@@ -7,7 +7,7 @@ class ManageCategoriesCtrl {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.FileListing = FileListing;
-        this.browser = DataBrowserService.state();
+        this.DataBrowserService = DataBrowserService;
         this.UserService = UserService;
         this.Django = Django;
         this.$q = $q;
@@ -46,14 +46,10 @@ class ManageCategoriesCtrl {
             this.editCategory(this.edit);
             this.ui.loading = false;
         } else {
-            let entities = this.browser.project.getAllRelatedObjects();
-            var allFilePaths = [];
             this.browser.listings = {};
-            var apiParams = {
-                fileMgr: 'agave',
-                baseUrl: '/api/agave/files',
-                searchState: 'projects.view.data',
-            };
+            let entities = this.browser.project.getAllRelatedObjects();
+            let listingPaths = [];
+            let allPaths = [];
             entities.forEach((entity) => {
                 this.browser.listings[entity.uuid] = {
                     name: this.browser.listing.name,
@@ -62,60 +58,41 @@ class ManageCategoriesCtrl {
                     trail: this.browser.listing.trail,
                     children: [],
                 };
-                allFilePaths = allFilePaths.concat(entity._filePaths);
+                allPaths = allPaths.concat(entity._filePaths);
             });
-            this.setFilesDetails = (paths) => {
-                let filePaths = [...new Set(paths)];
-                var p = this.$q((resolve, reject) => {
-                    var results = [];
-                    var index = 0;
-                    var size = 5;
-                    var fileCalls = filePaths.map(filePath => {
-                        return this.FileListing.get(
-                            { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
-                        ).then((resp) => {
-                            if (!resp) {
-                                return;
-                            }
-                            var allEntities = this.browser.project.getAllRelatedObjects();
-                            var entities = allEntities.filter((entity) => {
-                                return entity._filePaths.includes(resp.path);
-                            });
-                            entities.forEach((entity) => {
-                                resp._entities.push(entity);
-                                this.browser.listings[entity.uuid].children.push(resp);
-                            });
-                            return resp;
-                        });
-                    });
-    
-                    var step = () => {
-                        var calls = fileCalls.slice(index, (index += size));
-                        if (calls.length) {
-                            this.$q.all(calls)
-                                .then((res) => {
-                                    results.concat(res);
-                                    step();
-                                    return res;
-                                })
-                                .catch(reject);
-                        } else {
-                            resolve(results);
+            allPaths.forEach((path) => {
+                listingPaths = listingPaths.concat(path.match(`.*\/`)[0]);
+            });
+            let reducedPaths = { files: [...new Set(allPaths)], directories: [...new Set(listingPaths)] };
+
+            this.populateListings = (paths, ents) => {
+                let apiParams = this.DataBrowserService.apiParameters();
+                var dirListings = paths.directories.map((dir) => {
+                    return this.FileListing.get(
+                        { system: 'project-' + this.browser.project.uuid, path: dir },
+                        apiParams
+                    ).then((resp) => {
+                        if (!resp) {
+                            return;
                         }
-                    };
-                    step();
-                });
-                return p.then(
-                    (results) => {
-                        this.ui.loading = false;
-                        return results;
-                    },
-                    (err) => {
-                        this.ui.loading = false;
-                        this.browser.ui.error = err;
+                        let files = resp.children;
+                        ents.forEach((e) => {
+                            files.forEach((f) => {
+                                if (e._filePaths.indexOf(f.path) > -1) {
+                                    f._entities.push(e);
+                                    this.browser.listings[e.uuid].children.push(f);
+                                }
+                            });
+                        });
+                        return resp;
                     });
+                });
+
+                this.$q.all(dirListings).then((resp) => {
+                    this.ui.loading = false;
+                });
             };
-            this.setFilesDetails(allFilePaths);
+            this.populateListings(reducedPaths, entities);
         }
 
         if (this.browser.project.value.projectType === 'experimental') {
@@ -231,10 +208,6 @@ class ManageCategoriesCtrl {
                 }
             ];
         }
-
-        // if (this.edit) {
-        //     this.editCategory(this.edit);
-        // }
     }
 
     dropEntity(group) {
@@ -301,11 +274,9 @@ class ManageCategoriesCtrl {
                         trail: this.browser.listing.trail,
                         children: [],
                     }; 
-                    this.ui.error = false;
                 },
                 (err) => {
-                    this.ui.error = true;
-                    this.error = err;
+                    this.ui.error = err;
                 }
             );
     }
