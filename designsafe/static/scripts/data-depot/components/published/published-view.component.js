@@ -256,6 +256,13 @@ class PublishedViewCtrl {
         return eqt.label;
     }
 
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+    
     download() {
         this.$uibModal.open({
             component: 'publicationDownloadModal',
