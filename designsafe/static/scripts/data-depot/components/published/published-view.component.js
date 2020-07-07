@@ -324,7 +324,8 @@ class PublishedViewCtrl {
             resolve: {
                 publication: () => { return this.browser.publication; },
                 entity: () => { return entity; },
-            }
+            },
+            size: 'citation'
         });
     }
 

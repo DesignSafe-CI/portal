@@ -6352,6 +6352,10 @@ button.close {
     width: 500px;
     top: 35%;
   }
+  .modal-citation {
+    width: 500px;
+    top: 35%;
+  }
   .modal-download {
     width: 900px;
     top: 20%;
