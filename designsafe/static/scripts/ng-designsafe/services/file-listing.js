@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { path } from 'd3';
 
 export function FileListing($http, $q) {
     'ngInject';
@@ -530,6 +531,27 @@ export function FileListing($http, $q) {
             });
     };
 
+    FileListing.prototype.createJupyterLink = function(specificLocation, identifier) {
+        // Inject specific location and project
+        let pathToFile = this.path;
+        if (pathToFile.includes(identifier.user)) {
+            pathToFile = pathToFile.substring(identifier.user.length + 2);
+        }
+        if (specificLocation === 'myData' || specificLocation === 'communityData') {
+            specificLocation = specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1);
+        } else if (specificLocation.includes('projects')) {
+            const prjNumber = identifier.project.value.projectId;
+            specificLocation = 'projects/' + prjNumber;
+        } else if (specificLocation === 'publishedData.view') {
+            specificLocation = 'Published';
+        }
+        if (this.system === 'designsafe.storage.published') {
+            specificLocation = 'NHERI-Published';
+        }
+        const fileLocation = `${specificLocation}/${pathToFile}`;
+        const jupyterPath = `http://jupyter.designsafe-ci.org/user/${identifier.user}/notebooks/${fileLocation}`;
+        return jupyterPath;
+    };
 
     // function FilePermission(json) {
     //   angular.extend(this, json);

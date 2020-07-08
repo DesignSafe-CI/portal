@@ -169,28 +169,10 @@ class DataBrowserServicePreviewCtrl {
     }
 
     openInJupyter() {
-        const filePath = this.file.path;
-        let pathToFile = '';
-        if (filePath.includes(this.Django.user)) {
-            const lenghtUserName = this.Django.user.length;
-            pathToFile = filePath.substring(lenghtUserName + 2);
-        } else {
-            pathToFile = filePath;
-        }
-        let specificLocation = this.$state.current.name;
-        if (specificLocation === 'myData' || specificLocation === 'communityData') {
-            specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1));
-        } else if (specificLocation.includes('projects')) {
-            const prjNumber = this.DataBrowserService.state().project.value.projectId;
-            specificLocation = 'projects/' + prjNumber;
-        } else if (specificLocation === 'publishedData.view') {
-            specificLocation = 'Published';
-        }
-        if (this.file.system === 'designsafe.storage.published') { 
-            specificLocation = 'NHERI-Published';
-        }
-        const fileLocation = specificLocation + "/" + pathToFile;
-        const jupyterPath = `http://jupyter.designsafe-ci.org/user/${this.Django.user}/notebooks/${fileLocation}`;
+        const jupyterPath = this.file.createJupyterLink(this.$state.current.name, {
+            project: this.DataBrowserService.state().project,
+            user: this.Django.user,
+        });
         window.open(jupyterPath);
     }
 }
