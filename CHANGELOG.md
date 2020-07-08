@@ -1,6 +1,6 @@
 # DesignSafe-CI Portal Release Notes
 
-## v4.9.7-20200701
+## v4.9.8-20200701
 Enhancements:
 - task/DES-1678: Curation UI/UX updates (1516, 1526, 1539)
 - task/DES-1632: Create meta tags for publications with multiple DOIs
@@ -10,6 +10,11 @@ Enhancements:
 
 Fixes:
 - Removed call to custom script from rapid initial migration
+
+## v4.9.8
+Fixes:
+- Enable expansion of multiple tabs of the same type in Publications.
+- Fixes to the Authors window in the publication pipeline.
 
 ## v4.9.7-20200602
 Fixes: 
