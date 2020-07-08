@@ -284,11 +284,14 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
 
         $scope.data = data;
         $scope.data.names = {};
-
+        $scope.offset = 0;
+        $scope.limit = 100;
         $scope.state = {
           busy: false,
           error: null,
-          listingProjects: false
+          listingProjects: false,
+          loadingMore: false,
+          reachedEnd: false,
         };
 
         $scope.options = [
@@ -314,24 +317,28 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
 
         $scope.currentOption = null;
         $scope.$watch('currentOption', function () {
+          $scope.state.reachedEnd = false;
           $scope.state.busy = true;
           var cOption = $scope.currentOption;
+          $scope.offset = 0;
           if (cOption.conf.system != 'projects'){
             $scope.state.listingProjects = false;
-            FileListing.get(cOption.conf, cOption.apiParams)
+            FileListing.get(cOption.conf, cOption.apiParams, {offset: $scope.offset, limit: $scope.limit})
               .then(function (listing) {
                 $scope.listing = listing;
                 $scope.state.busy = false;
+                $scope.state.reachedEnd = listing.children.length < ($scope.limit - 1);
               });
           } else {
             $scope.state.listingProjects = true;
-            ProjectService.list()
+            ProjectService.list({offset: $scope.offset, limit: $scope.limit})
               .then(function(projects){
                 $scope.projects = _.map(projects, function(p) {
                   p.href = $state.href('projects.view', {projectId: p.uuid});
                   return p;});
                 $scope.getNames();
                 $scope.state.busy = false;
+                $scope.state.reachedEnd = projects.length < $scope.limit;
             });
           }
 
@@ -347,7 +354,33 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
           }
         });
         $scope.currentOption = $scope.options[0];
-
+        $scope.scrollToBottom = function(fileListing) {
+          $scope.offset += $scope.limit;
+          $scope.state.loadingMore = true;
+          var cOption = $scope.currentOption;
+          cOption.conf.path = (fileListing || {}).path
+          if (cOption.conf.system != 'projects'){
+            $scope.state.listingProjects = false;
+            FileListing.get(cOption.conf, cOption.apiParams, {offset: $scope.offset, limit: $scope.limit})
+              .then(function (listing) {
+                $scope.listing.children = $scope.listing.children.concat(listing.children);
+                $scope.state.reachedEnd = listing.children.length < ($scope.limit - 1);
+                $scope.state.loadingMore = false;
+              });
+          } else {
+            $scope.state.listingProjects = true;
+            ProjectService.list({offset: $scope.offset, limit: $scope.limit})
+              .then(function(projects){
+                $scope.projects = $scope.projects.concat(_.map(projects, function(p) {
+                  p.href = $state.href('projects.view', {projectId: p.uuid});
+                  return p;}));
+                
+                $scope.getNames();
+                $scope.state.reachedEnd = projects.length < $scope.limit;
+                $scope.state.loadingMore = false;
+            });
+          }
+        };
         $scope.getNames = function () {
           // get user details in one request
           var piList = [];
@@ -367,6 +400,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
         $scope.onBrowse = function ($event, fileListing) {
           $event.preventDefault();
           $event.stopPropagation();
+          $scope.offset = 0;
           $scope.state.listingProjects = false;
           var system = fileListing.system || fileListing.systemId;
           var path = fileListing.path;
@@ -379,10 +413,12 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
           }
 
           $scope.state.busy = true;
-          FileListing.get({system: system, path: path}, $scope.currentOption.apiParams)
+          FileListing.get({system: system, path: path}, $scope.currentOption.apiParams, {offset: $scope.offset, limit: $scope.limit})
             .then(function (listing) {
               $scope.listing = listing;
               $scope.state.busy = false;
+              $scope.state.reachedEnd = listing.children.length < ($scope.limit - 1);
+              $scope.currentOption.conf.system = listing.system;
             });
         };
 

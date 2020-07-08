@@ -404,7 +404,10 @@ class BaseFileResource(BaseAgaveResource):
                                               filePath=urllib.parse.quote(path),
                                               offset=offset,
                                               limit=limit)
-        listing = cls(agave_client=agave_client, **list_result[0])
+        try:
+            listing = cls(agave_client=agave_client, **list_result[0])
+        except IndexError:
+            listing = cls(agave_client=agave_client, system=system, path=path, type=None)
         if listing.type == 'dir' or offset:
             # directory names display as "." from API
             listing.name = os.path.basename(listing.path)

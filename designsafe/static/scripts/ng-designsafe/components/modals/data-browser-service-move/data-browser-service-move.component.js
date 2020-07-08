@@ -20,15 +20,18 @@ class DataBrowserServiceMoveCtrl {
             files: this.files,
             names: {},
         };
-
+        this.currentParams = null;
         this.listing = this.initialDestination;
 
         this.state = {
             busy: false,
             error: null,
-            listingProjects: false
+            listingProjects: false,
+            loadingMore: false,
+            reachedEnd: false,
         };
-        
+        this.offset = 0;
+        this.limit=100;
 
         this.options = [
             {
@@ -58,16 +61,23 @@ class DataBrowserServiceMoveCtrl {
 
         this.$scope.$watch('currentOption', (opt) => {
             let conf = opt.conf;
+            let params = opt.apiParams;
+            this.currentParams = params;
+            this.state.reachedEnd = false;
+            this.state.busy = true;
+            this.offset = 0;
+
             if (conf.system != 'projects') {
                 this.state.listingProjects = false;
-                this.FileListing.get(conf)
+                this.FileListing.get(conf, params, {offset: this.offset, limit: this.limit})
                     .then((listing) => {
                         this.listing = listing;
                         this.state.busy = false;
+                        this.state.reachedEnd = listing.children.length < (this.limit - 1);
                     });
             } else {
                 this.state.listingProjects = true;
-                this.ProjectService.list()
+                this.ProjectService.list({offset: this.offset, limit: this.limit})
                     .then((projects) => {
                         this.projects = _.map(projects, (p) => {
                             p.href = this.$state.href('projects.view', { projectId: p.uuid });
@@ -75,6 +85,7 @@ class DataBrowserServiceMoveCtrl {
                         });
                         this.getNames();
                         this.state.busy = false;
+                        this.state.reachedEnd = projects.length < $scope.limit;
                     });
             }
             if (this.$scope.currentOption.label === 'My Data') {
@@ -91,6 +102,34 @@ class DataBrowserServiceMoveCtrl {
 
 
     }
+
+    scrollToBottom(fileListing) {
+        this.offset += this.limit;
+        this.state.loadingMore = true;
+        var cOption = this.$scope.currentOption;
+        cOption.conf.path = (fileListing || {}).path
+        if (cOption.conf.system != 'projects'){
+          this.state.listingProjects = false;
+          this.FileListing.get(cOption.conf, cOption.apiParams, {offset: this.offset, limit: this.limit})
+            .then( listing =>  {
+                this.listing.children = this.listing.children.concat(listing.children)
+                this.state.reachedEnd = listing.children.length < (this.limit - 1)
+                this.state.loadingMore = false;
+            });
+        } else {
+          this.state.listingProjects = true;
+          this.ProjectService.list({offset: this.offset, limit: this.limit})
+            .then( projects => {
+                const mappedProjects = _.map(projects, p => {
+                    p.href = this.$state.href('projects.view', {projectId: p.uuid});
+                        return p;});
+                this.projects = this.projects.concat(mappedProjects);
+                this.getNames();
+                this.state.reachedEnd = projects.length < this.limit;
+                this.state.loadingMore = false;
+          });
+        }
+    };
 
     getNames () {
         // get user details in one request
@@ -112,6 +151,8 @@ class DataBrowserServiceMoveCtrl {
         $event.preventDefault();
         $event.stopPropagation();
         this.state.listingProjects = false;
+        this.state.reachedEnd = false;
+        this.offset=0;
         var system = fileListing.system || fileListing.systemId;
         var path = fileListing.path;
         if (typeof system === 'undefined' && typeof path === 'undefined' && fileListing.value) {
@@ -124,10 +165,12 @@ class DataBrowserServiceMoveCtrl {
 
         this.state.busy = true;
         this.state.error = null;
-        this.FileListing.get({ system: system, path: path }).then(
+        this.FileListing.get({ system: system, path: path }, this.currentParams, {offset: this.offset, limit: this.limit}).then(
             (listing) => {
                 this.listing = listing;
                 this.state.busy = false;
+                this.state.reachedEnd = listing.children.length < (this.limit - 1);
+                this.$scope.currentOption.conf.system = listing.system;
             },
             (error) => {
                 this.state.busy = false;
@@ -160,6 +203,5 @@ export const DataBrowserServiceMoveComponent = {
         dismiss: '&'
     }
 };
-
 
 
