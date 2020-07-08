@@ -1,5 +1,16 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.7-20200701
+Enhancements:
+- task/DES-1678: Curation UI/UX updates (1516, 1526, 1539)
+- task/DES-1632: Create meta tags for publications with multiple DOIs
+- task/DES-628: Advanced Search for Publications
+- task/DES-1670: Update MyData in WorkSpace Data Browser to match Data Depot
+- task/DES-1650: Add infinite scroll to Data Depot move/copy modals
+
+Fixes:
+- Removed call to custom script from rapid initial migration
+
 ## v4.9.7-20200602
 Fixes: 
 * Enable expansion of multiple tabs of the same type in Publications.
