@@ -618,6 +618,7 @@ PORTAL_DATA_DEPOT_MANAGERS = {
     'shared': 'designsafe.apps.api.agave.filemanager.shared_data.SharedDataFileManager',
     'my-projects': 'designsafe.apps.api.agave.filemanager.private_data.PrivateDataFileManager',
     'public': 'designsafe.apps.api.agave.filemanager.publications.PublicationsManager',
+    'public-legacy': 'designsafe.apps.api.agave.filemanager.publications_legacy.LegacyPublicationsManager',
     'published': 'designsafe.apps.api.agave.filemanager.published_files.PublishedFileManager',
     'community': 'designsafe.apps.api.agave.filemanager.community.CommunityFileManager'
 }
@@ -627,6 +628,7 @@ PORTAL_DATA_DEPOT_SEARCH_MANAGERS = {
     'shared': 'designsafe.apps.api.search.searchmanager.shared_data.SharedDataSearchManager',
     'my-projects': 'designsafe.apps.api.search.searchmanager.private_data.PrivateDataSearchManager',
     'public': 'designsafe.apps.api.search.searchmanager.publications.PublicationsSearchManager',
+    'public-legacy': 'designsafe.apps.api.search.searchmanager.publications_legacy.LegacyPublicationsSearchManager',
     'published': 'designsafe.apps.api.search.searchmanager.published_files.PublishedDataSearchManager',
     'community': 'designsafe.apps.api.search.searchmanager.community.CommunityDataSearchManager'
 }
