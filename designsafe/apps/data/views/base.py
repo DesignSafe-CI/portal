@@ -231,6 +231,7 @@ class DataDepotPublishedView(TemplateView):
         context['description'] = pub.project.value.description
         context['experiments'] = getattr(pub, 'experimentsList', [])
         context['missions'] = getattr(pub, 'missions', [])
+        context['reports'] = getattr(pub, 'reports', [])
         context['simulations'] = getattr(pub, 'simulations', [])
         context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
 

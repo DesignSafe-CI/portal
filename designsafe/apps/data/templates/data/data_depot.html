@@ -41,6 +41,14 @@
     <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
     {% endfor %}{% endif %}
 
+    {% if reports %}<!-- Report Citation Tags -->{% for report in reports %}
+    <meta name="citation_title" content="{{ report.value.title }}">
+    <meta name="citation_doi" content="{{ report.doi }}">
+    <meta name="citation_description" content="{{ report.value.description }}">
+    {% for author in mission.authors %}<meta name="citation_author" content="{{ author.lname }}, {{ author.fname }}">
+    <meta name="citation_author_institution" content="{{ author.inst }}">{% endfor %}
+    {% endfor %}{% endif %}
+
     {% if simulations %}<!-- Simulation Citation Tags -->{% for simulation in simulations %}
     <meta name="citation_title" content="{{ simulation.value.title }}">
     <meta name="citation_doi" content="{{ simulation.doi }}">
