@@ -1,11 +1,13 @@
+
 <div class="table-responsive" data-ng-class="{'preview-wrapper': $ctrl.browser.showPreviewListing}">
     <div
-        data-ng-class="{'ds-table-display-wrapper' : $ctrl.listing().children.length > 10}"
-        data-ds-infinite-scroll
-        data-scroll-bottom="$ctrl.scrollToBottom()"
+        data-ng-class="{'ds-table-display-wrapper' : $ctrl.fileListing.length > 10}"
+        ds-infinite-scroll
+        data-scroll-bottom="$ctrl.handleScroll()"
         data-scroll-top="$ctrl.scrollToTop()"
         data-bottom-height="0"
     >
+        <div id="listingtop"></div> 
         <div>
             <span ng-repeat="path in $ctrl.breadcrumbs track by $index">
                 <span ng-if="!$last"><a ng-click="$ctrl.breadcrumbBrowse($event, path)">{{ path || 'Main' }}</a> / </span>
@@ -14,39 +16,43 @@
         </div>
         <table class="files-listing-table table table-bordered table-striped"
                style="background-color: #fff;">
-            <thead ng-if="$ctrl._ui.showHeader">
+            <thead>
                 <tr>
                     <th>
-                        <span ng-if="$ctrl._ui.showSelect">
+                        <span ng-if="$ctrl.showSelect">
                             <i class="fa fa-lg fa-check-square" style="color:#337ab7;" ng-click="$ctrl.selectAll()"></i>
                             <span>Name</span>
                         </span>
-                        <span ng-if="!$ctrl._ui.showSelect">Name</span>
+                        <span ng-if="!$ctrl.showSelect">Name</span>
                     </th>
                     <th>Size</th>
                     <th>Last modified</th>
+                    <th ng-if="$ctrl.operationLabel">Operation</th>
                 </tr>
             </thead>
             <tbody>
-                <tr data-ng-if="!$ctrl.browser.busyListing"
-                    data-ng-repeat="item in $ctrl.listing().children"
-                    ng-class="{highlight: item._ui.selected}"
+                <tr
+                    data-ng-repeat="item in $ctrl.fileListing"
+                    ng-class="{highlight: item.selected}"
                 >
                     <td class="unselectable">
-                        <span ng-if="$ctrl._ui.showSelect">
-                            <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="item._ui.selected" data-ng-click="$ctrl.onSelect($event, item)">
+                        <span ng-if="$ctrl.showSelect">
+                            <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="item.selected" data-ng-click="$ctrl.onSelect($index)">
                                 <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
                                 <i class="fa fa-check-square fa-stack-1x" style="color:#1CB500;"></i>
                             </span>
-                            <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="!item._ui.selected" data-ng-click="$ctrl.onSelect($event, item)">
+                            <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="!item.selected" data-ng-click="$ctrl.onSelect($index)">
                                 <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
                                 <i class="fa fa-square-o fa-stack-1x" style="color:lightgray;"></i>
                             </span>
                         </span>
                         <i class="fa {{ item.icon() }}">&nbsp;</i>
-                        <a data-ng-href="{{ item.href }}" data-ng-click="$ctrl.onBrowse($event, item)">
+                        <a ng-if="item.type === 'dir'" data-ng-href="#" data-ng-click="$ctrl.onBrowse({$event: $event, path: item.path})">
                             {{ item.name }}
                         </a>
+                        <span ng-if="item.type !== 'dir'">
+                            {{ item.name }}
+                        </span>
                         <div class="project-categories">
                             <div class="file-categories"
                                  data-ng-if="$ctrl._ui.editTags || $ctrl._ui.showTags">
@@ -71,11 +77,15 @@
                     </td>
                     <td data-ng-if="item.format== 'folder'">--</td>
                     <td data-ng-if="item.format== 'raw'">{{ item.length|bytes }}</td>
-                    <td ng-hide="!$ctrl._ui.showHeader">{{ item.lastModified|date:"short" }}</td>
+                    <td >{{ item.lastModified|date:"short" }}</td>
+                    <td data-ng-if="$ctrl.operationLabel">
+                        <button ng-if="item.type==='dir'" ng-click="$ctrl.operation({file: item})">{{$ctrl.operationLabel}}
+
+                        </button></td>
                 </tr>
-                <tr data-ng-if="$ctrl.browser.busyListingPage">
-                    <td>
-                        <span class="bg-info text-info">
+                <tr >
+                    <td colspan="4" style="height: 37px;">
+                        <span class="bg-info text-info" ng-if="$ctrl.loadingScroll">
                             <i class="fa fa-spinner fa-spin">&nbsp;</i>
                             Loading...
                         </span>
@@ -83,7 +93,7 @@
                 </tr>
             </tbody>
             <caption style="padding:0px;">
-                <div data-ng-if="$ctrl.browser.busy"
+                <div data-ng-if="$ctrl.loading"
                      style="padding:10px; font-size:large; width:100%;"
                      class="bg-info"
                  >
@@ -92,19 +102,19 @@
                         Loading...
                     </span>
                 </div>
-                <div data-ng-if="! $ctrl.browser.busy && $ctrl.browser.error" class="text-center">
+                <div data-ng-if="!$ctrl.loading && $ctrl.error" class="text-center">
                     <div class="alert alert-danger">
-                        <div data-ng-if="$ctrl.browser.error.message"
-                             data-ng-bind-html="$ctrl.browser.error.message">
+                        <div data-ng-if="$ctrl.error.message"
+                             data-ng-bind-html="$ctrl.error.message">
                             {{$ctrl.browser.error}}
                         </div>
-                        <div data-ng-if="!$ctrl.browser.error.message">
+                        <div data-ng-if="!$ctrl.error.message">
                             Something went wrong.
                         </div>
                     </div>
                 </div>
-                <div data-ng-if="! $ctrl.browser.busy &&
-                                 ! $ctrl.browser.error &&
+                <div data-ng-if="! $ctrl.loading &&
+                                 ! $ctrl.error &&
                                  ($ctrl.listing().children.length) === 0"
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"

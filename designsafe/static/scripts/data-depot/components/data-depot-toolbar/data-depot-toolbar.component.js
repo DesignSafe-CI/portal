@@ -1,14 +1,14 @@
 import dataDepotToolbarTemplate from './data-depot-toolbar.component.html'
 
 class DataDepotToolbarCtrl {
-    constructor($state, $uibModal, Django, DataBrowserService, UserService) {
+    constructor($state, $uibModal, Django, DataBrowserService, UserService, FileListingService) {
         'ngInject';
         this.DataBrowserService = DataBrowserService;
         this.$state = $state;
         this.search = { queryString: '' };
         this.browser = DataBrowserService.state();
         this.UserService = UserService;
-
+        this.FileListingService = FileListingService
         this.tests = {};
 
         this.apiParams = DataBrowserService.apiParameters();
@@ -86,7 +86,7 @@ class DataDepotToolbarCtrl {
         this.DataBrowserService.share(this.browser.selected[0]);
     }
     copy() {
-        this.DataBrowserService.copy(this.browser.selected);
+        this.FileListingService.openCopyModal();
     }
     move() {
         this.DataBrowserService.move(this.browser.selected, this.browser.listing);
@@ -108,8 +108,6 @@ class DataDepotToolbarCtrl {
         });
     }
 }
-
-DataDepotToolbarCtrl.$inject = ['$state', '$uibModal', 'Django', 'DataBrowserService', 'UserService'] 
 
 
 export const DataDepotToolbarComponent = {

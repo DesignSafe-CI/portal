@@ -1,1 +1,12 @@
-<files-listing data-browser="$ctrl.browser">&nbsp;</files-listing>
+<files-listing
+    on-scroll="$ctrl.scrollToBottom()"
+    file-listing="$ctrl.FileListingService.listings.main.listing"
+    loading="$ctrl.FileListingService.listings.main.loading"
+    loading-scroll="$ctrl.FileListingService.listings.main.loadingScroll"
+    reached-end="$ctrl.FileListingService.listings.main.reachedEnd"
+    error="$ctrl.FileListingService.listings.main.error"
+    on-browse="$ctrl.onBrowse($event, path)"
+    show-select="true"
+    
+    >&nbsp;</files-listing
+>

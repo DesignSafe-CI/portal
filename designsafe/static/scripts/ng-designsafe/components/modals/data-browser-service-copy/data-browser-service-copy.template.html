@@ -1,0 +1,25 @@
+<div class="modal-header">
+    <h3 class="modal-title">Select the destination to copy the following files</h3>
+</div>
+<div class="modal-body">
+    <select ng-options="item.api as item.label for item in $ctrl.options" ng-model="$ctrl.selectedOption" ng-change="$ctrl.handleChange()"></select>
+    <ul>
+        <li ng-repeat="item in $ctrl.FileListingService.getSelectedFiles('main')">{{item.name}} {{$ctrl.FileListingService.operations.copy.status[item.key]}}</li>
+    </ul>
+    <div>
+        <files-listing
+            on-scroll="$ctrl.scrollToBottom()"
+            file-listing="$ctrl.FileListingService.listings.modal.listing"
+            loading="$ctrl.FileListingService.listings.modal.loading"
+            loading-scroll="$ctrl.FileListingService.listings.modal.loadingScroll"
+            reached-end="$ctrl.FileListingService.listings.modal.reachedEnd"
+            error="$ctrl.FileListingService.listings.modal.error"
+            on-browse="$ctrl.onBrowse($event, path)"
+            show-select="false"
+            operation-label="'Copy'"
+            operation="$ctrl.handleCopy(file)"
+            >&nbsp;</files-listing
+        >
+    </div>
+    <div class="modal-footer"></div>
+</div>

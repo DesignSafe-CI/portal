@@ -1,6 +1,7 @@
 import angular from 'angular';
 
 import { nbv, DataBrowserService } from './data-browser-service';
+import { FileListingService } from './file-listing-service';
 import { DataService } from './data-service';
 import { FileListing } from './file-listing';
 import { LoggingServiceProvider } from './logging-service';
@@ -29,6 +30,7 @@ designsafeServices.factory('ProjectService', ProjectService);
 designsafeServices.factory('SystemsService', SystemsService);
 designsafeServices.service('TicketsService', TicketsService);
 designsafeServices.service('UserService', UserService);
+designsafeServices.service('FileListingService', FileListingService);
 // TODO: Move these components to /static/scripts/projects/components/index.js
 designsafeServices.component('confirmMessage', ConfirmMessageComponent);
 designsafeServices.component('editProject', EditProjectComponent);

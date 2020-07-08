@@ -757,6 +757,7 @@ function config(
                         searchState: undefined,
                     };
                 },
+                system: () => 'googledrive',
                 path: ($stateParams) => {
                     'ngInject';
                     return $stateParams.filePath || '/';

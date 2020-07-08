@@ -244,14 +244,45 @@ class FilesListingCtrl {
       }
 }
 
+class FilesListingCtrl2 {
+    constructor($state, $stateParams, FileListingService) {
+        'ngInject';
+        this.$state = $state;
+        this.$stateParams = $stateParams;
+        this.FileListingService = FileListingService    
+        
+        this.handleScroll = this.handleScroll.bind(this)
+    }
+
+    $onInit() {
+    }
+
+    handleScroll() {
+        if (!this.reachedEnd && !this.FileListingService.listings.modal.loading) {
+            this.onScroll()
+        }
+    }
+
+    onSelect(idx) {
+        this.FileListingService.select('main', idx)
+    }
+}
+
 export const FilesListingComponent = {
-    controller: FilesListingCtrl,
+    controller: FilesListingCtrl2,
     controllerAs: '$ctrl',
     template: FilesListingTemplate,
     bindings: {
-        browser: '=',
-        filesList: '=',
-        params: '<',
+        onScroll: '&',
+        onBrowse: '&',
+        fileListing: '<',
+        loading: '<',
+        loadingScroll: '<',
+        reachedEnd: '<',
+        error: '<',
+        showSelect: '<',
+        operationLabel: '<',
+        operation: '&'
     },
 };
 

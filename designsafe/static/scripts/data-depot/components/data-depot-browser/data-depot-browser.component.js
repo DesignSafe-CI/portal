@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { uuid } from 'uuidv4';
 import DataDepotBrowserTemplate from './data-depot-browser.component.html';
 import DataDepotPublicationTemplate from './data-depot-browser.publications.component.html';
 
@@ -55,8 +56,51 @@ class DataDepotBrowserCtrl {
     }
 }
 
+class DataDepotBrowserCtrl2 {
+    constructor($state, $stateParams, FileListingService, $http, $scope) {
+        this.$state = $state;
+        this.$stateParams = $stateParams;
+        this.FileListingService = FileListingService;
+        this.$http = $http;
+        this.$scope = $scope
+
+        this.scrollToBottom = this.scrollToBottom.bind(this);
+    }
+
+    $onInit() {
+        const section = 'main';
+        const api = this.apiParams.fileMgr;
+        const system = this.$stateParams.systemId || 'googledrive';
+        const path = this.$stateParams.filePath
+
+        this.offset = 0;
+        this.limit = 15;
+
+        this.FileListingService.browse(section, api, system, path, this.offset, this.limit);
+    }
+
+    scrollToBottom() {
+        const section = 'main';
+        const api = this.apiParams.fileMgr;
+        const system = this.$stateParams.systemId;
+        const path = this.$stateParams.filePath
+
+        this.FileListingService.browseScroll(section, api, system, path)
+    }
+
+    onBrowse($event, path) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        const section = 'main';
+        const api = this.apiParams.fileMgr;
+        const system = this.$stateParams.systemId;
+
+        this.$state.go(this.$state.current.name, {filePath: path.replace('/', '')}, {inherit: false})
+    }
+}
+
 export const DataDepotBrowserComponent = {
-    controller: DataDepotBrowserCtrl,
+    controller: DataDepotBrowserCtrl2,
     controllerAs: '$ctrl',
     template: DataDepotBrowserTemplate,
     bindings: {

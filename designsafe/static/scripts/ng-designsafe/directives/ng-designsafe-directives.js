@@ -207,10 +207,12 @@ export function dsInfiniteScroll(){
         var pos = el.offsetHeight + el.scrollTop;
         if (pos >= el.scrollHeight - scope.bottomHeight){
           scope.scrollBottom(el, pos);
+          scope.$apply()
         }
         if (pos <= el.offsetHeight){
           if (scope.scrollTop){
             scope.scrollTop(el, pos);
+            scope.$apply();
           }
         }
       });

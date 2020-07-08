@@ -1,12 +1,15 @@
 # pylint: disable=missing-docstring
 from django.conf.urls import url, include
 from designsafe.apps.api.views import LoggerApi
+from django.http import JsonResponse
 
 urlpatterns = [
     url(r'^agave/', include('designsafe.apps.api.agave.urls')),
     url(r'^public/', include('designsafe.apps.api.agave.urls')),
     url(r'^projects/', include('designsafe.apps.api.projects.urls',
                                namespace='ds_projects_api')),
+
+    url(r'^datafiles/', include('designsafe.apps.api.datafiles.urls')),
     url(r'^external-resources/', include('designsafe.apps.api.external_resources.urls')),
 
     url(r'^logger/$', LoggerApi.as_view(), name='logger'),

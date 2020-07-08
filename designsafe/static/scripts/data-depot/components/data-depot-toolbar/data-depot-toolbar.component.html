@@ -8,7 +8,7 @@
         <div class="btn-toolbar btn-toolbar-left" role="toolbar" aria-label="Data Browser Toolbar">
             <form class="navbar-form navbar-left" ng-submit="$ctrl.ddSearch()" style="display:flex" 
             ng-hide="['Dropbox', 'Box', 'Google Drive', 'Project View', 'NEES Published'].includes($ctrl.placeholder())">
-                <input class="form-control" style="width:240px;" placeholder="Find in {{ $ctrl.placeholder() }}" ng-model="$ctrl.search.queryString">
+            <input class="form-control" style="width:240px;" placeholder="Find in {{ $ctrl.placeholder() }}" ng-model="$ctrl.search.queryString">
                 <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
             </form>
             <div class="btn-toolbar-right">
@@ -26,9 +26,9 @@
                         <i class="fa fa-arrows"></i><span style="display:block;">Move</span>
                     </button>
                     <button class="btn btn-sm btn-default" title="Copy" ng-click="$ctrl.copy()"
-                            ng-disabled="!$ctrl.browser.tests.canCopy ||
+                            ng-disabled="!$ctrl.FileListingService.tests.copy||
                                         $ctrl.browser.project.publicationStatus === 'publishing'">
-                        <i class="fa fa-copy"></i><span style="display:block;">Copy</span>
+                        <i class="fa fa-copy"></i><span style="display:block;">Fake Copy</span>
                     </button>
                     <button class="btn btn-sm btn-default" title="Preview" ng-click="$ctrl.preview()"
                             ng-disabled="!$ctrl.browser.tests.canPreview ||
