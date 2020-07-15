@@ -878,7 +878,7 @@ class ProjectTreeCtrl {
                                 parent: exp.name,
                                 children: [],
                                 rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
-                                display: 'Experiental Output',
+                                display: 'Experimental Output',
                                 order: this.orderOf(out, exp.uuid).value,
                             };
                             childExpOuts.push(outNode);
