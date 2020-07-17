@@ -22,8 +22,11 @@ class DataConfig(AppConfig):
             connections.create_connection('default',
                                           hosts=settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
                                           http_auth=settings.ES_AUTH,
-                                          max_retries=3,
+                                          sniff_on_start=True,
+                                          sniffer_timeout=60,
                                           retry_on_timeout=True,
+                                          use_ssl=True,
+                                          timeout=5
                                           )
         except AttributeError as exc:
             logger.error('Missing ElasticSearch config. %s', exc)
