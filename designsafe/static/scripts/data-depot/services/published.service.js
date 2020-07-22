@@ -160,7 +160,8 @@ export class PublishedService {
         }
 
         // Check for reports
-        if(has(resp.data, 'reports')) entities.push(...resp.data.reports);
+        const isSimulation = has(resp.data, 'simulations') || has(resp.data, 'hybrid_simulations');
+        if(has(resp.data, 'reports') && !isSimulation) entities.push(...resp.data.reports);
 
         entities.forEach((entity) => {
             // Title
