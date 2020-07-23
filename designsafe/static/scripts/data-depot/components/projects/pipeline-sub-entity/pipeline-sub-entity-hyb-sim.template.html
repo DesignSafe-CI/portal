@@ -256,7 +256,7 @@
                             <!-- Simulation Output -->
                         </div>
                     </div>
-                    <!-- Experimental Substrucutre -->
+                    <!-- Experimental Substructure -->
                     <div ng-repeat="expsub in $ctrl.browser.project.expsubstructure_set | orderBy: 'value.title'"
                         ng-if="$ctrl.matchingGroup(primEnt, expsub) && $ctrl.matchingGroup(model, expsub)">
                         <div class="dropdown dropdown-spacer-sm" id="details-{{expsub.uuid}}" style="margin-left: 30px">
@@ -273,7 +273,7 @@
                                             <table style="width:100%">
                                                 <tr>
                                                     <td style="text-align: left;">
-                                                        <span>Experimental Substrucutre |
+                                                        <span>Experimental Substructure |
                                                             <strong>{{expsub.value.title}}</strong></span>
                                                     </td>
                                                     <td style="text-align: right;">
