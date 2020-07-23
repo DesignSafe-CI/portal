@@ -149,18 +149,20 @@ export class PublishedService {
         this.$window.document.getElementsByName('DC.creator')[0].content = authors;
 
         const entities = [];
+        let isSimulation = false;
         if (has(resp.data, 'experimentsList')) {
             entities.push(...resp.data.experimentsList);
         } else if(has(resp.data, 'simulations')) {
             entities.push(...resp.data.simulations);
+            isSimulation = true;
         } else if(has(resp.data, 'missions')) {
             entities.push(...resp.data.missions);
         } else if (has(resp.data, 'hybrid_simulations')) {
             entities.push(...resp.data, 'hybrid_simulations');
+            isSimulation = true;
         }
 
         // Check for reports
-        const isSimulation = has(resp.data, 'simulations') || has(resp.data, 'hybrid_simulations');
         if(has(resp.data, 'reports') && !isSimulation) entities.push(...resp.data.reports);
 
         entities.forEach((entity) => {
