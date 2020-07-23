@@ -197,7 +197,6 @@ class DataDepotPublishedView(TemplateView):
         context = super(DataDepotPublishedView, self).get_context_data(**kwargs)
         logger.info('Get context Data')
         pub = BaseESPublication(project_id=kwargs['project_id'].strip('/'))
-        logger.debug('pub: %s', pub.to_dict())
         context['projectId'] = pub.projectId
         context['citation_title'] = pub.project.value.title
         context['citation_date'] = pub.created
@@ -236,7 +235,11 @@ class DataDepotPublishedView(TemplateView):
         context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
 
         proj = ProjectsManager(service_account()).get_project_by_id(pub.projectId)
-        context['dc_json'] = json.dumps(proj.to_datacite_json())
+        context['dc_json'] = json.dumps(proj.to_dataset_json())
+        # Debug
+        logger.debug('pub: %s', pub.to_dict())
+        logger.debug(json.dumps(proj.to_datacite_json(), indent=2))
+        logger.debug(json.dumps(proj.to_dataset_json(), indent=2))
 
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({

@@ -263,6 +263,40 @@ class Project(MetadataModel):
         else:
             update_archive(proj_dir)
 
+    def to_dataset_json(self):
+        """
+        Serialize project to json for google dataset search
+        https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/BMNJPS
+        """
+        logger.debug(self.to_body_dict())
+        dataset_json = {
+            "@context": "http://schema.org",
+            "@type": "Dataset",
+            "publisher": {
+                "@type": "Organization",
+                "name": "Designsafe-CI"
+            },
+            "provider": {
+                "@type": "Organization",
+                "name": "Designsafe-CI"
+            },
+            "includedInDataCatalog": {
+                "@type": "Organization",
+                "name": "Designsafe-CI",
+                "url": "https://designsafe-ci.org"
+            },
+            "name": self.title,
+            "description": self.description,
+            "keywords": self.keywords.split(','),
+            "datePublished": self.created
+        }
+        if self.dois:
+            dataset_json['identifier'] = self.dois[0]
+        else:
+            related_ents = self.related_entities()
+            logger.debug(related_ents)
+        return dataset_json
+
     def to_datacite_json(self):
         """Serialize project to datacite json."""
         attributes = {}
