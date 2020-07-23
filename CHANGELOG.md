@@ -1,7 +1,42 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.9-20200703
+Fixes:
+- bug/DES-1698: Fixing typos in hybrid simulation templates
+- Fix Simulations Not Rendering
+
+## v4.9.9-20200702
+Enhancements:
+- Update Elasticsearch settings and reduce the amount of data retrieved from ES for simple listings.
+
+## v4.9.9
+Enhancements:
+- task/DES-1678: Curation UI/UX updates (1516, 1526, 1539)
+- task/DES-1632: Create meta tags for publications with multiple DOIs
+- task/DES-1670: Update MyData in WorkSpace Data Browser to match Data Depot
+- task/DES-1650: Add infinite scroll to Data Depot move/copy modals
+
+Fixes:
+- Removed call to custom script from rapid initial migration
+
+## v4.9.8-20200701
+Enhancements:
+- task/DES-1678: Curation UI/UX updates (1516, 1526, 1539)
+- task/DES-1632: Create meta tags for publications with multiple DOIs
+- task/DES-628: Advanced Search for Publications
+- task/DES-1670: Update MyData in WorkSpace Data Browser to match Data Depot
+- task/DES-1650: Add infinite scroll to Data Depot move/copy modals
+
+Fixes:
+- Removed call to custom script from rapid initial migration
+
+## v4.9.8
+Fixes:
+- Enable expansion of multiple tabs of the same type in Publications.
+- Fixes to the Authors window in the publication pipeline.
+
 ## v4.9.7-20200602
-Fixes: 
+Fixes:
 * Enable expansion of multiple tabs of the same type in Publications.
 * Fixes to the Authors window in the publication pipeline.
 
@@ -60,7 +95,7 @@ Fixes:
 * Fixes an issue preventing the license string from submitting to an app correctly
 
 ## v4.9.4
-Fixes: 
+Fixes:
 * Fixes an issue where license management would not render in the admin panel
 
 ## v4.9.2-20200404
@@ -68,11 +103,11 @@ Fixes:
 * Fixes an issue where license management would not render in the admin panel
 
 ## v4.9.3
-Enhancements: 
+Enhancements:
 * Visual updates to the publication download feature.
 
 ## v4.9.2-20200403
-Fixes: 
+Fixes:
 * Publications display and paginate properly in the workspace.
 * Speed up publications listings.
 
