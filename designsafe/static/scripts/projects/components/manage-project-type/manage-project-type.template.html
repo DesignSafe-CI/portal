@@ -942,6 +942,89 @@
         </div>
         <!-- Project Overview -->
     </div>
+    <!-- Project Protected Data Check -->
+    <div ng-if="$ctrl.slide === 'protected_data'">
+        <div ng-if="$ctrl.prjType === 'field_recon'">
+            <div class="overview-body">
+                <h3 style="text-align: center;">
+                    Will you or other team members upload protected data to this project?
+                </h3>
+                <div>
+                    <!-- format radio buttons and test e-mail options -->
+                    <!-- send user info and type of information chosen -->
+                    <input type="radio"
+                            name="protected-data-option"
+                            id="no-protected-data"
+                            ng-model="$ctrl.protectedData"
+                            value="0"
+                            class="overview-radio-btn"
+                    >
+                    <strong>No, we will upload only non-confidential and/or non-personal information:</strong>
+                    <ul>
+                        <li>
+                            The data has been de-identified and/or there is no Personally Identifiable
+                            Information (PII), or you received approval to publish PII from the research
+                            subjects.
+                        </li>
+                        <li>
+                            For an example of the type of data that fits category and has been published
+                            on DesignSafe, see: https://doi.org/10.17603/e9wq-gz57
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+                <div>
+                    <input type="radio"
+                            name="protected-data-option"
+                            id="protected-data"
+                            ng-model="$ctrl.protectedData"
+                            value="1"
+                            class="overview-radio-btn"
+                    >
+                    <strong>Yes, we will upload sensitive personal information</strong>
+                    <ul>
+                        <li>
+                            Includes any of these types of confidential information that may pose a risk if disclosed to non-authorized
+                            individuals.
+                        </li>
+                        <li>
+                            See examples of this type of data
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+                <div>
+                    <input type="radio"
+                            name="protected-data-option"
+                            id="very-protected-data"
+                            ng-model="$ctrl.protectedData"
+                            value="2"
+                            class="overview-radio-btn"
+                    >
+                    <strong>Yes, we will upload very sensitive confidential information</strong>
+                    <ul>
+                        <li>
+                            Examples include any type of confidential information that would cause harm to individuals if not
+                            accessed only by authorized individuals. For example, medical diagnoses records, very sensitive
+                            financial records, criminal records, data involved in issues of national security, etc.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td class="overview-back-long">
+                        <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td class="overview-continue">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('finish')" ng-disabled="$ctrl.protectedData==-1">
+                            Continue
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
     <!-- Project Finish -->
     <div ng-if="$ctrl.slide === 'finish'">
         <div ng-if="$ctrl.prjType === 'field_recon'">
