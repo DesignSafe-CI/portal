@@ -17,6 +17,7 @@ from designsafe.apps.api.projects.views import (ProjectListingView,
                                                 ProjectCollaboratorsView,
                                                 ProjectInstanceView,
                                                 ProjectMetaView,
+                                                ProjectNotificationView,
                                                 PublicationView,
                                                 NeesPublicationView)
 
@@ -60,4 +61,7 @@ urlpatterns = [
 
     url(r'^(?P<project_id>[a-z0-9\-]+)/data/(?P<file_path>.*)/$',
         ProjectDataView.as_view(), name='project_data'),
+
+    url(r'^(?P<project_uuid>[a-z0-9\-]+)/notification/$',
+        ProjectNotificationView.as_view(), name='project_notification'),
 ]

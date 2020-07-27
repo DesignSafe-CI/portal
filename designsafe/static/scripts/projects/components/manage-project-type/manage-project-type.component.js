@@ -1,5 +1,4 @@
-import ManageProjectTypeTemplate from './manage-project-type.component.html';
-import _ from 'underscore';
+import ManageProjectTypeTemplate from './manage-project-type.template.html';
 
 class ManageProjectTypeCtrl {
 
@@ -17,9 +16,10 @@ class ManageProjectTypeCtrl {
         this.project = this.resolve.options.project;
         this.warning = this.resolve.options.warning;
         this.preview = this.resolve.options.preview;
-        this.prjType = '';
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
+        this.prjType = '';
         this.slide = 'type';
+        this.protectedData = -1;
         if (this.preview) {
             this.prjType = this.project.value.projectType;
             this.slide = 'overview';
@@ -44,6 +44,10 @@ class ManageProjectTypeCtrl {
             projectData.projectId = this.project.value.projectId;
             projectData.uuid = this.project.uuid;
 
+            if (this.prjType === 'field_recon' && this.protectedData > 0) {
+                this.sendNotificationEmail();
+            }
+
             this.savePrj(projectData).then((project) => {
                 this.DataBrowserService.state().project.value.projectType = project.value.projectType;
                 this.close({$value: project});
@@ -53,6 +57,14 @@ class ManageProjectTypeCtrl {
                 });
             });
         }
+    }
+
+    sendNotificationEmail() {
+        console.log('component');
+        this.ProjectService.notifyPersonalData({
+            uuid: this.project.uuid,
+            username: this.project.value.pi
+        })
     }
 
     savePrj(options) {
