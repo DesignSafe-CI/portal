@@ -969,7 +969,7 @@ def email_project_admins(self, project_id, project_uuid, project_title, project_
             """.format(name=user.get_full_name(), email=user.email, title=project_title, prjID=project_id, url=project_url)
 
         send_mail(
-            "DesignSafe PID Alert",
+            "DesignSafe PII Alert",
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [admin],
