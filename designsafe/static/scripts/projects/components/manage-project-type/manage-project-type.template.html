@@ -727,7 +727,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('protected_data')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -769,7 +773,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('protected_data')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('missions')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -1053,7 +1061,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('protected_data')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('file_tags')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -1242,71 +1254,6 @@
                     prior to preparing this type of data publication.
                 </p>
             </div>
-            <!-- <div class="overview-body">
-                <h3>
-                    Guidelines Regarding the Storage and Publication of Human Subjects Data
-                </h3>
-                <hr>
-                <p>
-                    Researchers should always comply with the requirements, norms and procedures approved 
-                    by the Institutional Review Board (IRB) or equivalent body, regarding human subjects’
-                    data storage and publication.
-                </p>
-                <p>
-                    <i>Protected data</i> includes human subjects data with Personal Identifiable Information (PII),
-                    data that is protected under
-                    <a href="https://www.hhs.gov/hipaa/for-professionals/privacy/laws-regulations/index.html" target="_blank">HIPPA</a>,
-                    <a href="https://studentprivacy.ed.gov/faq/what-ferpa" target="_blank">FERPA</a> and
-                    <a href="https://csrc.nist.gov/projects/risk-management/detailed-overview" target="_blank">FISMA</a>
-                    regulations, as well as data that involves vulnerable populations and that contains
-                    <a href="https://en.wikipedia.org/wiki/Information_sensitivity" target="_blank">sensitive information</a>.
-                </p>
-                <div class="overview-heading">Storing Protected Data</div>
-                <p>
-                    DesignSafe My Data and My Projects are secure spaces to store raw protected data as
-                    long as it is not under HIPPA, FERPA or FISMA regulations. If data needs to comply with
-                    these regulations, researchers must contact DesignSafe through a
-                    <a href="/help/new-ticket/" target="_blank">help ticket</a>
-                    to evaluate the case and use
-                    <a href="https://www.tacc.utexas.edu/protected-data-service" target="_blank">TACC‘s Protected Data Service</a>.
-                    Researchers with doubts are welcome to send a
-                    <a href="/help/new-ticket/" target="_blank">ticket</a> or join
-                    <a href="/learning-center/training/" target="_blank">curation office hours</a>.
-                </p>
-                <div class="overview-heading">Publishing Protected Data</div>
-                <p>
-                    To publish protected data researchers should adhere to the following procedures:
-                </p>
-                <p>
-                    1.  Do not publish HIPPA, FERPA, FISMA, PII data or other sensitive information in DesignSafe.
-                </p>
-                <p>
-                    2.  To publish protected data and any related documentation (reports, planning documents,
-                    field notes, etc.) it must be properly anonymized. No <i>direct identifiers</i> and up to
-                    three <i>indirect identifiers</i> are allowed. <i>Direct identifiers</i> include items such
-                    as participant names, participant initials, facial photographs (unless expressly authorized
-                    by participants), home addresses, social security numbers and dates of birth. <i>Indirect identifiers</i>
-                    are identifiers that, taken together, could be used to deduce someone’s identity. Examples of
-                    <i>indirect identifiers</i> include gender, household and family compositions, occupation,
-                    places of birth, or year of birth/age.
-                </p>
-                <p>
-                    3.  If a researcher needs to restrict public access to data because it includes HIPPA, FERPA,
-                    PII data or other sensitive information, consider publishing metadata and other documentation
-                    about the data.
-                </p>
-                <p>
-                    4.  Users of DesignSafe interested in the data will be directed to contact the project PI or
-                    designated point of contact through a published email address to request access to the data
-                    and to discuss the conditions for its reuse.
-                </p>
-                <p>
-                    5.  Please contact DesignSafe through a
-                    <a href="/help/new-ticket/" target="_blank">help ticket</a> or join
-                    <a href="/learning-center/training/" target="_blank">curation office hours</a>
-                    prior to preparing this type of data publication.
-                </p>
-            </div> -->
         </div>
         <div ng-if="$ctrl.prjType !== 'field_recon'">
             <div class="overview-body">
