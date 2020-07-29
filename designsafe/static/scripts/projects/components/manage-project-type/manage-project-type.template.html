@@ -205,10 +205,16 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
-                        <a ng-if="!$ctrl.preview" ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                        <a ng-hide="$ctrl.preview" ng-click="$ctrl.continue('type')">
+                            <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                        </a>
                     </td>
                     <td class="overview-continue">
                         <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('experiment')">
@@ -239,7 +245,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -287,7 +297,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('experiment')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -321,7 +335,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('categories')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -352,7 +370,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('tree')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -398,10 +420,16 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
-                        <a ng-if="!$ctrl.preview" ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                        <a ng-hide="$ctrl.preview" ng-click="$ctrl.continue('type')">
+                            <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                        </a>
                     </td>
                     <td class="overview-continue">
                         <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('simulation')">
@@ -431,7 +459,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -477,7 +509,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('simulation')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -511,7 +547,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('categories')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -542,7 +582,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('tree')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -628,10 +672,16 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('protected_data')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
-                        <a ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                        <a ng-hide="$ctrl.preview" ng-click="$ctrl.continue('type')">
+                            <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                        </a>
                     </td>
                     <td class="overview-continue">
                         <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('missions')">
@@ -677,7 +727,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('protected_data')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -719,7 +773,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('protected_data')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('missions')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -769,7 +827,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('protected_data')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('collections1')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -804,7 +866,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('protected_data')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('collections2')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -849,13 +915,19 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('protected_data')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('file_tags')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
                     </td>
                     <td class="overview-continue">
-                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('protected_data')">
+                        <button class="btn btn-add"
+                                style="width: 100%;"
+                                ng-click="$ctrl.preview ? $ctrl.continue('finish') : $ctrl.continue('protected_data')">
                             Continue
                         </button> 
                     </td>
@@ -1036,73 +1108,49 @@
                     prior to preparing this type of data publication.
                 </p>
             </div>
-            <!-- <div class="overview-body">
-                <h3>
-                    Guidelines Regarding the Storage and Publication of Human Subjects Data
-                </h3>
-                <hr>
-                <p>
-                    Researchers should always comply with the requirements, norms and procedures
-                    approved by the Institutional Review Board (IRB) or equivalent body, regarding
-                    human subjects’ data storage and publication.
-                </p>
-                <p>
-                    Protected data includes human subjects data with Personal Identifiable Information
-                    (PII), data that is protected under HIPPA and FERPA regulations, as well as data that
-                    involves vulnerable populations and that contains sensitive information. 
-                </p>
-                <div class="overview-heading">Storing Protected Data</div>
-                <p>
-                    Do not store raw protected data in DesignSafe. Before storing, the data should be
-                    processed with the same precautions outlined in the Publishing Protected Data section
-                    below.
-                </p>
-                <div class="overview-heading">Publishing Protected Data</div>
-                <p>
-                    To publish protected data researchers should adhere to the following procedures:
-                </p>
-                <p>
-                    a)	Do not publish HIPPA, FERPA, PII data or other sensitive information in DesignSafe.
-                </p>
-                <p>
-                    b)	To publish protected data and any related documentation (reports, planning documents,
-                    field notes, etc.) it must be properly anonymized. No direct identifiers are allowed.
-                    These include items such as participant names, participant initials, facial photographs
-                    unless expressly authorized by participants), home addresses, social security numbers and
-                    dates of birth. Up to three indirect identifiers are allowed in a published dataset. These
-                    are identifiers that, taken together, could be used to deduce someone’s identity. Examples
-                    include gender, household and family compositions, occupation, places of birth, or year of
-                    birth/age.
-                </p>
-                <p>
-                    c)	If a researcher needs to restrict public access to data because it includes highly
-                    sensitive personal information, or because removing the indirect identifiers will impair
-                    the data understandability, you may only publish metadata and other documentation about
-                    the data in DesignSafe. Users interested in the data will contact the PI (your email address
-                    will be published) to request access to the data and to discuss the conditions for its reuse.
-                    Please contact DesignSafe’s curator through a HELP ticket prior to preparing this type of
-                    data publication.
-                </p>
-            </div> -->
         </div>
         <div ng-if="$ctrl.prjType !== 'field_recon'">
-            <p>
-                <strong>We recommend you follow these best practices for curation:</strong>
-                <li>
-                    Publish data files in a format that is interoperable and open.
-                    Example: CSV files instead of Excel spreadsheet files
-                </li>
-                <li>Before publishing raw data, consider why it is necessary. If so, explain how other can use the raw data.</li>
-                <li>Be selective with any images you choose. Use file tags to describe them. Make sure they have a purpose or a function.</li>
-                <li>Use applicable software to review for any errors in your data before you publish.</li>
-            </p>
+            <div class="overview-body">
+                <h3>Best Practices</h3>
+                <hr>
+                <ul>
+                    <li>
+                        Publish data files in a format that is interoperable and open.
+                        Example: CSV instead of SAS files
+                    </li>
+                    <li>
+                        Before publishing raw data that has not been processed, consider
+                        why it is necessary. If so, explain how others can use the raw data.
+                    </li>
+                    <li>
+                        Be selective with any images you choose. Use file tags to describe them.
+                        Make sure they have a purpose or a function.
+                    </li>
+                    <li>
+                        Do not publish ZIP files. ZIP files prevent others from viewing and
+                        understanding your data.
+                    </li>
+                    <li>Use applicable software to review for any errors in your data before you publish.</li>
+                    <li>
+                        Avoid publishing data within folders. Instead, provide a direct view
+                        to the data within collections so others can understand your project at a glance.
+                    </li>
+                </ul>
+            </div>
         </div>
         <table style="width: 100%;">
             <tr>
                 <td class="overview-back-long">
-                    <a ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation'" ng-click="$ctrl.continue('tags')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
-                    <a ng-if="$ctrl.prjType === 'hybrid_simulation' || $ctrl.prjType == 'other'" ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
-                    <a ng-if="$ctrl.prjType === 'field_recon'" ng-click="$ctrl.continue('protected_data')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    <a ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation'" ng-click="$ctrl.continue('tags')">
+                        <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                    </a>
+                    <a ng-if="$ctrl.prjType === 'hybrid_simulation' || $ctrl.prjType == 'other'" ng-click="$ctrl.continue('type')">
+                        <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                    </a>
+                    <a ng-if="$ctrl.prjType === 'field_recon'"
+                       ng-click="$ctrl.preview ? $ctrl.continue('best_practice') : $ctrl.continue('protected_data')">
+                       <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                    </a>
                 </td>
                 <td class="overview-continue">
                     <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.finish()">
