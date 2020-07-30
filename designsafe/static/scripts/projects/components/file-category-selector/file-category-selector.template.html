@@ -98,7 +98,7 @@
                 {{simOutput.value.title}}
             </option>
         </optgroup>
-        <optgroup label="Social Sciences Collection"
+        <optgroup label="Social Sciences Collections"
                   data-ng-if="$ctrl.project.socialscience_set.length">
             <option data-ng-repeat="collection in $ctrl.project.socialscience_set | orderBy: ['value.title']"
                     value="{{collection.uuid}}">
@@ -112,7 +112,7 @@
                 {{collection.value.title}}
             </option>
         </optgroup>
-        <optgroup label="Research Planning Collection"
+        <optgroup label="Research Planning Collections"
                   data-ng-if="$ctrl.project.planning_set.length">
             <option data-ng-repeat="collection in $ctrl.project.planning_set | orderBy: ['value.title']"
                     value="{{collection.uuid}}">
@@ -126,7 +126,7 @@
                 {{analysis.value.title}}
             </option>
         </optgroup>
-        <optgroup label="Report"
+        <optgroup label="Documents Collection"
                   data-ng-if="$ctrl.project.report_set.length">
             <option data-ng-repeat="report in $ctrl.project.report_set | orderBy: ['value.title']"
                     value="{{report.uuid}}">

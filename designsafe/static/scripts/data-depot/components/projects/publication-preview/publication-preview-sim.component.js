@@ -184,6 +184,17 @@ class PublicationPreviewSimCtrl {
             size: 'lg'
         });
     }
+
+    showAuthor(author) {
+        this.$uibModal.open({
+            component: 'authorInformationModal',
+            resolve: {
+                author,
+            },
+            size: 'author',
+        });
+    }
+
 }
 
 PublicationPreviewSimCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$uibModal', '$state', '$q'];

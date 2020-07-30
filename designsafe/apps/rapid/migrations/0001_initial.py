@@ -32,5 +32,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_rapid_event_types)
     ]

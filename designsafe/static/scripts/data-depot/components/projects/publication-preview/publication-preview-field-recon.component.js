@@ -217,17 +217,12 @@ class PublicationPreviewFieldReconCtrl {
     }
 
     showAuthor(author) {
-        this.UserService.get(author.name).then((res) => {
-            if (res.orcid_id) {
-                author.orcid = res.orcid_id;
-            }
-            this.$uibModal.open({
-                component: 'authorInformationModal',
-                resolve: {
-                    author
-                },
-                size: 'author'
-            });
+        this.$uibModal.open({
+            component: 'authorInformationModal',
+            resolve: {
+                author,
+            },
+            size: 'author'
         });
     }
 

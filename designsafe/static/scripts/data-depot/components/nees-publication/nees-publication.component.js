@@ -1,3 +1,4 @@
+import { has } from 'underscore';
 class NeesPublicationCtrl {
     constructor($stateParams, $state, PublishedService, DataBrowserService, $uibModal) {
         'ngInject';
@@ -30,6 +31,10 @@ class NeesPublicationCtrl {
         this.projectName = this.$stateParams.filePath.replace(/^\/+/, '').split('.')[0];
         this.PublishedService.getNeesPublished(this.projectName).then((res) => {
             this.project = res.data;
+            if (has(res.data, 'metadata')) {
+                this.PublishedService.updateNeesMetatags(res.data.metadata);
+            }
+            
         });
         this.browser = this.DataBrowserService.state();
         this.DataBrowserService.browse({ system: 'nees.public', path: this.$stateParams.filePath });

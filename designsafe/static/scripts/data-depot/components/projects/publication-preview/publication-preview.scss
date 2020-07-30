@@ -122,3 +122,8 @@
 td {
   vertical-align: top;
 }
+.license-element {
+  display: flex; 
+  flex-direction: row; 
+  align-items: center;
+}

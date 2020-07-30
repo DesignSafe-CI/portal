@@ -256,6 +256,13 @@ class PublishedViewCtrl {
         return eqt.label;
     }
 
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+    
     download() {
         this.$uibModal.open({
             component: 'publicationDownloadModal',
@@ -291,17 +298,12 @@ class PublishedViewCtrl {
     }
 
     showAuthor(author) {
-        this.UserService.get(author.name).then((res) => {
-            if (res.orcid_id) {
-                author.orcid = res.orcid_id;
-            }
-            this.$uibModal.open({
-                component: 'authorInformationModal',
-                resolve: {
-                    author
-                },
-                size: 'author'
-            });
+        this.$uibModal.open({
+            component: 'authorInformationModal',
+            resolve: {
+                author,
+            },
+            size: 'author',
         });
     }
 
@@ -322,7 +324,8 @@ class PublishedViewCtrl {
             resolve: {
                 publication: () => { return this.browser.publication; },
                 entity: () => { return entity; },
-            }
+            },
+            size: 'citation'
         });
     }
 

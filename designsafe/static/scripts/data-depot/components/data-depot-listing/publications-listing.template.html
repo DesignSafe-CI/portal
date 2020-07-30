@@ -1,14 +1,7 @@
-<div style="background-color:white;padding:10px"> 
-    <a  ng-if="$ctrl.$stateParams.query_string"ng-href="/data/browser/public/"><i class="fa fa-arrow-left"></i> Back to all publications</a>
-    <p ng-if="$ctrl.$stateParams.query_string">{{$ctrl.browser.listing.children.length}}<span ng-if="$ctrl.browser.listing.children.length >= 100">+</span> Results found for <b>{{$ctrl.$stateParams.query_string}}</b></p>
-    <p><b>Publication Type</b> <a ng-if=$ctrl.$stateParams.typeFilters ng-click="$ctrl.clearTypeFilters()">Clear</a></p>
-    <label class="checkbox-inline"><input type="checkbox" ng-checked="$ctrl.checkTypeFilterSelected('experimental')" ng-click="$ctrl.onTypeFilterSelect('experimental')"  >Experimental</label>
-    <label class="checkbox-inline"><input type="checkbox" ng-checked="$ctrl.checkTypeFilterSelected('simulation')" ng-click="$ctrl.onTypeFilterSelect('simulation')"  >Simulation</label>
-    <label class="checkbox-inline"><input type="checkbox" ng-checked="$ctrl.checkTypeFilterSelected('hybrid_simulation')" ng-click="$ctrl.onTypeFilterSelect('hybrid_simulation')">Hybrid Simulation</label>
-    <label class="checkbox-inline"><input type="checkbox" ng-checked="$ctrl.checkTypeFilterSelected('field_recon')" ng-click="$ctrl.onTypeFilterSelect('field_recon')">Field Research</label>
-    <label class="checkbox-inline"><input type="checkbox" ng-checked="$ctrl.checkTypeFilterSelected('nees')" ng-click="$ctrl.onTypeFilterSelect('nees')" >NEES</label>
-    <label class="checkbox-inline"><input type="checkbox" ng-checked="$ctrl.checkTypeFilterSelected('other')" ng-click="$ctrl.onTypeFilterSelect('other')">Other</label>
-  </div>
+<div ng-if="$ctrl.$state.current.name == 'publicData'"><publication-advanced-search /></div>
+
+
+
 <div class="table-responsive">
     <div
         class="ds-table-display-wrapper"

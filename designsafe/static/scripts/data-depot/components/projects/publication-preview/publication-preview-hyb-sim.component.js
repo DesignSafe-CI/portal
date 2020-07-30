@@ -184,6 +184,17 @@ class PublicationPreviewHybSimCtrl {
             size: 'lg'
         });
     }
+
+    showAuthor(author) {
+        this.$uibModal.open({
+            component: 'authorInformationModal',
+            resolve: {
+                author,
+            },
+            size: 'author',
+        });
+    }
+
 }
 
 export const PublicationPreviewHybSimComponent = {

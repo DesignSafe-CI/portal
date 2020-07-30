@@ -24,7 +24,11 @@
           <dd-breadcrumb skip-root="true" custom-root="$ctrl.customRoot" listing="$ctrl.listing" on-browse="$ctrl.onBrowse"></dd-breadcrumb>
         </div>
     </div>
-    <div class="table-responsive" ng-if="!$ctrl.state.listingProjects">
+    <div class="table-responsive" style="height: 500px" ng-if="!$ctrl.state.listingProjects" ds-infinite-scroll
+    data-scroll-bottom="!$ctrl.state.busy && !$ctrl.state.reachedEnd && $ctrl.scrollToBottom($ctrl.listing)"
+    data-scroll-top="$ctrl.scrollToTop()"
+    ng-scroll=""
+    data-bottom-height="0">
         <table class="table table-bordered table-striped" style="background-color: #fff;">
             <thead>
             <th>Name</th>
@@ -45,6 +49,13 @@
                        ng-click="$ctrl.chooseDestination(item)">
                         Move to {{ item.name }}
                     </a>
+                </td>
+            </tr>
+            <tr>
+                <td ng-if="$ctrl.state.loadingMore" colspan=2>
+                    <span class="bg-info text-info">
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                    </span>
                 </td>
             </tr>
             </tbody>
@@ -79,7 +90,11 @@
             </caption>
         </table>
         </div>
-    <div class="table-responsive" ng-if="$ctrl.state.listingProjects">
+        <div class="table-responsive" ng-if="$ctrl.state.listingProjects" style="height: 500px"
+            ds-infinite-scroll
+            data-scroll-bottom="!$ctrl.state.busy && !$ctrl.state.reachedEnd && $ctrl.scrollToBottom($ctrl.listing)"
+            data-scroll-top="$ctrl.scrollToTop()"
+            data-bottom-height="0">
       <table class="table table-bordered tables-striped" style="background-color: #fff;">
         <thead>
          <th>Name</th>
@@ -97,6 +112,13 @@
               {{$ctrl.data.names[item.value.pi]}}
             </td>
           </tr>
+          <tr>
+            <td ng-if="$ctrl.state.loadingMore" colspan=2>
+                <span class="bg-info text-info">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
+            </td>
+        </tr>
         </tbody>
       <caption style="padding:0">
 

@@ -133,7 +133,6 @@
             <strong>View Data Diagram</strong>
         </a>
     </div>
-    <!-- Experiments -->
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
             <i class="fa fa-spinner fa-spin"></i> Loading...
@@ -189,7 +188,7 @@
                         <div class="entity-meta-data">
                             <span ng-if="$ctrl.readOnly">
                                 <span ng-repeat="author in $ctrl.sortAuthors(experiment.authors) | filter: { authorship: true }">
-                                    <a href="#" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span> 
+                                    <a href="javascript:;" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span> 
                                 </span>
                             </span>
                             <span ng-if="!$ctrl.readOnly">
@@ -259,14 +258,26 @@
                             <span>(Appears when published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
-                                {{ $ctrl.browser.publication.licenses.datasets }}
+                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets" class="license-element">
+                                <span class="curation-odc" style="font-size:32px;"></span>&nbsp;
+                                <span>{{ $ctrl.browser.publication.licenses.datasets }}</span>
                             </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.works">
-                                {{ $ctrl.browser.publication.licenses.works }}
+                            <div data-ng-if="$ctrl.browser.publication.licenses.works" class="license-element">
+                                <span 
+                                    class="curation-cc-share"
+                                    style="font-size:32px;"
+                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+                                </span>
+                                <span
+                                    class="curation-cc-zero"
+                                    style="font-size:32px;"
+                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
+                                </span>&nbsp;
+                                <span>{{ $ctrl.browser.publication.licenses.works }}</span>
                             </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.software">
-                                {{ $ctrl.browser.publication.licenses.software }}
+                            <div data-ng-if="$ctrl.browser.publication.licenses.software" class="license-element">
+                                <span class="curation-gpl" style="font-size:32px;"></span>&nbsp;
+                                <span>{{ $ctrl.browser.publication.licenses.software }}</span>
                             </div>
                         </div>
                     </div>
@@ -277,13 +288,18 @@
                         <!-- Experiment Reports -->
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+                                <button 
+                                    class="btn collapsed tab-report" 
+                                    data-toggle="collapse" 
+                                    data-target="#files-{{report.uuid}}-{{experiment.uuid}}" 
+                                    style="width:100%;"
+                                >
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>
                                     </div>
                                 </button>
-                                <div id="files-{{report.uuid}}" class="collapse">
+                                <div id="files-{{report.uuid}}-{{experiment.uuid}}" class="collapse">
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>

@@ -16,7 +16,7 @@ from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.search.searchmanager.community import CommunityDataSearchManager
 from designsafe.apps.api.search.searchmanager.published_files import PublishedDataSearchManager
 from designsafe.apps.api.search.searchmanager.cms import CMSSearchManager
-from designsafe.apps.api.search.searchmanager.publications import PublicationsSearchManager
+from designsafe.apps.api.search.searchmanager.publications_site_search import PublicationsSiteSearchManager
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class SearchView(BaseApiView):
         }
 
         public_files_query = CommunityDataSearchManager(request).construct_query() | PublishedDataSearchManager(request).construct_query()
-        publications_query = PublicationsSearchManager(request).construct_query()
+        publications_query = PublicationsSiteSearchManager(request).construct_query()
         cms_query = es_query = CMSSearchManager(request).construct_query()
 
         if type_filter == 'public_files':

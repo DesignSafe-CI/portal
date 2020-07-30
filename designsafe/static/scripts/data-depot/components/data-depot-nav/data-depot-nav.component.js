@@ -24,6 +24,12 @@ class DataDepotNavCtrl {
         description: "Curated data/projects with DOI's"
       },
       {
+        name: 'Published (NEES)',
+        collapsible: false,
+        state: 'publicDataLegacy',
+        description: "Legacy NEES Publications"
+      },
+      {
         name: 'Community Data',
         collapsible: false,
         state: 'communityData',
