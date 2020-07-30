@@ -276,6 +276,10 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 + If a mission is published it must have the following:
                     - Planning Set OR Social Science Set OR Geoscience Set
                     - Files within all Sets
+            
+            Since FR is the only model which will require just one of multiple requirement
+            types we will check for missing information first and then check that one of
+            the requirements is included.
             */
             let requirements = ['planning', 'social_science', 'geoscience'];
             let missions = selPrimEnts.filter(ent => ent.name.endsWith('mission'));
@@ -288,15 +292,13 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
             
             if (missions.length) {
                 checkRequirements(missions, subentities, requirements);
-                // a mission only requires one collection type with associated files
-                console.log(missingData);
+                let errNames = Array.from(requirements, req => errMsg[req]);
+                // ensure all requirements are not missing (we just need one for FR) and
+                // there are no missing files
                 missingData = missingData.filter((data) => {
-                    // if we are only missing 2 of 3 requirements this is acceptable
-                    if (data.missing.length < 3) {
+                    if (!errNames.every(name => data.missing.includes(name)) &&
+                        !data.missing.includes('Associated files/data are missing or not selected')) {
                         return false;
-                    }
-                    if (data.missing.length === 3) {
-                        data.missing = ['A Collection with Data'];
                     }
                     return true;
                 });
