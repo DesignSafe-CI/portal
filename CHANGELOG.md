@@ -1,5 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.10-20200704
+Enhancements
+- Task/DES-1716 - Update minimum requirements for FR projects 
+- Task/DES-1708(1714, 1581) - Project Overview Updates and updated PII Policy Guidelines
+Fixes:
+- Bug/DES-1674 - Fix bug with FR ordering in "Relate Data" modal 
+- Bug/DES-1662 - Fix issue with project file listings overloading agave with requests
+
 ## v4.9.9-20200703
 Fixes:
 - bug/DES-1698: Fixing typos in hybrid simulation templates
@@ -36,7 +44,7 @@ Fixes:
 - Fixes to the Authors window in the publication pipeline.
 
 ## v4.9.7-20200602
-Fixes: 
+Fixes:
 * Enable expansion of multiple tabs of the same type in Publications.
 * Fixes to the Authors window in the publication pipeline.
 
@@ -95,7 +103,7 @@ Fixes:
 * Fixes an issue preventing the license string from submitting to an app correctly
 
 ## v4.9.4
-Fixes: 
+Fixes:
 * Fixes an issue where license management would not render in the admin panel
 
 ## v4.9.2-20200404
@@ -103,11 +111,11 @@ Fixes:
 * Fixes an issue where license management would not render in the admin panel
 
 ## v4.9.3
-Enhancements: 
+Enhancements:
 * Visual updates to the publication download feature.
 
 ## v4.9.2-20200403
-Fixes: 
+Fixes:
 * Publications display and paginate properly in the workspace.
 * Speed up publications listings.
 

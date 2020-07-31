@@ -1,31 +1,13 @@
-import _ from 'underscore';
-
 import FileCategoriesTemplate from './file-categories.template.html';
 import experimentalFileTags from './experimental-file-tags.json';
 import simulationFileTags from './simulation-file-tags.json';
 import hybridSimulationFileTags from './hybrid-simulation-file-tags.json';
 import fieldReconFileTags from './field-recon-file-tags.json';
 import otherFileTags from './other-file-tags.json';
-import { values } from '@uirouter/core';
 
-const getFileUuid = (file) => {
-    let promise;
-    if (_.isEmpty(file.uuid())) {
-        promise = file.fetch();
-    } else {
-        let my_promise = () => {
-            let prm = new Promise((resolve)=>{
-                resolve(file);
-            });
-            return prm;
-        };
-        promise = my_promise();
-    }
-    return promise;
-};
 
 class FileCategoriesCtrl {
-    constructor($q, Django, ProjectModel, ProjectService, ProjectEntitiesService, httpi, $scope){
+    constructor($q, Django, ProjectModel, ProjectService, ProjectEntitiesService, httpi, $scope) {
         'ngInject';
         this.Django = Django;
         this.ProjectModel = ProjectModel;
@@ -37,65 +19,78 @@ class FileCategoriesCtrl {
     }
 
     $onInit() {
-        this._ui = { 
-            busy: true,
+        this._ui = {
+            busy: false,
             error: false,
             isOther: this.project.value.projectType === 'other',
             showTags: this.showTags || false,
             editTags: this.editTags || false,
         };
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
-        getFileUuid(this.file).finally( ()=>{
-            this._ui.busy=false;
+    }
+
+    updateEntity(entity, file) {
+        this.ProjectEntitiesService.update({
+            data: { uuid: entity.uuid, entity: entity },
+        })
+            .then((updatedEnt) => {
+                let oldEnt = this.project.getRelatedByUuid(updatedEnt.uuid);
+                oldEnt.update(updatedEnt);
+                if (file) {
+                    file.setEntities(this.project.uuid, this.project.getAllRelatedObjects());
+                }
+            })
+            .finally(() => {
+                this._ui.busy = false;
+            });
+    };
+
+    savePrj(options) {
+        return this.projectResource.post({ data: options }).then((resp) => {
+            return new this.ProjectModel(resp.data);
         });
     }
 
     removeCategory(entity) {
         this._ui.busy = true;
-        getFileUuid(this.file).then((file)=>{
-            if (!_.contains(entity.associationIds, file.uuid())){
-                return undefined;
+
+        this.rmUuid = (allIds, idToRm) => {
+            let index = allIds.indexOf(idToRm);
+            if (index >= 0) {
+                allIds.splice(index, 1);
             }
-            entity.associationIds = _.difference(entity.associationIds, [this.file.uuid()]);
-            entity.value.files = _.difference(entity.value.files, [this.file.uuid()]);
-            return entity;
-        }).then( (ret) => {
-            if (!ret){
-                return undefined;
-            }
-            return this.ProjectEntitiesService.update({
-                data: {
-                    uuid: ret.uuid,
-                    entity: ret,
-                },
+            return allIds;
+        };
+
+        if (!this.file.uuid().length) {
+            this.file.fetch().then((file) => {
+                if (!entity.associationIds.includes(file.uuid())) {
+                    return undefined;
+                }
+                this.rmUuid(entity.associationIds, file.uuid());
+                this.rmUuid(entity.value.files, file.uuid());
+                this.updateEntity(entity, this.file);
             });
-        }).then( (ret) => {
-            if (!ret) {
-                return this.file;
+        } else {
+            if (!entity.associationIds.includes(this.file.uuid())) {
+                return undefined;
             }
-            let entity = this.project.getRelatedByUuid(ret.uuid);
-            entity.update(ret);
-            this.file.setEntities(this.project.uuid, this.project.getAllRelatedObjects());
-            return this.file;
-        }).finally(() => {
-            this._ui.busy = false;
-            this.$scope.$apply();
-        });
+            this.rmUuid(entity.associationIds, this.file.uuid());
+            this.rmUuid(entity.value.files, this.file.uuid());
+            this.updateEntity(entity, this.file);
+        }
     }
 
     removeProjectTag(tag) {
         this._ui.busy = true;
         let tagName = tag.tagName;
-        
-        this.project.value.fileTags = _.filter(
-            this.project.value.fileTags,
-            (ft) => {
-                if(ft.fileUuid === tag.fileUuid && ft.tagName === tagName){
-                    return false;
-                }
-                return true;
+
+        this.project.value.fileTags = this.project.value.fileTags.filter((ft) => {
+            if (ft.fileUuid === tag.fileUuid && ft.tagName === tagName) {
+                return false;
             }
-        );
+            return true;
+        });
 
         var projectData = {};
         projectData.uuid = this.project.uuid;
@@ -126,13 +121,39 @@ class FileCategoriesCtrl {
             tagName = this.selectedFileTag[this.project.uuid];
         }
 
-        getFileUuid(this.file).then((file) => {
+        if (!this.file.uuid().length) {
+            this.file.fetch()
+                .then((file) => {
+                    this.project.value.fileTags.push({
+                        fileUuid: file.uuid(),
+                        tagName: tagName,
+                        path: this.file.path,
+                    });
+                })
+                .then(() => {
+                    let projectData = {};
+                    projectData.uuid = this.project.uuid;
+                    projectData.fileTags = this.project.value.fileTags;
+                    projectData.title = this.project.value.title;
+                    projectData.pi = this.project.value.pi;
+                    projectData.coPis = this.project.value.coPis;
+                    projectData.projectType = this.project.value.projectType;
+                    projectData.projectId = this.project.value.projectId;
+                    projectData.description = this.project.value.description;
+                    projectData.keywords = this.project.value.keywords;
+                    projectData.teamMembers = this.project.value.teamMembers;
+                    projectData.associatedProjects = this.project.value.associatedProjects;
+                    projectData.awardNumber = this.project.value.awardNumber;
+                    this.savePrj(projectData);
+                    this.selectedFileTag[this.project.uuid] = null;
+                    this._ui.busy = false;
+                });
+        } else {
             this.project.value.fileTags.push({
-                fileUuid: file.uuid(),
+                fileUuid: this.file.uuid(),
                 tagName: tagName,
-                path: this.file.path
+                path: this.file.path,
             });
-        }).then(() => {
             let projectData = {};
             projectData.uuid = this.project.uuid;
             projectData.fileTags = this.project.value.fileTags;
@@ -146,17 +167,10 @@ class FileCategoriesCtrl {
             projectData.teamMembers = this.project.value.teamMembers;
             projectData.associatedProjects = this.project.value.associatedProjects;
             projectData.awardNumber = this.project.value.awardNumber;
-            this.savePrj(projectData).finally(() => {
-                this.selectedFileTag[this.project.uuid] = null;
-                this._ui.busy = false;
-            });
-        });
-    }
-
-    savePrj(options) {
-        return this.projectResource.post({ data: options }).then((resp) => {
-            return new this.ProjectModel(resp.data);
-        });
+            this.savePrj(projectData);
+            this.selectedFileTag[this.project.uuid] = null;
+            this._ui.busy = false;
+        }
     }
 
     addFileTag(entity) {
@@ -176,64 +190,47 @@ class FileCategoriesCtrl {
             return;
         }
 
-        getFileUuid(this.file).then((file)=>{
+        if (!this.file.uuid().length) {
+            this.file.fetch().then((file) => {
+                entity.value.fileTags.push({
+                    fileUuid: file.uuid(),
+                    tagName: tagName,
+                    path: this.file.path,
+                });
+                this.updateEntity(entity);
+                this.selectedFileTag[entity.uuid] = null;
+            });
+        } else {
             entity.value.fileTags.push({
-                fileUuid: file.uuid(),
+                fileUuid: this.file.uuid(),
                 tagName: tagName,
-                path: this.file.path
+                path: this.file.path,
             });
-        }).then(() => {
-            return this.ProjectEntitiesService.update({
-                data: {
-                    uuid: entity.uuid,
-                    entity: entity,
-                }
-            });
-        }).then((res) => {
-            let prjEntity = this.project.getRelatedByUuid(res.uuid);
-            prjEntity.update(res);
-        }).finally(() => {
-            this._ui.busy = false;
+            this.updateEntity(entity);
             this.selectedFileTag[entity.uuid] = null;
-            this.$scope.$apply();
-        });
+        }
     }
 
     removeFileTag(entity, tag) {
         this._ui.busy = true;
         let tagName = tag.tagName;
-        
-        entity.value.fileTags = _.filter(
-            entity.value.fileTags,
-            (ft) => {
-                if(ft.fileUuid === tag.fileUuid && ft.tagName === tagName){
-                    return false;
-                }
-                return true;
+        entity.value.fileTags = entity.value.fileTags.filter((ft) => {
+            if (ft.fileUuid === tag.fileUuid && ft.tagName === tagName) {
+                return false;
             }
-        );
-    
-        this.ProjectEntitiesService.update({
-            data: {
-                uuid: entity.uuid,
-                entity: entity,
-            }
-        }).then((res) => {
-            let prjEntity = this.project.getRelatedByUuid(res.uuid);
-            prjEntity.update(res);
-        }).finally(() => {
-            this._ui.busy = false;
+            return true;
         });
+        this.updateEntity(entity);
     }
 
     fileTagsForEntity(entity) {
-        if (this.project.value.projectType === 'experimental'){
+        if (this.project.value.projectType === 'experimental') {
             return experimentalFileTags[entity.name];
         } else if (this.project.value.projectType === 'simulation') {
             return simulationFileTags[entity.name];
         } else if (this.project.value.projectType === 'hybrid_simulation') {
             return hybridSimulationFileTags[entity.name];
-        } else if (this.project.value.projectType === 'other'){
+        } else if (this.project.value.projectType === 'other') {
             return otherFileTags['designsafe.project'];
         } else if (this.project.value.projectType === 'field_recon') {
             return fieldReconFileTags[entity.name];
@@ -242,7 +239,22 @@ class FileCategoriesCtrl {
     }
 
     tagsForFile(tags) {
-        return _.filter(tags, (tag) => { return tag.fileUuid == this.file.uuid(); });
+        /*
+        Get the file tags for a file.
+        If listing files for published projects, compare the filepath
+        without the projectId in the root path.
+        */
+        if (!tags) {
+            return;
+        }
+        if (this.file.apiParams.fileMgr == 'published') {
+            return tags.filter((tag) => {
+                return tag.path == this.file.path.replace(/^\/*PRJ-[0-9]{4}/g, '');
+            });
+        }
+        return tags.filter((tag) => {
+            return tag.path == this.file.path;
+        });
     }
 }
 

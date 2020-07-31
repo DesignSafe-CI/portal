@@ -36,30 +36,30 @@ class PipelineSelectionCtrl {
                 { query_string: this.$state.params.query_string }
             ),
             this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
-        ]).then(([project, listing, entities]) => {
+        ]).then(([project, listing, ents]) => {
             this.browser.project = project;
-            this.browser.project.appendEntitiesRel(entities);
+            this.browser.project.appendEntitiesRel(ents);
             this.browser.listing = listing;
+            this.prepProject();
+            this.createAbstractListing(ents);
+        });
+
+        this.createAbstractListing = (entities) => {
+            /*
+            Create Abstract Listing:
+            Since we need to list x number of files from anywhere within the project's directory,
+            we need to try to list the minimum amount of paths within the project to get the file details.
+            Once we have the listed files we can create the abstracted file listings (this.browser.listings).
+            */
+            this.browser.listings = {};
             this.browser.listing.href = this.$state.href('projects.view.data', {
                 projectId: this.projectId,
                 filePath: this.browser.listing.path,
                 projectTitle: this.browser.project.value.projectTitle,
             });
-            this.browser.listing.children.forEach((child) => {
-                child.href = this.$state.href('projects.view.data', {
-                    projectId: this.projectId,
-                    filePath: child.path,
-                    projectTitle: this.browser.project.value.projectTitle,
-                });
-                child.setEntities(this.projectId, entities);
-            });
-            var allFilePaths = [];
-            this.browser.listings = {};
-            var apiParams = {
-                fileMgr: 'agave',
-                baseUrl: '/api/agave/files',
-                searchState: 'projects.view.data',
-            };
+
+            let listingPaths = [];
+            let allPaths = [];
             entities.forEach((entity) => {
                 this.browser.listings[entity.uuid] = {
                     name: this.browser.listing.name,
@@ -68,64 +68,42 @@ class PipelineSelectionCtrl {
                     trail: this.browser.listing.trail,
                     children: [],
                 };
-                allFilePaths = allFilePaths.concat(entity._filePaths);
+                allPaths = allPaths.concat(entity._filePaths);
             });
+            allPaths.forEach((path) => {
+                listingPaths = listingPaths.concat(path.match(`.*\/`)[0]);
+            });
+            let reducedPaths = { files: [...new Set(allPaths)], directories: [...new Set(listingPaths)] };
 
-            this.prepProject();
-
-            this.setFilesDetails = (paths) => {
-                let filePaths = [...new Set(paths)];
-                var p = this.$q((resolve, reject) => {
-                    var results = [];
-                    var index = 0;
-                    var size = 5;
-                    var fileCalls = filePaths.map(filePath => {
-                        return this.FileListing.get(
-                            { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
-                        ).then((resp) => {
-                            if (!resp) {
-                                return;
-                            }
-                            var allEntities = this.browser.project.getAllRelatedObjects();
-                            var entities = allEntities.filter((entity) => {
-                                return entity._filePaths.includes(resp.path);
-                            });
-                            entities.forEach((entity) => {
-                                resp._entities.push(entity);
-                                this.browser.listings[entity.uuid].children.push(resp);
-                            });
-                            return resp;
-                        });
-                    });
-
-                    var step = () => {
-                        var calls = fileCalls.slice(index, (index += size));
-                        if (calls.length) {
-                            this.$q.all(calls)
-                                .then((res) => {
-                                    results.concat(res);
-                                    step();
-                                    return res;
-                                })
-                                .catch(reject);
-                        } else {
-                            resolve(results);
+            this.populateListings = (paths, ents) => {
+                let apiParams = this.DataBrowserService.apiParameters();
+                var dirListings = paths.directories.map((dir) => {
+                    return this.FileListing.get(
+                        { system: 'project-' + this.browser.project.uuid, path: dir },
+                        apiParams
+                    ).then((resp) => {
+                        if (!resp) {
+                            return;
                         }
-                    };
-                    step();
-                });
-                return p.then(
-                    (results) => {
-                        this.ui.loading = false;
-                        return results;
-                    },
-                    (err) => {
-                        this.ui.loading = false;
-                        this.browser.ui.error = err;
+                        let files = resp.children;
+                        ents.forEach((e) => {
+                            files.forEach((f) => {
+                                if (e._filePaths.indexOf(f.path) > -1) {
+                                    f._entities.push(e);
+                                    this.browser.listings[e.uuid].children.push(f);
+                                }
+                            });
+                        });
+                        return resp;
                     });
+                });
+
+                this.$q.all(dirListings).then(() => {
+                    this.ui.loading = false;
+                });
             };
-            this.setFilesDetails(allFilePaths);
-        });
+            this.populateListings(reducedPaths, entities);
+        };
     }
 
     prepProject() {

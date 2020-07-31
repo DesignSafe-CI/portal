@@ -35,25 +35,33 @@ export function FileListing($http, $q) {
         }
     }
 
-    FileListing.prototype.setEntities = function(projectId, entities){
+    FileListing.prototype.setEntities = function(projectUuid, entities){
+        /**
+         * Set Entity Metadata
+         * This method will set entity information on individual files within a project's listing.
+         * The entity metadata is used for categorization and tagging purposes on files within the listing
+         * 
+         * @param {string} projectUuid The uuid of the project
+         * @param {array} entities Array of entities within a project
+        **/
+
         var self = this;
         var path = self.path;
+
         self._entities = [];
-        _.each(entities, function(entity){
+        entities.forEach((entity) => {
             if (typeof entity !== 'undefined' &&
             typeof entity._links !== 'undefined' &&
             typeof entity._links.associationIds !== 'undefined') {
-                _.each(entity._links.associationIds, function (asc) {
+                entity._links.associationIds.forEach((asc) => {
                     if (asc.title === 'file') {
-                        var comps = asc.href.split('project-' + projectId, 2);
+                        var comps = asc.href.split('project-' + projectUuid, 2);
                         if (comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '')) {
                             self._entities.push(entity);
                         }
-                        if (!comps[1].replace(/^\/+/, '').includes('.')) {
-                            if (comps.length === 2 && self._parent.path.replace(/^\/+/, '').startsWith(comps[1].replace(/^\/+/, ''))) {
-                                if (!self._parent._entities.includes(entity)) {
-                                    self._parent._entities.push(entity);
-                                }
+                        if (comps.length === 2 && self._parent.path.replace(/^\/+/, '').startsWith(comps[1].replace(/^\/+/, ''))) {
+                            if (!self._parent._entities.includes(entity)) {
+                                self._parent._entities.push(entity);
                             }
                         }
                     }
@@ -65,7 +73,7 @@ export function FileListing($http, $q) {
             var myAsoc = _.find(self._entities[0]._links.associationIds,
                 function(asc){
                     if (asc.title === 'file'){
-                        var comps = asc.href.split('project-' + projectId, 2);
+                        var comps = asc.href.split('project-' + projectUuid, 2);
                         return self.path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
                     }
                 });
@@ -242,7 +250,6 @@ export function FileListing($http, $q) {
         var self = this;
         // recreate a deferred timeout for the promise
         stopper = $q.defer();
-
         var req = $http.get(this.listingUrl(), { params: params, timeout: stopper.promise }).then(function (resp) {
             angular.extend(self, resp.data);
 
