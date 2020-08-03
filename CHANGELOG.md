@@ -1,5 +1,16 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.11
+Enhancements
+- Task/DES-1716 - Update minimum requirements for FR projects 
+- Task/DES-1708(1714, 1581) - Project Overview Updates and updated PII Policy Guidelines
+- Disable move/rename operations for files with associated entities
+Fixes:
+- Bug/DES-1674 - Fix bug with FR ordering in "Relate Data" modal 
+- Bug/DES-1662 - Fix issue with project file listings overloading agave with requests
+- bug/DES-1698: Fixing typos in hybrid simulation templates
+- Fix Simulations Not Rendering
+
 ## v4.9.10-20200704
 Enhancements
 - Task/DES-1716 - Update minimum requirements for FR projects 
