@@ -78,4 +78,4 @@ def new_user_alert(username):
                                                     'Email: ' + user.email + '\n' +
                                                     'Name: ' + user.first_name + ' ' + user.last_name + '\n' +
                                                     'Id: ' + str(user.id) + '\n',
-              settings.DEFAULT_FROM_EMAIL, [settings.NEW_ACCOUNT_ALERT_EMAIL],)
+              settings.DEFAULT_FROM_EMAIL, settings.NEW_ACCOUNT_ALERT_EMAIL,)
