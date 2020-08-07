@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.13
+Hotfix:
+- Change wording of confirmation message after submitting registration request.
+
 ## v4.9.12
 Hotfix:
 - Send new_account_alert email to multiple emails
