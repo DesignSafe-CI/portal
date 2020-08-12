@@ -1,0 +1,22 @@
+<div class="modal-header">
+    <h3 class="modal-title">Folder Preview for {{$ctrl.resolve.path}}</h3>
+</div>
+<div class="modal-body">
+        <breadcrumb
+            path="$ctrl.FileListingService.listings[$ctrl.resolve.section].params.path"
+            system="$ctrl.FileListingService.listings[$ctrl.resolve.section].params.system"
+            on-browse="$ctrl.onBrowse($event, file)"
+            skip-root="$ctrl.breadcrumbParams().skipRoot"
+            custom-root="$ctrl.breadcrumbParams().customRoot"
+        ></breadcrumb>
+        <files-listing
+            on-scroll="$ctrl.scrollToBottom()"
+            listing="$ctrl.FileListingService.listings[$ctrl.resolve.section]"
+            on-browse="$ctrl.onBrowse($event, file)"
+            show-select="false"
+            show-tags="true"
+            >&nbsp;</files-listing
+        >
+    </div>
+    <div class="modal-footer"></div>
+</div>

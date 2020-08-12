@@ -2,62 +2,63 @@ import CurationDirectoryTemplate from './curation-directory.component.html';
 
 class CurationDirectoryCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q, $uibModal) {
+    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, FileListingService, FileOperationService, $state, $stateParams, $q, $uibModal) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.DataBrowserService = DataBrowserService;
         this.FileListing = FileListing;
-        this.browser = this.DataBrowserService.state();
+        this.FileListingService = FileListingService;
+        this.FileOperationService = FileOperationService;
+        this.browser = {}
         this.$state = $state;
         this.$q = $q;
         this.$uibModal = $uibModal;
+        this.$stateParams = $stateParams;
     }
     
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
+        this.browser.project = this.ProjectService.current;
         this.filePath = this.ProjectService.resolveParams.filePath;
-        this.data = this.ProjectService.resolveParams.data;
-        this.loading = true;
         this.fl = {
             showSelect: true,
             showHeader: true,
             showTags: false,
             editTags: true,
         };
+        const promisesToResolve = {
+            listing: this.FileListingService.browse({
+                section: 'main',
+                api: 'agave',
+                scheme: 'private',
+                system: 'project-' + this.projectId,
+                path: this.filePath,
+                query_string: this.$stateParams.query_string
+            }).toPromise(),
+        };
+        
 
-        if (this.data && this.data.listing.path == this.filePath) {
-            this.browser = this.data;
-            this.loading = false;
-        } else {
-            this.$q.all([
-                this.ProjectService.get({ uuid: this.projectId }),
-                this.DataBrowserService.browse(
-                    { system: 'project-' + this.projectId, path: this.filePath },
-                    { query_string: this.$state.params.query_string }
-                ),
-                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
-            ]).then(([project, listing, entities]) => {
-                this.browser.project = project;
-                this.browser.project.appendEntitiesRel(entities);
-                this.browser.listing = listing;
-                this.browser.listing.href = this.$state.href('projects.view.data', {
-                    projectId: this.projectId,
-                    filePath: this.browser.listing.path,
-                    projectTitle: this.browser.project.value.projectTitle,
-                });
-                this.browser.listing.children.forEach((child) => {
-                    child.href = this.$state.href('projects.view.data', {
-                        projectId: this.projectId,
-                        filePath: child.path,
-                        projectTitle: this.browser.project.value.projectTitle,
-                    });
-                    child.setEntities(this.projectId, entities);
-                });
-                this.loading = false;
-            });
+        if ( !(this.ProjectService.current && this.ProjectService.current.uuid === this.projectId )){//&& this.FileListingService.listings.main.params.path === this.filePath) {
+        this.loading = true;
+        promisesToResolve.project = this.ProjectService.get({ uuid: this.projectId })
+        promisesToResolve.entities = this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }) 
+        } 
+        else {
+        this.browser.project = this.ProjectService.current;
         }
+        this.$q.all(promisesToResolve).then(({project, listing, entities}) => {
+        if (project) {
+            this.browser.project = project;
+            this.browser.project.appendEntitiesRel(entities);
+        }
+        const projectEntities = this.browser.project.getAllRelatedObjects();
+        this.FileListingService.setEntities('main', projectEntities);
+    
+        this.loading = false;
+        
+        });
     }
 
     isSingle(val) {
@@ -86,7 +87,7 @@ class CurationDirectoryCtrl {
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser, filePath: this.filePath});
+        this.$state.go('projects.view', {projectId: this.browser.project.uuid, data: this.browser, filePath: this.filePath});
     }
 
     goPreview() {
@@ -186,6 +187,15 @@ class CurationDirectoryCtrl {
             size: 'lg',
         });
     }
+
+  onBrowse(file) {
+    if (file.type === 'dir') {
+        this.$state.go(this.$state.current.name, {filePath: file.path.replace(/^\/+/, ''), query_string: null})
+    }
+    else {
+        this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
+    }
+  }
 }
 
 export const CurationDirectoryComponent = {

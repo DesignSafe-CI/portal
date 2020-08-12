@@ -93,7 +93,11 @@
                             <span ng-click="$ctrl.editSubEntity(report)"><a>Edit</a></span>
                         </div>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
+                    <files-listing
+                        on-scroll="$ctrl.scrollToBottom()"
+                        listing="$ctrl.browser.listings[report.uuid]"
+                        on-browse="$ctrl.onBrowse($event, path)"
+                        >&nbsp;</files-listing>      
                 </div>
             </div>
         </div>
@@ -113,7 +117,12 @@
                         <p ng-if="model.value.description">{{ model.value.description }}</p>
                         <span ng-click="$ctrl.editSubEntity(model)"><a>Edit</a></span>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl"></files-listing>
+                    <files-listing
+                    on-scroll="$ctrl.scrollToBottom()"
+                    listing="$ctrl.FileListingService.listings[model.uuid]"
+                    on-browse="$ctrl.onBrowse($event, path)"
+                    >&nbsp;</files-listing
+                > 
                 </div>
             </div>
             <!-- Coordinator -->
@@ -140,7 +149,12 @@
                                         <p ng-if="coordinator.value.description">{{ coordinator.value.description }}</p>
                                         <span ng-click="$ctrl.editSubEntity(coordinator)"><a>Edit</a></span>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" params="$ctrl.fl"></files-listing>
+                                    <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[coordinator.uuid]"
+                                    on-browse="$ctrl.onBrowse($event, path)"
+                                    >&nbsp;</files-listing
+                                > 
                                 </div>
                             </td>
                         </tr>
@@ -169,8 +183,12 @@
                                                 <p ng-if="cout.value.description">{{ cout.value.description }}</p>
                                                 <span ng-click="$ctrl.editSubEntity(cout)"><a>Edit</a></span>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" params="$ctrl.fl"></files-listing>
-                                        </div>
+                                            <files-listing
+                                            on-scroll="$ctrl.scrollToBottom()"
+                                            listing="$ctrl.FileListingService.listings[cout.uuid]"
+                                            on-browse="$ctrl.onBrowse($event, path)"
+                                            >&nbsp;</files-listing
+                                        >                                   </div>
                                     </td>
                                 </tr>
                             </table>
@@ -207,8 +225,12 @@
                                                 <p ng-if="simsub.value.description">{{ simsub.value.description }}</p>
                                                 <span ng-click="$ctrl.editSubEntity(simsub)"><a>Edit</a></span>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" params="$ctrl.fl"></files-listing>
-                                        </div>
+                                            <files-listing
+                                        on-scroll="$ctrl.scrollToBottom()"
+                                        listing="$ctrl.FileListingService.listings[simsub.uuid]"
+                                        on-browse="$ctrl.onBrowse($event, path)"
+                                        >&nbsp;</files-listing
+                                         >  </div>
                                     </td>
                                 </tr>
                             </table>
@@ -246,8 +268,12 @@
                                                         <p ng-if="sout.value.description">{{ sout.value.description }}</p>
                                                         <span ng-click="$ctrl.editSubEntity(sout)"><a>Edit</a></span>
                                                     </div>
-                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" params="$ctrl.fl"></files-listing>
-                                                </div>
+                                                    <files-listing
+                                                    on-scroll="$ctrl.scrollToBottom()"
+                                                    listing="$ctrl.FileListingService.listings[simsub.uuid]"
+                                                    on-browse="$ctrl.onBrowse($event, path)"
+                                                    >&nbsp;</files-listing
+                                                 > </div>
                                             </td>
                                         </tr>
                                     </table>
@@ -287,8 +313,12 @@
                                                 <p ng-if="expsub.value.description">{{ expsub.value.description }}</p>
                                                 <span ng-click="$ctrl.editSubEntity(expsub)"><a>Edit</a></span>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" params="$ctrl.fl"></files-listing>
-                                        </div>
+                                            <files-listing
+                                            on-scroll="$ctrl.scrollToBottom()"
+                                            listing="$ctrl.FileListingService.listings[expsub.uuid]"
+                                            on-browse="$ctrl.onBrowse($event, path)"
+                                            >&nbsp;</files-listing
+                                        >                                       </div>
                                     </td>
                                 </tr>
                             </table>
@@ -326,8 +356,12 @@
                                                         <p ng-if="eout.value.description">{{ eout.value.description }}</p>
                                                         <span ng-click="$ctrl.editSubEntity(eout)"><a>Edit</a></span>
                                                     </div>
-                                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" params="$ctrl.fl"></files-listing>
-                                                </div>
+                                                    <files-listing
+                                                    on-scroll="$ctrl.scrollToBottom()"
+                                                    listing="$ctrl.FileListingService.listings[eout.uuid]"
+                                                    on-browse="$ctrl.onBrowse($event, path)"
+                                                    >&nbsp;</files-listing
+                                                >                                              </div>
                                             </td>
                                         </tr>
                                     </table>
@@ -368,8 +402,13 @@
                             <span ng-click="$ctrl.editSubEntity(analysis)"><a>Edit</a></span>
                         </div>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>
-                </div>
+                    <files-listing
+                    on-scroll="$ctrl.scrollToBottom()"
+                    listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                    on-browse="$ctrl.onBrowse($event, path)"
+                    >&nbsp;</files-listing
+                >           
+                 </div>
             </div>
         </div>
     </div>

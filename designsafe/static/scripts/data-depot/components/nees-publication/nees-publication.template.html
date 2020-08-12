@@ -1,4 +1,3 @@
-<dd-breadcrumb listing="$ctrl.browser.listing" skip-root="true" custom-root="$ctrl.data.customRoot" on-browse="$ctrl.onBrowse" item-href="$ctrl.resolveBreadcrumbHref"></dd-breadcrumb>
 <div class="project">
     <div ng-if="$ctrl.project" class="project-detail" style="background:white;">
         <h2>{{$ctrl.project.name}}: {{$ctrl.project.metadata.project.title}}</h2>
@@ -137,9 +136,15 @@
     </div>
 </div>
 
-<uib-tabset active="active">
+<uib-tabset active="active" ng-if="$ctrl.project">
     <uib-tab index="0" heading="Files">
-        <files-listing data-browser="$ctrl.browser">&nbsp;</files-listing>
+        <breadcrumb
+        path="$ctrl.breadcrumbParams.path"
+        on-browse="$ctrl.onBrowse(file)"
+        custom-root="$ctrl.breadcrumbParams.root"
+        skip-root="$ctrl.breadcrumbParams.skipRoot"
+    ></breadcrumb>
+        <files-listing listing="$ctrl.FileListingService.listings.main" on-browse="$ctrl.onBrowse(file)">&nbsp;</files-listing>
     </uib-tab>
     <uib-tab index="1" heading="Experiments">
             <div class="modal-body">

@@ -3,11 +3,13 @@ import _ from 'underscore';
 
 class ManageCategoriesCtrl {
 
-    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService, DataBrowserService, FileListing) {
+    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService, FileListingService, FileOperationService, DataBrowserService, FileListing) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.FileListing = FileListing;
-        this.browser = DataBrowserService.state();
+        this.FileListingService = FileListingService;
+        this.FileOperationService = FileOperationService;
+        this.DataBrowserService = DataBrowserService;
         this.UserService = UserService;
         this.Django = Django;
         this.$q = $q;
@@ -47,75 +49,9 @@ class ManageCategoriesCtrl {
             this.ui.loading = false;
         } else {
             let entities = this.browser.project.getAllRelatedObjects();
-            var allFilePaths = [];
-            this.browser.listings = {};
-            var apiParams = {
-                fileMgr: 'agave',
-                baseUrl: '/api/agave/files',
-                searchState: 'projects.view.data',
-            };
-            entities.forEach((entity) => {
-                this.browser.listings[entity.uuid] = {
-                    name: this.browser.listing.name,
-                    path: this.browser.listing.path,
-                    system: this.browser.listing.system,
-                    trail: this.browser.listing.trail,
-                    children: [],
-                };
-                allFilePaths = allFilePaths.concat(entity._filePaths);
+            this.FileListingService.abstractListing(entities, this.browser.project.uuid).subscribe((_) => {
+                this.ui.loading = false;
             });
-            this.setFilesDetails = (paths) => {
-                let filePaths = [...new Set(paths)];
-                var p = this.$q((resolve, reject) => {
-                    var results = [];
-                    var index = 0;
-                    var size = 5;
-                    var fileCalls = filePaths.map(filePath => {
-                        return this.FileListing.get(
-                            { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
-                        ).then((resp) => {
-                            if (!resp) {
-                                return;
-                            }
-                            var allEntities = this.browser.project.getAllRelatedObjects();
-                            var entities = allEntities.filter((entity) => {
-                                return entity._filePaths.includes(resp.path);
-                            });
-                            entities.forEach((entity) => {
-                                resp._entities.push(entity);
-                                this.browser.listings[entity.uuid].children.push(resp);
-                            });
-                            return resp;
-                        });
-                    });
-    
-                    var step = () => {
-                        var calls = fileCalls.slice(index, (index += size));
-                        if (calls.length) {
-                            this.$q.all(calls)
-                                .then((res) => {
-                                    results.concat(res);
-                                    step();
-                                    return res;
-                                })
-                                .catch(reject);
-                        } else {
-                            resolve(results);
-                        }
-                    };
-                    step();
-                });
-                return p.then(
-                    (results) => {
-                        this.ui.loading = false;
-                        return results;
-                    },
-                    (err) => {
-                        this.ui.loading = false;
-                        this.browser.ui.error = err;
-                    });
-            };
-            this.setFilesDetails(allFilePaths);
         }
 
         if (this.browser.project.value.projectType === 'experimental') {
@@ -231,10 +167,6 @@ class ManageCategoriesCtrl {
                 }
             ];
         }
-
-        // if (this.edit) {
-        //     this.editCategory(this.edit);
-        // }
     }
 
     dropEntity(group) {
@@ -277,12 +209,12 @@ class ManageCategoriesCtrl {
         var nameComps = entity.name.split('.');
         var name = nameComps[nameComps.length - 1];
         entity.description = entity.description || '';
-        if (typeof this.browser.files !== 'undefined') {
-            entity.filePaths = _.map(this.browser.files,
-                (file) => {
-                    return file.path;
-                });
-        }
+        //if (typeof this.browser.files !== 'undefined') {
+        //    entity.filePaths = _.map(this.browser.files,
+        //        (file) => {
+        //            return file.path;
+        //        });
+        //}
         this.ProjectEntitiesService.create({
             data: {
                 uuid: this.browser.project.uuid,
@@ -301,11 +233,9 @@ class ManageCategoriesCtrl {
                         trail: this.browser.listing.trail,
                         children: [],
                     }; 
-                    this.ui.error = false;
                 },
                 (err) => {
-                    this.ui.error = true;
-                    this.error = err;
+                    this.ui.error = err;
                 }
             );
     }
@@ -389,6 +319,14 @@ class ManageCategoriesCtrl {
             });
         };
         confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+    }
+
+    onBrowse(file) {
+        if (file.type === 'dir') {
+            return;
+        } else {
+            this.FileOperationService.openPreviewModal({ api: 'agave', scheme: 'private', file });
+        }
     }
 }
 

@@ -150,6 +150,13 @@
         <a data-ng-click="$ctrl.treeDiagram()">
             <strong>View Data Diagram</strong>
         </a>
+        <breadcrumb
+            path="$ctrl.breadcrumbParams.path"
+            system="$ctrl.FileListingService.listings.main.params.path"
+            on-browse="$ctrl.onBrowse(file)"
+            custom-root="$ctrl.breadcrumbParams.root"
+            skip-root="$ctrl.breadcrumbParams.skipRoot"
+        ></breadcrumb>
     </div>
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
@@ -157,7 +164,18 @@
         </h3>
     </div>
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
-        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" params="$ctrl.fl"></files-listing>
+        <breadcrumb
+            path="$ctrl.breadcrumbParams.path"
+            system="$ctrl.FileListingService.listings.main.params.path"
+            on-browse="$ctrl.onBrowse(file)"
+            custom-root="$ctrl.breadcrumbParams.root"
+            skip-root="$ctrl.breadcrumbParams.skipRoot"
+        ></breadcrumb>
+        <files-listing show-select="true" show-tags="true"
+            on-scroll="$ctrl.scrollToBottom()"
+            listing="$ctrl.FileListingService.listings.main"
+            on-browse="$ctrl.onBrowse(file)"
+        >&nbsp;</files-listing>
     </div>
     <div ng-if="!$ctrl.ui.fileNav">
         <!-- Root Sets -->
@@ -254,8 +272,11 @@
                                 <p>{{ mission.value.description }}</p>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[mission.uuid]" params="$ctrl.fl"></files-listing>
-                    </div>
+                        <files-listing show-select="true" show-tags="true"
+                        on-scroll="$ctrl.scrollToBottom()"
+                        listing="$ctrl.FileListingService.listings[mission.uuid]"
+                        on-browse="$ctrl.onBrowse(file)"
+                    >&nbsp;</files-listing>                    </div>
                 </div>
             </div>
             <!-- Missions -->
@@ -431,7 +452,11 @@
                                                 <p>{{ collection.value.description }}</p>
                                             </div>
                                         </div>
-                                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
+                                            <files-listing show-select="true" show-tags="true"
+                                                on-scroll="$ctrl.scrollToBottom()"
+                                                listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                                on-browse="$ctrl.onBrowse(file)"
+                                            >&nbsp;</files-listing>
                                     </div>
                                 </div>
                             </div>
@@ -547,8 +572,12 @@
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
-                                        </div>
+                                                <files-listing show-select="true" show-tags="true"
+                                                    on-scroll="$ctrl.scrollToBottom()"
+                                                    listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                                    on-browse="$ctrl.onBrowse(file)"
+                                                >&nbsp;</files-listing>                                        
+                                            </div>
                                     </div>
                                 </div>
                                 <!-- GeoscienceEngineering -->
@@ -632,8 +661,12 @@
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
-                                        </div>
+                                                <files-listing show-select="true" show-tags="true"
+                                                on-scroll="$ctrl.scrollToBottom()"
+                                                listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                                on-browse="$ctrl.onBrowse(file)"
+                                        >       &nbsp;</files-listing>                                      
+                                          </div>
                                     </div>
                                 </div>
                                 <!-- Research Planning Collection -->
@@ -672,7 +705,11 @@
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
+                                            <files-listing show-select="true" show-tags="true"
+                                            on-scroll="$ctrl.scrollToBottom()"
+                                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                            on-browse="$ctrl.onBrowse(file)"
+                                             >&nbsp;</files-listing>                                        
                                         </div>
                                     </div>
                                 </div>

@@ -1,3 +1,4 @@
+//MARK FOR DEPRECATION
 import _ from 'underscore';
 
 function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataBrowserService) {

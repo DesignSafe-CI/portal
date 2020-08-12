@@ -1,12 +1,15 @@
 import angular from 'angular';
 
 import { nbv, DataBrowserService } from './data-browser-service';
+import { FileListingService } from './file-listing-service';
+import { FileOperationService } from './file-operation-service';
 import { DataService } from './data-service';
 import { FileListing } from './file-listing';
 import { LoggingServiceProvider } from './logging-service';
 import { notificationFactory } from './notification-factory';
 import { ProjectEntitiesService } from './project-entity-service';
 import { ProjectService } from './project-service';
+import { PublicationService } from './publication-service';
 import { SystemsService } from './systems-service';
 import { TicketsService } from './tickets-service';
 import { UserService } from './user-service';
@@ -25,10 +28,13 @@ designsafeServices.factory('FileListing', ['$http', '$q', 'Logging', FileListing
 designsafeServices.provider('Logging', LoggingServiceProvider);
 designsafeServices.factory('notificationFactory', notificationFactory);
 designsafeServices.factory('ProjectEntitiesService', ProjectEntitiesService);
-designsafeServices.factory('ProjectService', ProjectService);
+designsafeServices.service('ProjectService', ProjectService);
 designsafeServices.factory('SystemsService', SystemsService);
 designsafeServices.service('TicketsService', TicketsService);
 designsafeServices.service('UserService', UserService);
+designsafeServices.service('FileListingService', FileListingService);
+designsafeServices.service('FileOperationService', FileOperationService);
+designsafeServices.service('PublicationService', PublicationService);
 // TODO: Move these components to /static/scripts/projects/components/index.js
 designsafeServices.component('confirmMessage', ConfirmMessageComponent);
 designsafeServices.component('editProject', EditProjectComponent);

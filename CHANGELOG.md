@@ -1,5 +1,16 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.0.0-20200801
+Enhancements: 
+- All listings have been reimplemented on both the frontend and backend. DataBrowserService and FileListing are refactored into a FileListingService and FileOperationService.
+- All listings in the Data Depot now use a shared FilesListing component
+- New “transfer” endpoint to copy files between any 2 storage backends.
+- Box and Dropbox SDKs updated to more recent versions.
+- Working search inside of projects and publications
+- Reduced loading times for publications and fixes for common display bugs.
+- Publications listings now fetch ~90% less data from Elasticsearch
+- Rewritten Workspace data browser 
+
 ## v4.9.8-20200701
 Enhancements:
 - task/DES-1678: Curation UI/UX updates (1516, 1526, 1539)

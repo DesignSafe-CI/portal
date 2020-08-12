@@ -3,24 +3,26 @@ import PublicationPopupTemplate from './publication-popup.html';
 
 class PublicationPreviewHybSimCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $uibModal, $state, $q) {
+    constructor($stateParams, ProjectEntitiesService, ProjectService, DataBrowserService, FileListingService, FileOperationService, FileListing, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.DataBrowserService = DataBrowserService;
         this.FileListing = FileListing;
-        this.browser = this.DataBrowserService.state();
+        this.FileListingService = FileListingService;
+        this.browser = {}
         this.$uibModal = $uibModal;
         this.$state = $state;
+        this.$stateParams = $stateParams;
         this.$q = $q;
+        this.FileOperationService = FileOperationService;
     }
     
     $onInit() {
         this.readOnly = this.$state.current.name.indexOf('publishedData') === 0;
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
-        this.data = this.ProjectService.resolveParams.data;
         this.ui = {
             fileNav: true,
             loading: true
@@ -32,121 +34,37 @@ class PublicationPreviewHybSimCtrl {
             editTags: false,
         };
 
-        window.sessionStorage.clear();
 
-        if (this.filePath === '/') {
+        if (this.filePath === '/' && !this.$stateParams.query_string) {
             this.ui.fileNav = false;
         }
 
-        if (this.data && this.data.listing.path == this.filePath) {
-            this.browser = this.data;
-            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }).then((ents) => {
-                this.createListing(ents);
-            });
-        } else {
-            this.$q.all([
+        this.$q
+            .all([
                 this.ProjectService.get({ uuid: this.projectId }),
-                this.DataBrowserService.browse(
-                    { system: 'project-' + this.projectId, path: this.filePath },
-                    { query_string: this.$state.params.query_string }
-                ),
-                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
-            ]).then(([project, listing, ents]) => {
+                this.FileListingService.browse({
+                    section: 'main',
+                    api: 'agave',
+                    scheme: 'private',
+                    system: 'project-' + this.projectId,
+                    path: this.filePath,
+                    query_string: this.$stateParams.query_string
+                }).toPromise(),
+                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }),
+            ])
+            .then(([project, listing, ents]) => {
+                this.breadcrumbParams = {
+                    root: {label: project.value.projectId, path: ''}, 
+                    path: this.FileListingService.listings.main.params.path,
+                    skipRoot: false
+                };
                 this.browser.project = project;
                 this.browser.project.appendEntitiesRel(ents);
-                this.browser.listing = listing;
-                this.createListing(ents);
-            });
-        }
-
-        this.createListing = (entities) => {
-            this.browser.listing.href = this.$state.href('projects.view.data', {
-                projectId: this.projectId,
-                filePath: this.browser.listing.path,
-                projectTitle: this.browser.project.value.projectTitle,
-            });
-            this.browser.listing.children.forEach((child) => {
-                child.href = this.$state.href('projects.view.data', {
-                    projectId: this.projectId,
-                    filePath: child.path,
-                    projectTitle: this.browser.project.value.projectTitle,
+                this.browser.listing = this.FileListingService.listings.main.listing;
+                this.FileListingService.abstractListing(ents, project.uuid).subscribe((_) => {
+                    this.ui.loading = false;
                 });
-                child.setEntities(this.projectId, entities);
             });
-            if (typeof this.browser.listings === 'undefined') {
-                var allFilePaths = [];
-                this.browser.listings = {};
-                var apiParams = {
-                    fileMgr: 'agave',
-                    baseUrl: '/api/agave/files',
-                    searchState: 'projects.view.data',
-                };
-                entities.forEach((entity) => {
-                    this.browser.listings[entity.uuid] = {
-                        name: this.browser.listing.name,
-                        path: this.browser.listing.path,
-                        system: this.browser.listing.system,
-                        trail: this.browser.listing.trail,
-                        children: [],
-                    };
-                    allFilePaths = allFilePaths.concat(entity._filePaths);
-                });
-                this.setFilesDetails = (paths) => {
-                    let filePaths = [...new Set(paths)];
-                    var p = this.$q((resolve, reject) => {
-                        var results = [];
-                        var index = 0;
-                        var size = 5;
-                        var fileCalls = filePaths.map(filePath => {
-                            return this.FileListing.get(
-                                { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
-                            ).then((resp) => {
-                                if (!resp) {
-                                    return;
-                                }
-                                var allEntities = this.browser.project.getAllRelatedObjects();
-                                var entities = allEntities.filter((entity) => {
-                                    return entity._filePaths.includes(resp.path);
-                                });
-                                entities.forEach((entity) => {
-                                    resp._entities.push(entity);
-                                    this.browser.listings[entity.uuid].children.push(resp);
-                                });
-                                return resp;
-                            });
-                        });
-
-                        var step = () => {
-                            var calls = fileCalls.slice(index, (index += size));
-                            if (calls.length) {
-                                this.$q.all(calls)
-                                    .then((res) => {
-                                        results.concat(res);
-                                        step();
-                                        return res;
-                                    })
-                                    .catch(reject);
-                            } else {
-                                resolve(results);
-                            }
-                        };
-                        step();
-                    });
-                    return p.then(
-                        (results) => {
-                            this.ui.loading = false;
-                            return results;
-                        },
-                        (err) => {
-                            this.ui.loading = false;
-                            this.browser.ui.error = err;
-                        });
-                };
-                this.setFilesDetails(allFilePaths);
-            } else {
-                this.ui.loading = false;
-            }
-        };
     }
 
     matchingGroup(sim, model) {
@@ -167,11 +85,11 @@ class PublicationPreviewHybSimCtrl {
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser});
+        this.$state.go('projects.view', {projectId: this.browser.project.uuid});
     }
 
     goCuration() {
-        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, data: this.browser});
+        this.$state.go('projects.curation', {projectId: this.browser.project.uuid});
     }
 
     editProject() {
@@ -215,16 +133,15 @@ class PublicationPreviewHybSimCtrl {
         });
     }
 
-    showAuthor(author) {
-        this.$uibModal.open({
-            component: 'authorInformationModal',
-            resolve: {
-                author,
-            },
-            size: 'author',
-        });
+    onBrowse(file) {
+        if (file.type === 'dir') {
+            //this.$state.go(this.$state.current.name, {filePath: file.path.replace(/^\/+/, '')}, {inherit: false})
+            this.$state.go(this.$state.current.name, {filePath: file.path.replace(/^\/+/, ''), query_string: null})
+        }
+        else {
+            this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
+        }
     }
-
 }
 
 export const PublicationPreviewHybSimComponent = {

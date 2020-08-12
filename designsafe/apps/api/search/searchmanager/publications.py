@@ -185,7 +185,7 @@ class PublicationsSearchManager(BaseSearchManager):
         description = self.query_dict['queries']['description']
         if not description:
             return None
-        return Q('query_string', query=keywords, fields=['project.value.description'])
+        return Q('query_string', query=description, fields=['project.value.description'])
 
 
     
@@ -274,17 +274,12 @@ class PublicationsSearchManager(BaseSearchManager):
         query = self.construct_query(system, file_path, **kwargs)
         listing_search = Search()
         listing_search = listing_search.filter(query).sort('_index', {'created': {'order': 'desc', 'unmapped_type': 'long'}})
-        listing_search = listing_search.extra(from_=offset, size=limit)
+        listing_search = listing_search.extra(from_=offset, size=limit).source(includes=['project.value', 'created', 'projectId', 'users', 'system'])
         res = listing_search.execute()
         children = []
         for hit in res:
-            try:
-                getattr(hit, 'projectId')
-                hit_to_file = BaseESPublication.hit_to_file(hit)
-                children.append(hit_to_file)
-            except AttributeError:
-                children.append(BaseESPublicationLegacy(**hit.to_dict()).to_file())
-
+            hit_to_file = BaseESPublication.hit_to_file(hit)
+            children.append(hit_to_file)
         result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
             'name': '$SEARCH',

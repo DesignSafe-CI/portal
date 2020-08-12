@@ -1,0 +1,12 @@
+<ul class="breadcrumb">
+    <li ng-if="$ctrl.preRoot">
+        <a href="#" ng-click="$ctrl.browsePreRoot($event)">{{$ctrl.preRoot.label}}</a>
+    </li>
+    <li data-ng-repeat="item in $ctrl.trails">
+
+        <a href="#"
+           data-ng-click="$ctrl.browse($event, item.path)">{{ item.label }}</a>
+
+    </li>
+
+</ul>

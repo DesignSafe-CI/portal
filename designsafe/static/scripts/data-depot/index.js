@@ -63,13 +63,11 @@ function config(
                 apiParams: ()=> {
                     return {
                         fileMgr: 'agave',
-                        baseUrl: '/api/agave/files',
-                        searchState: 'myData',
                     };
                 },
                 path: ($stateParams, Django) => {
                     'ngInject';
-                    if ($stateParams.filePath === '/') {
+                    if ($stateParams.filePath.replace(/^\/+/, '') === '') {
                         return Django.user;
                     }
                     return $stateParams.filePath;
@@ -88,52 +86,18 @@ function config(
                 },
             },
         })
-        .state('dataSearch', {
-            url: '/agave-search/?query_string&offset&limit',
-            component: 'dataDepotBrowser',
-            params: {
-                systemId: 'designsafe.storage.default',
-                filePath: '$SEARCH',
-            },
-            resolve: {
-                apiParams: ()=> {
-                    return {
-                        fileMgr: 'agave',
-                        baseUrl: '/api/agave/files',
-                        searchState: 'dataSearch',
-                    };
-                },
-                auth: ($q, Django) => {
-                    'ngInject';
-                    if (Django.context.authenticated) {
-                        return true;
-                    }
-                    return $q.reject({
-                        type: 'authn',
-                        context: Django.context,
-                    });
-                
-                },
-            },
-        })
         .state('sharedData', {
-            url: '/shared/{systemId}/{filePath:any}/?query_string',
+            url: '/shared/{systemId}/{filePath:any}?query_string',
             component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.default',
-                filePath: '$SHARE',
+                filePath: '',
             },
             resolve: {
                 apiParams: ()=> {
                     return {
-                        fileMgr: 'agave',
-                        baseUrl: '/api/agave/files',
-                        searchState: 'sharedData'
+                        fileMgr: 'shared',
                     };
-                },
-                path: ($stateParams)=> {
-                    'ngInject';
-                    return $stateParams.filePath || '$SHARE/';
                 },
                 auth: ($q, Django) =>{
                     'ngInject';
@@ -150,40 +114,22 @@ function config(
         })
         .state('projects', {
             abstract: true,
-            component: 'projectRoot',
         })
         .state('projects.list', {
             url: '/projects/?query_string',
             component: 'projectListing',
-            params: {
-                systemId: 'designsafe.storage.default',
-            },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        DataBrowserService.apiParams.searchState = 'projects.list';
-                        var options = {
-                            system: $stateParams.systemId || 'designsafe.storage.default',
-                            path: $stateParams.filePath || Django.user,
-                        };
-                        if (options.path === '/') {
-                            options.path = Django.user;
-                        }
-                        DataBrowserService.currentState.listing = {
-                            system: 'designsafe.storage.default',
-                            permissions: [],
-                        };
-                        delete DataBrowserService.currentState.project;
-                    },
-                ],
+                section: () => 'main',
             },
         })
         .state('projects.view', {
-            url: '/projects/{projectId}/',
-            abstract: true,
+            url: '/projects/{projectId}/{filePath:any}?query_string',
             component: 'projectView',
+            params: {
+                projectTitle: '',
+                filePath: '',
+                projectId: ''
+            },
             resolve: {
                 projectId: [
                     '$stateParams',
@@ -191,17 +137,28 @@ function config(
                     ($stateParams, ProjectService) => {
                         'ngInject';
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.filePath = ''
                         return $stateParams.projectId;
+                    },
+                ],
+                params: [
+                    '$stateParams',
+                    'ProjectService',
+                    ($stateParams, ProjectService) => {
+                        ProjectService.resolveParams.projectId = $stateParams.projectId;
+                        ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                        ProjectService.resolveParams.projectTitle = $stateParams.projectTitle;
+                        ProjectService.resolveParams.query_string = $stateParams.query_string || '';
                     },
                 ],
             },
         })
+        /*
         .state('projects.view.data', {
             url: '{filePath:any}?query_string&offset&limit',
             component: 'projectData',
             params: {
                 projectTitle: '',
-                query_string: '',
                 filePath: '/',
                 data: null,
             },
@@ -219,26 +176,27 @@ function config(
                 ],
             },
         })
+        */
         .state('projects.curation', {
-            url: '/projects/{projectId}/curation{filePath:any}',
+            url: '/projects/{projectId}/curation/{filePath:any}?query_string',
             component: 'curationDirectory',
             params: {
-                filePath: '/',
+                filePath: '',
                 data: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
-                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '';
                     ProjectService.resolveParams.data = $stateParams.data;
                 }]
             }
         })
         .state('projects.preview', {
-            url: '/projects/{projectId}/preview/exp{filePath:any}',
+            url: '/projects/{projectId}/preview/exp/{filePath:any}?query_string',
             component: 'publicationPreview',
             params: {
-                filePath: '/',
+                filePath: '',
                 project: null,
                 selectedListings: null,
                 data: null,
@@ -258,10 +216,10 @@ function config(
             },
         })
         .state('projects.previewSim', {
-            url: '/projects/{projectId}/preview/sim{filePath:any}',
+            url: '/projects/{projectId}/preview/sim/{filePath:any}?query_string',
             component: 'publicationPreviewSim',
             params: {
-                filePath: '/',
+                filePath: '',
                 project: null,
                 selectedListings: null,
                 data: null,
@@ -281,10 +239,10 @@ function config(
             },
         })
         .state('projects.previewHybSim', {
-            url: '/projects/{projectId}/preview/hybrid{filePath:any}',
+            url: '/projects/{projectId}/preview/hybrid/{filePath:any}?query_string',
             component: 'publicationPreviewHybSim',
             params: {
-                filePath: '/',
+                filePath: '',
                 project: null,
                 selectedListings: null,
             },
@@ -302,10 +260,10 @@ function config(
             },
         })
         .state('projects.previewOther', {
-            url: '/projects/{projectId}/preview/other{filePath:any}',
+            url: '/projects/{projectId}/preview/other/{filePath:any}?query_string',
             component: 'publicationPreviewOther',
             params: {
-                filePath: '/',
+                filePath: '',
                 project: null,
                 selectedListings: null,
             },
@@ -323,10 +281,10 @@ function config(
             },
         })
         .state('projects.previewFieldRecon', {
-            url: '/projects/{projectId}/preview/recon{filePath:any}',
+            url: '/projects/{projectId}/preview/recon/{filePath:any}?query_string',
             component: 'publicationPreviewFieldRecon',
             params: {
-                filePath: '/',
+                filePath: '',
                 project: null,
                 selectedListings: null,
             },
@@ -374,10 +332,10 @@ function config(
             }
         })
         .state('projects.pipelineSelectOther', {
-            url: '/projects/{projectId}/curation/selectionOther{filePath:any}',
+            url: '/projects/{projectId}/curation/selectionOther/{filePath:any}',
             component: 'pipelineSelectOther',
             params: {
-                filePath: '/',
+                filePath: '',
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
@@ -387,10 +345,10 @@ function config(
             }
         })
         .state('projects.pipelineSelectField', {
-            url: '/projects/{projectId}/curation/selectionFieldRecon{filePath:any}',
+            url: '/projects/{projectId}/curation/selectionFieldRecon/{filePath:any}',
             component: 'pipelineSelectField',
             params: {
-                filePath: '/',
+                filePath: '',
             },
             resolve: {
                 projectId: ($stateParams, ProjectService) => {
@@ -757,6 +715,7 @@ function config(
                         searchState: undefined,
                     };
                 },
+                system: () => 'googledrive',
                 path: ($stateParams) => {
                     'ngInject';
                     return $stateParams.filePath || '/';
@@ -773,32 +732,12 @@ function config(
                 },
             },
         })
-        .state('communityDataSearch', {
-            url: '/community-search/?query_string&offset&limit',
-            component: 'dataDepotBrowser',
-            params: {
-                systemId: 'nees.public',
-                filePath: '$SEARCH',
-            },
-            resolve: {
-                apiParams: ()=> {
-                    return {
-                        fileMgr: 'public',
-                        baseUrl: '/api/public/files',
-                        searchState: 'communityDataSearch',
-                    };
-                },
-                auth: () => {
-                    return true;
-                },
-            },
-        })
         .state('communityData', {
             url: '/public/designsafe.storage.community/{filePath:any}?query_string&offset&limit',
             component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.community',
-                filePath: '/',
+                filePath: '',
             },
             resolve: {
                 apiParams: ()=> {
@@ -810,7 +749,7 @@ function config(
                 },
                 path: ($stateParams)=>{
                     'ngInject';
-                    return $stateParams.filePath || '/';
+                    return $stateParams.filePath || '';
                 },
                 auth: () => {
                     return true;
@@ -843,7 +782,7 @@ function config(
         })
         .state('publicDataLegacy', {
             url: '/public-legacy/?typeFilters&query_string',
-            component: 'dataDepotPublicationsBrowser',
+            component: 'dataDepotPublicationsLegacyBrowser',
             params: {
                 systemId: 'nees.public',
                 filePath: '',
@@ -890,6 +829,7 @@ function config(
             },
         })
         .state('publishedData',  {
+            url: '/public/designsafe.storage.published/{filePath:any}?query_string',
             component: 'publishedParent',
             resolve: {
                 version: ($stateParams) => {
@@ -900,25 +840,6 @@ function config(
                     'ngInject';
                     return $stateParams.type;
                 }
-            },
-            abstract: true,
-        })
-        .state('publishedData.view', {
-            url: '/public/designsafe.storage.published/{filePath:any}',
-            /****/
-            views: {
-                'published-v1@publishedData': 'published',
-                'published-other@publishedData': 'otherPublishedView',
-                'published-field-recon@publishedData': 'fieldReconPublishedView',
-                'published-hyb-sim@publishedData': 'hybSimPublishedView',
-                'published-sim@publishedData': 'simPublishedView',
-                'published-exp@publishedData': 'expPublishedView',
-            },
-            params: {
-                systemId: 'designsafe.storage.published',
-                filePath: '',
-                version: 1,
-                type: 'other',
             },
             onExit: ($window) => {
                 'ngInject';
@@ -959,25 +880,13 @@ function config(
                     }
                 });
             },
-            resolve: {
-                listing: ($stateParams, DataBrowserService)=>{
-                    'ngInject';
-                    let systemId = $stateParams.systemId || 'designsafe.storage.published';
-                    let filePath = $stateParams.filePath;
-                    DataBrowserService.apiParams.fileMgr = 'published';
-                    DataBrowserService.apiParams.baseUrl = '/api/public/files';
-                    DataBrowserService.apiParams.searchState = 'publicData';
-                    return DataBrowserService.browse({ system: systemId, path: filePath });
-                },
-                auth: () => {
-                    return true;
-                },
-            }
         })
+       
         .state('trainingMaterials', {
             url: '/training/',
             template: '<pre>local/trainingMaterials.html</pre>',
         });
+        
 
     $urlRouterProvider.otherwise(function($injector) {
         var $state = $injector.get('$state');

@@ -1,30 +1,42 @@
 import publishedTemplate from './published.html';
 
 export class PublishedParentCtrl {
-    constructor($stateParams, DataBrowserService, PublishedService, FileListing){
+    constructor($stateParams, DataBrowserService, PublicationService, FileListing){
         'ngInject';
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
-        this.PublishedService = PublishedService;
+        this.PublicationService = PublicationService;
         this.FileListing = FileListing;
     }
 
     $onInit() {
         //this.version = this.resolve.version;
         this.ui = {};
-        this.browser = this.DataBrowserService.state();
+        this.browser = {}
         var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.ui.loading = true;
+        this.project = null;
 
         if (projId) {
-            this.PublishedService.getPublished(projId)
+            this.PublicationService.getPublished(projId)
                 .then((resp) => {
-                    //add metadata to header
+                    this.PublicationService.updateHeaderMetadata(projId, resp)
                     this.version = resp.data.version || 1;
                     this.type = resp.data.project.value.projectType;
+                    this.publication = resp.data
                     this.ui.loading = false;
                 });
         }
+    }
+
+    viewToShow() {
+        if (this.ui.loading) {
+            return null
+        }
+        if (this.version === 1) {
+            return 'v1';
+        }
+        return this.type.toLowerCase();
     }
 
     showV1View() {

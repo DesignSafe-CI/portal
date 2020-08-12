@@ -1,0 +1,200 @@
+
+<div ng-if="$ctrl.project.value.projectType == 'simulation' && $ctrl.filePathComps.length <= 1">  <!-- simulation publishe dview -->
+
+  <div ng-repeat="simulation in $ctrl.browser.publication.simulations | orderBy: 'value.title'" style="#fff;">
+    <div class="dropdown entity-preview-header" id="details-{{simulation.uuid}}">
+      <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
+              style="width:100%">
+        Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
+      </button>
+      <div id="data-{{simulation.uuid}}" class="collapse">
+
+        <div style="border:1px solid black; background:white; margin-bottom:15px;">
+          <div style="padding:5px;">
+            <h3 style="margin-top:0">{{simulation.value.title}}</h3>
+            <p style="font-weight:bold;">Description</p>
+            <p>{{simulation.value.description}}</p>
+          </div>
+
+          <div style="width:49%; vertical-align:top; display:inline-block;">
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span>
+              {{$ctrl.browser.publication.created| date: 'MMM/d/yyyy'}}
+            </div>
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span>
+                {{simulation.doi}}  
+            </div>
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Type: </span>
+              <span ng-if="simulation.value.simulationType !== 'Other'">{{simulation.value.simulationType}}</span>
+              <span ng-if="simulation.value.simulationType === 'Other'">{{simulation.value.simulationTypeOther}}</span>
+            </div>
+          </div>
+          <div style="width:49%; vertical-align:top; display:inline-block;">
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Authors: </span>
+                <span ng-repeat="user in $ctrl.filterUsers(simulation.value.authors, $ctrl.browser.publication.users) | orderBy: $ctrl.sortUsers(simulation)">
+                {{user.last_name}}, {{user.first_name}};
+                </span>
+            </div>
+            <div ng-if="$ctrl.getRelated('analysis', false, simulation.uuid).length">
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Analysis: </span>
+              <a ng-href="#data-{{$ctrl.getRelated('analysiss', false, simulation.uuid)[0].uuid}}">
+                {{$ctrl.getRelated('analysiss', false, simulation.uuid)[0].value.title}}
+              </a>
+            </div>
+            <div ng-if="$ctrl.getRelated('reports', false, simulation.uuid).length">
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Report: </span>
+              <a ng-href="#data-{{$ctrl.getRelated('reports', false, simulation.uuid)[0].uuid}}">
+                {{$ctrl.getRelated('reports', false, simulation.uuid)[0].value.title}}
+              </a>
+            </div>
+            <div>
+              <button class="btn btn-info btn-sm pull-right"
+                      ng-click="$ctrl.onCitation($ctrl.browser.publication, simulation)">Citation
+              </button>
+            </div>
+          </div>
+          <div ng-if="!$ctrl.getRelated('models', false, simulation.uuid).length"
+               class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
+                This Simulation has no Models.
+          </div>
+          <div ng-repeat="model in $ctrl.getRelated('models', false, simulation.uuid) | orderBy: ['_ui.order', 'value.title']"
+               style="margin-bottom:10px;">
+            <div style="padding:3px;">
+              <span ng-class="ds-text-black"class="older-tick">Simulation Model: {{model.value.title}} </span>
+            </div>
+            <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
+              <div style="border-bottom:1px solid lightgrey;">
+                <a ng-class="ds-text-black" ng-click="$ctrl.viewSimulationRelations(model.uuid)" href="#">
+                  {{model.value.title}}
+                </a>
+              </div>
+              <div>
+                <div ng-repeat="simInput in $ctrl.getRelated('inputs', false, model.uuid)"
+                     style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
+                            padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
+                  <a class="ds-text-green" 
+                     href=""
+                     ng-click="$ctrl.viewSimulationRelations(simInput.uuid)">
+                    {{simInput.value.title}}
+                  </a>
+                  <div style="display:inline-block"
+                       ng-repeat="simOutput in $ctrl.getRelated('outputs', false, [model.uuid, simInput.uuid])">
+                    <a class="ds-text-red" href="" ng-click="$ctrl.viewSimulationRelations(simOutput.uuid)">
+                      {{simOutput.value.title}}
+                    </a>
+                    <div style="display:inline-block"
+                         ng-repeat="analysis in $ctrl.getRelated('analysiss', false, [simOutput.uuid])">
+                      <a class="ds-text-light-blue" href="" ng-click="$ctrl.viewSimulationRelations(analysis.uuid)">
+                        {{analysis.value.title}}
+                      </a>
+                    </div>
+                    <div style="display:inline-block"
+                         ng-repeat="report in $ctrl.getRelated('reports', false, [model.uuid, simOutput.uuid])">
+                      <a class="" href="" ng-click="$ctrl.viewSimulationRelations(report.uuid)">
+                        {{report.value.title}}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px; overflow:scroll;">
+              <files-listing listing="$ctrl.FileListingService.listings[model.uuid]" nested="true">
+                <div
+                  class="simulation-input"
+                  style="background:#fff; border:none;"
+                  ng-repeat="simInput in $ctrl.getRelated('inputs', false, [simulation.uuid, model.uuid])"
+                >
+                  <div class="entity-preview-header" id="details-{{simInput.uuid}}">
+                    <button class="btn btn-default btn-sm ds-text-green" style="width:100%">
+                        Simulation Input {{simInput.value.title}}
+                    </button>
+                  </div>
+                  <files-listing listing="$ctrl.FileListingService.listings[simInput.uuid]" nested="true">
+                    <div
+                    class="simulation-output"
+                    style="background:#fff; border:none; padding:0; margin:0"
+                    ng-repeat="simOutput in $ctrl.getRelated('outputs', false, [model.uuid, simInput.uuid])"
+                    >
+                    <div class="entity-preview-header" id="details-{{simOutput.uuid}}">
+                      <button class="btn btn-default btn-sm ds-text-red" style="width:100%">
+                        Simulation Output {{simOutput.value.title}}
+                      </button>
+                    </div>
+                    <files-listing listing="$ctrl.FileListingService.listings[simOutput.uuid]" nested="true">
+                      <div
+                          class="sim-data-analysis"
+                          style="background:#fff; border:none; padding:0, margin:0"
+                          ng-repeat="analysis in $ctrl.getRelated('analysiss', false, [simOutput.uuid])"
+                      >
+                        <div class="entity-preview-header" id="details-{{analysis.uuid}}">
+                          <button class="btn btn-default btn-sm" class="ds-text-light-green" style="width:100%">
+                            Integrated Analysis {{analysis.value.title}}
+                          </button>
+                        </div>
+                        <files-listing listing="$ctrl.FileListingService.listings[analysis.uuid]"></files-listing>
+                      </div>
+                      <div
+                        class="sim-int-report"
+                        style="background:#fff; border:none; padding:0, margin:0"
+                        ng-repeat="report in $ctrl.getRelated('reports', false, [simulation.uuid, model.uuid, simOutput.uuid])"
+                      >
+                        <div class="entity-preview-header" id="details-{{report.uuid}}">
+                          <button class="btn btn-default btn-sm" class="ds-text-black" style="width:100%">
+                            Integrated Report {{report.value.title}}
+                          </button>
+                        </div>
+                        <files-listing listing="$ctrl.FileListingService.listings[report.uuid]"> </files-listing>
+                        </div>
+                      </files-listing>
+                    </div>
+                  </files-listing>
+                </div>
+              </files-listing>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div ng-repeat="analysis in $ctrl.browser.publication.analysiss | orderBy: ['value.title', 'value.simulations.length']">
+    <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
+      <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#data-{{analysis.uuid}}"
+              style="width:100%">
+        <span ng-if="!analysis.value.simulations.length">Analysis {{analysis.value.title}} </span>
+        <span ng-if="analysis.value.simulations.length">Simulation Analysis {{analysis.value.title}} </span>
+        <i class="fa dropdown-caret"></i>
+      </button>
+          <div id="data-{{analysis.uuid}}" class="collapse">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <files-listing listing="$ctrl.FileListingService.listing[analysis.uuid"></files-listing>
+            </div>
+          </div>
+      <div id="data-{{analysis.uuid}}" class="collapse">
+      </div>
+    </div>
+  </div>
+
+
+  <div ng-repeat="report in $ctrl.browser.publication.reports | orderBy: ['value.title', 'value.simulations.length']"
+       style="#fff;">
+    <div class="dropdown entity-preview-header" id="details-{{report.uuid}}">
+      <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#data-{{report.uuid}}"
+              style="width:100%" class="ds-text-black">
+        <span ng-if="!report.value.simulations.length">Report {{report.value.title}} </span>
+        <span ng-if="report.value.simulations.length">Simulation Report {{report.value.title}} </span>
+        <i class="fa dropdown-caret"></i>
+      </button>
+          <div id="data-{{report.uuid}}" class="collapse">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <files-listing listing="$ctrl.FileListingService.listings[report.uuid]"></files-listing>
+            </div>
+          </div>
+    </div>
+  </div>
+
+</div> <!-- Simulation published view close -->

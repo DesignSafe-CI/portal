@@ -393,7 +393,13 @@
                                 <span ng-click="$ctrl.deleteCategory(modelConf)"><a>Delete </a></span>
                             </div>
                         </div>
-                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConf.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[modelConf.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[modelConf.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                            ></files-listing>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -415,7 +421,13 @@
                                 <span ng-click="$ctrl.deleteCategory(sensorInfo)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorInfo.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[sensorInfo.uuid]">
+                            <files-listing
+                                on-scroll="$ctrl.scrollToBottom()"
+                                listing="$ctrl.FileListingService.listings[sensorInfo.uuid]"
+                                on-browse="$ctrl.onBrowse(file)"
+                            ></files-listing>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -437,7 +449,14 @@
                                 <span ng-click="$ctrl.deleteCategory(event)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[event.uuid]">
+                            <files-listing
+                                on-scroll="$ctrl.scrollToBottom()"
+                                listing="$ctrl.FileListingService.listings[event.uuid]"
+                                on-browse="$ctrl.onBrowse(file)"
+                            ></files-listing>
+                            
+                        </div>
                     </div>
                 </div>
             </div>
@@ -459,7 +478,14 @@
                                 <span ng-click="$ctrl.deleteCategory(model)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[model.uuid]">
+                            <files-listing
+                                on-scroll="$ctrl.scrollToBottom()"
+                                listing="$ctrl.FileListingService.listings[model.uuid]"
+                                on-browse="$ctrl.onBrowse(file)"
+                                ></files-listing>
+                            
+                        </div>
                     </div>
                 </div>
             </div>
@@ -481,7 +507,14 @@
                                 <span ng-click="$ctrl.deleteCategory(input)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[input.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[input.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -503,7 +536,14 @@
                                 <span ng-click="$ctrl.deleteCategory(output)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[output.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[output.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -525,7 +565,14 @@
                                 <span ng-click="$ctrl.deleteCategory(gm)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[gm.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[gm.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[gm.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -547,7 +594,14 @@
                                 <span ng-click="$ctrl.deleteCategory(coordinator)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[coordinator.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[coordinator.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -569,7 +623,14 @@
                                 <span ng-click="$ctrl.deleteCategory(simsub)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[simsub.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[simsub.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -591,7 +652,14 @@
                                 <span ng-click="$ctrl.deleteCategory(expsub)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[expsub.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[expsub.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -613,7 +681,14 @@
                                 <span ng-click="$ctrl.deleteCategory(cout)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[cout.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[cout.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -635,7 +710,14 @@
                                 <span ng-click="$ctrl.deleteCategory(eout)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[eout.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[eout.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -657,7 +739,14 @@
                                 <span ng-click="$ctrl.deleteCategory(sout)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[sout.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[sout.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -690,7 +779,14 @@
                                 <span ng-click="$ctrl.deleteCategory(analysis)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[analysis.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -712,7 +808,14 @@
                                 <span ng-click="$ctrl.deleteCategory(report)"><a>Delete </a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
+                        <div ng-if="$ctrl.FileListingService.listings[report.uuid]">
+                            <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[report.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                    >&nbsp;</files-listing
+                                >
+                        </div>
                     </div>
                 </div>
             </div>

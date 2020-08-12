@@ -15,10 +15,11 @@
 <div class="container" role="main" id="workspace">
   <div><apptray></apptray></div>
   <div class="workspace-panel-container">
-    <div ng-controller="DataBrowserCtrl"
-         ng-include="'{% static "scripts/workspace/html/data-browser.html" %}'"
+    <div 
          class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-left"
-         ng-class="{'workspace-panel-collapsed': panel.collapsed}"></div>
+         ng-class="{'workspace-panel-collapsed': panel.collapsed}">
+         <workspace-data-browser></workspace-data-browser>
+        </div>
     <div ng-controller="ApplicationFormCtrl"
          ng-include="'{% static "scripts/workspace/html/application-form.html" %}'"
          class="workspace-panel workspace-panel-main"></div>

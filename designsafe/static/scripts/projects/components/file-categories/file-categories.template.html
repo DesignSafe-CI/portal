@@ -1,14 +1,16 @@
 <div class="file-categories-content">
+    <!--
     <div class="loading" data-ng-if="$ctrl._ui.busy">
         <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </div>
+    -->
     <div ng-if="!$ctrl._ui.isOther">
-        <div ng-if="$ctrl._ui.editTags">
+        <div ng-if="$ctrl.editTags">
             <div class="tag-item" data-ng-repeat="entityTag in $ctrl.file._entityTags">
                 {{entityTag}}
             </div>
             <div style="width:100%;" class="file-tag-list">
-                <table class="file-tag-item file-tag-table" data-ng-repeat="parent in $ctrl.file._parent._entities">
+                <table class="file-tag-item file-tag-table" data-ng-repeat="parent in $ctrl.file._parent_entities">
                     <tr style="vertical-align: top;">
                         <td style="width:49%">
                             <div class="file-category-label">
@@ -18,7 +20,7 @@
                             </div>
                         </td>
                         <td style="width:49%">
-                            <div class="file-tag-label" style="display: inline-block;" data-ng-repeat="tag in $ctrl.tagsForFile(parent.value.fileTags)">
+                            <div class="file-tag-label" style="display: inline-block;" data-ng-repeat="tag in $ctrl.tagsForFile(parent.value.fileTags, $ctrl.file.path)">
                                 <span>{{tag.tagName}}</span>
                                 <button class="btn-link"
                                         data-ng-click="$ctrl.removeFileTag(parent, tag)"
@@ -95,7 +97,7 @@
                             </div>
                         </td>
                         <td style="width:49%">
-                            <div class="file-tag-label" data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags)">
+                            <div class="file-tag-label" data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags, $ctrl.file.path)">
                                 <span>{{tag.tagName}}</span>
                                 <button class="btn-link"
                                         data-ng-click="$ctrl.removeFileTag(entity, tag)"
@@ -160,16 +162,16 @@
             </div>
         </div>
         <!-- preview/published tags -->
-        <span data-ng-repeat="parent in $ctrl.file._parent._entities" ng-if="$ctrl._ui.showTags">
-            <span data-ng-repeat="tag in $ctrl.tagsForFile(parent.value.fileTags)">
+        <span data-ng-repeat="parent in $ctrl.file._parent_entities" ng-if="$ctrl.showTags">
+            <span data-ng-repeat="tag in $ctrl.tagsForFile(parent.value.fileTags, $ctrl.parentPath)">
                 <div class="tag-preview">
                     <span ng-if="!$last">{{tag.tagName}}, </span>
                     <span ng-if="$last">{{tag.tagName}}</span>
                 </div>
             </span>
         </span>
-        <span data-ng-repeat="entity in $ctrl.file._entities" ng-if="$ctrl._ui.showTags">
-            <span data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags)">
+        <span data-ng-repeat="entity in $ctrl.file._entities" ng-if="$ctrl.showTags">
+            <span data-ng-repeat="tag in $ctrl.tagsForFile(entity.value.fileTags, $ctrl.file.path)">
                 <div class="tag-preview">
                     <span ng-if="!$last">{{tag.tagName}}, </span>
                     <span ng-if="$last">{{tag.tagName}}</span>
@@ -181,7 +183,7 @@
     <div ng-if="$ctrl._ui.isOther">
         <div class="file-tag-list" ng-if="$ctrl._ui.editTags">
             <div class="other-tag-item">
-                <div class="other-tag-label" data-ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags)">
+                <div class="other-tag-label" data-ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags, $ctrl.file.path)">
                     <span>{{tag.tagName}}</span>
                     <button class="btn-link"
                             style="padding:0px;"
@@ -220,7 +222,7 @@
                 </div>
             </div>
         </div>
-        <span ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags)" ng-if="$ctrl._ui.showTags">
+        <span ng-repeat="tag in $ctrl.tagsForFile($ctrl.project.value.fileTags, $ctrl.file.path)" ng-if="$ctrl.showTags">
             <div class="tag-preview">
                 <span ng-if="!$last">{{tag.tagName}}, </span>
                 <span ng-if="$last">{{tag.tagName}}</span>

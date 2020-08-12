@@ -1350,6 +1350,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
             if (upload.file.webkitRelativePath) {
               formData.append('relative_path', upload.file.webkitRelativePath);
             }
+            console.log(formData)/*
             return currentState.listing.upload(formData).then(
               function (resp) {
                 upload.state = 'success';
@@ -1360,7 +1361,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
                 upload.error = err.data;
                 return {status: 'error', response: err.data};
               }
-            );
+            );*/
           });
 
           $q.all(tasks).then(function (results) {

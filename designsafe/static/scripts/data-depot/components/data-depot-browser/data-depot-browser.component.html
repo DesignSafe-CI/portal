@@ -1,1 +1,16 @@
-<files-listing data-browser="$ctrl.browser">&nbsp;</files-listing>
+
+<breadcrumb
+    path="$ctrl.FileListingService.listings.main.params.path"
+    system="$ctrl.FileListingService.listings.main.params.system"
+    on-browse="$ctrl.onBrowse(file)"
+    skip-root="$ctrl.breadcrumbParams.skipRoot"
+    custom-root="$ctrl.breadcrumbParams.customRoot"
+></breadcrumb>
+<files-listing
+    on-scroll="$ctrl.scrollToBottom()"
+    listing = "$ctrl.FileListingService.listings['main']"
+    on-browse="$ctrl.onBrowse(file)"
+    show-select="true"
+    >
+</files-listing
+>

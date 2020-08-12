@@ -9,7 +9,9 @@ export class PublishedDataCtrl {
         Django,
         $window,
         DataBrowserService,
-        PublishedService,
+        FileListingService,
+        FileOperationService,
+        PublicationService,
         FileListing,
         $uibModal,
         $http,
@@ -22,8 +24,10 @@ export class PublishedDataCtrl {
         this.Django = Django;
         this.$window = $window;
         this.DataBrowserService = DataBrowserService;
-        this.PublishedService = PublishedService;
+        this.PublicationService = PublicationService;
         this.FileListing = FileListing;
+        this.FileListingService = FileListingService;
+        this.FileOperationService = FileOperationService;
         this.$uibModal = $uibModal;
         this.$http = $http;
         this.$stateParams = $stateParams;
@@ -35,73 +39,75 @@ export class PublishedDataCtrl {
     }
 
     $onInit() {
-        this.filePathComps = _.compact(this.$stateParams.filePath.split('/'));
-        this.browser = this.DataBrowserService.state();
+        this.browser = {}
+        this.browser.publication = this.publication;
+        this.project = this.publication.project;
+        this.breadcrumbParams = {
+            root: {label: this.project.value.projectId, path: this.project.value.projectId}, 
+            path: this.project.value.projectId,
+            skipRoot: true
+        }
+
+        this.filePathComps = _.compact(decodeURIComponent(this.$stateParams.filePath).split('/'));
         this.state = {
             loadingMore: false,
             reachedEnd: false,
             page: 0
         };
         this.ui = { loadingProjectMeta: false };
-        this.getFileObjs = (evt) => {
-            evt.files = _.map(evt.fileObjs, (f) => {
-                f.system = 'designsafe.storage.published';
-                f.path = this.browser.publication.projectId + f.path;
-                f.permissions = 'READ';
-                return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
+
+        if (this.filePathComps.length > 1 || this.$stateParams.query_string || !['experimental', 'simulation', 'hybrid_simulation'].includes(this.project.value.projectType)) {
+            this.breadcrumbParams.path = this.$stateParams.filePath
+            this.FileListingService.browse({
+                section: 'main',
+                api: 'agave',
+                scheme: 'public',
+                system: 'designsafe.storage.published',
+                path: this.$stateParams.filePath,
+                query_string: this.$stateParams.query_string,
             });
-        };
+        }
+        //var pi = _.find(this.browser.publication.users, (usr) => {
+        //    return usr.username === this.project.value.pi;
+        //});
+        //this.project.piLabel = pi.last_name + ', ' + pi.first_name;
+        if (this.browser.publication.project.value.projectType === 'experimental') {
+            _.each(this.browser.publication.eventsList, this.getFileObjs);
+            _.each(this.browser.publication.modelConfigs, this.getFileObjs);
+            _.each(this.browser.publication.sensorLists, this.getFileObjs);
+            _.each(this.browser.publication.analysisList, this.getFileObjs);
+            _.each(this.browser.publication.reportsList, this.getFileObjs);
+        } else if (this.browser.publication.project.value.projectType === 'simulation') {
+            _.each(this.browser.publication.analysiss, this.getFileObjs);
+            _.each(this.browser.publication.inputs, this.getFileObjs);
+            _.each(this.browser.publication.models, this.getFileObjs);
+            _.each(this.browser.publication.outputs, this.getFileObjs);
+            _.each(this.browser.publication.reports, this.getFileObjs);
+        } else if (this.browser.publication.project.value.projectType === 'hybrid_simulation') {
+            _.each(this.browser.publication.analysiss, this.getFileObjs);
+            _.each(this.browser.publication.reports, this.getFileObjs);
 
-        var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
-        if (projId) {
-            this.PublishedService.getPublished(projId)
-                .then((resp) => {
-                    this.browser.publication = resp.data;
-                    this.project = resp.data.project;
-                    //var pi = _.find(this.browser.publication.users, (usr) => {
-                    //    return usr.username === this.project.value.pi;
-                    //});
-                    //this.project.piLabel = pi.last_name + ', ' + pi.first_name;
-
-                    if (this.browser.publication.project.value.projectType === 'experimental') {
-                        _.each(this.browser.publication.eventsList, this.getFileObjs);
-                        _.each(this.browser.publication.modelConfigs, this.getFileObjs);
-                        _.each(this.browser.publication.sensorLists, this.getFileObjs);
-                        _.each(this.browser.publication.analysisList, this.getFileObjs);
-                        _.each(this.browser.publication.reportsList, this.getFileObjs);
-                    } else if (this.browser.publication.project.value.projectType === 'simulation') {
-                        _.each(this.browser.publication.analysiss, this.getFileObjs);
-                        _.each(this.browser.publication.inputs, this.getFileObjs);
-                        _.each(this.browser.publication.models, this.getFileObjs);
-                        _.each(this.browser.publication.outputs, this.getFileObjs);
-                        _.each(this.browser.publication.reports, this.getFileObjs);
-                    } else if (this.browser.publication.project.value.projectType === 'hybrid_simulation') {
-                        _.each(this.browser.publication.analysiss, this.getFileObjs);
-                        _.each(this.browser.publication.reports, this.getFileObjs);
-
-                        _.each(this.browser.publication.coordinators, this.getFileObjs);
-                        _.each(this.browser.publication.coordinator_outputs, this.getFileObjs);
-                        _.each(this.browser.publication.exp_substructures, this.getFileObjs);
-                        _.each(this.browser.publication.exp_outputs, this.getFileObjs);
-                        _.each(this.browser.publication.sim_substructures, this.getFileObjs);
-                        _.each(this.browser.publication.sim_outputs, this.getFileObjs);
-                        _.each(this.browser.publication.global_models, this.getFileObjs);
-                        _.each(this.browser.publication.hybrid_simulations, this.getFileObjs);
-                    }
-
-                    //add metadata to header
-                    this.PublishedService.updateHeaderMetadata(projId, resp);
-                    this.version = this.browser.publication.version || 1;
-                    this.type = this.browser.publication.project.value.projectType;
-                    this.ui.loadingProjectMeta = false;
-                });
+            _.each(this.browser.publication.coordinators, this.getFileObjs);
+            _.each(this.browser.publication.coordinator_outputs, this.getFileObjs);
+            _.each(this.browser.publication.exp_substructures, this.getFileObjs);
+            _.each(this.browser.publication.exp_outputs, this.getFileObjs);
+            _.each(this.browser.publication.sim_substructures, this.getFileObjs);
+            _.each(this.browser.publication.sim_outputs, this.getFileObjs);
+            _.each(this.browser.publication.global_models, this.getFileObjs);
+            _.each(this.browser.publication.hybrid_simulations, this.getFileObjs);
         }
 
+        this.version = this.browser.publication.version || 1;
+        this.type = this.browser.publication.project.value.projectType;
+        this.ui.loadingProjectMeta = false;
+                
+        
+        /*
         if (!this.browser.error) {
             this.browser.listing.href = this.$state.href(
                 'publishedData.view', {
-                    system: this.browser.listing.system,
-                    filePath: this.browser.listing.path.replace(/^\/+/, '')
+                    system: this.FileListingService.listings.main.params.system,
+                    filePath: this.FileListingService.listings.main.params.path.replace(/^\/+/, '')
                 });
             _.each(this.browser.listing.children, (child) => {
                 child.href = this.$state.href(
@@ -110,8 +116,10 @@ export class PublishedDataCtrl {
                         filePath: child.path.replace(/^\/+/, '')
                 });
             });
-        }
 
+        }
+        */
+        /*
         this.data = {
             customRoot: {
                 name: 'Published',
@@ -123,19 +131,11 @@ export class PublishedDataCtrl {
                 filePath: '/'
             }
         };
+        */
     }
 
     getFileObjs(evt) {
-        const _apiParams = {
-            fileMgr: 'published',
-            baseUrl: '/api/public/files'
-        };
-        evt.files = _.map(evt.fileObjs, (f) => {
-            f.system = 'designsafe.storage.published';
-            f.path = this.browser.publication.projectId + f.path;
-            f.permissions = 'READ';
-            return this.FileListing.init(f, _apiParams);
-        });
+       this.FileListingService.publishedListing(this.browser.publication, evt)
     }
 
     getTitle() {
@@ -154,59 +154,14 @@ export class PublishedDataCtrl {
         return;
     }
 
-    scrollToBottom() {
-        this.DataBrowserService.scrollToBottom();
-    }
 
-    onBrowse($event, file) {
-        if ($event) {
-            $event.preventDefault();
-            $event.stopPropagation();
+    onBrowse(file) {
+        if(file.type === 'dir') {
+            this.$state.go(this.$state.current.name, {filePath: file.path, query_string: null})
         }
-
-        var systemId = file.system || file.systemId;
-        var filePath;
-        if (file.path == '/') {
-            filePath = file.path + file.name;
-        } else {
-            filePath = file.path;
+        else {
+            this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'public', file})
         }
-        if (typeof (file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder') {
-            this.DataBrowserService.preview(file, this.browser.listing);
-        } else {
-            if (file.system === 'nees.public') {
-                this.$state.go('publicData', { systemId: file.system, filePath: file.path }, { reload: true, inherit: false });
-            } else {
-                this.$state.go('publishedData.view', { systemId: file.system, filePath: file.path, listing: true }, { reload: true, inherit: false });
-            }
-        }
-    }
-
-    onSelect($event, file) {
-        $event.preventDefault();
-        $event.stopPropagation();
-
-        if ($event.ctrlKey || $event.metaKey) {
-            var selectedIndex = this.browser.selected.indexOf(file);
-            if (selectedIndex > -1) {
-                this.DataBrowserService.deselect([file]);
-            } else {
-                this.DataBrowserService.select([file]);
-            }
-        } else if ($event.shiftKey && this.browser.selected.length > 0) {
-            var lastFile = this.browser.selected[this.browser.selected.length - 1];
-            var lastIndex = this.browser.listing.children.indexOf(lastFile);
-            var fileIndex = this.browser.listing.children.indexOf(file);
-            var min = Math.min(lastIndex, fileIndex);
-            var max = Math.max(lastIndex, fileIndex);
-            this.DataBrowserService.select(this.browser.listing.children.slice(min, max + 1));
-        } else if (typeof file._ui !== 'undefined' &&
-            file._ui.selected) {
-            this.DataBrowserService.deselect([file]);
-        } else {
-            this.DataBrowserService.select([file], true);
-        }
-
     }
 
     showFullPath(item) {
@@ -217,11 +172,6 @@ export class PublishedDataCtrl {
         } else {
             return false;
         }
-    }
-
-    onDetail($event, file) {
-        $event.stopPropagation();
-        this.DataBrowserService.preview(file, this.browser.listing);
     }
 
     renderName(file) {
@@ -304,16 +254,13 @@ export class PublishedDataCtrl {
 
     viewCollabs() {
         this.$uibModal.open({
-            templateUrl: '/static/scripts/data-depot/templates/view-collabs.html',
+            template: require('../..//templates/view-collabs.html'), 
             controller: ['$uibModalInstance', 'browser', 'getUserDets', function ($uibModalInstance, browser, getUserDets) {
                 var $ctrl = this;
                 $ctrl.data = {};
                 $ctrl.getUserDets = getUserDets;
-                if (browser.listing.project) {
-                    $ctrl.data.project = browser.listing.project;
-                } else {
-                    $ctrl.data.project = browser.publication.project;
-                }
+                $ctrl.data.project = browser.publication.project;
+                
                 $ctrl.close = function () {
                     $uibModalInstance.dismiss('close');
                 };
@@ -333,11 +280,9 @@ export class PublishedDataCtrl {
             controller: ['$uibModalInstance', 'browser', function ($uibModalInstance, browser) {
                 var $ctrl = this;
                 $ctrl.data = {};
-                if (browser.listing.project) {
-                    $ctrl.data.publication = browser.listing;
-                } else {
-                    $ctrl.data.publication = browser.publication;
-                }
+
+                $ctrl.data.publication = browser.publication;
+                
                 $ctrl.data.piDets = this.getUserDets($ctrl.data.publication.project.value.pi);
                 $ctrl.close = function () {
                     $uibModalInstance.dismiss('close');
@@ -357,11 +302,9 @@ export class PublishedDataCtrl {
             controller: ['$uibModalInstance', 'browser', function ($uibModalInstance, browser) {
                 var $ctrl = this;
                 $ctrl.data = {};
-                if (browser.listing.project) {
-                    $ctrl.data.publication = browser.listing;
-                } else {
-                    $ctrl.data.publication = browser.publication;
-                }
+
+                $ctrl.data.publication = browser.publication;
+
                 $ctrl.close = function () {
                     $uibModalInstance.dismiss('close');
                 };
@@ -381,11 +324,9 @@ export class PublishedDataCtrl {
             controller: ['$uibModalInstance', 'browser', 'getRelated', function ($uibModalInstance, browser, getRelated) {
                 var $ctrl = this;
                 $ctrl.data = {};
-                if (browser.listing.project) {
-                    $ctrl.data.publication = browser.listing;
-                } else {
-                    $ctrl.data.publication = browser.publication;
-                }
+
+                $ctrl.data.publication = browser.publication;
+                
                 $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
@@ -414,11 +355,9 @@ export class PublishedDataCtrl {
             controller: ['$uibModalInstance', 'browser', 'getRelated', function ($uibModalInstance, browser, getRelated) {
                 var $ctrl = this;
                 $ctrl.data = {};
-                if (browser.listing.project) {
-                    $ctrl.data.publication = browser.listing;
-                } else {
-                    $ctrl.data.publication = browser.publication;
-                }
+
+                $ctrl.data.publication = browser.publication;
+                
                 $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
@@ -447,11 +386,9 @@ export class PublishedDataCtrl {
             controller: ['$uibModalInstance', 'browser', 'getRelated', function ($uibModalInstance, browser, getRelated) {
                 var $ctrl = this;
                 $ctrl.data = {};
-                if (browser.listing.project) {
-                    $ctrl.data.publication = browser.listing;
-                } else {
-                    $ctrl.data.publication = browser.publication;
-                }
+
+                $ctrl.data.publication = browser.publication;
+                
                 $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
@@ -499,8 +436,16 @@ export class PublishedDataCtrl {
         });
     }
 
-    onCitation(publication, project) {
-        this.DataBrowserService.showCitation(publication, project);
+   onCitation(publication, entity) {
+    this.$uibModal.open({
+        component: 'publishedCitationModal',
+        resolve: {
+            publication: () => { return publication; },
+            entity: () => { return entity; },
+            version: () => { return 1 }
+        },
+        size: 'citation'
+    });
     }
 
     download() {
@@ -519,5 +464,8 @@ export class PublishedDataCtrl {
 export const PublishedComponent = {
     controller: PublishedDataCtrl,
     controllerAs: '$ctrl',
-    template: publishedTemplate
+    template: publishedTemplate,
+    bindings: {
+        publication: '<'
+    }
 };
