@@ -41,6 +41,10 @@ Enhancements:
 Fixes:
 - Bug/DES-1674 - Fix bug with FR ordering in "Relate Data" modal
 - Bug/DES-1662 - Fix issue with project file listings overloading agave with requests
+## v5.0.0-20200802
+Fixes: 
+- Insert missing ngInject
+
 ## v5.0.0-20200801
 Enhancements: 
 - All listings have been reimplemented on both the frontend and backend. DataBrowserService and FileListing are refactored into a FileListingService and FileOperationService.
