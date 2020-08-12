@@ -637,3 +637,52 @@ PORTAL_DATA_DEPOT_SEARCH_MANAGERS = {
 }
 
 COMMUNITY_INDEX_SCHEDULE = os.environ.get('COMMUNITY_INDEX_SCHEDULE', {})
+
+
+SUPPORTED_MS_WORD = [
+    '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
+]
+SUPPORTED_MS_EXCEL = [
+    '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xltx', '.xltm',
+]
+SUPPORTED_MS_POWERPOINT = [
+    '.ppt', '.pot', '.pps', '.pptx', '.pptm', '.potx', '.ppsx', '.ppsm', '.sldx', '.sldm',
+]
+
+SUPPORTED_IMAGE_PREVIEW_EXTS = [
+    '.png', '.gif', '.jpg', '.jpeg',
+]
+
+SUPPORTED_TEXT_PREVIEW_EXTS = [
+    '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css',
+    '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml', '.hh', '.htm', '.html',
+    '.java', '.js', '.less', '.m', '.make', '.md', '.ml', '.mm', '.msg', '.php',
+    '.pl', '.properties', '.py', '.rb', '.sass', '.scala', '.script', '.sh', '.sml',
+    '.sql', '.txt', '.vi', '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl',
+    '.json', '.out', '.err',
+]
+
+SUPPORTED_OBJECT_PREVIEW_EXTS = [
+    '.pdf',
+]
+
+SUPPORTED_VIDEO_EXTS = [
+    '.webm', '.ogv', '.ogg', '.mp4'
+]
+
+SUPPORTED_VIDEO_MIMETYPES = {
+    '.webm': 'video/webm',
+    '.ogg': 'video/ogg',
+    '.mp4': 'video/mp4'
+}
+SUPPORTED_IPYNB_PREVIEW_EXTS = [
+        '.ipynb'
+    ]
+
+SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS_EXCEL
+
+SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
+                                SUPPORTED_TEXT_PREVIEW_EXTS +
+                                SUPPORTED_OBJECT_PREVIEW_EXTS +
+                                SUPPORTED_MS_OFFICE + 
+                                SUPPORTED_IPYNB_PREVIEW_EXTS)

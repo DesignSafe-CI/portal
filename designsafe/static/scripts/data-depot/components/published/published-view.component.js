@@ -5,16 +5,20 @@ import FieldReconPublicationTemplate from '../projects/publication-preview/publi
 import OtherPublicationTemplate from '../projects/publication-preview/publication-preview-other.component.html';
 import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
 import { isEqual, has } from 'underscore';
+import { publish } from 'rxjs/operators';
 
 class PublishedViewCtrl {
-    constructor($anchorScroll, $location, $stateParams, $uibModal, DataBrowserService, PublishedService, UserService, FileListing){
+    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, DataBrowserService, FileListingService, FileOperationService, PublicationService, UserService, FileListing){
         'ngInject';
         this.$anchorScroll = $anchorScroll;
+        this.$state = $state;
         this.$location = $location;
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
         this.DataBrowserService = DataBrowserService;
-        this.PublishedService = PublishedService;
+        this.FileListingService = FileListingService;
+        this.FileOperationService = FileOperationService;
+        this.PublicationService= PublicationService;
         this.UserService = UserService;
         this.FileListing = FileListing;
     }
@@ -29,117 +33,117 @@ class PublishedViewCtrl {
             fileNav: true,
             loading: true,
         };
-        this.browser = this.DataBrowserService.state();
+        this.browser = {}
         this.browser.listings = {};
-        var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
+        this.browser.publication = this.publication;
+        this.browser.project = this.publication.project;
+        this.project = this.publication.project;
+        this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
+
+        this.breadcrumbParams = {
+            root: {label: this.projId, path: this.projId}, 
+            path: this.projId,
+            skipRoot: true
+        }
 
         this.getFileObjs = (evt) => {
-            evt.files = evt.fileObjs.map((f) => {
-                f.system = 'designsafe.storage.published';
-                f.path = this.browser.publication.projectId + f.path;
-                f.permissions = 'READ';
-                return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
-            });
-            evt.files.forEach((file) => {
-                if (!this.browser.listings[evt.uuid]) {
-                    this.browser.listings[evt.uuid] = { children: [] };
-                }
-                this.browser.listings[evt.uuid].children.push(file);
-            });
-            this.browser.listings[evt.uuid].children.forEach((child) => {
-                child._entities.push(evt);
-            });
+            this.FileListingService.publishedListing(this.browser.publication, evt)
         };
 
-        if (this.$stateParams.filePath.replace('/',  '') === projId) {
+        if (decodeURIComponent(this.$stateParams.filePath).replace('/',  '') === this.projId && this.browser.project.value.projectType !== 'other' && !this.$stateParams.query_string) {
             this.ui.fileNav = false;
         }
 
-        if (projId) {
-            this.PublishedService.getPublished(projId)
-                .then((resp) => {
-                    this.browser.publication = resp.data;
-                    this.browser.project = resp.data.project;
-                    this.project = resp.data.project;
-                    this.fl = {
-                        showSelect: true,
-                        showHeader: this.browser.project.value.projectType === 'other',
-                        showTags: true,
-                        editTags: false,
-                    };
+        if (this.ui.fileNav) {
+            this.breadcrumbParams.path = this.$stateParams.filePath
+            this.FileListingService.browse({
+                section: 'main',
+                api: 'agave',
+                scheme: 'public',
+                system: 'designsafe.storage.published',
+                path: this.$stateParams.filePath,
+                query_string: this.$stateParams.query_string,
+            }).subscribe(_ => this.getProjectListings());
+        }
+        else {
+            this.getProjectListings();
+        }
+        
+        //add metadata to header
+        //this.PublicationServicevice.updateHeaderMetadata(projId, resp);
+        this.version = this.browser.publication.version || 1;
+        this.type = this.browser.publication.project.value.projectType;
+        this.ui.loading = false;
+        
+        // // Generate text for PI
+        // this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi);
+        // // Generate CoPI list
+        // this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
 
-                    if (this.browser.publication.project.value.projectType === 'experimental') {
-                        if (typeof this.browser.publication.analysisList != 'undefined') {
-                            this.browser.publication.analysisList.forEach(this.getFileObjs);
-                        }
-                        if (typeof this.browser.publication.reportsList != 'undefined') {
-                            this.browser.publication.reportsList.forEach(this.getFileObjs);
-                        }
-                        this.browser.publication.modelConfigs.forEach(this.getFileObjs);
-                        this.browser.publication.sensorLists.forEach(this.getFileObjs);
-                        this.browser.publication.eventsList.forEach(this.getFileObjs);
-                    } else if (this.browser.publication.project.value.projectType === 'simulation') {
-                        if (typeof this.browser.publication.analysiss != 'undefined') {
-                            this.browser.publication.analysiss.forEach(this.getFileObjs);
-                        }
-                        if (typeof this.browser.publication.reports != 'undefined') {
-                            this.browser.publication.reports.forEach(this.getFileObjs);
-                        }
-                        this.browser.publication.models.forEach(this.getFileObjs);
-                        this.browser.publication.inputs.forEach(this.getFileObjs);
-                        this.browser.publication.outputs.forEach(this.getFileObjs);
-                    } else if (this.browser.publication.project.value.projectType === 'hybrid_simulation') {
-                        if (typeof this.browser.publication.analysiss != 'undefined') {
-                            this.browser.publication.analysiss.forEach(this.getFileObjs);
-                        }
-                        if (typeof this.browser.publication.reports != 'undefined') {
-                            this.browser.publication.reports.forEach(this.getFileObjs);
-                        }
+        this.prepProject();
+                
+        
+    }
 
-                        this.browser.publication.hybrid_simulations.forEach(this.getFileObjs);
-                        this.browser.publication.global_models.forEach(this.getFileObjs);
-                        this.browser.publication.coordinators.forEach(this.getFileObjs);
-                        this.browser.publication.coordinator_outputs.forEach(this.getFileObjs);
-                        this.browser.publication.exp_substructures.forEach(this.getFileObjs);
-                        this.browser.publication.exp_outputs.forEach(this.getFileObjs);
-                        this.browser.publication.sim_substructures.forEach(this.getFileObjs);
-                        this.browser.publication.sim_outputs.forEach(this.getFileObjs);
-                    } else if (this.browser.publication.project.value.projectType === 'field_recon') {
-                        if (typeof this.browser.publication.analysiss != 'undefined') {
-                            this.browser.publication.analysiss.forEach(this.getFileObjs);
-                        }
-                        if (typeof this.browser.publication.reports != 'undefined') {
-                            this.browser.publication.reports.forEach(this.getFileObjs);
-                        }
-                        if (typeof this.browser.publication.collections != 'undefined') {
-                            this.browser.publication.collections.forEach(this.getFileObjs);
-                        }
-                        if (typeof this.browser.publication.planning != 'undefined') {
-                            this.browser.publication.planning.forEach(this.getFileObjs);
-                        }
-                        if (typeof this.browser.publication.geoscience != 'undefined') {
-                            this.browser.publication.geoscience.forEach(this.getFileObjs);
-                        }
-                        if (typeof this.browser.publication.socialscience != 'undefined') {
-                            this.browser.publication.socialscience.forEach(this.getFileObjs);
-                        }
-                    }
-                    
-                    //add metadata to header
-                    this.PublishedService.updateHeaderMetadata(projId, resp);
-                    this.version = this.browser.publication.version || 1;
-                    this.type = this.browser.publication.project.value.projectType;
-                    this.ui.loading = false;
-                    
-                    // // Generate text for PI
-                    // this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi);
-                    // // Generate CoPI list
-                    // this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
-                }).then( () => {
-                    this.prepProject();
-                });
+    getProjectListings() {
+        if (this.browser.publication.project.value.projectType === 'experimental') {
+            if (typeof this.browser.publication.analysisList != 'undefined') {
+                this.browser.publication.analysisList.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.reportsList != 'undefined') {
+                this.browser.publication.reportsList.forEach(this.getFileObjs);
+            }
+            this.browser.publication.modelConfigs.forEach(this.getFileObjs);
+            this.browser.publication.sensorLists.forEach(this.getFileObjs);
+            this.browser.publication.eventsList.forEach(this.getFileObjs);
+        } else if (this.browser.publication.project.value.projectType === 'simulation') {
+            if (typeof this.browser.publication.analysiss != 'undefined') {
+                this.browser.publication.analysiss.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.reports != 'undefined') {
+                this.browser.publication.reports.forEach(this.getFileObjs);
+            }
+            this.browser.publication.models.forEach(this.getFileObjs);
+            this.browser.publication.inputs.forEach(this.getFileObjs);
+            this.browser.publication.outputs.forEach(this.getFileObjs);
+        } else if (this.browser.publication.project.value.projectType === 'hybrid_simulation') {
+            if (typeof this.browser.publication.analysiss != 'undefined') {
+                this.browser.publication.analysiss.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.reports != 'undefined') {
+                this.browser.publication.reports.forEach(this.getFileObjs);
+            }
+
+            this.browser.publication.hybrid_simulations.forEach(this.getFileObjs);
+            this.browser.publication.global_models.forEach(this.getFileObjs);
+            this.browser.publication.coordinators.forEach(this.getFileObjs);
+            this.browser.publication.coordinator_outputs.forEach(this.getFileObjs);
+            this.browser.publication.exp_substructures.forEach(this.getFileObjs);
+            this.browser.publication.exp_outputs.forEach(this.getFileObjs);
+            this.browser.publication.sim_substructures.forEach(this.getFileObjs);
+            this.browser.publication.sim_outputs.forEach(this.getFileObjs);
+        } else if (this.browser.publication.project.value.projectType === 'field_recon') {
+            if (typeof this.browser.publication.analysiss != 'undefined') {
+                this.browser.publication.analysiss.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.reports != 'undefined') {
+                this.browser.publication.reports.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.collections != 'undefined') {
+                this.browser.publication.collections.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.planning != 'undefined') {
+                this.browser.publication.planning.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.geoscience != 'undefined') {
+                this.browser.publication.geoscience.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.socialscience != 'undefined') {
+                this.browser.publication.socialscience.forEach(this.getFileObjs);
+            }
         }
     }
+
     prepProject() {
         if (this.project.value.projectType === 'experimental'){
             this.browser.project.analysis_set = this.browser.publication.analysisList;
@@ -268,7 +272,6 @@ class PublishedViewCtrl {
             component: 'publicationDownloadModal',
             resolve: {
                 publication: () => {return this.browser.publication;},
-                mediaUrl: () => {return this.browser.listing.mediaUrl();},
             },
             size: 'download'
         });
@@ -345,34 +348,58 @@ class PublishedViewCtrl {
     rmEmpty(arr) {
         return arr.filter(Boolean);
     }
+
+    onBrowse(file) {
+        if (file.type === 'dir') {
+            this.$state.go(this.$state.current.name, {filePath: file.path, query_string: null})
+        }
+        else {
+            this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
+        }
+    }
 }
 
 export const ExpPublishedViewComponent = {
     template: ExpPublicationTemplate,
     controller: PublishedViewCtrl,
     controllerAs: '$ctrl',
+    bindings: {
+        publication: '<'
+    }
 };
 
 export const SimPublishedViewComponent = {
     template: SimPublicationTemplate,
     controller: PublishedViewCtrl,
     controllerAs: '$ctrl',
+    bindings: {
+        publication: '<'
+    }
 };
 
 export const HybSimPublishedViewComponent = {
     template: HybSimPublicationTemplate,
     controller: PublishedViewCtrl,
     controllerAs: '$ctrl',
+    bindings: {
+        publication: '<'
+    }
 };
 
 export const FieldReconPublishedViewComponent = {
     template: FieldReconPublicationTemplate,
     controller: PublishedViewCtrl,
     controllerAs: '$ctrl',
+    bindings: {
+        publication: '<'
+    }
 };
 
 export const OtherPublishedViewComponent = {
     template: OtherPublicationTemplate,
     controller: PublishedViewCtrl,
     controllerAs: '$ctrl',
+    bindings: {
+        publication: '<'
+    }
 };

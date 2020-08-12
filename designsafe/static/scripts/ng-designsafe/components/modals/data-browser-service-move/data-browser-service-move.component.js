@@ -1,210 +1,105 @@
-import DataBrowserServiceMoveTemplate from './data-browser-service-move.component.html';
-import _ from 'underscore';
+import dataBrowserServiceMoveTemplate from './data-browser-service-move.component.html';
 
-class DataBrowserServiceMoveCtrl {
-
-    constructor($scope, $state, FileListing, ProjectService, DataBrowserService, UserService) {
+class DataBrowserMoveCtrl {
+    constructor(
+        $scope,
+        $state,
+        $anchorScroll,
+        $timeout,
+        $location,
+        Django,
+        FileListingService,
+        FileOperationService,
+        ProjectService
+    ) {
         'ngInject';
         this.$scope = $scope;
         this.$state = $state;
-        this.FileListing = FileListing;
+        this.$anchorScroll = $anchorScroll;
+        this.Django = Django;
+
+        this.$timeout = $timeout;
+        this.$location = $location;
+        this.FileListingService = FileListingService;
+        this.FileOperationService = FileOperationService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
-        this.UserService = UserService;
+
+        this.successCallback = this.successCallback.bind(this);
     }
 
     $onInit() {
-        this.files = this.resolve.files;
-        if(this.files.some(f => f._entities.length)) {
-            this.hasEntities = true;
-        }
-        this.initialDestination = this.resolve.initialDestination;
-        this.data = {
-            files: this.files,
-            names: {},
-        };
-        this.currentParams = null;
-        this.listing = this.initialDestination;
+        const section = 'modal';
+        const offset = 0;
 
-        this.state = {
-            busy: false,
-            error: null,
-            listingProjects: false,
-            loadingMore: false,
-            reachedEnd: false,
-        };
-        this.offset = 0;
-        this.limit=100;
+        this.hasEntities = this.resolve.files.map(this.FileOperationService.checkForEntities).find(x => x)
 
-        this.options = [
-            {
-                label: 'My Data',
-                conf: { system: 'designsafe.storage.default', path: '' }
-            },
-            {
-                label: 'My Projects',
-                conf: { system: 'projects', path: '' }
-            },
-            {
-                label: 'Shared with me',
-                conf: { system: 'designsafe.storage.default', path: '$SHARE' }
-            }
-        ];
-
-        let dbState = this.DataBrowserService.currentState;
-        if (dbState.listing.system == 'designsafe.storage.default') { 
-            this.$scope.currentOption = this.options.find((opt) => opt.label === 'My Data');
-        } else if (dbState.listing.system.startsWith('project-')) {
-            this.$scope.currentOption = this.options.find((opt) => opt.label === 'My Projects');
-        } else if (dbState.listing.path == '$Share') {
-            this.$scope.currentOption = this.options.find((opt) => opt.label === 'Shared with me');
+        if (this.$state.current.name === 'myData') {
+            this.breadcrumbParams = this.FileListingService.fileMgrMappings.agave.breadcrumbParams;
         } else {
-            this.$scope.currentOption = this.options[0];
+            const projectId = this.ProjectService.current.value.projectId;
+            this.breadcrumbParams = {
+                skipRoot: false,
+                customRoot: { label: projectId, path: '' },
+            };
         }
 
-        this.$scope.$watch('currentOption', (opt) => {
-            let conf = opt.conf;
-            let params = opt.apiParams;
-            this.currentParams = params;
-            this.state.reachedEnd = false;
-            this.state.busy = true;
-            this.offset = 0;
-
-            if (conf.system != 'projects') {
-                this.state.listingProjects = false;
-                this.FileListing.get(conf, params, {offset: this.offset, limit: this.limit})
-                    .then((listing) => {
-                        this.listing = listing;
-                        this.state.busy = false;
-                        this.state.reachedEnd = listing.children.length < (this.limit - 1);
-                    });
-            } else {
-                this.state.listingProjects = true;
-                this.ProjectService.list({offset: this.offset, limit: this.limit})
-                    .then((projects) => {
-                        this.projects = _.map(projects, (p) => {
-                            p.href = this.$state.href('projects.view', { projectId: p.uuid });
-                            return p;
-                        });
-                        this.getNames();
-                        this.state.busy = false;
-                        this.state.reachedEnd = projects.length < $scope.limit;
-                    });
-            }
-            if (this.$scope.currentOption.label === 'My Data') {
-                this.customRoot = null;
-            } else {
-                this.customRoot = {
-                    name: this.$scope.currentOption.label,
-                    href: '#',
-                    system: this.$scope.currentOption.conf.system,
-                    path: this.$scope.currentOption.conf.path
-                };
-            }
-        });
-
-
+        const { api, scheme, system, path } = this.resolve;
+        this.FileListingService.browse({ section, api, scheme, system, path, offset });
     }
 
-    scrollToBottom(fileListing) {
-        this.offset += this.limit;
-        this.state.loadingMore = true;
-        var cOption = this.$scope.currentOption;
-        cOption.conf.path = (fileListing || {}).path
-        if (cOption.conf.system != 'projects'){
-          this.state.listingProjects = false;
-          this.FileListing.get(cOption.conf, cOption.apiParams, {offset: this.offset, limit: this.limit})
-            .then( listing =>  {
-                this.listing.children = this.listing.children.concat(listing.children)
-                this.state.reachedEnd = listing.children.length < (this.limit - 1)
-                this.state.loadingMore = false;
-            });
-        } else {
-          this.state.listingProjects = true;
-          this.ProjectService.list({offset: this.offset, limit: this.limit})
-            .then( projects => {
-                const mappedProjects = _.map(projects, p => {
-                    p.href = this.$state.href('projects.view', {projectId: p.uuid});
-                        return p;});
-                this.projects = this.projects.concat(mappedProjects);
-                this.getNames();
-                this.state.reachedEnd = projects.length < this.limit;
-                this.state.loadingMore = false;
-          });
-        }
-    };
+    onBrowse(file) {
+        const section = 'modal';
+        const offset = 0;
+        const { api, system, scheme } = this.FileListingService.listings.modal.params;
 
-    getNames () {
-        // get user details in one request
-        var piList = [];
-        this.projects.forEach((proj) => {
-            if (!piList.includes(proj.value.pi)) {
-                piList.push(proj.value.pi);
-            }
-        });
-        this.UserService.getPublic(piList).then((resp) => {
-            var data = resp.userData;
-            data.forEach((user) => {
-                this.data.names[user.username] = user.fname + ' ' + user.lname;
-            });
+        this.FileListingService.browse({ section, api, scheme, system, path: file.path, offset });
+    }
+
+    successCallback() {
+        this.$state.reload();
+    }
+
+    handleMove(dest) {
+        this.close();
+
+        this.FileOperationService.handleMove({
+            srcApi: this.resolve.api,
+            srcFiles: this.resolve.files,
+            destApi: this.FileListingService.listings.modal.params.api,
+            destSystem: dest.system,
+            destPath: dest.path,
+            successCallback: this.successCallback,
         });
     }
 
-    onBrowse($event, fileListing) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        this.state.listingProjects = false;
-        this.state.reachedEnd = false;
-        this.offset=0;
-        var system = fileListing.system || fileListing.systemId;
-        var path = fileListing.path;
-        if (typeof system === 'undefined' && typeof path === 'undefined' && fileListing.value) {
-            system = 'project-' + fileListing.uuid;
-            path = '/';
-        }
-        if (system === 'designsafe.storage.default' && path === '/') {
-            path = path + fileListing.name;
-        }
+    handleFooterMove() {
+        this.handleMove({
+            system: this.FileListingService.listings.modal.params.system,
+            path: this.FileListingService.listings.modal.params.path,
+        });
+    }
 
-        this.state.busy = true;
-        this.state.error = null;
-        this.FileListing.get({ system: system, path: path }, this.currentParams, {offset: this.offset, limit: this.limit}).then(
-            (listing) => {
-                this.listing = listing;
-                this.state.busy = false;
-                this.state.reachedEnd = listing.children.length < (this.limit - 1);
-                this.$scope.currentOption.conf.system = listing.system;
-            },
-            (error) => {
-                this.state.busy = false;
-                this.state.error = error.data.message || error.data;
-            }
+    getModalListing() {
+        const srcSystem = this.resolve.files[0].system;
+        const srcPaths = this.resolve.files.map((f) => f.path);
+        this.FileListingService.listings.modal.listing = this.FileListingService.listings.modal.listing.filter(
+            (f) => !(f.system === srcSystem && srcPaths.includes(f.path))
         );
-    }
-
-    validDestination(fileListing) {
-        return fileListing && (fileListing.type === 'dir' || fileListing.type === 'folder') && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
-    }
-
-    chooseDestination(fileListing) {
-        this.close({ $value: fileListing });
+        return this.FileListingService.listings.modal
     }
 
     cancel() {
         this.dismiss();
     }
-
 }
 
 export const DataBrowserServiceMoveComponent = {
-    template: DataBrowserServiceMoveTemplate,
-    controller: DataBrowserServiceMoveCtrl,
+    template: dataBrowserServiceMoveTemplate,
+    controller: DataBrowserMoveCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',
         close: '&',
-        dismiss: '&'
-    }
+        dismiss: '&',
+    },
 };
-
-

@@ -43,7 +43,7 @@
     <div>
         <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
             Preview</a>
-        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedFiles.children.length">Continue</button>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedListing.listing.length">Continue</button>
     </div>
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
@@ -61,15 +61,21 @@
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
-        <div class="well" style="margin-bottom: 20px;" ng-hide="$ctrl.ui.loading || !$ctrl.selectedFiles.children.length">
+        <div class="well" style="margin-bottom: 20px;" ng-hide="$ctrl.ui.loading || !$ctrl.selectedListing">
             <h4>These files will be published:</h4>
-            <files-listing browser="$ctrl.browser" files-list="$ctrl.selectedFiles" params="$ctrl.flSelected"></files-listing>
+            <files-listing listing=$ctrl.selectedListing show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
         </div>
         <div ng-hide="$ctrl.ui.loading" style="text-align: center;">
             <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
         </div>
         <div ng-hide="$ctrl.ui.loading">
-            <files-listing browser="$ctrl.browser" params="$ctrl.fl"></files-listing>
+            <breadcrumb
+            path="$ctrl.FileListingService.listings.main.params.path"
+            system="$ctrl.FileListingService.listings.main.params.path"
+            on-browse="$ctrl.onBrowse(file)"
+            custom-root="{label: $ctrl.browser.project.value.projectId, path: ''}"
+        ></breadcrumb>
+            <files-listing listing="$ctrl.FileListingService.listings.main" show-select="true" show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
         </div>
     </div>
 </div>

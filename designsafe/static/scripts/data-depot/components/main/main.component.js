@@ -1,8 +1,10 @@
-export function MainCtrl($scope, DataBrowserService) {
+import mainTemplate from './main.template.html';
+
+export function MainCtrl($scope) {
     'ngInject';
-    $scope.browser = DataBrowserService.state();
   }
 
 export const MainComponent = {
-    controller: MainCtrl
+    controller: MainCtrl,
+    template: mainTemplate
 }

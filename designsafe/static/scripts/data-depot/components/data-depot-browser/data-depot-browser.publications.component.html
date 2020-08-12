@@ -1,8 +1,4 @@
-<publications-listing ng-if="$ctrl.browser.listing.path==='/' ||
-                             $ctrl.browser.listing.path==='/$SEARCH'"
-                      data-browser="$ctrl.browser"
+<publications-listing 
+                      listing="$ctrl.PublicationService.listing"
 ></publications-listing>
-<files-listing ng-if="$ctrl.browser.listing.path!=='/' &&
-                      $ctrl.browser.listing.path!=='/$SEARCH'"
-               data-browser="$ctrl.browser"
-></files-listing>
+

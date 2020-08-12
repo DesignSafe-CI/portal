@@ -146,8 +146,15 @@
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
-        <div ng-if="$ctrl.fl">
-            <files-listing browser="$ctrl.browser" params="$ctrl.fl"></files-listing>
+        <div ng-if="$ctrl.ui.fileNav">
+            <breadcrumb
+            path="$ctrl.breadcrumbParams.path"
+            system="$ctrl.FileListingService.listings.main.params.path"
+            on-browse="$ctrl.onBrowse(file)"
+            custom-root="$ctrl.breadcrumbParams.root"
+            skip-root="$ctrl.breadcrumbParams.skipRoot"
+        ></breadcrumb>
+            <files-listing listing="$ctrl.FileListingService.listings.main" on-browse="$ctrl.onBrowse(file)" show-tags="true" show-select="true"></files-listing>
         </div>
     </div>
 </div>

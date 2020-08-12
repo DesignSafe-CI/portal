@@ -1,7 +1,10 @@
 import PublicationDescriptionModalTemplate from './publication-description.component.html'
 class PublicationDescriptionModalCtrl {
-    constructor() {
+    constructor(PublicationService) {
+        'ngInject';
+        this.PublicationService = PublicationService;
     }
+
 }
 
 export const PublicationDescriptionModalComponent = {

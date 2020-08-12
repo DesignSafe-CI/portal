@@ -1,3 +1,4 @@
+//MARK FOR DEPRECATION
 import _ from 'underscore';
 import projectRootTemplate from './project-root.component.html';
 

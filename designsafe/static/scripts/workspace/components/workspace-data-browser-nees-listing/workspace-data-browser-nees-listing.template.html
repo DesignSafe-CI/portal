@@ -1,0 +1,44 @@
+<div class="files-listing">
+    <div
+        class="table-responsive ds-table-display-wrapper"
+        ds-infinite-scroll
+        data-scroll-bottom="$ctrl.scrollToBottom()"
+        data-scroll-top="scrollToTop()"
+        data-bottom-height="0"
+    >
+        <table class="table table-striped">
+            <thead>
+                <th>Project ID</th>
+                <th>Project Name</th>
+            </thead>
+            <tbody>
+                <tr data-ng-repeat="publication in $ctrl.listing.publications">
+                    <td>
+                        <button ng-if="$ctrl.requestKey"
+                                    type="button"
+                                    class="btn btn-xs btn-info"
+                                    ng-click="$ctrl.chooseFile(publication)">Select</button>
+                        <a
+                            ng-click="$ctrl.onBrowse({publication})"
+                            class="btn btn-xs btn-link"
+                            ds-data-draggable
+                            data-ds-data="agave://nees.public/{{publication.project}}"
+                        >
+                            <i class="fa fa-folder"></i>
+                            <span>{{publication.project}}</span>
+                        </a>
+                    </td>
+                    <td>{{publication.title}}</td>
+                </tr>
+                <tr ng-if="$ctrl.listing.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
+                <tr ng-if="$ctrl.listing.loadingScroll">
+                    <td>
+                            <span class="bg-info text-info">
+                            <i class="fa fa-spinner fa-spin"></i> Loading...
+                            </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

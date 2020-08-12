@@ -158,7 +158,6 @@ def repair_paths(limit=1000):
         
         bulk(es_client, update_ops)
         search_after = res.hits.hits[-1]['sort']
-        logger.debug(search_after)
         file_search = IndexedFile.search().sort('_id').extra(size=limit, search_after=search_after)
         res = file_search.execute()
 

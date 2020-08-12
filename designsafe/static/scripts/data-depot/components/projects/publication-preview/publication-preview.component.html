@@ -132,6 +132,13 @@
         <a data-ng-click="$ctrl.treeDiagram()">
             <strong>View Data Diagram</strong>
         </a>
+        <breadcrumb
+            path="$ctrl.breadcrumbParams.path"
+            system="$ctrl.FileListingService.listings.main.params.path"
+            on-browse="$ctrl.onBrowse(file)"
+            custom-root="$ctrl.breadcrumbParams.root"
+            skip-root="$ctrl.breadcrumbParams.skipRoot"
+        ></breadcrumb>
     </div>
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
@@ -151,14 +158,28 @@
                 <div class="well" ng-if="report.value.description">
                     <p>{{ report.value.description }}</p>
                 </div>
-                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
-            </div>
+                <files-listing show-select="true" show-tags="true"
+                on-scroll="$ctrl.scrollToBottom()"
+                listing="$ctrl.FileListingService.listings[report.uuid]"
+                on-browse="$ctrl.onBrowse(file)"
+            >&nbsp;</files-listing>            </div>
         </div>
     </div>
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
-        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listing" params="$ctrl.fl"></files-listing>
-    </div>
-    <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
+        <breadcrumb
+            path="$ctrl.breadcrumbParams.path"
+            system="$ctrl.FileListingService.listings.main.params.path"
+            on-browse="$ctrl.onBrowse(file)"
+            custom-root="$ctrl.breadcrumbParams.root"
+            skip-root="$ctrl.breadcrumbParams.skipRoot"
+        ></breadcrumb>
+        <files-listing show-select="true" show-tags="true"
+        on-scroll="$ctrl.scrollToBottom()"
+        listing="$ctrl.FileListingService.listings.main"
+        on-browse="$ctrl.onBrowse(file)"
+    >&nbsp;</files-listing>    </div>
+    <!-- Experiments -->
+    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
             <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                 <table style="width:100%" id="anchor-{{ experiment.uuid }}">
@@ -303,8 +324,11 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl"></files-listing>
-                                </div>
+                                    <files-listing show-select="true" show-tags="true"
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[report.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                >&nbsp;</files-listing>                               </div>
                             </div>
                         </div>
                         <!-- Model Configs -->
@@ -322,8 +346,11 @@
                                     <div class="well" ng-if="modelConfig.value.description">
                                         <p>{{ modelConfig.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConfig.uuid]" params="$ctrl.fl"></files-listing>
-                                </div>
+                                    <files-listing show-select="true" show-tags="true"
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[modelConfig.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                >&nbsp;</files-listing>                                </div>
                             </div>
                             <!-- Sensors -->
                             <div ng-repeat="sensorList in $ctrl.browser.project.sensorlist_set | orderBy: 'value.title'"
@@ -355,8 +382,11 @@
                                                 <div class="well" ng-if="sensorList.value.description">
                                                     <p>{{ sensorList.value.description }}</p>
                                                 </div>
-                                                <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorList.uuid]" params="$ctrl.fl"></files-listing>
-                                            </div>
+                                                <files-listing show-select="true" show-tags="true"
+                                                on-scroll="$ctrl.scrollToBottom()"
+                                                listing="$ctrl.FileListingService.listings[sensorList.uuid]"
+                                                on-browse="$ctrl.onBrowse(file)"
+                                            >&nbsp;</files-listing>                                            </div>
                                             </td>
                                         </tr>
                                     </table>
@@ -386,8 +416,11 @@
                                                             <div class="well" ng-if="event.value.description">
                                                                 <p>{{ event.value.description }}</p>
                                                             </div>
-                                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]" params="$ctrl.fl"></files-listing>
-                                                        </div>
+                                                            <files-listing show-select="true" show-tags="true"
+                                                            on-scroll="$ctrl.scrollToBottom()"
+                                                            listing="$ctrl.FileListingService.listings[event.uuid]"
+                                                            on-browse="$ctrl.onBrowse(file)"
+                                                        >&nbsp;</files-listing>                                                        </div>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -423,8 +456,11 @@
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>
-                                </div>
+                                    <files-listing show-select="true" show-tags="true"
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                >&nbsp;</files-listing>                                </div>
                             </div>
                         </div>
                     </div>

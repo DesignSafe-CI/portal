@@ -79,23 +79,23 @@
                         <div style="padding-bottom: 5px;">
                             <label for="exp-facility-select">Experiment Facility</label>
                             <select
+                                ng-disabled="!$ctrl.params.typeFilters.experimental"
                                 id="exp-facility-select"
                                 ng-model="$ctrl.params.advancedFilters.experimental.experimentalFacility"
-                                ng-options="ef.label as ef.label for ef in $ctrl.experimentOptions.experimentalFacility.experimental"
+                                ng-change="$ctrl.getValidExperimentTypes()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.experimentFacilityOptions"
                                 class="form-control"
-                                ><option value="">All Facilities</option></select
+                                ></select
                             >
                         </div>
                         <div>
                             <label for="exp-type-select">Experiment Type</label>
                             <select
+                                ng-disabled="!$ctrl.params.typeFilters.experimental || !$ctrl.params.advancedFilters.experimental.experimentalFacility"
                                 id="exp-type-select"
                                 ng-model="$ctrl.params.advancedFilters.experimental.experimentType"
-                                ng-options="ef.name as ef.label for ef in $ctrl.getValidExperimentTypes()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.validExperimentTypes"
                                 class="form-control"
-                                ><option value=""
-                                    >{{$ctrl.getValidExperimentTypes().length ? "All Types" : "Select a
-                                    Facility"}}</option
                                 ></select
                             >
                         </div>
@@ -104,11 +104,12 @@
                     <td style="width: 20%;">
                         <label for="simulation-type-select">Simulation Type</label>
                         <select
+                            ng-disabled="!$ctrl.params.typeFilters.simulation"
                             id="simulation-type-select"
                             ng-model="$ctrl.params.advancedFilters.simulation.simulationType"
                             ng-options="ef.name as ef.label for ef in $ctrl.simulationTypes"
                             class="form-control"
-                            ><option value="">All Types</option></select
+                            ></select
                         >
                     </td>
 
@@ -116,40 +117,44 @@
                         <div style="padding-bottom: 5px;">
                         <label for="simulation-type-select">Natural Hazard Type</label>
                         <select
+                        ng-disabled="!$ctrl.params.typeFilters.field_recon"
                             id="nh-type-select"
                             ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardType"
-                            ng-options="opt as opt for opt in $ctrl.rapidEventTypes"
+                            ng-options="opt.name as opt.label for opt in $ctrl.rapidEventTypes"
                             class="form-control"
-                            ><option value="">All Types</option></select
+                            ></select
                         >
                     </div>
                     <div>
                         <label for="nh-event-select">Natural Hazard Event</label>
                         <input
                             class="form-control"
-                            ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardEvent"
+                            ng-disabled="!$ctrl.params.typeFilters.field_recon"
+                            ng-model="ctrl.params.advancedFilters.field_recon.naturalHazardEvent"
                         />
                     </div>
                     </td>
                     <td style="width: 20%;">
                         <label for="other-type-select">Data Type</label>
                         <select
+                            ng-disabled="!$ctrl.params.typeFilters.other"
                             id="other-type-select"
                             ng-model="$ctrl.params.advancedFilters.other.dataType"
-                            ng-options="opt as opt for opt in $ctrl.otherTypes"
+                            ng-options="opt.name as opt.label for opt in $ctrl.otherTypes"
                             class="form-control"
-                            ><option value="">All Types</option></select
+                            ></select
                         >
                     </td>
 
                     <td style="width: 20%;">
                         <label for="hybrid-sim-type-select">Hybrid Sim Type</label>
                         <select
+                            ng-disabled="!$ctrl.params.typeFilters.hybrid_simulation"
                             id="other-type-select"
                             ng-model="$ctrl.params.advancedFilters.hybrid_simulation.hybridSimulationType"
                             ng-options="opt.name as opt.label for opt in $ctrl.hybridSimulationTypes"
                             class="form-control"
-                            ><option value="">All Types</option></select
+                            ></select
                         >
                     </td>
                 </tr>
