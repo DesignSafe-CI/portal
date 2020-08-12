@@ -20,7 +20,7 @@ class PublicationDataCtrl {
         this.typeFilter = this.typeFilter.bind(this);
         this.clearFilters = this.clearFilters.bind(this);
         this.areFiltersEmpty = this.areFiltersEmpty.bind(this);
-        this.browser = DataBrowserService.state();
+        this.browser = {}
     }
 
     $onInit() {

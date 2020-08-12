@@ -34,19 +34,8 @@ class LegacyPublicationsSearchManager(BaseSearchManager):
             "title",
             "description",
             "doi",
-            "project.value.title",
-            "project.value.keywords",
-            "project.value.description",
-            "project.value.dataType",
-            "project.value.projectType",
-            "project.value.dois",
-            "project.value.nhLocation",
-            "project.value.pi",
-            "project.value.teamOrder.fname",
-            "project.value.teamOrder.lname",
-            "project.value.teamOrder.name",
-            "authors.fname",
-            "authors.lname",
+            "publications",
+            "pis",
             "name"
             ]
         published_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())[0]
