@@ -1,3 +1,4 @@
+//MARK FOR DEPRECATION
 import ProjectSearchTemplate from './project-search.component.html';
 import _ from 'underscore';
 
@@ -43,7 +44,7 @@ function ProjectSearchCtrl($scope, $state, Django, DataBrowserService, ProjectSe
       $event.preventDefault();
       $event.stopPropagation();
 
-      $state.go('projects.view.data', {projectId: file.system.slice(8)})
+      $state.go('projects.view', {projectId: file.system.slice(8)})
     }
 
     $scope.onBrowseData = function ($event, file) {
@@ -52,7 +53,7 @@ function ProjectSearchCtrl($scope, $state, Django, DataBrowserService, ProjectSe
       if (typeof(file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder') {
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
-        $state.go('projects.view.data', {projectId: file.system.slice(8), filePath: file.path});
+        $state.go('projects.view', {projectId: file.system.slice(8), filePath: file.path});
       }
     };
 

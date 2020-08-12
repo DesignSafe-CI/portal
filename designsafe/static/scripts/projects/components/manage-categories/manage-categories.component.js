@@ -3,10 +3,12 @@ import _ from 'underscore';
 
 class ManageCategoriesCtrl {
 
-    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService, DataBrowserService, FileListing) {
+    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService, FileListingService, FileOperationService, DataBrowserService, FileListing) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.FileListing = FileListing;
+        this.FileListingService = FileListingService;
+        this.FileOperationService = FileOperationService;
         this.DataBrowserService = DataBrowserService;
         this.UserService = UserService;
         this.Django = Django;
@@ -46,53 +48,10 @@ class ManageCategoriesCtrl {
             this.editCategory(this.edit);
             this.ui.loading = false;
         } else {
-            this.browser.listings = {};
             let entities = this.browser.project.getAllRelatedObjects();
-            let listingPaths = [];
-            let allPaths = [];
-            entities.forEach((entity) => {
-                this.browser.listings[entity.uuid] = {
-                    name: this.browser.listing.name,
-                    path: this.browser.listing.path,
-                    system: this.browser.listing.system,
-                    trail: this.browser.listing.trail,
-                    children: [],
-                };
-                allPaths = allPaths.concat(entity._filePaths);
+            this.FileListingService.abstractListing(entities, this.browser.project.uuid).subscribe((_) => {
+                this.ui.loading = false;
             });
-            allPaths.forEach((path) => {
-                listingPaths = listingPaths.concat(path.match(`.*\/`)[0]);
-            });
-            let reducedPaths = { files: [...new Set(allPaths)], directories: [...new Set(listingPaths)] };
-
-            this.populateListings = (paths, ents) => {
-                let apiParams = this.DataBrowserService.apiParameters();
-                var dirListings = paths.directories.map((dir) => {
-                    return this.FileListing.get(
-                        { system: 'project-' + this.browser.project.uuid, path: dir },
-                        apiParams
-                    ).then((resp) => {
-                        if (!resp) {
-                            return;
-                        }
-                        let files = resp.children;
-                        ents.forEach((e) => {
-                            files.forEach((f) => {
-                                if (e._filePaths.indexOf(f.path) > -1) {
-                                    f._entities.push(e);
-                                    this.browser.listings[e.uuid].children.push(f);
-                                }
-                            });
-                        });
-                        return resp;
-                    });
-                });
-
-                this.$q.all(dirListings).then((resp) => {
-                    this.ui.loading = false;
-                });
-            };
-            this.populateListings(reducedPaths, entities);
         }
 
         if (this.browser.project.value.projectType === 'experimental') {
@@ -250,12 +209,12 @@ class ManageCategoriesCtrl {
         var nameComps = entity.name.split('.');
         var name = nameComps[nameComps.length - 1];
         entity.description = entity.description || '';
-        if (typeof this.browser.files !== 'undefined') {
-            entity.filePaths = _.map(this.browser.files,
-                (file) => {
-                    return file.path;
-                });
-        }
+        //if (typeof this.browser.files !== 'undefined') {
+        //    entity.filePaths = _.map(this.browser.files,
+        //        (file) => {
+        //            return file.path;
+        //        });
+        //}
         this.ProjectEntitiesService.create({
             data: {
                 uuid: this.browser.project.uuid,
@@ -360,6 +319,14 @@ class ManageCategoriesCtrl {
             });
         };
         confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+    }
+
+    onBrowse(file) {
+        if (file.type === 'dir') {
+            return;
+        } else {
+            this.FileOperationService.openPreviewModal({ api: 'agave', scheme: 'private', file });
+        }
     }
 }
 

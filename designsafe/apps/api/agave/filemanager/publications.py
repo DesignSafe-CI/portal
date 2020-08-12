@@ -68,17 +68,13 @@ class PublicationsManager(AgaveFileManager):
             {'project._exact': {'order': 'asc', 'unmapped_type': 'keyword'}},
             {'created': {'order': 'desc', 'unmapped_type': 'long'}}
         )
-        listing_search = listing_search.extra(from_=offset, size=limit)
+        listing_search = listing_search.extra(from_=offset, size=limit).source(includes=['project.value', 'created', 'projectId', 'users', 'system'])
 
         res = listing_search.execute()
         children = []
         for hit in res:
-            try:
-                getattr(hit, 'projectId')
-                hit_to_file = BaseESPublication.hit_to_file(hit)
-                children.append(hit_to_file)
-            except AttributeError:
-                children.append(BaseESPublicationLegacy(**hit.to_dict()).to_file())
+            hit_to_file = BaseESPublication.hit_to_file(hit)
+            children.append(hit_to_file)
 
         result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],

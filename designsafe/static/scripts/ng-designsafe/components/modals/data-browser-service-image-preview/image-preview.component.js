@@ -1,9 +1,10 @@
 import ImagePreviewTemplate from './image-preview.template.html';
 
 class ImagePreviewCtrl {
-    constructor(DataBrowserService) { 
+    constructor(DataBrowserService, FileOperationService) {
         'ngInject';
         this.DataBrowserService = DataBrowserService;
+        this.FileOperationService = FileOperationService;
     }
 
     $onInit() {
@@ -12,28 +13,28 @@ class ImagePreviewCtrl {
         this.slides = [];
         this.images = this.resolve.images;
         this.images.forEach((child, i, arr) => {
-            child.tests = this.DataBrowserService.allowedActions([child]);
-            return child.download()
-                .then((res) => {
-                    const {
-                        name, path, lastModified
-                    } = child;
-                    const meta = { name, path, lastModified };
-                    if (child.size) {
-                        meta.size = child.size;
-                    } else if (child.length) {
-                        meta.length = child.length;
-                    }
-                    this.slides.push({
-                        meta,
-                        image: res.href,
-                        text: child.name,
-                        id: this.slides.length
-                    });
-                    if (i === arr.length - 1) {
-                        this.loading = false;
-                    }
+            return this.FileOperationService.getPreviewHref({
+                api: this.resolve.api,
+                scheme: this.resolve.scheme,
+                file: child,
+            }).then((res) => {
+                const { name, path, lastModified } = child;
+                const meta = { name, path, lastModified };
+                if (child.size) {
+                    meta.size = child.size;
+                } else if (child.length) {
+                    meta.length = child.length;
+                }
+                this.slides.push({
+                    meta,
+                    image: res.data.href,
+                    text: child.name,
+                    id: this.slides.length,
                 });
+                if (i === arr.length - 1) {
+                    this.loading = false;
+                }
+            });
         });
     }
 
@@ -42,7 +43,7 @@ class ImagePreviewCtrl {
     }
 
     copy(file) {
-        this.DataBrowserService.copy(file);
+        //this.DataBrowserService.copy(file);
     }
 
     move(file) {

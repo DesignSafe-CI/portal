@@ -6,10 +6,19 @@ export class PublishedService {
         this.$q = $q;
         this.$window = $window;
         this.$filter = $filter;
+        this.current = null;
     }
 
+    /**
+     * Retrieve details for a publication using its project ID.
+     * @param {string} projId Project ID to retrieve.
+     */
     getPublished(projId) {
-        return this.$http.get('/api/projects/publication/' + projId);
+        // Retrieve current details if they are already in state.
+        return this.$http.get('/api/projects/publication/' + projId).then(resp => {
+            this.current = resp.data;
+            return resp
+        });
     }
 
     getNeesPublished(neesId) {
@@ -55,6 +64,7 @@ export class PublishedService {
     }
     
     updateHeaderMetadata(projId, resp) {
+        
         this.$window.document.title = resp.data.project.value.title + ' | DesignSafe-CI';
         this.$window.document.getElementsByName('keywords')[0].content = resp.data.project.value.keywords;
         this.$window.document.getElementsByName('description')[0].content = resp.data.project.value.description;
@@ -70,7 +80,7 @@ export class PublishedService {
 
         this.$window.document.getElementsByName('citation_abstract_html_url')[0].content = "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published//" + projId;
 
-
+        
         var elements = this.$window.document.getElementsByName('citation_author');
         while (elements[0]) elements[0].parentNode.removeChild(elements[0]);
         var elements = this.$window.document.getElementsByName('citation_author_institution');
@@ -84,7 +94,7 @@ export class PublishedService {
             meta.content = keyword;
             this.$window.document.getElementsByTagName('head')[0].appendChild(meta);
         });
-
+        
         var authors = '';
         var ieeeAuthors = '';
 
@@ -106,6 +116,7 @@ export class PublishedService {
                 return p._ui.order;
             }
         });
+        
         _.each(publishers, (usr, index, list) => {
             var str = usr.last_name + ', ' + usr.first_name;
             var usr_institution = _.filter(resp.data.institutions, (inst) => {
@@ -133,7 +144,7 @@ export class PublishedService {
             }
 
         });
-
+        
         if (!authors && _.has(resp.data.project.value, 'teamOrder')) {
             authors = resp.data.project.value.teamOrder.reduce((prev, curr, idx) => {
                 const last = idx === resp.data.project.value.teamOrder.length - 1;
@@ -149,22 +160,20 @@ export class PublishedService {
         this.$window.document.getElementsByName('DC.creator')[0].content = authors;
 
         const entities = [];
-        let isSimulation = false;
-        if (has(resp.data, 'experimentsList')) {
+
+        if (_.has(resp.data, 'experimentsList')) {
             entities.push(...resp.data.experimentsList);
-        } else if(has(resp.data, 'simulations')) {
+        } else if(_.has(resp.data, 'simulations')) {
             entities.push(...resp.data.simulations);
-            isSimulation = true;
-        } else if(has(resp.data, 'missions')) {
+        } else if(_.has(resp.data, 'missions')) {
             entities.push(...resp.data.missions);
-        } else if (has(resp.data, 'hybrid_simulations')) {
-            entities.push(...resp.data, 'hybrid_simulations');
-            isSimulation = true;
-        }
-
+        } else if (_.has(resp.data, 'hybrid_simulations')) {
+            entities.push(...resp.data.hybrid_simulations);
+        }   
+        
         // Check for reports
-        if(has(resp.data, 'reports') && !isSimulation) entities.push(...resp.data.reports);
-
+        if(_.has(resp.data, 'reports')) entities.push(...resp.data.reports);
+        
         entities.forEach((entity) => {
             // Title
             const entTitleTag = this.$window.document.createElement('meta');
@@ -185,7 +194,7 @@ export class PublishedService {
             this.$window.document.getElementsByTagName('head')[0].appendChild(entDescTag);
 
             // Authors (with Institutions)
-            entity.authors
+            entity.authors && entity.authors
                 .filter((author) => author.authorship === true)
                 .forEach((author) => {
                     const authorTag = this.$window.document.createElement('meta');

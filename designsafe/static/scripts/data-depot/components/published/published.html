@@ -1,27 +1,29 @@
 <div ng-if="$ctrl.ui.loading">
 Loading... <i class="fa fa-spinner fa-spin"></i>
 </div>
-<div data-ui-view="published-v1"
-     data-ng-if="$ctrl.showV1View()">
-    &nbsp;
+
+<div 
+     data-ng-if="$ctrl.viewToShow()==='v1'">
+     <published publication=$ctrl.publication></published>
 </div>
-<div data-ui-view="published-exp"
-     data-ng-if="$ctrl.showExpView()">
-    &nbsp;
+
+<div
+     data-ng-if="$ctrl.viewToShow() === 'experimental'">
+    <exp-published-view publication=$ctrl.publication></exp-published-view>
 </div>
-<div data-ui-view="published-sim"
-     data-ng-if="$ctrl.showSimView()">
-    &nbsp;
+<div
+     data-ng-if="$ctrl.viewToShow() === 'simulation'">
+    <sim-published-view publication=$ctrl.publication></sim-published-view>
 </div>
-<div data-ui-view="published-hyb-sim"
-     data-ng-if="$ctrl.showHybSimView()">
-    &nbsp;
+<div 
+     data-ng-if="$ctrl.viewToShow()==='hybrid_simulation'">
+    <sim-hyb-published-view publication=$ctrl.publication></sim-hyb-published-view>
 </div>
-<div data-ui-view="published-field-recon"
-     data-ng-if="$ctrl.showFieldReconView()">
-    &nbsp;
+<div
+     data-ng-if="$ctrl.viewToShow() === 'field_recon'">
+    <field-recon-published-view publication=$ctrl.publication></field-recon-published-view>
 </div>
-<div data-ui-view="published-other"
-     data-ng-if="$ctrl.showOtherView()">
-    &nbsp;
-</div>
+<div 
+     data-ng-if="$ctrl.viewToShow()==='other'">
+    <other-published-view publication=$ctrl.publication></other-published-view>
+</div> 

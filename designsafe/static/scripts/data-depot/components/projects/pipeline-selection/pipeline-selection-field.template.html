@@ -155,8 +155,11 @@
                                 </p>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[mission.uuid]" category-selection="true"></files-listing>
-                    </div>
+                        <files-listing show-tags="true"
+                        on-scroll="$ctrl.scrollToBottom()"
+                        listing="$ctrl.FileListingService.listings[mission.uuid]"
+                        on-browse="$ctrl.onBrowse(file)"
+                    >&nbsp;</files-listing>                     </div>
                 </div>
             </div>
             <!-- Missions -->
@@ -350,8 +353,11 @@
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-selection="true"></files-listing>
-                                        </div>
+                                            <files-listing show-tags="true"
+                                            on-scroll="$ctrl.scrollToBottom()"
+                                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                            on-browse="$ctrl.onBrowse(file)"
+                                        >&nbsp;</files-listing>                                        </div>
                                     </div>
                                 </div>
                                 <!-- GeoscienceEngineering -->
@@ -435,8 +441,11 @@
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-selection="true"></files-listing>
-                                        </div>
+                                            <files-listing show-tags="true"
+                                            on-scroll="$ctrl.scrollToBottom()"
+                                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                            on-browse="$ctrl.onBrowse(file)"
+                                        >&nbsp;</files-listing>                                         </div>
                                     </div>
                                 </div>
                                 <!-- Research Planning Collection -->
@@ -475,8 +484,11 @@
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>
                                             </div>
-                                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" category-selection="true"></files-listing>
-                                        </div>
+                                            <files-listing show-tags="true"
+                                            on-scroll="$ctrl.scrollToBottom()"
+                                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                            on-browse="$ctrl.onBrowse(file)"
+                                        >&nbsp;</files-listing>                                         </div>
                                     </div>
                                 </div>
                             </div>

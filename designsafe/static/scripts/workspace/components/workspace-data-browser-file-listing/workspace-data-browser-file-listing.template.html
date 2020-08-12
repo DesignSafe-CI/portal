@@ -1,0 +1,37 @@
+<div class="files-listing">
+    <div
+        class="table-responsive ds-table-display-wrapper"
+        ds-infinite-scroll
+        data-scroll-bottom="scrollToBottom()"
+        data-scroll-top="scrollToTop()"
+        data-bottom-height="0"
+    >
+        <table class="table table-striped">
+            <thead>
+                <th>Name</th>
+                <th>Size</th>
+            </thead>
+            <tbody>
+                <tr data-ng-repeat="file in $ctrl.listing.listing">
+                    <td>
+                        <button ng-if="file.name !== '.' && $ctrl.requestKey"
+                                    type="button"
+                                    class="btn btn-xs btn-info"
+                                    ng-click="$ctrl.chooseFile(file)">Select</button>
+                        <a
+                            ng-click="$ctrl.browse($event, file)"
+                            class="btn btn-xs btn-link"
+                            ds-data-draggable
+                            data-ds-data="agave://{{file.system}}/{{file.path}}"
+                        >
+                            <i class="fa {{$ctrl.icon(file.name, file.type)}}"></i>
+                            <span>{{file.name}}</span>
+                        </a>
+                    </td>
+                    <td>{{file.length|bytes}}</td>
+                </tr>
+                <tr ng-if="$ctrl.listing.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
