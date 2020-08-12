@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.0.0-20200802
+Fixes: 
+- Insert missing ngInject
+
 ## v5.0.0-20200801
 Enhancements: 
 - All listings have been reimplemented on both the frontend and backend. DataBrowserService and FileListing are refactored into a FileListingService and FileOperationService.

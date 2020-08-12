@@ -40,6 +40,7 @@ class DataDepoPublicationsLegacyBrowserCtrl {
 
 class DataDepotBrowserCtrl {
     constructor($state, $stateParams, $window, FileListingService, FileOperationService, $http, Django, $scope) {
+        'ngInject';
         this.$state = $state;
         this.$stateParams = $stateParams;
         this.FileListingService = FileListingService;
