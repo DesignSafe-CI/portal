@@ -67,6 +67,7 @@ export class ProjectService {
     this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     this.collabResource = this.httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
     this.dataResource = this.httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
+    this.notificationResource = httpi.resource('/api/projects/:uuid/notification/').setKeepTrailingSlash(true);
     //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
     //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
 
@@ -424,10 +425,13 @@ export class ProjectService {
                     - Files associated to the Report
 
             Condition 2)
-                + If a mission is published it must have:
-                    - Planning Set
-                    - Social Science OR Geoscience Set
+                + If a mission is published it must have the following:
+                    - Planning Set OR Social Science Set OR Geoscience Set
                     - Files within all Sets
+            
+            Since FR is the only model which will require just one of multiple requirement
+            types we will check for missing information first and then check that one of
+            the requirements is included.
             */
             let requirements = ['planning', 'social_science', 'geoscience'];
             let missions = selPrimEnts.filter(ent => ent.name.endsWith('mission'));
@@ -440,13 +444,13 @@ export class ProjectService {
             
             if (missions.length) {
                 checkRequirements(missions, subentities, requirements);
-                // if a mission is missing only a social science or geoscience model this is okay
+                let errNames = Array.from(requirements, req => errMsg[req]);
+                // ensure all requirements are not missing (we just need one for FR) and
+                // there are no missing files
                 missingData = missingData.filter((data) => {
-                    if (data.missing.length < 2 && (data.missing.includes('Social Sciences Collection') || data.missing.includes('Engineering/Geosciences Collection'))) {
+                    if (!errNames.every(name => data.missing.includes(name)) &&
+                        !data.missing.includes('Associated files/data are missing or not selected')) {
                         return false;
-                    }
-                    if (data.missing.length < 3 && data.missing.includes('Research Planning Collection')) {
-                        data.missing = ['Research Planning Collection'];
                     }
                     return true;
                 });
@@ -500,6 +504,15 @@ export class ProjectService {
         return modalInstance;
     };
 
-
+    /**
+     *
+     * @param options
+     * @param {string} options.uuid The Project uuid
+     * @param {string} options.username The username of the collaborator to add
+     * @returns {Promise}
+     */
+    notifyPersonalData(options) {
+        return this.notificationResource.post({ data: options });
+    };
 
 }

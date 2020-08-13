@@ -966,3 +966,39 @@ def email_collaborator_added_to_project(self, project_id, project_uuid, project_
                         settings.DEFAULT_FROM_EMAIL,
                         [collab_user.email],
                         html_message=body)
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def email_project_admins(self, project_id, project_uuid, project_title, project_url, username):
+    #contact project admins regarding publication of sensitive information
+    service = get_service_account_client()
+    admins = settings.PROJECT_ADMINS_EMAIL
+    user = get_user_model().objects.get(username=username)
+
+    for admin in admins:
+        email_body = """
+            <p>Hello,</p>
+            <p>
+                The following Field Research project has been created with the intent of publishing sensitive information:
+                <br>
+                <b>{prjID} - {title}</b>
+            </p>
+            <p>
+                Contact PI:
+                <br>
+                {name} - {email}
+            </p>
+            <p>
+                Link to Project:
+                <br>
+                <a href=\"{url}\">{url}</a>.
+            </p>
+            This is a programmatically generated message. Do NOT reply to this message.
+            """.format(name=user.get_full_name(), email=user.email, title=project_title, prjID=project_id, url=project_url)
+
+        send_mail(
+            "DesignSafe PII Alert",
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [admin],
+            html_message=email_body)

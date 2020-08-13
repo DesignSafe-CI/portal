@@ -82,16 +82,13 @@ class ProjectViewCtrl {
     this.ProjectService.editProject(this.browser.project);
   }
 
-  manageProjectType($event) {
-    if ($event) {
-      $event.preventDefault();
-    }
+  overview() {
     this.$uibModal.open({
-      component: 'manageProjectType',
-      resolve: {
-        options: () => { return { 'project': this.browser.project, 'warning': false }; },
-      },
-      size: 'lg',
+        component: 'manageProjectType',
+        resolve: {
+            options: () => { return {'project': this.browser.project, 'preview': true, 'warning': false}; },
+        },
+        size: 'lg',
     });
   }
 
@@ -102,7 +99,7 @@ class ProjectViewCtrl {
 
   curationDirectory() {
     if (this.browser.project.value.projectType === 'None') {
-      this.manageProjectType();
+      this.overview();
     } else {
       this.$state.go('projects.curation', { projectId: this.projectId, data: this.browser, filePath: this.filePath});
     }
@@ -130,7 +127,7 @@ class ProjectViewCtrl {
         this.checkState();
       });
     } else {
-      this.manageProjectType();
+      this.overview();
     }
   }
 

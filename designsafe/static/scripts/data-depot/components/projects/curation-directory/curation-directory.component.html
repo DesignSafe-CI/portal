@@ -27,12 +27,16 @@
             <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
                 <td>Project Type</td>
                 <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
-                    {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}
-                    <a ng-if="$ctrl.browser.project.value.projectType == 'experimental' || $ctrl.browser.project.value.projectType == 'simulation'"
-                        ng-click="$ctrl.overview()"
-                    >
-                        View Curation Overview for {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }} Projects
-                    </a>
+                    {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }} &nbsp;
+                    <a ng-if="$ctrl.browser.project.value.projectType == 'experimental' || $ctrl.browser.project.value.projectType == 'simulation'"	                    <a ng-if="['experimental', 'simulation'].includes($ctrl.browser.project.value.projectType)"
+                        ng-click="$ctrl.overview()"	                        ng-click="$ctrl.overview()">
+                    >	                        View Overview
+                        View Curation Overview for {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }} Projects	
+                    </a>	                    </a>
+                </td>	                </td>
+                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>	                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
+                    Field Research &nbsp;
+                    <a ng-click="$ctrl.overview()">View Overview</a>
                 </td>
                 <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>
             </tr>

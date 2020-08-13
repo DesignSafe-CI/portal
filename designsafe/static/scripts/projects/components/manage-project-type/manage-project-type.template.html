@@ -1,3 +1,4 @@
+  
 <div class="modal-header" style="background: #e6e6e6;">
     <h4 class="modal-title" style="border:none;">
         <span ng-if="$ctrl.slide === 'type'">Select a Project Type</span>
@@ -205,10 +206,16 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
-                        <a ng-if="!$ctrl.preview" ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                        <a ng-hide="$ctrl.preview" ng-click="$ctrl.continue('type')">
+                            <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                        </a>
                     </td>
                     <td class="overview-continue">
                         <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('experiment')">
@@ -239,7 +246,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -287,7 +298,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('experiment')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -321,7 +336,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('categories')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -352,7 +371,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('tree')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -398,10 +421,16 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
-                        <a ng-if="!$ctrl.preview" ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                        <a ng-hide="$ctrl.preview" ng-click="$ctrl.continue('type')">
+                            <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                        </a>
                     </td>
                     <td class="overview-continue">
                         <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('simulation')">
@@ -431,7 +460,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -477,7 +510,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('simulation')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -511,7 +548,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('categories')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -542,7 +583,11 @@
             <table style="width: 100%;">
                 <tr>
                     <td class="overview-skip">
-                        <a ng-click="$ctrl.continue('finish')"><strong>Skip Overview</strong></a> (not recommended)
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('finish')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
                     </td>
                     <td class="overview-back-short">
                         <a ng-click="$ctrl.continue('tree')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
@@ -579,56 +624,316 @@
         <!-- Project Overview -->
     </div>
     <div ng-if="$ctrl.prjType === 'field_recon'">
-        <!-- Project Overview -->
+        <!-- Field Research - Overview -->
         <div ng-if="$ctrl.slide === 'overview'">
-            <div>
+            <div class="overview-body">
+                <h3>Field Research</h3>
+                <hr>
                 <p>
-                    DesignSafe offers an interactive interface to curate and publish data with other project members.
-                    Curation is important so your data can be <strong>organized</strong>, <strong>discovered</strong>, and <strong>understood</strong> for years to come.
+                    Field research projects allow engineers and social scientists to curate and publish together or independently.
                 </p>
                 <p>
-                    The four components of curation:
-                    <div style="margin-left: 18px;">
-                        <div>
-                            <strong>Missions</strong> group collections of data representing different visits to a site, field teams, field experiments,
-                            or research topics (e.g., liquefaction, structural performance, wave inundation, etc.). Some researchers refer to missions using
-                            terms such as "time 1", "wave 1", etc.
-                        </div>
-                        <div>
-                            <strong>Collections</strong> group related data gathered in a mission. Sub-collections are organized within folders.
-                        </div>
-                        <div>
-                            <strong>Relate</strong> relates collections to missions and allows hierarchical organization.
-                        </div>
-                        <div>
-                            <strong>Reports</strong> group virtual reconnaissance, field assessments, or preliminary virtual assessments that can be published
-                            before the missions or as a final report.
-                        </div>
-                        <div>
-                            <strong>File Tags</strong> are agreed upon terms from the community that describe individual files.
-                        </div>
-                    </div>
+                    Curation is important so your data can be
+                    <strong>organized</strong>, <strong>discovered</strong>, and <strong>understood</strong>
+                    for years to come.
                 </p>
+                <p>
+                    The four components of curating field research projects:
+                </p>
+                <div style="margin-left: 18px;">
+                    <p>
+                        <strong>Missions</strong><br>
+                        Missions group collections of data representing different visits to a site, field teams,
+                        field experiments, or research topics (e.g., liquefaction, structural performance, wave
+                        inundation, etc.). Some researchers refer to missions using terms such as “time 1”, “wave 1”, etc.
+                    </p>
+                    <p>
+                        <strong>Collections</strong><br>
+                        Collections group files together based on a shared purpose in a mission.
+                    </p>
+                    <p>
+                        <strong>Relating Data</strong><br>
+                        Relating data organizes missions and their respective collections.
+                    </p>
+                    <p>
+                        <strong>File Tags</strong><br>
+                        File tags are agreed upon terms that the community contributes for describing files and directories.
+                    </p>
+                </div>
+                <br>
                 <p>
                     For further help with curation, DesignSafe has the following resources:
-                    <li> <a href="/rw/user-guides/data-curation-publication/" target="_blank">Data Curation and Publication user guide</a></li>
-                    <li> <a href="/rw/user-guides/data-publication-guidelines/" target="_blank">Data Publication Guidelines</a></li>
-                    <li> <a href="https://www.youtube.com/playlist?list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">YouTube video instruction series</a></li>
-                    <!-- <li> <a href="______" target="_blank">Example projects that highlight best practices</a> (recommended)</li> -->
-                    <li> <a href="/learning-center/training/" target="_blank">Curation office hours</a></li>
-                    <li> <a href="/learning-center/training/" target="_blank">Webinars</a></li>
+                    <ul>
+                        <li><a href="/rw/user-guides/data-curation-publication/" target="_blank">Data Curation and Publication user guide</a></li>
+                        <li> <a href="/rw/user-guides/data-publication-guidelines/" target="_blank">Data publication guidelines</a></li>
+                        <li> <a href="/learning-center/training/" target="_blank">Curation office hours</a></li>
+                    </ul>
                 </p>
-                <br> 
             </div>
-            <div class="btn-group" style="overflow: auto; width:100%;">
-                <a data-ng-click="$ctrl.continue('type')" class="pull-left">
-                    <i class="fa fa-arrow-left">&nbsp;</i> <strong>Back</strong>
-                </a>
-                <button class="btn btn-add pull-right"
-                        data-ng-click="$ctrl.continue('finish')">
-                    Continue
-                </button>
+            <table style="width: 100%;">
+                <tr>
+                    <td class="overview-skip">
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
+                    </td>
+                    <td class="overview-back-short">
+                        <a ng-hide="$ctrl.preview" ng-click="$ctrl.continue('type')">
+                            <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                        </a>
+                    </td>
+                    <td class="overview-continue">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('missions')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Field Research - Missions -->
+        <div ng-if="$ctrl.slide === 'missions'">
+            <div class="overview-body">
+                <h3>Missions</h3>
+                <hr>
+                <p>
+                    Missions group collections of data representing different visits to a site,
+                    field teams, field experiments, or research topics (e.g., liquefaction, structural
+                    performance, wave inundation, etc.). Some researchers refer to missions using terms
+                    such as “time 1”, “wave 1”, etc.
+                </p>
+                <ul>
+                    <li>A mission is a self-contained component within a project.</li>
+                    <li>You can publish subsequent missions over the lifespan of the project.</li>
+                    <li>Each mission receives its own DOI.</li>
+                    <li>Missions are all related under a single project.</li>
+                </ul>
+                <br>
+                <h3>Research Planning Collections</h3>
+                <hr>
+                <p>
+                    Research planning collections group files related to planning and logistics,
+                    administration, design, institutional review board (IRB), or permits.
+                </p>
+                <ul>
+                    <li>Users find these files very helpful for understanding projects and planning new ones.</li>
+                    <li>
+                        File types: Consent forms, data management plans, IRB applications, letters of support,
+                        planning documents, permits, protocols, quality assurance plans, reports, reflexivity
+                        reports (also called reflections or best practices), and team trainings.
+                    </li>
+                </ul>
             </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td class="overview-skip">
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
+                    </td>
+                    <td class="overview-back-short">
+                        <a ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td class="overview-continue">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('collections1')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Field Research - Collections pt1 -->
+        <div ng-if="$ctrl.slide === 'collections1'">
+            <div class="overview-body">
+                <h3>Engineering/Geosciences Collections</h3>
+                <hr>
+                <p>
+                    Engineering/geosciences collections group related data from the
+                    engineering/geosciences domain.
+                </p>
+                <ul>
+                    <li>
+                        File types: 3D models, audio, building codes, data processing methods, images, lidar, 
+                        point clouds, notes, scans, tracks, videos, reports, and virtual reconnaissance.
+                    </li>
+                </ul>
+                <br>
+                <h3>Social Sciences Collections</h3>
+                <hr>
+                <p>Social sciences collections group related data from the social sciences domain.</p>
+                <ul>
+                    <li>
+                        File types: audio, data documentation, images, instruments, raw data,
+                        reports, transcripts, and variables.
+                    </li>
+                </ul>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td class="overview-skip">
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
+                    </td>
+                    <td class="overview-back-short">
+                        <a ng-click="$ctrl.continue('missions')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td class="overview-continue">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('collections2')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Field Research - Collections pt2 -->
+        <div ng-if="$ctrl.slide === 'collections2'">
+            <div class="overview-body">
+                <h3>Documents Collections</h3>
+                <hr>
+                <p>
+                    Documents collections include instruments, protocols, and different
+                    reports (virtual reconnaissance, field assessment, preliminary virtual
+                    assessment, etc). These collections are published separately, each with
+                    their own DOI.
+                </p>
+                <ul>
+                    <li>
+                        Use this collection to publish files outside the mission, especially
+                        for planning and reporting files that encompass the entire project.
+                        You can publish more than one documents collections over time.
+                    </li>
+                </ul>
+                <br>
+                <h3>Relating Data</h3>
+                <hr>
+                <p>Relating data organizes missions and their respective collections.</p>
+                <ul>
+                    <li>
+                        Organize the missions and collections such that another user
+                        can easily understand the project.
+                    </li>
+                    <li>
+                        If a collection is across multiple missions (example: a survey
+                        instrument or other planning files), you can put the same collection
+                        in multiple missions.
+                    </li>
+                </ul>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td class="overview-skip">
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
+                    </td>
+                    <td class="overview-back-short">
+                        <a ng-click="$ctrl.continue('collections1')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td class="overview-continue">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('file_tags')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Field Research - File Tags -->
+        <div ng-if="$ctrl.slide === 'file_tags'">
+            <div class="overview-body">
+                <h3>File Tags</h3>
+                <hr>
+                <p>File tags are agreed upon terms that the community contributes for describing files and directories.</p>
+                <ul>
+                    <li>The option to tag a file appears after you’ve put files in collections.</li>
+                    <li>The tags available for a file depend on the collection you have put the file into.</li>
+                    <li>If you can’t find a tag that describes your file, select ‘other’ to type in a custom tag.</li>
+                    <li>You can add multiple tags to one file.</li>
+                    <li>The natural hazards community has contributed to creating the agreed-upon terms.</li>
+                    <li>
+                        Using agreed-upon terms helps other researchers refine their search and discover specific files
+                        in your publication.
+                    </li>
+                    <li>These tags are optional, but strongly recommended.</li>
+                </ul>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td class="overview-skip">
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
+                    </td>
+                    <td class="overview-back-short">
+                        <a ng-click="$ctrl.continue('collections2')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td class="overview-continue">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('best_practice')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Field Research - Best Practices -->
+        <div ng-if="$ctrl.slide === 'best_practice'">
+            <div class="overview-body">
+                <h3>Best Practices</h3>
+                <hr>
+                <ul>
+                    <li>
+                        Publish data files in a format that is interoperable and open.
+                        Example: CSV instead of SAS files
+                    </li>
+                    <li>
+                        Before publishing raw data that has not been processed, consider
+                        why it is necessary. If so, explain how others can use the raw data.
+                    </li>
+                    <li>
+                        Be selective with any images you choose. Use file tags to describe them.
+                        Make sure they have a purpose or a function.
+                    </li>
+                    <li>
+                        Do not publish ZIP files. ZIP files prevent others from viewing and
+                        understanding your data.
+                    </li>
+                    <li>Use applicable software to review for any errors in your data before you publish.</li>
+                    <li>
+                        Avoid publishing data within folders. Instead, provide a direct view
+                        to the data within collections so others can understand your project at a glance.
+                    </li>
+                </ul>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td class="overview-skip">
+                        <span ng-hide="$ctrl.preview">
+                            <a ng-click="$ctrl.continue('protected_data')">
+                                <strong>Skip Overview</strong>
+                            </a> (not recommended)
+                        </span>
+                    </td>
+                    <td class="overview-back-short">
+                        <a ng-click="$ctrl.continue('file_tags')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td class="overview-continue">
+                        <button class="btn btn-add"
+                                style="width: 100%;"
+                                ng-click="$ctrl.preview ? $ctrl.continue('finish') : $ctrl.continue('protected_data')">
+                            Continue
+                        </button> 
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
     <div ng-if="$ctrl.prjType === 'other'">
@@ -651,6 +956,89 @@
             </table>
         </div>
         <!-- Project Overview -->
+    </div>
+    <!-- Project Protected Data Check -->
+    <div ng-if="$ctrl.slide === 'protected_data'">
+        <div ng-if="$ctrl.prjType === 'field_recon'">
+            <div class="overview-body">
+                <h3 style="text-align: center;">
+                    Will you or other team members upload protected data to this project?
+                </h3>
+                <div>
+                    <!-- format radio buttons and test e-mail options -->
+                    <!-- send user info and type of information chosen -->
+                    <input type="radio"
+                            name="protected-data-option"
+                            id="no-protected-data"
+                            ng-model="$ctrl.protectedData"
+                            value="0"
+                            class="overview-radio-btn"
+                    >
+                    <strong>No, we will upload only non-confidential and/or non-personal information:</strong>
+                    <ul>
+                        <li>
+                            The data has been de-identified and/or there is no Personally Identifiable
+                            Information (PII), or you received approval to publish PII from the research
+                            subjects.
+                        </li>
+                        <li>
+                            For an example of the type of data that fits category and has been published
+                            on DesignSafe, see: https://doi.org/10.17603/e9wq-gz57
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+                <div>
+                    <input type="radio"
+                            name="protected-data-option"
+                            id="protected-data"
+                            ng-model="$ctrl.protectedData"
+                            value="1"
+                            class="overview-radio-btn"
+                    >
+                    <strong>Yes, we will upload sensitive personal information</strong>
+                    <ul>
+                        <li>
+                            Includes any of these types of confidential information that may pose a risk if disclosed to non-authorized
+                            individuals.
+                        </li>
+                        <li>
+                            See examples of this type of data
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+                <div>
+                    <input type="radio"
+                            name="protected-data-option"
+                            id="very-protected-data"
+                            ng-model="$ctrl.protectedData"
+                            value="2"
+                            class="overview-radio-btn"
+                    >
+                    <strong>Yes, we will upload very sensitive confidential information</strong>
+                    <ul>
+                        <li>
+                            Examples include any type of confidential information that would cause harm to individuals if not
+                            accessed only by authorized individuals. For example, medical diagnoses records, very sensitive
+                            financial records, criminal records, data involved in issues of national security, etc.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td class="overview-back-long">
+                        <a ng-click="$ctrl.continue('best_practice')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    </td>
+                    <td class="overview-continue">
+                        <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('finish')" ng-disabled="$ctrl.protectedData==-1">
+                            Continue
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
     <!-- Project Finish -->
     <div ng-if="$ctrl.slide === 'finish'">
@@ -723,23 +1111,47 @@
             </div>
         </div>
         <div ng-if="$ctrl.prjType !== 'field_recon'">
-            <p>
-                <strong>We recommend you follow these best practices for curation:</strong>
-                <li>
-                    Publish data files in a format that is interoperable and open.
-                    Example: CSV files instead of Excel spreadsheet files
-                </li>
-                <li>Before publishing raw data, consider why it is necessary. If so, explain how other can use the raw data.</li>
-                <li>Be selective with any images you choose. Use file tags to describe them. Make sure they have a purpose or a function.</li>
-                <li>Use applicable software to review for any errors in your data before you publish.</li>
-            </p>
+            <div class="overview-body">
+                <h3>Best Practices</h3>
+                <hr>
+                <ul>
+                    <li>
+                        Publish data files in a format that is interoperable and open.
+                        Example: CSV instead of SAS files
+                    </li>
+                    <li>
+                        Before publishing raw data that has not been processed, consider
+                        why it is necessary. If so, explain how others can use the raw data.
+                    </li>
+                    <li>
+                        Be selective with any images you choose. Use file tags to describe them.
+                        Make sure they have a purpose or a function.
+                    </li>
+                    <li>
+                        Do not publish ZIP files. ZIP files prevent others from viewing and
+                        understanding your data.
+                    </li>
+                    <li>Use applicable software to review for any errors in your data before you publish.</li>
+                    <li>
+                        Avoid publishing data within folders. Instead, provide a direct view
+                        to the data within collections so others can understand your project at a glance.
+                    </li>
+                </ul>
+            </div>
         </div>
         <table style="width: 100%;">
             <tr>
                 <td class="overview-back-long">
-                    <a ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation'" ng-click="$ctrl.continue('tags')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
-                    <a ng-if="$ctrl.prjType === 'hybrid_simulation' || $ctrl.prjType == 'other'" ng-click="$ctrl.continue('type')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
-                    <a ng-if="$ctrl.prjType === 'field_recon'" ng-click="$ctrl.continue('overview')"><i class="fa fa-arrow-left"></i> <strong>Back</strong></a>
+                    <a ng-if="$ctrl.prjType === 'experimental' || $ctrl.prjType === 'simulation'" ng-click="$ctrl.continue('tags')">
+                        <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                    </a>
+                    <a ng-if="$ctrl.prjType === 'hybrid_simulation' || $ctrl.prjType == 'other'" ng-click="$ctrl.continue('type')">
+                        <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                    </a>
+                    <a ng-if="$ctrl.prjType === 'field_recon'"
+                       ng-click="$ctrl.preview ? $ctrl.continue('best_practice') : $ctrl.continue('protected_data')">
+                       <i class="fa fa-arrow-left"></i> <strong>Back</strong>
+                    </a>
                 </td>
                 <td class="overview-continue">
                     <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.finish()">
