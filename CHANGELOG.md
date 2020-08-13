@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.14
+Hotfix:
+- Fix enviornment variable setting for new user alert emails
+
 ## v4.9.13
 Hotfix:
 - Change wording of confirmation message after submitting registration request.
