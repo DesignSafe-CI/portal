@@ -28,13 +28,12 @@
                 <td>Project Type</td>
                 <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
                     {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }} &nbsp;
-                    <a ng-if="$ctrl.browser.project.value.projectType == 'experimental' || $ctrl.browser.project.value.projectType == 'simulation'"	                    <a ng-if="['experimental', 'simulation'].includes($ctrl.browser.project.value.projectType)"
-                        ng-click="$ctrl.overview()"	                        ng-click="$ctrl.overview()">
-                    >	                        View Overview
-                        View Curation Overview for {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }} Projects	
-                    </a>	                    </a>
-                </td>	                </td>
-                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>	                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
+                    <a ng-if="['experimental', 'simulation'].includes($ctrl.browser.project.value.projectType)"
+                        ng-click="$ctrl.overview()">
+                        View Overview
+                    </a>
+                </td>
+                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
                     Field Research &nbsp;
                     <a ng-click="$ctrl.overview()">View Overview</a>
                 </td>
