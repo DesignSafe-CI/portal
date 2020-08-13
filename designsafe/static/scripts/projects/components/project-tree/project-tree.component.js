@@ -18,7 +18,7 @@ class ProjectTreeCtrl {
         this.project = this.resolve.project;
         this.rootCategoryUuid = this.resolve.rootCategoryUuid;
         this.readOnly = this.resolve.readOnly || false;
-        if (this.project.mission_set) {
+        if (this.project.value.projectType === "field_recon") {
             this.initiateEntityOrder([].concat(this.project.mission_set || [], this.project.report_set || []));
         }
     }
@@ -878,7 +878,7 @@ class ProjectTreeCtrl {
                                 parent: exp.name,
                                 children: [],
                                 rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
-                                display: 'Experiental Output',
+                                display: 'Experimental Output',
                                 order: this.orderOf(out, exp.uuid).value,
                             };
                             childExpOuts.push(outNode);
