@@ -67,6 +67,7 @@ export class ProjectService {
     this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     this.collabResource = this.httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
     this.dataResource = this.httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
+    this.notificationResource = httpi.resource('/api/projects/:uuid/notification/').setKeepTrailingSlash(true);
     //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
     //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
 
@@ -514,6 +515,15 @@ export class ProjectService {
         return modalInstance;
     };
 
-
+    /**
+     *
+     * @param options
+     * @param {string} options.uuid The Project uuid
+     * @param {string} options.username The username of the collaborator to add
+     * @returns {Promise}
+     */
+    notifyPersonalData(options) {
+        return this.notificationResource.post({ data: options });
+    };
 
 }

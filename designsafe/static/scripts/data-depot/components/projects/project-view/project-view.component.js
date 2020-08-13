@@ -99,7 +99,7 @@ class ProjectViewCtrl {
 
   curationDirectory() {
     if (this.browser.project.value.projectType === 'None') {
-      this.manageProjectType();
+      this.overview();
     } else {
       this.$state.go('projects.curation', { projectId: this.projectId, data: this.browser, filePath: this.filePath});
     }
@@ -117,7 +117,7 @@ class ProjectViewCtrl {
     } else if (this.browser.project.value.projectType === 'field_recon') {
       this.$state.go('projects.previewFieldRecon', { projectId: this.browser.project.uuid});
     } else {
-      this.manageProjectType();
+      this.overview();
     }
   }
 
