@@ -381,19 +381,22 @@ export class PublicationService {
         this.$window.document.getElementsByName('DC.creator')[0].content = authors;
 
         const entities = [];
+        let isSimulation = false;
 
         if (_.has(resp.data, 'experimentsList')) {
             entities.push(...resp.data.experimentsList);
         } else if(_.has(resp.data, 'simulations')) {
+            isSimulation = true;
             entities.push(...resp.data.simulations);
         } else if(_.has(resp.data, 'missions')) {
             entities.push(...resp.data.missions);
         } else if (_.has(resp.data, 'hybrid_simulations')) {
+            sSimulation = true;
             entities.push(...resp.data.hybrid_simulations);
         }   
         
         // Check for reports
-        if(_.has(resp.data, 'reports')) entities.push(...resp.data.reports);
+        if(_.has(resp.data, 'reports') && !isSimulation) entities.push(...resp.data.reports);
         
         entities.forEach((entity) => {
             // Title
