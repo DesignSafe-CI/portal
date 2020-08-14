@@ -49,7 +49,6 @@ class ManageProjectTypeCtrl {
             }
 
             this.savePrj(projectData).then((project) => {
-                this.DataBrowserService.state().project.value.projectType = project.value.projectType;
                 this.close({$value: project});
                 this.loading = false;
                 this.$state.go('projects.curation', { projectId: project.uuid }, { reload: true }).then(() => {
@@ -60,7 +59,6 @@ class ManageProjectTypeCtrl {
     }
 
     sendNotificationEmail() {
-        console.log('component');
         this.ProjectService.notifyPersonalData({
             uuid: this.project.uuid,
             username: this.project.value.pi
