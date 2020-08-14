@@ -1,18 +1,5 @@
 import { Subject, ReplaySubject, BehaviorSubject, Observable, from, of, forkJoin, race, throwError } from 'rxjs';
-import {
-    map,
-    tap,
-    switchMap,
-    exhaustMap,
-    flatMap,
-    take,
-    catchError,
-    delay,
-    takeWhile,
-    combineAll,
-    shareReplay,
-    share,
-} from 'rxjs/operators';
+import { map, tap, switchMap, exhaustMap, flatMap, catchError, share } from 'rxjs/operators';
 import { uuid } from 'uuidv4';
 import { path } from 'd3';
 
@@ -111,8 +98,7 @@ export class FileOperationService {
             upload: this.Django.context.authenticated && agaveDataStates.includes(this.$state.current.name),
             preview: files.length === 1 && files[0].format !== 'folder',
             previewImages: files.length > 0 && agaveDataStates.includes(this.$state.current.name),
-            download:
-                files.length > 0 && !files.some((f) => f.format === 'folder'),
+            download: files.length > 0 && !files.some((f) => f.format === 'folder'),
             trash:
                 this.Django.context.authenticated &&
                 files.length > 0 &&
@@ -313,9 +299,7 @@ export class FileOperationService {
             this.operations.move.status[f.key] = 'PROCESSING';
             let moveRequest;
 
-            const moveUrl = this.removeDuplicateSlashes(
-                `/api/datafiles/${srcApi}/private/move/${f.system}/${f.path}/`
-            );
+            const moveUrl = this.removeDuplicateSlashes(`/api/datafiles/${srcApi}/private/move/${f.system}/${f.path}/`);
             moveRequest = this.$http.put(moveUrl, {
                 dest_system: destSystem,
                 dest_path: destPath,
