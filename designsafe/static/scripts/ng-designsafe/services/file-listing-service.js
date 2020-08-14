@@ -1,18 +1,5 @@
 import { Subject, ReplaySubject, BehaviorSubject, Observable, from, of, forkJoin, race, throwError } from 'rxjs';
-import {
-    map,
-    tap,
-    switchMap,
-    exhaustMap,
-    flatMap,
-    take,
-    catchError,
-    delay,
-    takeWhile,
-    combineAll,
-    shareReplay,
-    share,
-} from 'rxjs/operators';
+import { map, tap, switchMap, exhaustMap, take, catchError, share } from 'rxjs/operators';
 import { uuid } from 'uuidv4';
 
 /**
@@ -48,7 +35,16 @@ const takeLeadingSubscriber = () => {
 };
 
 export class FileListingService {
-    constructor($http, $uibModal, $rootScope, $q, ProjectService, ProjectEntitiesService, FileOperationService, Django) {
+    constructor(
+        $http,
+        $uibModal,
+        $rootScope,
+        $q,
+        ProjectService,
+        ProjectEntitiesService,
+        FileOperationService,
+        Django
+    ) {
         'ngInject';
         this.count = 0;
         this.$rootScope = $rootScope;
@@ -167,9 +163,9 @@ export class FileListingService {
         };
 
         // Make sure all files in all listings are deselected when the state changes.
-        this.selectAll = this.selectAll.bind(this)
+        this.selectAll = this.selectAll.bind(this);
         this.$rootScope.$watch('this.$state.current', () => {
-            Object.keys(this.listings).forEach(section => this.selectAll(section, false))
+            Object.keys(this.listings).forEach((section) => this.selectAll(section, false));
         });
     }
 
@@ -216,18 +212,20 @@ export class FileListingService {
         this.listings[section].listing[idx].selected = !this.listings[section].listing[idx].selected;
         const selectedFiles = this.listings[section].listing.filter((f) => f.selected);
         this.listings[section].selectedFiles = selectedFiles;
-        const allSelected = Object.keys(this.listings).map(key => this.listings[key].selectedFiles).flat()
+        const allSelected = Object.keys(this.listings)
+            .map((key) => this.listings[key].selectedFiles)
+            .flat();
         this.FileOperationService.updateTests(allSelected);
     }
 
     selectAll(section, setValue) {
-
         const _setValue = setValue == null ? !this.listings[section].selectAll : setValue;
         this.listings[section].listing = this.listings[section].listing.map((f) => ({ ...f, selected: _setValue }));
-        this.listings[section].selectedFiles = this.listings[section].listing.filter(f => f.selected);
-        const allSelected = Object.keys(this.listings).map(key => this.listings[key].selectedFiles).flat()
+        this.listings[section].selectedFiles = this.listings[section].listing.filter((f) => f.selected);
+        const allSelected = Object.keys(this.listings)
+            .map((key) => this.listings[key].selectedFiles)
+            .flat();
         this.FileOperationService.updateTests(allSelected);
-
     }
 
     /**
@@ -300,7 +298,7 @@ export class FileListingService {
         if (section === 'main') {
             this.selectAll(section, false);
         }
-        
+
         const mappingFunction = () => this.mapParamsToListing(params);
 
         this.listings[section].listing = [];
@@ -372,144 +370,6 @@ export class FileListingService {
     }
 
     /***************************************************************************
-                        METHODS INVOLVING PROJECT ENTITIES
-     **************************************************************************/
-    getEntitiesForFile(path, entities, projectId) {
-        const _entities = entities.filter((entity) => {
-            // yields entity._links.associationIds or an empty array.
-            const associationIds = (entity._links || {}).associationIds || [];
-            // Filter for entities whose associationIds contain a file path matching the provided path.
-            return associationIds.some((asc) => {
-                const comps = asc.href.split('project-' + projectId, 2);
-                return comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
-            });
-        });
-
-        let _entityTags = [];
-        entities.forEach((entity) => {
-            entity.value.modelDrawing && _entityTags.push('Model Drawing');
-            entity.value.load && _entityTags.push('Load');
-            entity.value.sensorDrawing && _entityTags.push('Sensor Drawing');
-            entity.value.script && _entityTags.push('Script');
-        });
-        _entityTags = [...new Set(_entityTags)];
-
-        let _fileTags = [];
-        _entities.forEach((e) => {
-            const tagsForPath = e.value.fileTags.filter(
-                (tag) => tag.path && tag.path.replace(/^\/+/, '') === path.replace(/^\/+/, '')
-            );
-            _fileTags.push(...tagsForPath.map((tag) => tag.tagName));
-        });
-
-        return { _entities, _entityTags, _fileTags };
-    }
-
-    setEntities(section, entities) {
-        const projectId = this.ProjectService.resolveParams.projectId;
-
-        const _parent_entities = this.getEntitiesForFile(this.listings[section].params.path, entities, projectId);
-        this.listings[section].listing = this.listings[section].listing.map((f) => ({
-            ...f,
-            ...this.getEntitiesForFile(f.path, entities, projectId),
-            _parent_entities: _parent_entities._entities,
-        }));
-    }
-
-    mapParamsToAbstractListing({ entitiesPerPath, system, path, offset, limit }) {
-        const listingUrl = this.removeDuplicateSlashes(`/api/datafiles/agave/private/listing/${system}/${path}/`);
-        const request = this.$http.get(listingUrl, {
-            params: { offset, limit },
-        });
-
-        const listingObservable$ = from(request).pipe(tap(this.abstractListingSuccessCallback(entitiesPerPath)));
-        return listingObservable$;
-    }
-
-    abstractListingSuccessCallback(entityMapping) {
-        return (resp) => {
-            const files = resp.data.listing;
-
-            files
-                .filter((f) => entityMapping[f.path])
-                .forEach((file) => {
-                    entityMapping[file.path].forEach((entity) => {
-                        file._entities = entityMapping[file.path];
-                        this.listings[entity.uuid].listing.push(file);
-                    });
-                });
-        };
-    }
-
-    abstractListing(entities, projectId, offset = 0, limit = 100) {
-        // Create an object that maps each path to an array of its associated entities.
-        const entitiesPerPath = {};
-        const abstractListingParams = {api: 'agave', scheme: 'private', system: 'project-' + projectId, path: ''}
-        // Update "main" params so toolbar operations work as expected.
-        this.listings.main.params = {section: 'main', ...abstractListingParams};
-        entities.forEach((entity) => {
-            this.addSection(entity.uuid);
-            this.listings[entity.uuid].listing = []
-            this.listings[entity.uuid].params = {section: entity.uuid, ...abstractListingParams};
-            entity._filePaths.forEach((path) => {
-                entitiesPerPath[path] = [...(entitiesPerPath[path] || []), entity];
-            });
-        });
-        // Concatenate all entity._filePath arrays.
-        const allPaths = Object.keys(entitiesPerPath);
-        // Map paths to their direct parents.
-        const listingPaths = allPaths.map((path) => path.match(`.*\/`)[0]);
-
-        let reducedPaths = { files: allPaths, directories: [...new Set(listingPaths)] };
-
-        const abstractListings = reducedPaths.directories.map((path) =>
-            this.mapParamsToAbstractListing({
-                entitiesPerPath,
-                system: 'project-' + projectId,
-                path,
-                offset,
-                limit,
-            })
-        );
-
-        const abstractListingsObservable$ = forkJoin(abstractListings);
-
-        this.abstractListingSubject.next(() => abstractListingsObservable$);
-        const subscriber = this.abstractListingSubject.pipe(take(1));
-        return subscriber;
-    }
-
-    setPublicationSelection(section, valueToSet) {
-        this.listings[section].selectedForPublication = valueToSet;
-    }
-
-    publishedListing(publication, entity) {
-        const publicationListingParams = {api: 'agave', scheme: 'public', system: 'designsafe.storage.published', path: ''}
-        this.listings.main.params = {section: 'main', ...publicationListingParams};
-        const entityFiles = entity.fileObjs.map((f) => ({
-            ...f,
-            system: 'designsafe.storage.published',
-            path: publication.projectId + f.path,
-            format: f.type === 'dir' ? 'folder' : 'raw',
-            permissions: 'READ',
-            _entities: [entity],
-        }));
-
-        // Need to set entities on the main listing if one exists (for filenav/search)
-        entityFiles.forEach(file => {
-            const foundFile = this.listings.main.listing.find(f => f.path.replace(/^\/+/, '') === file.path.replace(/^\/+/, ''))
-            if (foundFile) {
-                // n.b. foundFile is a reference so modifying it will update the global state.
-                foundFile._entities = [...(foundFile._entities || []), entity]
-            }
-        })
-        this.addSection(entity.uuid);
-        this.updateParams(entity.uuid, publicationListingParams);
-
-        this.listings[entity.uuid].listing = entityFiles;
-    }
-
-    /***************************************************************************
                         METHODS FOR HANDLING INFINITE SCROLL
     ***************************************************************************/
 
@@ -550,7 +410,9 @@ export class FileListingService {
      */
     mapParamsToScroll({ section, api, scheme, system, path, offset, limit, query_string }) {
         const operation = query_string ? 'search' : 'listing';
-        const listingUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/${operation}/${system}/${path}/`);
+        const listingUrl = this.removeDuplicateSlashes(
+            `/api/datafiles/${api}/${scheme}/${operation}/${system}/${path}/`
+        );
         const request = this.$http.get(listingUrl, {
             params: { offset, limit, nextPageToken: this.listings[section].params.nextPageToken, query_string },
         });
@@ -609,5 +471,150 @@ export class FileListingService {
         return () => {
             this.listings[section].loadingScroll = false;
         };
+    }
+
+    /***************************************************************************
+                        METHODS INVOLVING PROJECT ENTITIES
+     **************************************************************************/
+    getEntitiesForFile(path, entities, projectId) {
+        const _entities = entities.filter((entity) => {
+            // yields entity._links.associationIds or an empty array.
+            const associationIds = (entity._links || {}).associationIds || [];
+            // Filter for entities whose associationIds contain a file path matching the provided path.
+            return associationIds.some((asc) => {
+                const comps = asc.href.split('project-' + projectId, 2);
+                return comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
+            });
+        });
+
+        let _entityTags = [];
+        entities.forEach((entity) => {
+            entity.value.modelDrawing && _entityTags.push('Model Drawing');
+            entity.value.load && _entityTags.push('Load');
+            entity.value.sensorDrawing && _entityTags.push('Sensor Drawing');
+            entity.value.script && entity.value.script.length && _entityTags.push('Script');
+        });
+        _entityTags = [...new Set(_entityTags)];
+
+        let _fileTags = [];
+        _entities.forEach((e) => {
+            const tagsForPath = e.value.fileTags.filter(
+                (tag) => tag.path && tag.path.replace(/^\/+/, '') === path.replace(/^\/+/, '')
+            );
+            _fileTags.push(...tagsForPath.map((tag) => tag.tagName));
+        });
+
+        return { _entities, _entityTags, _fileTags };
+    }
+
+    setEntities(section, entities) {
+        const projectId = this.ProjectService.resolveParams.projectId;
+
+        const _parent_entities = this.getEntitiesForFile(this.listings[section].params.path, entities, projectId);
+        this.listings[section].listing = this.listings[section].listing.map((f) => ({
+            ...f,
+            ...this.getEntitiesForFile(f.path, entities, projectId),
+            _parent_entities: _parent_entities._entities,
+        }));
+    }
+
+    mapParamsToAbstractListing({ entitiesPerPath, system, path, offset, limit }) {
+        const listingUrl = this.removeDuplicateSlashes(`/api/datafiles/agave/private/listing/${system}/${path}/`);
+        const request = this.$http.get(listingUrl, {
+            params: { offset, limit },
+        });
+
+        const listingObservable$ = from(request).pipe(tap(this.abstractListingSuccessCallback(entitiesPerPath)));
+        return listingObservable$;
+    }
+
+    abstractListingSuccessCallback(entityMapping) {
+        return (resp) => {
+            const files = resp.data.listing;
+
+            files
+                .filter((f) => entityMapping[f.path])
+                .forEach((file) => {
+                    entityMapping[file.path].forEach((entity) => {
+                        file._entities = entityMapping[file.path];
+                        this.listings[entity.uuid].listing.push(file);
+                    });
+                });
+        };
+    }
+
+    abstractListing(entities, projectId, offset = 0, limit = 100) {
+        // Create an object that maps each path to an array of its associated entities.
+        const entitiesPerPath = {};
+        const abstractListingParams = { api: 'agave', scheme: 'private', system: 'project-' + projectId, path: '' };
+        // Update "main" params so toolbar operations work as expected.
+        this.listings.main.params = { section: 'main', ...abstractListingParams };
+        entities.forEach((entity) => {
+            this.addSection(entity.uuid);
+            this.listings[entity.uuid].listing = [];
+            this.listings[entity.uuid].params = { section: entity.uuid, ...abstractListingParams };
+            entity._filePaths.forEach((path) => {
+                entitiesPerPath[path] = [...(entitiesPerPath[path] || []), entity];
+            });
+        });
+        // Concatenate all entity._filePath arrays.
+        const allPaths = Object.keys(entitiesPerPath);
+        // Map paths to their direct parents.
+        const listingPaths = allPaths.map((path) => path.match(`.*\/`)[0]);
+
+        let reducedPaths = { files: allPaths, directories: [...new Set(listingPaths)] };
+
+        const abstractListings = reducedPaths.directories.map((path) =>
+            this.mapParamsToAbstractListing({
+                entitiesPerPath,
+                system: 'project-' + projectId,
+                path,
+                offset,
+                limit,
+            })
+        );
+
+        const abstractListingsObservable$ = forkJoin(abstractListings);
+
+        this.abstractListingSubject.next(() => abstractListingsObservable$);
+        const subscriber = this.abstractListingSubject.pipe(take(1));
+        return subscriber;
+    }
+
+    setPublicationSelection(section, valueToSet) {
+        this.listings[section].selectedForPublication = valueToSet;
+    }
+
+    publishedListing(publication, entity) {
+        const publicationListingParams = {
+            api: 'agave',
+            scheme: 'public',
+            system: 'designsafe.storage.published',
+            path: '',
+        };
+        this.listings.main.params = { section: 'main', ...publicationListingParams };
+        const entityFiles = entity.fileObjs.map((f) => ({
+            ...f,
+            system: 'designsafe.storage.published',
+            path: publication.projectId + f.path,
+            format: f.type === 'dir' ? 'folder' : 'raw',
+            permissions: 'READ',
+            _entities: [entity],
+        }));
+
+        // Need to set entities on the main listing if one exists (for filenav/search)
+        entityFiles.forEach((file) => {
+            const foundFile = this.listings.main.listing.find(
+                (f) => f.path.replace(/^\/+/, '') === file.path.replace(/^\/+/, '')
+            );
+            if (foundFile) {
+                // n.b. foundFile is a reference so modifying it will update the global state.
+                foundFile._entities = [...(foundFile._entities || []), entity];
+            }
+        });
+        this.addSection(entity.uuid);
+        this.updateParams(entity.uuid, publicationListingParams);
+
+        this.listings[entity.uuid].listing = entityFiles;
     }
 }
