@@ -15,34 +15,33 @@
             <tr class="prj-row">
                 <td>PI</td>
                 <td class="prj-data">
-                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
+                  <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
                 </td>
-            </tr>
-            <tr ng-if="$ctrl.browser.project.value.coPis.length">
+              </tr>
+              <tr ng-if="$ctrl.browser.project.value.coPis.length">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
+                  <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
-            </tr>
-            <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
+              </tr>
+              <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
                 <td>Project Type</td>
                 <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
-                    {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }} &nbsp;
-                    <a ng-if="['experimental', 'simulation'].includes($ctrl.browser.project.value.projectType)"
-                        ng-click="$ctrl.overview()">
-                        View Overview
-                    </a>
+                  {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }} &nbsp;
+                  <a ng-if="['experimental', 'simulation'].includes($ctrl.browser.project.value.projectType)"
+                      ng-click="$ctrl.overview()">
+                      View Overview
+                  </a>
+              </td>
+              <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
+                  Field Research &nbsp;
+                  <a ng-click="$ctrl.overview()">View Overview</a>
                 </td>
-                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
-                    Field Research &nbsp;
-                    <a ng-click="$ctrl.overview()">View Overview</a>
-                </td>
-                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
+              </tr>
+              <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
-            </tr>
+              </tr>
             <!-- FR -->
             <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
                 <td>Event</td>
