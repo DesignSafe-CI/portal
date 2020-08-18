@@ -3,13 +3,11 @@ import PublicationPopupTemplate from './publication-popup.html';
 
 class PublicationPreviewHybSimCtrl {
 
-    constructor($stateParams, ProjectEntitiesService, ProjectService, DataBrowserService, FileListingService, FileOperationService, FileListing, $uibModal, $state, $q) {
+    constructor($stateParams, ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
-        this.FileListing = FileListing;
         this.FileListingService = FileListingService;
         this.browser = {}
         this.$uibModal = $uibModal;

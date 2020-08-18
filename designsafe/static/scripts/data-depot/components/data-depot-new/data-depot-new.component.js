@@ -2,7 +2,7 @@ import _ from 'underscore';
 import DataDepotNewTemplate from './data-depot-new.component.html';
 
 class DataDepotNewCtrl {
-  constructor($scope, $rootScope, $state, $sce, Django, ProjectService, FileListingService, FileOperationService, DataBrowserService) {
+  constructor($scope, $rootScope, $state, $sce, Django, ProjectService, FileListingService, FileOperationService) {
     'ngInject';
     this.$scope = $scope;
     this.$rootScope = $rootScope
@@ -12,7 +12,6 @@ class DataDepotNewCtrl {
     this.ProjectService = ProjectService;
     this.FileListingService = FileListingService;
     this.FileOperationService = FileOperationService;
-    this.DataBrowserService = DataBrowserService
     
   }
   $onInit() {

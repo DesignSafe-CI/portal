@@ -4,16 +4,14 @@ import experimentalData from '../../../../projects/components/manage-experiments
 
 class PublicationPreviewCtrl {
 
-    constructor( $stateParams, ProjectEntitiesService, ProjectService, DataBrowserService, FileListingService, FileOperationService, FileListing, $uibModal, $state, $q) {
+    constructor( $stateParams, ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
         this.$stateParams = $stateParams;
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
-        this.FileListing = FileListing;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
-        this.browser = this.DataBrowserService.state();
+        this.browser = {};
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;

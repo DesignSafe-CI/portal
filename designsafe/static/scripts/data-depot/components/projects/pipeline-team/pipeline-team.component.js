@@ -3,12 +3,11 @@ import _ from 'underscore';
 
 class PipelineTeamCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, UserService, httpi, $state) {
+    constructor(ProjectEntitiesService, ProjectService, UserService, httpi, $state) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
         this.UserService = UserService;
         this.browser = {}
         this.httpi = httpi;

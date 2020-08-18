@@ -1,10 +1,9 @@
 import BreadcrumbTemplate from './breadcrumb.template.html';
 
 class BreadcrumbCtrl {
-    constructor($state, DataBrowserService) {
+    constructor($state) {
         'ngInject';
         this.$state = $state;
-        this.DataBrowserService = DataBrowserService;
     }
 
     $onInit() {
