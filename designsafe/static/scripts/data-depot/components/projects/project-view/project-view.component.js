@@ -2,13 +2,11 @@ import ProjectViewTemplate from './project-view.component.html';
 
 class ProjectViewCtrl {
 
-  constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListingService, FileOperationService, FileListing, $state, $stateParams, $q, $uibModal) {
+  constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $state, $stateParams, $q, $uibModal) {
     'ngInject';
 
     this.ProjectEntitiesService = ProjectEntitiesService;
     this.ProjectService = ProjectService;
-    this.DataBrowserService = DataBrowserService;
-    this.FileListing = FileListing;
     this.FileListingService = FileListingService;
     this.FileOperationService = FileOperationService;
     this.browser = {};

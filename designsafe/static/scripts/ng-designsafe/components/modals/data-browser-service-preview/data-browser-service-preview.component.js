@@ -2,13 +2,12 @@ import DataBrowserServicePreviewTemplate from './data-browser-service-preview.co
 import _ from 'underscore';
 
 class DataBrowserServicePreviewCtrl {
-    constructor($sce, $http, $scope, $state, FileListingService, FileOperationService, ProjectService, nbv, Django) {
+    constructor($sce, $http, $scope, $state, FileListingService, FileOperationService, ProjectService, Django) {
         'ngInject';
         this.$sce = $sce;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
         this.ProjectService = ProjectService;
-        this.nbv = nbv;
         this.Django = Django;
         this.$state = $state;
         this.$http = $http;

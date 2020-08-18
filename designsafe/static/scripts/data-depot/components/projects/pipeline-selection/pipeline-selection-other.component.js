@@ -2,15 +2,13 @@ import PipelineSelectionOtherTemplate from './pipeline-selection-other.component
 
 class PipelineSelectionOtherCtrl {
 
-    constructor(ProjectService, DataBrowserService, FileListingService, FileOperationService, FileListing, $uibModal, $state, $q) {
+    constructor(ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
         this.browser = {}
-        this.FileListing = FileListing;
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;

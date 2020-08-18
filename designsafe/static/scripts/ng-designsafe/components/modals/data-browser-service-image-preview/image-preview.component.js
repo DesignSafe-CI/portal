@@ -1,9 +1,8 @@
 import ImagePreviewTemplate from './image-preview.template.html';
 
 class ImagePreviewCtrl {
-    constructor(DataBrowserService, FileOperationService) {
+    constructor(FileOperationService) {
         'ngInject';
-        this.DataBrowserService = DataBrowserService;
         this.FileOperationService = FileOperationService;
     }
 
@@ -37,27 +36,7 @@ class ImagePreviewCtrl {
             });
         });
     }
-
-    download(file) {
-        this.DataBrowserService.download(file);
-    }
-
-    copy(file) {
-        //this.DataBrowserService.copy(file);
-    }
-
-    move(file) {
-        this.DataBrowserService.move(file, this.DataBrowserService.state().listing);
-    }
-
-    rename(file) {
-        this.DataBrowserService.rename(file);
-    }
-
-    rm(file) {
-        this.DataBrowserService.rm(file);
-    }
-
+    
     close() {
         return this.dismiss();
     }
