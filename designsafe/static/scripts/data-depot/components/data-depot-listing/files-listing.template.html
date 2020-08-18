@@ -13,7 +13,7 @@
                 <tr>
                     <th>
                         <span ng-if="$ctrl.showSelect">
-                            <i class="fa fa-lg fa-check-square" style="color:#337ab7;" ng-click="$ctrl.selectAll()"></i>
+                            <i class="fa fa-lg fa-check-square" style="color:#337ab7;" ng-click="$ctrl.FileListingService.selectAll($ctrl.listing.params.section)"></i>
                             <span>Name</span>
                         </span>
                         <span ng-if="!$ctrl.showSelect">Name</span>
@@ -107,11 +107,11 @@
                 </div>
                 <div data-ng-if="!$ctrl.listing.loading && $ctrl.listing.error" class="text-center">
                     <div class="alert alert-danger">
-                        <div data-ng-if="$ctrl.error.message"
-                             data-ng-bind-html="$ctrl.error.message">
+                        <div data-ng-if="$ctrl.listing.error.message"
+                             data-ng-bind-html="$ctrl.listing.error.message">
                             {{$ctrl.browser.error}}
                         </div>
-                        <div data-ng-if="!$ctrl.error.message">
+                        <div data-ng-if="!$ctrl.listing.error.message">
                             Something went wrong.
                         </div>
                     </div>

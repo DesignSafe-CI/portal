@@ -19,7 +19,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
     };
 
 
-    DataBrowserService.projectBreadcrumbSubject.subscribe( () =>  {
+    DataBrowserService.projectBreadcrumbSubject.then( () =>  {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
       // Create a function that checks if 'toStateParams.projectTitle' is empty. Replace it if so...
