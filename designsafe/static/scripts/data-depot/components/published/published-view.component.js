@@ -8,19 +8,17 @@ import { isEqual, has } from 'underscore';
 import { publish } from 'rxjs/operators';
 
 class PublishedViewCtrl {
-    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, DataBrowserService, FileListingService, FileOperationService, PublicationService, UserService, FileListing){
+    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, FileListingService, FileOperationService, PublicationService, UserService){
         'ngInject';
         this.$anchorScroll = $anchorScroll;
         this.$state = $state;
         this.$location = $location;
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
-        this.DataBrowserService = DataBrowserService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
         this.PublicationService= PublicationService;
         this.UserService = UserService;
-        this.FileListing = FileListing;
     }
 
     $onInit() {

@@ -3,12 +3,10 @@ import _ from 'underscore';
 
 class PipelineOtherCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListingService, $uibModal, $state) {
+    constructor(ProjectEntitiesService, ProjectService, FileListingService, $uibModal, $state) {
         'ngInject';
-
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
         this.browser =  {}
         this.FileListingService = FileListingService;
         this.$uibModal = $uibModal;

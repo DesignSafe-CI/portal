@@ -1,12 +1,10 @@
 import publishedTemplate from './published.html';
 
 export class PublishedParentCtrl {
-    constructor($stateParams, DataBrowserService, PublicationService, FileListing){
+    constructor($stateParams, PublicationService){
         'ngInject';
         this.$stateParams = $stateParams;
-        this.DataBrowserService = DataBrowserService;
         this.PublicationService = PublicationService;
-        this.FileListing = FileListing;
     }
 
     $onInit() {

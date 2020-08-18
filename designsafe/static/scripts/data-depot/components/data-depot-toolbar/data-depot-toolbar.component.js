@@ -1,9 +1,8 @@
 import dataDepotToolbarTemplate from './data-depot-toolbar.component.html'
 
 class DataDepotToolbarCtrl {
-    constructor($state, $uibModal, Django, DataBrowserService, UserService, FileListingService, FileOperationService) {
+    constructor($state, $uibModal, Django, UserService, FileListingService, FileOperationService) {
         'ngInject';
-        this.DataBrowserService = DataBrowserService;
         this.$state = $state;
         this.search = { queryString: '' };
         this.UserService = UserService;
@@ -78,7 +77,7 @@ class DataDepotToolbarCtrl {
         this.FileOperationService.trash({api, scheme, files, trashPath});
     }
     rm() {
-        this.DataBrowserService.rm(this.browser.selected);
+        this.FileOperationService.rm(this.browser.selected);
     }
     ddSearch() {
         this.$state.go(this.$state.current.name, {

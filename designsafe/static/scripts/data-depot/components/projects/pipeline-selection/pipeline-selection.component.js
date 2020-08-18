@@ -8,8 +8,6 @@ class PipelineSelectionCtrl {
     constructor(
         ProjectEntitiesService,
         ProjectService,
-        DataBrowserService,
-        FileListing,
         FileListingService,
         FileOperationService,
         $state,
@@ -19,11 +17,9 @@ class PipelineSelectionCtrl {
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
         this.browser = {};
-        this.FileListing = FileListing;
         this.$state = $state;
         this.$q = $q;
     }
