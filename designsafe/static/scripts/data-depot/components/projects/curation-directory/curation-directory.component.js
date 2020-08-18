@@ -36,7 +36,7 @@ class CurationDirectoryCtrl {
                 system: 'project-' + this.projectId,
                 path: this.filePath,
                 query_string: this.$stateParams.query_string
-            }).toPromise(),
+            })
         };
         
 

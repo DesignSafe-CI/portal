@@ -1,10 +1,14 @@
 from designsafe.apps.api.views import BaseApiView
+from django.core.urlresolvers import reverse
 from django.http import JsonResponse, HttpResponseForbidden, FileResponse
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from requests.exceptions import HTTPError
+from boxsdk.exception import BoxOAuthException
+from dropbox.exceptions import AuthError
 import json
 import logging
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.datafiles.handlers.agave_handlers import agave_get_handler, agave_put_handler, agave_post_handler
 from designsafe.apps.api.datafiles.handlers.shared_handlers import shared_get_handler, shared_put_handler
 from designsafe.apps.api.datafiles.handlers.googledrive_handlers import googledrive_get_handler, googledrive_put_handler
@@ -14,6 +18,7 @@ from designsafe.apps.api.datafiles.operations.transfer_operations import transfe
 # Create your views here.
 
 logger = logging.getLogger(__name__)
+
 
 class AgaveFilesView(BaseApiView):
     def get(self, request, operation=None, scheme='private', system=None, path='/'):
@@ -67,7 +72,7 @@ class SharedFilesView(BaseApiView):
             client = None
         username = request.user.username
         try:
-            response = shared_get_handler (
+            response = shared_get_handler(
                 client, scheme, system, path, username, operation, **request.GET.dict())
             return JsonResponse(response)
         except HTTPError as e:
@@ -92,14 +97,25 @@ class GoogledriveFilesView(BaseApiView):
         try:
             client = request.user.googledrive_user_token.client
         except AttributeError:
-            client = None
-
+            message = 'Connect your Google Drive account <a href="' + reverse('googledrive_integration:index') + '">here</a>'
+            raise ApiException(status=400, message=message, extra={
+                'action_url': reverse('googledrive_integration:index'),
+                'action_label': 'Connect Google Drive Account'
+            })
         try:
             response = googledrive_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
             return JsonResponse(response)
-        except HTTPError as e:
-            return JsonResponse({'message': str(e)}, status=e.response.status_code)
+        except Exception as e:
+            if 'invalid_grant' in str(e):
+                message = 'While you previously granted this application access to Google Drive, ' \
+                    'that grant appears to be no longer valid. Please ' \
+                    '<a href="{}">disconnect and reconnect your Google Drive account</a> ' \
+                    'to continue using Google Drive data.'.format(reverse('googledrive_integration:index'))
+                raise ApiException(status=401, message=message)
+
+            message = 'Unable to communicate with Google Drive: {}'.format(e)
+            raise ApiException(status=500, message=message)
 
     def put(self, request, operation=None, scheme='private',
             handler=None, system=None, path=''):
@@ -113,19 +129,29 @@ class GoogledriveFilesView(BaseApiView):
         response = googledrive_put_handler(client, scheme, system, path, operation, body=body)
 
         return JsonResponse(response)
+
+
 class DropboxFilesView(BaseApiView):
     def get(self, request, operation=None, scheme='private', system=None, path=''):
         try:
             client = request.user.dropbox_user_token.client
         except AttributeError:
-            client = None
-
+            message = 'Connect your Dropbox account <a href="' + reverse('dropbox_integration:index') + '">here</a>'
+            raise ApiException(status=400, message=message, extra={
+                'action_url': reverse('dropbox_integration:index'),
+                'action_label': 'Connect Dropbox.com Account'
+            })
         try:
             response = dropbox_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
             return JsonResponse(response)
-        except HTTPError as e:
-            return JsonResponse({'message': str(e)}, status=e.response.status_code)
+        except AuthError:
+            # user needs to reconnect with Dropbox
+            message = 'While you previously granted this application access to Dropbox, ' \
+                      'that grant appears to be no longer valid. Please ' \
+                      '<a href="%s">disconnect and reconnect your Dropbox.com account</a> ' \
+                      'to continue using Dropbox data.' % reverse('dropbox_integration:index')
+            raise ApiException(status=403, message=message)
 
     def put(self, request, operation=None, scheme='private',
             handler=None, system=None, path=''):
@@ -140,21 +166,30 @@ class DropboxFilesView(BaseApiView):
 
         return JsonResponse(response)
 
-    
 
 class BoxFilesView(BaseApiView):
     def get(self, request, operation=None, scheme='private', system=None, path=''):
         try:
             client = request.user.box_user_token.client
         except AttributeError:
-            client = None
+            message = 'Connect your Box account <a href="' + reverse('box_integration:index') + '">here</a>'
+            raise ApiException(status=400, message=message, extra={
+                'action_url': reverse('box_integration:index'),
+                'action_label': 'Connect Box.com Account'
+            })
 
         try:
             response = box_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
             return JsonResponse(response)
-        except HTTPError as e:
-            return JsonResponse({'message': str(e)}, status=e.response.status_code)
+        except BoxOAuthException:
+            # user needs to reconnect with Box
+            message = 'While you previously granted this application access to Box, ' \
+                      'that grant appears to be no longer valid. Please ' \
+                      '<a href="%s">disconnect and reconnect your Box.com account</a> ' \
+                      'to continue using Box data.' % reverse('box_integration:index')
+            raise ApiException(status=403, message=message)
+
     def put(self, request, operation=None, scheme='private',
             handler=None, system=None, path=''):
 
@@ -187,14 +222,3 @@ class TransferFilesView(BaseApiView):
         else:
             resp = transfer(src_client, dest_client, **body)
             return JsonResponse({'success': True})
-
-class FileMediaView(BaseApiView):
-    def get(self, request, api, scheme, system, path):
-
-        from designsafe.apps.api.datafiles.operations.googledrive_operations import download
-        client = request.user.googledrive_user_token.client
-        resp = download(client, system, path)
-
-        # return JsonResponse({'name': resp.name})
-
-        return FileResponse(resp)

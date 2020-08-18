@@ -43,7 +43,7 @@ class PublicationPreviewOtherCtrl {
                     scheme: 'private',
                     system: 'project-' + this.projectId,
                     path: this.filePath,
-                }).toPromise(),
+                }),
             ]).then(([project, listing]) => {
                 this.breadcrumbParams = {
                     root: {label: project.value.projectId, path: ''}, 

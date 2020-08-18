@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from designsafe.apps.api.datafiles.views import AgaveFilesView, GoogledriveFilesView, BoxFilesView, DropboxFilesView, TransferFilesView, SharedFilesView, FileMediaView
+from designsafe.apps.api.datafiles.views import AgaveFilesView, GoogledriveFilesView, BoxFilesView, DropboxFilesView, TransferFilesView, SharedFilesView
 from django.http import JsonResponse
 
 urlpatterns = [
@@ -36,6 +36,4 @@ urlpatterns = [
 
 
     url(r'^transfer/(?P<format>[\w.-]+)/$', TransferFilesView.as_view(), name='file_transfer'),
-    url(r'^media/(?P<api>[\w.-]+)/(?P<scheme>[\w.-]+)/(?P<system>[\w.-]+)/(?P<path>[ \S]+)/$', FileMediaView.as_view(), name='file_media')
-
 ]

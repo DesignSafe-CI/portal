@@ -40,7 +40,7 @@ class ProjectViewCtrl {
             system: 'project-' + this.projectId,
             path: this.filePath,
             query_string: this.$stateParams.query_string
-        }).toPromise(),
+        }),
     };
     
     if ( !(this.ProjectService.current && this.ProjectService.current.uuid === this.projectId )){

@@ -51,7 +51,7 @@ class PublicationPreviewCtrl {
                     system: 'project-' + this.projectId,
                     path: this.filePath,
                     query_string: this.$stateParams.query_string
-                }).toPromise(),
+                }),
                 this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }),
             ])
             .then(([project, listing, ents]) => {
@@ -65,7 +65,7 @@ class PublicationPreviewCtrl {
                 this.browser.project = project;
                 this.browser.project.appendEntitiesRel(ents);
                 this.browser.listing = this.FileListingService.listings.main.listing;
-                this.FileListingService.abstractListing(ents, project.uuid).subscribe((_) => {
+                this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
                     this.ui.loading = false;
                 });
             });
