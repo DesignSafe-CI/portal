@@ -21,7 +21,7 @@ class DataBrowserListingModalCtrl {
             customRoot: { path: '', label: 'Project' },
         };
         const { section, api, scheme, system, path } = this.resolve;
-        this.FileListingService.browse({section, api, scheme, system, path}).subscribe((_) =>
+        this.FileListingService.browse({section, api, scheme, system, path}).then((_) =>
             this.FileListingService.setEntities(this.resolve.section, this.entities)
         );
     }
@@ -38,7 +38,7 @@ class DataBrowserListingModalCtrl {
         const offset = 0;
         const { api, system, scheme } = this.FileListingService.listings.modal.params;
 
-        this.FileListingService.browse({section, api, scheme, system, path: file.path, offset}).subscribe((_) =>
+        this.FileListingService.browse({section, api, scheme, system, path: file.path, offset}).then((_) =>
             this.FileListingService.setEntities(this.resolve.section, this.entities)
         );
     }

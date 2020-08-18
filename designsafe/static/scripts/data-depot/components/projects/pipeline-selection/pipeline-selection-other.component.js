@@ -33,7 +33,7 @@ class PipelineSelectionOtherCtrl {
                 scheme: 'private',
                 system: 'project-' + this.projectId,
                 path: this.filePath,
-            }).toPromise(),
+            }),
         ]).then(([project, listing]) => {
             this.browser.project = project;
             this.browser.listing = listing;

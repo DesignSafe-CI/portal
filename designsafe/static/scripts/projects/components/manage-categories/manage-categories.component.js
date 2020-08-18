@@ -49,7 +49,7 @@ class ManageCategoriesCtrl {
             this.ui.loading = false;
         } else {
             let entities = this.browser.project.getAllRelatedObjects();
-            this.FileListingService.abstractListing(entities, this.browser.project.uuid).subscribe((_) => {
+            this.FileListingService.abstractListing(entities, this.browser.project.uuid).then((_) => {
                 this.ui.loading = false;
             });
         }

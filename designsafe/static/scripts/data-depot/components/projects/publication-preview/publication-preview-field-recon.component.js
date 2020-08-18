@@ -3,9 +3,9 @@ import PublicationPopupTemplate from './publication-popup.html';
 
 class PublicationPreviewFieldReconCtrl {
 
-    constructor($stateParams, ProjectEntitiesService, ProjectService, DataBrowserService, FileListingService, FileOperationService, FileListing, $uibModal, $state, $q) {
+    constructor($scope, $stateParams, ProjectEntitiesService, ProjectService, DataBrowserService, FileListingService, FileOperationService, FileListing, $uibModal, $state, $q) {
         'ngInject';
-
+        this.$scope = $scope;
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.DataBrowserService = DataBrowserService;
@@ -47,7 +47,7 @@ class PublicationPreviewFieldReconCtrl {
                 system: 'project-' + this.projectId,
                 path: this.filePath,
                 query_string: this.$stateParams.query_string
-            }).toPromise(),
+            }),
             this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }),
         ])
         .then(([project, listing, ents]) => {
@@ -78,8 +78,9 @@ class PublicationPreviewFieldReconCtrl {
 
             
             this.browser.listing = this.FileListingService.listings.main.listing;
-            this.FileListingService.abstractListing(ents, project.uuid).subscribe((_) => {
+            this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
                 this.ui.loading = false;
+                //this.$scope.$apply();
             });
         });
     }

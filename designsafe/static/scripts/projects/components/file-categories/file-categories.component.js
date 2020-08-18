@@ -88,7 +88,7 @@ class FileCategoriesCtrl {
                 this.file.system,
                 this.file.path,
                 this.file.key
-            ).subscribe((file) => {
+            ).then((file) => {
                 if (!entity.associationIds.includes(file.uuid)) {
                     return undefined;
                 }
@@ -154,7 +154,7 @@ class FileCategoriesCtrl {
                 this.file.system,
                 this.file.path,
                 this.file.key
-            ).subscribe((file) => {
+            ).then((file) => {
                 this.project.value.fileTags.push({
                     fileUuid: file.uuid,
                     tagName: tagName,
@@ -228,7 +228,7 @@ class FileCategoriesCtrl {
                 this.file.system,
                 this.file.path,
                 this.file.key
-            ).subscribe((file) => {
+            ).then((file) => {
                 entity.value.fileTags.push({
                     fileUuid: file.uuid,
                     tagName: tagName,

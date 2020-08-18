@@ -44,35 +44,20 @@ class FileCategorySelectorCtrl {
 
     categorizeFiles(inputs) {
         this._ui.busy = true;
-
-        var promises = [];
-        var promise;
-        /*
-        inputs.forEach((file) => {
-            if (_.isEmpty(file.uuid())) {
-                promise = file.getMeta();
-            } else {
-                let my_promise = () => {
-                    let defer = this.$q.defer();
-                    defer.resolve(file);
-                    return defer.promise;
-                };
-                promise = my_promise();
-            }
-            promises.push(promise);
-        });
-        */
-        const uuidObservables = []
+        const uuidPromises = []
         inputs.forEach(file => {
             if (!file.uuid) {
-                uuidObservables.push(this.FileListingService.getUuid(this.section, 'agave', 'private', file.system, file.path, file.key))
+                uuidPromises.push(this.FileListingService.getUuid(this.section, 'agave', 'private', file.system, file.path, file.key))
             }
             else {
-                uuidObservables.push(of(file))
+                let defer = this.$q.defer();
+                defer.resolve(file);
+                const promise = defer.promise;
+                uuidPromises.push(promise)
             }
         })
 
-        forkJoin(uuidObservables).subscribe((files) => {
+        this.$q.all(uuidPromises).then((files) => {
             let entity = this.project.getRelatedByUuid(this.selectedUuid);
             files.forEach((file) => {
                 if (entity.associationIds.includes(file.uuid)) {
