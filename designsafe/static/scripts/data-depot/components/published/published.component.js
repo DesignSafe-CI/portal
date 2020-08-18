@@ -8,11 +8,9 @@ export class PublishedDataCtrl {
         $filter,
         Django,
         $window,
-        DataBrowserService,
         FileListingService,
         FileOperationService,
         PublicationService,
-        FileListing,
         $uibModal,
         $http,
         $stateParams
@@ -23,9 +21,7 @@ export class PublishedDataCtrl {
         this.$filter = $filter;
         this.Django = Django;
         this.$window = $window;
-        this.DataBrowserService = DataBrowserService;
         this.PublicationService = PublicationService;
-        this.FileListing = FileListing;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
         this.$uibModal = $uibModal;

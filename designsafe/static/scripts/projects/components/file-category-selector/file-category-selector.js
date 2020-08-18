@@ -3,12 +3,11 @@ import { of, forkJoin } from 'rxjs';
 import FileCategorySelectorTemplate from './file-category-selector.template.html';
 
 class FileCategorySelectorCtrl {
-    constructor($q, Django, ProjectService, DataBrowserService, FileListingService, ProjectEntitiesService, $scope) {
+    constructor($q, Django, ProjectService, FileListingService, ProjectEntitiesService, $scope) {
         'ngInject';
         this.Django = Django;
         this.ProjectService = ProjectService;
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.DataBrowserService = DataBrowserService;
         this.FileListingService = FileListingService;
         this.$q = $q;
         this.$scope = $scope;
