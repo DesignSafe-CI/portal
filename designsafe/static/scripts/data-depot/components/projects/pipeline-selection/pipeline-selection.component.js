@@ -48,7 +48,7 @@ class PipelineSelectionCtrl {
                 this.browser.project = project;
                 this.browser.project.appendEntitiesRel(entities);
                 this.prepProject();
-                this.FileListingService.abstractListing(entities, project.uuid).subscribe((_) => {
+                this.FileListingService.abstractListing(entities, project.uuid).then((_) => {
                     this.ui.loading = false;
                 });
             });

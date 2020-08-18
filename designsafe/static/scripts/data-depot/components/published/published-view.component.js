@@ -63,7 +63,7 @@ class PublishedViewCtrl {
                 system: 'designsafe.storage.published',
                 path: this.$stateParams.filePath,
                 query_string: this.$stateParams.query_string,
-            }).subscribe(_ => this.getProjectListings());
+            }).then(_ => this.getProjectListings());
         }
         else {
             this.getProjectListings();

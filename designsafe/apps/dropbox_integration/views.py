@@ -30,7 +30,7 @@ def index(request):
             dropbox = Dropbox(dropbox_token.access_token)
             dropbox_user=dropbox.users_get_account(dropbox_token.account_id)
             context['dropbox_connection'] = dropbox_user
-        except (BadRequestException, AuthError):
+        except (AuthError, BadRequestException):
             # authentication failed
             logger.warning('Dropbox oauth token for user=%s failed to authenticate' %
                            request.user.username)

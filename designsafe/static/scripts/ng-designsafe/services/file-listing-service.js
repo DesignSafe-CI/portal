@@ -219,7 +219,8 @@ export class FileListingService {
     }
 
     selectAll(section, setValue) {
-        const _setValue = setValue == null ? !this.listings[section].selectAll : setValue;
+        const _setValue = typeof setValue === 'boolean' ? setValue : !this.listings[section].selectAll;
+        this.listings[section].selectAll = _setValue;
         this.listings[section].listing = this.listings[section].listing.map((f) => ({ ...f, selected: _setValue }));
         this.listings[section].selectedFiles = this.listings[section].listing.filter((f) => f.selected);
         const allSelected = Object.keys(this.listings)
@@ -258,16 +259,20 @@ export class FileListingService {
     getUuid(section, api, scheme, system, path, key) {
         const listingUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/detail/${system}/${path}/`);
         const listingRequest = this.$http.get(listingUrl);
-        return this.from(listingRequest).pipe(
-            map((resp) => resp.data.uuid),
-            map((uuid) => {
-                // lookup the file in the listing by key and append its uuid.
-                const idx = this.listings[section].listing.findIndex((f) => f.key === key);
-                const fileWithUuid = { ...this.listings[section].listing[idx], uuid };
-                this.listings[section].listing[idx] = fileWithUuid;
-                return fileWithUuid;
-            })
-        );
+        const uuidPromise = this.from(listingRequest)
+            .pipe(
+                map((resp) => resp.data.uuid),
+                map((uuid) => {
+                    // lookup the file in the listing by key and append its uuid.
+                    const idx = this.listings[section].listing.findIndex((f) => f.key === key);
+                    const fileWithUuid = { ...this.listings[section].listing[idx], uuid };
+                    this.listings[section].listing[idx] = fileWithUuid;
+                    return fileWithUuid;
+                })
+            )
+            .toPromise();
+
+        return this.$q.when(uuidPromise);
     }
 
     getDetail({ api, scheme, system, path }) {
@@ -308,7 +313,8 @@ export class FileListingService {
         // The return value can be subscribed to for the latest value
 
         this.listings[section].listingSubscriber.next(mappingFunction);
-        return this.listings[section].listingSubscriber.pipe(take(1));
+        const listingPromise = this.listings[section].listingSubscriber.pipe(take(1)).toPromise();
+        return this.$q.when(listingPromise);
     }
 
     /**
@@ -578,7 +584,7 @@ export class FileListingService {
 
         this.abstractListingSubject.next(() => abstractListingsObservable$);
         const subscriber = this.abstractListingSubject.pipe(take(1));
-        return subscriber;
+        return this.$q.when(subscriber.toPromise());
     }
 
     setPublicationSelection(section, valueToSet) {
