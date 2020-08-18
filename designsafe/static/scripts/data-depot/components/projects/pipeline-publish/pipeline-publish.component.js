@@ -29,13 +29,12 @@ const attributeMap = {
 };
 
 class PipelinePublishCtrl {
-    constructor(ProjectService, PublicationService, DataBrowserService, $http, $state) {
+    constructor(ProjectService, PublicationService, $http, $state) {
         'ngInject';
         this.ProjectService = ProjectService;
         this.PublicationService = PublicationService;
         this.$http = $http;
         this.$state = $state;
-        this.DataBrowserService = DataBrowserService;
     }
 
     $onInit() {

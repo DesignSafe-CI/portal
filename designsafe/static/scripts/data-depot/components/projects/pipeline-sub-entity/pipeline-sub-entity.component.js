@@ -6,16 +6,14 @@ import PipelineSubEntityFieldTemplate from './pipeline-sub-entity-field.template
 
 class PipelineSubEntityCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListingService, FileOperationService, FileListing, $uibModal, $state, $q) {
+    constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
         this.browser = {}
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
-        this.FileListing = FileListing;
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;

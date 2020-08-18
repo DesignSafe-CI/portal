@@ -3,13 +3,11 @@ import _ from 'underscore';
 
 class ManageCategoriesCtrl {
 
-    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService, FileListingService, FileOperationService, DataBrowserService, FileListing) {
+    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService, FileListingService, FileOperationService) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.FileListing = FileListing;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
-        this.DataBrowserService = DataBrowserService;
         this.UserService = UserService;
         this.Django = Django;
         this.$q = $q;

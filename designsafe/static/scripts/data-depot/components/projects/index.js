@@ -1,9 +1,7 @@
 import angular from 'angular';
 
-import { ProjectRootComponent } from './project-root/project-root.component';
 import { ProjectListingComponent } from './project-listing/project-listing.component';
 import { ProjectViewComponent } from './project-view/project-view.component';
-import { ProjectSearchComponent } from './project-search/project-search.component';
 import { CurationDirectoryComponent } from './curation-directory/curation-directory.component';
 import { PublicationPreviewComponent } from './publication-preview/publication-preview.component';
 import { PublicationPreviewSimComponent } from './publication-preview/publication-preview-sim.component';
@@ -52,10 +50,8 @@ import { PublicationDownloadModalComponent } from '../../../projects/components/
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
-ddProjectsComponents.component('projectRoot', ProjectRootComponent);
 ddProjectsComponents.component('projectListing', ProjectListingComponent);
 ddProjectsComponents.component('projectView', ProjectViewComponent);
-ddProjectsComponents.component('projectSearch', ProjectSearchComponent);
 ddProjectsComponents.component('curationDirectory', CurationDirectoryComponent);
 ddProjectsComponents.component('publicationPreview', PublicationPreviewComponent);
 ddProjectsComponents.component('publicationPreviewSim', PublicationPreviewSimComponent);

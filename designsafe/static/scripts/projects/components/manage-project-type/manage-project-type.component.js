@@ -2,12 +2,11 @@ import ManageProjectTypeTemplate from './manage-project-type.template.html';
 
 class ManageProjectTypeCtrl {
 
-    constructor(ProjectEntitiesService, ProjectModel, httpi, DataBrowserService, ProjectService, $state) {
+    constructor(ProjectEntitiesService, ProjectModel, httpi, ProjectService, $state) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectModel = ProjectModel;
         this.httpi = httpi;
-        this.DataBrowserService = DataBrowserService;
         this.ProjectService = ProjectService;
         this.$state = $state;
     }
