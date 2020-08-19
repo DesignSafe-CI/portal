@@ -170,6 +170,7 @@ export class PublicationService {
         this.listingLegacy.listingSubscriber.next(observableMapping);
     }
     mapParamsToListingLegacy({ offset, limit, query_string }) {
+        this.listingLegacy.params = { ...this.listingLegacy.params, offset, limit, query_string };
         const operation = query_string ? 'neessearch' : 'neeslisting';
         const listingObservable$ = from(
             this.$http.get(`/api/publications/${operation}/`, { params: { offset, limit, query_string } })
@@ -229,16 +230,15 @@ export class PublicationService {
                                 UTILS
      **************************************************************************/
 
-
     /**
      * Retrieve details for a publication using its project ID.
      * @param {string} projId Project ID to retrieve.
      */
     getPublished(projId) {
         // Retrieve current details if they are already in state.
-        return this.$http.get('/api/projects/publication/' + projId).then(resp => {
+        return this.$http.get('/api/projects/publication/' + projId).then((resp) => {
             this.current = resp.data;
-            return resp
+            return resp;
         });
     }
 
@@ -267,7 +267,6 @@ export class PublicationService {
             header.appendChild(authorTag);
         });
 
-
         // Experiments
         const experiments = data.experiments || [];
         experiments.forEach((exp) => {
@@ -281,11 +280,9 @@ export class PublicationService {
             descTag.content = exp.description || '';
             header.appendChild(descTag);
         });
-
     }
-    
+
     updateHeaderMetadata(projId, resp) {
-        
         this.$window.document.title = resp.data.project.value.title + ' | DesignSafe-CI';
         this.$window.document.getElementsByName('keywords')[0].content = resp.data.project.value.keywords;
         this.$window.document.getElementsByName('description')[0].content = resp.data.project.value.description;
@@ -293,15 +290,21 @@ export class PublicationService {
         this.$window.document.getElementsByName('citation_title')[0].content = resp.data.project.value.title;
         this.$window.document.getElementsByName('DC.title')[0].content = resp.data.project.value.title;
 
-        this.$window.document.getElementsByName('citation_publication_date')[0].content = this.$filter('date')(resp.data.created, 'yyyy/M/d');
-        this.$window.document.getElementsByName('DC.date')[0].content = this.$filter('date')(resp.data.created, 'yyyy/M/d');
+        this.$window.document.getElementsByName('citation_publication_date')[0].content = this.$filter('date')(
+            resp.data.created,
+            'yyyy/M/d'
+        );
+        this.$window.document.getElementsByName('DC.date')[0].content = this.$filter('date')(
+            resp.data.created,
+            'yyyy/M/d'
+        );
 
         this.$window.document.getElementsByName('citation_doi')[0].content = resp.data.project.doi || '';
         this.$window.document.getElementsByName('DC.identifier')[0].content = resp.data.project.doi || '';
 
-        this.$window.document.getElementsByName('citation_abstract_html_url')[0].content = "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published//" + projId;
-        
-        
+        this.$window.document.getElementsByName('citation_abstract_html_url')[0].content =
+            'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published//' + projId;
+
         var elements = this.$window.document.getElementsByName('citation_author');
         while (elements[0]) elements[0].parentNode.removeChild(elements[0]);
         var elements = this.$window.document.getElementsByName('citation_author_institution');
@@ -310,24 +313,29 @@ export class PublicationService {
         while (elements[0]) elements[0].parentNode.removeChild(elements[0]);
 
         resp.data.project.value.keywords.split(/[,\s]+/).forEach((keyword) => {
-            var meta = this.$window.document.createElement("meta");
-            meta.name = "citation_keywords";
+            var meta = this.$window.document.createElement('meta');
+            meta.name = 'citation_keywords';
             meta.content = keyword;
             this.$window.document.getElementsByTagName('head')[0].appendChild(meta);
         });
-        
+
         var authors = '';
         var ieeeAuthors = '';
 
         var publishers = _.filter(resp.data.users, (usr) => {
             if (resp.data.project.name === 'designsafe.project' || prj.name === 'designsafe.project.analysis') {
-                return _.contains(resp.data.project.value.coPis, usr.username) ||
-                    usr.username === resp.data.project.value.pi;
+                return (
+                    _.contains(resp.data.project.value.coPis, usr.username) ||
+                    usr.username === resp.data.project.value.pi
+                );
             } else {
                 return _.contains(resp.data.project.value.authors, usr.username);
             }
         });
-        if (typeof resp.data.project.value.projectType !== 'undefined' && resp.data.project.value.projectType === 'other') {
+        if (
+            typeof resp.data.project.value.projectType !== 'undefined' &&
+            resp.data.project.value.projectType === 'other'
+        ) {
             publishers = resp.data.users;
         }
         publishers = _.sortBy(publishers, (p) => {
@@ -337,14 +345,14 @@ export class PublicationService {
                 return p._ui.order;
             }
         });
-        
-        publishers.forEach( (usr, index, list) => {
+
+        publishers.forEach((usr, index, list) => {
             var str = usr.last_name + ', ' + usr.first_name;
             var usr_institution = _.filter(resp.data.institutions, (inst) => {
                 return inst.name === usr.username;
             });
-            var meta = this.$window.document.createElement("meta");
-            meta.name = "citation_author";
+            var meta = this.$window.document.createElement('meta');
+            meta.name = 'citation_author';
             meta.content = str;
             this.$window.document.getElementsByTagName('head')[0].appendChild(meta);
 
@@ -357,15 +365,13 @@ export class PublicationService {
             }
 
             if (usr_institution[0]) {
-                var meta = this.$window.document.createElement("meta");
-                meta.name = "citation_author_institution";
+                var meta = this.$window.document.createElement('meta');
+                meta.name = 'citation_author_institution';
                 meta.content = usr_institution[0].label;
                 this.$window.document.getElementsByTagName('head')[0].appendChild(meta);
-
             }
-
         });
-        
+
         if (!authors && _.has(resp.data.project.value, 'teamOrder')) {
             authors = resp.data.project.value.teamOrder.reduce((prev, curr, idx) => {
                 const last = idx === resp.data.project.value.teamOrder.length - 1;
@@ -375,8 +381,8 @@ export class PublicationService {
                 }
                 return `${prev} ${currentName}`;
             }, '');
-        } 
-        
+        }
+
         this.$window.document.getElementsByName('author')[0].content = authors;
         this.$window.document.getElementsByName('DC.creator')[0].content = authors;
 
@@ -385,26 +391,26 @@ export class PublicationService {
 
         if (_.has(resp.data, 'experimentsList')) {
             entities.push(...resp.data.experimentsList);
-        } else if(_.has(resp.data, 'simulations')) {
+        } else if (_.has(resp.data, 'simulations')) {
             isSimulation = true;
             entities.push(...resp.data.simulations);
-        } else if(_.has(resp.data, 'missions')) {
+        } else if (_.has(resp.data, 'missions')) {
             entities.push(...resp.data.missions);
         } else if (_.has(resp.data, 'hybrid_simulations')) {
             sSimulation = true;
             entities.push(...resp.data.hybrid_simulations);
-        }   
-        
+        }
+
         // Check for reports
-        if(_.has(resp.data, 'reports') && !isSimulation) entities.push(...resp.data.reports);
-        
+        if (_.has(resp.data, 'reports') && !isSimulation) entities.push(...resp.data.reports);
+
         entities.forEach((entity) => {
             // Title
             const entTitleTag = this.$window.document.createElement('meta');
             entTitleTag.name = 'citation_title';
             entTitleTag.content = entity.value.title || '';
             this.$window.document.getElementsByTagName('head')[0].appendChild(entTitleTag);
-           
+
             // Doi
             const entDoiTag = this.$window.document.createElement('meta');
             entDoiTag.name = 'citation_doi';
@@ -418,22 +424,21 @@ export class PublicationService {
             this.$window.document.getElementsByTagName('head')[0].appendChild(entDescTag);
 
             // Authors (with Institutions)
-            entity.authors && entity.authors
-                .filter((author) => author.authorship === true)
-                .forEach((author) => {
-                    const authorTag = this.$window.document.createElement('meta');
-                    authorTag.name = 'citation_author';
-                    authorTag.content = `${author.lname} ${author.fname}`;
+            entity.authors &&
+                entity.authors
+                    .filter((author) => author.authorship === true)
+                    .forEach((author) => {
+                        const authorTag = this.$window.document.createElement('meta');
+                        authorTag.name = 'citation_author';
+                        authorTag.content = `${author.lname} ${author.fname}`;
 
-                    const authorInstTag = this.$window.document.createElement('meta');
-                    authorInstTag.name = 'citation_author_institution';
-                    authorInstTag.content = author.inst;
+                        const authorInstTag = this.$window.document.createElement('meta');
+                        authorInstTag.name = 'citation_author_institution';
+                        authorInstTag.content = author.inst;
 
-                    this.$window.document.getElementsByTagName('head')[0].appendChild(authorTag);
-                    this.$window.document.getElementsByTagName('head')[0].appendChild(authorInstTag);
-                });
+                        this.$window.document.getElementsByTagName('head')[0].appendChild(authorTag);
+                        this.$window.document.getElementsByTagName('head')[0].appendChild(authorInstTag);
+                    });
         });
-        
     }
-
 }
