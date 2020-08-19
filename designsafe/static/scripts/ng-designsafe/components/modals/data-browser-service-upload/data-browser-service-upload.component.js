@@ -13,7 +13,7 @@ class DataBrowserServiceUploadCtrl {
         this.uploadCallback = this.uploadCallback.bind(this)
     }
     $onInit() {
-
+        this.directoryUploadSupported = this.Modernizr.fileinputdirectory;
         this.File
  
         this.selectedFiles = [];
@@ -88,7 +88,7 @@ class DataBrowserServiceUploadCtrl {
      * Cancel and close upload dialog.
      */
     cancel() {
-        $uibModalInstance.dismiss('cancel');
+        this.close();
     }
 }
 

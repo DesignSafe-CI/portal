@@ -15,13 +15,28 @@ from designsafe.apps.api.datafiles.handlers.googledrive_handlers import googledr
 from designsafe.apps.api.datafiles.handlers.dropbox_handlers import dropbox_get_handler, dropbox_put_handler
 from designsafe.apps.api.datafiles.handlers.box_handlers import box_get_handler, box_put_handler
 from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
+from designsafe.apps.api.datafiles.notifications import notify
 # Create your views here.
 
 logger = logging.getLogger(__name__)
+metrics = logging.getLogger('metrics')
 
 
 class AgaveFilesView(BaseApiView):
     def get(self, request, operation=None, scheme='private', system=None, path='/'):
+
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'agave',
+                             'systemId': system,
+                             'filePath': path,
+                             'query': request.GET.dict()}
+                     })
+
         if not request.user.is_authenticated:
             client = get_user_model().objects.get(username='envision').agave_oauth.client
         else:
@@ -37,6 +52,21 @@ class AgaveFilesView(BaseApiView):
             handler=None, system=None, path='/'):
 
         body = json.loads(request.body)
+
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'agave',
+                             'scheme': scheme,
+                             'system': system,
+                             'path': path,
+                             'body': body
+                         }
+                     })
+
         try:
             client = request.user.agave_oauth.client
         except AttributeError:
@@ -53,6 +83,17 @@ class AgaveFilesView(BaseApiView):
              handler=None, system=None, path='/'):
         post_files = request.FILES.dict()
         post_body = request.POST.dict()
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'agave',
+                             'scheme': scheme,
+                             'system': system,
+                             'path': path,
+                         }})
 
         try:
             client = request.user.agave_oauth.client
@@ -66,6 +107,17 @@ class AgaveFilesView(BaseApiView):
 
 class SharedFilesView(BaseApiView):
     def get(self, request, operation=None, scheme='private', system=None, path=''):
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'shared',
+                             'systemId': system,
+                             'filePath': path,
+                             'query': request.GET.dict()}
+                     })
         try:
             client = request.user.agave_oauth.client
         except AttributeError:
@@ -81,6 +133,20 @@ class SharedFilesView(BaseApiView):
     def put(self, request, operation=None, scheme='private',
             handler=None, system=None, path='/'):
 
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'shared',
+                             'scheme': scheme,
+                             'system': system,
+                             'path': path,
+                             'body': body
+                         }
+                     })
+
         body = json.loads(request.body)
         try:
             client = request.user.agave_oauth.client
@@ -94,6 +160,17 @@ class SharedFilesView(BaseApiView):
 
 class GoogledriveFilesView(BaseApiView):
     def get(self, request, operation=None, scheme='private', system=None, path='root'):
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'googledrive',
+                             'systemId': system,
+                             'filePath': path,
+                             'query': request.GET.dict()}
+                     })
         try:
             client = request.user.googledrive_user_token.client
         except AttributeError:
@@ -119,6 +196,19 @@ class GoogledriveFilesView(BaseApiView):
 
     def put(self, request, operation=None, scheme='private',
             handler=None, system=None, path=''):
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'googledrive',
+                             'scheme': scheme,
+                             'system': system,
+                             'path': path,
+                             'body': body
+                         }
+                     })
 
         body = json.loads(request.body)
         try:
@@ -133,6 +223,17 @@ class GoogledriveFilesView(BaseApiView):
 
 class DropboxFilesView(BaseApiView):
     def get(self, request, operation=None, scheme='private', system=None, path=''):
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'dropbox',
+                             'systemId': system,
+                             'filePath': path,
+                             'query': request.GET.dict()}
+                     })
         try:
             client = request.user.dropbox_user_token.client
         except AttributeError:
@@ -155,6 +256,20 @@ class DropboxFilesView(BaseApiView):
 
     def put(self, request, operation=None, scheme='private',
             handler=None, system=None, path=''):
+        
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'dropbox',
+                             'scheme': scheme,
+                             'system': system,
+                             'path': path,
+                             'body': body
+                         }
+                     })
 
         body = json.loads(request.body)
         try:
@@ -169,6 +284,17 @@ class DropboxFilesView(BaseApiView):
 
 class BoxFilesView(BaseApiView):
     def get(self, request, operation=None, scheme='private', system=None, path=''):
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'box',
+                             'systemId': system,
+                             'filePath': path,
+                             'query': request.GET.dict()}
+                     })
         try:
             client = request.user.box_user_token.client
         except AttributeError:
@@ -193,6 +319,20 @@ class BoxFilesView(BaseApiView):
     def put(self, request, operation=None, scheme='private',
             handler=None, system=None, path=''):
 
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': operation,
+                         'info': {
+                             'api': 'box',
+                             'scheme': scheme,
+                             'system': system,
+                             'path': path,
+                             'body': body
+                         }
+                     })
+
         body = json.loads(request.body)
         try:
             client = request.user.box_user_token.client
@@ -213,12 +353,31 @@ class TransferFilesView(BaseApiView):
             'box': request.user.box_user_token.client
         }
         body = json.loads(request.body)
+
+        metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': 'transfer',
+                         'info': {
+                             'body': body
+                         }
+                     })
+
         src_client = client_lookup[body['src_api']]
         dest_client = client_lookup[body['dest_api']]
 
-        if format == 'folder':
-            resp = transfer_folder(src_client, dest_client, **body)
-            return JsonResponse({'success': True})
-        else:
-            resp = transfer(src_client, dest_client, **body)
-            return JsonResponse({'success': True})
+        notify(request.user.username, 'transfer', 'Copy operation has started.', 'INFO', {})
+        try:
+            if format == 'folder':
+                resp = transfer_folder(src_client, dest_client, **body)
+                notify(request.user.username, 'transfer', 'Files were successfully copied.', 'SUCCESS', {})
+                return JsonResponse({'success': True})
+            else:
+                resp = transfer(src_client, dest_client, **body)
+                notify(request.user.username, 'transfer', 'Files were successfully copied.', 'SUCCESS', {})
+                return JsonResponse({'success': True})
+        except Exception as exc:
+            notify(request.user.username, 'transfer', 'Copy operation has failed.', 'ERROR', {})
+            logger.info(exc)
+            raise exc

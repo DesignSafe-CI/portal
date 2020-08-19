@@ -94,11 +94,14 @@ export class FileOperationService {
             rename:
                 this.Django.context.authenticated &&
                 files.length === 1 &&
-                [...agaveDataStates, ...externalDataStates].includes(this.$state.current.name),
+                [...agaveDataStates].includes(this.$state.current.name),
             upload: this.Django.context.authenticated && agaveDataStates.includes(this.$state.current.name),
             preview: files.length === 1 && files[0].format !== 'folder',
-            previewImages: files.length > 0 && agaveDataStates.includes(this.$state.current.name),
-            download: files.length > 0 && !files.some((f) => f.format === 'folder'),
+            previewImages: files.length > 0 && !externalDataStates.includes(this.$state.current.name),
+            download:
+                files.length > 0 &&
+                !files.some((f) => f.format === 'folder') &&
+                !externalDataStates.includes(this.$state.current.name),
             trash:
                 this.Django.context.authenticated &&
                 files.length > 0 &&
@@ -425,19 +428,18 @@ export class FileOperationService {
                 );
             //forkJoin emits when all folder listings have completed
             return forkJoin(folders.map(folderListing)).pipe(
-                // flatMap turns the array of responses from forkJoin into an observable stream
-                // -[resp1,resp2,resp3]- => -resp1-resp2-resp3-
-                flatMap((responses) => from(responses)),
                 //tap callback pushes each image in each listing response onto the images array
-                tap((res) => {
-                    const output = res.data.listing.filter(({ path }) => {
-                        const ext = path
-                            .split('.')
-                            .pop()
-                            .toLowerCase();
-                        return ['jpg', 'jpeg', 'png', 'tiff', 'gif'].includes(ext);
+                tap((responses) => {
+                    responses.forEach((res) => {
+                        const output = res.data.listing.filter(({ path }) => {
+                            const ext = path
+                                .split('.')
+                                .pop()
+                                .toLowerCase();
+                            return ['jpg', 'jpeg', 'png', 'tiff', 'gif'].includes(ext);
+                        });
+                        images.push(...output);
                     });
-                    images.push(...output);
                 }),
                 //the final output of the observable is the images array
                 map((_) => images)
@@ -463,7 +465,7 @@ export class FileOperationService {
     }
 
     /***************************************************************************
-                                UPLOAD MODAL
+                                MKDIR MODAL
     ***************************************************************************/
 
     openMkdirModal({ api, scheme, system, path }) {
