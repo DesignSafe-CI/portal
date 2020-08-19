@@ -579,6 +579,12 @@ export class FileListingService {
                 limit,
             })
         );
+        
+        // forkJoin doesn't emit when passed an empty array so we need to return
+        // early if there are no listings to perform.
+        if(!abstractListings.length) {
+            return this.$q(resolve => resolve(null))
+        }
 
         const abstractListingsObservable$ = forkJoin(abstractListings);
 

@@ -139,8 +139,10 @@ def search(offset=0, limit=100, query_string='', *args):
 def neeslisting(offset=0, limit=100, *args):
     pub_query = IndexedPublicationLegacy.search()
     pub_query = pub_query.extra(from_=offset, size=limit)
-    pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate'])
-    pub_query = pub_query.sort({'project._exact': {'order': 'asc'}})
+    pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
+    pub_query = pub_query.sort(
+            {'created': {'order': 'desc', 'unmapped_type': 'long'}}
+        )
     res = pub_query.execute()
     hits = list(map(lambda h: h.to_dict(), res.hits))
 
@@ -161,8 +163,10 @@ def neessearch(offset=0, limit=100, query_string='', *args):
 
     pub_query = IndexedPublicationLegacy.search().filter(nees_pi_query | nees_query_string_query)
     pub_query = pub_query.extra(from_=offset, size=limit)
-    pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate'])
-    pub_query = pub_query.sort({'project._exact': {'order': 'asc'}})
+    pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
+    pub_query = pub_query.sort(
+            {'created': {'order': 'desc', 'unmapped_type': 'long'}}
+        )
     res = pub_query.execute()
     hits = list(map(lambda h: h.to_dict(), res.hits))
     return {'listing': hits}

@@ -50,7 +50,7 @@ class PublicationLegacyListingCtrl {
     $onInit() {
     }
     href(publication) {
-        return this.$state.href('neesPublished', {filePath: publication.project})
+        return this.$state.href('neesPublished', {filePath: publication.path})
     }
 
     showDescription(publication) {
