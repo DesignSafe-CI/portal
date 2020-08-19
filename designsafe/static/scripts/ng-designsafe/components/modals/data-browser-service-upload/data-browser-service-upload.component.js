@@ -1,9 +1,9 @@
 import angular from 'angular';
 import { uuid } from 'uuidv4';
 import dataBrowserServiceUploadTemplate from './data-browser-service-upload.template.html';
-import { tickStep } from 'd3';
 class DataBrowserServiceUploadCtrl {
     constructor($scope, $q, $state, Modernizr, FileOperationService) {
+        'ngInject';
         this.$q = $q;
         this.Modernizr = Modernizr;
         this.FileOperationService = FileOperationService
