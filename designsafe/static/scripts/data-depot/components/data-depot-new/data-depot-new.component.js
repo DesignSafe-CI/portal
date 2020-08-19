@@ -75,7 +75,7 @@ class DataDepotNewCtrl {
     };
 
     uploadFolders($event) {
-      if (this.FileOperationService.canUpload()) {
+      if (this.FileOperationService.tests.upload) {
         this.FileOperationService.openUploadModal({directory: true, 
           api: this.FileListingService.listings.main.params.api,
           scheme: this.FileListingService.listings.main.params.scheme,
