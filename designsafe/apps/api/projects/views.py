@@ -579,3 +579,24 @@ class ProjectMetaView(BaseApiView, SecureMixin):
             return HttpResponseBadRequest('Entity not valid.')
 
         return JsonResponse(resp.to_body_dict(), safe=False)
+
+class ProjectNotificationView(BaseApiView, SecureMixin):
+    @profile_fn
+    def post(self, request, project_uuid):
+        """
+        View for email notifications regarding projects
+        """
+        post_data = json.loads(request.body)
+        username = post_data.get('username')
+        ag = get_service_account_client()
+        project = BaseProject.manager().get(ag, uuid=project_uuid)
+        tasks.email_project_admins.apply_async(
+            args=[
+                project.project_id,
+                project_uuid,
+                project.title,
+                request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project_uuid)),
+                username
+            ]
+        )
+        return JsonResponse({'status': 'ok'})

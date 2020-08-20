@@ -16,6 +16,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
     let projectResource = httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     let collabResource = httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
     let dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
+    let notificationResource = httpi.resource('/api/projects/:uuid/notification/').setKeepTrailingSlash(true);
     //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
     //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
 
@@ -318,6 +319,17 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
             },
             size: 'lg',
         });
+    };
+
+    /**
+     *
+     * @param options
+     * @param {string} options.uuid The Project uuid
+     * @param {string} options.username The username of the collaborator to add
+     * @returns {Promise}
+     */
+    service.notifyPersonalData = (options) => {
+        return notificationResource.post({ data: options });
     };
 
     /**
