@@ -95,7 +95,7 @@ class PublicationAdvancedSearchCtrl {
             }
 
         }
-        this.isCollapsed = false;
+        this.isCollapsed = true;
 
     }
     getValidExperimentTypes() {

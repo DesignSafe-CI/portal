@@ -1003,6 +1003,10 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
         };
 
         $scope.file = file;
+        if ($scope.file._entities.length) {
+          console.log('hs entities')
+          $scope.hasEntities = true;
+        }
 
         $scope.doRenameFile = function($event) {
           $event.preventDefault();

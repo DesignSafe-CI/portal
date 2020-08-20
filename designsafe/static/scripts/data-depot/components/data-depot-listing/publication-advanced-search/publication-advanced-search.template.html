@@ -12,19 +12,19 @@
             <tr >
                 <td style="border-right: none;">
                     <label for="author-input">Author</label
-                    ><input ng-model="$ctrl.params.queries.author" class="form-control" id="author-input" />
+                    ><input ng-model="$ctrl.params.queries.author" class="form-control" id="author-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()"/>
                 </td>
                 <td style="border-left: none; border-right: none;">
                     <label for="title-input">Title</label
-                    ><input ng-model="$ctrl.params.queries.title" class="form-control" id="title-input" />
+                    ><input ng-model="$ctrl.params.queries.title" class="form-control" id="title-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()" />
                 </td>
                 <td style="border-left: none; border-right: none;">
                     <label for="keyword-input">Keyword</label
-                    ><input ng-model="$ctrl.params.queries.keyword" class="form-control" id="keyword-input" />
+                    ><input ng-model="$ctrl.params.queries.keyword" class="form-control" id="keyword-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()" />
                 </td>
                 <td style="border-left: none; border-right: none;">
                     <label for="description-input">Description</label
-                    ><input ng-model="$ctrl.params.queries.description" class="form-control" id="description-input" />
+                    ><input ng-model="$ctrl.params.queries.description" class="form-control" id="description-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()" />
                 </td>
             </tr>
         </tbody>
@@ -163,16 +163,16 @@
                 <div style="text-align: center;">
                     <a href="#" ng-click="$ctrl.toggleSearchPanel($event)">
                         <span ng-if="$ctrl.isCollapsed"> More Options <span class="fa fa-chevron-down"></span> </span>
-                        <span ng-if="!$ctrl.isCollapsed"> Fewer Options <span class="fa fa-chevron-up"></span> </span>
+                        <span ng-if="!$ctrl.isCollapsed"> Less Options <span class="fa fa-chevron-up"></span> </span>
                     </a>
                 </div>
             </div>
             <div class="col-md-4" style="height: 50px; display: flex; justify-content: left; align-items: center;">
                 <div style="width: 100%;">
                     <div style="float:right;">
-                        <a href="#" ng-click="$ctrl.cancel()" style="padding-right: 15px;">Clear</a>
-                        <button class="btn btn-success" ng-click="$ctrl.browse()">
-                            Search Datasets
+                        <a href="#" ng-click="$ctrl.cancel()" style="padding-right: 15px;">Clear Filters</a>
+                        <button class="btn btn-success" ng-click="$ctrl.browse()" style="width:150px">
+                            Search
                         </button>
                     </div>
                     

@@ -15,6 +15,9 @@ class DataBrowserServiceMoveCtrl {
 
     $onInit() {
         this.files = this.resolve.files;
+        if(this.files.some(f => f._entities.length)) {
+            this.hasEntities = true;
+        }
         this.initialDestination = this.resolve.initialDestination;
         this.data = {
             files: this.files,

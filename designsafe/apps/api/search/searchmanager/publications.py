@@ -185,7 +185,7 @@ class PublicationsSearchManager(BaseSearchManager):
         description = self.query_dict['queries']['description']
         if not description:
             return None
-        return Q('query_string', query=keywords, fields=['project.value.description'])
+        return Q('query_string', query=description, fields=['project.value.description'])
 
 
     
