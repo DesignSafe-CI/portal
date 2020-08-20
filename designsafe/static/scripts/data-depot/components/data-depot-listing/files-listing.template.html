@@ -77,7 +77,7 @@
                     <td data-ng-if="item.lastModified">{{ item.lastModified|date:"short" }}</td>
                     <td data-ng-if="!item.lastModified">--</td>
                     <td data-ng-if="$ctrl.operationLabel">
-                        <button ng-if="item.type==='dir'" ng-click="$ctrl.operation({file: item})">{{$ctrl.operationLabel}}
+                        <button class="btn btn-primary" ng-if="item.type==='dir'" ng-click="$ctrl.operation({file: item})">{{$ctrl.operationLabel}}
 
                         </button></td>
                 </tr>
