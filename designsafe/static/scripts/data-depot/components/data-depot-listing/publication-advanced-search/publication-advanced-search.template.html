@@ -36,30 +36,30 @@
         <tbody style="background-color: #eeeeee;">
             <tr>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('experimental')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.experimental" />
                         Experimental</label
                     >
                 </td>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('simulation')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.simulation" />
                         Simulation</label
                     >
                 </td>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('field_recon')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.field_recon" /> Field
                         Research</label
                     >
                 </td>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('other')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.other" /> Other</label
                     >
                 </td>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('hybrid_simulation')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.hybrid_simulation" />
                         Hybrid Simulation</label
                     >
@@ -162,9 +162,9 @@
         </table>
     </div>
     <div class="row" style="margin: 0px; background-color: #eeeeee;">
-        <div class="col-md-12" style="border: 1px solid #dddddd;">
-            <div class="col-md-4" style="height: 50px;"></div>
-            <div class="col-md-4" style="height: 50px; display: flex; justify-content: center; align-items: center;">
+        <div class="col-xs-12" style="border: 1px solid #dddddd;">
+            <div class="col-xs-5" style="height: 50px;"></div>
+            <div class="col-xs-2" style="height: 50px; display: flex; justify-content: center; align-items: center;">
                 <div style="text-align: center;">
                     <a href="#" ng-click="$ctrl.toggleSearchPanel($event)">
                         <span ng-if="$ctrl.isCollapsed"> More Options <span class="fa fa-chevron-down"></span> </span>
@@ -172,11 +172,11 @@
                     </a>
                 </div>
             </div>
-            <div class="col-md-4" style="height: 50px; display: flex; justify-content: left; align-items: center;">
-                <div style="width: 100%;">
+            <div class="col-xs-5" style="height: 50px; display: flex; justify-content: left; align-items: center;">
+                <div style="min-width: 100%;">
                     <div style="float:right;">
                         <a href="#" ng-click="$ctrl.cancel()" style="padding-right: 15px;">Clear Filters</a>
-                        <button class="btn btn-success" ng-click="$ctrl.browse()" style="width:150px">
+                        <button class="btn btn-success" ng-click="$ctrl.browse()" style="width: 175px">
                             Search
                         </button>
                     </div>
