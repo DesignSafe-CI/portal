@@ -38,7 +38,7 @@ module.exports = function(config) {
             './node_modules/angular-schema-form/dist/bootstrap-decorator.js',
             './designsafe/static/scripts/ng-modernizr/**/*.js',
 
-            './static/djng/**/*.js',
+            './designsafe/static/djng/**/*.js',
 
             './designsafe/static/scripts/ng-designsafe/modules/notifications-module.js',
             './designsafe/static/scripts/logging/logger.js',
