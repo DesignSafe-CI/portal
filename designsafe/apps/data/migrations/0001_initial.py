@@ -14,5 +14,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-      migrations.RunPython(init_indices)
+      # migrations.RunPython(init_indices)
     ]

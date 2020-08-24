@@ -55,7 +55,7 @@ class SearchCtrl {
 
         this.searchService.search(this.data.search_text, this.results_per_page, this.offset, this.data.type_filter).then( resp => {
             this.data.search_results = resp.data;
-            this.max_pages = this.Math.ceil(this.data.search_results.total_hits / this.results_per_page);
+            this.max_pages = this.Math.ceil(this.data.search_results.all_total / this.results_per_page);
             this.searching = false;
             this.$window.scrollTo(0, 0);
         }, err => {
@@ -88,7 +88,7 @@ class SearchCtrl {
     };
 
     max_pages() {
-        return this.Math.ceil(this.data.search_results.total_hits / this.results_per_page)
+        return this.Math.ceil(this.data.search_results.all_total / this.results_per_page)
     }
 
 }

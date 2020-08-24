@@ -27,7 +27,7 @@ webhook_body_pending = json.dumps(json.load(open(FILEDIR_PENDING)))
 webhook_body_pending2 = json.dumps(json.load(open(FILEDIR_PENDING2)))
 webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING)))
 
-wh_url = reverse('designsafe_api:jobs_wh_handler')
+
 
 # Create your tests here.
 @skip("Need to mock websocket call to redis")
@@ -35,6 +35,7 @@ class NotificationsTestCase(TestCase):
     fixtures = ['user-data.json', 'agave-oauth-token-data.json']
 
     def setUp(self):
+        self.wh_url = reverse('designsafe_api:jobs_wh_handler')
         user = get_user_model().objects.get(pk=2)
         user.set_password('password')
         user.save()
@@ -64,29 +65,29 @@ class NotificationsTestCase(TestCase):
         self.assertEqual(self.user.username, 'ds_user')
 
     def test_submitting_webhook_returns_200_and_creates_notification(self):
-        r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
+        r = self.client.post(self.wh_url, webhook_body_pending, content_type='application/json')
         self.assertEqual(r.status_code, 200)
         n = Notification.objects.last()
         status_from_notification = n.to_dict()['extra']['status']
         self.assertEqual(status_from_notification, 'PENDING')
 
     def test_2_webhooks_same_status_same_jobId_should_give_1_notification(self):
-        r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
+        r = self.client.post(self.wh_url, webhook_body_pending, content_type='application/json')
 
         #assert that sending the same status twice doesn't trigger a second notification.
-        r2 = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
+        r2 = self.client.post(self.wh_url, webhook_body_pending, content_type='application/json')
         self.assertEqual(Notification.objects.count(), 1)
 
     def test_2_webhooks_different_status_same_jobId_should_give_2_notifications(self):
-        r1 = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
+        r1 = self.client.post(self.wh_url, webhook_body_pending, content_type='application/json')
 
-        r2 = self.client.post(wh_url, webhook_body_submitting, content_type='application/json')
+        r2 = self.client.post(self.wh_url, webhook_body_submitting, content_type='application/json')
         self.assertEqual(Notification.objects.count(), 2)
 
     def test_2_webhooks_same_status_different_jobId_should_give_2_notifications(self):
 
-        r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
-        r2 = self.client.post(wh_url, webhook_body_pending2, content_type='application/json')
+        r = self.client.post(self.wh_url, webhook_body_pending, content_type='application/json')
+        r2 = self.client.post(self.wh_url, webhook_body_pending2, content_type='application/json')
 
         self.assertEqual(Notification.objects.count(), 2)
 
@@ -95,6 +96,7 @@ class TestWebhookViews(TestCase):
     fixtures = ['user-data', 'agave-oauth-token-data']
 
     def setUp(self):
+        self.wh_url = reverse('designsafe_api:jobs_wh_handler')
         self.mock_agave_patcher = patch('designsafe.apps.auth.models.AgaveOAuthToken.client', autospec=True)
         self.mock_agave = self.mock_agave_patcher.start()
 
@@ -135,7 +137,7 @@ class TestWebhookViews(TestCase):
     def test_webhook_job_post(self):
         job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'json/submitting.json')))
 
-        response = self.client.post(wh_url, json.dumps(job_event), content_type='application/json')
+        response = self.client.post(self.wh_url, json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
         n = Notification.objects.last()
