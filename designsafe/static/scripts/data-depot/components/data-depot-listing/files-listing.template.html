@@ -40,7 +40,7 @@
                             </span>
                         </span>
                         <i class="fa {{ $ctrl.icon(item.name, item.type) }}">&nbsp;</i>
-                        <a data-ng-href="{{$ctrl.href(item.system, item.path)}}" data-ng-click="$ctrl.browse($event, item)" >
+                        <a data-ng-href="{{$ctrl.href(item.system, item.path)}}" data-ng-click="$ctrl.browse($event, item)" class="test-file-name">
                             {{ item.name }}
                         </a>
                         <!-- <a data-ng-href="https://www.dropbox.com/home{{item.path}}">

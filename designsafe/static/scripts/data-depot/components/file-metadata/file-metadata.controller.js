@@ -7,6 +7,7 @@ class FileMetadataComponentCtrl {
     }
 
     $onInit() {
+        console.log(this.file)
         this.show = false;
     }
 

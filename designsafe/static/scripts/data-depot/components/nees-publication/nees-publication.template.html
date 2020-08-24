@@ -16,7 +16,7 @@
                                 <tbody>
                                     <tr>
                                         <th style="border-top:none; width:25%">PIs</th>
-                                        <td style="border-top:none; width:75%">
+                                        <td style="border-top:none; width:75%" id="pis">
                                             <div ng-repeat="pi in $ctrl.project.metadata.project.pis | orderBy: 'firstName'">
                                                 {{pi.firstName}} {{pi.lastName}}
                                             </div>
@@ -31,7 +31,7 @@
                                 <tbody>
                                     <tr>
                                         <th style="border-top:none; width:25%;">Organizations</th>
-                                        <td style="border-top:none; width:75%;">
+                                        <td style="border-top:none; width:75%;" id="orgs">
                                             <div ng-repeat="org in $ctrl.project.metadata.project.organization | orderBy: 'firstName'">
                                                 {{org.name}} {{org.state}}, {{org.country}}
                                             </div>
@@ -53,7 +53,7 @@
                                 <tbody>
                                     <tr>
                                         <th style="border-top:none; width:25%">NEES ID</th>
-                                        <td style="border-top:none; width:75%">{{$ctrl.project.metadata.project.name}}</td>
+                                        <td style="border-top:none; width:75%" id="nees-id">{{$ctrl.project.metadata.project.name}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -63,7 +63,7 @@
                                 <tbody>
                                     <tr>
                                         <th style="border-top:none; width:25%">Sponsor</th>
-                                        <td style="border-top:none; width:75%">
+                                        <td style="border-top:none; width:75%" id="sponsor">
                                             <div ng-repeat="sponsor in $ctrl.project.metadata.project.sponsor">
                                                 <a ng-href="{{sponsor.url}}" target="_blank">{{sponsor.name}}</a>
                                             </div>
@@ -80,7 +80,7 @@
                                 <tbody>
                                     <tr>
                                         <th style="border-top:none; width:25%">Project Type</th>
-                                        <td style="border-top:none; width:75%"><span style="text-transform:capitalize">NEES</span></td>
+                                        <td style="border-top:none; width:75%" id="project-type"><span style="text-transform:capitalize">NEES</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -90,7 +90,7 @@
                                 <tbody>
                                         <tr>
                                                 <th style="border-top:none; width:25%">Start Date</th>
-                                        <td style="border-top:none; width:75%">{{$ctrl.project.metadata.project.startDate}}</td>
+                                        <td style="border-top:none; width:75%" id="start-date">{{$ctrl.project.metadata.project.startDate}}</td>
                                             </tr>
 
                                 </tbody>
@@ -105,7 +105,7 @@
                                     <tr>
                                         <th style="border-top:none; width:25%">DOIs</th>
                                         <td style="border-top:none; width:75%">
-                                            <button class="btn btn-sm btn-info btn-cite" ng-click="$ctrl.showDoiList($ctrl.project)">
+                                            <button class="btn btn-sm btn-info btn-cite" ng-click="$ctrl.showDoiList($ctrl.project)" id="doi-button">
                                                 View All DOIs
                                             </button>
                                         </td>
@@ -127,7 +127,7 @@
                 </tbody>
             </table>
         </div>
-        <div style="width:100%; padding-top:1px">
+        <div id="description" style="width:100%; padding-top:1px">
             <p><strong>Description</strong></p>
             <p>
                 {{$ctrl.project.metadata.project.description}}
@@ -168,7 +168,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr ng-if="experiment.title">
+                                                <tr ng-if="experiment.title" class="test-expt-title">
                                                     <td>
                                                         Title
                                                     </td>
@@ -176,7 +176,7 @@
                                                         {{experiment.title}}
                                                     </td>
                                                 </tr>
-                                                <tr ng-if="experiment.creators">
+                                                <tr ng-if="experiment.creators" class="test-expt-creators">
                                                     <td>
                                                         Creators
                                                     </td>
@@ -187,10 +187,10 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                <tr ng-if="experiment.doi">
+                                                <tr ng-if="experiment.doi" class="test-expt-doi">
                                                     <td>
                                                         DOI
-                                                        <button class="btn btn-info btn-sm btn-cite" ng-click="$ctrl.showExp(experiment)">
+                                                        <button class="btn btn-info btn-sm btn-cite test-btn-cite" ng-click="$ctrl.showExp(experiment)">
                                                             Citation
                                                         </button>
                                                     </td>
@@ -198,7 +198,7 @@
                                                         {{experiment.doi}}
                                                     </td>
                                                 </tr>
-                                                <tr ng-if="experiment.type">
+                                                <tr ng-if="experiment.type" class="test-expt-type">
                                                     <td>
                                                         Type
                                                     </td>
@@ -206,7 +206,7 @@
                                                         {{experiment.type}}
                                                     </td>
                                                 </tr>
-                                                <tr ng-if="experiment.description">
+                                                <tr ng-if="experiment.description" class="test-expt-description">
                                                     <td>
                                                         Description
                                                     </td>
@@ -214,7 +214,7 @@
                                                         {{experiment.description}}
                                                     </td>
                                                 </tr>
-                                                <tr ng-if="experiment.startDate">
+                                                <tr ng-if="experiment.startDate" class="test-expt-start">
                                                     <td>
                                                         Start Date
                                                     </td>
@@ -222,7 +222,7 @@
                                                         {{experiment.startDate}}
                                                     </td>
                                                 </tr>
-                                                <tr ng-if="experiment.endDate">
+                                                <tr ng-if="experiment.endDate" class="test-expt-end">
                                                     <td>
                                                         End Date
                                                     </td>
@@ -230,7 +230,7 @@
                                                         {{experiment.endDate}}
                                                     </td>
                                                 </tr>
-                                                <tr ng-if="experiment.equipment">
+                                                <tr ng-if="experiment.equipment" class="test-expt-equipment">
                                                     <td>
                                                         Equipment
                                                     </td>
@@ -265,7 +265,7 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                <tr ng-if="experiment.material">
+                                                <tr ng-if="experiment.material" class="test-expt-material">
                                                     <td>
                                                         Material
                                                     </td>
@@ -283,7 +283,7 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                <tr ng-if="experiment.path">
+                                                <tr ng-if="experiment.path" class="test-expt-creators">
                                                     <td>
                                                         Files
                                                     </td>

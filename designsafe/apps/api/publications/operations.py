@@ -1,5 +1,6 @@
 from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
 from designsafe.apps.api.publications import search_utils
+from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 from django.contrib.auth import get_user_model
 from elasticsearch_dsl import Q
 import json
@@ -21,19 +22,20 @@ def _get_user_by_username(hit, username):
     return "{}, {}".format(user['last_name'], user['first_name'])
 
 
-def listing(offset=0, limit=100, *args):
+def listing(offset=0, limit=100, limit_fields=True, *args):
     pub_query = IndexedPublication.search()
     pub_query = pub_query.filter(Q('term', status='published'))
     pub_query = pub_query.extra(from_=offset, size=limit)
-    pub_query = pub_query.source(includes=['project.value.title',
-                                           'project.value.pi',
-                                           'project.value.keywords',
-                                           'project.value.projectType',
-                                           'project.value.dataType',
-                                           'created',
-                                           'projectId',
-                                           'users',
-                                           'system'])
+    if limit_fields:
+        pub_query = pub_query.source(includes=['project.value.title',
+                                            'project.value.pi',
+                                            'project.value.keywords',
+                                            'project.value.projectType',
+                                            'project.value.dataType',
+                                            'created',
+                                            'projectId',
+                                            'users',
+                                            'system'])
     pub_query = pub_query.sort(
         {'created': {'order': 'desc'}}
     )
@@ -49,7 +51,7 @@ def listing(offset=0, limit=100, *args):
     return {'listing': hits}
 
 
-def search(offset=0, limit=100, query_string='', *args):
+def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     query_dict = json.loads(urllib.parse.unquote(query_string))
 
     type_filters = query_dict['typeFilters']
@@ -114,15 +116,16 @@ def search(offset=0, limit=100, query_string='', *args):
     search = search.filter('bool', must=query_filters)
     search = search.filter(Q('term', status='published'))
     search = search.extra(from_=offset, size=limit)
-    search = search.source(includes=['project.value.title',
-                                     'project.value.pi',
-                                     'project.value.keywords',
-                                     'project.value.projectType',
-                                     'project.value.dataType',
-                                     'created',
-                                     'projectId',
-                                     'users',
-                                     'system'])
+    if limit_fields:
+        search = search.source(includes=['project.value.title',
+                                        'project.value.pi',
+                                        'project.value.keywords',
+                                        'project.value.projectType',
+                                        'project.value.dataType',
+                                        'created',
+                                        'projectId',
+                                        'users',
+                                        'system'])
 
     search = search.sort(
         {'created': {'order': 'desc'}})
@@ -136,10 +139,11 @@ def search(offset=0, limit=100, query_string='', *args):
     return {'listing': hits}
 
 
-def neeslisting(offset=0, limit=100, *args):
+def neeslisting(offset=0, limit=100, limit_fields=True, *args):
     pub_query = IndexedPublicationLegacy.search()
     pub_query = pub_query.extra(from_=offset, size=limit)
-    pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
+    if limit_fields:
+        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
     pub_query = pub_query.sort(
             {'created': {'order': 'desc', 'unmapped_type': 'long'}}
         )
@@ -148,7 +152,7 @@ def neeslisting(offset=0, limit=100, *args):
 
     return {'listing': hits}
 
-def neessearch(offset=0, limit=100, query_string='', *args):
+def neessearch(offset=0, limit=100, query_string='', limit_fields=True, *args):
 
     nees_pi_query = Q({"nested":
                         {"path": "pis",
@@ -163,7 +167,8 @@ def neessearch(offset=0, limit=100, query_string='', *args):
 
     pub_query = IndexedPublicationLegacy.search().filter(nees_pi_query | nees_query_string_query)
     pub_query = pub_query.extra(from_=offset, size=limit)
-    pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
+    if limit_fields:
+        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
     pub_query = pub_query.sort(
             {'created': {'order': 'desc', 'unmapped_type': 'long'}}
         )
@@ -186,3 +191,25 @@ def neesdescription(project_id, *args):
         .source(includes=['description'])
     desc = next(hit.description for hit in pub_query.execute().hits)
     return {'description': desc}
+
+
+def save_publication(
+            self,
+            publication,
+            status='publishing'
+    ):  # pylint: disable=no-self-use
+        """Save publication."""
+        publication['projectId'] = publication['project']['value']['projectId']
+        publication['created'] = datetime.datetime.now().isoformat()
+        publication['status'] = status
+        publication['version'] = 2
+        publication['licenses'] = publication.pop('license', [])
+        publication['license'] = ''
+        try:
+            pub = IndexedPublication.from_id(publication['projectId'])
+            pub.update(**publication)
+        except DocumentNotFound:
+            pub = IndexedPublication(project_id=publication['projectId'], **publication)
+            pub.save()
+        pub.save()
+        return pub

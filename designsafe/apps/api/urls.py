@@ -4,8 +4,6 @@ from designsafe.apps.api.views import LoggerApi
 from django.http import JsonResponse
 
 urlpatterns = [
-    url(r'^agave/', include('designsafe.apps.api.agave.urls')),
-    url(r'^public/', include('designsafe.apps.api.agave.urls')),
     url(r'^projects/', include('designsafe.apps.api.projects.urls',
                                namespace='ds_projects_api')),
 

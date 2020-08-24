@@ -12,5 +12,5 @@ import './rapid';
 import './geo';
 
 
-let context = require.context('.', true, /file-listing-service\.spec\.js/);
+let context = require.context('.', true, /\.spec\.js/);
 context.keys().forEach(context);
