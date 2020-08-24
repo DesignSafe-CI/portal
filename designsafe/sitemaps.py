@@ -35,7 +35,7 @@ Adjusting these settings for the CMS is handled in ``designsafe.urls``
 from django.contrib import sitemaps
 from django.contrib.sites.models import Site
 from django.urls import reverse
-from designsafe.apps.api.agave.filemanager.publications import PublicationsManager
+from designsafe.apps.api.publications.operations import listing as list_publications, neeslisting as list_nees
 from designsafe.apps.api.agave import get_service_account_client
 
 # imported urlpatterns from apps
@@ -174,28 +174,30 @@ class ProjectSitemap(sitemaps.Sitemap):
         # pefm - PublicElasticFileManager to grab public projects
         count = 0
         while True:
-            projects = PublicationsManager(None).listing(system=None, offset=count, limit=200)
-            for proj in projects['children']:
-                if 'project' in proj:
-                    # designsafe projects
-                    subpath = {
-                        'root' : reverse('designsafe_data:data_depot'),
-                        'project' : proj['project'],
-                        'system' : proj['system']
-                    }
-                    projPath.append('{root}public/{system}/{project}'.format(**subpath))
-                elif 'system' in proj and 'path' in proj:
-                    # nees projects
-                    subpath = {
-                        'root' : reverse('designsafe_data:data_depot'),
-                        'project' : proj['path'],
-                        'system' : proj['system']
-                    }
-                    projPath.append('{root}public/{system}{project}'.format(**subpath))
-                else:
-                    continue
+            projects = list_publications(offset=count, limit=200, limit_fields=False)
+            for proj in projects['listing']:
+                subpath = {
+                    'root' : reverse('designsafe_data:data_depot'),
+                    'project' : proj['project']['value']['projectId'],
+                    'system' : 'designsafe.storage.published'
+                }
+                projPath.append('{root}public/{system}/{project}'.format(**subpath))
+            if len(projects['listing']) < 200:
+                break
+            count += 200
 
-            if len(projects['children']) < 200:
+        count = 0
+        while True:
+            projects = list_nees(offset=count, limit=200, limit_fields=False)
+            for proj in projects['listing']:
+                # nees projects
+                subpath = {
+                    'root' : reverse('designsafe_data:data_depot'),
+                    'project' : proj['path'],
+                    'system' : proj['system']
+                }
+                projPath.append('{root}public/{system}{project}'.format(**subpath))
+            if len(projects['listing']) < 200:
                 break
             count += 200
 

@@ -25,11 +25,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     wget \
     git \
-    mysql-devel \
     vim \
-    nfs-utils \
-    openssl-devel \
-    bzip2-devel \
 
 
 
@@ -76,6 +72,7 @@ RUN pip3 install --upgrade pip && \
 COPY requirements.txt /tmp/
 
 RUN pip3 install -r /tmp/requirements.txt
+RUN pip3 install pytest
 ENV PATH="/home/tg458981/.local/bin:${PATH}"
 
 COPY package*.json /srv/www/designsafe/

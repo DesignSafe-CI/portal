@@ -110,6 +110,7 @@ def call_api(request, service):
                 data = agave.jobs.delete(jobId=job_id)
             elif request.method == 'POST':
                 job_post = json.loads(request.body)
+                logger.debug(job_post)
                 job_id = job_post.get('job_id')
 
                 # cancel job / stop job

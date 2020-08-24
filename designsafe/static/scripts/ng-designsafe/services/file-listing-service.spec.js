@@ -1,7 +1,7 @@
 import { TestScheduler } from 'rxjs/testing';
 import { race } from 'rxjs';
 
-describe('RapidDataService', function() {
+describe('FileListingService', function() {
     var FileListingService, $httpBackend, $http, testScheduler;
 
     beforeEach(angular.mock.module('designsafe'));
@@ -30,6 +30,7 @@ describe('RapidDataService', function() {
                 api: 'agave',
                 system: 'test.system',
                 path: '/test/path',
+                scheme: 'testscheme',
                 offset: 0,
                 limit: 100,
             };
@@ -37,8 +38,8 @@ describe('RapidDataService', function() {
             
             // Formats backend API call correctly
             expect(FileListingService.$http.get).toHaveBeenCalledWith(
-                '/api/agave/files/listing/agave/test.system/test/path/',
-                { params: { offset: 0, limit: 100 } }
+                '/api/datafiles/agave/testscheme/listing/test.system/test/path/',
+                { params: { offset: 0, limit: 100, query_string: undefined } }
             );
             // Emits identically to from($http.get(...))
             expectObservable(listingObservable).toBe('--a|');
@@ -62,6 +63,7 @@ describe('RapidDataService', function() {
                 api: 'agave',
                 system: 'test.system',
                 path: '/test/path',
+                scheme: 'testscheme',
                 offset: 0,
                 limit: 100,
             };
@@ -69,8 +71,8 @@ describe('RapidDataService', function() {
             
             // Formats backend API call correctly
             expect(FileListingService.$http.get).toHaveBeenCalledWith(
-                '/api/agave/files/listing/agave/test.system/test/path/',
-                { params: { offset: 0, limit: 100 } }
+                '/api/datafiles/agave/testscheme/listing/test.system/test/path/',
+                { params: { offset: 0, limit: 100, query_string: undefined } }
             );
 
             flush();

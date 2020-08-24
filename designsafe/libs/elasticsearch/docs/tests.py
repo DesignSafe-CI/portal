@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 import datetime
 from elasticsearch_dsl import Q
+from unittest import skip
 from designsafe.libs.elasticsearch.docs.files import BaseESFile
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.libs.elasticsearch.docs.base import BaseESResource
@@ -235,20 +236,23 @@ class TestIndexedFile(TestCase):
         mock_save.assert_called_with()
 
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
-    def test_from_path_with_404(self, mock_search):
+    @patch('designsafe.apps.data.models.elasticsearch.Index.refresh')
+    def test_from_path_with_404(self, mock_refresh, mock_search):
         mock_search().filter().execute.side_effect = TransportError(404)
         with self.assertRaises(TransportError):
             IndexedFile.from_path('test.system', '/')
 
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
-    def test_from_path_raises_when_no_hits(self, mock_search):
+    @patch('designsafe.apps.data.models.elasticsearch.Index.refresh')
+    def test_from_path_raises_when_no_hits(self, mock_refresh, mock_search):
         mock_search().filter().execute.return_value.hits.total.value = 0
         with self.assertRaises(DocumentNotFound):
             IndexedFile.from_path('test.system', '/')
-
+    
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.get')
-    def test_from_path_1_hit(self, mock_get, mock_search):
+    @patch('designsafe.apps.data.models.elasticsearch.Index.refresh')
+    def test_from_path_1_hit(self, mock_refresh, mock_get, mock_search):
         search_res = IndexedFile(
             **{'name': 'res1', 'system': 'test.system', 'path': '/path/to/res1'})
 
@@ -267,10 +271,12 @@ class TestIndexedFile(TestCase):
 
         self.assertEqual(doc_from_path, search_res)
 
+    
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.delete')
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
     @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.get')
-    def test_from_path_multiple_hits(self, mock_get, mock_search, mock_delete):
+    @patch('designsafe.apps.data.models.elasticsearch.Index.refresh')
+    def test_from_path_multiple_hits(self, mock_refresh, mock_get, mock_search, mock_delete):
         """
         When there are multiple files sharing a system and path, ensure we delete
         all but one and return the remaining document.

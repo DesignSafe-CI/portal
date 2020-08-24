@@ -25,7 +25,7 @@ from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 from designsafe.libs.common.decorators import profile as profile_fn
-from designsafe.apps.api.agave.filemanager.publications import PublicationsManager
+from designsafe.apps.api.publications.operations import save_publication
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 logger = logging.getLogger(__name__)
@@ -64,7 +64,7 @@ class PublicationView(BaseApiView):
 
         #logger.debug('publication: %s', json.dumps(data, indent=2))
         status = data.get('status', 'saved')
-        pub = PublicationsManager(None).save_publication(
+        pub = save_publication(
             data['publication'],
             status
         )

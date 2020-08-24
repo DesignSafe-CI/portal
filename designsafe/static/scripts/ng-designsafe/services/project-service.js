@@ -479,7 +479,7 @@ export class ProjectService {
      * @param {string} options.username The username of the collaborator to add
      * @returns {Promise}
      */
-    service.notifyPersonalData = (options) => {
+    notifyPersonalData(options) {
         return notificationResource.post({ data: options });
     };
 
