@@ -192,7 +192,7 @@
                 </div>
                 <div class="other-tag-selector">
                     <select class="form-control project-other-tags-select" data-ng-model="$ctrl.selectedFileTag[$ctrl.project.uuid]">
-                        <option value="">-- Select File Tags --</option>
+                        <option value="">-- Select a File Tag --</option>
                         <option value="other">Other</option>
                         <option ng-repeat="tag in $ctrl.fileTagsForEntity('designsafe.project').tags">{{tag}}</option>
                     </select>
