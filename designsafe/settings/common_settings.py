@@ -608,13 +608,15 @@ if os.environ.get('PORTAL_PROFILE') == 'True':
     PORTAL_PROFILE = True
 else:
     PORTAL_PROFILE = False
-
-from designsafe.settings.celery_settings import *
-from designsafe.settings.external_resource_settings import *
-from designsafe.settings.elasticsearch_settings import *
-from designsafe.settings.rt_settings import *
-from designsafe.settings.external_resource_secrets import *
-from designsafe.settings.nco_mongo import *
+try:
+    from designsafe.settings.celery_settings import *
+    from designsafe.settings.external_resource_settings import *
+    from designsafe.settings.elasticsearch_settings import *
+    from designsafe.settings.rt_settings import *
+    from designsafe.settings.external_resource_secrets import *
+    from designsafe.settings.nco_mongo import *
+except ImportError:
+    pass
 
 PORTAL_DATA_DEPOT_MANAGERS = {
     'agave': 'designsafe.apps.api.agave.filemanager.private_data.PrivateDataFileManager',
