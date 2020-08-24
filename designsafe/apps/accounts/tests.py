@@ -108,7 +108,14 @@ class AccountsTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, 'Generating User Report')
 
-    def test_professional_profile_manage(self):
+    @patch('designsafe.apps.accounts.views.forms.TASClient')
+    @patch('designsafe.apps.accounts.views.TASUser')
+    def test_professional_profile_manage(self, mock_tas_user, mock_form_tas):
+
+        mock_form_tas().institutions.return_value = [{'id': 1, 'name': 'inst1'}]
+        mock_form_tas().get_departments.return_value = [{'id': 1, 'name': 'dep1'}]
+        mock_form_tas().countries.return_value = [{'id': 1, 'name': 'country1'}]
+        
         url = reverse('designsafe_accounts:manage_profile')
         self.client.login(username='ds_admin', password='admin/password')
         resp = self.client.get(url)
@@ -116,15 +123,22 @@ class AccountsTests(TestCase):
         assert 'test@test.com' in str(resp.content)
 
     @patch('designsafe.apps.accounts.views.TASClient')
-    def test_professional_profile_post(self, mock_tas):
+    @patch('designsafe.apps.accounts.views.TASUser')
+    @patch('designsafe.apps.accounts.views.forms.TASClient')
+    def test_professional_profile_post(self, mock_form_tas, mock_tas_user, mock_tas):
+
+        mock_form_tas().institutions.return_value = [{'id': 1, 'name': 'inst1'}]
+        mock_form_tas().get_departments.return_value = [{'id': 1, 'name': 'dep1'}]
+        mock_form_tas().countries.return_value = [{'id': 1, 'name': 'country1'}]
+
         url = reverse('designsafe_accounts:profile_edit')
         self.client.login(username='ds_admin', password='admin/password')
 
         data = {'firstName': 'DS',
                 'lastName': 'User', 'email': 'test@test.test',
-                'phone': '555-555-5555', 'institutionId': '1', 'departmentId': '127',
+                'phone': '555-555-5555', 'institutionId': '1', 'departmentId': '1',
                 'title': 'Center Non-Researcher Staff',
-                'countryId': '230', 'citizenshipId': '230',
+                'countryId': '1', 'citizenshipId': '1',
                 'ethnicity': 'White', 'gender': 'Other',
                 'bio': 'NEW TEST BIO',
                 'website': 'NEW_WEBSITE', 'orcid_id': 'NEW_ORCID_ID', 'nh_interests': '13',
