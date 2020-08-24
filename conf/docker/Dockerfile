@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     wget \
     git \
-    vim \
+    vim 
 
 
 
@@ -41,8 +41,8 @@ RUN apt-get update && apt-get install -y \
 #     make altinstall
 
 # install node 12.x
-RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash -
-RUN apt-get -y install nodejs npm
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get install -y nodejs
 
 # RUN pip install --upgrade pip && pip install uwsgitop
 RUN pip3 install --upgrade pip && pip3 install uwsgi uwsgitop
