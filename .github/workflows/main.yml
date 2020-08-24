@@ -51,6 +51,7 @@ jobs:
 
     - name: Client Side Unit Tests
       run: |
+        npm install
         npm run test
 
 

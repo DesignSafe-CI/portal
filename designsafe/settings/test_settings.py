@@ -212,7 +212,14 @@ HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
-from .nees_settings import NEES_USER_DATABASE
+NEES_USER_DATABASE = {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': os.environ.get('NEES_DATABASE_NAME'),
+    'HOST': os.environ.get('NEES_DATABASE_HOST'),
+    'PORT': os.environ.get('NEES_DATABASE_PORT'),
+    'USER': os.environ.get('NEES_DATABASE_USER'),
+    'PASSWORD': os.environ.get('NEES_DATABASE_PASSWORD'),
+}
 #if NEES_USER_DATABASE['NAME']:
 #    DATABASES['nees_users'] = NEES_USER_DATABASE
 
@@ -572,8 +579,11 @@ if os.environ.get('PORTAL_PROFILE') == 'True':
 else:
     PORTAL_PROFILE = False
 
-from .rt_settings import *
-from .external_resource_secrets import *
+
+GOOGLE_OAUTH2_CLIENT_SECRET = "CHANGE_ME"
+GOOGLE_OAUTH2_CLIENT_ID = "CHANGE_ME"
+
+WEBHOOK_POST_URL = "http://8cb9afb3.ngrok.io"
 
 # Box sync
 BOX_APP_CLIENT_ID = 'boxappclientid'
@@ -797,3 +807,18 @@ HAYSTACK_CONNECTIONS = {
         'KWARGS': {'http_auth': ES_AUTH}
     }
 }
+
+DJANGO_RT = {
+    'RT_HOST': os.environ.get('RT_HOST', 'https://rt.example.com/REST/1.0'),
+    'RT_UN': os.environ.get('RT_USERNAME', 'username'),
+    'RT_PW': os.environ.get('RT_PASSWORD', 'password'),
+    'RT_QUEUE': os.environ.get('RT_DEFAULT_QUEUE', 'Support'),
+}
+
+TICKET_CATEGORIES = (
+    ('DATA_CURATION_PUBLICATION', 'Data Curation & Publication'),
+    ('DATA_DEPOT', 'Data Depot'),
+    ('DISCOVERY_WORKSPACE', 'Discovery Workspace'),
+    ('LOGIN', 'Login/Registration'),
+    ('OTHER', 'Other'),
+)
