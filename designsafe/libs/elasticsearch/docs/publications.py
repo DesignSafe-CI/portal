@@ -213,10 +213,11 @@ class BaseESPublication(BaseESResource):
 
     def archive(self):
         archive_name = '{}_archive.zip'.format(self.projectId)
+        metadata_name = '{}_metadata.json'.format(self.projectId)
         pub_dir = settings.DESIGNSAFE_PUBLISHED_PATH
         arc_dir = os.path.join(pub_dir, 'archives/')
         archive_path = os.path.join(arc_dir, archive_name)
-        metadata_path = os.path.join(arc_dir, self.projectId+'_metadata.json')
+        metadata_path = os.path.join(arc_dir, metadata_name)
 
         def set_perms(dir, octal, subdir=None):
             try:
@@ -246,7 +247,7 @@ class BaseESPublication(BaseESResource):
                         if f == archive_name:
                             continue
                         zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(pub_dir, ''), f))
-                zf.write(metadata_path, self.projectId+'_metadata.json')
+                zf.write(metadata_path, metadata_name)
                 zf.close()
             except Exception as e:
                 logger.exception("Archive creation failed for {}".format(arc_source))
@@ -281,7 +282,6 @@ class BaseESPublication(BaseESResource):
                 else:
                     project_doi = pub_dict['project']['value']['dois'][0]
                     meta_dict = datacite.get_doi(project_doi)
-                # metadata_path = os.path.join(arc_dir, self.projectId+'_metadata.json')
                 with open(metadata_path, 'w') as meta_file:
                     json.dump(meta_dict, meta_file)
             except:
