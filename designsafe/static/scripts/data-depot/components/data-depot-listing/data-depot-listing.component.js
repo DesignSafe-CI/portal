@@ -39,7 +39,7 @@ class PublicationListingCtrl {
 }
 
 class PublicationLegacyListingCtrl {
-    constructor($state, PublicationService, $stateParams, $uibModal){
+    constructor($state, PublicationService, $uibModal){
         'ngInject';
         this.$state = $state;
         this.PublicationService = PublicationService;
@@ -64,10 +64,9 @@ class PublicationLegacyListingCtrl {
 }
 
 class FilesListingCtrl {
-    constructor($state, $stateParams, FileListingService) {
+    constructor($state, FileListingService) {
         'ngInject';
         this.$state = $state;
-        this.$stateParams = $stateParams;
         this.FileListingService = FileListingService    
         
         this.handleScroll = this.handleScroll.bind(this)

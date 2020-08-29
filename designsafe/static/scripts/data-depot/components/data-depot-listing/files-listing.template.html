@@ -6,6 +6,7 @@
         data-scroll-bottom="$ctrl.handleScroll()"
         data-scroll-top="$ctrl.scrollToTop()"
         data-bottom-height="0"
+        id="listing-scroll"
     >
         <table class="files-listing-table table table-bordered table-striped"
                style="background-color: #fff;">
@@ -39,7 +40,7 @@
                                 <i class="fa fa-square-o fa-stack-1x" style="color:lightgray;"></i>
                             </span>
                         </span>
-                        <i class="fa {{ $ctrl.icon(item.name, item.type) }}">&nbsp;</i>
+                        <i class="fa {{ $ctrl.icon(item.name, item.type) }} test-file-icon">&nbsp;</i>
                         <a data-ng-href="{{$ctrl.href(item.system, item.path)}}" data-ng-click="$ctrl.browse($event, item)" class="test-file-name">
                             {{ item.name }}
                         </a>
@@ -72,12 +73,12 @@
                             </div>
                         </div>
                     </td>
-                    <td data-ng-if="item.format== 'folder'">--</td>
-                    <td data-ng-if="item.format== 'raw'">{{ item.length|bytes }}</td>
-                    <td data-ng-if="item.lastModified">{{ item.lastModified|date:"short" }}</td>
-                    <td data-ng-if="!item.lastModified">--</td>
-                    <td data-ng-if="$ctrl.operationLabel">
-                        <button class="btn btn-primary" ng-if="item.type==='dir'" ng-click="$ctrl.operation({file: item})">{{$ctrl.operationLabel}}
+                    <td data-ng-if="item.format== 'folder'" class="test-length-folder">--</td>
+                    <td data-ng-if="item.format== 'raw'" class="test-length-file">{{ item.length|bytes }}</td>
+                    <td data-ng-if="item.lastModified" class="test-date">{{ item.lastModified|date:"short" }}</td>
+                    <td data-ng-if="!item.lastModified"class="test-date-missing">--</td>
+                    <td data-ng-if="$ctrl.operationLabel" class="test-op-label">
+                        <button class="btn btn-primary test-op-btn" ng-if="item.type==='dir'" ng-click="$ctrl.operation({file: item})">{{$ctrl.operationLabel}}
 
                         </button></td>
                 </tr>
@@ -109,7 +110,7 @@
                     <div class="alert alert-danger">
                         <div data-ng-if="$ctrl.listing.error.message"
                              data-ng-bind-html="$ctrl.listing.error.message">
-                            {{$ctrl.browser.error}}
+                            {{$ctrl.listing.error.message}}
                         </div>
                         <div data-ng-if="!$ctrl.listing.error.message">
                             Something went wrong.
@@ -122,7 +123,7 @@
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"
                 >
-                    <p class="lead" style="margin-top:20px" ng-if="!($ctrl.listing.params.system.includes('project-') || $ctrl.editTags)">
+                    <p class="lead" style="margin-top:20px" ng-if="!($ctrl.listing.params.system.includes('project-') && $ctrl.editTags)">
                         This folder is empty! <br />
                         <i class="fa fa-folder-open-o">&nbsp;</i><br/>
                         <a data-ng-if="$ctrl.listing.params.system.includes('project-')"
