@@ -43,6 +43,7 @@ module.exports = function(config) {
             './designsafe/static/scripts/ng-designsafe/modules/notifications-module.js',
             './designsafe/static/scripts/logging/logger.js',
             './designsafe/apps/signals/static/designsafe/apps/signals/scripts/module.js',
+            './designsafe/static/styles/ng-designsafe.css',
 
             './designsafe/static/scripts/test-context.js',
         ],

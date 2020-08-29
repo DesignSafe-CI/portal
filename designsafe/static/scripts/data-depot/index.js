@@ -2,9 +2,8 @@ import angular from 'angular';
 
 import './../ng-designsafe/providers';
 import './components';
-import './services';
 
-let ddModule = angular.module('ds-data', ['designsafe', 'dd.components', 'dd.services']);
+let ddModule = angular.module('ds-data', ['designsafe', 'dd.components']);
 ddModule.requires.push(
     'ui.router',
     'djng.urls', //TODO: djng

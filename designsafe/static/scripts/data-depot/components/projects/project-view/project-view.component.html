@@ -3,7 +3,7 @@
     <!-- Project Header Start -->
     <div>
       <div class="prj-head-container">
-        <span class="prj-head-title">
+        <span class="prj-head-title" id="test-prj-title">
             {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
             <a class="prj-head-edit" ng-click="$ctrl.editProject($event)"><strong>Edit Project</strong></a>
         </span>
@@ -15,26 +15,26 @@
         </colgroup>
         <tr class="prj-row">
           <td>PI</td>
-          <td class="prj-data">
+          <td class="prj-data" id="test-prj-pi">
             <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
           </td>
         </tr>
         <tr ng-if="$ctrl.browser.project.value.coPis.length">
           <td>CoPIs</td>
-          <td class="prj-data">
+          <td class="prj-data" id="test-prj-copi">
             <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
           </td>
         </tr>
         <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
           <td>Project Type</td>
-          <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
+          <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'" id="test-prj-type">
             {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }} &nbsp;
             <a ng-if="['experimental', 'simulation'].includes($ctrl.browser.project.value.projectType)"
                 ng-click="$ctrl.overview()">
                 View Overview
             </a>
         </td>
-        <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
+        <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'" id="test-prj-type">
             Field Research &nbsp;
             <a ng-click="$ctrl.overview()">View Overview</a>
           </td>
@@ -74,21 +74,21 @@
         <!-- older projects will have awards listed as strings -->
         <tr ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
           <td>Awards</td>
-          <td><strong>{{ $ctrl.browser.project.value.awardNumber.join("") }}</strong></td>
+          <td class="test-prj-award"><strong>{{ $ctrl.browser.project.value.awardNumber.join("") }}</strong></td>
         </tr>
         <tr ng-if="!$ctrl.isSingle($ctrl.browser.project.value.awardNumber)" ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index">
           <td ng-if="$first">Awards</td>
           <td ng-if="!$first"></td>
-          <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+          <td class="test-prj-award"><strong>{{ award.name }} - {{ award.number }}</strong></td>
         </tr>
         <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
           <td ng-if="$first">Related Work</td>
           <td ng-if="!$first"></td>
-          <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
+          <td id="test-prj-related"><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
         </tr>
         <tr class="prj-row">
           <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
-          <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
+          <td class="prj-data" id="test-prj-keywords">{{ $ctrl.browser.project.value.keywords }}</td>
         </tr>
       </table>
       <div ng-if="$ctrl.browser.project.value.description">
