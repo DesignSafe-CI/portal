@@ -11,7 +11,6 @@ from pytas.http import TASClient
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -268,10 +267,48 @@ class Project(MetadataModel):
         Serialize project to json for google dataset search
         https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/BMNJPS
         """
+        logger.debug("***"*100)
         logger.debug(self.to_body_dict())
+        logger.debug("***"*100)
+
         dataset_json = {
             "@context": "http://schema.org",
             "@type": "Dataset",
+            "@id": "",
+            "identifier": "",
+            "name": self.title,
+            "creator": [
+                {
+                    "name": "",
+                    "affiliation": "",
+                    "@id": "https://orcid.org/0000-0001-7099-4002",
+                    "identifier": "https://orcid.org/0000-0001-7099-4002"
+                }
+            ],
+            "author": [
+                {
+                    "name": "",
+                    "affiliation": "",
+                    "@id": "https://orcid.org/0000-0001-7099-4002",
+                    "identifier": "https://orcid.org/0000-0001-7099-4002"
+                }
+            ],
+            "datePublished": self.created,
+            "dateModified": self.to_body_dict()['lastUpdated'],
+            "version": #self.to_body_dict()['value']['version'],
+            "description": self.description,
+            "keywords": self.keywords.split(','),
+
+
+            "license": {
+                "@type": "Dataset",
+                "text": ""
+            },
+            "includedInDataCatalog": {
+                "@type": "Organization",
+                "name": "Designsafe-CI",
+                "url": "https://designsafe-ci.org"
+            },
             "publisher": {
                 "@type": "Organization",
                 "name": "Designsafe-CI"
@@ -291,10 +328,38 @@ class Project(MetadataModel):
             "datePublished": self.created
         }
         if self.dois:
+            "distribution": [
+                {
+                    "@type": "DataDownload",
+                    "name": self.to_body_dict()['value']['projectId'] + "_archive.zip",
+                    "fileFormat": "application/zip",
+                    "contentSize": "",
+                    "@id": "",
+                    "identifier": ""
+                }
+            ]
+        }
+        if self.team_order.order == 0:
+            logger.debug('cool'*100)
+        if self.dois:
+            dataset_json['@id'] = self.dois[0]
             dataset_json['identifier'] = self.dois[0]
         else:
             related_ents = self.related_entities()
             logger.debug(related_ents)
+        if getattr(self, 'team_order', False):
+            authors = sorted(self.team_order, key=lambda x: x['order'])
+        else:
+            authors = [{'name': username} for username in [self.pi] + self.co_pis]
+        creators_details, institutions = _process_authors(authors)
+        logger.debug("$$$"*100)
+        logger.debug(institutions)
+        logger.debug("$$$"*100)
+        dataset_json['author'] = [{"name": creator["givenName"] + " " + creator["familyName"]} for creator in creators_details]
+        dataset_json['author'] = [{"affiliation": institution} for institution in institutions]
+        logger.debug("###"*100)
+        logger.debug(dataset_json)
+        logger.debug("###"*100)
         return dataset_json
 
     def to_datacite_json(self):
