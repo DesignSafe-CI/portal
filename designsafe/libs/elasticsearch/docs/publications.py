@@ -5,15 +5,8 @@
 """
 
 import logging
-import os
-import zipfile
-import json
 from future.utils import python_2_unicode_compatible
-from designsafe import settings
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
-from designsafe.apps.projects.managers import datacite
-from designsafe.apps.projects.managers.base import ProjectsManager
-from designsafe.apps.api.agave import service_account
 from designsafe.libs.elasticsearch.docs.base import BaseESResource
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 from django.contrib.auth import get_user_model
@@ -210,87 +203,3 @@ class BaseESPublication(BaseESResource):
                 file_paths.append(file_dict['path'])
 
         return file_paths
-
-    def archive(self):
-        archive_name = '{}_archive.zip'.format(self.projectId)
-        metadata_name = '{}_metadata.json'.format(self.projectId)
-        pub_dir = settings.DESIGNSAFE_PUBLISHED_PATH
-        arc_dir = os.path.join(pub_dir, 'archives/')
-        archive_path = os.path.join(arc_dir, archive_name)
-        metadata_path = os.path.join(arc_dir, metadata_name)
-
-        def set_perms(dir, octal, subdir=None):
-            try:
-                os.chmod(dir, octal)
-                if subdir:
-                    if not os.path.isdir(subdir):
-                        raise Exception('subdirectory does not exist!')
-                    for root, dirs, files in os.walk(subdir):
-                        os.chmod(root, octal)
-                        for d in dirs:
-                            os.chmod(os.path.join(root, d), octal)
-                        for f in files:
-                            os.chmod(os.path.join(root, f), octal)
-            except Exception as e:
-                logger.exception("Failed to set permissions for {}".format(dir))
-                os.chmod(dir, 0o555)
-
-        # compress published files into a zip archive
-        def create_archive():
-            arc_source = os.path.join(pub_dir, self.projectId)
-
-            try:
-                logger.debug("Creating archive for {}".format(self.projectId))
-                zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
-                for dirs, _, files in os.walk(arc_source):
-                    for f in files:
-                        if f == archive_name:
-                            continue
-                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(pub_dir, ''), f))
-                zf.write(metadata_path, metadata_name)
-                zf.close()
-            except Exception as e:
-                logger.exception("Archive creation failed for {}".format(arc_source))
-            finally:
-                set_perms(pub_dir, 0o555, arc_source)
-                set_perms(arc_dir, 0o555)
-
-        # create json file of project metadata (placeholder until fedora is up)
-        def create_metadata():
-            manager = ProjectsManager(service_account())
-            pub_dict = self._wrapped.to_dict()
-            meta_dict = {}
-
-            entity_type_map = {
-            'experimental': 'experimentsList',
-            'simulation': 'simulations',
-            'hybrid_simulation': 'hybrid_simulations',
-            'field_recon': 'missions',
-            }
-
-            try:
-                logger.debug("Creating metadata for {}".format(self.projectId))
-                if pub_dict['project']['value']['projectType'] in entity_type_map:
-                    ent_type = entity_type_map[pub_dict['project']['value']['projectType']]
-                    entity_dois = [x['value']['dois'][0] for x in pub_dict[ent_type]]
-                    project_uuid = pub_dict['project']['uuid']
-                    meta_dict = manager.get_entity_by_uuid(project_uuid).to_datacite_json()
-                    meta_dict['published_resources'] = []
-                    for doi in entity_dois:
-                        ent_json = datacite.get_doi(doi)
-                        meta_dict['published_resources'].append(ent_json)
-                else:
-                    project_doi = pub_dict['project']['value']['dois'][0]
-                    meta_dict = datacite.get_doi(project_doi)
-                with open(metadata_path, 'w') as meta_file:
-                    json.dump(meta_dict, meta_file)
-            except:
-                logger.exception("Failed to create metadata!")
-
-        try:
-            set_perms(pub_dir, 0o755, os.path.join(pub_dir, self.projectId))
-            set_perms(arc_dir, 0o755)
-            create_metadata()
-            create_archive()
-        except Exception as e:
-            logger.exception('Failed to archive publication!')

@@ -5,10 +5,14 @@
         Visit: https://support.datacite.org/docs/api for more info.
 """
 
+import os
+import json
+import zipfile
 import logging
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
+from designsafe import settings
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.projects.managers import datacite as DataciteManager
@@ -16,7 +20,7 @@ from designsafe.apps.projects.managers.base import ProjectsManager
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 
 
-LOG = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}'
 ENTITY_TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}/#details-{entity_uuid}'
 FIELD_MAP = {
@@ -167,7 +171,7 @@ def draft_publication(
         responses.append(prj_res)
 
     for res in responses:
-        LOG.info(
+        logger.info(
             "DOI created or updated: %(doi)s",
             {"doi": res['data']['id']}
         )
@@ -215,7 +219,7 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
     pub.update(status='published')
 
     for res in responses:
-        LOG.info(
+        logger.info(
             "DOI published: %(doi)s",
             {"doi": res['data']['id']}
         )
@@ -236,7 +240,7 @@ def _populate_entities_in_publication(entity, publication):
         try:
             field = getattr(entity, attr)
         except AttributeError:
-            LOG.exception(
+            logger.exception(
                 "No field '%(attr)s' in '%(ent)s'",
                 {"attr": attr, "ent": entity}
             )
@@ -267,7 +271,7 @@ def _transform_authors(entity, publication):
         try:
             user = get_user_model().objects.get(username=author.get('name'))
         except ObjectDoesNotExist:
-            LOG.exception(
+            logger.exception(
                 "Error retrieving user: %(user)s",
                 {"user": author.get('name')}
             )
@@ -325,7 +329,7 @@ def fix_file_tags(project_id):
                 )
                 tag['fileUuid'] = pub_file.uuid
             except Exception as err:
-                LOG.info('error: {}'.format(err))
+                logger.info('error: {}'.format(err))
                 continue
 
     def fix_tags_no_path(entity):
@@ -340,7 +344,7 @@ def fix_file_tags(project_id):
                             tag['fileUuid'] = pub_file.uuid
                     
                 except Exception as err:
-                    LOG.info('error: {}'.format(err))
+                    logger.info('error: {}'.format(err))
                     continue
         else:
             for fobj in entity['fileObjs']:
@@ -352,7 +356,7 @@ def fix_file_tags(project_id):
                             tag['fileUuid'] = pub_file.uuid
                     
                 except Exception as err:
-                    LOG.info('error: {}'.format(err))
+                    logger.info('error: {}'.format(err))
                     continue
 
     for entname in entities_to_check:
@@ -369,6 +373,108 @@ def fix_file_tags(project_id):
                 fix_tags_no_path(pub_dict[entname])
 
     pub.update(**pub_dict)
+
+
+def archive(project_id):
+    """Archive Published Files and Metadata
+
+    When given a project_id, this function will copy and compress all of the published files
+    for a project, and it will also include a formatted json document of the published metadata.
+    Note: This metadata file is will only be used until the Fedora system is set up again.
+    """
+    pub = BaseESPublication(project_id=project_id)
+    archive_name = '{}_archive.zip'.format(pub.projectId)
+    metadata_name = '{}_metadata.json'.format(pub.projectId)
+    pub_dir = settings.DESIGNSAFE_PUBLISHED_PATH
+    arc_dir = os.path.join(pub_dir, 'archives/')
+    archive_path = os.path.join(arc_dir, archive_name)
+    metadata_path = os.path.join(arc_dir, metadata_name)
+
+    def set_perms(dir, octal, subdir=None):
+        try:
+            os.chmod(dir, octal)
+            if subdir:
+                if not os.path.isdir(subdir):
+                    raise Exception('subdirectory does not exist!')
+                for root, dirs, files in os.walk(subdir):
+                    os.chmod(root, octal)
+                    for d in dirs:
+                        os.chmod(os.path.join(root, d), octal)
+                    for f in files:
+                        os.chmod(os.path.join(root, f), octal)
+        except Exception as e:
+            logger.exception("Failed to set permissions for {}".format(dir))
+            os.chmod(dir, 0o555)
+
+    # compress published files into a zip archive
+    def create_archive():
+        arc_source = os.path.join(pub_dir, pub.projectId)
+
+        try:
+            logger.debug("Creating archive for {}".format(pub.projectId))
+            zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
+            for dirs, _, files in os.walk(arc_source):
+                for f in files:
+                    if f == archive_name:
+                        continue
+                    zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(pub_dir, ''), f))
+            zf.write(metadata_path, metadata_name)
+            zf.close()
+        except Exception as e:
+            logger.exception("Archive creation failed for {}".format(arc_source))
+        finally:
+            set_perms(pub_dir, 0o555, arc_source)
+            set_perms(arc_dir, 0o555)
+
+    # create formatted metadata for user download
+    def create_metadata():
+        mgr = ProjectsManager(service_account())
+        pub_dict = pub._wrapped.to_dict()
+        meta_dict = {}
+
+        entity_type_map = {
+            'experimental': 'experimentsList',
+            'simulation': 'simulations',
+            'hybrid_simulation': 'hybrid_simulations',
+            'field_recon': 'missions',
+        }
+
+        project_uuid = pub_dict['project']['uuid']
+        try:
+            logger.debug("Creating metadata for {}".format(pub.projectId))
+            if pub_dict['project']['value']['projectType'] in entity_type_map:
+                ent_type = entity_type_map[pub_dict['project']['value']['projectType']]
+                entity_uuids = [x['uuid'] for x in pub_dict[ent_type]]
+                meta_dict = mgr.get_entity_by_uuid(project_uuid).to_datacite_json()
+                meta_dict['published_resources'] = []
+                meta_dict['url'] = TARGET_BASE.format(project_id=pub_dict['project_id'])
+                for uuid in entity_uuids:
+                    entity = mgr.get_entity_by_uuid(uuid)
+                    ent_json = entity.to_datacite_json()
+                    ent_json['doi'] = entity.dois[0]
+                    ent_json['url'] = ENTITY_TARGET_BASE.format(
+                        project_id=pub_dict['project_id'],
+                        entity_uuid=uuid
+                    )
+                    meta_dict['published_resources'].append(ent_json)
+            else:
+                project = mgr.get_entity_by_uuid(project_uuid)
+                meta_dict = project.to_datacite_json()
+                meta_dict['doi'] = project.dois[0]
+                meta_dict['url'] = TARGET_BASE.format(project_id=pub_dict['project_id'])
+
+            with open(metadata_path, 'w') as meta_file:
+                json.dump(meta_dict, meta_file)
+        except:
+            logger.exception("Failed to create metadata!")
+
+    try:
+        set_perms(pub_dir, 0o755, os.path.join(pub_dir, pub.projectId))
+        set_perms(arc_dir, 0o755)
+        create_metadata()
+        create_archive()
+    except Exception as e:
+        logger.exception('Failed to archive publication!')
 
 
 def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
