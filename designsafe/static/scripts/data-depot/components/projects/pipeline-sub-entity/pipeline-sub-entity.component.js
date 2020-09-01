@@ -141,6 +141,7 @@ class PipelineSubEntityCtrl {
                 project: () => this.browser.project,
                 edit: () => selection,
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }

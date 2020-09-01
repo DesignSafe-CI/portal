@@ -176,7 +176,6 @@ class PublicationPreviewCtrl {
     }
 
     editProject() {
-        // need to refresh project data when this is closed (not working atm)
         this.ProjectService.editProject(this.browser.project);
     }
 
@@ -212,6 +211,7 @@ class PublicationPreviewCtrl {
                 project: () => {return this.browser.project; },
                 readOnly: () => {return true;},
             },
+            backdrop: 'static',
             size: 'lg'
         });
     }

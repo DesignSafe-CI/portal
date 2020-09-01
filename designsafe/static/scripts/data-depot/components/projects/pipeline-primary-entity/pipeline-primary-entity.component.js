@@ -122,6 +122,7 @@ class PipelinePrimaryEntityCtrl {
                 project: () => { return this.project; },
                 edit: () => { return selectedEnt; },
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }

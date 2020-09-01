@@ -311,16 +311,6 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
         return missingData;
     };
 
-    service.manageHybridSimulations = (options) => {
-        $uibModal.open({
-            component: 'manageHybridSimulations',
-            resolve: {
-                options: () => options,
-            },
-            size: 'lg',
-        });
-    };
-
     /**
      *
      * @param options
@@ -330,22 +320,6 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      */
     service.notifyPersonalData = (options) => {
         return notificationResource.post({ data: options });
-    };
-
-    /**
-     *
-     * @param options
-     * @param {string} options.uuid The Project uuid
-     * @returns {Promise}
-     */
-    service.manageSimulations = (options) => {
-        $uibModal.open({
-            component: 'manageSimulations',
-            resolve: {
-                options: () => options,
-            },
-            size: 'lg',
-        });
     };
 
     /**
@@ -359,6 +333,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 project: () => project,
                 efs: () => efs,
             },
+            backdrop: 'static',
             size: 'lg',
         });
         return modalInstance;
