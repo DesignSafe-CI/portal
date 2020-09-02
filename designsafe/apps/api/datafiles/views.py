@@ -5,15 +5,12 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from requests.exceptions import HTTPError
 from boxsdk.exception import BoxOAuthException
-from dropbox.exceptions import AuthError
+from dropbox.exceptions import AuthError as DropboxAuthError
+from google.auth.exceptions import GoogleAuthError
 import json
 import logging
 from designsafe.apps.api.exceptions import ApiException
-from designsafe.apps.api.datafiles.handlers.agave_handlers import agave_get_handler, agave_put_handler, agave_post_handler
-from designsafe.apps.api.datafiles.handlers.shared_handlers import shared_get_handler, shared_put_handler
-from designsafe.apps.api.datafiles.handlers.googledrive_handlers import googledrive_get_handler, googledrive_put_handler
-from designsafe.apps.api.datafiles.handlers.dropbox_handlers import dropbox_get_handler, dropbox_put_handler
-from designsafe.apps.api.datafiles.handlers.box_handlers import box_get_handler, box_put_handler
+from designsafe.apps.api.datafiles.handlers import datafiles_get_handler, datafiles_post_handler, datafiles_put_handler, resource_unconnected_handler, resource_expired_handler
 from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
 from designsafe.apps.api.datafiles.notifications import notify
 # Create your views here.
@@ -22,33 +19,52 @@ logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
 
 
-class AgaveFilesView(BaseApiView):
-    def get(self, request, operation=None, scheme='private', system=None, path='/'):
+def get_client(user, api):
+    client_mappings = {
+        'agave': 'agave_oauth',
+        'shared': 'agave_oauth',
+        'googledrive': 'googledrive_user_token',
+        'box': 'box_user_token',
+        'dropbox': 'dropbox_user_token'
+    }
+    return getattr(user, client_mappings[api]).client
 
+
+class DataFilesView(BaseApiView):
+    def get(self, request, api, operation=None, scheme='private', system=None, path=''):
+        
         metrics.info('Data Depot',
                      extra={
                          'user': request.user.username,
                          'sessionId': getattr(request.session, 'session_key', ''),
                          'operation': operation,
                          'info': {
-                             'api': 'agave',
+                             'api': api,
                              'systemId': system,
                              'filePath': path,
                              'query': request.GET.dict()}
                      })
 
-        if not request.user.is_authenticated:
+        if request.user.is_authenticated:
+            try:
+                client = get_client(request.user, api)
+            except AttributeError:
+                raise resource_unconnected_handler(api)
+        elif api == 'agave':
             client = get_user_model().objects.get(username='envision').agave_oauth.client
         else:
-            client = request.user.agave_oauth.client
+            return JsonResponse({'message': 'Please log in to access this feature.'}, status=403)
+
         try:
-            response = agave_get_handler(
-                client, scheme, system, path, operation, **request.GET.dict())
+            response = datafiles_get_handler(
+                api, client, scheme, system, path, operation, **request.GET.dict())
             return JsonResponse(response)
+        except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
+            raise resource_expired_handler(api)
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
 
-    def put(self, request, operation=None, scheme='private',
+    def put(self, request, api, operation=None, scheme='private',
             handler=None, system=None, path='/'):
 
         body = json.loads(request.body)
@@ -59,7 +75,7 @@ class AgaveFilesView(BaseApiView):
                          'sessionId': getattr(request.session, 'session_key', ''),
                          'operation': operation,
                          'info': {
-                             'api': 'agave',
+                             'api': api,
                              'scheme': scheme,
                              'system': system,
                              'path': path,
@@ -67,19 +83,20 @@ class AgaveFilesView(BaseApiView):
                          }
                      })
 
-        try:
-            client = request.user.agave_oauth.client
-        except AttributeError:
-            return HttpResponseForbidden
+        if request.user.is_authenticated:
+            try:
+                client = get_client(request.user, api)
+            except AttributeError:
+                raise resource_unconnected_handler(api)
 
         try:
-            response = agave_put_handler(request.user.username, client, scheme, system, path, operation, body=body)
+            response = datafiles_put_handler(api, request.user.username, client, scheme, system, path, operation, body=body)
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
 
         return JsonResponse(response)
 
-    def post(self, request, operation=None, scheme='private',
+    def post(self, request, api, operation=None, scheme='private',
              handler=None, system=None, path='/'):
         post_files = request.FILES.dict()
         post_body = request.POST.dict()
@@ -89,257 +106,19 @@ class AgaveFilesView(BaseApiView):
                          'sessionId': getattr(request.session, 'session_key', ''),
                          'operation': operation,
                          'info': {
-                             'api': 'agave',
+                             'api': api,
                              'scheme': scheme,
                              'system': system,
                              'path': path,
                          }})
 
-        try:
-            client = request.user.agave_oauth.client
-        except AttributeError:
-            return HttpResponseForbidden()
+        if request.user.is_authenticated:
+            try:
+                client = get_client(request.user, api)
+            except AttributeError:
+                raise resource_unconnected_handler(api)
 
-        response = agave_post_handler(request.user.username, client, scheme, system, path, operation, body={**post_files, **post_body})
-
-        return JsonResponse(response)
-
-
-class SharedFilesView(BaseApiView):
-    def get(self, request, operation=None, scheme='private', system=None, path=''):
-        metrics.info('Data Depot',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'info': {
-                             'api': 'shared',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
-        try:
-            client = request.user.agave_oauth.client
-        except AttributeError:
-            client = None
-        username = request.user.username
-        try:
-            response = shared_get_handler(
-                client, scheme, system, path, username, operation, **request.GET.dict())
-            return JsonResponse(response)
-        except HTTPError as e:
-            return JsonResponse({'message': str(e)}, status=e.response.status_code)
-
-    def put(self, request, operation=None, scheme='private',
-            handler=None, system=None, path='/'):
-
-        metrics.info('Data Depot',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'info': {
-                             'api': 'shared',
-                             'scheme': scheme,
-                             'system': system,
-                             'path': path,
-                             'body': body
-                         }
-                     })
-
-        body = json.loads(request.body)
-        try:
-            client = request.user.agave_oauth.client
-        except AttributeError:
-            return HttpResponseForbidden
-
-        response = shared_put_handler(client, scheme, system, path, operation, body=body)
-
-        return JsonResponse(response)
-
-
-class GoogledriveFilesView(BaseApiView):
-    def get(self, request, operation=None, scheme='private', system=None, path='root'):
-        metrics.info('Data Depot',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'info': {
-                             'api': 'googledrive',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
-        try:
-            client = request.user.googledrive_user_token.client
-        except AttributeError:
-            message = 'Connect your Google Drive account <a href="' + reverse('googledrive_integration:index') + '">here</a>'
-            raise ApiException(status=400, message=message, extra={
-                'action_url': reverse('googledrive_integration:index'),
-                'action_label': 'Connect Google Drive Account'
-            })
-        try:
-            response = googledrive_get_handler(
-                client, scheme, system, path, operation, **request.GET.dict())
-            return JsonResponse(response)
-        except Exception as e:
-            if 'invalid_grant' in str(e):
-                message = 'While you previously granted this application access to Google Drive, ' \
-                    'that grant appears to be no longer valid. Please ' \
-                    '<a href="{}">disconnect and reconnect your Google Drive account</a> ' \
-                    'to continue using Google Drive data.'.format(reverse('googledrive_integration:index'))
-                raise ApiException(status=401, message=message)
-
-            message = 'Unable to communicate with Google Drive: {}'.format(e)
-            raise ApiException(status=500, message=message)
-
-    def put(self, request, operation=None, scheme='private',
-            handler=None, system=None, path=''):
-        metrics.info('Data Depot',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'info': {
-                             'api': 'googledrive',
-                             'scheme': scheme,
-                             'system': system,
-                             'path': path,
-                             'body': body
-                         }
-                     })
-
-        body = json.loads(request.body)
-        try:
-            client = request.user.googledrive_user_token.client
-        except AttributeError:
-            return HttpResponseForbidden
-
-        response = googledrive_put_handler(client, scheme, system, path, operation, body=body)
-
-        return JsonResponse(response)
-
-
-class DropboxFilesView(BaseApiView):
-    def get(self, request, operation=None, scheme='private', system=None, path=''):
-        metrics.info('Data Depot',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'info': {
-                             'api': 'dropbox',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
-        try:
-            client = request.user.dropbox_user_token.client
-        except AttributeError:
-            message = 'Connect your Dropbox account <a href="' + reverse('dropbox_integration:index') + '">here</a>'
-            raise ApiException(status=400, message=message, extra={
-                'action_url': reverse('dropbox_integration:index'),
-                'action_label': 'Connect Dropbox.com Account'
-            })
-        try:
-            response = dropbox_get_handler(
-                client, scheme, system, path, operation, **request.GET.dict())
-            return JsonResponse(response)
-        except AuthError:
-            # user needs to reconnect with Dropbox
-            message = 'While you previously granted this application access to Dropbox, ' \
-                      'that grant appears to be no longer valid. Please ' \
-                      '<a href="%s">disconnect and reconnect your Dropbox.com account</a> ' \
-                      'to continue using Dropbox data.' % reverse('dropbox_integration:index')
-            raise ApiException(status=403, message=message)
-
-    def put(self, request, operation=None, scheme='private',
-            handler=None, system=None, path=''):
-        
-        metrics.info('Data Depot',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'info': {
-                             'api': 'dropbox',
-                             'scheme': scheme,
-                             'system': system,
-                             'path': path,
-                             'body': body
-                         }
-                     })
-
-        body = json.loads(request.body)
-        try:
-            client = request.user.dropbox_user_token.client
-        except AttributeError:
-            return HttpResponseForbidden
-
-        response = dropbox_put_handler(client, scheme, system, path, operation, body=body)
-
-        return JsonResponse(response)
-
-
-class BoxFilesView(BaseApiView):
-    def get(self, request, operation=None, scheme='private', system=None, path=''):
-        metrics.info('Data Depot',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'info': {
-                             'api': 'box',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
-        try:
-            client = request.user.box_user_token.client
-        except AttributeError:
-            message = 'Connect your Box account <a href="' + reverse('box_integration:index') + '">here</a>'
-            raise ApiException(status=400, message=message, extra={
-                'action_url': reverse('box_integration:index'),
-                'action_label': 'Connect Box.com Account'
-            })
-
-        try:
-            response = box_get_handler(
-                client, scheme, system, path, operation, **request.GET.dict())
-            return JsonResponse(response)
-        except BoxOAuthException:
-            # user needs to reconnect with Box
-            message = 'While you previously granted this application access to Box, ' \
-                      'that grant appears to be no longer valid. Please ' \
-                      '<a href="%s">disconnect and reconnect your Box.com account</a> ' \
-                      'to continue using Box data.' % reverse('box_integration:index')
-            raise ApiException(status=403, message=message)
-
-    def put(self, request, operation=None, scheme='private',
-            handler=None, system=None, path=''):
-
-        metrics.info('Data Depot',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'info': {
-                             'api': 'box',
-                             'scheme': scheme,
-                             'system': system,
-                             'path': path,
-                             'body': body
-                         }
-                     })
-
-        body = json.loads(request.body)
-        try:
-            client = request.user.box_user_token.client
-        except AttributeError:
-            return HttpResponseForbidden
-
-        response = box_put_handler(client, scheme, system, path, operation, body=body)
+        response = datafiles_post_handler(api, request.user.username, client, scheme, system, path, operation, body={**post_files, **post_body})
 
         return JsonResponse(response)
 

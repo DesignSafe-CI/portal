@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 def listing(client, system, path, offset=None, limit=100, nextPageToken=None, *args, **kwargs):
+    if not path:
+        path = 'root'
 
     fields = "mimeType, name, id, modifiedTime, fileExtension, size, parents, webViewLink"
     listing_call = client.files().list(q="'{}' in parents and trashed=False".format(path),
@@ -41,6 +43,8 @@ def listing(client, system, path, offset=None, limit=100, nextPageToken=None, *a
 
 
 def iterate_listing(client, system, path, limit=100):
+    if not path:
+        path = 'root'
     scroll_token = None
     while True:
         _listing = listing(client, system, path, limit=limit, nextPageToken=scroll_token)
@@ -53,6 +57,8 @@ def iterate_listing(client, system, path, limit=100):
 
 
 def walk_all(client, system, path, limit=100):
+    if not path:
+        path = 'root'
     for f in iterate_listing(client, system, path, limit):
         yield f
         if f['format'] == 'folder':
@@ -60,6 +66,8 @@ def walk_all(client, system, path, limit=100):
 
 
 def upload(client, system, path, uploaded_file, *args, **kwargs):
+    if not path:
+        path = 'root'
     filename = os.path.basename(uploaded_file.name)
     mimetype = magic.from_buffer(uploaded_file.getvalue(), mime=True)
     media = MediaIoBaseUpload(uploaded_file, mimetype=mimetype)
@@ -71,6 +79,8 @@ def upload(client, system, path, uploaded_file, *args, **kwargs):
 
 
 def mkdir(client, system, path, dir_name):
+    if not path:
+        path = 'root'
     file_metadata = {
         'name': dir_name,
         'parents': [path],
@@ -110,7 +120,8 @@ def download(client, system, path):
 
 
 def preview(client, system, path):
-
+    if not path:
+        path = 'root'
     file_name = path.strip('/').split('/')[-1]
     file_ext = os.path.splitext(file_name)[1].lower()
 
@@ -141,6 +152,8 @@ def preview(client, system, path):
 
 def copy(client, src_system, src_path, dest_system, dest_path, filename, filetype='file', *args):
     from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
+    if not src_path:
+        src_path = 'root'
     # Google drive doesn't have a robust copy API, so this endpoint uses generic transfer methods.
     if filetype == 'file':
         transfer(client, client, 'googledrive', 'googledrive', src_system, dest_system, src_path, dest_path)
