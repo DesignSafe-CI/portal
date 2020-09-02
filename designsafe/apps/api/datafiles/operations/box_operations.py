@@ -2,6 +2,8 @@ from boxsdk.object.folder import Folder
 from boxsdk.object.file import File
 from boxsdk.exception import BoxAPIException
 import io
+import logging
+logger = logging.getLogger(__name__)
 
 def listing(client, system, path, offset=0, limit=100):
     offset = int(offset)
