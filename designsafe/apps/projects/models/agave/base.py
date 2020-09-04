@@ -10,6 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
+from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
+from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 
 logger = logging.getLogger(__name__)
 
@@ -267,47 +269,37 @@ class Project(MetadataModel):
         Serialize project to json for google dataset search
         https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/BMNJPS
         """
-        logger.debug("***"*100)
-        logger.debug(self.to_body_dict())
-        logger.debug("***"*100)
 
         dataset_json = {
             "@context": "http://schema.org",
             "@type": "Dataset",
             "@id": "",
             "identifier": "",
+            "logo" : "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png"
             "name": self.title,
             "creator": [
                 {
                     "name": "",
                     "affiliation": "",
-                    "@id": "https://orcid.org/0000-0001-7099-4002",
-                    "identifier": "https://orcid.org/0000-0001-7099-4002"
+                    "@id": "",
+                    "identifier": ""
                 }
             ],
             "author": [
                 {
                     "name": "",
                     "affiliation": "",
-                    "@id": "https://orcid.org/0000-0001-7099-4002",
-                    "identifier": "https://orcid.org/0000-0001-7099-4002"
+                    "@id": "",
+                    "identifier": ""
                 }
             ],
             "datePublished": self.created,
             "dateModified": self.to_body_dict()['lastUpdated'],
-            "version": #self.to_body_dict()['value']['version'],
             "description": self.description,
             "keywords": self.keywords.split(','),
-
-
             "license": {
                 "@type": "Dataset",
-                "text": ""
-            },
-            "includedInDataCatalog": {
-                "@type": "Organization",
-                "name": "Designsafe-CI",
-                "url": "https://designsafe-ci.org"
+                "text": 
             },
             "publisher": {
                 "@type": "Organization",
@@ -322,25 +314,17 @@ class Project(MetadataModel):
                 "name": "Designsafe-CI",
                 "url": "https://designsafe-ci.org"
             },
-            "name": self.title,
-            "description": self.description,
-            "keywords": self.keywords.split(','),
-            "datePublished": self.created
         }
         if self.dois:
-            "distribution": [
-                {
+            dataset_json["distribution"] = {
                     "@type": "DataDownload",
                     "name": self.to_body_dict()['value']['projectId'] + "_archive.zip",
                     "fileFormat": "application/zip",
                     "contentSize": "",
                     "@id": "",
                     "identifier": ""
-                }
-            ]
-        }
-        if self.team_order.order == 0:
-            logger.debug('cool'*100)
+            }
+
         if self.dois:
             dataset_json['@id'] = self.dois[0]
             dataset_json['identifier'] = self.dois[0]
@@ -351,15 +335,14 @@ class Project(MetadataModel):
             authors = sorted(self.team_order, key=lambda x: x['order'])
         else:
             authors = [{'name': username} for username in [self.pi] + self.co_pis]
-        creators_details, institutions = _process_authors(authors)
-        logger.debug("$$$"*100)
-        logger.debug(institutions)
-        logger.debug("$$$"*100)
-        dataset_json['author'] = [{"name": creator["givenName"] + " " + creator["familyName"]} for creator in creators_details]
-        dataset_json['author'] = [{"affiliation": institution} for institution in institutions]
-        logger.debug("###"*100)
-        logger.debug(dataset_json)
-        logger.debug("###"*100)
+        dataset_json['creator'] = generate_creators(authors)
+        dataset_json['author'] = generate_creators(authors)
+        if BaseESPublication(project_id=project_id):
+            pub = BaseESPublication(project_id=project_id)
+            dataset_json['license'] = pub.licenses
+        elif BaseESPublicationLegacy(project_id=project_id):
+            pub = BaseESPublicationLegacy(project_id=project_id)
+            dataset_json['license'] = pub.licenses
         return dataset_json
 
     def to_datacite_json(self):
@@ -435,6 +418,48 @@ class Project(MetadataModel):
             if award.get('name') and award.get('number')
         ]
         return attributes
+
+
+def generate_creators(authors):
+    creators_details = []
+    for author in authors:
+        user_obj = None
+        user_tas = None
+        user_orcid = None
+        if not author.get('guest'):
+            try:
+                user_obj = get_user_model().objects.get(username=author['name'])
+                user_orcid = user_obj.profile.orcid_id if user_obj.profile.orcid_id else None
+            except ObjectDoesNotExist:
+                pass
+
+        if user_obj:
+            user_tas = TASClient().get_user(username=user_obj.username)
+
+        if user_orcid:
+            details = {
+                '@id': user_orcid,
+                'identifier': user_orcid
+            }
+        else:
+            details = {}
+
+        if user_obj and user_tas:
+            author_name = "{} {}".format(user_obj.first_name, user_obj.last_name)
+            details.update({
+                'name': author_name,
+                "affiliation": user_tas['institution']
+            })
+            creators_details.append(details)
+        elif author.get('fname') and author.get('lname'):
+            author_name = "{} {}".format(author.get('fname'), author.get('lname'))
+            details.update({
+                'name': author_name,
+                "affiliation": getattr(author, 'inst', '')
+            })
+            creators_details.append(details)
+        return creators_details
+
 
 
 def _process_authors(authors):
