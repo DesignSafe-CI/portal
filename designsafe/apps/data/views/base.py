@@ -236,10 +236,6 @@ class DataDepotPublishedView(TemplateView):
 
         proj = ProjectsManager(service_account()).get_project_by_id(pub.projectId)
         context['dc_json'] = json.dumps(proj.to_dataset_json())
-        # Debug
-        logger.debug('pub: %s', pub.to_dict())
-        logger.debug(json.dumps(proj.to_datacite_json(), indent=2))
-        logger.debug(json.dumps(proj.to_dataset_json(), indent=2))
 
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
