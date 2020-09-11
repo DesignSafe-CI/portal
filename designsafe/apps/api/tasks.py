@@ -116,7 +116,7 @@ def box_download_file(box_file_manager, box_file_id, download_directory_path):
     :return: the full path to the downloaded file
     """
     box_file = box_file_manager.box_api.file(box_file_id).get()
-    safe_filename = box_file.name.encode(sys.getfilesystemencoding(), 'ignore')  # convert utf-8 chars
+    safe_filename = box_file.name
     file_download_path = os.path.join(download_directory_path, safe_filename)
     logger.debug('Download file %s <= box://file/%s', file_download_path, box_file_id)
 
@@ -137,7 +137,7 @@ def box_download_folder(box_file_manager, box_folder_id, download_path):
     :return:
     """
     box_folder = box_file_manager.box_api.folder(box_folder_id).get()
-    safe_dirname = box_folder.name.encode(sys.getfilesystemencoding(), 'ignore')  # convert utf-8 chars
+    safe_dirname = box_folder.name
     directory_path = os.path.join(download_path, safe_dirname)
     logger.debug('Creating directory %s <= box://folder/%s', directory_path, box_folder_id)
     try:

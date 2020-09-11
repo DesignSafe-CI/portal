@@ -285,7 +285,7 @@ class FileManager(object):
         googledrive_file = self.googledrive_api.files().get(fileId=file_id, fields="name, mimeType").execute()
 
         # convert utf-8 chars
-        safe_filename = googledrive_file['name'].encode(sys.getfilesystemencoding(), 'ignore')
+        safe_filename = googledrive_file['name']
         file_download_path = os.path.join(download_directory_path, safe_filename)
         logger.debug('Download file %s <= googledrive://file/%s', file_download_path, file_id)
 
@@ -361,7 +361,7 @@ class FileManager(object):
         """
         googledrive_folder = self.googledrive_api.files().get(fileId=folder_id, fields="name").execute()
         # convert utf-8 chars
-        safe_dirname = googledrive_folder['name'].encode(sys.getfilesystemencoding(), 'ignore')
+        safe_dirname = googledrive_folder['name']
         directory_path = os.path.join(download_path, safe_dirname)
         logger.debug('Creating directory %s <= googledrive://folder/%s', directory_path, folder_id)
         try:
