@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.16
+Fixes:
+- Fix transfers between external resources (Box, Dropbox, Google Drive) and Agave.
+
 ## v4.9.15
 Enhancements:
 - Update file tag options for Other-type projects.
