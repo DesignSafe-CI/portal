@@ -277,7 +277,7 @@ class FileManager(object):
         dropbox_file = self.dropbox_api.files_get_metadata(dropbox_file_path)
 
         # convert utf-8 chars
-        safe_filename = dropbox_file.name.encode(sys.getfilesystemencoding(), 'ignore')
+        safe_filename = dropbox_file.name
         file_download_path = os.path.join(download_directory_path, safe_filename)
         logger.debug('Download file %s <= dropbox://file/%s', file_download_path, dropbox_file_path)
         self.dropbox_api.files_download_to_file(file_download_path,dropbox_file_path)
@@ -300,7 +300,7 @@ class FileManager(object):
         dropbox_folder_metadata = self.dropbox_api.files_alpha_get_metadata(path)
 
         # convert utf-8 chars
-        safe_dirname = dropbox_folder_metadata.name.encode(sys.getfilesystemencoding(), 'ignore')
+        safe_dirname = dropbox_folder_metadata.name
         directory_path = os.path.join(download_path, safe_dirname)
         logger.debug('Creating directory %s <= dropbox://folder/%s', directory_path, path)
         try:
