@@ -64,7 +64,14 @@
         </div>
 
         </div>
-        
+
+        <!--GeoJSON Map-->
+        <div id="preview_map_wrapper" style="display: none;"></div>
+        <div ng-if="$ctrl.mapError.show" class="alert alert-warning">
+            <p class="lead">Unable to show a preview</p>
+            <p>{{ $ctrl.mapError.message }}</p>
+        </div>
+
         <div ng-if="$ctrl.fileType === 'text'" ng-show="!$ctrl.loading" >
             <pre style="height:500px">{{$ctrl.textContent}}</pre>
         </div>

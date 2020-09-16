@@ -1,5 +1,7 @@
 import DataBrowserServicePreviewTemplate from './data-browser-service-preview.component.html';
-import _ from 'underscore';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet/dist/images/marker-shadow.png';
+import * as L from 'leaflet';
 
 class DataBrowserServicePreviewCtrl {
     constructor($sce, $http, $scope, $state, FileListingService, FileOperationService, ProjectService, Django) {
@@ -42,6 +44,17 @@ class DataBrowserServicePreviewCtrl {
                     oReq.onload = (e) =>
                         e.target.response.text().then((text) => {
                             this.textContent = text;
+                            
+                            let body;
+                            if (this.resolve.file.name.includes('json')) {
+                                // Pretty print JSON
+                                body = JSON.parse(text);
+                                this.textContent = JSON.stringify(body, null, 4);
+                                this.renderGeoJson(body);
+                            }
+                            if (this.resolve.file.name.includes('geojson'))
+                                this.renderGeoJson(body);
+                            
                             this.loading = false;
                             this.$scope.$apply();
                         });
@@ -58,10 +71,6 @@ class DataBrowserServicePreviewCtrl {
                     };
                     oReq.send();
                 }
-            },
-            (err) => {
-                this.error = true;
-                this.loading = false;
             }
         );
     }
@@ -102,10 +111,10 @@ class DataBrowserServicePreviewCtrl {
     isJupyter() {
         if (this.resolve.api !== 'agave') {
             return false;
-        } else {
-            let fileExtension = this.resolve.file.name.split('.').pop();
-            return fileExtension === 'ipynb';
-        }
+        } 
+        const fileExtension = this.resolve.file.name.split('.').pop();
+        return fileExtension === 'ipynb';
+
     }
 
     openInJupyter() {
@@ -133,6 +142,47 @@ class DataBrowserServicePreviewCtrl {
         const jupyterPath = `http://jupyter.designsafe-ci.org/user/${this.Django.user}/notebooks/${fileLocation}`;
         window.open(jupyterPath);
     }
+
+    renderGeoJson(data) {
+        const mapWrapper = document.getElementById('preview_map_wrapper');
+        mapWrapper.style.display = 'block';
+        
+        this.mapElement = document.createElement('div');
+        this.mapElement.setAttribute('id', 'preview_map');
+        this.mapElement.style.height = '500px';
+        mapWrapper.appendChild(this.mapElement);
+
+        this.map = L.map(this.mapElement);
+        this.mapError = { show: false, message: '' };
+
+        // Fix marker icon 404
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+            iconUrl: require('leaflet/dist/images/marker-icon.png'),
+            shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+        });
+
+        try {
+            L.tileLayer(
+                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
+                    attribution:
+                        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+                }
+            ).addTo(this.map);
+            const geoJson = L.geoJson(data).addTo(this.map);
+            this.map.fitBounds(geoJson.getBounds());
+        } catch(e) {
+            this.map.off();
+            this.map.remove();
+            this.mapError = { show: true, message: e.message };
+            const el = document.querySelector('#preview_map');
+            const { parentElement } = el;
+            parentElement.removeChild(el);
+        }
+    }
+
 }
 
 export const DataBrowserServicePreviewComponent = {
