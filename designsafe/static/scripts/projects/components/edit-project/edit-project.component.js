@@ -491,7 +491,7 @@ class EditProjectCtrl {
                 }
                 if (!this.form.uuid) {
                     this.$state.go(
-                        'projects.view.data',
+                        'projects.view',
                         {
                             projectId: project.uuid,
                             filePath: '/',

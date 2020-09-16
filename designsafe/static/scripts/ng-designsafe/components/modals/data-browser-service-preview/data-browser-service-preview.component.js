@@ -71,6 +71,10 @@ class DataBrowserServicePreviewCtrl {
                     };
                     oReq.send();
                 }
+            },
+            (err) => {
+                this.error = true;
+                this.loading = false;
             }
         );
     }

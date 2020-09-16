@@ -38,7 +38,7 @@ class PipelinePublishCtrl {
     }
 
     $onInit() {
-        this.project = this.resolve.project;
+        this.project = this.ProjectService.current
         this.selectedListings = this.resolve.resolveParams.selectedListings;
         this.ui = {
             published: null,
@@ -111,7 +111,7 @@ class PipelinePublishCtrl {
     return() {
         window.sessionStorage.clear();
         this.$state.go(
-            'projects.view.data',
+            'projects.view',
             { projectId: this.project.uuid },
             { reload: true }
         );

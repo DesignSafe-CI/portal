@@ -41,15 +41,4 @@ class DropboxUserToken(models.Model):
 
     @property
     def client(self):
-        """
-        redirect_uri = reverse('dropbox_integration:oauth2_callback')
-        oauth = DropboxOAuth2Flow(
-                    consumer_key = settings.DROPBOX_APP_KEY,
-                    consumer_secret = settings.DROPBOX_APP_SECRET,
-                    redirect_uri = request.build_absolute_uri(redirect_uri),
-                    session = request.session['dropbox'],
-                    csrf_token_session_key = 'state'
-                )
-        return Dropbox(oauth.access_token)
-        """
         return Dropbox(self.access_token)

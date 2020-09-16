@@ -125,12 +125,6 @@ class DataFilesView(BaseApiView):
 
 class TransferFilesView(BaseApiView):
     def put(self, request, format):
-        client_lookup = {
-            'agave': request.user.agave_oauth.client,
-            'googledrive': request.user.googledrive_user_token.client,
-            'dropbox': request.user.dropbox_user_token.client,
-            'box': request.user.box_user_token.client
-        }
         body = json.loads(request.body)
 
         metrics.info('Data Depot',
@@ -143,8 +137,8 @@ class TransferFilesView(BaseApiView):
                          }
                      })
 
-        src_client = client_lookup[body['src_api']]
-        dest_client = client_lookup[body['dest_api']]
+        src_client = get_client(request.user, body['src_api'])
+        dest_client = get_client(request.user, body['dest_api'])
 
         notify(request.user.username, 'transfer', 'Copy operation has started.', 'INFO', {})
         try:

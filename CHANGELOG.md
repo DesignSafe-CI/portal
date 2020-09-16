@@ -1,5 +1,20 @@
 # DesignSafe-CI Portal Release Notes
 
+## v4.9.16
+Fixes:
+- Fix transfers between external resources (Box, Dropbox, Google Drive) and Agave.
+
+## v4.9.15
+Enhancements:
+- Update file tag options for Other-type projects.
+Fixes:
+- Bugfixes and UI enhancements for Publications search.
+- Fix environment variable setting for new user alert emails.
+
+## v4.9.14
+Hotfix:
+- Change wording of confirmation message after submitting registration request.
+
 ## v4.9.13
 Hotfix:
 - Change wording of confirmation message after submitting registration request.
