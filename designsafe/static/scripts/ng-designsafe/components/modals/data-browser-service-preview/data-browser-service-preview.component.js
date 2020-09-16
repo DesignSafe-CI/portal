@@ -50,7 +50,6 @@ class DataBrowserServicePreviewCtrl {
                                 // Pretty print JSON
                                 body = JSON.parse(text);
                                 this.textContent = JSON.stringify(body, null, 4);
-                                this.renderGeoJson(body);
                             }
                             if (this.resolve.file.name.includes('geojson'))
                                 this.renderGeoJson(body);
