@@ -439,6 +439,8 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     if not isinstance(award_number, list):
         award_number = []
 
+    prj_json['value']['awardNumbers'] = award_number
+    prj_json['value'].pop('awardNumber', None)
     if publication.get('project'):
         publication['project'].update(prj_json)
     else:
