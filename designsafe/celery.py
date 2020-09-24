@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'designsafe.settings')
 
 
-
 from django.conf import settings  # noqa
 
 app = Celery('designsafe')
@@ -22,15 +21,15 @@ app.config_from_object('django.conf:settings', namespace="CELERY")
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 app.conf.update(
-    CELERYBEAT_SCHEDULE = {
+    CELERYBEAT_SCHEDULE={
         'update_user_storages': {
             'task': 'designsafe.apps.search.tasks.update_search_index',
             'schedule': crontab(minute=0, hour=0),
         },
-       # 'reindex_projects': {
-       #     'task': 'designsafe.apps.api.tasks.reindex_projects',
-       #     'schedule': crontab(hour="*/24", minute=0)
-       # }
+        'reindex_projects': {
+            'task': 'designsafe.apps.api.tasks.reindex_projects',
+            'schedule': crontab(hour=0, minute=0)
+        }
     }
 )
 
@@ -39,6 +38,7 @@ if settings.COMMUNITY_INDEX_SCHEDULE:
         'task': 'designsafe.apps.search.tasks.index_community_data',
         'schedule': crontab(**settings.COMMUNITY_INDEX_SCHEDULE)
     }
+
 
 @app.task(bind=True)
 def debug_task(self):
