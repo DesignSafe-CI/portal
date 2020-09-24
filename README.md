@@ -53,7 +53,7 @@ Machine, which is required to run Docker on Mac/Windows hosts.
    $ docker-compose -f ./conf/docker/docker-compose-dev.all.debug.yml up
    $ docker exec -it des_django bash
    # ./manage.py migrate
-   # ./manage.py collectstatic
+   # ./manage.py collectstatic -i demo
    # ./manage.py createsuperuser
    ```
 
