@@ -29,7 +29,8 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 2. Build the container(s)
 
    ```
-   $ docker-compose build
+   $ docker-compose -f conf/docker/docker-compose.yml build
+   $ npm install
    ```
 
 3. Configure environment variables
@@ -49,9 +50,10 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 3. Set up local/testing database
 
    ```
-   $ docker-compose up -d
-   $ docker exec -it portal_django_1 bash
+   $ docker-compose -f ./conf/docker/docker-compose-dev.all.debug.yml up
+   $ docker exec -it des_django bash
    # ./manage.py migrate
+   # ./manage.py collectstatic
    # ./manage.py createsuperuser
    ```
 
@@ -182,7 +184,7 @@ install all the Python/Django/npm dependencies locally (ideally within a virtual
 is already done in the docker container.
 
 We assume you have the image built or checked out locally and it is called
-`portal_django`.
+`des_django`.
 
 ### Django tests
 
@@ -191,7 +193,7 @@ Django tests should be written according to standard [Django testing procedures]
 You can run Django tests with the following command:
 
 ```shell
-$ docker run -it --rm portal_django python manage.py test --settings=designsafe.settings.test_settings
+$ docker run -it --rm des_django python manage.py test --settings=designsafe.settings.test_settings
 ```
 
 ### Frontend tests
@@ -203,7 +205,7 @@ To run frontend tests, ensure that all scripts and test scripts are configured i
 [`karma-conf.js`](karma-conf.js) and then run the command:
 
 ```shell
-$ docker run -it --rm portal_django bin/run-tests.sh
+$ npm run test
 ```
 
 ## Development setup
@@ -215,7 +217,8 @@ for testing.
 
 ```shell
 $ docker-compose build
-$ docker-compose up
+$ docker-compose -f conf/docker/docker-compose-dev.all.debug.yml up
+$ npm run dev
 ```
 
 When using this compose file, your Agave Client should be configured with a `callback_url`
