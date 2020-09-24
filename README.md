@@ -14,8 +14,7 @@ on.
 - [Install Docker Compose][4]
 
 If you are on a Mac or a Windows machine, the recommended method is to install
-[Docker Toolbox][5], which will install both Docker and Docker Compose as well as Docker
-Machine, which is required to run Docker on Mac/Windows hosts.
+[Docker Desktop][5], which will install both Docker and Docker Compose, which is required to run Docker on Mac/Windows hosts.
 
 ## First time setup
 
@@ -260,7 +259,7 @@ Production deployment is managed by ansible. See https://github.com/designsafe-c
 [2]: https://docs.docker.com/compose/
 [3]: https://docs.docker.com/installation/
 [4]: https://docs.docker.com/compose/install/
-[5]: https://www.docker.com/toolbox
+[5]: https://docs.docker.com/desktop/
 [6]: https://github.com/DesignSafe-CI/portal/wiki/Importing-data-from-Production-to-Development
 [7]: https://github.com/DesignSafe-CI/portal/wiki/CSS-Styles-Reference
 [8]: https://docs.djangoproject.com/en/dev/topics/testing/
