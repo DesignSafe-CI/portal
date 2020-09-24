@@ -216,7 +216,7 @@ mode with a redis service for websockets support. You can optionally enable the 
 for testing.
 
 ```shell
-$ docker-compose build
+$ docker-compose -f conf/docker/docker-compose.yml build
 $ docker-compose -f conf/docker/docker-compose-dev.all.debug.yml up
 $ npm run dev
 ```
