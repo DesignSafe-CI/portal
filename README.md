@@ -34,9 +34,9 @@ If you are on a Mac or a Windows machine, the recommended method is to install
 
 3. Configure environment variables
 
-   Make a copy of [designsafe.env.sample](designsafe.env.sample) and rename it to
+   Make a copy of [designsafe.sample.env](designsafe.sample.env) and rename it to
    `designsafe.env`. Configure variables as necessary. See
-   [designsafe.env.sample](designsafe.env.sample) for details of configuration.
+   [designsafe.sample.env](designsafe.sample.env) for details of configuration.
 
    Required variables:
 
@@ -45,6 +45,9 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    - `TAS_*`: should be set to enable direct access to `django.contrib.admin`
    - `AGAVE_*`: should be set to enable Agave API integration (authentication, etc.)
    - `RT_*`: should be set to enable ticketing
+   
+   Make copies of [rabbitmq.sample.env](rabbitmq.sample.env) and [mysql.sample.env](mysql.sample.env), then rename them to
+   `rabbitmq.env` and `mysql.env`. 
 
 3. Set up local/testing database
 
