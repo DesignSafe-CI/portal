@@ -103,7 +103,6 @@ describe('filesListing', () => {
 
         expect(component.find('.test-file-name').text()).toContain('testfile');
         expect(component.find('.test-length-folder').text()).toContain('--');
-        console.log(component.find('.test-file-icon').attr('class'))
     });
 
     it('Renders an operation button that calls a bound operation', () => {
