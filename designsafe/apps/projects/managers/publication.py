@@ -184,9 +184,9 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
     to `"published"` that way it shows up in the published listing.
 
     If publish_dois is False Datacite will keep the newly created DOIs in
-    "DRAFT" status, but they will not be set to "PUBLISHED". A DOI on
-    DataCite can only be deleted if it is in "DRAFT" status. Once a DOI
-    is set to "PUBLISHED" or "RESERVED" it can't be deleted.
+    "DRAFT" status, and not "PUBLISHED". A DOI on DataCite can only be
+    deleted if it is in "DRAFT" status. Once a DOI is set to "PUBLISHED"
+    or "RESERVED" it can't be deleted.
 
     :param str project_id: Project Id to publish.
     :param list entity_uuids: list of str Entity uuids to publish.

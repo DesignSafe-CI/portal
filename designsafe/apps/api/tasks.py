@@ -866,7 +866,7 @@ def swap_file_tag_uuids(self, project_id):
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
-def set_publish_status(self, project_id, entity_uuids, publish_dois=False):
+def set_publish_status(self, project_id, entity_uuids=None, publish_dois=False):
     from designsafe.apps.projects.managers import publication as PublicationManager
     # Only publish DOIs created from prod
     if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
