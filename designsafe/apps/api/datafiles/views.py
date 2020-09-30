@@ -57,7 +57,7 @@ class DataFilesView(BaseApiView):
 
         try:
             response = datafiles_get_handler(
-                api, client, scheme, system, path, operation, **request.GET.dict())
+                api, client, scheme, system, path, operation, username=request.user.username, **request.GET.dict())
             return JsonResponse(response)
         except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
             raise resource_expired_handler(api)
