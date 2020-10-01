@@ -196,15 +196,16 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
     responses = []
 
     if publish_dois:
-        for ent_uuid in entity_uuids:
-            entity = None
-            if ent_uuid:
-                entity = mgr.get_entity_by_uuid(ent_uuid)
-            
-            if entity:
-                for doi in entity.dois:
-                    res = DataciteManager.publish_doi(doi)
-                    responses.append(res)
+        if entity_uuids:
+            for ent_uuid in entity_uuids:
+                entity = None
+                if ent_uuid:
+                    entity = mgr.get_entity_by_uuid(ent_uuid)
+                
+                if entity:
+                    for doi in entity.dois:
+                        res = DataciteManager.publish_doi(doi)
+                        responses.append(res)
         
         for doi in prj.dois:
             res = DataciteManager.publish_doi(doi)
