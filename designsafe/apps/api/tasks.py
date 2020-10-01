@@ -781,7 +781,7 @@ def copy_publication_files_to_corral(self, project_id):
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def freeze_publication_meta(self, project_id, entity_uuids):
+def freeze_publication_meta(self, project_id, entity_uuids=None):
     """Freeze publication meta.
 
     :param str project_id: Project Id.
