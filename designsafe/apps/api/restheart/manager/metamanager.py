@@ -1,6 +1,9 @@
 import logging
 import json
-from designsafe.apps.api.mongodb.utils import mongo_client
+import requests
+# from designsafe.apps.api.restheart.utils import mongo_client
+# replace mongo_client with agavepy client
+from django.conf import settings
 from django.http import JsonResponse
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from requests import HTTPError
@@ -8,31 +11,46 @@ from requests import HTTPError
 logger = logging.getLogger(__name__)
 
 
-class MongoMetaManager():
+class FileMetaManager():
 
-    def __init__(self, collection):
+    def __init__(self):
         """
-        Set collection for the mongo database (files, projects, publications etc...)
-        Client info will need to be completed with user info...
-        For now we just use admin
+        Manger for V3 Meta Files
+        collection: 'files'
+
+        Testing curl commands for now. Set up use with "tapispy"
+        """        
+        self._db_url = "{host}{base}/{database}/{collection}".format(
+            host=settings.RESTHEART_CLIENT_HOST,
+            base=settings.RESTHEART_CLIENT_BASEURL,
+            database=settings.RESTHEART_CLIENT_DS_DATABASE,
+            collection=settings.RESTHEART_FILES_COLLECTION 
+        )
+
+    def get_all_test(self):
+        # first few files in the collection
         """
-        self._mc = mongo_client()['api'][collection]
+        BOOKMARK: created a 'files' collection
+        - we need to get the pySDK kit installed so we can manage v3 services.
+        """
+        headers = {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer {}'.format(settings.RESTHEART_CLIENT_TOKEN)
+        }
+        response = requests.request("GET", self._db_url, headers=headers)
+        return response.json()
 
-
-    # @property
-    # def requires_auth(self):
-    #     """
-    #     May not keep this...
-    #     """
-    #     return True
-
-
-    # def list_permissions():
-    #     """
-    #     Get permissions of current user
-    #     """
-    #     return 'list permissions'
-
+    def get_doc_test(self):
+        # request a single file by OID... or file path... but we'll need the user's info in the path. How will we get and retrieve files?
+        # what data will we save with each file?
+        # maybe check agave meta v2 and see...
+        headers = {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer {}'.format(settings.RESTHEART_CLIENT_TOKEN)
+        }
+        doc_path = self._db_url + '5f6bb3065bfeafbfcf063686'
+        response = requests.request("GET", doc_path, headers=headers)
+        return response.json()
 
     def get_file_doc(self, system_id, file_path):
         """

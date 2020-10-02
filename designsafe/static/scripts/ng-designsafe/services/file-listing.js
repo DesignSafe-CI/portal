@@ -185,7 +185,7 @@ export function FileListing($http, $q) {
     };
 
     FileListing.prototype.mongoMetaUrl = function () {
-        var urlParts = ['/api/mongodb/files/mongometa/', this.system + '/'];
+        var urlParts = ['/api/restheart/files/v3/', this.system + '/'];
         if (this.path) {
             urlParts.push(this.path.replace('#', '%23'));
         }

@@ -28,6 +28,7 @@ def get_service_account_client():
                  resources=AGAVE_RESOURCES)
 
 def get_sandbox_service_account_client():
+    # this does not appear to be useful anymore...
     """Return sandbox service account"""
     return Agave(api_server=settings.AGAVE_SANDBOX_TENANT_BASEURL,
                  token=settings.AGAVE_SANDBOX_SUPER_TOKEN,

@@ -27,8 +27,7 @@ from designsafe.libs.common.decorators import profile as profile_fn
 from requests import HTTPError
 from designsafe.apps.api.agave.filemanager.lookups import FileLookupManager
 from designsafe.apps.api.search.searchmanager.lookups import SearchLookupManager
-
-from designsafe.apps.api.mongodb.manager.metamanager import MongoMetaManager
+from designsafe.apps.api.restheart.manager.metamanager import FileMetaManager
 
 
 logger = logging.getLogger(__name__)
