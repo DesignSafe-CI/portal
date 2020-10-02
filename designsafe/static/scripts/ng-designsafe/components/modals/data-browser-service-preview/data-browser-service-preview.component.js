@@ -2,7 +2,7 @@ import DataBrowserServicePreviewTemplate from './data-browser-service-preview.co
 import 'leaflet/dist/leaflet.css';
 import 'leaflet/dist/images/marker-shadow.png';
 import * as L from 'leaflet';
-import { valid as validateGeoJson }from 'geojson-validation'
+import { valid as validateGeoJson }from 'geojson-validation';
 
 class DataBrowserServicePreviewCtrl {
     constructor($sce, $http, $scope, $state, FileListingService, FileOperationService, ProjectService, Django) {
@@ -70,6 +70,7 @@ class DataBrowserServicePreviewCtrl {
                     oReq.send();
                 }
             },
+            // eslint-disable-next-line
             (err) => {
                 this.error = true;
                 this.loading = false;
@@ -170,7 +171,9 @@ class DataBrowserServicePreviewCtrl {
                 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 {
                     attribution:
-                        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+                        '&copy; \
+                        <a href="http://osm.org/copyright">OpenStreetMap</a> \
+                        contributors',
                 }
             ).addTo(this.map);
             const geoJson = L.geoJson(data).addTo(this.map);
