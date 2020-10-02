@@ -1001,3 +1001,27 @@ def email_collaborator_added_to_project(self, project_id, project_uuid, project_
                         settings.DEFAULT_FROM_EMAIL,
                         [collab_user.email],
                         html_message=body)
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def email_user_publication_request_confirmation(self, username):
+    user = get_user_model().objects.get(username=username)
+    email_subject = 'Your DesignSafe Publication Request Has Been Issued'
+    email_body = """
+    <p>Depending on the size of your data, the publication might take a few minutes or a couple of hours to appear in the <a href=\"{pub_url}\">Published Directory.</a></p>
+    <p>During this time, check-in to see if your publication appears. 
+    If your publication does not appear, is incomplete, or does not have a DOI, <a href=\"{ticket_url}\">please submit a ticket.</a></p>
+    <p><strong>Do not</strong> attempt to republish by clicking Request DOI & Publish again.</p>
+    <p>This is a programmatically generated message. <strong>Do NOT</strong> reply to this message. 
+    If you have any feedback or questions, please feel free to <a href=\"{ticket_url}\">submit a ticket.</a></p>
+    """.format(pub_url="https://www.designsafe-ci.org/data/browser/public/", ticket_url="https://www.designsafe-ci.org/help/new-ticket/")
+    try:
+        user.profile.send_mail(email_subject, email_body)
+    except Exception as e:
+        logger.info("Could not send email to user {}".format(user))
+        send_mail(
+            email_subject,
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            html_message=email_body
+        )
