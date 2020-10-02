@@ -1012,7 +1012,7 @@ def email_user_publication_request_confirmation(self, username):
     If your publication does not appear, is incomplete, or does not have a DOI, <a href=\"{ticket_url}\">please submit a ticket.</a></p>
     <p><strong>Do not</strong> attempt to republish by clicking Request DOI & Publish again.</p>
     <p>This is a programmatically generated message. <strong>Do NOT</strong> reply to this message. 
-    If you have any feedback or questions, please feel free to <a href=\"{ticket_url}\">please submit a ticket.</a></p>
+    If you have any feedback or questions, please feel free to <a href=\"{ticket_url}\">submit a ticket.</a></p>
     """.format(pub_url="https://www.designsafe-ci.org/data/browser/public/", ticket_url="https://www.designsafe-ci.org/help/new-ticket/")
     try:
         user.profile.send_mail(email_subject, email_body)
