@@ -2,6 +2,7 @@ import DataBrowserServicePreviewTemplate from './data-browser-service-preview.co
 import 'leaflet/dist/leaflet.css';
 import 'leaflet/dist/images/marker-shadow.png';
 import * as L from 'leaflet';
+import { valid as validateGeoJson }from 'geojson-validation'
 
 class DataBrowserServicePreviewCtrl {
     constructor($sce, $http, $scope, $state, FileListingService, FileOperationService, ProjectService, Django) {
@@ -44,16 +45,14 @@ class DataBrowserServicePreviewCtrl {
                     oReq.onload = (e) =>
                         e.target.response.text().then((text) => {
                             this.textContent = text;
-                            
-                            let body;
-                            if (this.resolve.file.name.includes('json')) {
-                                // Pretty print JSON
-                                body = JSON.parse(text);
+                            const extension = this.resolve.file.name.split('.').pop();
+                            if (extension.includes('json')) {
+                                const body = JSON.parse(text);
+                                // Pretty Print JSON
                                 this.textContent = JSON.stringify(body, null, 4);
+                                const isGeoJson = validateGeoJson(body);
+                                if (isGeoJson) this.renderGeoJson(body);
                             }
-                            if (this.resolve.file.name.includes('geojson'))
-                                this.renderGeoJson(body);
-                            
                             this.loading = false;
                             this.$scope.$apply();
                         });
