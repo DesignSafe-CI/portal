@@ -5,7 +5,7 @@ import io
 import logging
 logger = logging.getLogger(__name__)
 
-def listing(client, system, path, offset=0, limit=100):
+def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     offset = int(offset)
     limit = int(limit)  
 

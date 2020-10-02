@@ -97,7 +97,6 @@ describe('projectView', () => {
     });
 
     it('renders the component', () => {
-        console.log('rendering component');
         const element = angular.element('<project-view></project-view>');
         const component = $compile(element)($rootScope);
         $rootScope.$digest();

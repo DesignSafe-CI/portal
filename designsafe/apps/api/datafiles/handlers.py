@@ -29,12 +29,12 @@ operations_mapping = {
 }
 
 
-def datafiles_get_handler(api, client, scheme, system, path, operation, **kwargs):
+def datafiles_get_handler(api, client, scheme, system, path, operation, username=None, **kwargs):
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied
     op = getattr(operations_mapping[api], operation)
-    logger.debug(op)
-    return op(client, system, path, **kwargs)
+
+    return op(client, system, path, username=username, **kwargs)
 
 
 def datafiles_post_handler(api, username, client, scheme, system,
