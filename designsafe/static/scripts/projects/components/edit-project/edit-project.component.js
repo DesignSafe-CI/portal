@@ -478,7 +478,7 @@ class EditProjectCtrl {
                         if (this.project) {
                             this.project.value = project.value;
                         }
-                        this.$state.go('projects.list', { reload: true });
+                        this.$state.go('', { reload: true });
                         this.close({ $value: project });
                         this.ui.busy = false;
                     });
@@ -491,7 +491,7 @@ class EditProjectCtrl {
                 }
                 if (!this.form.uuid) {
                     this.$state.go(
-                        'projects.view.data',
+                        'projects.view',
                         {
                             projectId: project.uuid,
                             filePath: '/',

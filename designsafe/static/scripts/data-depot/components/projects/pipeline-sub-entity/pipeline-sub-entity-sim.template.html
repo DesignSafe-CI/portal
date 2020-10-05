@@ -93,8 +93,11 @@
                             <span ng-click="$ctrl.editSubEntity(report)"><a>Edit</a></span>
                         </div>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" params="$ctrl.fl">
-                    </files-listing>
+                    <files-listing
+                    on-scroll="$ctrl.scrollToBottom()"
+                    listing="$ctrl.FileListingService.listings[report.uuid]"
+                    on-browse="$ctrl.onBrowse(file)"
+                >&nbsp;</files-listing>                      </files-listing>
                 </div>
             </div>
         </div>
@@ -114,8 +117,11 @@
                         <p ng-if="model.value.description">{{ model.value.description }}</p>
                         <span ng-click="$ctrl.editSubEntity(model)"><a>Edit</a></span>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]" params="$ctrl.fl">
-                    </files-listing>
+                    <files-listing
+                    on-scroll="$ctrl.scrollToBottom()"
+                    listing="$ctrl.FileListingService.listings[model.uuid]"
+                    on-browse="$ctrl.onBrowse(file)"
+                >&nbsp;</files-listing>                      </files-listing>
                 </div>
             </div>
             <!-- Inputs -->
@@ -142,8 +148,11 @@
                                         <p ng-if="input.value.description">{{ input.value.description }}</p>
                                         <span ng-click="$ctrl.editSubEntity(input)"><a>Edit</a></span>
                                     </div>
-                                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]"
-                                        params="$ctrl.fl"></files-listing>
+                                    <files-listing
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[input.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)"
+                                >&nbsp;</files-listing>  
                                 </div>
                             </td>
                         </tr>
@@ -172,9 +181,11 @@
                                                 <p ng-if="output.value.description">{{ output.value.description }}</p>
                                                 <span ng-click="$ctrl.editSubEntity(output)"><a>Edit</a></span>
                                             </div>
-                                            <files-listing browser="$ctrl.browser"
-                                                files-list="$ctrl.browser.listings[output.uuid]" params="$ctrl.fl">
-                                            </files-listing>
+                                            <files-listing
+                                            on-scroll="$ctrl.scrollToBottom()"
+                                            listing="$ctrl.FileListingService.listings[output.uuid]"
+                                            on-browse="$ctrl.onBrowse(file)"
+                                        >&nbsp;</files-listing>  
                                         </div>
                                     </td>
                                 </tr>
@@ -213,8 +224,11 @@
                             <span ng-click="$ctrl.editSubEntity(analysis)"><a>Edit</a></span>
                         </div>
                     </div>
-                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" params="$ctrl.fl"></files-listing>
-                </div>
+                    <files-listing
+                    on-scroll="$ctrl.scrollToBottom()"
+                    listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                    on-browse="$ctrl.onBrowse(file)"
+                >&nbsp;</files-listing>                  </div>
             </div>
         </div>
     </div>

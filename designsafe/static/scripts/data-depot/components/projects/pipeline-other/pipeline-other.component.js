@@ -3,13 +3,12 @@ import _ from 'underscore';
 
 class PipelineOtherCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, $uibModal, $state) {
+    constructor(ProjectEntitiesService, ProjectService, FileListingService, $uibModal, $state) {
         'ngInject';
-
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
-        this.browser = this.DataBrowserService.state();
+        this.browser =  {}
+        this.FileListingService = FileListingService;
         this.$uibModal = $uibModal;
         this.$state = $state;
     }
@@ -41,7 +40,7 @@ class PipelineOtherCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.view', {projectId: this.project.uuid}, {reload: true});
     }
 
     goProject() {

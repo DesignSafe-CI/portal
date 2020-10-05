@@ -1,0 +1,667 @@
+{
+  "agavePath": "agave://nees.public/NEES-2013-1216.groups",
+  "children": [],
+  "deleted": false,
+  "format": "folder",
+  "length": 24731027,
+  "name": "NEES-2013-1216",
+  "path": "/NEES-2013-1216.groups",
+  "permissions": "READ",
+  "system": "nees.public",
+  "systemId": "nees.public",
+  "type": "dir",
+  "metadata": {
+    "experiments": [
+      {
+        "startDate": "2013-08-10T00:00:00",
+        "doi": "10.4231/D3HQ3S04M",
+        "endDate": "2013-10-04T00:00:00",
+        "description": "The seismic performance of the precast system was evaluated with a quasi-static test of one column-to-cap-beam sub-assembly. This column contained a steel dowel bar that extended down from the body of the column into the footing.\r\n\r\nThe column-to-cap-beam subassembly had a cantilever height of 60 in. and a column diameter of 20 in (42% scale). The specimen was subjected to a constant axial Load of 159 kips and a quasi-static displacement history based on the NEHRP recommendations for precast structural walls. \r\n\r\nThe lateral displacement history consisted of ten four-cycle sets. Each set had target peak values of 1.2X, 1.44X, 1.44X, and 0.48X, where X is the maximum target drift from the previous set. The  maximum target drift of the first set was selected so that the column would remain elastic throughout the duration of the first four cycles (X = 0.167 in.).",
+        "facility": [
+          {
+            "country": "United States",
+            "state": "WA",
+            "name": "University of Washington"
+          }
+        ],
+        "deleted": true,
+        "material": [
+          {
+            "materials": [
+              "Regular concrete",
+              "No. 3 transverse reinforcing",
+              "Rebar duct grout",
+              "Central duct grout",
+              "No. 7 flexural reinforcing",
+              "Grout pad - fiber reinforced grout"
+            ],
+            "component": "Cap Beam",
+            "$$hashKey": "object:844"
+          },
+          {
+            "materials": [
+              "Regular concrete",
+              "3 gauge wire",
+              "No. 6 longitudinal reinforcing",
+              "No. 4 longitudinal reinforcing"
+            ],
+            "component": "Column",
+            "$$hashKey": "object:845"
+          }
+        ],
+        "path": "NEES-2013-1216.groups/Experiment-3",
+        "title": "Cyclic Testing of an Unbonded Pre-tensioned Bridge Column with Rocking Detail: Capbeam Specimen",
+        "sensors": [
+          "SCXI"
+        ],
+        "creators": [
+          {
+            "lastName": "Kennedy",
+            "firstName": "Bryan J.",
+            "$$hashKey": "object:836"
+          },
+          {
+            "lastName": "Thonstad",
+            "firstName": "Travis",
+            "$$hashKey": "object:839"
+          },
+          {
+            "lastName": "Eberhard",
+            "firstName": "Marc",
+            "$$hashKey": "object:838"
+          },
+          {
+            "lastName": "Stanton",
+            "firstName": "John",
+            "$$hashKey": "object:837"
+          }
+        ],
+        "type": "Large Scale",
+        "specimenType": [
+          {
+            "name": "Column to capbeam connection",
+            "description": "Reduced section grouted connection"
+          }
+        ],
+        "name": "Experiment-3",
+        "$$hashKey": "object:811"
+      },
+      {
+        "startDate": "2012-11-16T00:00:00",
+        "doi": "10.4231/D35717P5R",
+        "endDate": "2012-11-16T00:00:00",
+        "description": "The seismic performance of the precast system was evaluated with quasi-static tests of two column-to-footing sub-assemblies. In this column-to-footing sub-assembly, a ductile fiber-reinforced concrete (HyFRC) was used in the plastic hinge region and stainless steel reinforcing bars were used in the column.\r\n\r\nThe column-to-spread-footing subassembly had a cantilever height of 66 in. and a column diameter of 20 in (42% scale). The specimen was subjected to a constant axial Load of 159 kips and a quasi-static displacement history based on the NEHRP recommendations for precast structural walls.\r\n\r\nThe lateral displacement history consisted of ten four-cycle sets. Each set had target peak values of 1.2X, 1.44X, 1.44X, and 0.48X, where X is the maximum target drift from the previous set. The  maximum target drift of the first set was selected so that the column would remain elastic throughout the duration of the first four cycles (X = 0.167 in.).",
+        "facility": [
+          {
+            "country": "United States",
+            "state": "WA",
+            "name": "University of Washington"
+          }
+        ],
+        "deleted": true,
+        "material": [
+          {
+            "materials": [
+              "HyFRC column concrete",
+              "Regular column concrete",
+              "No. 4 longitudinal reinforcing",
+              "Spiral wire",
+              "Strand"
+            ],
+            "component": "Column",
+            "$$hashKey": "object:875"
+          },
+          {
+            "materials": [
+              "No. 5 reinforcing",
+              "No. 4 reinforcing",
+              "No. 3 reinforcing",
+              "Regular footing concrete"
+            ],
+            "component": "Footing",
+            "$$hashKey": "object:876"
+          }
+        ],
+        "path": "NEES-2013-1216.groups/Experiment-7",
+        "title": "Cyclic Testing of an Unbonded Pre-tensioned Bridge Column with HyFRC: Footing Specimen 02",
+        "sensors": [
+          "NI-DAQ"
+        ],
+        "creators": [
+          {
+            "lastName": "Finnsson",
+            "firstName": "Gunnsteinn",
+            "$$hashKey": "object:867"
+          },
+          {
+            "lastName": "Haraldsson",
+            "firstName": "Olafur",
+            "$$hashKey": "object:870"
+          },
+          {
+            "lastName": "Eberhard",
+            "firstName": "Marc",
+            "$$hashKey": "object:869"
+          },
+          {
+            "lastName": "Stanton",
+            "firstName": "John",
+            "$$hashKey": "object:868"
+          }
+        ],
+        "type": "Large Scale",
+        "specimenType": [
+          {
+            "name": "Column-to-Footing Connection",
+            "description": "Precast, prestressed, cantilever column with a \"wet socket\" footing connection."
+          }
+        ],
+        "name": "Experiment-7",
+        "$$hashKey": "object:812"
+      },
+      {
+        "startDate": "2013-04-01T00:00:00",
+        "doi": "10.4231/D3G737473",
+        "endDate": "2013-08-09T00:00:00",
+        "description": "The seismic performance of the precast system was evaluated with quasi-static tests of two column-footing sub-assemblies. This specimen utilized only conventional concrete and the confined rocking detail. \r\n\r\nThe column-to-spread-footing subassembly had a cantilever height of 60 in. and a column diameter of 20 in (42% scale). The specimen was subjected to a constant axial Load of 159 kips and a quasi-static displacement history based on the NEHRP recommendations for precast structural walls. \r\n\r\nThe lateral displacement history consisted of ten four-cycle sets. Each set had target peak values of 1.2X, 1.44X, 1.44X, and 0.48X, where X is the maximum target drift from the previous set. The  maximum target drift of the first set was selected so that the column would remain elastic throughout the duration of the first four cycles (X = 0.167 in.).",
+        "facility": [
+          {
+            "country": "United States",
+            "state": "WA",
+            "name": "University of Washington"
+          }
+        ],
+        "deleted": true,
+        "material": [
+          {
+            "materials": [
+              "Regular column concrete",
+              "No. 6 longitudinal reinforcing",
+              "No. 4 longitudinal reinforcing",
+              "Spiral wire",
+              "Strand"
+            ],
+            "component": "Column",
+            "$$hashKey": "object:907"
+          },
+          {
+            "materials": [
+              "Regular footing concrete"
+            ],
+            "component": "Footing",
+            "$$hashKey": "object:908"
+          }
+        ],
+        "path": "NEES-2013-1216.groups/Experiment-5",
+        "title": "Cyclic Testing of an Unbonded Pre-tensioned Bridge Column with Rocking Detail: Footing Specimen 01",
+        "sensors": [
+          "PreT-SF-ROCK"
+        ],
+        "creators": [
+          {
+            "lastName": "Schaefer",
+            "firstName": "Jeff",
+            "$$hashKey": "object:898"
+          },
+          {
+            "lastName": "Thonstad",
+            "firstName": "Travis",
+            "$$hashKey": "object:901"
+          },
+          {
+            "lastName": "Kennedy",
+            "firstName": "Bryan",
+            "$$hashKey": "object:897"
+          },
+          {
+            "lastName": "Eberhard",
+            "firstName": "Marc",
+            "$$hashKey": "object:900"
+          },
+          {
+            "lastName": "Stanton",
+            "firstName": "John",
+            "$$hashKey": "object:899"
+          }
+        ],
+        "type": "Large Scale",
+        "specimenType": [
+          {
+            "name": "Column-to-footing connection",
+            "description": "Utilizes socket footing connection detail and a precast, prestressed, rocking cantilever column."
+          }
+        ],
+        "name": "Experiment-5",
+        "$$hashKey": "object:813"
+      },
+      {
+        "startDate": "2012-12-05T00:00:00",
+        "doi": "10.4231/D39Z90C8S",
+        "endDate": "2012-12-05T00:00:00",
+        "description": "The seismic performance of the precast system was evaluated with quasi-static tests of two column-to-footing sub-assemblies. In this column-to-footing sub-assembly, a ductile fiber-reinforced concrete (HyFRC) was used in the plastic hinge region. \r\n\r\nThe column-to-spread-footing subassembly had a cantilever height of 66 in. and a column diameter of 20 in (42% scale). The specimen was subjected to a constant axial Load of 159 kips and a quasi-static displacement history based on the NEHRP recommendations for precast structural walls.\r\n\r\nThe lateral displacement history consisted of ten four-cycle sets. Each set had target peak values of 1.2X, 1.44X, 1.44X, and 0.48X, where X is the maximum target drift from the previous set. The  maximum target drift of the first set was selected so that the column would remain elastic throughout the duration of the first four cycles (X = 0.167 in.).",
+        "facility": [
+          {
+            "country": "United States",
+            "state": "WA",
+            "name": "University of Washington"
+          }
+        ],
+        "deleted": true,
+        "material": [
+          {
+            "materials": [
+              "HyFRC column concrete",
+              "Regular column concrete",
+              "No. 4 longitudinal reinforcing",
+              "Spiral wire",
+              "Strand"
+            ],
+            "component": "Column",
+            "$$hashKey": "object:934"
+          },
+          {
+            "materials": [
+              "No. 5 reinforcing",
+              "No. 4 reinforcing",
+              "No. 3 reinforcing",
+              "Regular footing concrete"
+            ],
+            "component": "Footing",
+            "$$hashKey": "object:935"
+          }
+        ],
+        "path": "NEES-2013-1216.groups/Experiment-6",
+        "title": "Cyclic Testing of an Unbonded Pre-tensioned Bridge Column with HyFRC: Footing Specimen 01",
+        "sensors": [
+          "NI-DAQ"
+        ],
+        "creators": [
+          {
+            "lastName": "Finnson",
+            "firstName": "Gunnsteinn",
+            "$$hashKey": "object:926"
+          },
+          {
+            "lastName": "Haraldsson",
+            "firstName": "Olafur",
+            "$$hashKey": "object:929"
+          },
+          {
+            "lastName": "Eberhard",
+            "firstName": "Marc",
+            "$$hashKey": "object:928"
+          },
+          {
+            "lastName": "Stanton",
+            "firstName": "John",
+            "$$hashKey": "object:927"
+          }
+        ],
+        "type": "Large Scale",
+        "specimenType": [
+          {
+            "name": "Column-to-Footing Connection",
+            "description": "Precast, prestressed, cantilever column with a \"wet socket\" footing connection."
+          }
+        ],
+        "name": "Experiment-6",
+        "$$hashKey": "object:814"
+      },
+      {
+        "startDate": "2014-07-11T00:00:00",
+        "doi": "10.4231/D33B5W88M",
+        "endDate": "2014-07-15T00:00:00",
+        "description": "The dynamic, system performance of the precast pre-tensioned system was evaluated by shake table testing of a two-span, three-bent bridge at the NEES Facility at the University of Nevada, Reno. \r\n\r\nThe bridge was quarter scale, had two-column bents with 12in. (0.305m) diameter columns, and 30ft (9.14m) span lengths. The overall bridge geometry was similar to that of one previously tested at the University of Nevada, Reno that used conventional non-prestressed columns, cast-in-place concrete columns. \r\n\r\nClear heights of 6ft (1.83m), 8ft (2.44m), and 5ft (1.52m) were used for bents 1, 2 and 3 respectively. The column bases were embedded 22 in. (0.56m) inside the cast-in-place combined footing using a wet socket connection (Haraldsson et al. 2014). The tops of the column were integrally grouted into the superstructure using a hybrid-bar-socket connection (Davis et al. 2012). The column longitudinal reinforcement consisted of 6-#3 bars and 4-3/8 in. diameter epoxy coated prestressing strands.\r\n\r\nBoth low- and high-amplitude earthquake excitations were used to investigate the bridge response. The excitations were based on the 90 deg. and 360 deg. components of the Century City Country Club North (CCN90/CCN360) record from the 1994 Northridge California Earthquake; the 360 deg. component of the Sylmar- Olive View Med. Center (SYL360) record from the 1994 Northridge California Earthquake; and the 0 deg. component of the Takatori (TAK000) record from the 1995 Kobe, Japan Earthquake.",
+        "facility": [
+          {
+            "country": "United States",
+            "state": "NV",
+            "name": "University of Nevada-Reno"
+          }
+        ],
+        "deleted": true,
+        "material": [
+          {
+            "materials": [
+              "270ksi 0.375in. Epoxy Coated Strand",
+              "W2.9 Spiral",
+              "No. 4 Supplementary Reinforcing",
+              "Concrete",
+              "No. 3 Longitudinal reinforcing"
+            ],
+            "component": "Bent 1 Columns",
+            "$$hashKey": "object:991"
+          },
+          {
+            "materials": [
+              "W2.9 Spiral",
+              "No. 4 Supplementary Reinforcing",
+              "270ksi 0.375in. Epoxy Coated Strand",
+              "Concrete",
+              "No. 3 Longitudinal reinforcing"
+            ],
+            "component": "Bent 2 Columns",
+            "$$hashKey": "object:992"
+          },
+          {
+            "materials": [
+              "270ksi 0.375in. Epoxy Coated Strand",
+              "W2.9 Spiral",
+              "No. 4 Supplementary Reinforcing",
+              "Concrete",
+              "No. 3 Longitudinal reinforcing"
+            ],
+            "component": "Bent 3 Columns",
+            "$$hashKey": "object:993"
+          },
+          {
+            "materials": [
+              "Bent 1 South Column - duct grout",
+              "Bent 1 North Column - duct grout",
+              "Bent 1 Concrete",
+              "No. 6 Beam Reinforcing",
+              "Bent 1 Grout pad - Fiber Reinforced Grout",
+              "No. 3 Skin Steel",
+              "Bent 3 South Column - duct grout",
+              "Bent 3 Concrete",
+              "No. 4 Shear Reinforcing",
+              "Bent 3 Grout pad - Fiber Reinforced Grout",
+              "Bent 3 North Column - duct grout"
+            ],
+            "component": "Cantilever Cap Beams",
+            "$$hashKey": "object:994"
+          },
+          {
+            "materials": [
+              "Concrete"
+            ],
+            "component": "Footings",
+            "$$hashKey": "object:995"
+          },
+          {
+            "materials": [
+              "No. 6 Beam Reinforcing",
+              "Concrete",
+              "Bent 2 Grout pad - Fiber Reinforced Grout",
+              "Bent 2 South Column - duct grout",
+              "No. 3 Skin Steel",
+              "No. 4 Shear Reinforcing",
+              "Bent 2 North Column - duct grout"
+            ],
+            "component": "Inverted-T Cap Beam",
+            "$$hashKey": "object:996"
+          }
+        ],
+        "equipment": [
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "469D",
+            "equipmentClass": "Other Utilities",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:967"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "Biaxial Shake Table - 1",
+            "equipmentClass": "Shaking Table System",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:968"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "Biaxial Shake Table - 2",
+            "equipmentClass": "Shaking Table System",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:969"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "Biaxial Shake Table - 3",
+            "equipmentClass": "Shaking Table System",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:970"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "FireStore-FS-2 Video-Data Store and Handler (Quantity: 4)",
+            "equipmentClass": "Other Utilities",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:971"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "FlexTest IIM",
+            "equipmentClass": "Other Utilities",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:972"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "SONY-BRC300 (Quantity: 5)",
+            "equipmentClass": "Camera",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:973"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "SONY-EVI-D70 (Quantity: 6)",
+            "equipmentClass": "Camera",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:974"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "UNR DAQ - NI",
+            "equipmentClass": "DAQ Infrastructure",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:975"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "UNR DAQ - Pacific",
+            "equipmentClass": "DAQ Infrastructure",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:976"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "UNR Hydraulic System",
+            "equipmentClass": "Hydraulic Power Infrastructure",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:977"
+          },
+          {
+            "equipment": "Shake Tables (Bi-axial)",
+            "component": "UNR LAN",
+            "equipmentClass": "LAN Infrastructure",
+            "facility": "University of Nevada-Reno",
+            "$$hashKey": "object:978"
+          }
+        ],
+        "path": "NEES-2013-1216.groups/Experiment-4",
+        "title": "Shake Table Testing of a Two-Span Bridge Specimen with Unbonded, Pre-tensioned Rocking Columns",
+        "sensors": [
+          "Sensor List"
+        ],
+        "creators": [
+          {
+            "lastName": "Thonstad",
+            "firstName": "Travis",
+            "$$hashKey": "object:961"
+          },
+          {
+            "lastName": "Mantawy",
+            "firstName": "Islam",
+            "$$hashKey": "object:958"
+          },
+          {
+            "lastName": "Stanton",
+            "firstName": "John",
+            "$$hashKey": "object:959"
+          },
+          {
+            "lastName": "Eberhard",
+            "firstName": "Marc",
+            "$$hashKey": "object:960"
+          },
+          {
+            "lastName": "Sanders",
+            "firstName": "David",
+            "$$hashKey": "object:957"
+          }
+        ],
+        "type": "Shake Table",
+        "specimenType": [
+          {
+            "name": "Pre-Tensioned Precast Bridge Specimen"
+          }
+        ],
+        "name": "Experiment-4",
+        "$$hashKey": "object:815"
+      },
+      {
+        "startDate": "2013-04-01T00:00:00",
+        "doi": "10.4231/D3KW57K0S",
+        "endDate": "2013-08-20T00:00:00",
+        "description": "The seismic performance of the precast system was evaluated with quasi-static tests of two column-footing sub-assemblies. In this column-to-footing sub-assembly, a ductile fiber-reinforced concrete (HyFRC) was used to fill the steel rocking detail and the region immediately above it. This column also contained a steel dowel bar that extended down from the body of the column into the footing.\r\n\r\nThe column-to-spread-footing subassembly had a cantilever height of 60 in. and a column diameter of 20 in (42% scale). The specimen was subjected to a constant axial Load of 159 kips and a quasi-static displacement history based on the NEHRP recommendations for precast structural walls. \r\n\r\nThe lateral displacement history consisted of ten four-cycle sets. Each set had target peak values of 1.2X, 1.44X, 1.44X, and 0.48X, where X is the maximum target drift from the previous set. The  maximum target drift of the first set was selected so that the column would remain elastic throughout the duration of the first four cycles (X = 0.167 in.).",
+        "facility": [
+          {
+            "country": "United States",
+            "state": "WA",
+            "name": "University of Washington"
+          }
+        ],
+        "deleted": true,
+        "material": [
+          {
+            "materials": [
+              "HyFRC column concrete",
+              "Regular column concrete",
+              "No. 6 longitudinal reinforcing",
+              "No. 4 longitudinal reinforcing",
+              "Spiral wire",
+              "Strand"
+            ],
+            "component": "Column",
+            "$$hashKey": "object:1056"
+          },
+          {
+            "materials": [
+              "Regular footing concrete"
+            ],
+            "component": "Footing",
+            "$$hashKey": "object:1057"
+          }
+        ],
+        "path": "NEES-2013-1216.groups/Experiment-1",
+        "title": "Cyclic Testing of an Unbonded Pre-tensioned Bridge Column with Rocking Detail: Footing Specimen 02",
+        "sensors": [
+          "SCXI"
+        ],
+        "creators": [
+          {
+            "lastName": "Schaefer",
+            "firstName": "Jeffrey A.",
+            "$$hashKey": "object:1047"
+          },
+          {
+            "lastName": "Kennedy",
+            "firstName": "Bryan",
+            "$$hashKey": "object:1046"
+          },
+          {
+            "lastName": "Thonstad",
+            "firstName": "Travis",
+            "$$hashKey": "object:1050"
+          },
+          {
+            "lastName": "Eberhard",
+            "firstName": "Marc",
+            "$$hashKey": "object:1049"
+          },
+          {
+            "lastName": "Stanton",
+            "firstName": "John",
+            "$$hashKey": "object:1048"
+          }
+        ],
+        "type": "Large Scale",
+        "specimenType": [
+          {
+            "name": "Column-to-footing connection",
+            "description": "Utilizes socket footing connection detail and a precast, prestressed, rocking cantilever column."
+          }
+        ],
+        "name": "Experiment-1",
+        "$$hashKey": "object:816"
+      }
+    ],
+    "project": {
+      "deleted": true,
+      "description": "This research investigates a system to simultaneously achieve three major advances in the design and construction of bridge bents: improved seismic performance, faster on-site construction, and better long-term durability. First, the seismic performance will be addressed through the use of unbonded pre-tensioned columns, with the goal of re-centering the bridge after an earthquake. Second, the faster on-site construction is to be achieved through the use of pre-fabrication, which typically goes hand-in-hand with pre-tensioning. Connection details are critical, but basic configurations for them have already been developed. Third, the long-term durability is to be addressed by the use of high performance materials (hybrid fiber-reinforced concrete (HyFRC), stainless steel bars, and epoxy-coated strands) in key areas. Pilot studies have already been conducted and have shown that the system possesses the desired fundamental characteristics and has the potential to deliver the anticipated benefits. However, key aspects of the system need to be investigated, and numerical models need to be developed to investigate its dynamic performance under a wide variety of conditions. This research is a collaboration among the University of Washington, University of California at Berkeley, and University of Nevada, Reno. The testing of a two-span bridge designed with this new system will be conducted using the George E. Brown, Jr. Network for Earthquake Engineering Simulation (NEES) shake table facility at the University of Nevada, Reno. Data from this project will be archived and made available to the public through the NEES Project Warehouse data repository at http://www.nees.org.\r\n\r\nThis project aims to break the limitation of achieving two out of the three long-standing \"better, faster, cheaper\" paradigm by providing three simultaneous improvements to the way that bridges are designed and built in seismic areas. The \"better\" aspect is provided by building upon basic technology that has been proven for buildings and was used to resist the seismic loads in a 40-story concrete building in San Francisco, among others. Pre-tensioning is being adapted for use in bridges, where it is being supplemented and optimized by the strategic inclusion in key regions of high performance materials, such as stainless steel and fiber-reinforced concrete, which are both selected for their toughness. Those materials will provide a quantum improvement in the response to earthquake motions by ensuring that bridges re-align properly and are open to traffic, including emergency response vehicles, immediately after an earthquake, and also by providing better long-term durability than is possible with conventional materials. The \"faster\" is achieved by the use of carefully designed pre-fabrication, which means that many components can be made off site and connected together rapidly on site. The connections must be easy to assemble but highly resistant to earthquake forces. Achieving those two goals together is challenging, but is possible due to the innovative configuration of the system. The \"cheaper\" is expected to follow from the significant reduction in construction time. Preliminary studies on individual aspects of the system have already shown their viability. This study focuses on the whole system, to optimize the arrangement and details of its components, and to create the mathematical models needed by engineers to design it in practice to reduce the cost of rebuilding the nation's aging bridge infrastructure. This award is part of the National Earthquake Hazards Reduction Program (NEHRP).",
+      "endDate": "2015-04-30T00:00:00",
+      "facility": [
+        {
+          "country": "United States",
+          "state": "NV",
+          "name": "University of Nevada-Reno"
+        },
+        {
+          "country": "United States",
+          "state": "WA",
+          "name": "University of Washington"
+        }
+      ],
+      "name": "NEES-2013-1216",
+      "organization": [
+        {
+          "country": "United States",
+          "state": "NV",
+          "name": "University of Nevada-Reno",
+          "$$hashKey": "object:791"
+        },
+        {
+          "country": "United States",
+          "state": "WA",
+          "name": "University of Washington",
+          "$$hashKey": "object:792"
+        },
+        {
+          "country": "United States",
+          "state": "CA",
+          "name": "University of California, Berkeley",
+          "$$hashKey": "object:793"
+        }
+      ],
+      "pis": [
+        {
+          "lastName": "Stanton",
+          "firstName": "John",
+          "$$hashKey": "object:786"
+        },
+        {
+          "lastName": "Eberhard",
+          "firstName": "Marc",
+          "$$hashKey": "object:787"
+        },
+        {
+          "lastName": "Sanders",
+          "firstName": "David",
+          "$$hashKey": "object:785"
+        }
+      ],
+      "project": "NEES-2013-1216.groups",
+      "startDate": "2012-05-15T00:00:00",
+      "system": "nees.public",
+      "title": "Seismic Resilience of Pre-Tensioned Bridge Bents",
+      "sponsor": [
+        {
+          "url": "http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=1207903",
+          "name": "NSF-1207903",
+          "$$hashKey": "object:797"
+        }
+      ],
+      "systemId": "nees.public"
+    }
+  }
+}

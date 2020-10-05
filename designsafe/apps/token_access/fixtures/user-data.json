@@ -33,7 +33,7 @@
       "date_joined": "2016-03-01T00:00:00.000Z"
     },
     "model": "auth.user",
-    "pk": 1
+    "pk": 3
   },
   {
     "fields": {
@@ -61,5 +61,25 @@
     },
     "model": "token_access.token",
     "pk": "5da84493fa0037de0945631d1f9df5c00cdcac49"
+  },
+
+  {
+    "model": "designsafe_accounts.designsafeprofile",
+    "pk": 5610,
+    "fields": {
+      "user": 2,
+      "ethnicity": "Asian",
+      "gender": "Male",
+      "agree_to_account_limit": "2020-07-02T23:41:19.342Z",
+      "bio": null,
+      "website": null,
+      "orcid_id": null,
+      "professional_level": null,
+      "update_required": true,
+      "last_updated": "2020-07-02T23:41:19.343Z",
+      "nh_interests": [],
+      "nh_technical_domains": [],
+      "research_activities": []
+    }
   }
 ]

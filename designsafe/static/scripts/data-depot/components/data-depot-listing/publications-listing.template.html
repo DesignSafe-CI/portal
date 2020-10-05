@@ -20,46 +20,30 @@
                 </thead>
 
             <tbody>
-                <tr ng-if="!$ctrl.browser.busyListing"
-              ng-repeat="item in $ctrl.browser.listing.children"
-              ng-click="$ctrl.onSelect($event, item)"
-              ng-class="{'ds-data-selected': item._ui.selected}"
+                <tr ng-if="!$ctrl.listing.loading"
+              ng-repeat="item in $ctrl.listing.publications"
+              ng-click=""
           >
               <td>
-                  <a ng-href="{{ item.href }}" ng-click="$ctrl.onBrowse($event, item)">
-                      {{ $ctrl.renderName(item) }}
+                  <a ng-href="{{ $ctrl.href(item) }}">
+                      {{ item.project.value.title }}
                   </a>
-                  <span style="text-transform:capitalize;" ng-if="item.meta">({{ $ctrl.getType(item.meta)}})</span>
-                  <span style="text-transform:capitalize;" ng-if="!item.meta">(NEES)</span>
+                  <span style="text-transform:capitalize;">({{item.project.value.dataType ||  $ctrl.getType(item.project.value.projectType) }})</span>
               </td>
-              <td ng-if="item.meta.piLabel">
-                  {{item.meta.piLabel}}
-              </td>
-              <td ng-if="!item.meta.pi">
-                <span ng-show="item.metadata.project.pis">{{ item.metadata.project.pis[0].lastName }}, {{ item.metadata.project.pis[0].firstName }}</span>
-                <span ng-hide="item.metadata.project.pis">N/A</span> 
+              <td >
+                <span ng-show="item.pi">{{ item.pi }}</span>
             </td>
-              <td align="center" ng-if="item.meta.dateOfPublication">
-                <a ng-click="$ctrl.showDescription($ctrl.renderName(item), item.meta.description)">View Description</a>
-              </td>
-            <td align="center" ng-if="!item.meta.dateOfPublication">
-                <a ng-click="$ctrl.showDescription($ctrl.renderName(item), item.metadata.project.description)" ng-hide="!item.metadata.project.description">View Description</a>
-                <span ng-show="!item.metadata.project.description">N/A</span>
+            <td align="center" >
+                <a ng-click="$ctrl.showDescription(item)">View Description</a>
             </td>
-              <td ng-if="item.meta.type">
-                {{item.meta.keywords}}
+              <td >
+                {{item.project.value.keywords}}
               </td>
-              <td ng-if="!item.meta.type">
-                NEES
-              </td>
-              <td ng-if="item.meta.dateOfPublication">
-                {{ item.meta.dateOfPublication| date: 'M/d/yyyy'}}
-              </td>
-              <td ng-if="!item.meta.dateOfPublication">
-                N/A
+              <td >
+                {{ item.created| date: 'M/d/yyyy'}}
               </td>
           </tr>
-                <tr ng-if="$ctrl.browser.busyListingPage">
+                <tr ng-if="$ctrl.listing.loadingScroll">
                     <td>
                         <span class="bg-info text-info">
                             <i class="fa fa-spinner fa-spin"></i> Loading...
@@ -68,23 +52,23 @@
                 </tr>
             </tbody>
             <caption>
-                <div data-ng-if="$ctrl.browser.busy"
+                <div data-ng-if="$ctrl.listing.loading"
                      style="padding:10px; font-size:large; width:100%;"
                      class="bg-info">
                     <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
                 </div>
 
-                <div ng-if="! $ctrl.browser.busy && browser.error"
+                <div ng-if="! $ctrl.listing.loading && $ctrl.listing.error"
                      class="text-center">
                     <p class="alert alert-danger"
-                       ng-bind-html="$ctrl.browser.error.message ||
-                                     $ctrl.browser.error | toTrusted"></p>
+                       ng-bind-html="$ctrl.listing.error.message ||
+                                     $ctrl.listing.error | toTrusted"></p>
                 </div>
 
                 <div
-                    ng-if="! $ctrl.browser.busy &&
-                           ! $ctrl.browser.error &&
-                           ($ctrl.browser.listing.children|length) === 0"
+                    ng-if="! $ctrl.listing.loading &&
+                           ! $ctrl.listing.error &&
+                           ($ctrl.listing.publications|length) === 0"
                     style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                     class="text-center"
                 >

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from mock import patch
+from mock import patch, MagicMock
 from .views import redirect_old_nees
 
 class RedirectTest(TestCase):
@@ -10,5 +10,6 @@ class RedirectTest(TestCase):
     @patch('django.shortcuts.redirect')
     def test_redirect_old_nees(self, mock_redirect):
         mock_redirect.return_value = True
-        redirect_old_nees(685)
+        mock_request = MagicMock()
+        redirect_old_nees(mock_request, 685)
         self.assertTrue(mock_redirect.called_with('/search/?query_string=NEES 0685'))

@@ -212,7 +212,14 @@ HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
-from .nees_settings import NEES_USER_DATABASE
+NEES_USER_DATABASE = {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': os.environ.get('NEES_DATABASE_NAME'),
+    'HOST': os.environ.get('NEES_DATABASE_HOST'),
+    'PORT': os.environ.get('NEES_DATABASE_PORT'),
+    'USER': os.environ.get('NEES_DATABASE_USER'),
+    'PASSWORD': os.environ.get('NEES_DATABASE_PASSWORD'),
+}
 #if NEES_USER_DATABASE['NAME']:
 #    DATABASES['nees_users'] = NEES_USER_DATABASE
 
@@ -300,17 +307,17 @@ CKEDITOR_SETTINGS = {
     'allowedContent': True
 }
 
-#MIGRATION_MODULES = {
-#    'djangocms_flash': 'djangocms_flash.migrations_django',
-#    'djangocms_file': 'djangocms_file.migrations_django',
-#    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
-#    'djangocms_inherit': 'djangocms_inherit.migrations_django',
-#    'djangocms_link': 'djangocms_link.migrations_django',
-#    'djangocms_picture': 'djangocms_picture.migrations_django',
-#    'djangocms_teaser': 'djangocms_teaser.migrations_django',
-#    'djangocms_video': 'djangocms_video.migrations_django',
-#    'djangocms_style': 'djangocms_style.migrations_django',
-#}
+MIGRATION_MODULES = {
+    'djangocms_flash': None,
+    'djangocms_file': None,
+    'djangocms_googlemap': None,
+    'djangocms_inherit': None,
+    'djangocms_link': None,
+    'djangocms_picture': None,
+    'djangocms_teaser': None,
+    'djangocms_video': None,
+    'djangocms_style': None
+}
 
 LOGIN_URL = os.environ.get('LOGIN_URL', '/login/')
 
@@ -572,9 +579,11 @@ if os.environ.get('PORTAL_PROFILE') == 'True':
 else:
     PORTAL_PROFILE = False
 
-from .elasticsearch_settings import *
-from .rt_settings import *
-from .external_resource_secrets import *
+
+GOOGLE_OAUTH2_CLIENT_SECRET = "CHANGE_ME"
+GOOGLE_OAUTH2_CLIENT_ID = "CHANGE_ME"
+
+WEBHOOK_POST_URL = "http://8cb9afb3.ngrok.io"
 
 # Box sync
 BOX_APP_CLIENT_ID = 'boxappclientid'
@@ -615,7 +624,23 @@ AGAVE_STORAGE_SYSTEM = 'storage.example.com'
 MIGRATION_MODULES = {
     'data': None,
     'designsafe_data': None,
-    'rapid': None }
+    'rapid': None,
+    'djangocms_flash.Flash': None,
+    'djangocms_file.File': None,
+    'djangocms_file.Folder': None,
+    'djangocms_googlemap.GoogleMapMarker': None,
+    'djangocms_googlemap.GoogleMapRoute': None,
+    'djangocms_googlemap.GoogleMap': None,
+    'djangocms_inherit': None,
+    'djangocms_link': None,
+    'djangocms_picture.Picture': None,
+    'djangocms_teaser': None,
+    'djangocms_video.VideoTrack': None,
+    'djangocms_video.VideoPlayer': None,
+    'djangocms_video.VideoSource': None,
+    'djangocms_style.Style': None,
+    
+}
 
 LOGGING = {
     'version': 1,
@@ -685,3 +710,115 @@ PORTAL_DATA_DEPOT_SEARCH_MANAGERS = {
 }
 
 COMMUNITY_INDEX_SCHEDULE = {}
+
+ES_INDEX_PREFIX = 'designsafe-dev-{}'
+ES_AUTH = 'username:password'
+
+ES_CONNECTIONS = {
+    'default': {
+        'hosts': [
+            'https://wma-es-client.tacc.utexas.edu:9200',
+        ],
+    },
+    'staging': { #dev/qa
+        'hosts':  [
+            'https://wma-es-client.tacc.utexas.edu:9200',
+        ]
+    },
+    'dev': {
+        'hosts': [
+            'elasticsearch:9200'
+        ]
+    },
+    'localhost': {
+        'hosts': [
+            'localhost'
+        ]
+    }
+}
+
+ES_INDICES = {
+    'files': {
+        'alias': ES_INDEX_PREFIX.format('files'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedFile',
+        'kwargs': {'number_of_shards': 3}
+    },
+    'files_legacy': {
+        'alias': ES_INDEX_PREFIX.format('files-legacy'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedFileLegacy',
+        'kwargs': {'number_of_shards': 3}
+    },
+    'publications': {
+        'alias': ES_INDEX_PREFIX.format('publications'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedPublication',
+        'kwargs': {'index.mapping.total_fields.limit': 3000}
+    },
+    'web_content': {
+        'alias': ES_INDEX_PREFIX.format('web-content'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedCMSPage',
+        'kwargs': {}
+    },
+    'publications_legacy': {
+        'alias': ES_INDEX_PREFIX.format('publications-legacy'),
+        'document': 'designsafe.apps.data.models.elasticsearch.IndexedPublicationLegacy',
+        'kwargs': {}
+    },
+    'rapid_event': {
+        'alias': ES_INDEX_PREFIX.format('rapid-events'),
+        'document': 'designsafe.apps.rapid.models.RapidNHEvent',
+        'kwargs': {}
+    },
+    'rapid_event_type': {
+        'alias': ES_INDEX_PREFIX.format('rapid-event-types'),
+        'document': 'designsafe.apps.rapid.models.RapidNHEventType',
+        'kwargs': {}
+    },
+    'projects': {
+        'alias': ES_INDEX_PREFIX.format('projects'),
+        'document': 'designsafe.apps.projects.models.elasticsearch.IndexedProject',
+        'kwargs': {}
+    },
+    'project_entities': {
+        'alias': ES_INDEX_PREFIX.format('project-entities'),
+        'document': 'designsafe.apps.projects.models.elasticsearch.IndexedEntity',
+        'kwargs': {}
+
+    },
+    #'apps': {
+    #    'name': 'des-apps_a',
+    #    'alias': ['des-apps'],
+    #    'documents': [{'name': 'app',
+    #                   'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedApp'}]
+    #},
+    #'jobs': {
+    #    'name': 'des-jobs_a',
+    #    'alias': ['des-jobs'],
+    #    'documents': [{'name': 'job',
+    #                   'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedJob'}]
+    #}
+}
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        # 'URL': 'des_elasticsearch:9200/',
+        'URL': ES_CONNECTIONS['dev']['hosts'][0],
+        'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
+        'KWARGS': {'http_auth': ES_AUTH}
+    }
+}
+
+DJANGO_RT = {
+    'RT_HOST': os.environ.get('RT_HOST', 'https://rt.example.com/REST/1.0'),
+    'RT_UN': os.environ.get('RT_USERNAME', 'username'),
+    'RT_PW': os.environ.get('RT_PASSWORD', 'password'),
+    'RT_QUEUE': os.environ.get('RT_DEFAULT_QUEUE', 'Support'),
+}
+
+TICKET_CATEGORIES = (
+    ('DATA_CURATION_PUBLICATION', 'Data Curation & Publication'),
+    ('DATA_DEPOT', 'Data Depot'),
+    ('DISCOVERY_WORKSPACE', 'Discovery Workspace'),
+    ('LOGIN', 'Login/Registration'),
+    ('OTHER', 'Other'),
+)

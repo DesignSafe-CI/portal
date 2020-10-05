@@ -130,7 +130,11 @@
                     <br>{{ mission.value.description }}
                 </p>
             </div>
-            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[mission.uuid]" params="$ctrl.fl"></files-listing>
+        <files-listing
+            on-scroll="$ctrl.scrollToBottom()"
+            listing="$ctrl.FileListingService.listings[mission.uuid]"
+            on-browse="$ctrl.onBrowse(file)"
+        >&nbsp;</files-listing>
             <div><br>
                 <span class="prj-head-title" ng-click="$ctrl.editSubEntity(mission)"><a>Edit</a></span>
             </div>
@@ -256,8 +260,11 @@
                                     <span class="prj-head-title" ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
                                 </div>
                             </div>
-                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
-                        </div>
+                            <files-listing
+                            on-scroll="$ctrl.scrollToBottom()"
+                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                            on-browse="$ctrl.onBrowse(file)"
+                        >&nbsp;</files-listing>                    </div>
                     </div>
                 </div>
                 <!-- GeoscienceEngineering -->
@@ -344,8 +351,11 @@
                                     <span class="prj-head-title" ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
                                 </div>
                             </div>
-                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
-                        </div>
+                            <files-listing
+                            on-scroll="$ctrl.scrollToBottom()"
+                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                            on-browse="$ctrl.onBrowse(file)"
+                        >&nbsp;</files-listing>                        </div>
                     </div>
                 </div>
                 <!-- Research Planning Collection -->
@@ -387,8 +397,11 @@
                                     <span class="prj-head-title" ng-click="$ctrl.editSubEntity(collection)"><a>Edit</a></span>
                                 </div>
                             </div>
-                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[collection.uuid]" params="$ctrl.fl"></files-listing>
-                        </div>
+                            <files-listing
+                            on-scroll="$ctrl.scrollToBottom()"
+                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                            on-browse="$ctrl.onBrowse(file)"
+                        >&nbsp;</files-listing>                        </div>
                     </div>
                 </div>
             </div>

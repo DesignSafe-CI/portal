@@ -3,6 +3,10 @@ from django.contrib.auth import get_user_model, signals
 from django.contrib.auth.models import Permission
 from django.core.urlresolvers import reverse
 from unittest import skip
+from mock import patch
+import pytest
+
+pytestmark = pytest.mark.django_db
 
 
 class AccountsTests(TestCase):
@@ -11,11 +15,11 @@ class AccountsTests(TestCase):
 
     def setUp(self):
         # configure admin user
-        user = get_user_model().objects.get(pk=1)
-        user.set_password('admin/password')
+        admin_user = get_user_model().objects.get(pk=1)
+        admin_user.set_password('admin/password')
         perm = Permission.objects.get(codename='view_notification_subscribers')
-        user.user_permissions.add(perm)
-        user.save()
+        admin_user.user_permissions.add(perm)
+        admin_user.save()
 
         # configure regular user
         user = get_user_model().objects.get(pk=2)
@@ -104,20 +108,48 @@ class AccountsTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, 'Generating User Report')
 
-    def test_professional_profile_manage(self):
-        url = reverse('designsafe_accounts:manage_pro_profile')
-        self.client.login(username='ds_admin', password='admin/password')
-        resp = self.client.get(url)
-        assert 'TEST BIO' in resp.content
-        assert 'test@test.com' in resp.content
+    @patch('designsafe.apps.accounts.views.forms.TASClient')
+    @patch('designsafe.apps.accounts.views.TASUser')
+    def test_professional_profile_manage(self, mock_tas_user, mock_form_tas):
 
-    def test_professional_profile_post(self):
-        url = reverse('designsafe_accounts:pro_profile_edit')
+        mock_form_tas().institutions.return_value = [{'id': 1, 'name': 'inst1'}]
+        mock_form_tas().get_departments.return_value = [{'id': 1, 'name': 'dep1'}]
+        mock_form_tas().countries.return_value = [{'id': 1, 'name': 'country1'}]
+        
+        url = reverse('designsafe_accounts:manage_profile')
         self.client.login(username='ds_admin', password='admin/password')
-        data = {'bio': 'NEW TEST BIO', 'website': 'NEW_WEBSITE', 'orcid_id':'NEW_ORCID_ID'}
-        resp = self.client.post(url, data)
-        url = reverse('designsafe_accounts:manage_pro_profile')
         resp = self.client.get(url)
-        assert 'NEW TEST BIO' in resp.content
-        assert 'NEW_WEBSITE' in resp.content
-        assert 'NEW_ORCID_ID' in resp.content
+        assert 'TEST BIO' in str(resp.content)
+        assert 'test@test.com' in str(resp.content)
+
+    @patch('designsafe.apps.accounts.views.TASClient')
+    @patch('designsafe.apps.accounts.views.TASUser')
+    @patch('designsafe.apps.accounts.views.forms.TASClient')
+    def test_professional_profile_post(self, mock_form_tas, mock_tas_user, mock_tas):
+
+        mock_form_tas().institutions.return_value = [{'id': 1, 'name': 'inst1'}]
+        mock_form_tas().get_departments.return_value = [{'id': 1, 'name': 'dep1'}]
+        mock_form_tas().countries.return_value = [{'id': 1, 'name': 'country1'}]
+
+        url = reverse('designsafe_accounts:profile_edit')
+        self.client.login(username='ds_admin', password='admin/password')
+
+        data = {'firstName': 'DS',
+                'lastName': 'User', 'email': 'test@test.test',
+                'phone': '555-555-5555', 'institutionId': '1', 'departmentId': '1',
+                'title': 'Center Non-Researcher Staff',
+                'countryId': '1', 'citizenshipId': '1',
+                'ethnicity': 'White', 'gender': 'Other',
+                'bio': 'NEW TEST BIO',
+                'website': 'NEW_WEBSITE', 'orcid_id': 'NEW_ORCID_ID', 'nh_interests': '13',
+                'nh_technical_domains': '5',
+                'professional_level': 'Staff (support, administration, etc)',
+                'research_activities': '6'}
+
+        resp = self.client.post(url, data)
+       
+        url = reverse('designsafe_accounts:manage_profile')
+        resp = self.client.get(url) 
+        assert 'NEW TEST BIO' in str(resp.content)
+        assert 'NEW_WEBSITE' in str(resp.content)
+        assert 'NEW_ORCID_ID' in str(resp.content)

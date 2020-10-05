@@ -12,6 +12,12 @@
           {{ childItem.name }}
         </a>
       </div>
+      <div ng-switch-when="publicDataLegacy">
+        <hr style="margin: 0;">
+        <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ng-class="{active: $ctrl.$state.includes('publicDataLegacy') || $ctrl.$state.includes('neesPublished')}">
+          {{ childItem.name }}
+        </a>
+      </div>
       <div ng-switch-default>
         <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ui-sref-active="active">
           {{ childItem.name }}

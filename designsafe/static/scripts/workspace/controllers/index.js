@@ -1,7 +1,6 @@
 import angular from 'angular';
 
 import ApplicationFormCtrl from './application-form';
-import DataBrowserCtrl from './data-browser';
 import { JobsStatusCtrl, JobDetailsModalCtrl, VNCJobDetailsModalCtrl } from './jobs-status';
 
 
@@ -21,7 +20,6 @@ workspaceControllers.controller('ApplicationFormCtrl', [
     'ProjectService',
     ApplicationFormCtrl]
 );
-workspaceControllers.controller('DataBrowserCtrl', DataBrowserCtrl);
 workspaceControllers.controller('JobsStatusCtrl', JobsStatusCtrl);
 workspaceControllers.controller('JobDetailsModalCtrl', JobDetailsModalCtrl);
 workspaceControllers.controller('VNCJobDetailsModalCtrl', VNCJobDetailsModalCtrl);

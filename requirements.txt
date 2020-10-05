@@ -11,7 +11,7 @@ backports.shutil-get-terminal-size==1.0.0
 backports.ssl-match-hostname==3.4.0.2
 beautifulsoup4==4.5.3
 billiard==3.5.0.3
-boxsdk==1.5.5
+boxsdk==2.9.0
 cachetools==2.0.1
 celery==4.1.0
 certifi==2017.7.27.1
@@ -63,7 +63,7 @@ djangocms-teaser==0.2.0
 djangocms-text-ckeditor==3.5.0
 djangocms-video==2.0.3
 docutils==0.14
-dropbox==7.1.1
+dropbox==10.3.0
 dumb-init==1.2.2
 easy-thumbnails==2.3
 elasticsearch==7.5.1
@@ -128,7 +128,11 @@ pylint==1.9.3
 pymongo==3.9.0
 pyOpenSSL==17.2.0
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.4.0#egg=pytas
-pytest==2.7.0
+pytest==5.4.3
+pytest-asyncio==0.14.0
+pytest-cov==2.10.0
+pytest-django==3.7.0
+pytest-mock==3.1.1
 python-dateutil==2.4.2
 python-magic==0.4.13
 python-memcached==1.59
@@ -145,7 +149,7 @@ rt==1.0.8
 scandir==1.5
 simplegeneric==0.8.1
 singledispatch==3.4.0.3
-six==1.10.0
+six==1.15.0
 slimit==0.8.1
 snowballstemmer==1.2.1
 Sphinx==1.6.3

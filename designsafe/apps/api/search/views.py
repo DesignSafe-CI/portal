@@ -31,7 +31,6 @@ class SearchView(BaseApiView):
         if limit > 500:
             return HttpResponseBadRequest("limit must not exceed 500")
         type_filter = request.GET.get('type_filter', 'all')
-
         doc_type_map = {
             list(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())[0]: 'publication',
             list(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys())[0]: 'publication',
@@ -85,11 +84,11 @@ class SearchView(BaseApiView):
                 d["piLabel"] = "{}, {}".format(pi_user.last_name, pi_user.first_name)
             hits.append(d)
 
-        out['total_hits'] = res.hits.total.value
         out['hits'] = hits
         out['all_total'] = Search().query(public_files_query | publications_query | cms_query).count()
         out['public_files_total'] = Search().query(public_files_query).count()
         out['published_total'] = Search().query(publications_query).count()
         out['cms_total'] = Search().query(cms_query).count()
+        print(out)
 
         return JsonResponse(out, safe=False)

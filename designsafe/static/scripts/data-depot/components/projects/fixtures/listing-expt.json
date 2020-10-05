@@ -1,0 +1,2598 @@
+{
+    "loading": false,
+    "loadingScroll": false,
+    "reachedEnd": true,
+    "listing": [
+      {
+        "name": "00002.jpg",
+        "path": "/00002.jpg",
+        "lastModified": "2019-02-20T07:47:58-06:00",
+        "length": 85263,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00002.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "4a4a02cf-7753-4d09-b341-610a4bb1379b",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "8057478701564301801-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "7206731579572621801-242ac119-0001-012",
+              "3849330284117683735-242ac119-0001-012",
+              "6923074490394022377-242ac114-0001-002",
+              "1874008375186297321-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012",
+              "3339522405406469655-242ac11a-0001-012",
+              "1874523771261817321-242ac112-0001-002"
+            ],
+            "lastUpdated": "2020-08-13T12:29:47.542-05:00",
+            "created": "2019-03-26T15:19:19.763-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.sensor_list",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8057478701564301801-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8057478701564301801-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "7206731579572621801-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/7206731579572621801-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1874008375186297321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00002.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "1874523771261817321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//sensor_arrangment_I-A.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "3339522405406469655-242ac11a-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3339522405406469655-242ac11a-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "3849330284117683735-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3849330284117683735-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "6923074490394022377-242ac114-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Globus Folder",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "sensorListType": "other",
+              "title": "Pressure Sensor Array I-A",
+              "description": "We surrounded our test structure with four sensors to take pressure readings. TEST",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "3849330284117683735-242ac119-0001-012"
+              ],
+              "modelConfigs": [
+                "3339522405406469655-242ac11a-0001-012",
+                "7206731579572621801-242ac119-0001-012"
+              ],
+              "files": [
+                "6923074490394022377-242ac114-0001-002",
+                "1874523771261817321-242ac112-0001-002",
+                "1874008375186297321-242ac112-0001-002"
+              ],
+              "fileTags": [
+                {
+                  "path": "/00002.jpg",
+                  "fileUuid": "1874008375186297321-242ac112-0001-002",
+                  "tagName": "Linear Potentiometer",
+                  "$$hashKey": "object:136"
+                },
+                {
+                  "path": "/00002.jpg",
+                  "fileUuid": "1874008375186297321-242ac112-0001-002",
+                  "tagName": "Linear Variable Differential Transformer",
+                  "$$hashKey": "object:137"
+                }
+              ]
+            },
+            "_ui": {
+              "uuid": "8057478701564301801-242ac119-0001-012",
+              "orders": [
+                {
+                  "parent": "7206731579572621801-242ac119-0001-012",
+                  "value": 1
+                },
+                {
+                  "parent": "3339522405406469655-242ac11a-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 0
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "model_configs",
+              "files"
+            ],
+            "_displayName": "Sensor List",
+            "_filePaths": [
+              "/00002.jpg",
+              "/sensor_arrangment_I-A.jpg",
+              "/Globus Folder"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:133"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [
+          "Linear Potentiometer",
+          "Linear Variable Differential Transformer"
+        ],
+        "_parent_entities": [],
+        "$$hashKey": "object:74"
+      },
+      {
+        "name": "00003.jpg",
+        "path": "/00003.jpg",
+        "lastModified": "2019-02-20T07:47:59-06:00",
+        "length": 86729,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00003.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "63004406-90d6-4567-90c1-d55450e1fe8c",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "8908537048718372375-242ac11a-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "7120165510589246999-242ac113-0001-002",
+              "1873879526167417321-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012"
+            ],
+            "lastUpdated": "2020-07-06T17:05:06.174-05:00",
+            "created": "2019-10-14T14:55:05.356-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.report",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8908537048718372375-242ac11a-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8908537048718372375-242ac11a-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "7120165510589246999-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//objects2.pyc",
+                  "title": "file"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1873879526167417321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00003.jpg",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "title": "Findings From Series B",
+              "description": "This report needs a description...",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [],
+              "files": [
+                "7120165510589246999-242ac113-0001-002",
+                "1873879526167417321-242ac112-0001-002"
+              ],
+              "fileTags": []
+            },
+            "_ui": {
+              "uuid": "8908537048718372375-242ac11a-0001-012",
+              "orders": [],
+              "order": 1
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "files"
+            ],
+            "_displayName": "Report",
+            "_filePaths": [
+              "/objects2.pyc",
+              "/00003.jpg"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:149"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:75"
+      },
+      {
+        "name": "00004.jpg",
+        "path": "/00004.jpg",
+        "lastModified": "2019-02-20T07:48:02-06:00",
+        "length": 82372,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00004.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "23639c76-85b0-4265-b511-6e1f7b3639e1",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "1805800103257444841-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "1052668239654088215-242ac119-0001-012",
+              "1871173696770937321-242ac112-0001-002",
+              "3849330284117683735-242ac119-0001-012"
+            ],
+            "lastUpdated": "2019-10-17T08:07:47.769-05:00",
+            "created": "2019-04-08T08:56:24.826-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.analysis",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1805800103257444841-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1805800103257444841-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "3849330284117683735-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3849330284117683735-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1871173696770937321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00004.jpg",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "analysisType": "other",
+              "title": "Wave Impact on Reinforced Structures",
+              "refs": [
+                {
+                  "referencedoi": "http://www.google.com",
+                  "reference": "Data References 1"
+                },
+                {
+                  "referencedoi": "http://www.data.gov",
+                  "reference": "Data References 2"
+                },
+                {
+                  "referencedoi": "https://www.precision-camera.com",
+                  "reference": "Data References 3"
+                }
+              ],
+              "description": "This is all the data we collected from Experiment I-A",
+              "analysisData": "",
+              "application": "",
+              "script": [],
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "3849330284117683735-242ac119-0001-012"
+              ],
+              "files": [
+                "1871173696770937321-242ac112-0001-002"
+              ],
+              "fileTags": [
+                {
+                  "fileUuid": "1873922475840377321-242ac112-0001-002",
+                  "tagName": "Visualization"
+                }
+              ]
+            },
+            "_ui": {
+              "uuid": "1805800103257444841-242ac119-0001-012",
+              "orders": [],
+              "order": 1
+            },
+            "_relatedFields": [
+              "script",
+              "project",
+              "experiments",
+              "files"
+            ],
+            "_displayName": "Analysis",
+            "_filePaths": [
+              "/00004.jpg"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:159"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:76"
+      },
+      {
+        "name": "00005.jpg",
+        "path": "/00005.jpg",
+        "lastModified": "2019-02-20T07:48:35-06:00",
+        "length": 80635,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00005.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "ab0884af-77f3-4665-a956-a92b72a21f59",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "2799945664009989655-242ac11a-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "3849330284117683735-242ac119-0001-012",
+              "3534485681492857321-242ac112-0001-002",
+              "3339522405406469655-242ac11a-0001-012",
+              "1052668239654088215-242ac119-0001-012",
+              "7113637164594294295-242ac113-0001-002"
+            ],
+            "lastUpdated": "2020-08-13T12:29:47.541-05:00",
+            "created": "2019-09-18T14:31:01.700-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.sensor_list",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2799945664009989655-242ac11a-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2799945664009989655-242ac11a-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "3534485681492857321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00005.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "7113637164594294295-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//gato.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "3339522405406469655-242ac11a-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3339522405406469655-242ac11a-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "3849330284117683735-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3849330284117683735-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                }
+              ]
+            },
+            "value": {
+              "sensorListType": "other",
+              "title": "Pressure Sensor I-B",
+              "description": "Test",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "3849330284117683735-242ac119-0001-012"
+              ],
+              "modelConfigs": [
+                "3339522405406469655-242ac11a-0001-012"
+              ],
+              "files": [
+                "7113637164594294295-242ac113-0001-002",
+                "3534485681492857321-242ac112-0001-002"
+              ],
+              "fileTags": []
+            },
+            "_ui": {
+              "uuid": "2799945664009989655-242ac11a-0001-012",
+              "orders": [
+                {
+                  "parent": "3339522405406469655-242ac11a-0001-012",
+                  "value": 1
+                }
+              ],
+              "order": 1
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "model_configs",
+              "files"
+            ],
+            "_displayName": "Sensor List",
+            "_filePaths": [
+              "/00005.jpg",
+              "/gato.jpg"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:169"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:77"
+      },
+      {
+        "name": "00006.jpg",
+        "path": "/00006.jpg",
+        "lastModified": "2019-02-20T07:48:36-06:00",
+        "length": 80885,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00006.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "d0001d61-7e77-451b-adf4-bda2cebfeac3",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "2316632994191109655-242ac11a-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "3535301725279097321-242ac112-0001-002",
+              "4461024265737989655-242ac11a-0001-012",
+              "8057478701564301801-242ac119-0001-012",
+              "3339522405406469655-242ac11a-0001-012",
+              "1052668239654088215-242ac119-0001-012"
+            ],
+            "lastUpdated": "2020-01-22T10:34:51.519-06:00",
+            "created": "2019-09-18T14:31:12.953-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.event",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2316632994191109655-242ac11a-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2316632994191109655-242ac11a-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "4461024265737989655-242ac11a-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/4461024265737989655-242ac11a-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "8057478701564301801-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/8057478701564301801-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "3339522405406469655-242ac11a-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3339522405406469655-242ac11a-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "3535301725279097321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00006.jpg",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "eventType": "other",
+              "title": "Erosion Reading I-B",
+              "description": "Test",
+              "analysis": [],
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "4461024265737989655-242ac11a-0001-012"
+              ],
+              "modelConfigs": [
+                "3339522405406469655-242ac11a-0001-012"
+              ],
+              "sensorLists": [
+                "8057478701564301801-242ac119-0001-012"
+              ],
+              "files": [
+                "3535301725279097321-242ac112-0001-002"
+              ],
+              "fileTags": []
+            },
+            "_ui": {
+              "uuid": "2316632994191109655-242ac11a-0001-012",
+              "orders": [
+                {
+                  "parent": "8057478701564301801-242ac119-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 1
+            },
+            "_relatedFields": [
+              "analysis",
+              "project",
+              "experiments",
+              "model_configs",
+              "sensor_lists",
+              "files"
+            ],
+            "_displayName": "Event",
+            "_filePaths": [
+              "/00006.jpg"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:179"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:78"
+      },
+      {
+        "name": "00007.jpg",
+        "path": "/00007.jpg",
+        "lastModified": "2019-02-20T07:48:33-06:00",
+        "length": 83203,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00007.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "c96fd3f3-b9cc-4037-aae5-4f1bbf59defb",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "3339522405406469655-242ac11a-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "1052668239654088215-242ac119-0001-012",
+              "3849330284117683735-242ac119-0001-012",
+              "3330345885913977321-242ac112-0001-002"
+            ],
+            "lastUpdated": "2020-08-13T12:13:23.527-05:00",
+            "created": "2019-09-18T14:30:49.137-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.model_config",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3339522405406469655-242ac11a-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3339522405406469655-242ac11a-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "3330345885913977321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00007.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "3849330284117683735-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3849330284117683735-242ac119-0001-012",
+                  "title": "metadata"
+                }
+              ]
+            },
+            "value": {
+              "title": "Wave I-B",
+              "description": "Test",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "3849330284117683735-242ac119-0001-012"
+              ],
+              "files": [
+                "3330345885913977321-242ac112-0001-002"
+              ],
+              "fileTags": []
+            },
+            "_ui": {
+              "uuid": "3339522405406469655-242ac11a-0001-012",
+              "orders": [
+                {
+                  "parent": "3849330284117683735-242ac119-0001-012",
+                  "value": 1
+                }
+              ],
+              "order": 0
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "files"
+            ],
+            "_displayName": "ModelConfig",
+            "_filePaths": [
+              "/00007.jpg"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:189"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:79"
+      },
+      {
+        "name": "00008.jpg",
+        "path": "/00008.jpg",
+        "lastModified": "2019-02-20T07:48:20-06:00",
+        "length": 81756,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00008.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "3b3c5b8e-f6f2-4eb5-bff9-8fc22d73fe9b",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "7342634922269732375-242ac11a-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "1052668239654088215-242ac119-0001-012",
+              "2856224446108537321-242ac112-0001-002",
+              "7112348674405494295-242ac113-0001-002"
+            ],
+            "lastUpdated": "2020-08-13T12:12:24.354-05:00",
+            "created": "2019-10-14T14:55:41.815-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.analysis",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/7342634922269732375-242ac11a-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/7342634922269732375-242ac11a-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "2856224446108537321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00008.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "7112348674405494295-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//sensor_settings.py",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "analysisType": "other",
+              "title": "Tsunami Impact on Reinforced Structures",
+              "refs": [
+                null
+              ],
+              "description": "",
+              "analysisData": "",
+              "application": "",
+              "script": [],
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [],
+              "files": [
+                "7112348674405494295-242ac113-0001-002",
+                "2856224446108537321-242ac112-0001-002"
+              ],
+              "fileTags": []
+            },
+            "_ui": {
+              "uuid": "7342634922269732375-242ac11a-0001-012",
+              "orders": [],
+              "order": 0
+            },
+            "_relatedFields": [
+              "script",
+              "project",
+              "experiments",
+              "files"
+            ],
+            "_displayName": "Analysis",
+            "_filePaths": [
+              "/00008.jpg",
+              "/sensor_settings.py"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:199"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:80"
+      },
+      {
+        "name": "00009.jpg",
+        "path": "/00009.jpg",
+        "lastModified": "2019-02-20T07:48:22-06:00",
+        "length": 81455,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00009.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "99cc9fc1-0aaa-4ec9-881a-0d7ed9993949",
+        "selected": false,
+        "_entities": [],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:81"
+      },
+      {
+        "name": "gato.jpg",
+        "path": "/gato.jpg",
+        "lastModified": "2019-03-05T09:01:57-06:00",
+        "length": 21462,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//gato.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "a77ca8be-9b50-4eee-a42a-495a4d68a364",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "2799945664009989655-242ac11a-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "3849330284117683735-242ac119-0001-012",
+              "3534485681492857321-242ac112-0001-002",
+              "3339522405406469655-242ac11a-0001-012",
+              "1052668239654088215-242ac119-0001-012",
+              "7113637164594294295-242ac113-0001-002"
+            ],
+            "lastUpdated": "2020-08-13T12:29:47.541-05:00",
+            "created": "2019-09-18T14:31:01.700-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.sensor_list",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2799945664009989655-242ac11a-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2799945664009989655-242ac11a-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "3534485681492857321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00005.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "7113637164594294295-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//gato.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "3339522405406469655-242ac11a-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3339522405406469655-242ac11a-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "3849330284117683735-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3849330284117683735-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                }
+              ]
+            },
+            "value": {
+              "sensorListType": "other",
+              "title": "Pressure Sensor I-B",
+              "description": "Test",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "3849330284117683735-242ac119-0001-012"
+              ],
+              "modelConfigs": [
+                "3339522405406469655-242ac11a-0001-012"
+              ],
+              "files": [
+                "7113637164594294295-242ac113-0001-002",
+                "3534485681492857321-242ac112-0001-002"
+              ],
+              "fileTags": []
+            },
+            "_ui": {
+              "uuid": "2799945664009989655-242ac11a-0001-012",
+              "orders": [
+                {
+                  "parent": "3339522405406469655-242ac11a-0001-012",
+                  "value": 1
+                }
+              ],
+              "order": 1
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "model_configs",
+              "files"
+            ],
+            "_displayName": "Sensor List",
+            "_filePaths": [
+              "/00005.jpg",
+              "/gato.jpg"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:169"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:82"
+      },
+      {
+        "name": "Globus Folder",
+        "path": "/Globus Folder",
+        "lastModified": "2020-08-14T11:09:53-05:00",
+        "length": 4096,
+        "permissions": "ALL",
+        "format": "folder",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "text/directory",
+        "type": "dir",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Globus%20Folder"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "425ddc0b-49a5-4e28-89ed-2467bf3a58bf",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "8057478701564301801-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "7206731579572621801-242ac119-0001-012",
+              "3849330284117683735-242ac119-0001-012",
+              "6923074490394022377-242ac114-0001-002",
+              "1874008375186297321-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012",
+              "3339522405406469655-242ac11a-0001-012",
+              "1874523771261817321-242ac112-0001-002"
+            ],
+            "lastUpdated": "2020-08-13T12:29:47.542-05:00",
+            "created": "2019-03-26T15:19:19.763-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.sensor_list",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8057478701564301801-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8057478701564301801-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "7206731579572621801-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/7206731579572621801-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1874008375186297321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00002.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "1874523771261817321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//sensor_arrangment_I-A.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "3339522405406469655-242ac11a-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3339522405406469655-242ac11a-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "3849330284117683735-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3849330284117683735-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "6923074490394022377-242ac114-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Globus Folder",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "sensorListType": "other",
+              "title": "Pressure Sensor Array I-A",
+              "description": "We surrounded our test structure with four sensors to take pressure readings. TEST",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "3849330284117683735-242ac119-0001-012"
+              ],
+              "modelConfigs": [
+                "3339522405406469655-242ac11a-0001-012",
+                "7206731579572621801-242ac119-0001-012"
+              ],
+              "files": [
+                "6923074490394022377-242ac114-0001-002",
+                "1874523771261817321-242ac112-0001-002",
+                "1874008375186297321-242ac112-0001-002"
+              ],
+              "fileTags": [
+                {
+                  "path": "/00002.jpg",
+                  "fileUuid": "1874008375186297321-242ac112-0001-002",
+                  "tagName": "Linear Potentiometer",
+                  "$$hashKey": "object:136"
+                },
+                {
+                  "path": "/00002.jpg",
+                  "fileUuid": "1874008375186297321-242ac112-0001-002",
+                  "tagName": "Linear Variable Differential Transformer",
+                  "$$hashKey": "object:137"
+                }
+              ]
+            },
+            "_ui": {
+              "uuid": "8057478701564301801-242ac119-0001-012",
+              "orders": [
+                {
+                  "parent": "7206731579572621801-242ac119-0001-012",
+                  "value": 1
+                },
+                {
+                  "parent": "3339522405406469655-242ac11a-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 0
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "model_configs",
+              "files"
+            ],
+            "_displayName": "Sensor List",
+            "_filePaths": [
+              "/00002.jpg",
+              "/sensor_arrangment_I-A.jpg",
+              "/Globus Folder"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:133"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:83"
+      },
+      {
+        "name": "homepage.png",
+        "path": "/homepage.png",
+        "lastModified": "2019-03-05T09:01:57-06:00",
+        "length": 629021,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//homepage.png"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "fb8eb003-7b50-446d-b657-c39208972cea",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "9123280811976289815-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "2622921822589817321-242ac112-0001-002",
+              "2621891030438777321-242ac112-0001-002",
+              "7111919177675894295-242ac113-0001-002",
+              "2622921826884784617-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012"
+            ],
+            "lastUpdated": "2020-08-13T12:10:40.849-05:00",
+            "created": "2019-03-26T15:19:49.239-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.event",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9123280811976289815-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9123280811976289815-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "7111919177675894295-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//homepage.png",
+                  "title": "file"
+                },
+                {
+                  "rel": "2622921826884784617-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor2.csv",
+                  "title": "file"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "2622921822589817321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor3.csv",
+                  "title": "file"
+                },
+                {
+                  "rel": "2621891030438777321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor1.csv",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "eventType": "other",
+              "title": "Erosion Reading I-A",
+              "description": "The results from our pressure sensors showed weaknesses in the tested structure.",
+              "analysis": [],
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [],
+              "modelConfigs": [],
+              "sensorLists": [],
+              "files": [
+                "7111919177675894295-242ac113-0001-002",
+                "2622921826884784617-242ac112-0001-002",
+                "2622921822589817321-242ac112-0001-002",
+                "2621891030438777321-242ac112-0001-002"
+              ],
+              "fileTags": [
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "Aerodynamic roughness"
+                },
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "Image"
+                },
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "T-bar Test"
+                },
+                {
+                  "fileUuid": "2622921826884784617-242ac112-0001-002",
+                  "tagName": "Centrifuge Speed"
+                },
+                {
+                  "fileUuid": "2622921826884784617-242ac112-0001-002",
+                  "tagName": "Load"
+                },
+                {
+                  "path": "/pressure_readings_sensor3.csv",
+                  "fileUuid": "2622921822589817321-242ac112-0001-002",
+                  "tagName": "Image",
+                  "$$hashKey": "object:297"
+                }
+              ]
+            },
+            "_ui": {
+              "uuid": "9123280811976289815-242ac119-0001-012",
+              "orders": [
+                {
+                  "parent": "8057478701564301801-242ac119-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 0
+            },
+            "_relatedFields": [
+              "analysis",
+              "project",
+              "experiments",
+              "model_configs",
+              "sensor_lists",
+              "files"
+            ],
+            "_displayName": "Event",
+            "_filePaths": [
+              "/homepage.png",
+              "/pressure_readings_sensor2.csv",
+              "/pressure_readings_sensor3.csv",
+              "/pressure_readings_sensor1.csv"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:234"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:84"
+      },
+      {
+        "name": "lotsotestfiles",
+        "path": "/lotsotestfiles",
+        "lastModified": "2019-12-12T11:14:37-06:00",
+        "length": 8192,
+        "permissions": "ALL",
+        "format": "folder",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "text/directory",
+        "type": "dir",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//lotsotestfiles"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "4ceb8e5f-f2cd-49a4-9487-c4aec428a619",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "7396616410269609495-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "1052668239654088215-242ac119-0001-012",
+              "2041257155850211817-242ac113-0001-002",
+              "1755305162898796054-242ac112-0001-002",
+              "3849330284117683735-242ac119-0001-012"
+            ],
+            "lastUpdated": "2020-07-07T12:09:51.719-05:00",
+            "created": "2019-04-03T07:47:11.385-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.report",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/7396616410269609495-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/7396616410269609495-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "3849330284117683735-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3849330284117683735-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "2041257155850211817-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Setup Documentation/Dir2/test",
+                  "title": "file"
+                },
+                {
+                  "rel": "1755305162898796054-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//lotsotestfiles",
+                  "title": "file"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                }
+              ]
+            },
+            "value": {
+              "title": "Findings From Series A",
+              "description": "This is where the description goes. It is useful for a number of reasons, but you should always remember to speyul check your work.",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "3849330284117683735-242ac119-0001-012"
+              ],
+              "files": [
+                "2041257155850211817-242ac113-0001-002",
+                "1755305162898796054-242ac112-0001-002"
+              ],
+              "fileTags": []
+            },
+            "_ui": {
+              "uuid": "7396616410269609495-242ac119-0001-012",
+              "orders": [
+                {
+                  "parent": "3849330284117683735-242ac119-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 0
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "files"
+            ],
+            "_displayName": "Report",
+            "_filePaths": [
+              "/Setup Documentation/Dir2/test",
+              "/lotsotestfiles"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:244"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:85"
+      },
+      {
+        "name": "objects2.pyc",
+        "path": "/objects2.pyc",
+        "lastModified": "2019-03-05T09:01:56-06:00",
+        "length": 6466,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//objects2.pyc"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "b13f0adb-35d5-4d92-8cd0-d9f7e5f1e4e9",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "8908537048718372375-242ac11a-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "7120165510589246999-242ac113-0001-002",
+              "1873879526167417321-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012"
+            ],
+            "lastUpdated": "2020-07-06T17:05:06.174-05:00",
+            "created": "2019-10-14T14:55:05.356-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.report",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8908537048718372375-242ac11a-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8908537048718372375-242ac11a-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "7120165510589246999-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//objects2.pyc",
+                  "title": "file"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1873879526167417321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00003.jpg",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "title": "Findings From Series B",
+              "description": "This report needs a description...",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [],
+              "files": [
+                "7120165510589246999-242ac113-0001-002",
+                "1873879526167417321-242ac112-0001-002"
+              ],
+              "fileTags": []
+            },
+            "_ui": {
+              "uuid": "8908537048718372375-242ac11a-0001-012",
+              "orders": [],
+              "order": 1
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "files"
+            ],
+            "_displayName": "Report",
+            "_filePaths": [
+              "/objects2.pyc",
+              "/00003.jpg"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:149"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:86"
+      },
+      {
+        "name": "objekt.py",
+        "path": "/objekt.py",
+        "lastModified": "2019-03-05T09:01:56-06:00",
+        "length": 182,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//objekt.py"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "134235d4-6d8c-4a58-83ac-a4c7d2bbf9c5",
+        "selected": false,
+        "_entities": [],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:87"
+      },
+      {
+        "name": "objekt.pyc",
+        "path": "/objekt.pyc",
+        "lastModified": "2019-03-05T09:01:58-06:00",
+        "length": 469,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//objekt.pyc"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "462e042d-023a-474c-9e39-52ab533093aa",
+        "selected": false,
+        "_entities": [],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:88"
+      },
+      {
+        "name": "pressure_readings_sensor1.csv",
+        "path": "/pressure_readings_sensor1.csv",
+        "lastModified": "2019-02-20T07:48:16-06:00",
+        "length": 983,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor1.csv"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "b515f62f-7ce5-4f9d-b975-5b353d4fa277",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "9123280811976289815-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "2622921822589817321-242ac112-0001-002",
+              "2621891030438777321-242ac112-0001-002",
+              "7111919177675894295-242ac113-0001-002",
+              "2622921826884784617-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012"
+            ],
+            "lastUpdated": "2020-08-13T12:10:40.849-05:00",
+            "created": "2019-03-26T15:19:49.239-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.event",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9123280811976289815-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9123280811976289815-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "7111919177675894295-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//homepage.png",
+                  "title": "file"
+                },
+                {
+                  "rel": "2622921826884784617-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor2.csv",
+                  "title": "file"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "2622921822589817321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor3.csv",
+                  "title": "file"
+                },
+                {
+                  "rel": "2621891030438777321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor1.csv",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "eventType": "other",
+              "title": "Erosion Reading I-A",
+              "description": "The results from our pressure sensors showed weaknesses in the tested structure.",
+              "analysis": [],
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [],
+              "modelConfigs": [],
+              "sensorLists": [],
+              "files": [
+                "7111919177675894295-242ac113-0001-002",
+                "2622921826884784617-242ac112-0001-002",
+                "2622921822589817321-242ac112-0001-002",
+                "2621891030438777321-242ac112-0001-002"
+              ],
+              "fileTags": [
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "Aerodynamic roughness"
+                },
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "Image"
+                },
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "T-bar Test"
+                },
+                {
+                  "fileUuid": "2622921826884784617-242ac112-0001-002",
+                  "tagName": "Centrifuge Speed"
+                },
+                {
+                  "fileUuid": "2622921826884784617-242ac112-0001-002",
+                  "tagName": "Load"
+                },
+                {
+                  "path": "/pressure_readings_sensor3.csv",
+                  "fileUuid": "2622921822589817321-242ac112-0001-002",
+                  "tagName": "Image",
+                  "$$hashKey": "object:297"
+                }
+              ]
+            },
+            "_ui": {
+              "uuid": "9123280811976289815-242ac119-0001-012",
+              "orders": [
+                {
+                  "parent": "8057478701564301801-242ac119-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 0
+            },
+            "_relatedFields": [
+              "analysis",
+              "project",
+              "experiments",
+              "model_configs",
+              "sensor_lists",
+              "files"
+            ],
+            "_displayName": "Event",
+            "_filePaths": [
+              "/homepage.png",
+              "/pressure_readings_sensor2.csv",
+              "/pressure_readings_sensor3.csv",
+              "/pressure_readings_sensor1.csv"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:234"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:89"
+      },
+      {
+        "name": "pressure_readings_sensor2.csv",
+        "path": "/pressure_readings_sensor2.csv",
+        "lastModified": "2019-02-20T07:48:14-06:00",
+        "length": 983,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor2.csv"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "7340edc3-b20d-4001-8003-5aaa97b50358",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "9123280811976289815-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "2622921822589817321-242ac112-0001-002",
+              "2621891030438777321-242ac112-0001-002",
+              "7111919177675894295-242ac113-0001-002",
+              "2622921826884784617-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012"
+            ],
+            "lastUpdated": "2020-08-13T12:10:40.849-05:00",
+            "created": "2019-03-26T15:19:49.239-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.event",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9123280811976289815-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9123280811976289815-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "7111919177675894295-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//homepage.png",
+                  "title": "file"
+                },
+                {
+                  "rel": "2622921826884784617-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor2.csv",
+                  "title": "file"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "2622921822589817321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor3.csv",
+                  "title": "file"
+                },
+                {
+                  "rel": "2621891030438777321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor1.csv",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "eventType": "other",
+              "title": "Erosion Reading I-A",
+              "description": "The results from our pressure sensors showed weaknesses in the tested structure.",
+              "analysis": [],
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [],
+              "modelConfigs": [],
+              "sensorLists": [],
+              "files": [
+                "7111919177675894295-242ac113-0001-002",
+                "2622921826884784617-242ac112-0001-002",
+                "2622921822589817321-242ac112-0001-002",
+                "2621891030438777321-242ac112-0001-002"
+              ],
+              "fileTags": [
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "Aerodynamic roughness"
+                },
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "Image"
+                },
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "T-bar Test"
+                },
+                {
+                  "fileUuid": "2622921826884784617-242ac112-0001-002",
+                  "tagName": "Centrifuge Speed"
+                },
+                {
+                  "fileUuid": "2622921826884784617-242ac112-0001-002",
+                  "tagName": "Load"
+                },
+                {
+                  "path": "/pressure_readings_sensor3.csv",
+                  "fileUuid": "2622921822589817321-242ac112-0001-002",
+                  "tagName": "Image",
+                  "$$hashKey": "object:297"
+                }
+              ]
+            },
+            "_ui": {
+              "uuid": "9123280811976289815-242ac119-0001-012",
+              "orders": [
+                {
+                  "parent": "8057478701564301801-242ac119-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 0
+            },
+            "_relatedFields": [
+              "analysis",
+              "project",
+              "experiments",
+              "model_configs",
+              "sensor_lists",
+              "files"
+            ],
+            "_displayName": "Event",
+            "_filePaths": [
+              "/homepage.png",
+              "/pressure_readings_sensor2.csv",
+              "/pressure_readings_sensor3.csv",
+              "/pressure_readings_sensor1.csv"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:234"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:90"
+      },
+      {
+        "name": "pressure_readings_sensor3.csv",
+        "path": "/pressure_readings_sensor3.csv",
+        "lastModified": "2019-02-20T07:48:11-06:00",
+        "length": 983,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor3.csv"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "aeaaaa74-4a21-4edd-8ed7-d599f51cd0a8",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "9123280811976289815-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "2622921822589817321-242ac112-0001-002",
+              "2621891030438777321-242ac112-0001-002",
+              "7111919177675894295-242ac113-0001-002",
+              "2622921826884784617-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012"
+            ],
+            "lastUpdated": "2020-08-13T12:10:40.849-05:00",
+            "created": "2019-03-26T15:19:49.239-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.event",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9123280811976289815-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9123280811976289815-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "7111919177675894295-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//homepage.png",
+                  "title": "file"
+                },
+                {
+                  "rel": "2622921826884784617-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor2.csv",
+                  "title": "file"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "2622921822589817321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor3.csv",
+                  "title": "file"
+                },
+                {
+                  "rel": "2621891030438777321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor1.csv",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "eventType": "other",
+              "title": "Erosion Reading I-A",
+              "description": "The results from our pressure sensors showed weaknesses in the tested structure.",
+              "analysis": [],
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [],
+              "modelConfigs": [],
+              "sensorLists": [],
+              "files": [
+                "7111919177675894295-242ac113-0001-002",
+                "2622921826884784617-242ac112-0001-002",
+                "2622921822589817321-242ac112-0001-002",
+                "2621891030438777321-242ac112-0001-002"
+              ],
+              "fileTags": [
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "Aerodynamic roughness"
+                },
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "Image"
+                },
+                {
+                  "fileUuid": "2621891030438777321-242ac112-0001-002",
+                  "tagName": "T-bar Test"
+                },
+                {
+                  "fileUuid": "2622921826884784617-242ac112-0001-002",
+                  "tagName": "Centrifuge Speed"
+                },
+                {
+                  "fileUuid": "2622921826884784617-242ac112-0001-002",
+                  "tagName": "Load"
+                },
+                {
+                  "path": "/pressure_readings_sensor3.csv",
+                  "fileUuid": "2622921822589817321-242ac112-0001-002",
+                  "tagName": "Image",
+                  "$$hashKey": "object:297"
+                }
+              ]
+            },
+            "_ui": {
+              "uuid": "9123280811976289815-242ac119-0001-012",
+              "orders": [
+                {
+                  "parent": "8057478701564301801-242ac119-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 0
+            },
+            "_relatedFields": [
+              "analysis",
+              "project",
+              "experiments",
+              "model_configs",
+              "sensor_lists",
+              "files"
+            ],
+            "_displayName": "Event",
+            "_filePaths": [
+              "/homepage.png",
+              "/pressure_readings_sensor2.csv",
+              "/pressure_readings_sensor3.csv",
+              "/pressure_readings_sensor1.csv"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:234"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [
+          "Image"
+        ],
+        "_parent_entities": [],
+        "$$hashKey": "object:91"
+      },
+      {
+        "name": "pressure_readings_sensor4test.csv",
+        "path": "/pressure_readings_sensor4test.csv",
+        "lastModified": "2019-02-20T07:48:00-06:00",
+        "length": 983,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//pressure_readings_sensor4test.csv"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "e18282d0-bb6d-4791-8c60-0bbe4088ce66",
+        "selected": false,
+        "_entities": [],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:92"
+      },
+      {
+        "name": "sensor_arrangment_I-A.jpg",
+        "path": "/sensor_arrangment_I-A.jpg",
+        "lastModified": "2019-02-20T07:47:55-06:00",
+        "length": 81969,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "image/jpeg",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//sensor_arrangment_I-A.jpg"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "990b04eb-9050-44e9-8977-29f0a3a918f2",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "8057478701564301801-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "7206731579572621801-242ac119-0001-012",
+              "3849330284117683735-242ac119-0001-012",
+              "6923074490394022377-242ac114-0001-002",
+              "1874008375186297321-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012",
+              "3339522405406469655-242ac11a-0001-012",
+              "1874523771261817321-242ac112-0001-002"
+            ],
+            "lastUpdated": "2020-08-13T12:29:47.542-05:00",
+            "created": "2019-03-26T15:19:19.763-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.sensor_list",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8057478701564301801-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8057478701564301801-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "7206731579572621801-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/7206731579572621801-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1874008375186297321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00002.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "1874523771261817321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//sensor_arrangment_I-A.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "3339522405406469655-242ac11a-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3339522405406469655-242ac11a-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "3849330284117683735-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3849330284117683735-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "6923074490394022377-242ac114-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Globus Folder",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "sensorListType": "other",
+              "title": "Pressure Sensor Array I-A",
+              "description": "We surrounded our test structure with four sensors to take pressure readings. TEST",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "3849330284117683735-242ac119-0001-012"
+              ],
+              "modelConfigs": [
+                "3339522405406469655-242ac11a-0001-012",
+                "7206731579572621801-242ac119-0001-012"
+              ],
+              "files": [
+                "6923074490394022377-242ac114-0001-002",
+                "1874523771261817321-242ac112-0001-002",
+                "1874008375186297321-242ac112-0001-002"
+              ],
+              "fileTags": [
+                {
+                  "path": "/00002.jpg",
+                  "fileUuid": "1874008375186297321-242ac112-0001-002",
+                  "tagName": "Linear Potentiometer",
+                  "$$hashKey": "object:136"
+                },
+                {
+                  "path": "/00002.jpg",
+                  "fileUuid": "1874008375186297321-242ac112-0001-002",
+                  "tagName": "Linear Variable Differential Transformer",
+                  "$$hashKey": "object:137"
+                }
+              ]
+            },
+            "_ui": {
+              "uuid": "8057478701564301801-242ac119-0001-012",
+              "orders": [
+                {
+                  "parent": "7206731579572621801-242ac119-0001-012",
+                  "value": 1
+                },
+                {
+                  "parent": "3339522405406469655-242ac11a-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 0
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "model_configs",
+              "files"
+            ],
+            "_displayName": "Sensor List",
+            "_filePaths": [
+              "/00002.jpg",
+              "/sensor_arrangment_I-A.jpg",
+              "/Globus Folder"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:133"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:93"
+      },
+      {
+        "name": "sensor_details.txt",
+        "path": "/sensor_details.txt",
+        "lastModified": "2019-02-20T07:48:25-06:00",
+        "length": 983,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "text/plain",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//sensor_details.txt"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "73147531-a544-473a-91bb-424e196bec6c",
+        "selected": false,
+        "_entities": [],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:94"
+      },
+      {
+        "name": "sensor_settings.py",
+        "path": "/sensor_settings.py",
+        "lastModified": "2019-03-05T09:01:58-06:00",
+        "length": 9332,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//sensor_settings.py"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "4e0c137c-5e7b-42ef-b563-b8fd1d042251",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "7342634922269732375-242ac11a-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "1052668239654088215-242ac119-0001-012",
+              "2856224446108537321-242ac112-0001-002",
+              "7112348674405494295-242ac113-0001-002"
+            ],
+            "lastUpdated": "2020-08-13T12:12:24.354-05:00",
+            "created": "2019-10-14T14:55:41.815-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.analysis",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/7342634922269732375-242ac11a-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/7342634922269732375-242ac11a-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "2856224446108537321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//00008.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "7112348674405494295-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//sensor_settings.py",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "analysisType": "other",
+              "title": "Tsunami Impact on Reinforced Structures",
+              "refs": [
+                null
+              ],
+              "description": "",
+              "analysisData": "",
+              "application": "",
+              "script": [],
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [],
+              "files": [
+                "7112348674405494295-242ac113-0001-002",
+                "2856224446108537321-242ac112-0001-002"
+              ],
+              "fileTags": []
+            },
+            "_ui": {
+              "uuid": "7342634922269732375-242ac11a-0001-012",
+              "orders": [],
+              "order": 0
+            },
+            "_relatedFields": [
+              "script",
+              "project",
+              "experiments",
+              "files"
+            ],
+            "_displayName": "Analysis",
+            "_filePaths": [
+              "/00008.jpg",
+              "/sensor_settings.py"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:199"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:95"
+      },
+      {
+        "name": "Setup Documentation",
+        "path": "/Setup Documentation",
+        "lastModified": "2019-07-26T11:20:08-05:00",
+        "length": 4096,
+        "permissions": "ALL",
+        "format": "folder",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "text/directory",
+        "type": "dir",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Setup%20Documentation"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "f9b4c1f8-81bd-4b79-a2d3-27d704e58886",
+        "selected": false,
+        "_entities": [
+          {
+            "uuid": "7206731579572621801-242ac119-0001-012",
+            "schemaId": null,
+            "internalUsername": null,
+            "associationIds": [
+              "7137021306710659561-242ac114-0001-002",
+              "3849330284117683735-242ac119-0001-012",
+              "1873922475840377321-242ac112-0001-002",
+              "5336789130316091881-242ac113-0001-002",
+              "303745108476629482-242ac112-0001-002",
+              "1052668239654088215-242ac119-0001-012"
+            ],
+            "lastUpdated": "2020-07-06T17:02:32.914-05:00",
+            "created": "2019-03-26T15:18:59.955-05:00",
+            "owner": "ds_admin",
+            "name": "designsafe.project.model_config",
+            "_links": {
+              "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/7206731579572621801-242ac119-0001-012"
+              },
+              "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/7206731579572621801-242ac119-0001-012/pems"
+              },
+              "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+              },
+              "associationIds": [
+                {
+                  "rel": "3849330284117683735-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/3849330284117683735-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1052668239654088215-242ac119-0001-012",
+                  "href": "https://agave.designsafe-ci.org/meta/v2/data/1052668239654088215-242ac119-0001-012",
+                  "title": "metadata"
+                },
+                {
+                  "rel": "1873922475840377321-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Globus Folder/00001.jpg",
+                  "title": "file"
+                },
+                {
+                  "rel": "7137021306710659561-242ac114-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Trash/helicoptor.mp4",
+                  "title": "file"
+                },
+                {
+                  "rel": "303745108476629482-242ac112-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//lotsotestfiles/test98.txt",
+                  "title": "file"
+                },
+                {
+                  "rel": "5336789130316091881-242ac113-0001-002",
+                  "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Setup Documentation",
+                  "title": "file"
+                }
+              ]
+            },
+            "value": {
+              "title": "Wave I-A",
+              "description": "We are testing the stability of a structure reinforced with concrete pillars. Several waves of different sizes were tested against the structure. This is the first test for using a Large Wave Flume.",
+              "project": [
+                "1052668239654088215-242ac119-0001-012"
+              ],
+              "experiments": [
+                "3849330284117683735-242ac119-0001-012"
+              ],
+              "files": [
+                "303745108476629482-242ac112-0001-002",
+                "1873922475840377321-242ac112-0001-002",
+                "7137021306710659561-242ac114-0001-002",
+                "5336789130316091881-242ac113-0001-002"
+              ],
+              "fileTags": [
+                {
+                  "path": "/Setup Documentation/00005.jpg",
+                  "fileUuid": "4352735846030447081-242ac114-0001-002",
+                  "tagName": "Image"
+                },
+                {
+                  "path": "/Setup Documentation/00006.jpg",
+                  "fileUuid": "4360552686509167081-242ac114-0001-002",
+                  "tagName": "Superconductive Thermal Meatloaf"
+                },
+                {
+                  "fileUuid": "303745108476629482-242ac112-0001-002",
+                  "tagName": "Image",
+                  "path": "/lotsotestfiles/test98.txt"
+                },
+                {
+                  "fileUuid": "",
+                  "tagName": "Flexible Shear Beam Container",
+                  "path": "/Setup Documentation/00005.jpg"
+                },
+                {
+                  "fileUuid": "2041257155850211817-242ac113-0001-002",
+                  "tagName": "Clay",
+                  "path": "/Setup Documentation/Dir2/test"
+                },
+                {
+                  "fileUuid": "1873922475840377321-242ac112-0001-002",
+                  "tagName": "Model Drawing",
+                  "path": "/00001.jpg"
+                }
+              ]
+            },
+            "_ui": {
+              "uuid": "7206731579572621801-242ac119-0001-012",
+              "orders": [
+                {
+                  "parent": "3849330284117683735-242ac119-0001-012",
+                  "value": 0
+                }
+              ],
+              "order": 2
+            },
+            "_relatedFields": [
+              "project",
+              "experiments",
+              "files"
+            ],
+            "_displayName": "ModelConfig",
+            "_filePaths": [
+              "/Globus Folder/00001.jpg",
+              "/lotsotestfiles/test98.txt",
+              "/Setup Documentation"
+            ],
+            "tagsAsOptions": [],
+            "$$hashKey": "object:339"
+          }
+        ],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:96"
+      },
+      {
+        "name": "testobj.ipynb",
+        "path": "/testobj.ipynb",
+        "lastModified": "2019-03-05T09:01:57-06:00",
+        "length": 3350,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "application/octet-stream",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//testobj.ipynb"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "0e6e2114-472e-4156-87f6-f8ee9b3b7f8e",
+        "selected": false,
+        "_entities": [],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:97"
+      },
+      {
+        "name": "Trash",
+        "path": "/Trash",
+        "lastModified": "2019-07-02T11:00:01-05:00",
+        "length": 4096,
+        "permissions": "ALL",
+        "format": "folder",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "text/directory",
+        "type": "dir",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//Trash"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "0cef43d8-f9ba-47b6-943b-64cfd5c29a2a",
+        "selected": false,
+        "_entities": [],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:98"
+      },
+      {
+        "name": "urlstocheck.txt",
+        "path": "/urlstocheck.txt",
+        "lastModified": "2019-03-05T09:01:56-06:00",
+        "length": 77063,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "project-1052668239654088215-242ac119-0001-012",
+        "mimeType": "text/plain",
+        "type": "file",
+        "_links": {
+          "self": {
+            "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-1052668239654088215-242ac119-0001-012//urlstocheck.txt"
+          },
+          "system": {
+            "href": "https://agave.designsafe-ci.org/systems/v2/project-1052668239654088215-242ac119-0001-012"
+          }
+        },
+        "key": "00f701ea-164d-4ba4-9f63-c8e37bc82229",
+        "selected": false,
+        "_entities": [],
+        "_entityTags": [],
+        "_fileTags": [],
+        "_parent_entities": [],
+        "$$hashKey": "object:99"
+      }
+    ],
+    "selectedFiles": [],
+    "selectAll": false,
+    "params": {
+      "api": "agave",
+      "system": "project-1052668239654088215-242ac119-0001-012",
+      "scheme": "private",
+      "path": "",
+      "offset": 0,
+      "limit": 100,
+      "section": "main"
+    },
+    "error": null,
+    "errorScroll": null,
+    "rootEntities": [],
+    "selectedForPublication": false
+  }

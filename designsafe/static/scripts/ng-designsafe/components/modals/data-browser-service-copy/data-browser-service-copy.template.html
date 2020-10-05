@@ -1,0 +1,55 @@
+<div class="modal-header">
+    <h3 class="modal-title">Select the destination to copy the following files</h3>
+</div>
+
+<div class="modal-body">
+    <ul>
+        <li ng-repeat="item in $ctrl.FileListingService.getSelectedFiles('main')">
+            {{item.name}} {{$ctrl.FileListingService.operations.copy.status[item.key]}}
+        </li>
+    </ul>
+    <div class="row">
+        <div class="col-sm-3">
+            <select
+            class="form-control"
+            ng-options="item.api as item.label for item in $ctrl.options"
+            ng-model="$ctrl.selectedOption"
+            ng-change="$ctrl.handleChange()"
+        ></select>
+        </div>
+    </div>
+    
+    <div ng-if="!$ctrl.listingProjects">
+        <breadcrumb
+            path="$ctrl.FileListingService.listings.modal.params.path"
+            system="$ctrl.FileListingService.listings.modal.params.system"
+            on-browse="$ctrl.onBrowse(file)"
+            skip-root="$ctrl.breadcrumbParams.skipRoot"
+            custom-root="$ctrl.breadcrumbParams.customRoot"
+            pre-root="$ctrl.breadcrumbParams.preRoot"
+        ></breadcrumb>
+        <files-listing
+            on-scroll="$ctrl.scrollToBottom()"
+            listing="$ctrl.getModalListing()"
+            on-browse="$ctrl.onBrowse(file)"
+            operation-label="'Copy'"
+            operation="$ctrl.handleCopy(file)"
+            >&nbsp;</files-listing
+        >
+       
+    </div>
+    <div ng-if="$ctrl.listingProjects">
+        <project-listing section="'modal'" on-browse="$ctrl.onBrowseProject($event, project)">
+    </div>
+    <div class="modal-footer">
+        <div class="text-right">
+            <button class="btn btn-primary" type="button"
+                    ng-if="!$ctrl.listingProjects"
+                    ng-click="$ctrl.handleFooterCopy()"
+            >
+                Copy Here
+            </button>
+            <button class="btn btn-default" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+        </div>
+    </div>
+</div>

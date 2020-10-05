@@ -40,5 +40,5 @@ class DropboxUserToken(models.Model):
     #     return self.access_token, self.refresh_token
 
     @property
-    def client(self, request):
+    def client(self):
         return Dropbox(self.access_token)
