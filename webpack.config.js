@@ -1,7 +1,6 @@
 // webpack plugins
 const webpack = require('webpack');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = function(env) {
