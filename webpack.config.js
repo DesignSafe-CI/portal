@@ -1,7 +1,7 @@
 // webpack plugins
 const webpack = require('webpack');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ExtractTextPlugin = require('mini-css-extract-plugin');
 
 module.exports = function(env) {
     var smap = false;
@@ -53,18 +53,14 @@ module.exports = function(env) {
                 },
                 {
                     test: /\.(s?)css$/,
-                    use: ExtractTextPlugin.extract({
-                        use: [{
-                            loader: 'css-loader',
-                        },
-                        {
-                            loader: 'sass-loader',
-                            options: {
-                                sourceMap: true,
-                                includePaths: ['./designsafe/static/styles']
-                            }
-                        }]
-                    })
+                    use: [
+                        // Creates `style` nodes from JS strings
+                        'style-loader',
+                        // Translates CSS into CommonJS
+                        'css-loader',
+                        // Compiles Sass to CSS
+                        'sass-loader',
+                      ]
                 },
                 {
                     test: /\.coffee$/,
@@ -75,7 +71,6 @@ module.exports = function(env) {
             ]
         },
         plugins: [
-            new ExtractTextPlugin('[name].bundle.css'),
             new LiveReloadPlugin(),
             new webpack.ProvidePlugin({
                 jQuery: 'jquery',
