@@ -608,7 +608,7 @@ def copy_publication_files_to_corral(self, project_id):
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def freeze_publication_meta(self, project_id, entity_uuids):
+def freeze_publication_meta(self, project_id, entity_uuids=None):
     """Freeze publication meta.
 
     :param str project_id: Project Id.
@@ -693,7 +693,7 @@ def swap_file_tag_uuids(self, project_id):
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
-def set_publish_status(self, project_id, entity_uuids, publish_dois=False):
+def set_publish_status(self, project_id, entity_uuids=None, publish_dois=False):
     from designsafe.apps.projects.managers import publication as PublicationManager
     # Only publish DOIs created from prod
     if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
