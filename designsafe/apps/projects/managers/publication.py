@@ -434,9 +434,7 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     prj_json = prj.to_body_dict()
     _delete_unused_fields(prj_json)
 
-    award_number = publication.get('project', {}).get('value', {}).pop(
-        'awardNumber', []
-    ) or []
+    award_number = prj.award_number or []
 
     if not isinstance(award_number, list):
         award_number = []
