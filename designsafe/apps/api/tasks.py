@@ -17,6 +17,7 @@ from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.projects.models.elasticsearch import IndexedProject
 from designsafe.apps.data.tasks import agave_indexer
 from elasticsearch_dsl.query import Q
+from elasticsearch.helpers import bulk
 from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
@@ -436,64 +437,101 @@ def index_or_update_project(self, uuid):
     des-projects index or updates the document if one already exists for that
     project.
     """
-    from designsafe.apps.api.projects.models import Project
+    client = get_service_account_client() 
+    query = {'uuid': uuid}
+    listing = client.meta.listMetadata(q=json.dumps(query), offset=0, limit=1)
+    index_projects_listing(listing)
 
+
+def index_projects_listing(projects):
+    """
+    Index the result of an Agave projects listing
+
+    Parameters
+    ----------
+    projects: list
+        list of project metadata objects (either dict or agavepy.agave.Attrdict)
+
+    Returns
+    -------
+    Void
+    """
+    from designsafe.apps.projects.models.elasticsearch import IndexedProject
+    idx = IndexedProject.Index.name
+    client = IndexedProject._get_connection()
+    ops = []
+    for _project in projects:
+        # Iterate through projects and construct a bulk indexing operation.
+
+        project_dict = dict(_project)
+        project_dict = {key: value for key, value in project_dict.items() if key != '_links'}
+        award_number = project_dict['value'].get('awardNumber', []) 
+        if not isinstance(award_number, list):
+            award_number = [{'number': project_dict['value']['awardNumber'] }]
+        if not all(isinstance(el, dict) for el in award_number):
+            # Punt if the list items are some type other than dict.
+            award_number = []
+        project_dict['value']['awardNumber'] = award_number
+
+        if project_dict['value'].get('guestMembers', []) == [None]:
+            project_dict['value']['guestMembers'] = []
+        if project_dict['value'].get('nhEventStart', []) == '':
+            project_dict['value']['nhEventStart'] = None
+        if project_dict['value'].get('nhEventEnd', []) == '':
+            project_dict['value']['nhEventEnd'] = None
+
+        ops.append({
+            '_index': idx,
+            '_id': project_dict['uuid'],
+            'doc': project_dict,
+            '_op_type': 'update',
+            'doc_as_upsert': True
+            })
+
+    bulk(client, ops)
+
+
+def list_all_projects(offset=0, limit=100):
+    """
+    Iterate through all projects, yielding 100 (or some defined o) at a time.
+
+    Parameters
+    ----------
+    offset: int
+        Offset to begin iteration at.
+    limit: int
+        Number of project metadata items returned per listing
+
+    Yields
+    ------
+    agavepy.agave.Attrdict
+    """
     client = get_service_account_client()
-    project_model = Project(client)
-    project = project_model.search({'uuid': uuid}, client)[0]
-    project_meta = project.to_dict()
+    query = {'name': 'designsafe.project'}
+    while True:
+        listing = client.meta.listMetadata(q=json.dumps(query), offset=offset, limit=limit)
+        offset += limit
+        yield listing
+        if len(listing) < limit:
+            break
 
-    to_index = {key: value for key, value in iter(list(project_meta.items())) if key != '_links'}
-    to_index['value'] = {key: value for key, value in iter(list(project_meta['value'].items())) if key != 'teamMember'}
-    if not isinstance(to_index['value'].get('awardNumber', []), list):
-        to_index['value']['awardNumber'] = [{'number': to_index['value']['awardNumber'] }]
-    if to_index['value'].get('guestMembers', []) == [None]:
-        to_index['value']['guestMembers'] = []
-    project_search = IndexedProject.search().filter(
-        Q({'term': 
-            {'uuid._exact': uuid}
-        })
-    )
-    res = project_search.execute()
-    
-    if res.hits.total.value == 0:
-        # Create an ES record for the new metadata.
-        # project_info_args = {key:value for key,value in project_info.iteritems() if key != '_links'}
-        project_ES = IndexedProject(**to_index)
-        project_ES.save()
-    elif res.hits.total.value == 1:
-        # Update the record.
-        doc = res[0]
-        doc.update(**to_index)
-    else:
-        # If we're here we've somehow indexed the same project multiple times. 
-        # Delete all records and replace with the metadata passed to the task.
-        for doc in res:
-            IndexedProject.get(doc.meta.id).delete()
-        project_ES = IndexedProject(**to_index) 
-        project_ES.save()
 
 @shared_task(bind=True)
 def reindex_projects(self):
     """
-    Performs a listing of all projects using the service account client, then 
-    indexes each project using the index_or_update_project task.
+    Index all project metadata.
+
+    Returns
+    -------
+    Void
     """
-    client = get_service_account_client()
-    query = {'name': 'designsafe.project'}
+    for listing in list_all_projects():
+        try:
+            index_projects_listing(listing)
+        except Exception as e:
+            logger.exception(e)
 
-    in_loop = True
-    offset = 0
-    while in_loop:
-        listing = client.meta.listMetadata(q=json.dumps(query), offset=offset, limit=100)
-        offset += 100
 
-        if len(listing) == 0:
-            in_loop = False
-        else:
-            for project in listing:
-                index_or_update_project.apply_async(args=[project.uuid], queue='api')
-   
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
     # Only copy published files while in prod
@@ -791,3 +829,26 @@ def email_collaborator_added_to_project(self, project_id, project_uuid, project_
                         [collab_user.email],
                         html_message=body)
 
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def email_user_publication_request_confirmation(self, username):
+    user = get_user_model().objects.get(username=username)
+    email_subject = 'Your DesignSafe Publication Request Has Been Issued'
+    email_body = """
+    <p>Depending on the size of your data, the publication might take a few minutes or a couple of hours to appear in the <a href=\"{pub_url}\">Published Directory.</a></p>
+    <p>During this time, check-in to see if your publication appears. 
+    If your publication does not appear, is incomplete, or does not have a DOI, <a href=\"{ticket_url}\">please submit a ticket.</a></p>
+    <p><strong>Do not</strong> attempt to republish by clicking Request DOI & Publish again.</p>
+    <p>This is a programmatically generated message. <strong>Do NOT</strong> reply to this message. 
+    If you have any feedback or questions, please feel free to <a href=\"{ticket_url}\">submit a ticket.</a></p>
+    """.format(pub_url="https://www.designsafe-ci.org/data/browser/public/", ticket_url="https://www.designsafe-ci.org/help/new-ticket/")
+    try:
+        user.profile.send_mail(email_subject, email_body)
+    except Exception as e:
+        logger.info("Could not send email to user {}".format(user))
+        send_mail(
+            email_subject,
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            html_message=email_body
+        )

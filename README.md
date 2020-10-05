@@ -14,8 +14,7 @@ on.
 - [Install Docker Compose][4]
 
 If you are on a Mac or a Windows machine, the recommended method is to install
-[Docker Toolbox][5], which will install both Docker and Docker Compose as well as Docker
-Machine, which is required to run Docker on Mac/Windows hosts.
+[Docker Desktop][5], which will install both Docker and Docker Compose, which is required to run Docker on Mac/Windows hosts.
 
 ## First time setup
 
@@ -26,17 +25,11 @@ Machine, which is required to run Docker on Mac/Windows hosts.
    $ cd portal
    ```
 
-2. Build the container(s)
+2. Configure environment variables
 
-   ```
-   $ docker-compose build
-   ```
-
-3. Configure environment variables
-
-   Make a copy of [designsafe.env.sample](designsafe.env.sample) and rename it to
+   Make a copy of [designsafe.sample.env](conf/env_files/designsafe.sample.env) and rename it to
    `designsafe.env`. Configure variables as necessary. See
-   [designsafe.env.sample](designsafe.env.sample) for details of configuration.
+   [designsafe.sample.env](conf/env_files/designsafe.sample.env) for details of configuration.
 
    Required variables:
 
@@ -46,16 +39,44 @@ Machine, which is required to run Docker on Mac/Windows hosts.
    - `AGAVE_*`: should be set to enable Agave API integration (authentication, etc.)
    - `RT_*`: should be set to enable ticketing
 
-3. Set up local/testing database
+   Make copies of [rabbitmq.sample.env](conf/env_files/rabbitmq.sample.env) and [mysql.sample.env](conf/env_files/mysql.sample.env),
+   then rename them to `rabbitmq.env` and `mysql.env`.
+
+   Make copies of [mysql.sample.cnf](conf/mysql.sample.cnf), [redis.sample.conf](conf/redis.sample.conf),
+   and [rabbitmq.sample.conf](conf/rabbitmq.sample.conf), then rename them to `mysql.cnf`, `redis.conf`, and `rabbitmq.conf`.
+
+   Make a copy of [external_resource_secrets.sample.py](designsafe/settings/external_resource_secrets.sample.py)
+   and rename it to `external_resource_secrets.py`.
+
+   Create the directory `~/corral-repl/tacc/NHERI`, where `~` indicates your user's home directory on your machine.
+
+3. Build the containers and frontend package
 
    ```
-   $ docker-compose up -d
-   $ docker exec -it portal_django_1 bash
+   $ docker-compose -f conf/docker/docker-compose.yml build
+   ```
+
+   These lines install the node packages required for DesignSafe,
+   and build the frontend package.
+   ```
+   $ npm install
+   $ npm run build
+   ```
+
+   If you are working with the frontend code and want it to automatically update,
+   use `npm run dev` rather than `npm run build` to have it build upon saving the file.
+
+4. Set up local/testing database
+
+   ```
+   $ docker-compose -f ./conf/docker/docker-compose-dev.all.debug.yml up
+   $ docker exec -it des_django bash
    # ./manage.py migrate
+   # ./manage.py collectstatic -i demo
    # ./manage.py createsuperuser
    ```
 
-4. Open in browser
+5. Open in browser
 
    Navigate to [http://localhost:8000](http://localhost:8000) in your browser.
 
@@ -69,6 +90,10 @@ Machine, which is required to run Docker on Mac/Windows hosts.
    ```
 
    Then, navigate to: [http://192.168.99.100:8000](http://192.168.99.100:8000)
+
+   An alternative to using the above localhost or IP-based url, you can also do the following.
+   Update your /etc/hosts file by adding this line: `127.0.0.1 designsafe.dev`
+   Now you can navigate to [designsafe.dev](designsafe.dev) in your browser.
 
 ## Next steps
 
@@ -121,41 +146,6 @@ Every file needed is in `conf/nginx/certs`.
 6. Generate Cert: `openssl x509 -req -in designsafe.dev.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out designsafe.dev.crt -days 365 -sha256 -extfile designsafe.dev.ext` (Cert is valid for 365 days. Keep default form values defined in .conf file)
 7. Files created: `designsafe.dev.key` (site private key), `designsafe.dev.csr` (site certificate signing request), `designsafe.dev.crt` (actual site certificate), `ca.key` (CA private key) and `ca.pem` (CA certificate).
 
-### Importing data from production
-
-If you need or want to import data from production to a local development instance
-running SQLite, you will need to create a `datadump.json` file using the Django `dumpdata`
-command.
-
-To dump data from the production database you will first need an environment/configuration
-file that is configured for the production database. Then, run the following command:
-
-```
-docker run -it --rm -v $(pwd):/datadump \
-    --env-file /path/to/production/designsafe.env \
-    designsafeci/portal:latest bin/dumpdata.sh
-```
-
-This will created a file named `datadump-YYYYMMDD.json` in the current 
-directory. 
-
-DO NOT RUN THE FOLLOWING COMMAND WITH THE PRODUCTION CONFIGURATION. IT 
-WILL DESTROY THE DATABASE.
-
-You can load the `datadump-YYYYMMDD.json` file into your local instance 
-with the command:
-
-```
-docker run -it --rm -v $(pwd):/datadump \
-    --env-file /path/to/local/designsafe.env \
-    designsafeci/portal:latest bin/loaddata.sh
-```
-
-The result will be a SQLite database file `db.sqlite3` in the current directory loaded
-with the contents of `datadump-YYYYMMDD.json`.
-
-See [this wiki page][6] for additional details.
-
 ### Re-creating self signed cert
 
 The necessary configuration is already in `conf/nginx/designsafe.dev.conf`.
@@ -182,7 +172,7 @@ install all the Python/Django/npm dependencies locally (ideally within a virtual
 is already done in the docker container.
 
 We assume you have the image built or checked out locally and it is called
-`portal_django`.
+`des_django`.
 
 ### Django tests
 
@@ -191,7 +181,7 @@ Django tests should be written according to standard [Django testing procedures]
 You can run Django tests with the following command:
 
 ```shell
-$ docker run -it --rm portal_django python manage.py test --settings=designsafe.settings.test_settings
+$ docker run -it --rm des_django python manage.py test --settings=designsafe.settings.test_settings
 ```
 
 ### Frontend tests
@@ -203,7 +193,7 @@ To run frontend tests, ensure that all scripts and test scripts are configured i
 [`karma-conf.js`](karma-conf.js) and then run the command:
 
 ```shell
-$ docker run -it --rm portal_django bin/run-tests.sh
+$ npm run test
 ```
 
 ## Development setup
@@ -214,8 +204,9 @@ mode with a redis service for websockets support. You can optionally enable the 
 for testing.
 
 ```shell
-$ docker-compose build
-$ docker-compose up
+$ docker-compose -f conf/docker/docker-compose.yml build
+$ docker-compose -f conf/docker/docker-compose-dev.all.debug.yml up
+$ npm run dev
 ```
 
 When using this compose file, your Agave Client should be configured with a `callback_url`
@@ -250,15 +241,14 @@ of `https://$DOCKER_HOST_IP/auth/agave/callback/`.
 
 ## Production setup
 
-Production deployment is managed by ansible. See https://github.com/designsafe-ci/ansible. 
+Production deployment is managed by ansible. See https://github.com/designsafe-ci/ansible.
 
 
 [1]: https://docs.docker.com/
 [2]: https://docs.docker.com/compose/
 [3]: https://docs.docker.com/installation/
 [4]: https://docs.docker.com/compose/install/
-[5]: https://www.docker.com/toolbox
-[6]: https://github.com/DesignSafe-CI/portal/wiki/Importing-data-from-Production-to-Development
+[5]: https://docs.docker.com/desktop/
 [7]: https://github.com/DesignSafe-CI/portal/wiki/CSS-Styles-Reference
 [8]: https://docs.djangoproject.com/en/dev/topics/testing/
 [9]: http://jasmine.github.io/1.3/introduction.html

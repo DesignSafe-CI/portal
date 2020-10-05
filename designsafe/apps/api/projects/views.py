@@ -62,18 +62,19 @@ class PublicationView(BaseApiView):
         else:
             data = request.POST
 
-        #logger.debug('publication: %s', json.dumps(data, indent=2))
+        # logger.debug('publication: %s', json.dumps(data, indent=2))
         status = data.get('status', 'saved')
         pub = save_publication(
             data['publication'],
             status
         )
+        
         if data.get('status', 'save').startswith('publish'):
             (
                 tasks.freeze_publication_meta.s(
                     pub.projectId,
                     data.get('mainEntityUuids')
-                ).set(queue='api') |
+                ).set(queue='api') | 
                 group(
                     tasks.save_publication.si(
                         pub.projectId,
@@ -94,7 +95,8 @@ class PublicationView(BaseApiView):
                     pub.projectId,
                     data.get('mainEntityUuids')
                 ) |
-                tasks.zip_publication_files.si(pub.projectId)
+                tasks.zip_publication_files.si(pub.projectId) | 
+                tasks.email_user_publication_request_confirmation(request.user.username)
             ).apply_async()
 
         return JsonResponse({'status': 200,
