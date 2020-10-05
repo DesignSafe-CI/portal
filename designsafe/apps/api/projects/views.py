@@ -25,7 +25,7 @@ from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 from designsafe.libs.common.decorators import profile as profile_fn
-from designsafe.apps.api.agave.filemanager.publications import PublicationsManager
+from designsafe.apps.api.publications.operations import save_publication
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 logger = logging.getLogger(__name__)
@@ -41,6 +41,7 @@ def template_project_storage_system(project):
         system_template['storage']['rootDir'].format(project.uuid)
     return system_template
 
+
 class PublicationView(BaseApiView):
     @profile_fn
     def get(self, request, project_id):
@@ -50,7 +51,7 @@ class PublicationView(BaseApiView):
         else:
             return JsonResponse({'status': 404,
                                  'message': 'Not found'},
-                                 status=404)
+                                status=404)
 
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
@@ -61,18 +62,19 @@ class PublicationView(BaseApiView):
         else:
             data = request.POST
 
-        #logger.debug('publication: %s', json.dumps(data, indent=2))
+        # logger.debug('publication: %s', json.dumps(data, indent=2))
         status = data.get('status', 'saved')
-        pub = PublicationsManager(None).save_publication(
+        pub = save_publication(
             data['publication'],
             status
         )
+        
         if data.get('status', 'save').startswith('publish'):
             (
                 tasks.freeze_publication_meta.s(
                     pub.projectId,
                     data.get('mainEntityUuids')
-                ).set(queue='api') |
+                ).set(queue='api') | 
                 group(
                     tasks.save_publication.si(
                         pub.projectId,
@@ -93,7 +95,8 @@ class PublicationView(BaseApiView):
                     pub.projectId,
                     data.get('mainEntityUuids')
                 ) |
-                tasks.zip_publication_files.si(pub.projectId)
+                tasks.zip_publication_files.si(pub.projectId) | 
+                tasks.email_user_publication_request_confirmation(request.user.username)
             ).apply_async()
 
         return JsonResponse({'status': 200,
@@ -102,6 +105,7 @@ class PublicationView(BaseApiView):
                                             'schedule for publication',
                                  'status': status}},
                             status=200)
+
 
 class NeesPublicationView(BaseApiView):
     """
@@ -114,6 +118,7 @@ class NeesPublicationView(BaseApiView):
         """
         pub = BaseESPublicationLegacy(nees_id=nees_id)
         return JsonResponse(pub.to_file())
+
 
 class ProjectListingView(SecureMixin, BaseApiView):
     @profile_fn
@@ -136,6 +141,7 @@ class ProjectListingView(SecureMixin, BaseApiView):
             projects = Project.search(q=q, agave_client=ag)
         return JsonResponse({'projects': projects}, encoder=AgaveJSONEncoder)
 
+
 class ProjectCollectionView(SecureMixin, BaseApiView):
     @profile_fn
     def get(self, request, file_mgr_name=None, system_id=None, offset=None, limit=None):
@@ -149,7 +155,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         ag = request.user.agave_oauth.client
         query_string = request.GET.get('query_string', None)
         if query_string is not None:
-            projects = Project.ES_search(agave_client=ag, query_string=query_string, username = request.user.username)
+            projects = Project.ES_search(agave_client=ag, query_string=query_string, username=request.user.username)
             data = {'projects': projects}
             return JsonResponse(data, encoder=AgaveJSONEncoder)
         # Add metadata fields to project listings for workspace browser
@@ -166,9 +172,9 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         else:
             offset = request.GET.get('offset', 0)
             limit = request.GET.get('limit', 100)
-            projects = Project.list_projects(agave_client=ag, **{'offset':offset, 'limit':limit})
+            projects = Project.list_projects(agave_client=ag, **{'offset': offset, 'limit': limit})
             data = {'projects': projects}
-            
+
         return JsonResponse(data, encoder=AgaveJSONEncoder)
 
     @profile_fn
@@ -196,11 +202,11 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
 
         # create Project (metadata)
         metrics.info('projects',
-                     extra={'user' : request.user.username,
+                     extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'project_create',
-                            'info': {'postData': post_data} })
-        prj_model = project_lookup_model({ 'name': 'designsafe.project', 'value': post_data })
+                            'info': {'postData': post_data}})
+        prj_model = project_lookup_model({'name': 'designsafe.project', 'value': post_data})
         prj = prj_model(value=post_data)
         project_uuid = prj.uuid
         prj.manager().set_client(ag)
@@ -208,7 +214,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
 
         # create Project Directory on Managed system
         metrics.info('projects',
-                     extra={'user' : request.user.username,
+                     extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'base_directory_create',
                             'info': {
@@ -223,7 +229,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         project_system_tmpl['storage']['rootDir'] = \
             project_system_tmpl['storage']['rootDir'].format(project_uuid)
         metrics.info('projects',
-                     extra={'user' : request.user.username,
+                     extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'private_system_create',
                             'info': {
@@ -241,15 +247,15 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                                     'homeDir': project_system_tmpl.get('storage', {}).get('homeDir'),
                                     'rootDir': project_system_tmpl.get('storage', {}).get('rootDir')
                                 }
-                             }})
+                            }})
         ag.systems.add(body=project_system_tmpl)
 
         # grant initial permissions for creating user and PI, if exists
         metrics.info('projects',
-                     extra={'user' : request.user.username,
+                     extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'initial_pems_create',
-                            'info': {'collab': request.user.username, 'pi': prj.pi} })
+                            'info': {'collab': request.user.username, 'pi': prj.pi}})
 
         if getattr(prj, 'copi', None):
             prj.add_co_pis(prj.copi)
@@ -268,8 +274,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
 
         # Email collaborators
         chain(
-            tasks.set_project_id.s(prj.uuid).set(queue="api") | 
-            tasks.email_collaborator_added_to_project.s(    
+            tasks.set_project_id.s(prj.uuid).set(queue="api") |
+            tasks.email_collaborator_added_to_project.s(
                 prj.uuid,
                 prj.title,
                 request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), prj.uuid)),
@@ -288,6 +294,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
 
         prj.add_admin('prjadmin')
         return JsonResponse(prj.to_body_dict(), safe=False)
+
 
 class ProjectInstanceView(SecureMixin, BaseApiView):
 
@@ -333,7 +340,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
             names = list(set(meta_obj.value['teamMembers'] + meta_obj.value['coPis'] + [meta_obj.value['pi']]))
             updatednames = list(set(new_team_members + new_co_pis + [new_pi]))
         else:
-            names = list(set(meta_obj.value['teamMembers']  + meta_obj.value['coPis']))
+            names = list(set(meta_obj.value['teamMembers'] + meta_obj.value['coPis']))
             updatednames = list(set(new_team_members + new_co_pis))
 
         add_perm_usrs = [u for u in updatednames if u not in names]
@@ -385,17 +392,17 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        team_members_to_add = [user['username'] for user in post_data.get('users') \
-                                   if user['memberType'] == 'teamMember']
-        co_pis_to_add = [user['username'] for user in post_data.get('users') \
-                             if user['memberType'] == 'coPi']
-        
+        team_members_to_add = [user['username'] for user in post_data.get('users')
+                               if user['memberType'] == 'teamMember']
+        co_pis_to_add = [user['username'] for user in post_data.get('users')
+                         if user['memberType'] == 'coPi']
+
         ag = get_service_account_client()
         project = BaseProject.manager().get(ag, uuid=project_id)
         project.manager().set_client(ag)
         project.add_team_members(team_members_to_add)
         project.add_co_pis(co_pis_to_add)
-        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
         tasks.set_facl_project.apply_async(
             args=[
                 project_id,
@@ -427,10 +434,10 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         ag = get_service_account_client()
         project = BaseProject.manager().get(ag, uuid=project_id)
         project.manager().set_client(ag)
-        team_members_to_rm = [user['username'] for user in post_data['users'] \
-                                  if user['memberType'] == 'teamMember']
-        co_pis_to_rm = [user['username'] for user in post_data['users'] \
-                            if user['memberType'] == 'coPi']
+        team_members_to_rm = [user['username'] for user in post_data['users']
+                              if user['memberType'] == 'teamMember']
+        co_pis_to_rm = [user['username'] for user in post_data['users']
+                        if user['memberType'] == 'coPi']
         project.remove_team_members(team_members_to_rm)
         project.remove_co_pis(co_pis_to_rm)
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
@@ -451,10 +458,11 @@ class ProjectDataView(SecureMixin, BaseApiView):
         if project_system_id is None:
             p = Project(ag, uuid=project_id)
             project_system_id = p.project_system_id
-        
+
         listing = BaseFileResource.listing(ag, project_system_id, file_path)
 
         return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
+
 
 class ProjectMetaView(BaseApiView, SecureMixin):
 
@@ -536,10 +544,10 @@ class ProjectMetaView(BaseApiView, SecureMixin):
             model.associate(project_id)
             saved = model.save(ag)
             resp = model_cls(**saved)
-            #TODO: This should happen in a celery task and implemented in a manager
-            #Get project's metadata permissions
+            # TODO: This should happen in a celery task and implemented in a manager
+            # Get project's metadata permissions
             pems = BaseMetadataPermissionResource.list_permissions(project_id, ag)
-            #Loop permissions and set them in whatever metadata object we're saving
+            # Loop permissions and set them in whatever metadata object we're saving
             for pem in pems:
                 _pem = BaseMetadataPermissionResource(resp.uuid, ag)
                 _pem.username = pem.username

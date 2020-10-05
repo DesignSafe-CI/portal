@@ -41,11 +41,10 @@ export function agaveFilePicker(window, angular, $, _) {
 
                 $scope.$on('provides-file', function($event, args) {
                     let requestKey = args.requestKey || '';
-                    let file = args.file || {};
-                    let agavePath = 'agave://' + file.system + file.path;
+                    let path = args.path || '';
                     if (formKey === requestKey) {
-                        $scope.data.input = agavePath;
-                        $ngModel.$setViewValue(agavePath);
+                        $scope.data.input = path;
+                        $ngModel.$setViewValue(path);
                         stopWant();
                     }
                 });

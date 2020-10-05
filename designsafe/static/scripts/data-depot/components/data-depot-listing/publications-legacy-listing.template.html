@@ -1,0 +1,64 @@
+<div class="table-responsive">
+    <div
+        class="ds-table-display-wrapper"
+        data-ds-infinite-scroll
+        data-scroll-bottom="$ctrl.scrollToBottom()"
+        data-scroll-top="$ctrl.scrollToTop()"
+        data-bottom-height="0"
+    >
+        <table class="table table-bordered table-striped files-listing-table" style="background-color: #fff;">
+            <thead>
+                <th style="width: 350px;">Project Title</th>
+                <th style="width: 100px;">Project PI</th>
+                <th style="width: 100px;">Project Description</th>
+                <th style="width: 100px;">Start Date</th>
+                </thead>
+
+            <tbody>
+                <tr ng-if="!$ctrl.listing.loading"
+              ng-repeat="item in $ctrl.listing.publications"
+              ng-click="$ctrl.onSelect($event, item)"
+              ng-class="{'ds-data-selected': item._ui.selected}"
+          >
+              <td>
+                  <a ng-href="{{ $ctrl.href(item) }}" ng-click="$ctrl.onBrowse($event, item)">
+                      {{ item.title }}
+                  </a>
+                  <span>(NEES)</span>
+              </td>
+
+              <td ng-if="!item.meta.pi">
+                <span ng-show="item.pis">{{ item.pis[0].lastName }}, {{ item.pis[0].firstName }}</span>
+            </td>
+            <td align="center" >
+                <a ng-click="$ctrl.showDescription(item)">View Description</a>
+            </td>
+              <td>
+                {{ item.startDate| date: 'M/d/yyyy'}}
+              </td>
+          </tr>
+                <tr ng-if="$ctrl.listing.loadingScroll">
+                    <td>
+                        <span class="bg-info text-info">
+                            <i class="fa fa-spinner fa-spin"></i> Loading...
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+            <caption>
+                <div data-ng-if="$ctrl.listing.loading"
+                     style="padding:10px; font-size:large; width:100%;"
+                     class="bg-info">
+                    <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
+                </div>
+
+                <div ng-if="! $ctrl.listing.loading && $ctrl.listing.error"
+                     class="text-center">
+                    <p class="alert alert-danger"
+                       ng-bind-html="$ctrl.browser.error.message ||
+                                     $ctrl.browser.error | toTrusted"></p>
+                </div>
+            </caption>
+        </table>
+    </div>
+</div>

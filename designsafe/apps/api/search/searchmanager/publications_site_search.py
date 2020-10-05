@@ -70,21 +70,13 @@ class PublicationsSiteSearchManager(BaseSearchManager):
                                                "user.username"],
                                     "lenient": True}}}
                         })
-        nees_pi_query = Q({"nested":
-                        {"path": "pis",
-                         "ignore_unmapped": True,
-                         "query": {"query_string":
-                                   {"query": self.query_string,
-                                    "fields": ["pis.firstName",
-                                               "pis.lastName"],
-                                    "lenient": True}}}
-                        })
+
         pub_query = Q('query_string', query=self.query_string, default_operator='and', fields=project_query_fields)
 
         published_query = Q(
             'bool',
             must=[
-                Q('bool', should=[ds_user_query, nees_pi_query, pub_query]),
+                Q('bool', should=[ds_user_query, pub_query]),
                 Q('bool', should=[
                     Q({'term': {'_index': published_index_name}}),
                     Q({'term': {'_index': legacy_index_name}})

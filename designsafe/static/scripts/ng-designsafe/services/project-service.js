@@ -1,47 +1,170 @@
-import _ from 'underscore';
-import { $IsStateFilter, $IncludedByStateFilter } from 'angular-ui-router/lib/stateFilters';
-import experimentalData from "../../projects/components/manage-experiments/experimental-data.json";
+import { from } from 'rxjs';
+import { map, tap, concatMap, take } from 'rxjs/operators';
+import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
+import experimentalData from '../../projects/components/manage-experiments/experimental-data.json';
 
-export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Logging, ProjectModel, ProjectEntitiesService) {
-    'ngInject';
+export class ProjectService {
+    constructor(
+        httpi,
+        $http,
+        $interpolate,
+        $q,
+        $state,
+        $uibModal,
+        Logging,
+        ProjectModel,
+        UserService,
+    ) {
+        'ngInject';
+        this.httpi = httpi;
+        this.$http = $http;
+        this.$interpolate = $interpolate;
+        this.$q = $q;
+        this.$state = $state;
+        this.$uibModal = $uibModal;
+        this.Logging = Logging;
+        this.ProjectModel = ProjectModel;
+        this.UserService = UserService;
 
-    let logger = Logging.getLogger('DataDepot.ProjectService');
+        this.efs = experimentalData.experimentalFacility;
+        this.equipmentTypes = experimentalData.equipmentTypes;
+        this.experimentTypes = experimentalData.experimentTypes;
 
-    let efs = experimentalData.experimentalFacility;
-    let equipmentTypes = experimentalData.equipmentTypes;
-    let experimentTypes = experimentalData.experimentTypes;
+        this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
+        this.collabResource = this.httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
+        this.dataResource = this.httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
+        this.notificationResource = httpi.resource('/api/projects/:uuid/notification/').setKeepTrailingSlash(true);
+        //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
+        //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
 
-    let service = {};
+        this.data = {
+            navItems: [],
+            projects: [],
+        };
 
-    let projectResource = httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
-    let collabResource = httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
-    let dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
-    let notificationResource = httpi.resource('/api/projects/:uuid/notification/').setKeepTrailingSlash(true);
-    //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
-    //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
+        this.resolveParams = {
+            projectId: null,
+            filePath: null,
+            projectTitle: null,
+            query_string: null,
+        };
 
-    service.data = {
-        navItems: [],
-        projects: [],
-    };
+        this.listings = {
+            main: {
+                projects: [],
+                loading: false,
+                loadingScroll: false,
+                params: { section: 'main', offset: 0, limit: 100 },
+                reachedEnd: true,
+                listingSubscriber: takeLatestSubscriber(),
+                scrollSubscriber: takeLeadingSubscriber(),
+            },
+            modal: {
+                projects: [],
+                loading: false,
+                loadingScroll: false,
+                params: { section: 'main', offset: 0, limit: 100 },
+                reachedEnd: true,
+                listingSubscriber: takeLatestSubscriber(),
+                scrollSubscriber: takeLeadingSubscriber(),
+            },
+        };
 
-    service.resolveParams = {
-        projectId: null,
-        filePath: null,
-        projectTitle: null,
-        query_string: null,
-    };
+        // Latest project retrieved by this.get
+        this.current = null;
+
+        this.getPiNames = this.getPiNames.bind(this);
+    }
 
     /**
      * Get a list of Projects for the current user
      * @param {Object} options - The offset and limit variables
      * @returns {Project[]}
      */
-    service.list = function(options) {
-        return projectResource.get({ params: options }).then(function(resp) {
-            return _.map(resp.data.projects, function(p) { return new ProjectModel(p); });
+    list({ offset, limit }) {
+        return this.projectResource.get({ params: { offset, limit } }).then((resp) => {
+            return resp.data.projects.map((p) => {
+                return new this.ProjectModel(p);
+            });
         });
-    };
+    }
+
+    getPiNames(projectList) {
+        const piList = [...new Set(projectList.map((p) => p.value.pi))];
+        const usernameMapping = {};
+        const piPromise = this.UserService.getPublic(piList).then((resp) => {
+            var data = resp.userData;
+            data.forEach((user) => {
+                usernameMapping[user.username] = user.fname + ' ' + user.lname;
+            });
+            projectList.forEach((p) => {
+                p._pi_name = usernameMapping[p.value.pi];
+            });
+            return projectList;
+        });
+        return from(piPromise);
+    }
+
+    listProjects({ section, offset, limit, query_string }) {
+        this.listings[section].params = {
+            ...this.listings[section].params,
+            offset: offset || 0,
+            limit: limit || 100,
+            query_string,
+        };
+        this.listings[section].loading = true;
+        const observableMapping = () =>
+            this.mapParamsToListing({ section, offset: offset || 0, limit: limit || 100, query_string });
+        this.listings[section].listingSubscriber.next(observableMapping);
+        return this.listings[section].listingSubscriber.pipe(take(1)).toPromise();
+    }
+    mapParamsToListing({ section, offset, limit, query_string }) {
+        const listingParams = { section, offset: offset || 0, limit: limit || 100, query_string };
+        const listingObservable$ = from(this.$http.get('/api/projects/', { params: listingParams })).pipe(
+            map((resp) => resp.data.projects.map((p) => new this.ProjectModel(p))),
+            concatMap(this.getPiNames),
+            tap(this.listingSuccessCallback(section))
+        );
+        return listingObservable$;
+    }
+    listingSuccessCallback(section) {
+        return (projects) => {
+            this.listings[section].projects = projects;
+            this.listings[section].loading = false;
+            this.listings[section].reachedEnd = projects.length < this.listings[section].params.limit;
+        };
+    }
+
+    scrollProjects({ section }) {
+        const scrollParams = {
+            offset: this.listings[section].params.offset + this.listings[section].params.limit,
+            limit: this.listings[section].params.limit,
+            query_string: this.listings[section].params.query_string,
+            section,
+        };
+
+        this.listings[section].loadingScroll = true;
+        const observableMapping = () => this.mapParamsToScroll(scrollParams);
+        this.listings[section].scrollSubscriber.next(observableMapping);
+    }
+    mapParamsToScroll({ section, offset, limit, query_string }) {
+        this.listings[section].params = { ...this.listings[section].params, offset, limit };
+        const scrollObservable$ = from(
+            this.$http.get('/api/projects/', { params: { offset, limit, query_string } })
+        ).pipe(
+            map((resp) => resp.data.projects.map((p) => new this.ProjectModel(p))),
+            concatMap(this.getPiNames),
+            tap(this.scrollSuccessCallback(section))
+        );
+        return scrollObservable$;
+    }
+    scrollSuccessCallback(section) {
+        return (projects) => {
+            this.listings[section].projects = [...this.listings[section].projects, ...projects];
+            this.listings[section].loadingScroll = false;
+            this.listings[section].reachedEnd = projects.length < this.listings[section].params.limit;
+        };
+    }
 
     /**
      * Get a specific Project
@@ -49,11 +172,13 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @param {string} options.uuid The Project UUID
      * @returns {Promise}
      */
-    service.get = function(options) {
-        return projectResource.get({ params: options }).then(function(resp) {
-            return new ProjectModel(resp.data);
+    get(options) {
+        return this.projectResource.get({ params: options }).then((resp) => {
+            const prj = new this.ProjectModel(resp.data);
+            this.current = prj;
+            return prj;
         });
-    };
+    }
 
     /**
      * Save or update a Project
@@ -64,11 +189,11 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @param {string[]} [options.coPis] List of usernames for Project Co-PIs
      * @returns {Promise}
      */
-    service.save = function(options) {
-        return projectResource.post({ data: options }).then(function(resp) {
-            return new ProjectModel(resp.data);
+    save(options) {
+        return this.projectResource.post({ data: options }).then((resp) => {
+            return new this.ProjectModel(resp.data);
         });
-    };
+    }
 
     /**
      * Get a list of usernames for users that are collaborators on the Project
@@ -76,14 +201,16 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @param {string} options.uuid The Project uuid
      * @returns {Promise}
      */
-    service.getCollaborators = function(options) {
-        return collabResource.get({ params: options }).then(function(resp) {
+    getCollaborators(options) {
+        return this.collabResource.get({ params: options }).then((resp) => {
             if (typeof resp.data.teamMembers !== 'undefined') {
-                resp.data.teamMembers = _.without(resp.data.teamMembers, 'ds_admin', 'prjadmin');
+                resp.data.teamMembers = resp.data.teamMembers.filter(
+                    (member) => !['ds_admin', 'prjadmin'].includes(member)
+                );
             }
             return resp;
         });
-    };
+    }
 
     /**
      *
@@ -92,9 +219,9 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @param {string} options.username The username of the collaborator to add
      * @returns {Promise}
      */
-    service.addCollaborator = function(options) {
-        return collabResource.post({ data: options });
-    };
+    addCollaborator(options) {
+        return this.collabResource.post({ data: options });
+    }
 
     /**
      *
@@ -103,9 +230,9 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @param {string} options.username The username of the collaborator to add
      * @returns {Promise}
      */
-    service.removeCollaborator = function(options) {
-        return collabResource.delete({ data: options });
-    };
+    removeCollaborator(options) {
+        return this.collabResource.delete({ data: options });
+    }
 
     /**
      *
@@ -114,9 +241,9 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @param {string} [options.fileId] the Project data file id to list
      * @returns {Promise}
      */
-    service.projectData = function(options) {
-        return dataResource.get({ params: options });
-    };
+    projectData(options) {
+        return this.dataResource.get({ params: options });
+    }
 
     /**
      *
@@ -125,7 +252,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @param {object} selFileListings Object of selected file listings based on associated uuids
      * @returns {Message} Returns an error message for missing or incomplete entities
      */
-    service.checkSelectedFiles = function(project, selPrimEnts, selFileListings) {
+    checkSelectedFiles(project, selPrimEnts, selFileListings) {
         let missingData = [];
         let errMsg = {
             experiment: 'Experiment',
@@ -151,25 +278,25 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
         };
 
         let checkEntityHasFiles = (e) => {
-            if (!selFileListings[e.uuid]) {
+            if (!selFileListings[e.uuid].listing.length) {
                 return false;
             }
             return true;
         };
-        
+
         let addMissing = (missingEnt, fields) => {
-            if (!fields){
+            if (!fields) {
                 missingData.push({
-                    'title': missingEnt.value.title,
-                    'missing': ['Associated files/data are missing or not selected'],
-                    'type': errMsg[missingEnt.name.split('.').pop()]
+                    title: missingEnt.value.title,
+                    missing: ['Associated files/data are missing or not selected'],
+                    type: errMsg[missingEnt.name.split('.').pop()],
                 });
             } else {
-                let readableFields = fields.map(f => errMsg[f]);
+                let readableFields = fields.map((f) => errMsg[f]);
                 missingData.push({
-                    'title': missingEnt.value.title,
-                    'missing': readableFields,
-                    'type': errMsg[missingEnt.name.split('.').pop()]
+                    title: missingEnt.value.title,
+                    missing: readableFields,
+                    type: errMsg[missingEnt.name.split('.').pop()],
                 });
             }
         };
@@ -183,7 +310,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 });
             } else {
                 set.forEach((s) => {
-                    let related =  subsets.filter(subset => subset.associationIds.includes(s.uuid));
+                    let related = subsets.filter((subset) => subset.associationIds.includes(s.uuid));
                     let checklist = [];
 
                     related.forEach((relEnt) => {
@@ -193,7 +320,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                             checklist.push(relEnt.name.split('.').pop());
                         }
                     });
-                    let missing = required.filter(req => !checklist.includes(req));
+                    let missing = required.filter((req) => !checklist.includes(req));
                     if (missing.length) {
                         addMissing(s, missing);
                     }
@@ -217,7 +344,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 project.sensorlist_set || [],
                 project.event_set || []
             );
-            let experiments = selPrimEnts.filter(ent => ent.name.endsWith('experiment'));
+            let experiments = selPrimEnts.filter((ent) => ent.name.endsWith('experiment'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (experiments.length) {
                 checkRequirements(experiments, subentities, requirements);
@@ -233,12 +360,8 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 + Sets must include categorized files
             */
             let requirements = ['model', 'input', 'output'];
-            let subentities = [].concat(
-                project.model_set || [],
-                project.input_set || [],
-                project.output_set || []
-            );
-            let simulations = selPrimEnts.filter(ent => ent.name.endsWith('simulation'));
+            let subentities = [].concat(project.model_set || [], project.input_set || [], project.output_set || []);
+            let simulations = selPrimEnts.filter((ent) => ent.name.endsWith('simulation'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (simulations.length) {
                 checkRequirements(simulations, subentities, requirements);
@@ -261,7 +384,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
                 project.simsubstructure_set || [],
                 project.expsubstructure_set || []
             );
-            let hybSimulations = selPrimEnts.filter(ent => ent.name.endsWith('hybrid_simulation'));
+            let hybSimulations = selPrimEnts.filter((ent) => ent.name.endsWith('hybrid_simulation'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (hybSimulations.length) {
                 checkRequirements(hybSimulations, subentities, requirements);
@@ -283,22 +406,24 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
             the requirements is included.
             */
             let requirements = ['planning', 'social_science', 'geoscience'];
-            let missions = selPrimEnts.filter(ent => ent.name.endsWith('mission'));
-            let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
+            let missions = selPrimEnts.filter((ent) => ent.name.endsWith('mission'));
+            let reports = selPrimEnts.filter((ent) => ent.name.endsWith('report'));
             let subentities = [].concat(
                 project.planning_set || [],
                 project.socialscience_set || [],
                 project.geoscience_set || []
             );
-            
+
             if (missions.length) {
                 checkRequirements(missions, subentities, requirements);
-                let errNames = Array.from(requirements, req => errMsg[req]);
+                let errNames = Array.from(requirements, (req) => errMsg[req]);
                 // ensure all requirements are not missing (we just need one for FR) and
                 // there are no missing files
                 missingData = missingData.filter((data) => {
-                    if (!errNames.every(name => data.missing.includes(name)) &&
-                        !data.missing.includes('Associated files/data are missing or not selected')) {
+                    if (
+                        !errNames.every((name) => data.missing.includes(name)) &&
+                        !data.missing.includes('Associated files/data are missing or not selected')
+                    ) {
                         return false;
                     }
                     return true;
@@ -309,7 +434,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
             }
         }
         return missingData;
-    };
+    }
 
     /**
      *
@@ -318,28 +443,35 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @param {string} options.username The username of the collaborator to add
      * @returns {Promise}
      */
-    service.notifyPersonalData = (options) => {
+    notifyPersonalData(options) {
         return notificationResource.post({ data: options });
-    };
+    }
 
     /**
      * @param {Project} [project]
      * @return {Promise}
      */
-    service.editProject = (project) => {
-        let modalInstance = $uibModal.open({
+    editProject(project) {
+        let modalInstance = this.$uibModal.open({
             component: 'editProject',
             resolve: {
                 project: () => project,
-                efs: () => efs,
+                efs: () => this.efs,
             },
             backdrop: 'static',
             size: 'lg',
         });
         return modalInstance;
-    };
+    }
 
-
-    return service;
-
+    /**
+     *
+     * @param options
+     * @param {string} options.uuid The Project uuid
+     * @param {string} options.username The username of the collaborator to add
+     * @returns {Promise}
+     */
+    notifyPersonalData(options) {
+        return this.notificationResource.post({ data: options });
+    }
 }

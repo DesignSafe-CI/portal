@@ -30,7 +30,7 @@ def index(request):
             dropbox = Dropbox(dropbox_token.access_token)
             dropbox_user=dropbox.users_get_account(dropbox_token.account_id)
             context['dropbox_connection'] = dropbox_user
-        except BadRequestException or AuthError:
+        except (AuthError, BadRequestException):
             # authentication failed
             logger.warning('Dropbox oauth token for user=%s failed to authenticate' %
                            request.user.username)
@@ -98,7 +98,9 @@ def disconnect(request):
 
             dropbox_user_token = request.user.dropbox_user_token
             dropbox_user_token.delete()
-
+        except AuthError:
+            dropbox_user_token = request.user.dropbox_user_token
+            dropbox_user_token.delete()
         except DropboxUserToken.DoesNotExist:
             logger.warn('Disconnect Dropbox; DropboxUserToken does not exist.',
                         extra={'user': request.user})

@@ -9,6 +9,9 @@ import mock
 import json
 
 import logging
+import pytest
+
+pytestmark = pytest.mark.django_db
 
 logger = logging.getLogger(__name__)
 

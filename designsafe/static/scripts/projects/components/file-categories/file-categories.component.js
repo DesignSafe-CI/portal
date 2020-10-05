@@ -5,20 +5,34 @@ import hybridSimulationFileTags from './hybrid-simulation-file-tags.json';
 import fieldReconFileTags from './field-recon-file-tags.json';
 import otherFileTags from './other-file-tags.json';
 
-
 class FileCategoriesCtrl {
-    constructor($q, Django, ProjectModel, ProjectService, ProjectEntitiesService, httpi, $scope) {
+    constructor($q, $state, Django, ProjectModel, ProjectService, PublicationService, ProjectEntitiesService, FileListingService, httpi, $scope) {
         'ngInject';
         this.Django = Django;
         this.ProjectModel = ProjectModel;
         this.ProjectService = ProjectService;
         this.ProjectEntitiesService = ProjectEntitiesService;
+        this.FileListingService = FileListingService;
+        this.PublicationService = PublicationService;
         this.httpi = httpi;
         this.$q = $q;
         this.$scope = $scope;
+        this.$state = $state;
     }
 
     $onInit() {
+        this.scheme = this.FileListingService.listings[this.section].params.scheme
+        if(this.scheme === 'private') {
+            this.project = this.ProjectService.current;
+        }
+        else {
+            this.project = this.PublicationService.current.project
+        }
+
+
+        
+        
+
         this._ui = {
             busy: false,
             error: false,
@@ -26,6 +40,9 @@ class FileCategoriesCtrl {
             showTags: this.showTags || false,
             editTags: this.editTags || false,
         };
+
+        this.parentPath = this.file.path.replace(/\/[^\/]+\/?$/, '')
+
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     }
 
@@ -36,14 +53,15 @@ class FileCategoriesCtrl {
             .then((updatedEnt) => {
                 let oldEnt = this.project.getRelatedByUuid(updatedEnt.uuid);
                 oldEnt.update(updatedEnt);
-                if (file) {
-                    file.setEntities(this.project.uuid, this.project.getAllRelatedObjects());
-                }
+                this.FileListingService.setEntities(this.section, this.project.getAllRelatedObjects());
+                //if (file) {
+                //    file.setEntities(this.project.uuid, this.project.getAllRelatedObjects());
+                //}
             })
             .finally(() => {
                 this._ui.busy = false;
             });
-    };
+    }
 
     savePrj(options) {
         return this.projectResource.post({ data: options }).then((resp) => {
@@ -62,21 +80,28 @@ class FileCategoriesCtrl {
             return allIds;
         };
 
-        if (!this.file.uuid().length) {
-            this.file.fetch().then((file) => {
-                if (!entity.associationIds.includes(file.uuid())) {
+        if (!this.file.uuid) {
+            this.FileListingService.getUuid(
+                this.section,
+                'agave',
+                'private',
+                this.file.system,
+                this.file.path,
+                this.file.key
+            ).then((file) => {
+                if (!entity.associationIds.includes(file.uuid)) {
                     return undefined;
                 }
-                this.rmUuid(entity.associationIds, file.uuid());
-                this.rmUuid(entity.value.files, file.uuid());
+                this.rmUuid(entity.associationIds, file.uuid);
+                this.rmUuid(entity.value.files, file.uuid);
                 this.updateEntity(entity, this.file);
             });
         } else {
-            if (!entity.associationIds.includes(this.file.uuid())) {
+            if (!entity.associationIds.includes(this.file.uuid)) {
                 return undefined;
             }
-            this.rmUuid(entity.associationIds, this.file.uuid());
-            this.rmUuid(entity.value.files, this.file.uuid());
+            this.rmUuid(entity.associationIds, this.file.uuid);
+            this.rmUuid(entity.value.files, this.file.uuid);
             this.updateEntity(entity, this.file);
         }
     }
@@ -121,36 +146,41 @@ class FileCategoriesCtrl {
             tagName = this.selectedFileTag[this.project.uuid];
         }
 
-        if (!this.file.uuid().length) {
-            this.file.fetch()
-                .then((file) => {
-                    this.project.value.fileTags.push({
-                        fileUuid: file.uuid(),
-                        tagName: tagName,
-                        path: this.file.path,
-                    });
-                })
-                .then(() => {
-                    let projectData = {};
-                    projectData.uuid = this.project.uuid;
-                    projectData.fileTags = this.project.value.fileTags;
-                    projectData.title = this.project.value.title;
-                    projectData.pi = this.project.value.pi;
-                    projectData.coPis = this.project.value.coPis;
-                    projectData.projectType = this.project.value.projectType;
-                    projectData.projectId = this.project.value.projectId;
-                    projectData.description = this.project.value.description;
-                    projectData.keywords = this.project.value.keywords;
-                    projectData.teamMembers = this.project.value.teamMembers;
-                    projectData.associatedProjects = this.project.value.associatedProjects;
-                    projectData.awardNumber = this.project.value.awardNumber;
-                    this.savePrj(projectData);
-                    this.selectedFileTag[this.project.uuid] = null;
-                    this._ui.busy = false;
+        if (!this.file.uuid) {
+            this.FileListingService.getUuid(
+                this.section,
+                'agave',
+                'private',
+                this.file.system,
+                this.file.path,
+                this.file.key
+            ).then((file) => {
+                this.project.value.fileTags.push({
+                    fileUuid: file.uuid,
+                    tagName: tagName,
+                    path: this.file.path,
                 });
+
+                let projectData = {};
+                projectData.uuid = this.project.uuid;
+                projectData.fileTags = this.project.value.fileTags;
+                projectData.title = this.project.value.title;
+                projectData.pi = this.project.value.pi;
+                projectData.coPis = this.project.value.coPis;
+                projectData.projectType = this.project.value.projectType;
+                projectData.projectId = this.project.value.projectId;
+                projectData.description = this.project.value.description;
+                projectData.keywords = this.project.value.keywords;
+                projectData.teamMembers = this.project.value.teamMembers;
+                projectData.associatedProjects = this.project.value.associatedProjects;
+                projectData.awardNumber = this.project.value.awardNumber;
+                this.savePrj(projectData);
+                this.selectedFileTag[this.project.uuid] = null;
+                this._ui.busy = false;
+            });
         } else {
             this.project.value.fileTags.push({
-                fileUuid: this.file.uuid(),
+                fileUuid: this.file.uuid,
                 tagName: tagName,
                 path: this.file.path,
             });
@@ -190,10 +220,17 @@ class FileCategoriesCtrl {
             return;
         }
 
-        if (!this.file.uuid().length) {
-            this.file.fetch().then((file) => {
+        if (!this.file.uuid) {
+            this.FileListingService.getUuid(
+                this.section,
+                'agave',
+                'private',
+                this.file.system,
+                this.file.path,
+                this.file.key
+            ).then((file) => {
                 entity.value.fileTags.push({
-                    fileUuid: file.uuid(),
+                    fileUuid: file.uuid,
                     tagName: tagName,
                     path: this.file.path,
                 });
@@ -202,7 +239,7 @@ class FileCategoriesCtrl {
             });
         } else {
             entity.value.fileTags.push({
-                fileUuid: this.file.uuid(),
+                fileUuid: this.file.uuid,
                 tagName: tagName,
                 path: this.file.path,
             });
@@ -238,7 +275,7 @@ class FileCategoriesCtrl {
         return {};
     }
 
-    tagsForFile(tags) {
+    tagsForFile(tags, path) {
         /*
         Get the file tags for a file.
         If listing files for published projects, compare the filepath
@@ -247,13 +284,15 @@ class FileCategoriesCtrl {
         if (!tags) {
             return;
         }
-        if (this.file.apiParams.fileMgr == 'published') {
+
+        if (this.scheme === 'public') {
             return tags.filter((tag) => {
                 return tag.path == this.file.path.replace(/^\/*PRJ-[0-9]{4}/g, '');
             });
         }
+   
         return tags.filter((tag) => {
-            return tag.path == this.file.path;
+            return tag.path == path;
         });
     }
 }
@@ -263,9 +302,10 @@ export const FileCategoriesComponent = {
     controller: FileCategoriesCtrl,
     controllerAs: '$ctrl',
     bindings: {
-        project: '=',
+        //roject: '=',
         file: '=',
         showTags: '=',
         editTags: '=',
+        section: '<',
     },
 };

@@ -1,0 +1,63 @@
+<div class="workspace-panel-content">
+    <h2>Data Depot Browser</h2>
+    <div class="form-group">
+        <label for="id_system_id">Select data source</label>
+        <select
+            id="id_system_id"
+            name="system_id"
+            class="form-control"
+            ng-model="$ctrl.selectedOption"
+            ng-options="item.name as item.label for item in $ctrl.options"
+            ng-change="$ctrl.onSelect()"
+        ></select>
+
+        <p ng-if="$ctrl.requestKey" class="alert alert-info">
+            Select file for <em>{{ $ctrl.wants.title }}</em>.
+            <a class="btn btn-link btn-xs"
+               ng-if="$ctrl.wants.description"
+               uib-tooltip="{{$ctrl.wants.description}}"
+               tooltip-placement="right"
+               tooltip-append-to-body="true"><i class="fa fa-info-circle"></i> More info</a>
+        </p>
+
+        <div ng-if="$ctrl.listingType === 'files'">
+            <breadcrumb
+                path="$ctrl.FileListingService.listings.main.params.path"
+                system="$ctrl.FileListingService.listings.main.params.system"
+                on-browse="$ctrl.onBrowseFiles(file)"
+                skip-root="$ctrl.breadcrumbParams.skipRoot"
+                custom-root="$ctrl.breadcrumbParams.customRoot"
+                pre-root="$ctrl.breadcrumbParams.preRoot"
+            ></breadcrumb>
+            <workspace-data-browser-file-listing
+                listing="$ctrl.FileListingService.listings.main"
+                on-browse="$ctrl.onBrowseFiles(file)"
+                request-key="$ctrl.requestKey"
+            ></workspace-data-browser-file-listing>
+        </div>
+
+        <div ng-if="$ctrl.listingType === 'publications'">
+            <workspace-data-browser-publication-listing
+                listing="$ctrl.PublicationService.listing"
+                on-browse="$ctrl.onBrowsePublication(publication)"
+                request-key="$ctrl.requestKey">
+            </workspace-data-browser-publication-listing>
+        </div>
+
+        <div ng-if="$ctrl.listingType === 'projects'">
+            <workspace-data-browser-project-listing
+                listing="$ctrl.ProjectService.listings.main"
+                on-browse="$ctrl.onBrowseProject(project)"
+                request-key="$ctrl.requestKey">
+            </workspace-data-browser-project-listing>
+        </div>
+        
+        <div ng-if="$ctrl.listingType === 'nees'">
+            <workspace-data-browser-nees-listing
+                listing="$ctrl.PublicationService.listingLegacy"
+                on-browse="$ctrl.onBrowseNees(publication)"
+                request-key="$ctrl.requestKey">
+            </workspace-data-browser-nees-listing>
+        </div>
+    </div>
+</div>

@@ -9,14 +9,39 @@ class PublicationCitationCtrl {
 
     $onInit() {
         this.entity = this.resolve.entity;
+        this.version = this.resolve.version || 2;
         this.publication = this.resolve.publication;
         this.auths = [];
         this.doi = '';
 
-        if (this.entity) {
+        if (this.entity && this.version !== 1) {
             // entity
             this.auths = angular.copy(this.entity.authors);
             this.doi = this.entity.doi;
+        } else if (this.version === 1) {
+            this.doi = this.entity.doi
+            let authIds = [];
+            var publishers = this.publication.users.filter( (usr) => {
+                if (this.entity.name === 'designsafe.project' || this.entity.name === 'designsafe.project.analysis' || this.entity[0]) {
+                  return this.publication.project.value.coPis.includes(usr.username) ||
+                    usr.username === this.publication.project.value.pi;
+                } else {
+                  return this.entity.value.authors.includes(usr.username);
+                }
+              });
+              if (typeof this.entity.value.projectType !== 'undefined' && this.entity.value.projectType === 'other') {
+                publishers = this.publication.users;
+              }
+              publishers = publishers.sort ((p) => {
+                if (typeof p._ui[this.entity.uuid] !== 'undefined') {
+                  return p._ui[this.entity.uuid];
+                } else {
+                  return p._ui.order;
+                }
+              });
+    
+              this.auths = publishers.map(p => ({order: p._ui.order, fname: p.first_name, lname: p.last_name, authorship: true}))
+
         } else if (this.publication.project.value.projectType !== 'other') {
             // exp,hyb,sim,field 
             let authIds = [];
@@ -37,14 +62,14 @@ class PublicationCitationCtrl {
             this.doi = this.publication.project.doi;
         }
 
-        let authors = '';
+        this.authors = '';
         this.auths.sort((a, b) => {
             return a.order - b.order;
         });
         this.auths.forEach(
             (a) => {
                 if (a && a.lname && a.fname && a.authorship) {
-                    authors += a.lname + ', ' + a.fname + ', ';
+                    this.authors += a.lname + ', ' + a.fname + ', ';
                 }
             }
         );

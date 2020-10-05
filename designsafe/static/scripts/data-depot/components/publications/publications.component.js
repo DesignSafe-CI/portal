@@ -2,12 +2,10 @@ import _ from 'underscore';
 import publicationsTemplate from './publications.component.html';
 
 class PublicationDataCtrl {
-    constructor($scope, $state, $stateParams, $uibModal, Django, DataBrowserService) {
+    constructor($scope, $state, $stateParams, $uibModal, Django) {
         'ngInject';
-        this.DataBrowserService = DataBrowserService;
         this.$state = $state;
         this.Django = Django;
-        this.DataBrowserService = DataBrowserService;
         this.$uibModal = $uibModal;
 
         this.resolveBreadcrumbHref = this.resolveBreadcrumbHref.bind(this);
@@ -20,7 +18,7 @@ class PublicationDataCtrl {
         this.typeFilter = this.typeFilter.bind(this);
         this.clearFilters = this.clearFilters.bind(this);
         this.areFiltersEmpty = this.areFiltersEmpty.bind(this);
-        this.browser = DataBrowserService.state();
+        this.browser = {}
     }
 
     $onInit() {

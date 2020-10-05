@@ -69,7 +69,7 @@
                     <search-listing data="hit"></search-listing>
                 </div>
             </div>
-            <div class="row" ng-if="$ctrl.data.search_results.total_hits > $ctrl.results_per_page">
+            <div class="row" ng-if="$ctrl.data.search_results.all_total > $ctrl.results_per_page">
                 <div class="col-md-3">
                   <button class="btn btn-default pull-left"
                     ng-click="$ctrl.prev()"
