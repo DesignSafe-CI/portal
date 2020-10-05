@@ -1,7 +1,6 @@
 // webpack plugins
 const webpack = require('webpack');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
-const ExtractTextPlugin = require('mini-css-extract-plugin');
 
 module.exports = function(env) {
     var smap = false;
