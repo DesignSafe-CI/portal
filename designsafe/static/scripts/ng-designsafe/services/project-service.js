@@ -13,7 +13,7 @@ export class ProjectService {
         $uibModal,
         Logging,
         ProjectModel,
-        UserService
+        UserService,
     ) {
         'ngInject';
         this.httpi = httpi;
@@ -74,33 +74,6 @@ export class ProjectService {
         this.current = null;
 
         this.getPiNames = this.getPiNames.bind(this);
-    
-
-    this.listings = {
-        main: {
-            projects: [],
-            loading: false,
-            loadingScroll: false,
-            params: {section: 'main', offset: 0, limit: 100},
-            reachedEnd: true,
-            listingSubscriber: takeLatestSubscriber(),
-            scrollSubscriber: takeLeadingSubscriber(),
-        },
-        modal: {
-            projects: [],
-            loading: false,
-            loadingScroll: false,
-            params: {section: 'main', offset: 0, limit: 100},
-            reachedEnd: true,
-            listingSubscriber: takeLatestSubscriber(),
-            scrollSubscriber: takeLeadingSubscriber(),
-        }
-    };
-
-    // Latest project retrieved by this.get
-    this.current = null;
-
-    this.getPiNames = this.getPiNames.bind(this)
     }
 
     /**
@@ -191,77 +164,6 @@ export class ProjectService {
             this.listings[section].loadingScroll = false;
             this.listings[section].reachedEnd = projects.length < this.listings[section].params.limit;
         };
-    }
-
-    getPiNames(projectList) {
-        const piList = [...new Set(projectList.map(p => p.value.pi))]
-        const usernameMapping = {}
-        const piPromise = this.UserService.getPublic(piList).then((resp) => {
-            var data = resp.userData;
-            data.forEach((user) => {
-                usernameMapping[user.username] = user.fname + ' ' + user.lname;
-            });
-            projectList.forEach(p => {
-                p._pi_name = usernameMapping[p.value.pi]
-            })
-            return projectList
-        });
-        return from(piPromise)
-    }
-
-    listProjects({section, offset, limit, query_string}) {
-        this.listings[section].params = { ...this.listings[section].params, offset: offset || 0, limit: limit || 100, query_string };
-        this.listings[section].loading = true;
-        const observableMapping = () => this.mapParamsToListing({ section, offset: offset || 0, limit: limit || 100, query_string });
-        this.listings[section].listingSubscriber.next(observableMapping);
-        return this.listings[section].listingSubscriber.pipe(take(1)).toPromise();
-    }
-    mapParamsToListing({ section, offset, limit, query_string }) {
-        const listingParams = { section, offset: offset || 0, limit: limit || 100, query_string}
-        const listingObservable$ = from(
-            this.$http.get('/api/projects/', { params: listingParams})
-        ).pipe(
-            map(resp => resp.data.projects.map( (p) => new this.ProjectModel(p) )),
-            concatMap(this.getPiNames),
-            tap(this.listingSuccessCallback(section)));
-        return listingObservable$;
-    }
-    listingSuccessCallback(section) {
-        return (projects) => {
-            this.listings[section].projects = projects;
-            this.listings[section].loading = false;
-            this.listings[section].reachedEnd = projects.length < this.listings[section].params.limit;
-        }
-    }
-
-    scrollProjects({section}) {
-        const scrollParams = {
-            offset: this.listings[section].params.offset + this.listings[section].params.limit,
-            limit: this.listings[section].params.limit,
-            query_string: this.listings[section].params.query_string,
-            section
-        }
-
-        this.listings[section].loadingScroll = true;
-        const observableMapping = () => this.mapParamsToScroll(scrollParams);
-        this.listings[section].scrollSubscriber.next(observableMapping);
-    }
-    mapParamsToScroll({ section, offset, limit, query_string }) {
-        this.listings[section].params = { ...this.listings[section].params, offset, limit };
-        const scrollObservable$ = from(
-            this.$http.get('/api/projects/', { params: { offset, limit, query_string } })
-        ).pipe(
-            map(resp => resp.data.projects.map( (p) => new this.ProjectModel(p) )),
-            concatMap(this.getPiNames),
-            tap(this.scrollSuccessCallback(section)));
-        return scrollObservable$;
-    }
-    scrollSuccessCallback(section) {
-        return (projects) => {
-            this.listings[section].projects = [...this.listings[section].projects, ...projects];
-            this.listings[section].loadingScroll = false;
-            this.listings[section].reachedEnd = projects.length < this.listings[section].params.limit;
-        }
     }
 
     /**
