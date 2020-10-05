@@ -630,6 +630,15 @@ export class FileListingService {
     }
 
     /**
+     * Clear all entity selections.
+     */
+    clearPublicationSelections() {
+        Object.keys(this.listings).forEach((key) => {
+            this.listings[key].selectedForPublication = false;
+        })
+    }
+
+    /**
      * Perform an abstract listing for a publication. This will create a new listing 
      * section for each entity and populate it with the files associated to that
      * entity.

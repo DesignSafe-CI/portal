@@ -25,6 +25,7 @@ class PipelineSelectionCtrl {
     }
 
     $onInit() {
+        this.FileListingService.clearPublicationSelections();
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.selectedEnts = [];
