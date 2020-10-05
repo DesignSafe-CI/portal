@@ -436,16 +436,6 @@ export class ProjectService {
         return missingData;
     }
 
-    manageHybridSimulations(options) {
-        this.$uibModal.open({
-            component: 'manageHybridSimulations',
-            resolve: {
-                options: () => options,
-            },
-            size: 'lg',
-        });
-    }
-
     /**
      *
      * @param options
@@ -455,22 +445,6 @@ export class ProjectService {
      */
     notifyPersonalData(options) {
         return notificationResource.post({ data: options });
-    }
-
-    /**
-     *
-     * @param options
-     * @param {string} options.uuid The Project uuid
-     * @returns {Promise}
-     */
-    manageSimulations(options) {
-        this.$uibModal.open({
-            component: 'manageSimulations',
-            resolve: {
-                options: () => options,
-            },
-            size: 'lg',
-        });
     }
 
     /**
@@ -484,6 +458,7 @@ export class ProjectService {
                 project: () => project,
                 efs: () => this.efs,
             },
+            backdrop: 'static',
             size: 'lg',
         });
         return modalInstance;

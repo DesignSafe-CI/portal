@@ -112,6 +112,7 @@ class CurationDirectoryCtrl {
             resolve: {
                 options: () => { return {'project': this.browser.project, 'preview': true, 'warning': false}; },
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }
@@ -122,6 +123,7 @@ class CurationDirectoryCtrl {
             resolve: {
                 project: () => { return this.browser.project; },
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }
@@ -132,6 +134,7 @@ class CurationDirectoryCtrl {
             resolve: {
                 project: () => { return this.browser.project; },
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }
@@ -142,6 +145,7 @@ class CurationDirectoryCtrl {
             resolve: {
                 project: () => { return this.browser.project; },
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }
@@ -152,6 +156,7 @@ class CurationDirectoryCtrl {
             resolve: {
                 browser: () => this.browser,
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }
@@ -162,6 +167,7 @@ class CurationDirectoryCtrl {
         resolve: {
             project: () => {return this.browser.project; },
         },
+        backdrop: 'static',
         size: 'lg',
       });
     }
@@ -172,6 +178,7 @@ class CurationDirectoryCtrl {
             resolve: {
                 project: () => { return this.browser.project; },
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }
@@ -182,6 +189,7 @@ class CurationDirectoryCtrl {
             resolve: {
                 project: () => { return this.browser.project; },
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }
