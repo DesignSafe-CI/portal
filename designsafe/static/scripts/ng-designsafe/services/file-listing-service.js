@@ -1,38 +1,7 @@
-import { Subject, ReplaySubject, BehaviorSubject, Observable, from, of, forkJoin, race, throwError } from 'rxjs';
-import { map, tap, switchMap, exhaustMap, take, catchError, share } from 'rxjs/operators';
+import { Subject, Observable, from, of, forkJoin, race } from 'rxjs';
+import { map, tap, take, catchError } from 'rxjs/operators';
+import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
 import { uuid } from 'uuidv4';
-
-/**
- * Method to instantiate a subject that subscribes to the observable return
- * value of the last callback projected to it and cancels the result of any
- * previous calls. The callback must be a function that returns an observable.
- */
-const takeLatestSubscriber = () => {
-    let subject = new Subject();
-    subject = subject.pipe(
-        switchMap((callback) => callback()),
-        share() // Allow subscription to in-flight http requests.
-    );
-    subject.subscribe();
-    return subject;
-};
-
-/**
- * Method to instantiate a subject that subscribes to the observable return
- * value of the first callback passed to it and ignores anything new projected
- * to it until that observable resolves. The callback must be a function that
- * returns an observable.
- */
-const takeLeadingSubscriber = () => {
-    const subject = new Subject();
-    subject
-        .pipe(
-            exhaustMap((callback) => callback()),
-            share() // Allow subscription to in-flight http requests.
-        )
-        .subscribe();
-    return subject;
-};
 
 export class FileListingService {
     constructor(
@@ -212,17 +181,26 @@ export class FileListingService {
         this.listings[section].listing[idx].selected = !this.listings[section].listing[idx].selected;
         const selectedFiles = this.listings[section].listing.filter((f) => f.selected);
         this.listings[section].selectedFiles = selectedFiles;
+        /* If there are multiple listings per page (e.g. abstract listings) the 
+        other listings must be considered when updating tests. */
         const allSelected = Object.keys(this.listings)
             .map((key) => this.listings[key].selectedFiles)
             .flat();
         this.FileOperationService.updateTests(allSelected);
     }
 
+    /**
+     * Select or deselect all files in a given section. 
+     * @param {string} section Section ('main', 'modal') to target.
+     * @param {boolean} setValue If true, select all. If false, deselect all.
+     */
     selectAll(section, setValue) {
         const _setValue = typeof setValue === 'boolean' ? setValue : !this.listings[section].selectAll;
         this.listings[section].selectAll = _setValue;
         this.listings[section].listing = this.listings[section].listing.map((f) => ({ ...f, selected: _setValue }));
         this.listings[section].selectedFiles = this.listings[section].listing.filter((f) => f.selected);
+        /* If there are multiple listings per page (e.g. abstract listings) the 
+        other listings must be considered when updating tests. */
         const allSelected = Object.keys(this.listings)
             .map((key) => this.listings[key].selectedFiles)
             .flat();
@@ -289,12 +267,15 @@ export class FileListingService {
      * Format a parameter object and push it to a listing subscriber to trigger
      * a listing.
      *
-     * @param {string} section
-     * @param {string} api
-     * @param {string} system
-     * @param {string} path
-     * @param {number} offset
-     * @param {number} limit
+     * @param {object} params
+     * @param {string} params.section Section in which to perform the listing ('main' or 'modal')
+     * @param {string} params.api API to call to (e.g. 'agave')
+     * @param {string} params.scheme Scheme (e.g. 'private') of the listing.
+     * @param {string} params.system System to list in
+     * @param {string} params.path Path relative to system root.
+     * @param {number} params.offset Index to start listing at
+     * @param {number} params.limit Number of results to return.
+     * @param {string} params.query_string Optional query string for search.
      */
     browse({ section, api, scheme, system, path, offset, limit, query_string }) {
         const params = { section, api, scheme, system, path, offset: offset || 0, limit: limit || 100, query_string };
@@ -319,13 +300,15 @@ export class FileListingService {
 
     /**
      * Maps a set of parameters to an observable corresponding to a file listing.
-     * @param {string} section Section in which to perform the listing ('main' or 'modal')
      * @param {object} params
+     * @param {string} params.section Section in which to perform the listing ('main' or 'modal')
      * @param {string} params.api API to call to (e.g. 'agave')
+     * @param {string} params.scheme Scheme (e.g. 'private') of the listing.
      * @param {string} params.system System to list in
      * @param {string} params.path Path relative to system root.
      * @param {number} params.offset Index to start listing at
      * @param {number} params.limit Number of results to return.
+     * @param {string} params.query_string Optional query string for search.
      */
     mapParamsToListing({ section, api, scheme, system, path, offset, limit, query_string }) {
         const operation = query_string ? 'search' : 'listing';
@@ -383,10 +366,15 @@ export class FileListingService {
      * Format a parameter object and push it to a listing subscriber to trigger
      * a scroll listing.
      *
-     * @param {string} section
-     * @param {string} api
-     * @param {string} system
-     * @param {string} path
+     * @param {object} params
+     * @param {string} params.section Section in which to perform the listing ('main' or 'modal')
+     * @param {string} params.api API to call to (e.g. 'agave')
+     * @param {string} params.scheme Scheme for the listing.
+     * @param {string} params.system System to list in
+     * @param {string} params.path Path relative to system root.
+     * @param {number} params.offset Index to start listing at
+     * @param {number} params.limit Number of results to return.
+     * @param {string} params.query_string Optional query string for search.
      */
     browseScroll({ section, api, scheme, system, path }) {
         const params = {
@@ -408,11 +396,14 @@ export class FileListingService {
     /**
      * Maps a set of parameters to an observable corresponding to a scroll listing.
      * @param {object} params
+     * @param {string} params.section Section in which to perform the listing ('main' or 'modal')
      * @param {string} params.api API to call to (e.g. 'agave')
+     * @param {string} params.scheme Scheme for the listing.
      * @param {string} params.system System to list in
      * @param {string} params.path Path relative to system root.
      * @param {number} params.offset Index to start listing at
      * @param {number} params.limit Number of results to return.
+     * @param {string} params.query_string Optional query string for search.
      */
     mapParamsToScroll({ section, api, scheme, system, path, offset, limit, query_string }) {
         const operation = query_string ? 'search' : 'listing';
@@ -481,7 +472,15 @@ export class FileListingService {
 
     /***************************************************************************
                         METHODS INVOLVING PROJECT ENTITIES
-     **************************************************************************/
+    ***************************************************************************/
+
+    /**
+     * Return a list of ProjectEntityModel objects for each entity 
+     * associated with a given file.
+     * @param {string} path Path to the file.
+     * @param {Object[]} entities Array of ProjectEntityModel objects.
+     * @param {string} projectId projectId of the project containing the entities.
+     */
     getEntitiesForFile(path, entities, projectId) {
         const _entities = entities.filter((entity) => {
             // yields entity._links.associationIds or an empty array.
@@ -513,6 +512,11 @@ export class FileListingService {
         return { _entities, _entityTags, _fileTags };
     }
 
+    /**
+     * Sets entities on files in a listing, given an array of entities.
+     * @param {string} section Section to set entities in.
+     * @param {Object[]} entities Entities to set.
+     */
     setEntities(section, entities) {
         const projectId = this.ProjectService.resolveParams.projectId;
 
@@ -524,6 +528,15 @@ export class FileListingService {
         }));
     }
 
+    /**
+     * 
+     * @param {Object} params
+     * @param {Object} entitiesPerPath Object with file paths as keys and arrays of entities as values.
+     * @param {string} system System to list in
+     * @param {string} path Path to list in.
+     * @param {number} offset Listing offset.
+     * @param {number} limit Number of results to return.
+     */
     mapParamsToAbstractListing({ entitiesPerPath, system, path, offset, limit }) {
         const listingUrl = this.removeDuplicateSlashes(`/api/datafiles/agave/private/listing/${system}/${path}/`);
         const request = this.$http.get(listingUrl, {
@@ -534,6 +547,11 @@ export class FileListingService {
         return listingObservable$;
     }
 
+    /**
+     * Callback for successful abstract listing. On success, add listed files to 
+     * the abstract listing for each associated entity.
+     * @param {Object} entityMapping Object with file paths as keys and arrays of entities as values. 
+     */
     abstractListingSuccessCallback(entityMapping) {
         return (resp) => {
             const files = resp.data.listing;
@@ -549,6 +567,15 @@ export class FileListingService {
         };
     }
 
+    /**
+     * Perform an abstract listing given a set of entities. This will create a 
+     * new listing section for each entity and populate it with the files associated
+     * to that entity.
+     * @param {Object[]} entities Array of ProjectEntityModel objects. 
+     * @param {string} projectId projectId of project containing the entities.
+     * @param {number} offset Offset to pass to Agave.
+     * @param {number} limit Limit to pass to Agave.
+     */
     abstractListing(entities, projectId, offset = 0, limit = 100) {
         // Create an object that maps each path to an array of its associated entities.
         const entitiesPerPath = {};
@@ -593,10 +620,22 @@ export class FileListingService {
         return this.$q.when(subscriber.toPromise());
     }
 
+    /**
+     * Set the selectedForPublication tag on a listing.
+     * @param {string} section 
+     * @param {boolean} valueToSet 
+     */
     setPublicationSelection(section, valueToSet) {
         this.listings[section].selectedForPublication = valueToSet;
     }
 
+    /**
+     * Perform an abstract listing for a publication. This will create a new listing 
+     * section for each entity and populate it with the files associated to that
+     * entity.
+     * @param {Object} publication Publication to list under.
+     * @param {Object} entity Entity to perform the abstract listing for.
+     */
     publishedListing(publication, entity) {
         const publicationListingParams = {
             api: 'agave',

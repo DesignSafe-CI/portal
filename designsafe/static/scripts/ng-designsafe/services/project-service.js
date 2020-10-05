@@ -1,114 +1,80 @@
-import { Subject, Observable, from, of, forkJoin, race, throwError } from 'rxjs';
-import { $IsStateFilter, $IncludedByStateFilter } from 'angular-ui-router/lib/stateFilters';
-import experimentalData from "../../projects/components/manage-experiments/experimental-data.json";
-
-import {
-    map,
-    tap,
-    switchMap,
-    exhaustMap,
-    concatMap,
-    take,
-    share,
-} from 'rxjs/operators';
-import { uuid } from 'uuidv4';
-
-/**
- * Method to instantiate a subject that subscribes to the observable return
- * value of the last callback projected to it and cancels the result of any
- * previous calls. The callback must be a function that returns an observable.
- */
-const takeLatestSubscriber = () => {
-    let subject = new Subject();
-    subject = subject.pipe(
-        switchMap((callback) => callback()),
-        share() // Allow subscription to in-flight http requests.
-    );
-    subject.subscribe();
-    return subject;
-};
-
-/**
- * Method to instantiate a subject that subscribes to the observable return
- * value of the first callback passed to it and ignores anything new projected
- * to it until that observable resolves. The callback must be a function that
- * returns an observable.
- */
-const takeLeadingSubscriber = () => {
-    const subject = new Subject();
-    subject
-        .pipe(
-            exhaustMap((callback) => callback()),
-            share() // Allow subscription to in-flight http requests.
-        )
-        .subscribe();
-    return subject;
-};
+import { from } from 'rxjs';
+import { map, tap, concatMap, take } from 'rxjs/operators';
+import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
+import experimentalData from '../../projects/components/manage-experiments/experimental-data.json';
 
 export class ProjectService {
+    constructor(
+        httpi,
+        $http,
+        $interpolate,
+        $q,
+        $state,
+        $uibModal,
+        Logging,
+        ProjectModel,
+        UserService,
+    ) {
+        'ngInject';
+        this.httpi = httpi;
+        this.$http = $http;
+        this.$interpolate = $interpolate;
+        this.$q = $q;
+        this.$state = $state;
+        this.$uibModal = $uibModal;
+        this.Logging = Logging;
+        this.ProjectModel = ProjectModel;
+        this.UserService = UserService;
 
-    constructor(httpi, $http, $interpolate, $q, $state, $uibModal, Logging, ProjectModel, UserService, ProjectEntitiesService) {
-    'ngInject';
-    this.httpi = httpi;
-    this.$http = $http;
-    this.$interpolate = $interpolate;
-    this.$q = $q;
-    this.$state = $state;
-    this.$uibModal = $uibModal;
-    this.Logging = Logging;
-    this.ProjectModel = ProjectModel;
-    this.UserService = UserService;
+        this.efs = experimentalData.experimentalFacility;
+        this.equipmentTypes = experimentalData.equipmentTypes;
+        this.experimentTypes = experimentalData.experimentTypes;
 
-    this.efs = experimentalData.experimentalFacility;
-    this.equipmentTypes = experimentalData.equipmentTypes;
-    this.experimentTypes = experimentalData.experimentTypes;
+        this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
+        this.collabResource = this.httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
+        this.dataResource = this.httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
+        this.notificationResource = httpi.resource('/api/projects/:uuid/notification/').setKeepTrailingSlash(true);
+        //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
+        //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
 
-
-    this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
-    this.collabResource = this.httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
-    this.dataResource = this.httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
-    this.notificationResource = httpi.resource('/api/projects/:uuid/notification/').setKeepTrailingSlash(true);
-    //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
-    //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
-
-    this.data = {
-        navItems: [],
-        projects: [],
-    };
-
-    this.resolveParams = {
-        projectId: null,
-        filePath: null,
-        projectTitle: null,
-        query_string: null,
-    };
-
-    this.listings = {
-        main: {
+        this.data = {
+            navItems: [],
             projects: [],
-            loading: false,
-            loadingScroll: false,
-            params: {section: 'main', offset: 0, limit: 100},
-            reachedEnd: true,
-            listingSubscriber: takeLatestSubscriber(),
-            scrollSubscriber: takeLeadingSubscriber(),
-        },
-        modal: {
-            projects: [],
-            loading: false,
-            loadingScroll: false,
-            params: {section: 'main', offset: 0, limit: 100},
-            reachedEnd: true,
-            listingSubscriber: takeLatestSubscriber(),
-            scrollSubscriber: takeLeadingSubscriber(),
-        }
-    };
+        };
 
-    // Latest project retrieved by this.get
-    this.current = null;
+        this.resolveParams = {
+            projectId: null,
+            filePath: null,
+            projectTitle: null,
+            query_string: null,
+        };
 
-    this.getPiNames = this.getPiNames.bind(this)
-}
+        this.listings = {
+            main: {
+                projects: [],
+                loading: false,
+                loadingScroll: false,
+                params: { section: 'main', offset: 0, limit: 100 },
+                reachedEnd: true,
+                listingSubscriber: takeLatestSubscriber(),
+                scrollSubscriber: takeLeadingSubscriber(),
+            },
+            modal: {
+                projects: [],
+                loading: false,
+                loadingScroll: false,
+                params: { section: 'main', offset: 0, limit: 100 },
+                reachedEnd: true,
+                listingSubscriber: takeLatestSubscriber(),
+                scrollSubscriber: takeLeadingSubscriber(),
+            },
+        };
+
+        // Latest project retrieved by this.get
+        this.current = null;
+
+        this.getPiNames = this.getPiNames.bind(this);
+    }
 
     /**
      * Get a list of Projects for the current user
@@ -116,42 +82,49 @@ export class ProjectService {
      * @returns {Project[]}
      */
     list({ offset, limit }) {
-        return this.projectResource.get({ params: {offset, limit} }).then( (resp) => {
-            return resp.data.projects.map( (p) => { return new this.ProjectModel(p); });
+        return this.projectResource.get({ params: { offset, limit } }).then((resp) => {
+            return resp.data.projects.map((p) => {
+                return new this.ProjectModel(p);
+            });
         });
-    };
+    }
 
     getPiNames(projectList) {
-        const piList = [...new Set(projectList.map(p => p.value.pi))]
-        const usernameMapping = {}
+        const piList = [...new Set(projectList.map((p) => p.value.pi))];
+        const usernameMapping = {};
         const piPromise = this.UserService.getPublic(piList).then((resp) => {
             var data = resp.userData;
             data.forEach((user) => {
                 usernameMapping[user.username] = user.fname + ' ' + user.lname;
             });
-            projectList.forEach(p => {
-                p._pi_name = usernameMapping[p.value.pi]
-            })
-            return projectList
+            projectList.forEach((p) => {
+                p._pi_name = usernameMapping[p.value.pi];
+            });
+            return projectList;
         });
-        return from(piPromise)
+        return from(piPromise);
     }
 
-    listProjects({section, offset, limit, query_string}) {
-        this.listings[section].params = { ...this.listings[section].params, offset: offset || 0, limit: limit || 100, query_string };
+    listProjects({ section, offset, limit, query_string }) {
+        this.listings[section].params = {
+            ...this.listings[section].params,
+            offset: offset || 0,
+            limit: limit || 100,
+            query_string,
+        };
         this.listings[section].loading = true;
-        const observableMapping = () => this.mapParamsToListing({ section, offset: offset || 0, limit: limit || 100, query_string });
+        const observableMapping = () =>
+            this.mapParamsToListing({ section, offset: offset || 0, limit: limit || 100, query_string });
         this.listings[section].listingSubscriber.next(observableMapping);
         return this.listings[section].listingSubscriber.pipe(take(1)).toPromise();
     }
     mapParamsToListing({ section, offset, limit, query_string }) {
-        const listingParams = { section, offset: offset || 0, limit: limit || 100, query_string}
-        const listingObservable$ = from(
-            this.$http.get('/api/projects/', { params: listingParams})
-        ).pipe(
-            map(resp => resp.data.projects.map( (p) => new this.ProjectModel(p) )),
+        const listingParams = { section, offset: offset || 0, limit: limit || 100, query_string };
+        const listingObservable$ = from(this.$http.get('/api/projects/', { params: listingParams })).pipe(
+            map((resp) => resp.data.projects.map((p) => new this.ProjectModel(p))),
             concatMap(this.getPiNames),
-            tap(this.listingSuccessCallback(section)));
+            tap(this.listingSuccessCallback(section))
+        );
         return listingObservable$;
     }
     listingSuccessCallback(section) {
@@ -159,16 +132,16 @@ export class ProjectService {
             this.listings[section].projects = projects;
             this.listings[section].loading = false;
             this.listings[section].reachedEnd = projects.length < this.listings[section].params.limit;
-        }
+        };
     }
 
-    scrollProjects({section}) {
+    scrollProjects({ section }) {
         const scrollParams = {
             offset: this.listings[section].params.offset + this.listings[section].params.limit,
             limit: this.listings[section].params.limit,
             query_string: this.listings[section].params.query_string,
-            section
-        }
+            section,
+        };
 
         this.listings[section].loadingScroll = true;
         const observableMapping = () => this.mapParamsToScroll(scrollParams);
@@ -179,9 +152,10 @@ export class ProjectService {
         const scrollObservable$ = from(
             this.$http.get('/api/projects/', { params: { offset, limit, query_string } })
         ).pipe(
-            map(resp => resp.data.projects.map( (p) => new this.ProjectModel(p) )),
+            map((resp) => resp.data.projects.map((p) => new this.ProjectModel(p))),
             concatMap(this.getPiNames),
-            tap(this.scrollSuccessCallback(section)));
+            tap(this.scrollSuccessCallback(section))
+        );
         return scrollObservable$;
     }
     scrollSuccessCallback(section) {
@@ -189,7 +163,7 @@ export class ProjectService {
             this.listings[section].projects = [...this.listings[section].projects, ...projects];
             this.listings[section].loadingScroll = false;
             this.listings[section].reachedEnd = projects.length < this.listings[section].params.limit;
-        }
+        };
     }
 
     /**
@@ -201,10 +175,10 @@ export class ProjectService {
     get(options) {
         return this.projectResource.get({ params: options }).then((resp) => {
             const prj = new this.ProjectModel(resp.data);
-            this.current = prj
-            return prj
+            this.current = prj;
+            return prj;
         });
-    };
+    }
 
     /**
      * Save or update a Project
@@ -216,10 +190,10 @@ export class ProjectService {
      * @returns {Promise}
      */
     save(options) {
-        return this.projectResource.post({ data: options }).then( (resp) => {
+        return this.projectResource.post({ data: options }).then((resp) => {
             return new this.ProjectModel(resp.data);
         });
-    };
+    }
 
     /**
      * Get a list of usernames for users that are collaborators on the Project
@@ -228,13 +202,15 @@ export class ProjectService {
      * @returns {Promise}
      */
     getCollaborators(options) {
-        return this.collabResource.get({ params: options }).then( (resp) => {
+        return this.collabResource.get({ params: options }).then((resp) => {
             if (typeof resp.data.teamMembers !== 'undefined') {
-                resp.data.teamMembers = resp.data.teamMembers.filter(member => !['ds_admin', 'prjadmin'].includes(member));
+                resp.data.teamMembers = resp.data.teamMembers.filter(
+                    (member) => !['ds_admin', 'prjadmin'].includes(member)
+                );
             }
             return resp;
         });
-    };
+    }
 
     /**
      *
@@ -245,7 +221,7 @@ export class ProjectService {
      */
     addCollaborator(options) {
         return this.collabResource.post({ data: options });
-    };
+    }
 
     /**
      *
@@ -256,7 +232,7 @@ export class ProjectService {
      */
     removeCollaborator(options) {
         return this.collabResource.delete({ data: options });
-    };
+    }
 
     /**
      *
@@ -267,7 +243,7 @@ export class ProjectService {
      */
     projectData(options) {
         return this.dataResource.get({ params: options });
-    };
+    }
 
     /**
      *
@@ -307,20 +283,20 @@ export class ProjectService {
             }
             return true;
         };
-        
+
         let addMissing = (missingEnt, fields) => {
-            if (!fields){
+            if (!fields) {
                 missingData.push({
-                    'title': missingEnt.value.title,
-                    'missing': ['Associated files/data are missing or not selected'],
-                    'type': errMsg[missingEnt.name.split('.').pop()]
+                    title: missingEnt.value.title,
+                    missing: ['Associated files/data are missing or not selected'],
+                    type: errMsg[missingEnt.name.split('.').pop()],
                 });
             } else {
-                let readableFields = fields.map(f => errMsg[f]);
+                let readableFields = fields.map((f) => errMsg[f]);
                 missingData.push({
-                    'title': missingEnt.value.title,
-                    'missing': readableFields,
-                    'type': errMsg[missingEnt.name.split('.').pop()]
+                    title: missingEnt.value.title,
+                    missing: readableFields,
+                    type: errMsg[missingEnt.name.split('.').pop()],
                 });
             }
         };
@@ -334,7 +310,7 @@ export class ProjectService {
                 });
             } else {
                 set.forEach((s) => {
-                    let related =  subsets.filter(subset => subset.associationIds.includes(s.uuid));
+                    let related = subsets.filter((subset) => subset.associationIds.includes(s.uuid));
                     let checklist = [];
 
                     related.forEach((relEnt) => {
@@ -344,7 +320,7 @@ export class ProjectService {
                             checklist.push(relEnt.name.split('.').pop());
                         }
                     });
-                    let missing = required.filter(req => !checklist.includes(req));
+                    let missing = required.filter((req) => !checklist.includes(req));
                     if (missing.length) {
                         addMissing(s, missing);
                     }
@@ -368,7 +344,7 @@ export class ProjectService {
                 project.sensorlist_set || [],
                 project.event_set || []
             );
-            let experiments = selPrimEnts.filter(ent => ent.name.endsWith('experiment'));
+            let experiments = selPrimEnts.filter((ent) => ent.name.endsWith('experiment'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (experiments.length) {
                 checkRequirements(experiments, subentities, requirements);
@@ -384,12 +360,8 @@ export class ProjectService {
                 + Sets must include categorized files
             */
             let requirements = ['model', 'input', 'output'];
-            let subentities = [].concat(
-                project.model_set || [],
-                project.input_set || [],
-                project.output_set || []
-            );
-            let simulations = selPrimEnts.filter(ent => ent.name.endsWith('simulation'));
+            let subentities = [].concat(project.model_set || [], project.input_set || [], project.output_set || []);
+            let simulations = selPrimEnts.filter((ent) => ent.name.endsWith('simulation'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (simulations.length) {
                 checkRequirements(simulations, subentities, requirements);
@@ -412,7 +384,7 @@ export class ProjectService {
                 project.simsubstructure_set || [],
                 project.expsubstructure_set || []
             );
-            let hybSimulations = selPrimEnts.filter(ent => ent.name.endsWith('hybrid_simulation'));
+            let hybSimulations = selPrimEnts.filter((ent) => ent.name.endsWith('hybrid_simulation'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (hybSimulations.length) {
                 checkRequirements(hybSimulations, subentities, requirements);
@@ -434,22 +406,24 @@ export class ProjectService {
             the requirements is included.
             */
             let requirements = ['planning', 'social_science', 'geoscience'];
-            let missions = selPrimEnts.filter(ent => ent.name.endsWith('mission'));
-            let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
+            let missions = selPrimEnts.filter((ent) => ent.name.endsWith('mission'));
+            let reports = selPrimEnts.filter((ent) => ent.name.endsWith('report'));
             let subentities = [].concat(
                 project.planning_set || [],
                 project.socialscience_set || [],
                 project.geoscience_set || []
             );
-            
+
             if (missions.length) {
                 checkRequirements(missions, subentities, requirements);
-                let errNames = Array.from(requirements, req => errMsg[req]);
+                let errNames = Array.from(requirements, (req) => errMsg[req]);
                 // ensure all requirements are not missing (we just need one for FR) and
                 // there are no missing files
                 missingData = missingData.filter((data) => {
-                    if (!errNames.every(name => data.missing.includes(name)) &&
-                        !data.missing.includes('Associated files/data are missing or not selected')) {
+                    if (
+                        !errNames.every((name) => data.missing.includes(name)) &&
+                        !data.missing.includes('Associated files/data are missing or not selected')
+                    ) {
                         return false;
                     }
                     return true;
@@ -460,9 +434,9 @@ export class ProjectService {
             }
         }
         return missingData;
-    };
+    }
 
-    manageHybridSimulations(options){
+    manageHybridSimulations(options) {
         this.$uibModal.open({
             component: 'manageHybridSimulations',
             resolve: {
@@ -470,7 +444,7 @@ export class ProjectService {
             },
             size: 'lg',
         });
-    };
+    }
 
     /**
      *
@@ -481,7 +455,7 @@ export class ProjectService {
      */
     notifyPersonalData(options) {
         return notificationResource.post({ data: options });
-    };
+    }
 
     /**
      *
@@ -489,7 +463,7 @@ export class ProjectService {
      * @param {string} options.uuid The Project uuid
      * @returns {Promise}
      */
-    manageSimulations(options){
+    manageSimulations(options) {
         this.$uibModal.open({
             component: 'manageSimulations',
             resolve: {
@@ -497,13 +471,13 @@ export class ProjectService {
             },
             size: 'lg',
         });
-    };
+    }
 
     /**
      * @param {Project} [project]
      * @return {Promise}
      */
-    editProject(project){
+    editProject(project) {
         let modalInstance = this.$uibModal.open({
             component: 'editProject',
             resolve: {
@@ -513,7 +487,7 @@ export class ProjectService {
             size: 'lg',
         });
         return modalInstance;
-    };
+    }
 
     /**
      *
@@ -524,6 +498,5 @@ export class ProjectService {
      */
     notifyPersonalData(options) {
         return this.notificationResource.post({ data: options });
-    };
-
+    }
 }

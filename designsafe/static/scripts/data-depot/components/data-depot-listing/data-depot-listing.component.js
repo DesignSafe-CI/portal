@@ -43,7 +43,6 @@ class PublicationLegacyListingCtrl {
         'ngInject';
         this.$state = $state;
         this.PublicationService = PublicationService;
-        this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
     }
 

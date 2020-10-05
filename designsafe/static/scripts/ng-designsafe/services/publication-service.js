@@ -1,52 +1,7 @@
-import _, { has } from 'underscore';
-import { Subject, Observable, from, of, forkJoin, race, throwError } from 'rxjs';
-import {
-    map,
-    tap,
-    switchMap,
-    exhaustMap,
-    flatMap,
-    take,
-    catchError,
-    delay,
-    takeWhile,
-    combineAll,
-    shareReplay,
-    share,
-} from 'rxjs/operators';
-import { uuid } from 'uuidv4';
-
-/**
- * Method to instantiate a subject that subscribes to the observable return
- * value of the last callback projected to it and cancels the result of any
- * previous calls. The callback must be a function that returns an observable.
- */
-const takeLatestSubscriber = () => {
-    let subject = new Subject();
-    subject = subject.pipe(
-        switchMap((callback) => callback()),
-        share() // Allow subscription to in-flight http requests.
-    );
-    subject.subscribe();
-    return subject;
-};
-
-/**
- * Method to instantiate a subject that subscribes to the observable return
- * value of the first callback passed to it and ignores anything new projected
- * to it until that observable resolves. The callback must be a function that
- * returns an observable.
- */
-const takeLeadingSubscriber = () => {
-    const subject = new Subject();
-    subject
-        .pipe(
-            exhaustMap((callback) => callback()),
-            share() // Allow subscription to in-flight http requests.
-        )
-        .subscribe();
-    return subject;
-};
+import _ from 'underscore';
+import { from } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
 
 export class PublicationService {
     constructor($http, $uibModal, $q, $window, $filter) {
