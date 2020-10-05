@@ -1,39 +1,6 @@
-import { Subject, ReplaySubject, BehaviorSubject, Observable, from, of, forkJoin, race, throwError } from 'rxjs';
-import { map, tap, switchMap, exhaustMap, flatMap, catchError, share } from 'rxjs/operators';
-import { uuid } from 'uuidv4';
-import { path } from 'd3';
-
-/**
- * Method to instantiate a subject that subscribes to the observable return
- * value of the last callback projected to it and cancels the result of any
- * previous calls. The callback must be a function that returns an observable.
- */
-const takeLatestSubscriber = () => {
-    let subject = new Subject();
-    subject = subject.pipe(
-        switchMap((callback) => callback()),
-        share() // Allow subscription to in-flight http requests.
-    );
-    subject.subscribe();
-    return subject;
-};
-
-/**
- * Method to instantiate a subject that subscribes to the observable return
- * value of the first callback passed to it and ignores anything new projected
- * to it until that observable resolves. The callback must be a function that
- * returns an observable.
- */
-const takeLeadingSubscriber = () => {
-    const subject = new Subject();
-    subject
-        .pipe(
-            exhaustMap((callback) => callback()),
-            share() // Allow subscription to in-flight http requests.
-        )
-        .subscribe();
-    return subject;
-};
+import { Subject, from, of, forkJoin } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
+import { takeLatestSubscriber } from './_rxjs-utils';
 
 export class FileOperationService {
     constructor($http, $state, $rootScope, $uibModal, $q, ProjectService, Django) {
@@ -68,8 +35,6 @@ export class FileOperationService {
         };
 
         this.checkForEntities = this.checkForEntities.bind(this);
-
-        // Reset tests on each state change to prevent them from carrying over
     }
 
     /**
@@ -84,7 +49,6 @@ export class FileOperationService {
     getTests(files) {
         const externalDataStates = ['boxData', 'dropboxData', 'googledriveData'];
         const agaveDataStates = ['myData', 'projects.view', 'projects.curation'];
-        // If files are not eplicitly passed, check selected files in the main listing.
         const tests = {
             copy: this.Django.context.authenticated && files.length > 0,
             move:
@@ -113,7 +77,7 @@ export class FileOperationService {
     /**
      * Sets this.tests to enable/disable data depot toolbars based on currently
      * selected files.
-     * @param {string} section
+     * @param {Object[]} files Array of file objects to get allowed operations for.
      */
     updateTests(files) {
         this.tests = this.getTests(files);
@@ -137,6 +101,11 @@ export class FileOperationService {
 
     /**
      * Open the copy modal.
+     * @param {Object} params Copy parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to copy.
+     * @param {string} params.system System to copy files from.
+     * @param {Object[]} params.files Array of file objects {name, system, path} to copy.
      */
     openCopyModal({ api, scheme, system, files }) {
         this.operations.copy.status = {};
@@ -159,9 +128,13 @@ export class FileOperationService {
     /**
      * Push parameters onto the copy subject in order to trigger the operation.
      * This function is meant to be called from a controller.
-     *
-     * @param {string} dest Listing-formatted file corresponding to the destination dir.
-     * @param {function} successCallback Callback to execute after all events have been handled.
+     * @param {Object} params Copy parameters.
+     * @param {string} params.srcApi API (agave, googledrive, box, dropbox} handling source files.
+     * @param {Object[]} params.srcFiles Array of file objects {name, system, path} to copy.
+     * @param {string} params.destApi API to copy to.
+     * @param {string} params.destSystem System to copy to.
+     * @param {string} params.destPath Path of directory to copy files into.
+     * @param {function} params.successCallback Callback on successful copy of all files.
      */
     handleCopy({ srcApi, srcFiles, destApi, destSystem, destPath, successCallback }) {
         const copyParams = {
@@ -182,10 +155,12 @@ export class FileOperationService {
      * copy operations have completed.
      *
      * @param {object} params Object containing params for the copy operation.
-     * @param {string} params.api
-     * @param {string} params.destSystem
-     * @param {string} params.destPath
-     * @param {object} param.files Array of files in listing format. Requires system, name, and path attributes.
+     * @param {string} params.srcApi API (agave, googledrive, box, dropbox} handling source files.
+     * @param {string} params.destApi API to copy to.
+     * @param {string} params.destSystem System to copy to.
+     * @param {string} params.destPath Path of directory to copy files into.
+     * @param {Object[]} params.files Array of file objects {name, system, path} to copy.
+     * @param {function} params.successCallback Callback on successful copy of all files.
      */
     mapParamsToCopy({ srcApi, destApi, destSystem, destPath, srcFiles, successCallback }) {
         // Treat Shared Data as Agave for the purpose of copying files.
@@ -245,6 +220,12 @@ export class FileOperationService {
 
     /**
      * Open the move modal.
+     * @param {Object} params Move parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to move.
+     * @param {string} params.system System to move files from.
+     * @param {string} params.path Path to move files from.
+     * @param {Object[]} params.files Array of file objects {name, system, path} to move.
      */
     openMoveModal({ api, scheme, system, path, files }) {
         this.operations.move.status = {};
@@ -268,9 +249,13 @@ export class FileOperationService {
     /**
      * Push parameters onto the move subject in order to trigger the operation.
      * This function is meant to be called from a controller.
-     *
-     * @param {string} dest Listing-formatted file corresponding to the destination dir.
-     * @param {function} successCallback Callback to execute after all events have been handled.
+     * @param {Object} params Move parameters.
+     * @param {string} params.srcApi API (agave, googledrive, box, dropbox} handling source files.
+     * @param {Object[]} params.srcFiles Array of file objects {name, system, path} to move.
+     * @param {string} params.destApi API to move to.
+     * @param {string} params.destSystem System to move to.
+     * @param {string} params.destPath Path of directory to move files into.
+     * @param {function} params.successCallback Callback on successful move of all files.
      */
     handleMove({ srcApi, srcFiles, destApi, destSystem, destPath, successCallback }) {
         const moveParams = {
@@ -290,11 +275,13 @@ export class FileOperationService {
      *Maps a set of params to an observable that will resove when all specified
      * move operations have completed.
      *
-     * @param {object} params Object containing params for the move operation.
-     * @param {string} params.api
-     * @param {string} params.destSystem
-     * @param {string} params.destPath
-     * @param {object} param.files Array of files in listing format. Requires system, name, and path attributes.
+     * @param {object} params Object containing params for the copy operation.
+     * @param {string} params.srcApi API (agave, googledrive, box, dropbox} handling source files.
+     * @param {string} params.destApi API to move to.
+     * @param {string} params.destSystem System to move to.
+     * @param {string} params.destPath Path of directory to move files into.
+     * @param {Object[]} params.srcFiles Array of file objects {name, system, path} to move.
+     * @param {function} params.successCallback Callback on successful move of all files.
      */
     mapParamsToMove({ srcApi, destApi, destSystem, destPath, srcFiles, successCallback }) {
         const moveObservables = {};
@@ -330,6 +317,13 @@ export class FileOperationService {
                                 PREVIEW MODAL
     ***************************************************************************/
 
+    /**
+     * Open the preview modal.
+     * @param {Object} params Copy parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to preview.
+     * @param {Object} params.file File object {name, system, path} to preview.
+     */
     openPreviewModal({ api, scheme, file }) {
         var modal = this.$uibModal.open({
             component: 'preview',
@@ -342,6 +336,13 @@ export class FileOperationService {
         });
     }
 
+    /**
+     * Determine the correct endpoint to call to preview a file.
+     * @param {Object} params Destructured parameters.
+     * @param {Object} params.file File object {name, system, path} to preview.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to preview.
+     */
     getPreviewHref({ file, api, scheme }) {
         const previewUrl = this.removeDuplicateSlashes(
             `/api/datafiles/${api}/${scheme}/preview/${file.system}/${encodeURIComponent(file.path)}/`
@@ -364,6 +365,15 @@ export class FileOperationService {
                                 UPLOAD MODAL
     ***************************************************************************/
 
+    /**
+     * Open the file/folder upload modal
+     * @param {Object} params Upload params.
+     * @param {boolean} directory If true, upload a directory. If false, upload a single file.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to preview.
+     * @param {string} params.system System to upload to.
+     * @param {string} params.path Path to upload to.
+     */
     openUploadModal({ directory, api, scheme, system, path }) {
         var modal = this.$uibModal.open({
             component: 'uploadModal',
@@ -378,11 +388,32 @@ export class FileOperationService {
         });
     }
 
+    /**
+     * Push parameters onto the upload subject in order to trigger an upload operation.
+     * @param {Object} params Upload params.
+     * @param {boolean} directory If true, upload a directory. If false, upload a single file.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to preview.
+     * @param {string} params.system System to upload to.
+     * @param {string} params.path Path to upload to.
+     * @param {File[]} params.files File objects to upload. These come from the user input.
+     */
     handleUpload({ api, scheme, system, path, files, callback }) {
         const mapping = () => this.mapParamsToUpload({ api, scheme, system, path, files, callback });
         this.operations.upload.subscriber.next(mapping);
     }
 
+    /**
+     * Build an observable to handle file uploads. Uses forkJoin to trigger
+     * a callback once all requests have resolved.
+     * @param {Object} params Upload params.
+     * @param {boolean} directory If true, upload a directory. If false, upload a single file.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to preview.
+     * @param {string} params.system System to upload to.
+     * @param {string} params.path Path to upload to.
+     * @param {File[]} params.files File objects to upload. These come from the user input.
+     */
     mapParamsToUpload({ api, scheme, system, path, files, callback }) {
         let uploadObservables = {};
 
@@ -409,14 +440,36 @@ export class FileOperationService {
         return forkJoin(uploadObservables).pipe(tap(callback));
     }
 
+    /***************************************************************************
+                                IMAGE PREVIEW MODAL
+    ***************************************************************************/
+    /**
+     * Filter an array of files and return only the images.
+     * @param {Object[]} files Array of file objects ({name, system, path}).
+     */
+    filterImages(files) {
+        return files.filter(({ path }) =>
+            ['jpg', 'jpeg', 'png', 'tiff', 'gif'].includes(
+                path
+                    .split('.')
+                    .pop()
+                    .toLowerCase()
+            )
+        );
+    }
+
+    /**
+     * Returns an observable of all images in an array of files. If the array
+     * of files contains any folders, images in the top level of a folder are 
+     * returned as well.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to preview.
+     * @param {string} params.system System containing files to preview.
+     * @param {Object[]} params.files Array of file objects ({name, system, path}).
+     */
     getPreviewableImages({ api, scheme, system, files }) {
-        const images = files.filter(({ path }) => {
-            const ext = path
-                .split('.')
-                .pop()
-                .toLowerCase();
-            return ['jpg', 'jpeg', 'png', 'tiff', 'gif'].includes(ext);
-        });
+        const images = this.filterImages(files);
         const folders = files.filter(({ format }) => format === 'folder');
         // If selection contains folders, we need to perform a listing in each to find the images
         if (folders.length) {
@@ -431,13 +484,7 @@ export class FileOperationService {
                 //tap callback pushes each image in each listing response onto the images array
                 tap((responses) => {
                     responses.forEach((res) => {
-                        const output = res.data.listing.filter(({ path }) => {
-                            const ext = path
-                                .split('.')
-                                .pop()
-                                .toLowerCase();
-                            return ['jpg', 'jpeg', 'png', 'tiff', 'gif'].includes(ext);
-                        });
+                        const output = this.filterImages(res.data.listing);
                         images.push(...output);
                     });
                 }),
@@ -450,6 +497,14 @@ export class FileOperationService {
         }
     }
 
+    /**
+     * Opens the image preview modal.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to preview.
+     * @param {string} params.system System containing files to preview.
+     * @param {Object[]} params.files Array of file objects ({name, system, path}).
+     */
     openImagePreviewModal({ api, scheme, system, files }) {
         this.getPreviewableImages({ api, scheme, system, files }).subscribe((images) => {
             var modal = this.$uibModal.open({
@@ -468,6 +523,14 @@ export class FileOperationService {
                                 MKDIR MODAL
     ***************************************************************************/
 
+    /**
+     * Opens the mkdir modal.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of current listing.
+     * @param {string} params.system System of current listing
+     * @param {string} params.path Path under which to create a folder.
+     */
     openMkdirModal({ api, scheme, system, path }) {
         var modal = this.$uibModal.open({
             component: 'mkdirModal',
@@ -481,6 +544,16 @@ export class FileOperationService {
         });
     }
 
+    /**
+     * Perform the mkdir operation.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of current listing.
+     * @param {string} params.system System of current listing
+     * @param {string} params.path Path under which to create a folder.
+     * @param {string} params.folderName Name of the folder to create.
+     * @param {function} params.successCallback Callback on success.
+     */
     handleMkdir({ api, scheme, system, path, folderName, successCallback }) {
         const mkdirUrl = `/api/datafiles/${api}/${scheme}/mkdir/${system}/${encodeURIComponent(path)}/`;
         const mkdirRequest = this.$http.put(mkdirUrl, { dir_name: folderName }).then(successCallback);
@@ -489,6 +562,16 @@ export class FileOperationService {
     /***************************************************************************
                                 RENAME MODAL
     ***************************************************************************/
+
+    /**
+     * Opens the rename modal.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of current listing.
+     * @param {string} params.system System of current listing
+     * @param {string} params.path Path to the file being renamed.
+     * @param {Object} params.file File object ({name, system, path}) to rename. 
+     */
     openRenameModal({ api, scheme, system, path, file }) {
         var modal = this.$uibModal.open({
             component: 'renameModal',
@@ -503,6 +586,16 @@ export class FileOperationService {
         });
     }
 
+    /**
+     * Rename a file.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of current listing.
+     * @param {string} params.system System of current listing
+     * @param {string} params.path Path to the file being renamed.
+     * @param {string} params.newName New name for the file.
+     * @param {function} params.successCallback Callback on success.
+     */
     handleRename({ api, scheme, system, path, newName, successCallback }) {
         const renameUrl = `/api/datafiles/${api}/${scheme}/rename/${system}/${encodeURIComponent(path)}/`;
         const renameRequest = this.$http.put(renameUrl, { new_name: newName }).then(successCallback);
@@ -512,6 +605,13 @@ export class FileOperationService {
                                     DOWNLOAD
     ***************************************************************************/
 
+    /**
+     * Determine the correct endpoint to call to download a file.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of files to preview.
+     * @param {Object} params.file File object {name, system, path} to preview.
+     */
     getDownloadUrl({ api, scheme, file }) {
         const downloadUrl = this.removeDuplicateSlashes(
             `/api/datafiles/${api}/${scheme}/download/${file.system}/${encodeURIComponent(file.path)}/`
@@ -522,6 +622,8 @@ export class FileOperationService {
                 if (file._links) {
                     return this.$http.get(downloadUrl, { params: { href: file._links.self.href } });
                 }
+                /* If we don't have the href, pass a blank string and the 
+                   backend operation will look it up. */
                 return this.$http.get(downloadUrl, { params: { href: '' } });
             case 'box':
             case 'dropbox':
@@ -530,6 +632,13 @@ export class FileOperationService {
         }
     }
 
+    /**
+     * Download a file.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of current listing.
+     * @param {Object} params.files File objects ({name, system, path}) to download. 
+     */
     download({ api, scheme, files }) {
         if (!Array.isArray(files)) {
             files = [files];
@@ -553,6 +662,14 @@ export class FileOperationService {
                                     TRASH
     ***************************************************************************/
 
+    /**
+     * Wraps a trash operation in an observable.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of current listing.
+     * @param {Object} params.file File object ({name, system, path}) to trash. 
+     * @param {string} params.trashPath Path to the trash folder. 
+     */    
     mapParamsToTrash({ api, scheme, file, trashPath }) {
         const trashUrl = this.removeDuplicateSlashes(
             `/api/datafiles/${api}/${scheme}/trash/${file.system}/${encodeURIComponent(file.path)}/`
@@ -560,9 +677,16 @@ export class FileOperationService {
         return this.from(this.$http.put(trashUrl, { trash_path: trashPath }));
     }
 
+    /**
+     * Trash a set of files.
+     * @param {Object} params Destructured parameters.
+     * @param {string} params.api API of current listing.
+     * @param {string} params.scheme Scheme (private, published, community) of current listing.
+     * @param {Object} params.files File objects ({name, system, path}) to trash. 
+     * @param {string} params.trashPath Path to the trash folder. 
+     */   
     trash({ api, scheme, files, trashPath }) {
         const filePromises = files.map((file) => this.mapParamsToTrash({ api, scheme, file, trashPath }));
-
         forkJoin(filePromises).subscribe(() => this.$state.reload());
     }
 }
