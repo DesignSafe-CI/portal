@@ -353,7 +353,7 @@ def profile_edit(request):
                 ds_profile.website = pro_data['website']
                 ds_profile.orcid_id = pro_data['orcid_id']
                 ds_profile.professional_level = pro_data['professional_level']
-                
+
             except ObjectDoesNotExist as e:
                 logger.info('exception e: {} {}'.format(type(e), e ))
                 ds_profile = DesignSafeProfile(

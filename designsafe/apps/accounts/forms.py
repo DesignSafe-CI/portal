@@ -1,3 +1,5 @@
+import re
+import logging
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -8,14 +10,12 @@ from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from .models import (DesignSafeProfile, NotificationPreferences,
-    DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities, 
-    DesignSafeProfileNHTechnicalDomains)
+                     DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities,
+                     DesignSafeProfileNHTechnicalDomains)
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
-import re
-import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 ELIGIBLE = 'Eligible'
 INELIGIBLE = 'Ineligible'
@@ -291,154 +291,6 @@ class TasUserProfileAdminForm(forms.Form):
        )
 
 
-class UserRegistrationForm(forms.Form):
-    """
-    Except for `institution`, this is the same form as `UserProfileForm`. However,
-    due to limited ability to control field order, we cannot cleanly inherit from that
-    form.
-    """
-    firstName = forms.CharField(label='First name')
-    lastName = forms.CharField(label='Last name')
-    email = forms.EmailField(label='Email')
-    confirmEmail = forms.CharField(label='Confirm Email')
-    phone = forms.CharField()
-    institutionId = forms.ChoiceField(
-        label='Institution', choices=(),
-        error_messages={'invalid': 'Please select your affiliated institution'})
-    departmentId = forms.ChoiceField(label='Department', choices=(), required=False)
-    institution = forms.CharField(
-        label='Institution name',
-        help_text='If your institution is not listed, please provide the name of the '
-                  'institution as it should be shown here.',
-        required=False,
-                                      )
-    title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
-    countryId = forms.ChoiceField(
-        label='Country of residence', choices=(),
-        error_messages={'invalid': 'Please select your Country of residence'})
-    citizenshipId = forms.ChoiceField(
-        label='Country of citizenship', choices=(),
-        error_messages={'invalid': 'Please select your Country of citizenship'})
-
-    ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
-    gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
-
-    username = forms.RegexField(
-        label='Username',
-        help_text='Usernames must be 3-8 characters in length, start with a letter, and '
-                  'can contain only lowercase letters, numbers, or underscore.',
-        regex='^[a-z][a-z0-9_]{2,7}$')
-    password = forms.CharField(widget=forms.PasswordInput, label='Password')
-    confirmPassword = forms.CharField(
-        label='Confirm Password', widget=forms.PasswordInput,
-        help_text='Passwords must meet the following criteria:<ul>'
-                  '<li>Must not contain your username or parts of your full name;</li>'
-                  '<li>Must be a minimum of 8 characters in length;</li>'
-                  '<li>Must contain characters from at least three of the following: '
-                  'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
-    agree_to_terms = forms.BooleanField(
-        label='I Agree to the <a href="/terms/" target="_blank">Terms of Use</a>',
-        error_messages={'required': 'Please Accept the DesignSafe Terms of Use.'})
-    agree_to_account_limit = forms.BooleanField(
-        label='One account per user. I hereby verify that this is my only DesignSafe/TACC account'
-              ' and I understand that having multiple accounts will result in suspension.',
-        error_messages={'required': 'Please Agree to the DesignSafe Account Limit.'})
-
-    captcha = ReCaptchaField(widget=ReCaptchaWidget)
-
-    def __init__(self, *args, **kwargs):
-        super(UserRegistrationForm, self).__init__(*args, **kwargs)
-        self.fields['institutionId'].choices = get_institution_choices()
-        self.fields['institutionId'].choices += (('-1', 'My Institution is not listed'),)
-
-        data = self.data or self.initial
-        if data is not None and 'institutionId' in data and data['institutionId']:
-            self.fields['departmentId'].choices = get_department_choices(data['institutionId'])
-
-        self.fields['countryId'].choices = get_country_choices()
-        self.fields['citizenshipId'].choices = get_country_choices()
-
-    def clean(self):
-        username = self.cleaned_data.get('username')
-        firstName = self.cleaned_data.get('firstName')
-        lastName = self.cleaned_data.get('lastName')
-        password = self.cleaned_data.get('password')
-        confirmPassword = self.cleaned_data.get('confirmPassword')
-        email = self.cleaned_data.get('email')
-        confirmEmail = self.cleaned_data.get('confirmEmail')
-
-        if username and firstName and lastName and password and confirmPassword and email and confirmEmail:
-
-            valid, error_message = check_password_policy(self.cleaned_data,
-                                                         password,
-                                                         confirmPassword)
-            if not valid:
-                self.add_error('password', error_message)
-                self.add_error('confirmPassword', '')
-                raise forms.ValidationError(error_message)
-
-
-            if email != confirmEmail:  
-                valid = False         
-                error_message = 'The email provided does not match the confirmation.' 
-            if not valid:
-                self.add_error('email', error_message)
-                self.add_error('confirmEmail', '')
-                raise forms.ValidationError(error_message)
-
-    def save(self, source='DesignSafe', pi_eligibility=INELIGIBLE):
-        data = self.cleaned_data
-        data['source'] = source
-        data['piEligibility'] = pi_eligibility
-
-        safe_data = data.copy()
-        safe_data['password'] = safe_data['confirmPassword'] = '********'
-
-        logger.info('Attempting new user registration: %s' % safe_data)
-        tas_user = TASClient().save_user(None, data)
-
-        # create local user
-        UserModel = get_user_model()
-        try:
-            # the user should not exist
-            user = UserModel.objects.get(username=data['username'])
-            logger.warning('On TAS registration, local user already existed? '
-                           'user=%s' % user)
-        except UserModel.DoesNotExist:
-            user = UserModel.objects.create_user(
-                username=data['username'],
-                first_name=tas_user['firstName'],
-                last_name=tas_user['lastName'],
-                email=tas_user['email']
-                )
-
-        # extended profile information
-        try:
-            # again, this should not exist
-            ds_profile = DesignSafeProfile.objects.get(user=user)
-            ds_profile.ethnicity = data['ethnicity']
-            ds_profile.gender = data['gender']
-        except DesignSafeProfile.DoesNotExist:
-            ds_profile = DesignSafeProfile(
-                user=user,
-                ethnicity=data['ethnicity'],
-                gender=data['gender']
-                )
-        ds_profile.save()
-
-        # terms of use
-        logger.info('Prior to Registration, %s %s <%s> agreed to Terms of Use' % (
-            data['firstName'], data['lastName'], data['email']))
-        try:
-            terms = TermsAndConditions.get_active()
-            user_terms = UserTermsAndConditions(user=user, terms=terms)
-            user_terms.save()
-        except:
-            logger.exception('Error saving UserTermsAndConditions for user=%s', user)
-
-        return tas_user
-
-
 class ProfessionalProfileForm(forms.ModelForm):
     bio_placeholder = (
         'Please provide a brief summary of your professional profile, '
@@ -492,6 +344,159 @@ class ProfessionalProfileForm(forms.ModelForm):
         model = DesignSafeProfile
         exclude = ['user', 'ethnicity', 'gender', 'update_required']
 
+
+class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
+    #overriding form fields
+    institution = forms.CharField(
+        label='Institution name',
+        help_text='If your institution is not listed, please provide the name of the '
+                  'institution as it should be shown here.',
+        required=False,
+                                      )
+    #additional fields for registration form
+    confirmEmail = forms.CharField(label='Confirm Email')
+    username = forms.RegexField(
+        label='Username',
+        help_text='Usernames must be 3-8 characters in length, start with a letter, and '
+                  'can contain only lowercase letters, numbers, or underscore.',
+        regex='^[a-z][a-z0-9_]{2,7}$')
+    password = forms.CharField(widget=forms.PasswordInput, label='Password')
+    confirmPassword = forms.CharField(
+        label='Confirm Password', widget=forms.PasswordInput,
+        help_text='Passwords must meet the following criteria:<ul>'
+                  '<li>Must not contain your username or parts of your full name;</li>'
+                  '<li>Must be a minimum of 8 characters in length;</li>'
+                  '<li>Must contain characters from at least three of the following: '
+                  'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
+    agree_to_terms = forms.BooleanField(
+        label='I Agree to the <a href="/terms/" target="_blank">Terms of Use</a>',
+        error_messages={'required': 'Please Accept the DesignSafe Terms of Use.'})
+    agree_to_account_limit = forms.BooleanField(
+        label='One account per user. I hereby verify that this is my only DesignSafe/TACC account'
+              ' and I understand that having multiple accounts will result in suspension.',
+        error_messages={'required': 'Please Agree to the DesignSafe Account Limit.'})
+
+    captcha = ReCaptchaField(widget=ReCaptchaWidget)
+
+    field_order = ['firstName', 'lastName', 'email', 'confirmEmail',
+                  'phone', 'institutionId', 'departmentId', 'institution',
+                  'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
+                  'bio_placeholder', 'nh_interests', 'nh_technical_domains',
+                  'bio', 'website', 'orcid_id', 'professional_level', 'research_activities']
+
+    def __init__(self, *args, **kwargs):
+        super(UserRegistrationForm, self).__init__(*args, **kwargs)
+        self.fields['institutionId'].choices = get_institution_choices()
+        self.fields['institutionId'].choices += (('-1', 'My Institution is not listed'),)
+
+        data = self.data or self.initial
+        if data is not None and 'institutionId' in data and data['institutionId']:
+            self.fields['departmentId'].choices = get_department_choices(data['institutionId'])
+
+        self.fields['countryId'].choices = get_country_choices()
+        self.fields['citizenshipId'].choices = get_country_choices()
+
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        firstName = self.cleaned_data.get('firstName')
+        lastName = self.cleaned_data.get('lastName')
+        password = self.cleaned_data.get('password')
+        confirmPassword = self.cleaned_data.get('confirmPassword')
+        email = self.cleaned_data.get('email')
+        confirmEmail = self.cleaned_data.get('confirmEmail')
+
+        if username and firstName and lastName and password and confirmPassword and email and confirmEmail:
+
+            valid, error_message = check_password_policy(self.cleaned_data,
+                                                         password,
+                                                         confirmPassword)
+            if not valid:
+                self.add_error('password', error_message)
+                self.add_error('confirmPassword', '')
+                raise forms.ValidationError(error_message)
+
+
+            if email != confirmEmail:
+                valid = False
+                error_message = 'The email provided does not match the confirmation.'
+            if not valid:
+                self.add_error('email', error_message)
+                self.add_error('confirmEmail', '')
+                raise forms.ValidationError(error_message)
+
+    def save(self, source='DesignSafe', pi_eligibility=INELIGIBLE):
+        data = self.cleaned_data
+        data['source'] = source
+        data['piEligibility'] = pi_eligibility
+
+        safe_data = data.copy()
+        safe_data['password'] = safe_data['confirmPassword'] = '********'
+
+        LOGGER.info('Attempting new user registration: %s' % safe_data)
+        tas_user = TASClient().save_user(None, data)
+
+        # create local user
+        UserModel = get_user_model()
+        try:
+            # the user should not exist
+            user = UserModel.objects.get(username=data['username'])
+            LOGGER.warning('On TAS registration, local user already existed? '
+                           'user=%s' % user)
+        except UserModel.DoesNotExist:
+            user = UserModel.objects.create_user(
+                username=data['username'],
+                first_name=tas_user['firstName'],
+                last_name=tas_user['lastName'],
+                email=tas_user['email']
+                )
+
+        # extended profile information
+        try:
+            # again, this should not exist
+            ds_profile = DesignSafeProfile.objects.get(user=user)
+            ds_profile.ethnicity = data['ethnicity']
+            ds_profile.gender = data['gender']
+            ds_profile.bio = data['bio']
+            ds_profile.website = data['website']
+            ds_profile.orcid_id = data['orcid_id']
+            ds_profile.professional_level = data['professional_level']
+            ds_profile.update_required = False
+        except DesignSafeProfile.DoesNotExist:
+            ds_profile = DesignSafeProfile(
+                user=user,
+                ethnicity=data['ethnicity'],
+                gender=data['gender'],
+                bio=data['bio'],
+                website=data['website'],
+                orcid_id=data['orcid_id'],
+                professional_level=data['professional_level'],
+                update_required=False
+                )
+        ds_profile.save()
+
+        #save professional profile information
+        pro_profile = ProfessionalProfileForm(instance=ds_profile)
+        pro_profile.bio_placeholder = data['bio_placeholder']
+        pro_profile.nh_interests = data['nh_interests']
+        pro_profile.nh_technical_domains = data['nh_technical_domains']
+        pro_profile.bio = data['bio']
+        pro_profile.website = data['website']
+        pro_profile.orcid_id = data['orcid_id']
+        pro_profile.professional_level = data['professional_level']
+        pro_profile.research_activities = data['research_activities']
+        pro_profile.save()
+
+        # terms of use
+        LOGGER.info('Prior to Registration, %s %s <%s> agreed to Terms of Use' % (
+            data['firstName'], data['lastName'], data['email']))
+        try:
+            terms = TermsAndConditions.get_active()
+            user_terms = UserTermsAndConditions(user=user, terms=terms)
+            user_terms.save()
+        except:
+            LOGGER.exception('Error saving UserTermsAndConditions for user=%s', user)
+
+        return tas_user
 
 class NEESAccountMigrationForm(forms.Form):
 
