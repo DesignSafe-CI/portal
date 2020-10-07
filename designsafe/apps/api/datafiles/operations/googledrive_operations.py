@@ -103,7 +103,7 @@ def mkdir(client, system, path, dir_name):
     return newdir_dict
 
 
-def download(client, system, path):
+def download(client, system, path, *args, **kwargs):
     if not path:
         path = 'root'
     file_id = path
@@ -119,7 +119,7 @@ def download(client, system, path):
     return fh
 
 
-def preview(client, system, path):
+def preview(client, system, path, *args, **kwargs):
     if not path:
         path = 'root'
     file_name = path.strip('/').split('/')[-1]

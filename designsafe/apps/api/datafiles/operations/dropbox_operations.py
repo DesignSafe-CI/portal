@@ -49,7 +49,7 @@ def iterate_listing(client, system, path, limit=100):
             break
 
 
-def preview(client, system, path):
+def preview(client, system, path, *args, **kwargs):
     if path and not path.startswith('/'):
         path = '/' + path
 

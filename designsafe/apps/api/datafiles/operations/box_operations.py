@@ -40,7 +40,7 @@ def iterate_listing(client, system, path, limit=100):
             # Break out of the loop if the listing is exhausted.
             break
 
-def preview(client, system, path):
+def preview(client, system, path, *args, **kwargs):
     embed_url = client.file(path).get_embed_url()
     return {'href': embed_url, 'fileType': 'box'}
 

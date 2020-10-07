@@ -135,7 +135,7 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     return {'listing': hits, 'reachedEnd': len(hits) < int(limit)}
 
 
-def download(client, system, path, href, force=True, max_uses=3, lifetime=600):
+def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *args, **kwargs):
     """Creates a postit pointing to this file.
 
     Params
@@ -504,7 +504,7 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
     return dict(resp)
 
 
-def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
+def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwargs):
     """Preview a file.
     Params
     ------
