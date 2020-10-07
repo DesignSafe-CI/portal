@@ -1,16 +1,16 @@
 // webpack plugins
 const webpack = require('webpack');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = function(env) {
     var smap = false;
-    env == 'prod' ? smap = false : smap='cheap-module-eval-source-map';
+    env == 'prod' ? (smap = false) : (smap = 'cheap-module-eval-source-map');
     return {
         devtool: smap,
         entry: {
-            rapid : './designsafe/static/scripts/rapid/index.js',
-            geo : './designsafe/static/scripts/geo/index.js',
+            rapid: './designsafe/static/scripts/rapid/index.js',
+            geo: './designsafe/static/scripts/geo/index.js',
             base: './designsafe/static/scripts/ng-designsafe/ng-designsafe.js',
             dd: './designsafe/static/scripts/data-depot/index.js',
             workspace: './designsafe/static/scripts/workspace/app.js',
@@ -23,11 +23,11 @@ module.exports = function(env) {
         output: {
             publicPath: '/static/build/',
             path: __dirname + '/designsafe/static/build/',
-            filename: '[name].bundle.js'
+            filename: '[name].bundle.js',
         },
         resolve: {
             extensions: ['.js'],
-            modules: ['node_modules']
+            modules: ['node_modules'],
         },
         module: {
             rules: [
@@ -37,52 +37,60 @@ module.exports = function(env) {
                     loader: 'babel-loader',
                     options: {
                         presets: ['@babel/preset-env'],
-                        plugins: ['angularjs-annotate']
-                    }
+                        plugins: ['angularjs-annotate'],
+                    },
                 },
                 {
                     test: /\.html$/,
                     exclude: /node_modules/,
-                    use: [{
-                        loader: 'html-loader'
-                    }]
+                    use: [
+                        {
+                            loader: 'html-loader',
+                        },
+                    ],
                 },
                 {
                     test: /\.(ttf|woff|eot|svg|png|jpg)(\?[\s\S]+)?$/,
-                    loader: 'file-loader'
+                    loader: 'file-loader',
                 },
                 {
                     test: /\.(s?)css$/,
-                    use: ExtractTextPlugin.extract({
-                        use: [{
+
+                    use: [
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                        },
+                        {
                             loader: 'css-loader',
                         },
                         {
                             loader: 'sass-loader',
                             options: {
                                 sourceMap: true,
-                                includePaths: ['./designsafe/static/styles']
-                            }
-                        }]
-                    })
+                                includePaths: ['./designsafe/static/styles'],
+                            },
+                        },
+                    ],
                 },
                 {
                     test: /\.coffee$/,
-                    use: [{
-                        loader: 'coffee-loader'
-                    }]
+                    use: [
+                        {
+                            loader: 'coffee-loader',
+                        },
+                    ],
                 },
-            ]
+            ],
         },
         plugins: [
-            new ExtractTextPlugin('[name].bundle.css'),
+            new MiniCssExtractPlugin({filename: '[name].bundle.css'}),
             new LiveReloadPlugin(),
             new webpack.ProvidePlugin({
                 jQuery: 'jquery',
                 $: 'jquery',
                 jquery: 'jquery',
                 d3: 'd3',
-            })
+            }),
         ],
         externals: {
             jQuery: 'jQuery',
@@ -95,6 +103,6 @@ module.exports = function(env) {
             window: 'window',
             djng: 'djng',
             d3plus: 'd3plus',
-        }
+        },
     };
 };

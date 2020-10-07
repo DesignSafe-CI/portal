@@ -30,6 +30,7 @@ class IndexedProject(Document):
     value = Object(
         properties={
             'teamMembers': Text(fields={'_exact': Keyword()}, multi=True),
+            'teamMember': Text(fields={'_exact': Keyword()}, multi=True),
             'guestMembers': Nested(properties={
                 'guest': Boolean(),
                 'lname': Text(fields={'_exact': Keyword()}),
@@ -54,12 +55,15 @@ class IndexedProject(Document):
                 'tagName': Keyword(),
                 'format': Keyword(),
                 'lastModified': Date(),
+                'path': Text(fields={'_exact': Keyword()})
 
             }, multi=True),
-
+            
             'nhEventStart': Date(),
             'nhEventEnd': Date(),
             'nhTypes': Text(fields={'_exact': Keyword()}),
+            'nhType': Text(fields={'_exact': Keyword()}),   
+            'nhTypeOther': Text(fields={'_exact': Keyword()}),
             'nhEvent': Text(fields={'_exact': Keyword()}),
             'nhLocation': Text(fields={'_exact': Keyword()}),
             'nhLatitude': Text(fields={'_exact': Keyword()}),
@@ -81,6 +85,11 @@ class IndexedProject(Document):
             }),
             'pi': Text(fields={'_exact': Keyword()}),
             'awardNumber': Nested(properties={
+                'number': Keyword(),
+                'name': Text(fields={'_exact': Keyword()}),
+                'order': Long(),
+            }, multi=True),
+            'awardNumbers': Nested(properties={
                 'number': Keyword(),
                 'name': Text(fields={'_exact': Keyword()}),
                 'order': Long(),
