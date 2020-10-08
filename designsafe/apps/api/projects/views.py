@@ -58,16 +58,11 @@ class PublicationView(BaseApiView):
     def post(self, request, **kwargs):
         if request.is_ajax():
             data = json.loads(request.body)
-
         else:
             data = request.POST
 
-        # logger.debug('publication: %s', json.dumps(data, indent=2))
         status = data.get('status', 'saved')
-        pub = save_publication(
-            data['publication'],
-            status
-        )
+        pub = save_publication(data['publication'], status)
         
         if data.get('status', 'save').startswith('publish'):
             (
@@ -90,7 +85,7 @@ class PublicationView(BaseApiView):
                         countdown=60
                     )
                 ) |
-                tasks.swap_file_tag_uuids.si(pub.project_id) |
+                tasks.swap_file_tag_uuids.si(pub.projectId) |
                 tasks.set_publish_status.si(
                     pub.projectId,
                     data.get('mainEntityUuids')
