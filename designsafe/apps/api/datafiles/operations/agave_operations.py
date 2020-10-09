@@ -160,8 +160,7 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
     """
     # pylint: disable=protected-access
 
-    if not href:
-        href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
+    href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
 
     args = {
         'url': urllib.parse.unquote(href),
@@ -528,9 +527,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
 
     file_name = path.strip('/').split('/')[-1]
     file_ext = os.path.splitext(file_name)[1].lower()
-
-    if not href:
-        href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
+    href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
 
     args = {
         'url': urllib.parse.unquote(href),
