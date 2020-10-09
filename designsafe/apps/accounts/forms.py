@@ -381,7 +381,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
     field_order = ['firstName', 'lastName', 'email', 'confirmEmail',
                   'phone', 'institutionId', 'departmentId', 'institution',
                   'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
-                  'bio_placeholder', 'nh_interests', 'nh_technical_domains',
+                  'nh_interests', 'nh_technical_domains',
                   'bio', 'website', 'orcid_id', 'professional_level', 'research_activities']
 
     def __init__(self, *args, **kwargs):
@@ -476,7 +476,6 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
 
         #save professional profile information
         pro_profile = ProfessionalProfileForm(instance=ds_profile)
-        pro_profile.bio_placeholder = data['bio_placeholder']
         pro_profile.nh_interests = data['nh_interests']
         pro_profile.nh_technical_domains = data['nh_technical_domains']
         pro_profile.bio = data['bio']
