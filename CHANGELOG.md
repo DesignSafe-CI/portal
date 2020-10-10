@@ -1,6 +1,6 @@
 # DesignSafe-CI Portal Release Notes
 
-## v5.0.1
+## v5.0.2
 Fixes:
 - Fix an issue preventing some files from being downloaded.
 - Fix an issue preventing publications from being saved.
