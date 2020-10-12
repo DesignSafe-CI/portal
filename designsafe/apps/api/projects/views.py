@@ -91,7 +91,7 @@ class PublicationView(BaseApiView):
                     data.get('mainEntityUuids')
                 ) |
                 tasks.zip_publication_files.si(pub.projectId) | 
-                tasks.email_user_publication_request_confirmation(request.user.username)
+                tasks.email_user_publication_request_confirmation.si(request.user.username)
             ).apply_async()
 
         return JsonResponse({'status': 200,
