@@ -292,6 +292,11 @@ class TasUserProfileAdminForm(forms.Form):
 
 
 class ProfessionalProfileForm(forms.ModelForm):
+    """
+    Any changes made to this form need to be reflected in the UserCreationForm.
+    Specifically, update the UserCreationForm.save() function to make sure all
+    the pro profile fields are saved.
+    """
     bio_placeholder = (
         'Please provide a brief summary of your professional profile, '
         'the natural hazards activities with which you are involved or '
@@ -376,7 +381,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
               ' and I understand that having multiple accounts will result in suspension.',
         error_messages={'required': 'Please Agree to the DesignSafe Account Limit.'})
 
-    captcha = ReCaptchaField(widget=ReCaptchaWidget)
+    #captcha = ReCaptchaField(widget=ReCaptchaWidget)
 
     field_order = ['firstName', 'lastName', 'email', 'confirmEmail',
                   'phone', 'institutionId', 'departmentId', 'institution',
@@ -429,11 +434,33 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
         data['source'] = source
         data['piEligibility'] = pi_eligibility
 
-        safe_data = data.copy()
+        tas_data = {}
+        tas_data['firstName'] = data['firstName']
+        tas_data['lastName'] = data['lastName']
+        tas_data['email'] = data['email']
+        tas_data['confirmEmail'] = data['confirmEmail']
+        tas_data['phone'] = data['phone']
+        tas_data['institutionId'] = data['institutionId']
+        tas_data['departmentId'] = data['departmentId']
+        tas_data['institution'] = data['institution']
+        tas_data['title'] = data['title']
+        tas_data['countryId'] = data['countryId']
+        tas_data['citizenshipId'] = data['citizenshipId']
+        tas_data['ethnicity'] = data['ethnicity']
+        tas_data['gender'] = data['gender']
+        tas_data['source'] = data['source']
+        tas_data['piElegibility'] = data['piElegibility']
+        tas_data['username'] = data['username']
+        tas_data['password'] = data['password']
+        tas_data['confirmPassword'] = data['confirmPassword']
+        tas_data['agree_to_terms'] = data['agree_to_terms']
+        tas_data['agree_to_account_limit'] = data['agree_to_account_limit']
+
+        safe_data = tas_data.copy()
         safe_data['password'] = safe_data['confirmPassword'] = '********'
 
         LOGGER.info('Attempting new user registration: %s' % safe_data)
-        tas_user = TASClient().save_user(None, data)
+        tas_user = TASClient().save_user(None, tas_data)
 
         # create local user
         UserModel = get_user_model()
