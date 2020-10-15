@@ -3,6 +3,7 @@ from designsafe.apps.api.publications import search_utils
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 from django.contrib.auth import get_user_model
 from elasticsearch_dsl import Q
+import datetime
 import json
 import urllib
 import logging
@@ -193,11 +194,7 @@ def neesdescription(project_id, *args):
     return {'description': desc}
 
 
-def save_publication(
-            self,
-            publication,
-            status='publishing'
-    ):  # pylint: disable=no-self-use
+def save_publication(publication, status='publishing'):
         """Save publication."""
         publication['projectId'] = publication['project']['value']['projectId']
         publication['created'] = datetime.datetime.now().isoformat()

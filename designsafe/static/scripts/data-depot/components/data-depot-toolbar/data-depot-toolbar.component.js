@@ -42,7 +42,7 @@ class DataDepotToolbarCtrl {
 
     download() {
         const { api, scheme } = this.FileListingService.listings.main.params;
-        const files = this.getAllSelected()[0];
+        const files = this.getAllSelected();
         this.FileOperationService.download({api, scheme, files});
     }
     preview() {
