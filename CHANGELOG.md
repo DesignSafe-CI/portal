@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.0.3
+Fixes:
+- Re-enable download of multiple files.
+
 ## v5.0.2
 Fixes:
 - Fix an issue preventing some files from being downloaded.
