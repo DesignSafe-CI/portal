@@ -44,15 +44,19 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False, path
     from designsafe.apps.data.models.agave.files import BaseFileResource
     listing = []
     offset = 0
+    limit = 100
     page = client.files.list(systemId=system,
                              filePath=urllib.parse.quote(path),
                              offset=offset)
-    while page:
-        listing += page
-        offset += 100
+    while True:
         page = client.files.list(systemId=system,
                                  filePath=urllib.parse.quote(path),
                                  offset=offset)
+        listing += page
+        offset += limit
+
+        if len(page) != limit:
+            break
 
     folders = []
     files = []
