@@ -555,7 +555,7 @@ export class FileOperationService {
      * @param {function} params.successCallback Callback on success.
      */
     handleMkdir({ api, scheme, system, path, folderName, successCallback }) {
-        const mkdirUrl = `/api/datafiles/${api}/${scheme}/mkdir/${system}/${encodeURIComponent(path)}/`;
+        const mkdirUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/mkdir/${system}/${encodeURIComponent(path)}/`);
         const mkdirRequest = this.$http.put(mkdirUrl, { dir_name: folderName }).then(successCallback);
     }
 
@@ -597,7 +597,7 @@ export class FileOperationService {
      * @param {function} params.successCallback Callback on success.
      */
     handleRename({ api, scheme, system, path, newName, successCallback }) {
-        const renameUrl = `/api/datafiles/${api}/${scheme}/rename/${system}/${encodeURIComponent(path)}/`;
+        const renameUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/rename/${system}/${encodeURIComponent(path)}/`);
         const renameRequest = this.$http.put(renameUrl, { new_name: newName }).then(successCallback);
     }
 
