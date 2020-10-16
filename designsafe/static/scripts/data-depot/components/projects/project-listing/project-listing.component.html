@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <div class="ds-table-display-wrapper" ds-infinite-scroll data-scroll-bottom="scrollToBottom()()" data-scroll-top="scrollToTop()()" data-bottom-height="0">
+    <div class="ds-table-display-wrapper" ds-infinite-scroll data-scroll-bottom="$ctrl.scrollToBottom()()" data-bottom-height="0">
       <table class="table table-bordered table-striped" style="background-color: #fff;">
           <thead>
             <th style="width:10%">Project ID</th>
@@ -9,8 +9,8 @@
           </thead>
 
           <tbody>
-          <tr ng-repeat="project in data.projects"
-              ng-if="data.projects && ! browser.busyListing"
+          <tr ng-repeat="project in $ctrl.getListing().projects"
+              ng-if="$ctrl.getListing().projects && !$ctrl.getListing().loading"
               ng-click="onSelect($event, project);"
               ng-class="{'ds-data-selected': project.selected}"
           >
@@ -18,19 +18,19 @@
                 {{project.value.projectId}}
               </td>
               <td>
-                  <a ng-href="{{ project.href }}">
+                  <a ng-href="{{$ctrl.href(project)}}" ng-click="$ctrl.handleBrowse($event, project)">
                       {{ project.value.title }}
                   </a>
               </td>
               <td>
-                {{data.names[project.value.pi]}}
+                {{project._pi_name}}
               </td>
               <td>
                   {{ project.lastUpdated|date:"short" }}
               </td>
           </tr>
-          <tr ng-if="browser.busyListingPage">
-              <td>
+          <tr ng-if="$ctrl.getListing().loadingScroll">
+              <td colspan="4" class="text-center">
                   <span class="bg-info text-info">
                       <i class="fa fa-spinner fa-spin"></i> Loading...
                   </span>
@@ -38,7 +38,7 @@
           </tr>
           </tbody>
           <caption>
-            <div ng-if="ui.busy || browser.busy"
+            <div ng-if="$ctrl.getListing().loading"
                  style="padding:10px; font-size:large; width:100%;"
                  class="bg-info">
               <span>
@@ -53,7 +53,7 @@
           </caption>
       </table>
   </div>
-  <div ng-if="! data.projects" class="jumbotron">
+  <div ng-if="! $ctrl.getListing().projects" class="jumbotron">
       <p class="text-center">
           <i class="fa fa-spinner fa-spin"></i> Loading projects...
       </p>

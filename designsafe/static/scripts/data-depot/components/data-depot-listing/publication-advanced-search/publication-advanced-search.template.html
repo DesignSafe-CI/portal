@@ -36,30 +36,30 @@
         <tbody style="background-color: #eeeeee;">
             <tr>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('experimental')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.experimental" />
                         Experimental</label
                     >
                 </td>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('simulation')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.simulation" />
                         Simulation</label
                     >
                 </td>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('field_recon')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.field_recon" /> Field
                         Research</label
                     >
                 </td>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('other')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.other" /> Other</label
                     >
                 </td>
                 <td style="width: 20%; border-bottom: none;" ng-click="$ctrl.toggleFilter('hybrid_simulation')">
-                    <label class="checkbox-inline"
+                    <label class="checkbox-inline" style="padding-left:0px;"
                         ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.hybrid_simulation" />
                         Hybrid Simulation</label
                     >
@@ -79,23 +79,23 @@
                         <div style="padding-bottom: 5px;">
                             <label for="exp-facility-select">Experiment Facility</label>
                             <select
+                                ng-disabled="!$ctrl.params.typeFilters.experimental"
                                 id="exp-facility-select"
                                 ng-model="$ctrl.params.advancedFilters.experimental.experimentalFacility"
-                                ng-options="ef.label as ef.label for ef in $ctrl.experimentOptions.experimentalFacility.experimental"
+                                ng-change="$ctrl.getValidExperimentTypes()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.experimentFacilityOptions"
                                 class="form-control"
-                                ><option value="">All Facilities</option></select
+                                ></select
                             >
                         </div>
                         <div>
                             <label for="exp-type-select">Experiment Type</label>
                             <select
+                                ng-disabled="!$ctrl.params.typeFilters.experimental || !$ctrl.params.advancedFilters.experimental.experimentalFacility"
                                 id="exp-type-select"
                                 ng-model="$ctrl.params.advancedFilters.experimental.experimentType"
-                                ng-options="ef.name as ef.label for ef in $ctrl.getValidExperimentTypes()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.validExperimentTypes"
                                 class="form-control"
-                                ><option value=""
-                                    >{{$ctrl.getValidExperimentTypes().length ? "All Types" : "Select a
-                                    Facility"}}</option
                                 ></select
                             >
                         </div>
@@ -104,11 +104,12 @@
                     <td style="width: 20%;">
                         <label for="simulation-type-select">Simulation Type</label>
                         <select
+                            ng-disabled="!$ctrl.params.typeFilters.simulation"
                             id="simulation-type-select"
                             ng-model="$ctrl.params.advancedFilters.simulation.simulationType"
                             ng-options="ef.name as ef.label for ef in $ctrl.simulationTypes"
                             class="form-control"
-                            ><option value="">All Types</option></select
+                            ></select
                         >
                     </td>
 
@@ -116,40 +117,44 @@
                         <div style="padding-bottom: 5px;">
                         <label for="simulation-type-select">Natural Hazard Type</label>
                         <select
+                        ng-disabled="!$ctrl.params.typeFilters.field_recon"
                             id="nh-type-select"
                             ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardType"
-                            ng-options="opt as opt for opt in $ctrl.rapidEventTypes"
+                            ng-options="opt.name as opt.label for opt in $ctrl.rapidEventTypes"
                             class="form-control"
-                            ><option value="">All Types</option></select
+                            ></select
                         >
                     </div>
                     <div>
                         <label for="nh-event-select">Natural Hazard Event</label>
                         <input
                             class="form-control"
-                            ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardEvent"
+                            ng-disabled="!$ctrl.params.typeFilters.field_recon"
+                            ng-model="ctrl.params.advancedFilters.field_recon.naturalHazardEvent"
                         />
                     </div>
                     </td>
                     <td style="width: 20%;">
                         <label for="other-type-select">Data Type</label>
                         <select
+                            ng-disabled="!$ctrl.params.typeFilters.other"
                             id="other-type-select"
                             ng-model="$ctrl.params.advancedFilters.other.dataType"
-                            ng-options="opt as opt for opt in $ctrl.otherTypes"
+                            ng-options="opt.name as opt.label for opt in $ctrl.otherTypes"
                             class="form-control"
-                            ><option value="">All Types</option></select
+                            ></select
                         >
                     </td>
 
                     <td style="width: 20%;">
                         <label for="hybrid-sim-type-select">Hybrid Sim Type</label>
                         <select
+                            ng-disabled="!$ctrl.params.typeFilters.hybrid_simulation"
                             id="other-type-select"
                             ng-model="$ctrl.params.advancedFilters.hybrid_simulation.hybridSimulationType"
                             ng-options="opt.name as opt.label for opt in $ctrl.hybridSimulationTypes"
                             class="form-control"
-                            ><option value="">All Types</option></select
+                            ></select
                         >
                     </td>
                 </tr>
@@ -157,9 +162,9 @@
         </table>
     </div>
     <div class="row" style="margin: 0px; background-color: #eeeeee;">
-        <div class="col-md-12" style="border: 1px solid #dddddd;">
-            <div class="col-md-4" style="height: 50px;"></div>
-            <div class="col-md-4" style="height: 50px; display: flex; justify-content: center; align-items: center;">
+        <div class="col-xs-12" style="border: 1px solid #dddddd;">
+            <div class="col-xs-5" style="height: 50px;"></div>
+            <div class="col-xs-2" style="height: 50px; display: flex; justify-content: center; align-items: center;">
                 <div style="text-align: center;">
                     <a href="#" ng-click="$ctrl.toggleSearchPanel($event)">
                         <span ng-if="$ctrl.isCollapsed"> More Options <span class="fa fa-chevron-down"></span> </span>
@@ -167,11 +172,11 @@
                     </a>
                 </div>
             </div>
-            <div class="col-md-4" style="height: 50px; display: flex; justify-content: left; align-items: center;">
-                <div style="width: 100%;">
+            <div class="col-xs-5" style="height: 50px; display: flex; justify-content: left; align-items: center;">
+                <div style="min-width: 100%;">
                     <div style="float:right;">
                         <a href="#" ng-click="$ctrl.cancel()" style="padding-right: 15px;">Clear Filters</a>
-                        <button class="btn btn-success" ng-click="$ctrl.browse()" style="width:150px">
+                        <button class="btn btn-success" ng-click="$ctrl.browse()" style="width: 175px">
                             Search
                         </button>
                     </div>

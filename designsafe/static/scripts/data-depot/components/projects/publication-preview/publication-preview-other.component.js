@@ -3,14 +3,14 @@ import PublicationPopupTemplate from './publication-popup.html';
 
 class PublicationPreviewOtherCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $uibModal, $state, $q) {
+    constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
-        this.FileListing = FileListing;
-        this.browser = this.DataBrowserService.state();
+        this.FileListingService = FileListingService;
+        this.FileOperationService = FileOperationService;
+        this.browser = {}
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;
@@ -35,18 +35,21 @@ class PublicationPreviewOtherCtrl {
         if (!this.data || this.data.listing.path != this.filePath) {
             this.$q.all([
                 this.ProjectService.get({ uuid: this.projectId }),
-                this.DataBrowserService.browse(
-                    { system: 'project-' + this.projectId, path: this.filePath },
-                    { query_string: this.$state.params.query_string }
-                )
+                this.FileListingService.browse({
+                    section: 'main',
+                    api: 'agave',
+                    scheme: 'private',
+                    system: 'project-' + this.projectId,
+                    path: this.filePath,
+                }),
             ]).then(([project, listing]) => {
+                this.breadcrumbParams = {
+                    root: {label: project.value.projectId, path: ''}, 
+                    path: this.FileListingService.listings.main.params.path,
+                    skipRoot: false
+                };
                 this.browser.project = project;
                 this.browser.listing = listing;
-                this.browser.listing.href = this.$state.href('projects.view.data', {
-                    projectId: this.projectId,
-                    filePath: this.browser.listing.path,
-                    projectTitle: this.browser.project.value.projectTitle,
-                });
                 this.ui.loading = false;
             });
         } else {
@@ -73,7 +76,7 @@ class PublicationPreviewOtherCtrl {
     }
     
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
+        this.$state.go('projects.view', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
     }
 
     goCuration() {
@@ -132,9 +135,18 @@ class PublicationPreviewOtherCtrl {
         });
     }
 
+    onBrowse(file) {
+        if (file.type === 'dir') {
+            //this.$state.go(this.$state.current.name, {filePath: file.path.replace(/^\/+/, '')}, {inherit: false})
+            this.$state.go(this.$state.current.name, {filePath: file.path})
+        }
+        else {
+            this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
+        }
+    }
+
 }
 
-PublicationPreviewOtherCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$uibModal', '$state', '$q'];
 
 export const PublicationPreviewOtherComponent = {
     template: PublicationPreviewOtherTemplate,

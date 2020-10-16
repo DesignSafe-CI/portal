@@ -92,7 +92,7 @@ class PipelinePrimaryEntityCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.view', {projectId: this.project.uuid}, {reload: true});
     }
 
     goProject() {
@@ -122,6 +122,7 @@ class PipelinePrimaryEntityCtrl {
                 project: () => { return this.project; },
                 edit: () => { return selectedEnt; },
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }

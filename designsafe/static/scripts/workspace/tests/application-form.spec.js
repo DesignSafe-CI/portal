@@ -16,6 +16,8 @@ describe('ApplicationFormCtrl', function() {
         $q,
         ctrl,
         app,
+        systemsPromise,
+        appsPromise,
         appBin;
 
     beforeEach(() => {
@@ -67,29 +69,13 @@ describe('ApplicationFormCtrl', function() {
             },
         };
 
-        spyOn(Jobs, 'getWebhookUrl').and.callFake(() => {
-            return {
-                then: function(callback) {
-                    return callback({ data: 'https://designsafe-ci.org/api/notifications/wh/jobs/' });
-                },
-            };
-        });
+        systemsPromise = $q.defer();
+        systemsPromise.resolve({heartbeat: {status: true}})
+        spyOn(Systems, 'getSystemStatus').and.returnValue(systemsPromise.promise);
 
-        spyOn(Systems, 'getSystemStatus').and.callFake(() => {
-            return {
-                then: function(callback) {
-                    return callback({ data: { heartbeat: { status: true } } } );
-                },
-            };
-        });
-
-        spyOn(WorkspaceApps, 'get').and.callFake(() => {
-            return {
-                then: function(callback) {
-                    return callback({ data: app.value.definition });
-                },
-            };
-        });
+        appsPromise = $q.defer();
+        appsPromise.resolve({ data: app.value.definition })
+        spyOn(WorkspaceApps, 'get').and.returnValue(appsPromise.promise)
 
         ctrl = $controller('ApplicationFormCtrl', {
             $scope: scope,

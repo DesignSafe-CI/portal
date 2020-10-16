@@ -6,14 +6,14 @@ import PipelineSubEntityFieldTemplate from './pipeline-sub-entity-field.template
 
 class PipelineSubEntityCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $uibModal, $state, $q) {
+    constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
-        this.browser = this.DataBrowserService.state();
-        this.FileListing = FileListing;
+        this.browser = {}
+        this.FileListingService = FileListingService;
+        this.FileOperationService = FileOperationService;
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;
@@ -110,7 +110,7 @@ class PipelineSubEntityCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.view', {projectId: this.browser.project.uuid}, {reload: true});
     }
     
     goPrimaryEntity() {
@@ -141,6 +141,7 @@ class PipelineSubEntityCtrl {
                 project: () => this.browser.project,
                 edit: () => selection,
             },
+            backdrop: 'static',
             size: 'lg',
         });
     }
@@ -161,6 +162,14 @@ class PipelineSubEntityCtrl {
             return true;
         }
         return false;
+    }
+
+    onBrowse(file) {
+        if (file.type === 'dir') {
+            return;
+        } else {
+            this.FileOperationService.openPreviewModal({ api: 'agave', scheme: 'private', file });
+        }
     }
 }
 

@@ -5,20 +5,27 @@ import PipelineSelectionFieldTemplate from './pipeline-selection-field.template.
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineSelectionCtrl {
-
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q) {
+    constructor(
+        ProjectEntitiesService,
+        ProjectService,
+        FileListingService,
+        FileOperationService,
+        $state,
+        $q
+    ) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.DataBrowserService = DataBrowserService;
-        this.browser = this.DataBrowserService.state();
-        this.FileListing = FileListing;
+        this.FileListingService = FileListingService;
+        this.FileOperationService = FileOperationService;
+        this.browser = {};
         this.$state = $state;
         this.$q = $q;
     }
 
     $onInit() {
+        this.FileListingService.clearPublicationSelections();
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.selectedEnts = [];
@@ -29,81 +36,19 @@ class PipelineSelectionCtrl {
             loading: true,
         };
 
-        this.$q.all([
-            this.ProjectService.get({ uuid: this.projectId }),
-            this.DataBrowserService.browse(
-                { system: 'project-' + this.projectId, path: this.filePath },
-                { query_string: this.$state.params.query_string }
-            ),
-            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
-        ]).then(([project, listing, ents]) => {
-            this.browser.project = project;
-            this.browser.project.appendEntitiesRel(ents);
-            this.browser.listing = listing;
-            this.prepProject();
-            this.createAbstractListing(ents);
-        });
-
-        this.createAbstractListing = (entities) => {
-            /*
-            Create Abstract Listing:
-            Since we need to list x number of files from anywhere within the project's directory,
-            we need to try to list the minimum amount of paths within the project to get the file details.
-            Once we have the listed files we can create the abstracted file listings (this.browser.listings).
-            */
-            this.browser.listings = {};
-            this.browser.listing.href = this.$state.href('projects.view.data', {
-                projectId: this.projectId,
-                filePath: this.browser.listing.path,
-                projectTitle: this.browser.project.value.projectTitle,
-            });
-
-            let listingPaths = [];
-            let allPaths = [];
-            entities.forEach((entity) => {
-                this.browser.listings[entity.uuid] = {
-                    name: this.browser.listing.name,
-                    path: this.browser.listing.path,
-                    system: this.browser.listing.system,
-                    trail: this.browser.listing.trail,
-                    children: [],
-                };
-                allPaths = allPaths.concat(entity._filePaths);
-            });
-            allPaths.forEach((path) => {
-                listingPaths = listingPaths.concat(path.match(`.*\/`)[0]);
-            });
-            let reducedPaths = { files: [...new Set(allPaths)], directories: [...new Set(listingPaths)] };
-
-            this.populateListings = (paths, ents) => {
-                let apiParams = this.DataBrowserService.apiParameters();
-                var dirListings = paths.directories.map((dir) => {
-                    return this.FileListing.get(
-                        { system: 'project-' + this.browser.project.uuid, path: dir },
-                        apiParams
-                    ).then((resp) => {
-                        if (!resp) {
-                            return;
-                        }
-                        let files = resp.children;
-                        ents.forEach((e) => {
-                            files.forEach((f) => {
-                                if (e._filePaths.indexOf(f.path) > -1) {
-                                    f._entities.push(e);
-                                    this.browser.listings[e.uuid].children.push(f);
-                                }
-                            });
-                        });
-                        return resp;
-                    });
-                });
-
-                this.$q.all(dirListings).then(() => {
+        this.$q
+            .all([
+                this.ProjectService.get({ uuid: this.projectId }),
+                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }),
+            ])
+            .then(([project, entities]) => {
+                this.browser.project = project;
+                this.browser.project.appendEntitiesRel(entities);
+                this.prepProject();
+                this.FileListingService.abstractListing(entities, project.uuid).then((_) => {
                     this.ui.loading = false;
                 });
-            };
-            this.populateListings(reducedPaths, entities);
-        };
+            });
     }
 
     prepProject() {
@@ -111,31 +56,19 @@ class PipelineSelectionCtrl {
         this.projectSet = null;
         this.previewDest = null;
         this.subEntities = null;
-        if (this.browser.project.value.projectType === 'experimental'){
+        if (this.browser.project.value.projectType === 'experimental') {
             this.matchingGroupKey = 'experiments';
             this.projectSet = 'experiment_set';
             this.previewDest = 'projects.preview';
-            this.subEntities = [
-                'modelconfig_set',
-                'sensorlist_set',
-                'event_set',
-                'report_set',
-                'analysis_set'
-            ];
+            this.subEntities = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
         }
-        if (this.browser.project.value.projectType === 'simulation'){
+        if (this.browser.project.value.projectType === 'simulation') {
             this.matchingGroupKey = 'simulations';
             this.projectSet = 'simulation_set';
             this.previewDest = 'projects.previewSim';
-            this.subEntities = [
-                'model_set',
-                'input_set',
-                'output_set',
-                'report_set',
-                'analysis_set'
-            ];
+            this.subEntities = ['model_set', 'input_set', 'output_set', 'report_set', 'analysis_set'];
         }
-        if (this.browser.project.value.projectType === 'hybrid_simulation'){
+        if (this.browser.project.value.projectType === 'hybrid_simulation') {
             this.matchingGroupKey = 'hybridSimulations';
             this.projectSet = 'hybridsimulation_set';
             this.previewDest = 'projects.previewHybSim';
@@ -148,10 +81,10 @@ class PipelineSelectionCtrl {
                 'expoutput_set',
                 'simoutput_set',
                 'analysis_set',
-                'report_set'
+                'report_set',
             ];
         }
-        if (this.browser.project.value.projectType === 'field_recon'){
+        if (this.browser.project.value.projectType === 'field_recon') {
             this.matchingGroupKey = 'missions';
             this.projectSet = 'mission_set';
             this.previewDest = 'projects.previewFieldRecon';
@@ -161,10 +94,7 @@ class PipelineSelectionCtrl {
                 'geoscience_set',
                 'planning_set',
             ];
-            this.primaryEnts = [].concat(
-                this.browser.project.mission_set || [],
-                this.browser.project.report_set || []
-            );
+            this.primaryEnts = [].concat(this.browser.project.mission_set || [], this.browser.project.report_set || []);
             this.secondaryEnts = [].concat(
                 this.browser.project.socialscience_set || [],
                 this.browser.project.planning_set || [],
@@ -209,7 +139,10 @@ class PipelineSelectionCtrl {
             // if the sub entity is related to the project and not a primary entity
             if (!subEnt.value[this.matchingGroupKey]) {
                 return;
-            } else if (subEnt.associationIds.indexOf(this.projectId) > -1 && !subEnt.value[this.matchingGroupKey].length) {
+            } else if (
+                subEnt.associationIds.indexOf(this.projectId) > -1 &&
+                !subEnt.value[this.matchingGroupKey].length
+            ) {
                 return true;
             }
             return false;
@@ -224,7 +157,7 @@ class PipelineSelectionCtrl {
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', { projectId: this.projectId }, { reload: true });
+        this.$state.go('projects.view', { projectId: this.projectId }, { reload: true });
     }
 
     goPreview() {
@@ -233,7 +166,11 @@ class PipelineSelectionCtrl {
 
     goProject() {
         this.gatherSelections();
-        this.missing = this.ProjectService.checkSelectedFiles(this.browser.project, this.selectedEnts, this.selectedListings);
+        this.missing = this.ProjectService.checkSelectedFiles(
+            this.browser.project,
+            this.selectedEnts,
+            this.selectedListings
+        );
         let primaryNames = [
             'designsafe.project.experiment',
             'designsafe.project.simulation',
@@ -245,30 +182,35 @@ class PipelineSelectionCtrl {
             return;
         }
 
-        let primary = this.selectedEnts.filter(ent => primaryNames.includes(ent.name));
-        let secondary = this.selectedEnts.filter(ent => !primaryNames.includes(ent.name));
+        let primary = this.selectedEnts.filter((ent) => primaryNames.includes(ent.name));
+        let secondary = this.selectedEnts.filter((ent) => !primaryNames.includes(ent.name));
         window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
-        this.$state.go('projects.pipelineProject', {
-            projectId: this.projectId,
-            project: this.browser.project,
-            primaryEntities: primary,
-            secondaryEntities: secondary,
-            selectedListings: this.selectedListings,
-        }, { reload: true });
+
+        this.$state.go(
+            'projects.pipelineProject',
+            {
+                projectId: this.projectId,
+                project: this.browser.project,
+                primaryEntities: primary,
+                secondaryEntities: secondary,
+                selectedListings: this.selectedListings,
+            },
+            { reload: true }
+        );
     }
 
     ordered(parent, entities) {
         let order = (ent) => {
             if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
-                return ent._ui.orders.find(order => order.parent === parent.uuid);
+                return ent._ui.orders.find((order) => order.parent === parent.uuid);
             }
             return 0;
         };
-        entities.sort((a,b) => {
+        entities.sort((a, b) => {
             if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
                 return -1;
             }
-            return (order(a).value > order(b).value) ? 1 : -1;
+            return order(a).value > order(b).value ? 1 : -1;
         });
 
         return entities;
@@ -276,8 +218,8 @@ class PipelineSelectionCtrl {
 
     selectEntity(ent) {
         let uuidsToSelect = [];
-        if (this.selectedEnts.find(selEnt => selEnt.uuid === ent.uuid)) {
-            this.selectedEnts = this.selectedEnts.filter(selEnt => selEnt.uuid !== ent.uuid);
+        if (this.selectedEnts.find((selEnt) => selEnt.uuid === ent.uuid)) {
+            this.selectedEnts = this.selectedEnts.filter((selEnt) => selEnt.uuid !== ent.uuid);
         } else {
             this.selectedEnts.push(ent);
         }
@@ -286,20 +228,20 @@ class PipelineSelectionCtrl {
         });
 
         // iterate over subEntities and select files related to primary entity...
-        if (ent.name.endsWith('field_recon.report')){
+        if (ent.name.endsWith('field_recon.report')) {
             if (uuidsToSelect.includes(ent.uuid)) {
-                this.DataBrowserService.select(this.browser.listings[ent.uuid].children);
+                this.FileListingService.setPublicationSelection(ent.uuid, true);
             } else {
-                this.DataBrowserService.deselect(this.browser.listings[ent.uuid].children);
+                this.FileListingService.setPublicationSelection(ent.uuid, false);
             }
         } else {
             this.subEntities.forEach((subEntSet) => {
                 if (this.browser.project[subEntSet]) {
                     this.browser.project[subEntSet].forEach((subEnt) => {
-                        if (subEnt.associationIds.some(uuid => uuidsToSelect.includes(uuid))){
-                            this.DataBrowserService.select(this.browser.listings[subEnt.uuid].children);
+                        if (subEnt.associationIds.some((uuid) => uuidsToSelect.includes(uuid))) {
+                            this.FileListingService.setPublicationSelection(subEnt.uuid, true);
                         } else {
-                            this.DataBrowserService.deselect(this.browser.listings[subEnt.uuid].children);
+                            this.FileListingService.setPublicationSelection(subEnt.uuid, false);
                         }
                     });
                 }
@@ -309,24 +251,21 @@ class PipelineSelectionCtrl {
 
     gatherSelections() {
         this.selectedListings = {};
-        Object.keys(this.browser.listings).forEach((key) => {
-            this.selectedListings[key] = {
-                name: this.browser.listing.name,
-                path: this.browser.listing.path,
-                system: this.browser.listing.system,
-                trail: this.browser.listing.trail,
-                children: [],
-            };
-
-            this.browser.listings[key].children.forEach((child) => {
-                if (child._ui && child._ui.selected && child._ui.selected === true) {
-                    this.selectedListings[key].children.push(child);
-                }
-            });
-            if (!this.selectedListings[key].children.length) {
+        Object.keys(this.FileListingService.listings).forEach((key) => {
+            if (this.FileListingService.listings[key].selectedForPublication) {
+                this.selectedListings[key] = { ...this.FileListingService.listings[key] };
+            } else {
                 delete this.selectedListings[key];
             }
         });
+    }
+
+    onBrowse(file) {
+        if (file.type === 'dir') {
+            return;
+        } else {
+            this.FileOperationService.openPreviewModal({ api: 'agave', scheme: 'private', file });
+        }
     }
 }
 

@@ -9,6 +9,7 @@ from django.views.generic.base import View
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
 
+from designsafe.apps.data.models.elasticsearch import IndexedFile
 from elasticsearch_dsl import Q, Search
 
 logger = logging.getLogger(__name__)
@@ -18,8 +19,8 @@ class UsageView(SecureMixin, View):
 
     def get(self, request):
         current_user = request.user
-        q = Search(index="designsafe")\
-                .query('bool', must=[Q("match", **{"path._path": current_user.username})])\
+        q = IndexedFile.search()\
+                .query('bool', must=[Q("prefix", **{"path._exact": '/' + current_user.username})])\
                 .extra(size=0)
         q.aggs.metric('total_storage_bytes', 'sum', field="length")
         result = q.execute()

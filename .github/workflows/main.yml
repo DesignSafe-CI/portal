@@ -1,0 +1,51 @@
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ '**' ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  Server_Side_Unit_Tests:
+    runs-on: ubuntu-18.04
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6
+    
+    - run: pip install -r requirements.txt --no-cache
+    - run: pip install pytest
+    - name: Run Server-side unit tests and generate coverage report
+      run: |
+        pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
+
+  Client_Side_Unit_Tests:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Client Side Unit Tests
+      run: |
+        npm install
+        npm run test
+
+

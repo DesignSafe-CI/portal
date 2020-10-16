@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <h3 class="modal-title">File Preview: {{ $ctrl.file.name }}</h3>
+    <h3 class="modal-title">File Preview: {{ $ctrl.resolve.file.name }}</h3>
 </div>
 <div class="modal-body">
     <div>
@@ -10,36 +10,90 @@
             </div>
         </div>
         <div class="caption">
-            <file-metadata file="$ctrl.file"></file-metadata>
+            <file-metadata file="$ctrl.resolve.file"></file-metadata>
         </div>
     </div>
     <div class="table-preview actions text-center">
-        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canRename" ng-click="$ctrl.rename()">
+
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.rename" ng-click="$ctrl.rename()">
             <i class="fa fa-pencil"></i> Rename
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canMove" ng-click="$ctrl.move()">
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.move" ng-click="$ctrl.move()">
             <i class="fa fa-arrows"></i> Move
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canCopy" ng-click="$ctrl.copy()">
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.copy" ng-click="$ctrl.copy()">
             <i class="fa fa-copy"></i> Copy
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canDownload" ng-click="$ctrl.download()">
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.download" ng-click="$ctrl.download()">
             <i class="fa fa-cloud-download"></i> Download
         </button>
 
             <button class="btn btn-sm btn-default" ng-show="$ctrl.isJupyter()" ng-click="$ctrl.openInJupyter()">
                 <i class="fa fa-file-image-o"></i></i> Open In Jupyter
             </button>
-
-        <button class="btn btn-sm btn-danger" ng-if="$ctrl.tests.canDelete" ng-click="$ctrl.rm()">
-            <i class="fa fa-trash"></i> Delete
-        </button>
-    </div>
+    </div> 
 
     <div class="text-center nbv-preview">
+
+        <div ng-if="$ctrl.loading && $ctrl.fileType === 'video'">
+            <div class="alert alert-warning">
+                <p class="lead">Video Preview</p>
+                <p>Large video files will take longer to load, and some codecs are not supported.</p>
+            </div>
+        </div>
+
+        <div ng-if="$ctrl.fileType === 'other'">
+            <div class="alert alert-warning">
+                <p class="lead">Unsupported File Type</p>
+                <p>Preview for this item is not supported.</p>
+            </div>
+        </div>
+
+        <div ng-if="$ctrl.error">
+            <div class="alert alert-danger">
+                <p class="lead">Error!</p>
+                <p>There was an error loading the preview for this item.</p>
+            </div>
+        </div>
+
+        <div ng-if="$ctrl.loading">
+            <i class="fa fa-spinner fa-spin" style="font-size:150px;line-height:400px" ng-if="$ctrl.loading" id="loading_ind"></i>
+        </div>
+
+        </div>
+
+        <!--GeoJSON Map-->
+        <div id="preview_map_wrapper" style="display: none;"></div>
+        <div ng-if="$ctrl.mapError.show" class="alert alert-warning">
+            <p class="lead">Unable to show a preview</p>
+            <p>{{ $ctrl.mapError.message }}</p>
+        </div>
+
+        <div ng-if="$ctrl.fileType === 'text'" ng-show="!$ctrl.loading" >
+            <pre style="height:500px">{{$ctrl.textContent}}</pre>
+        </div>
+        <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.fileType==='video'" ng-show="!$ctrl.loading" >
+            <video id="videoPlayer" class="embed-responsive-item" ng-src="{{$ctrl.videoHref}}" id="framepreview" controls autoplay>
+        </div>
+        <div ng-if="$ctrl.fileType==='image'" ng-show="!$ctrl.loading">
+            <img id="preview" style="max-width:100%;" ng-src="{{$ctrl.href}}" id="framepreview" iframe-onload="$ctrl.onLoad()">
+        </div>
+        <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.fileType==='box'" ng-show="!$ctrl.loading">
+            <iframe class="embed-responsive-item" ng-src="{{ $ctrl.href }}" id="framepreview" iframe-onload="$ctrl.onLoad()"></iframe>
+        </div>
+        <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.fileType==='ms-office'" ng-show="!$ctrl.loading">
+            <iframe class="embed-responsive-item" ng-src="{{ $ctrl.href }}" id="framepreview" iframe-onload="$ctrl.onLoad()"></iframe>
+        </div>
+        <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.fileType==='object'" ng-show="!$ctrl.loading">
+            <iframe class="embed-responsive-item" ng-src="{{ $ctrl.href }}" id="framepreview" iframe-onload="$ctrl.onLoad()"></iframe>
+        </div>
+        <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.fileType==='ipynb'" ng-show="!$ctrl.loading">
+            <iframe class="embed-responsive-item" ng-src="{{ $ctrl.href }}" id="framepreview" iframe-onload="$ctrl.onLoad()"></iframe>
+        </div>
+        <!--
         <div ng-if="$ctrl.busy && $ctrl.prevVideo">
             <div clas="alert alert-warning">
                 <p class="lead">Vide Preview</p>
@@ -70,6 +124,7 @@
         <div class="embed-responsive embed-responsive-4by3" ng-if="! $ctrl.busy && $ctrl.prevVideo">
             <video class="embed-responsive-item" id="videoPlayer" controls autoplay src="" type=""></video>
         </div>
+        -->
     </div>
 </div>
 <div class="modal-footer">

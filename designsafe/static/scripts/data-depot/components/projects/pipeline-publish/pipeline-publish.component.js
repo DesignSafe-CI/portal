@@ -29,17 +29,16 @@ const attributeMap = {
 };
 
 class PipelinePublishCtrl {
-    constructor(ProjectService, PublishedService, DataBrowserService, $http, $state) {
+    constructor(ProjectService, PublicationService, $http, $state) {
         'ngInject';
         this.ProjectService = ProjectService;
-        this.PublishedService = PublishedService;
+        this.PublicationService = PublicationService;
         this.$http = $http;
         this.$state = $state;
-        this.DataBrowserService = DataBrowserService;
     }
 
     $onInit() {
-        this.project = this.resolve.project;
+        this.project = this.ProjectService.current
         this.selectedListings = this.resolve.resolveParams.selectedListings;
         this.ui = {
             published: null,
@@ -59,12 +58,12 @@ class PipelinePublishCtrl {
                 let entity = this.project.getRelatedByUuid(uuid);
                 let attr = attributeMap[entity.name];
                 let pubEntity = { name: entity.name, uuid: entity.uuid };
-                pubEntity.fileObjs = listing.children.map((child) => {
+                pubEntity.fileObjs = listing.listing.map((file) => {
                     return {
-                        name: child.name,
-                        path: child.path,
-                        system: child.system,
-                        type: child.type,
+                        name: file.name,
+                        path: file.path,
+                        system: file.system,
+                        type: file.type,
                     };
                 });
                 if (!publication[attr] ||
@@ -98,7 +97,7 @@ class PipelinePublishCtrl {
             });
         }
         this.publication = publication;
-        this.PublishedService.getPublished(this.project.value.projectId).then((resp) => {
+        this.PublicationService.getPublished(this.project.value.projectId).then((resp) => {
             let data = resp.data;
             if (data.project) {
                 this.ui.published = true;
@@ -112,7 +111,7 @@ class PipelinePublishCtrl {
     return() {
         window.sessionStorage.clear();
         this.$state.go(
-            'projects.view.data',
+            'projects.view',
             { projectId: this.project.uuid },
             { reload: true }
         );
@@ -129,7 +128,6 @@ class PipelinePublishCtrl {
                 status: 'publishing',
             }
         ).then((resp) => {
-            this.DataBrowserService.state().publicationStatus = resp.data.response.status;
             this.ui.submitted = true;
         }).finally( () => {
             this.busy = false;

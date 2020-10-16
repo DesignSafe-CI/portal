@@ -1,14 +1,274 @@
 {
+    "appId": "adcirc_netcdf_51.33-51.33u4",
+    "archive": true,
     "inputs": {
-        "workingDirectory": "agave://designsafe.storage.default/ds_user/test_folder"
+        "inputDirectory": "agave://designsafe.storage.community//app_examples/adcirc/adcirc_inputs"
     },
-    "name": "zip_test",
-    "parameters": {
-        "compression_type": "zip"
+    "parameters": {},
+    "appDefinition": {
+        "id": "adcirc_netcdf_51.33-51.33u4",
+        "name": "adcirc_netcdf_51.33",
+        "icon": null,
+        "uuid": "8856063205934043626-242ac114-0001-005",
+        "parallelism": "SERIAL",
+        "defaultProcessorsPerNode": 64,
+        "defaultMemoryPerNode": 1,
+        "defaultNodeCount": 1,
+        "defaultMaxRunTime": "10:00:00",
+        "defaultQueue": "normal",
+        "version": "51.33",
+        "revision": 4,
+        "isPublic": true,
+        "helpURI": "https://www.designsafe-ci.org/rw/user-guide/workspace/adcirc/",
+        "label": "ADCIRC-V51 (Stampede2)",
+        "owner": "ds_admin",
+        "shortDescription": "ADCIRC provides user with a sequential ADCIRC program. It is ideal to run small models on DesignSafe.",
+        "longDescription": "ADCIRC provides user with a sequential ADCIRC program. It is ideal to run small models on DesignSafe.",
+        "tags": [
+            "DesignSafe",
+            "netcdf",
+            "hdf5",
+            "hazards",
+            "NHERI",
+            "circulation",
+            "storm surge",
+            "larval transport",
+            "free surface circulation",
+            "transport problems",
+            "finite element",
+            "appCategory:Simulation",
+            "appIcon:ADCIRC"
+        ],
+        "ontology": [],
+        "executionType": "HPC",
+        "executionSystem": "designsafe.community.exec.stampede2.nores",
+        "deploymentPath": "/applications/adcirc_netcdf_51.33-51.33u4.zip",
+        "deploymentSystem": "designsafe.storage.default",
+        "templatePath": "wrapper.sh",
+        "testPath": "test/test.sh",
+        "checkpointable": false,
+        "lastModified": "2020-04-08T23:35:03-05:00",
+        "modules": [
+            "adcirc",
+            "intel/18.0.2",
+            "impi/18.0.2",
+            "netcdf"
+        ],
+        "available": true,
+        "inputs": [
+            {
+                "id": "inputDirectory",
+                "value": {
+                    "validator": "",
+                    "visible": true,
+                    "required": true,
+                    "order": 0,
+                    "enquote": false,
+                    "default": "agave://designsafe.storage.community//app_examples/adcirc/adcirc_inputs"
+                },
+                "details": {
+                    "label": "Input Directory",
+                    "description": "The directory containing your ADCIRC input files. You can drag the link for the directory from the Data Browser on the left, or click the 'Select Input' button and then select the directory. To try this out with example data, copy and paste 'agave://designsafe.storage.community//app_examples/adcirc/adcirc_inputs' above.",
+                    "argument": null,
+                    "showArgument": false,
+                    "repeatArgument": false
+                },
+                "semantics": {
+                    "minCardinality": 1,
+                    "maxCardinality": 1,
+                    "ontology": [
+                        "xsd:string"
+                    ],
+                    "fileTypes": [
+                        "raw-0"
+                    ]
+                }
+            }
+        ],
+        "parameters": [],
+        "outputs": [],
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/apps/v2/adcirc_netcdf_51.33-51.33u4"
+            },
+            "executionSystem": {
+                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.community.exec.stampede2.nores"
+            },
+            "storageSystem": {
+                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+            },
+            "history": {
+                "href": "https://agave.designsafe-ci.org/apps/v2/adcirc_netcdf_51.33-51.33u4/history"
+            },
+            "metadata": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/?q=%7B%22associationIds%22%3A%228856063205934043626-242ac114-0001-005%22%7D"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/apps/v2/adcirc_netcdf_51.33-51.33u4/pems"
+            }
+        },
+        "exec_sys": {
+            "maxSystemJobs": 50,
+            "_links": {
+                "metadata": {
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/?q=%7B%22associationIds%22%3A%22958769197909217767-242ac11a-0001-006%22%7D"
+                },
+                "roles": {
+                    "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.community.exec.stampede2.nores/roles"
+                },
+                "self": {
+                    "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.community.exec.stampede2.nores"
+                },
+                "history": {
+                    "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.community.exec.stampede2.nores/history"
+                }
+            },
+            "executionType": "HPC",
+            "available": true,
+            "description": "Stampede2 is the flagship supercomputer at The University of Texas at Austin's Texas Advanced Computing Center (TACC). A strategic national resource, Stampede2 will provide high-performance computing capabilities to thousands of researchers across the U.S. It will enter full production in fall 2017 as an 18 petaflop system that builds on the successes of the original Stampede cluster it replaces.",
+            "storage": {
+                "proxy": null,
+                "protocol": "SFTP",
+                "mirror": false,
+                "port": 22,
+                "auth": {
+                    "type": "PASSWORD"
+                },
+                "host": "stampede2.tacc.utexas.edu",
+                "rootDir": "/",
+                "homeDir": "/scratch/00849/tg458981/designsafe-scratch/"
+            },
+            "type": "EXECUTION",
+            "login": {
+                "proxy": null,
+                "protocol": "SSH",
+                "port": 22,
+                "auth": {
+                    "type": "PASSWORD"
+                },
+                "host": "stampede2.tacc.utexas.edu"
+            },
+            "uuid": "958769197909217767-242ac11a-0001-006",
+            "startupScript": "./bashrc",
+            "scheduler": "SLURM",
+            "default": false,
+            "public": true,
+            "maxSystemJobsPerUser": 4,
+            "id": "designsafe.community.exec.stampede2.nores",
+            "workDir": "/work/00849/tg458981/stampede2/designsafe-work/",
+            "owner": "mock",
+            "revision": 10,
+            "site": "tacc.utexas.edu",
+            "environment": null,
+            "queues": [
+                {
+                    "maxJobs": 4,
+                    "maxMemoryPerNode": 96,
+                    "default": false,
+                    "maxRequestedTime": "48:00:00",
+                    "name": "flat-quadrant",
+                    "description": null,
+                    "maxNodes": 32,
+                    "maxProcessorsPerNode": 2176,
+                    "mappedName": null,
+                    "maxUserJobs": -1,
+                    "customDirectives": "-A DesignSafe-Community"
+                },
+                {
+                    "maxJobs": 3,
+                    "maxMemoryPerNode": 192,
+                    "default": false,
+                    "maxRequestedTime": "48:00:00",
+                    "name": "skx-large",
+                    "description": null,
+                    "maxNodes": 865,
+                    "maxProcessorsPerNode": 41664,
+                    "mappedName": null,
+                    "maxUserJobs": -1,
+                    "customDirectives": "-A DesignSafe-Community"
+                },
+                {
+                    "maxJobs": 25,
+                    "maxMemoryPerNode": 192,
+                    "default": false,
+                    "maxRequestedTime": "48:00:00",
+                    "name": "skx-normal",
+                    "description": null,
+                    "maxNodes": 128,
+                    "maxProcessorsPerNode": 6144,
+                    "mappedName": null,
+                    "maxUserJobs": -1,
+                    "customDirectives": "-A DesignSafe-Community"
+                },
+                {
+                    "maxJobs": 1,
+                    "maxMemoryPerNode": 96,
+                    "default": false,
+                    "maxRequestedTime": "02:00:00",
+                    "name": "development",
+                    "description": null,
+                    "maxNodes": 4,
+                    "maxProcessorsPerNode": 272,
+                    "mappedName": null,
+                    "maxUserJobs": 1,
+                    "customDirectives": "-A DesignSafe-Community "
+                },
+                {
+                    "maxJobs": 50,
+                    "maxMemoryPerNode": 96,
+                    "default": true,
+                    "maxRequestedTime": "48:00:00",
+                    "name": "normal",
+                    "description": null,
+                    "maxNodes": 256,
+                    "maxProcessorsPerNode": 17048,
+                    "mappedName": null,
+                    "maxUserJobs": 5,
+                    "customDirectives": "-A DesignSafe-Community"
+                },
+                {
+                    "maxJobs": 5,
+                    "maxMemoryPerNode": 96,
+                    "default": false,
+                    "maxRequestedTime": "48:00:00",
+                    "name": "large",
+                    "description": null,
+                    "maxNodes": 2046,
+                    "maxProcessorsPerNode": 139264,
+                    "mappedName": null,
+                    "maxUserJobs": -1,
+                    "customDirectives": "-A DesignSafe-Community"
+                },
+                {
+                    "maxJobs": 1,
+                    "maxMemoryPerNode": 192,
+                    "default": false,
+                    "maxRequestedTime": "02:00:00",
+                    "name": "skx-dev",
+                    "description": null,
+                    "maxNodes": 4,
+                    "maxProcessorsPerNode": 192,
+                    "mappedName": null,
+                    "maxUserJobs": -1,
+                    "customDirectives": "-A DesignSafe-Community"
+                }
+            ],
+            "globalDefault": false,
+            "name": "Stampede2 SLURM Execution Host",
+            "lastModified": "2018-03-20T13:22:17-05:00",
+            "status": "UP",
+            "scratchDir": "/scratch/00849/tg458981/designsafe-scratch/"
+        },
+        "license": {
+            "type": null
+        }
     },
-    "maxRunTime": "00:30:00",
-    "archivePath": "ds_user/test/",
-    "archiveSystem": "designsafe.storage.default",
-    "appId": "compress-0.1",
-    "archive": "true"
+    "archiveOnAppError": true,
+    "name": "adcirc_netcdf_51.33-51.33u4_2020-08-23T02:13:05",
+    "nodeCount": 1,
+    "processorsPerNode": 64,
+    "maxRunTime": "00:10:00"
 }

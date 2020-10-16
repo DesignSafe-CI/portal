@@ -1,11 +1,151 @@
 [
   {
     "fields": {
-      "user_id": 1, 
+      "user_id": 1,
       "bio": "TEST BIO",
       "website": "test@test.com"
     },
     "model": "designsafe_accounts.DesignSafeProfile",
     "pk": 1
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhinterests",
+    "pk": 2,
+    "fields": {
+      "description": "Earthquake"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhinterests",
+    "pk": 6,
+    "fields": {
+      "description": "Tsunami"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhinterests",
+    "pk": 7,
+    "fields": {
+      "description": "Wind"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhinterests",
+    "pk": 8,
+    "fields": {
+      "description": "Fire"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhinterests",
+    "pk": 9,
+    "fields": {
+      "description": "Flood"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhinterests",
+    "pk": 10,
+    "fields": {
+      "description": "Hurricane"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhinterests",
+    "pk": 11,
+    "fields": {
+      "description": "Landslide"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhinterests",
+    "pk": 12,
+    "fields": {
+      "description": "Storm Surge"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhinterests",
+    "pk": 13,
+    "fields": {
+      "description": "Other"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhtechnicaldomains",
+    "pk": 1,
+    "fields": {
+      "description": "Coastal"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhtechnicaldomains",
+    "pk": 2,
+    "fields": {
+      "description": "Geotechnical"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhtechnicaldomains",
+    "pk": 3,
+    "fields": {
+      "description": "Social Science"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhtechnicaldomains",
+    "pk": 4,
+    "fields": {
+      "description": "Structural"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofilenhtechnicaldomains",
+    "pk": 5,
+    "fields": {
+      "description": "Other"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofileresearchactivities",
+    "pk": 1,
+    "fields": {
+      "description": "Already performed research in the NHERI program"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofileresearchactivities",
+    "pk": 2,
+    "fields": {
+      "description": "Performed research in the NEES program"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofileresearchactivities",
+    "pk": 3,
+    "fields": {
+      "description": "Performed research in the NHERI subject area but not in the NEES or NHERI programs"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofileresearchactivities",
+    "pk": 4,
+    "fields": {
+      "description": "Planning to perform research in the NHERI program"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofileresearchactivities",
+    "pk": 5,
+    "fields": {
+      "description": "Involved in education in the NHERI subject areas"
+    }
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofileresearchactivities",
+    "pk": 6,
+    "fields": {
+      "description": "No direct involvement in research or education in the NHERI subject areas"
+    }
   }
 ]

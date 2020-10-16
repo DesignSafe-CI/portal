@@ -1,18 +1,15 @@
 import dataDepotToolbarTemplate from './data-depot-toolbar.component.html'
 
 class DataDepotToolbarCtrl {
-    constructor($state, $uibModal, Django, DataBrowserService, UserService) {
+    constructor($state, $uibModal, Django, UserService, FileListingService, FileOperationService) {
         'ngInject';
-        this.DataBrowserService = DataBrowserService;
         this.$state = $state;
         this.search = { queryString: '' };
-        this.browser = DataBrowserService.state();
         this.UserService = UserService;
-
+        this.FileListingService = FileListingService
+        this.FileOperationService = FileOperationService
         this.tests = {};
-
-        this.apiParams = DataBrowserService.apiParameters();
-
+        this.Django = Django;
     }
 
     placeholder() {
@@ -26,7 +23,7 @@ class DataDepotToolbarCtrl {
             'publicData': 'Published Projects',
             'communityData': 'Community Data',
             'projects.view': 'Project View',
-            'projects.view.data': 'Project Data View',
+            'projects.curation': 'Project Curation',
             'neesPublished': 'NEES Published',
             'publicDataLegacy': 'Published (NEES)'
         };
@@ -39,78 +36,55 @@ class DataDepotToolbarCtrl {
         }
     };
 
-    details() {
-        // preview the last selected file or current listing if none selected
-        if (this.browser.selected.length > 0) {
-            this.DataBrowserService.preview(this.browser.selected.slice(-1)[0]);
-        } else {
-            this.DataBrowserService.preview(this.browser.listing);
-        }
+    getAllSelected() {
+        return Object.keys(this.FileListingService.listings).map(key => this.FileListingService.listings[key].selectedFiles).flat()
     }
+
     download() {
-        this.DataBrowserService.download(this.browser.selected);
+        const { api, scheme } = this.FileListingService.listings.main.params;
+        const files = this.getAllSelected();
+        this.FileOperationService.download({api, scheme, files});
     }
     preview() {
-        this.DataBrowserService.preview(this.browser.selected[0], this.browser.listing);
+        const { api, scheme } = this.FileListingService.listings.main.params;
+        const file = this.getAllSelected()[0];
+        this.FileOperationService.openPreviewModal({api, scheme, file});
     }
     previewImages() {
-        const images = this.browser.selected.filter(({ path }) => {
-            const ext = path.split('.').pop().toLowerCase();
-            return ['jpg', 'jpeg', 'png', 'tiff', 'gif'].indexOf(ext) !== -1;
-        });
-        const folders = this.browser.selected.filter(({ format }) => format === 'folder');
-        if (folders.length) {
-            Promise.all(folders.map((folder) => folder.fetch())).then((responses) => {
-                for (const res of responses) {
-                    const output = res.children.filter(({ path }) => {
-                        const ext = path.split('.').pop().toLowerCase();
-                        return ['jpg', 'jpeg', 'png', 'tiff', 'gif'].indexOf(ext) !== -1;
-                    });
-                    images.push(...output);
-                }
-                this.DataBrowserService.previewImages(images);
-            });
-        } else {
-            this.DataBrowserService.previewImages(images);
-        }
-    }
-    showCitation() {
-        this.DataBrowserService.showCitation(this.browser.selected, this.browser.listing);
-    }
-    viewMetadata() {
-        this.DataBrowserService.viewMetadata(this.browser.selected, this.browser.listing);
-    }
-    viewCategories() {
-        this.DataBrowserService.viewCategories(this.browser.selected, this.browser.listing);
-    }
-    share() {
-        this.DataBrowserService.share(this.browser.selected[0]);
+        const { api, scheme, system } = this.FileListingService.listings.main.params;
+        const files = this.getAllSelected();
+        this.FileOperationService.openImagePreviewModal({api, scheme, system, files});
     }
     copy() {
-        this.DataBrowserService.copy(this.browser.selected);
+        const { api, scheme, system, path } = this.FileListingService.listings.main.params;
+        const files = this.getAllSelected();
+        this.FileOperationService.openCopyModal({api, scheme, system, path, files});
     }
     move() {
-        this.DataBrowserService.move(this.browser.selected, this.browser.listing);
+        const { api, scheme, system, path } = this.FileListingService.listings.main.params;
+        const files = this.getAllSelected();
+        this.FileOperationService.openMoveModal({api, scheme, system, path, files});
     }
     rename() {
-        this.DataBrowserService.rename(this.browser.selected[0]);
+        const { api, scheme, system, path } = this.FileListingService.listings.main.params;
+        const file = this.getAllSelected()[0];
+        this.FileOperationService.openRenameModal({api, scheme, system, path, file});
     }
     trash() {
-        this.DataBrowserService.trash(this.browser.selected);
+        const { api, scheme } = this.FileListingService.listings.main.params;
+        const files = this.getAllSelected();
+        const trashPath = this.$state.current.name === 'myData' ?  `${this.Django.user}/.Trash` : '.Trash'
+        this.FileOperationService.trash({api, scheme, files, trashPath});
     }
     rm() {
-        this.DataBrowserService.rm(this.browser.selected);
+        this.FileOperationService.rm(this.browser.selected);
     }
     ddSearch() {
-        var state = this.apiParams.searchState;
-        this.$state.go(state, {
+        this.$state.go(this.$state.current.name, {
             'query_string': this.search.queryString,
-            'systemId': this.browser.listing.system,
         });
     }
 }
-
-DataDepotToolbarCtrl.$inject = ['$state', '$uibModal', 'Django', 'DataBrowserService', 'UserService'] 
 
 
 export const DataDepotToolbarComponent = {

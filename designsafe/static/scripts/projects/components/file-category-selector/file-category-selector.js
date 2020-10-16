@@ -1,27 +1,30 @@
 import _ from 'underscore';
+import { of, forkJoin } from 'rxjs';
 import FileCategorySelectorTemplate from './file-category-selector.template.html';
 
 class FileCategorySelectorCtrl {
-    constructor($q, Django, ProjectService, DataBrowserService, ProjectEntitiesService){
+    constructor($q, Django, ProjectService, FileListingService, ProjectEntitiesService, $scope) {
         'ngInject';
         this.Django = Django;
         this.ProjectService = ProjectService;
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.DataBrowserService = DataBrowserService;
+        this.FileListingService = FileListingService;
         this.$q = $q;
+        this.$scope = $scope;
     }
 
     $onInit() {
         this._ui = { busy: false, error: false };
-        this.state = this.DataBrowserService.state();
+        this.project = this.ProjectService.current;
     }
 
     selectMultiple() {
         // hides dropdowns for additionally selected files
-        if (this.state.selected.length > 1) {
-            if (this.file == this.state.selected[0]) {
+        const selected = this.FileListingService.listings[this.section].selectedFiles;
+        if (selected.length > 1) {
+            if (this.file.key === selected[0].key) {
                 return true;
-            } else if (this.state.selected.includes(this.file)) {
+            } else if (this.file.selected) {
                 return false;
             }
             return true;
@@ -31,8 +34,8 @@ class FileCategorySelectorCtrl {
     }
 
     saveSelection() {
-        if (this.state.selected.length > 1) {
-            this.categorizeFiles(this.state.selected);
+        if (this.FileListingService.listings[this.section].selectedFiles.length> 1) {
+            this.categorizeFiles(this.FileListingService.listings[this.section].selectedFiles);
         } else {
             this.categorizeFiles([this.file]);
         }
@@ -40,61 +43,53 @@ class FileCategorySelectorCtrl {
 
     categorizeFiles(inputs) {
         this._ui.busy = true;
-
-        var promises = [];
-        var promise;
-
-        inputs.forEach((file) => {
-            if (_.isEmpty(file.uuid())) {
-                promise = file.getMeta();
-            } else {
-                let my_promise = () => {
-                    let defer = this.$q.defer();
-                    defer.resolve(file);
-                    return defer.promise;
-                };
-                promise = my_promise();
+        const uuidPromises = []
+        inputs.forEach(file => {
+            if (!file.uuid) {
+                uuidPromises.push(this.FileListingService.getUuid(this.section, 'agave', 'private', file.system, file.path, file.key))
             }
-            promises.push(promise);
-        });
+            else {
+                let defer = this.$q.defer();
+                defer.resolve(file);
+                const promise = defer.promise;
+                uuidPromises.push(promise)
+            }
+        })
 
-        this.$q.all(promises).then((files) => {
+        this.$q.all(uuidPromises).then((files) => {
             let entity = this.project.getRelatedByUuid(this.selectedUuid);
             files.forEach((file) => {
-                if (_.contains(entity.associationIds, file.uuid())){
+                if (entity.associationIds.includes(file.uuid)) {
                     return undefined;
                 }
-                entity.associationIds.push(file.uuid());
-                entity.value.files.push(file.uuid());
+                entity.associationIds.push(file.uuid);
+                entity.value.files.push(file.uuid);
             });
-            return entity;
-        }).then((ret) => {
-            if (!ret){
+
+            if (!entity) {
                 return undefined;
             }
-            return this.ProjectEntitiesService.update({
+            this.ProjectEntitiesService.update({
                 data: {
-                    uuid: ret.uuid,
-                    entity: ret,
+                    uuid: entity.uuid,
+                    entity,
                 },
-            });
-        }).then((ret) => {
-            if (!ret) {
-                return inputs;
-            }
-            let entity = this.project.getRelatedByUuid(ret.uuid);
-            entity.update(ret);
-            
-            inputs.forEach((file) => {
-                file.setEntities(this.project.uuid, this.project.getAllRelatedObjects());
-            });
-            return inputs;
-        }).finally( ()=> {
-            this._ui.busy = false;
-            this.selectedUuid = '';
+            })
+                .then((ret) => {
+                    if (!ret) {
+                        return inputs;
+                    }
+                    let entity = this.project.getRelatedByUuid(ret.uuid);
+                    entity.update(ret);
+                    this.FileListingService.setEntities(this.section, this.project.getAllRelatedObjects())
+                    return inputs;
+                })
+                .finally(() => {
+                    this._ui.busy = false;
+                    this.selectedUuid = '';
+                });
         });
     }
-
 }
 
 export const FileCategorySelectorComponent = {
@@ -102,7 +97,7 @@ export const FileCategorySelectorComponent = {
     controller: FileCategorySelectorCtrl,
     controllerAs: '$ctrl',
     bindings: {
-        project: '=',
+        section: '<',
         file: '=',
     },
 };

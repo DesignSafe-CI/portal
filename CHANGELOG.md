@@ -1,5 +1,40 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.0.3
+Fixes:
+- Re-enable download of multiple files.
+
+## v5.0.2
+Fixes:
+- Fix an issue preventing some files from being downloaded.
+- Fix an issue preventing publications from being saved.
+
+## v5.0.1
+Fixes:
+- Add missing fields to projects search. 
+
+## v5.0.0
+Fixes: 
+- Prevent background clicks from closing some modals.
+- Fix bug preventing publication status from being set correctly for Other-type publications.
+- Fix bug preventing award numbers from being assigned to projects
+- Update verbiage for Research Planning Collection entities.
+Enhancements:
+- Merge data depot refactor into master.
+- Add GeoJSON support to file previews.
+- All listings in the Data Depot now use a shared FilesListing component
+- New "transfer" endpoint to copy files between any 2 storage backends.
+- Box and Dropbox SDKs updated to more recent versions.
+- Working search inside of projects and publications
+- Reduced loading times for publications and fixes for common display bugs.
+- Publications listings now fetch ~90% less data from Elasticsearch
+- Rewritten Workspace data browser
+- Use minified AngularJS library to reduce load times.
+
+## v4.9.16
+Fixes:
+- Fix transfers between external resources (Box, Dropbox, Google Drive) and Agave.
+
 ## v4.9.15
 Enhancements:
 - Update file tag options for Other-type projects.
@@ -37,6 +72,20 @@ Enhancements:
 Fixes:
 - Bug/DES-1674 - Fix bug with FR ordering in "Relate Data" modal
 - Bug/DES-1662 - Fix issue with project file listings overloading agave with requests
+## v5.0.0-20200802
+Fixes: 
+- Insert missing ngInject
+
+## v5.0.0-20200801
+Enhancements: 
+- All listings have been reimplemented on both the frontend and backend. DataBrowserService and FileListing are refactored into a FileListingService and FileOperationService.
+- All listings in the Data Depot now use a shared FilesListing component
+- New “transfer” endpoint to copy files between any 2 storage backends.
+- Box and Dropbox SDKs updated to more recent versions.
+- Working search inside of projects and publications
+- Reduced loading times for publications and fixes for common display bugs.
+- Publications listings now fetch ~90% less data from Elasticsearch
+- Rewritten Workspace data browser 
 
 ## v4.9.9-20200703
 Fixes:

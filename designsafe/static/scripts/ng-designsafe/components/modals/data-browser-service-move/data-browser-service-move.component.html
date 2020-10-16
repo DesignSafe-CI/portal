@@ -1,6 +1,7 @@
 <div class="modal-header">
     <h3 class="modal-title">Select the destination to move the following files</h3>
 </div>
+
 <div class="modal-body">
     <div ng-if="$ctrl.hasEntities">
         <div class="alert alert-warning">
@@ -10,161 +11,49 @@
     </div>
     <div ng-if="!$ctrl.hasEntities">
     <ul>
-        <li ng-repeat="file in $ctrl.data.files">
-            {{ file.name }}
+        <li ng-repeat="item in $ctrl.FileListingService.getSelectedFiles('main')">
+            {{item.name}} {{$ctrl.FileListingService.operations.move.status[item.key]}}
         </li>
     </ul>
 
-    <div class="row">
-        <div class="col-sm-3">
-            <form>
-                <label for="id_currentOption" class="sr-only">Jump to</label>
-                <select class="form-control" 
-                    id="id_currentOption" 
-                    name="currentOption" 
-                    ng-model="$ctrl.$scope.currentOption" 
-                    ng-options="option as option.label 
-                                for option in $ctrl.options"></select>
-            </form>
-        </div>
-        <div class="col-sm-9">
-          <dd-breadcrumb skip-root="true" custom-root="$ctrl.customRoot" listing="$ctrl.listing" on-browse="$ctrl.onBrowse"></dd-breadcrumb>
+    <div ng-if="$ctrl.hasEntities">
+        <div class="alert alert-warning">
+            <p class="lead">Associated Entities Detected</p>
+            <p>This file cannot be renamed until its tags or associated entities have been removed using the Curation Directory tab.</p>
         </div>
     </div>
-    <div class="table-responsive" style="height: 500px" ng-if="!$ctrl.state.listingProjects" ds-infinite-scroll
-    data-scroll-bottom="!$ctrl.state.busy && !$ctrl.state.reachedEnd && $ctrl.scrollToBottom($ctrl.listing)"
-    data-scroll-top="$ctrl.scrollToTop()"
-    ng-scroll=""
-    data-bottom-height="0">
-        <table class="table table-bordered table-striped" style="background-color: #fff;">
-            <thead>
-            <th>Name</th>
-            <th>Action</th>
-            </thead>
-
-            <tbody ng-if="!$ctrl.state.busy">
-            <tr ng-repeat="item in $ctrl.listing.children">
-                <td>
-                    <i class="fa {{ item.icon() }}"></i>
-                    <a ng-href="{{ item.href || '#' }}" ng-click="$ctrl.onBrowse($event, item)">
-                        {{ item.name }}
-                    </a>
-                </td>
-                <td>
-                    <a class="btn btn-primary btn-xs"
-                       ng-if="$ctrl.validDestination(item)"
-                       ng-click="$ctrl.chooseDestination(item)">
-                        Move to {{ item.name }}
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td ng-if="$ctrl.state.loadingMore" colspan=2>
-                    <span class="bg-info text-info">
-                        <i class="fa fa-spinner fa-spin"></i> Loading...
-                    </span>
-                </td>
-            </tr>
-            </tbody>
-            <caption class="text-center" ng-if="$ctrl.state.busy">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
-            </caption>
-      <caption style="padding:0">
-
-          <div ng-if="$ctrl.state.busy" style="margin-bottom:-38px" class="text-right">
-              <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
-                  <i class="fa fa-spinner fa-spin"></i> Loading...
-              </span>
-          </div>
-
-          <div ng-if="! $ctrl.state.busy && $ctrl.state.error" class="text-center">
-              <p class="alert alert-danger">
-                  {{ $ctrl.browser.error.message || $ctrl.browser.error }}
-              </p>
-          </div>
-
-
-            <caption class="text-center" ng-if="! state.busy && state.error">
-                <p class="alert alert-danger">
-                    {{ $ctrl.state.error }}
-                </p>
-            </caption>
-            <caption class="text-center" ng-if="! $ctrl.state.busy && ! $ctrl.state.error && ($ctrl.listing.children|length) === 0">
-                <p class="lead">
-                    This folder is empty!
-                    <br><i class="fa fa-folder-open-o"></i>
-                </p>
-            </caption>
-        </table>
-        </div>
-        <div class="table-responsive" ng-if="$ctrl.state.listingProjects" style="height: 500px"
-            ds-infinite-scroll
-            data-scroll-bottom="!$ctrl.state.busy && !$ctrl.state.reachedEnd && $ctrl.scrollToBottom($ctrl.listing)"
-            data-scroll-top="$ctrl.scrollToTop()"
-            data-bottom-height="0">
-      <table class="table table-bordered tables-striped" style="background-color: #fff;">
-        <thead>
-         <th>Name</th>
-         <th>PI</th>
-        </thead>
-        <tbody ng-if="!$ctrl.state.busy">
-          <tr ng-repeat="item in $ctrl.projects">
-            <td>
-              <i class="fa fa-briefcase"></i>
-              <a ng-href="{{ item.href || '#' }}" ng-click = "$ctrl.onBrowse($event, item)">
-                {{item.value.title}}
-              </a>
-            </td>
-            <td>
-              {{$ctrl.data.names[item.value.pi]}}
-            </td>
-          </tr>
-          <tr>
-            <td ng-if="$ctrl.state.loadingMore" colspan=2>
-                <span class="bg-info text-info">
-                    <i class="fa fa-spinner fa-spin"></i> Loading...
-                </span>
-            </td>
-        </tr>
-        </tbody>
-      <caption style="padding:0">
-
-          <div ng-if="$ctrl.state.busy" style="margin-bottom:-38px" class="text-right">
-              <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
-                  <i class="fa fa-spinner fa-spin"></i> Loading...
-              </span>
-          </div>
-
-          <div ng-if="! $ctrl.state.busy && state.error" class="text-center">
-              <p class="alert alert-danger">
-                  {{ $ctrl.browser.error.message || $ctrl.browser.error }}
-              </p>
-          </div>
-
-
-            <caption class="text-center" ng-if="! $ctrl.state.busy && state.error">
-                <p class="alert alert-danger">
-                    {{ $ctrl.state.error }}
-                </p>
-            </caption>
-            <caption class="text-center" ng-if="! $ctrl.state.busy && ! $ctrl.state.error && ($ctrl.listing.children|length) === 0">
-                <p class="lead">
-                    This folder is empty!
-                    <br><i class="fa fa-folder-open-o"></i>
-                </p>
-            </caption>
-        </table>
-    </div>
-    </div>
-
-<div class="modal-footer">
-    <div class="text-right">
-        <button class="btn btn-primary" type="button"
-                ng-disabled="! $ctrl.validDestination($ctrl.listing) || $ctrl.hasEntities"
-                ng-click="$ctrl.chooseDestination($ctrl.listing)"
+    
+    <div ng-if="!$ctrl.hasEntities">
+        <breadcrumb
+            path="$ctrl.FileListingService.listings.modal.params.path"
+            system="$ctrl.FileListingService.listings.modal.params.system"
+            on-browse="$ctrl.onBrowse(file)"
+            skip-root="$ctrl.breadcrumbParams.skipRoot"
+            custom-root="$ctrl.breadcrumbParams.customRoot"
+            pre-root="$ctrl.breadcrumbParams.preRoot"
+        ></breadcrumb>
+        <files-listing
+            on-scroll="$ctrl.scrollToBottom()"
+            listing="$ctrl.getModalListing()"
+            on-browse="$ctrl.onBrowse(file)"
+            operation-label="'Move'"
+            operation="$ctrl.handleMove(file)"
+            >&nbsp;</files-listing
         >
-            Move to {{ $ctrl.listing.name }}
-        </button>
-        <button class="btn btn-default" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+       
+    </div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-right">
+            <button class="btn btn-primary" type="button"
+                    ng-if="!$ctrl.listingProjects"
+                    ng-click="$ctrl.handleFooterMove()"
+                    ng-disabled="$ctrl.hasEntities"
+            >
+                Move Here
+            </button>
+            <button class="btn btn-default" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+        </div>
     </div>
 </div>

@@ -1,6 +1,5 @@
 import logging 
 from django.core.management import BaseCommand, CommandError
-from django.utils.six.moves import input
 from django.conf import settings
 import elasticsearch
 from elasticsearch import TransportError
@@ -42,7 +41,7 @@ class Command(BaseCommand):
         reindex_index_alias = default_index_alias + '-reindex'
 
         if not swap_only:
-            confirm = eval(input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias)))
+            confirm = input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias))
             if confirm != 'Y':
                 raise SystemExit
             # Set up a fresh reindexing alias.
