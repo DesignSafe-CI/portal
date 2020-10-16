@@ -440,16 +440,21 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
         data['source'] = source
         data['piEligibility'] = pi_eligibility
 
-        #pull out tas specific fields from data
+        #pull out specific fields from data for tas and pro profile
         tas_keys = ['firstName', 'lastName','email', 'confirmEmail',
                     'phone', 'institutionId', 'departmentId', 'institution',
                     'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
                     'source', 'piEligibility', 'username', 'password', 'confirmPassword',
                     'agree_to_terms', 'agree_to_account_limit']
+        pro_profile_fields = ['nh_interests', 'nh_technical_domains', 'bio',
+                                'website', 'orcid_id', 'professional_level', 'research_activities']
+        pro_profile_data = {}
         tas_data = {}
         for key in data:
             if key in tas_keys:
                 tas_data[key] = data[key]
+            if key in pro_profile_fields:
+                pro_profile_data[key] = data[key]
 
         safe_data = tas_data.copy()
         safe_data['password'] = safe_data['confirmPassword'] = '********'
@@ -498,12 +503,6 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
 
         #save professional profile information
         pro_profile = ProfessionalProfileForm(instance=ds_profile)
-        pro_profile_fields = ['nh_interests', 'nh_technical_domains', 'bio',
-                                'website', 'orcid_id', 'professional_level', 'research_activities']
-        pro_profile_data = {}
-        for key in data:
-            if key in pro_profile_fields:
-                pro_profile_data[key] = data[key]
         pro_profile.cleaned_data = pro_profile_data
         pro_profile.save()
 
