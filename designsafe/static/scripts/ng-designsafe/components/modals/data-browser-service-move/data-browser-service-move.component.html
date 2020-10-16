@@ -6,50 +6,47 @@
     <div ng-if="$ctrl.hasEntities">
         <div class="alert alert-warning">
             <p class="lead">Associated Entities Detected</p>
-            <p>This file cannot be renamed until its tags or associated entities have been removed using the Curation Directory tab.</p>
+            <p>
+                This file or folder cannot be moved until its tags or associated entities have been removed using the
+                Curation Directory tab.
+            </p>
         </div>
     </div>
     <div ng-if="!$ctrl.hasEntities">
-    <ul>
-        <li ng-repeat="item in $ctrl.FileListingService.getSelectedFiles('main')">
-            {{item.name}} {{$ctrl.FileListingService.operations.move.status[item.key]}}
-        </li>
-    </ul>
+        <ul>
+            <li ng-repeat="item in $ctrl.FileListingService.getSelectedFiles('main')">
+                {{ item.name }} {{ $ctrl.FileListingService.operations.move.status[item.key] }}
+            </li>
+        </ul>
 
-    <div ng-if="$ctrl.hasEntities">
-        <div class="alert alert-warning">
-            <p class="lead">Associated Entities Detected</p>
-            <p>This file cannot be renamed until its tags or associated entities have been removed using the Curation Directory tab.</p>
+        <div>
+            <breadcrumb
+                path="$ctrl.FileListingService.listings.modal.params.path"
+                system="$ctrl.FileListingService.listings.modal.params.system"
+                on-browse="$ctrl.onBrowse(file)"
+                skip-root="$ctrl.breadcrumbParams.skipRoot"
+                custom-root="$ctrl.breadcrumbParams.customRoot"
+                pre-root="$ctrl.breadcrumbParams.preRoot"
+            ></breadcrumb>
+            <files-listing
+                on-scroll="$ctrl.scrollToBottom()"
+                listing="$ctrl.getModalListing()"
+                on-browse="$ctrl.onBrowse(file)"
+                operation-label="'Move'"
+                operation="$ctrl.handleMove(file)"
+                >&nbsp;</files-listing
+            >
         </div>
-    </div>
-    
-    <div ng-if="!$ctrl.hasEntities">
-        <breadcrumb
-            path="$ctrl.FileListingService.listings.modal.params.path"
-            system="$ctrl.FileListingService.listings.modal.params.system"
-            on-browse="$ctrl.onBrowse(file)"
-            skip-root="$ctrl.breadcrumbParams.skipRoot"
-            custom-root="$ctrl.breadcrumbParams.customRoot"
-            pre-root="$ctrl.breadcrumbParams.preRoot"
-        ></breadcrumb>
-        <files-listing
-            on-scroll="$ctrl.scrollToBottom()"
-            listing="$ctrl.getModalListing()"
-            on-browse="$ctrl.onBrowse(file)"
-            operation-label="'Move'"
-            operation="$ctrl.handleMove(file)"
-            >&nbsp;</files-listing
-        >
-       
-    </div>
     </div>
 
     <div class="modal-footer">
         <div class="text-right">
-            <button class="btn btn-primary" type="button"
-                    ng-if="!$ctrl.listingProjects"
-                    ng-click="$ctrl.handleFooterMove()"
-                    ng-disabled="$ctrl.hasEntities"
+            <button
+                class="btn btn-primary"
+                type="button"
+                ng-if="!$ctrl.listingProjects"
+                ng-click="$ctrl.handleFooterMove()"
+                ng-disabled="$ctrl.hasEntities"
             >
                 Move Here
             </button>

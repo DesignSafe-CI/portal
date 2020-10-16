@@ -84,6 +84,9 @@ export class FileOperationService {
     }
 
     checkForEntities(file) {
+        const entities = this.ProjectService.current.getAllRelatedObjects()
+        const entityFilePaths = entities.map((e) => e._filePaths).flat(1);
+        const hasPathPrefix = entityFilePaths.some(entityPath => entityPath.startsWith(file.path))
         const inProject = ['projects.view', 'projects.curation'].includes(this.$state.current.name);
         const hasEntities = file._entities && file._entities.length;
         const hasTags = file._fileTags && file._fileTags.length;
@@ -92,7 +95,7 @@ export class FileOperationService {
             (tag) => tag.path.replace(/^\/+/, '') === file.path.replace(/^\/+/, '')
         );
 
-        return inProject && (hasEntities || hasTags || hasProjectFileTags);
+        return inProject && (hasPathPrefix || hasEntities || hasTags || hasProjectFileTags);
     }
 
     /***************************************************************************

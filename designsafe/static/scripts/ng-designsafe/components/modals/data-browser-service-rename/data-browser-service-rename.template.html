@@ -5,17 +5,37 @@
     <div ng-if="$ctrl.hasEntities">
         <div class="alert alert-warning">
             <p class="lead">Associated Entities Detected</p>
-            <p>This file cannot be renamed until its tags or associated entities have been removed using the Curation Directory tab.</p>
+            <p>
+                This file or folder cannot be renamed until its tags or associated entities have been removed using the
+                Curation Directory tab.
+            </p>
         </div>
     </div>
     <form>
         <div class="form-group">
             <label for="id-target-name">Enter {{ file.type }} name</label>
-            <input type="text" class="form-control" id="id-target-name" name="target-name" placeholder="New name" ng-model="$ctrl.newName" ng-disabled="$ctrl.hasEntities" autofocus select-on-focus>
+            <input
+                type="text"
+                class="form-control"
+                id="id-target-name"
+                name="target-name"
+                placeholder="New name"
+                ng-model="$ctrl.newName"
+                ng-disabled="$ctrl.hasEntities"
+                autofocus
+                select-on-focus
+            />
         </div>
         <div class="text-right">
             <button class="btn btn-default" type="button" ng-click="$ctrl.cancel()">Cancel</button>
-            <button class="btn btn-primary" type="button" ng-click="$ctrl.rename($event)" ng-disabled="$ctrl.hasEntities">Rename {{ file.type }}</button>
+            <button
+                class="btn btn-primary"
+                type="button"
+                ng-click="$ctrl.rename($event)"
+                ng-disabled="$ctrl.hasEntities"
+            >
+                Rename {{ file.type }}
+            </button>
         </div>
     </form>
 </div>
