@@ -664,14 +664,13 @@ def zip_project_files(self, project_uuid):
 
 @shared_task(bind=True)
 def zip_publication_files(self, project_id):
-    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
+    from designsafe.apps.projects.managers import publication as PublicationManager
     # Only create archive in prod
     if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
         return
 
     try:
-        pub = BaseESPublication(project_id=project_id)
-        pub.archive()
+        PublicationManager.archive(project_id=project_id)
     except Exception as exc:
         logger.error('Zip Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
