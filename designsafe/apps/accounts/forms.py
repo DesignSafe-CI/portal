@@ -300,7 +300,7 @@ class ProfessionalProfileForm(forms.ModelForm):
     Any changes made to this form need
     to be reflected in the UserRegistrationForm
     1) make sure the fields are in the correct order (field_order var)
-    2) Specifically, update the UserRegistrationForm.saveProProfile() function
+    2) Specifically, update the UserRegistrationForm.savew() function
     to make sure all the pro profile fields are saved.
     """
     bio_placeholder = (
@@ -444,7 +444,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
         tas_keys = ['firstName', 'lastName','email', 'confirmEmail',
                     'phone', 'institutionId', 'departmentId', 'institution',
                     'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
-                    'source', 'piElegibility', 'username', 'password', 'confirmPassword',
+                    'source', 'piEligibility', 'username', 'password', 'confirmPassword',
                     'agree_to_terms', 'agree_to_account_limit']
         tas_data = {}
         for key in data:
@@ -498,13 +498,13 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
 
         #save professional profile information
         pro_profile = ProfessionalProfileForm(instance=ds_profile)
-        pro_profile.nh_interests = data['nh_interests']
-        pro_profile.nh_technical_domains = data['nh_technical_domains']
-        pro_profile.bio = data['bio']
-        pro_profile.website = data['website']
-        pro_profile.orcid_id = data['orcid_id']
-        pro_profile.professional_level = data['professional_level']
-        pro_profile.research_activities = data['research_activities']
+        pro_profile_fields = ['nh_interests', 'nh_technical_domains', 'bio',
+                                'website', 'orcid_id', 'professional_level', 'research_activities']
+        pro_profile_data = {}
+        for key in data:
+            if key in pro_profile_fields:
+                pro_profile_data[key] = data[key]
+        pro_profile.cleaned_data = pro_profile_data
         pro_profile.save()
 
         # terms of use
