@@ -445,7 +445,9 @@ def archive(project_id):
             logger.debug("Creating metadata for {}".format(pub.projectId))
             if pub_dict['project']['value']['projectType'] in entity_type_map:
                 ent_type = entity_type_map[pub_dict['project']['value']['projectType']]
-                entity_uuids = [x['uuid'] for x in pub_dict[ent_type]]
+                entity_uuids = []
+                if ent_type in pub_dict.keys():
+                    entity_uuids = [x['uuid'] for x in pub_dict[ent_type]]
                 meta_dict = mgr.get_entity_by_uuid(project_uuid).to_datacite_json()
                 meta_dict['published_resources'] = []
                 meta_dict['url'] = TARGET_BASE.format(project_id=pub_dict['project_id'])
