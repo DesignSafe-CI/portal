@@ -1,4 +1,14 @@
 # DesignSafe-CI Portal Release Notes
+Fixes:
+- Fix a bug preventing users from creating directories inside of projects
+- Fix a bug causing indexing tasks to target the wrong queue
+Enhancements:
+- Prevent users from moving folders containing data with associated entities.
+- Add formatted metadata to publication archives.
+
+## v5.0.4
+Fixes:
+- Re-enable download of multiple files.
 
 ## v5.0.3
 Fixes:
