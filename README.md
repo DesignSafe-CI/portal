@@ -118,6 +118,16 @@ Every file needed is in `conf/nginx/certs`.
 3. `$ sudo cp ca.pem /usr/local/share/ca-certificates/extra/designsafeCA.pem`
 4. `$ sudo update-ca-certificates`
 
+<<<<<<< HEAD
+=======
+##### Fedora & CentOS & RHEL
+1. `$ sudo dnf install ca-certificates` or </br>`$ sudo yum install ca-certificates`
+2. `$ sudo update-ca-trust enable`
+3. `$ cd $PROJECT/conf/nginx/certificates`
+4. `$ sudo cp ca.pem /usr/share/pki/ca-trust-source/anchors/designsafeCA.pem` or </br>`$ sudo cp ca.pem /etc/pki/ca-trust/source/anchors/designsafeCA.pem`
+5. `$ sudo update-ca-trust`
+
+>>>>>>> 1fe3dc9f... Add instructions on installing CA certificates on Fedora/RHEL/CentOS
 #### Firefox UI
 
 1. Go to preferences
