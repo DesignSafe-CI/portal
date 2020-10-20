@@ -86,7 +86,6 @@
     "eslint-config-google": "^0.10.0",
     "eslint-config-recommended": "^4.0.0",
     "exif-js": "^2.3.0",
-    "filesaver": "0.0.13",
     "font-awesome": "^4.7.0",
     "geojson-validation": "^0.2.1",
     "jquery": "^3.3.1",

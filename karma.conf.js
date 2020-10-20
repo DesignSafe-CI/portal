@@ -5,7 +5,7 @@ module.exports = function(config) {
         files: [
             './designsafe/static/vendor/modernizr/modernizr.js',
             './node_modules/jquery/dist/jquery.min.js',
-            './designsafe/static/vendor/bootstrap-ds/js/bootstrap.js',
+            './designsafe/static/vendor/bootstrap-ds/js/bootstrap.min.js',
             './node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
             './node_modules/slick-carousel/slick/**/*.js',
             './node_modules/tv4/tv4.js',
