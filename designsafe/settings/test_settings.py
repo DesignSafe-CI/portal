@@ -30,8 +30,6 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__CHANGE_ME_!__')
 
 # SESSIONS
 SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
-# SESSION_ENGINE = 'redis_sessions.session'
-# SESSION_REDIS_HOST = 'redis'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -56,15 +54,13 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
 
-    'djng', #TODO: djng
-    'djng.urls',
+    'djng',
     'cms',
     'treebeard',
     'menus',
     'sekizai',
     'djangocms_style',
     'djangocms_file',
-    'djangocms_flash',
     'djangocms_googlemap',
     'djangocms_picture',
     'djangocms_video',
@@ -73,10 +69,8 @@ INSTALLED_APPS = (
     #django recaptcha
     'snowpenguin.django.recaptcha2',
 
-    #'pipeline',
     'filer',
     'easy_thumbnails',
-    'reversion',
     'bootstrap3',
     'termsandconditions',
     'impersonate',
@@ -243,14 +237,15 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'designsafe', 'static'),
     ('vendor', os.path.join(BASE_DIR, 'node_modules'))
 ]
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    #'pipeline.finders.PipelineFinder',
 )
 MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
+
+# FORM_RENDERER = 'djng.forms.renderers.DjangoAngularBootstrap3Templates'
 
 #####
 #
@@ -308,13 +303,9 @@ CKEDITOR_SETTINGS = {
 }
 
 MIGRATION_MODULES = {
-    'djangocms_flash': None,
     'djangocms_file': None,
     'djangocms_googlemap': None,
-    'djangocms_inherit': None,
-    'djangocms_link': None,
     'djangocms_picture': None,
-    'djangocms_teaser': None,
     'djangocms_video': None,
     'djangocms_style': None
 }
@@ -357,7 +348,9 @@ BOOTSTRAP3 = {
 # Django Impersonate
 #
 #####
-IMPERSONATE_REQUIRE_SUPERUSER = True
+IMPERSONATE = {
+    'REQUIRE_SUPERUSER': True
+}
 
 
 #####
@@ -431,63 +424,6 @@ NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@
 # Terms and Conditions
 #
 DEFAULT_TERMS_SLUG = 'terms'
-
-###
-# Pipeline
-#
-PIPELINE = {
-    'PIPELINE_ENABLED': False
-    }
-PIPELINE['COMPILERS'] = (
-    'pipeline.compilers.sass.SASSCompiler',
-)
-PIPELINE['SASS_ARGUMENTS'] = '-C'
-PIPELINE['CSS_COMPRESSOR'] = None
-PIPELINE['JS_COMPRESSOR'] = 'pipeline.compressors.slimit.SlimItCompressor'
-PIPELINE['STYLESHEETS'] = {
-    'vendor': {
-        'source_filenames': (
-            'vendor/bootstrap-ds/css/bootstrap.css',
-            'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
-            'vendor/font-awesome/css/font-awesome.css',
-            'vendor/angular-toastr/dist/angular-toastr.css',
-            'vendor/slick-carousel/slick/slick.css',
-            'vendor/slick-carousel/slick/slick-theme.css'
-        ),
-        'output_filename': 'css/vendor.css',
-    },
-    'main': {
-        'source_filenames': (
-            'styles/typekit.css',
-            'styles/main.css',
-            'styles/corner-ribbon.css',
-            'styles/base.scss',
-            'styles/nested-list-group.scss',
-        ),
-        'output_filename': 'css/main.css',
-    },
-}
-
-PIPELINE['JAVASCRIPT'] = {
-    'vendor': {
-        'source_filenames': (
-            'vendor/modernizr/modernizr.js',
-            'vendor/jquery/dist/jquery.js',
-            'vendor/bootstrap-ds/js/bootstrap.js',
-            'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
-            'vendor/d3/d3.min.js'
-        ),
-        'output_filename': 'js/vendor.js',
-    },
-    'main': {
-        'source_filenames': (
-            'scripts/utils.js',
-            'scripts/dateinput.js',
-            'scripts/navbar.js',
-        ),
-        'output_filename': 'js/main.js',
-    },
-}
 
 ##
 # django-websockets-redis
@@ -625,21 +561,17 @@ MIGRATION_MODULES = {
     'data': None,
     'designsafe_data': None,
     'rapid': None,
-    'djangocms_flash.Flash': None,
     'djangocms_file.File': None,
     'djangocms_file.Folder': None,
     'djangocms_googlemap.GoogleMapMarker': None,
     'djangocms_googlemap.GoogleMapRoute': None,
     'djangocms_googlemap.GoogleMap': None,
-    'djangocms_inherit': None,
-    'djangocms_link': None,
     'djangocms_picture.Picture': None,
-    'djangocms_teaser': None,
     'djangocms_video.VideoTrack': None,
     'djangocms_video.VideoPlayer': None,
     'djangocms_video.VideoSource': None,
     'djangocms_style.Style': None,
-    
+
 }
 
 LOGGING = {
