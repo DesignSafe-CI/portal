@@ -152,7 +152,8 @@ class FilesListingCtrl {
 
     isInTrash() {
         if (this.listing.params.path) {
-            if (this.listing.params.path.split('/')[1] == '.Trash')
+            let filePath = this.listing.params.path.split('/')
+            if (filePath[1] == '.Trash' || filePath[0] == '.Trash')
                 return true;
         }
         return false;
