@@ -213,6 +213,24 @@ describe('filesListing', () => {
         }, 0)
     })
 
+    it('Render inside trash', () => {
+        $rootScope.listing = {
+            ...initialListing,
+            params: {
+                path: 'test/.Trash/',
+            },
+        };
+
+        let el = angular.element('<files-listing listing="listing"></files-listing>');
+        component = $compile(el)($rootScope);
+        $rootScope.$digest();
+        expect(component.text()).toContain('Trashed items will be kept a maximum of 90 days.');
+
+        $rootScope.listing.params.path = 'test/.Trash/testing';
+        $rootScope.$digest();
+        expect(component.text()).toContain('Trashed items will be kept a maximum of 90 days.');
+    });
+ 
 
 });
 

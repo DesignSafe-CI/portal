@@ -149,6 +149,13 @@ class FilesListingCtrl {
                 return 'fa-file-o';
         }
     };
+    
+    isInTrash() {
+        if (this.listing.params.path.split('/')[1] == '.Trash')
+            return true;
+        else
+            return false;
+    }
 }
 
 export const FilesListingComponent = {
