@@ -363,6 +363,41 @@ export class FileOperationService {
                 return this.$http.get(previewUrl);
         }
     }
+    /**
+     * Generate Jupyter Link
+     * @param {Object} params
+     * @param {String} params.system System where file is located
+     * @param {String} params.path Path to file
+     * @param {String} params.loc Specific location of notebook 
+     */
+    openInJupyter(params) {
+        const { user } = this.Django;
+        const { system, path, loc } = params;
+        let pathToFile = path;
+        let specificLocation = loc;
+        
+        // Check Path
+        if (path.includes(this.Django.user)) {
+            const lengthUserName = this.Django.user.length;
+            pathToFile = path.substring(lengthUserName + 2);
+        }
+
+        // Check Scheme
+        if (loc === 'myData' || loc === 'communityData') {
+            specificLocation = loc.charAt(0).toUpperCase() + loc.slice(1);
+        } else if (loc.includes('projects')) {
+            const prjNumber = this.ProjectService.current.value.projectId;
+            specificLocation = 'projects/' + prjNumber;
+        } else if (loc === 'publishedData.view') {
+            specificLocation = 'Published';
+        }
+
+        // Check System
+        if (system === 'designsafe.storage.published') specificLocation = 'NHERI-Published';
+        
+        return `http://jupyter.designsafe-ci.org/user/${user}/notebooks/${specificLocation}/${pathToFile}`;
+        
+    }
 
     /***************************************************************************
                                 UPLOAD MODAL
