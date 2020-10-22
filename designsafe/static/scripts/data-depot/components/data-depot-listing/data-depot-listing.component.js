@@ -152,7 +152,7 @@ class FilesListingCtrl {
 
     isInTrash() {
         if (this.listing.params.path && this.listing.params.system) {
-            let filePath = this.listing.params.path.split('/');                            
+            let filePath = this.listing.params.path.split('/');
             if (this.listing.params.system == 'designsafe.storage.default' &&
                 filePath[1] == '.Trash')
                 return true;

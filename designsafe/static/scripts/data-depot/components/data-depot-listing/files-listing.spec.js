@@ -217,6 +217,7 @@ describe('filesListing', () => {
         $rootScope.listing = {
             ...initialListing,
             params: {
+                system: 'designsafe.storage.default',
                 path: 'test/.Trash/',
             },
         };
@@ -226,10 +227,11 @@ describe('filesListing', () => {
         $rootScope.$digest();
         expect(component.text()).toContain('Trashed items will be kept a maximum of 90 days.');
 
-        $rootScope.listing.params.path = 'test/.Trash/testing';
+        $rootScope.listing.params.path = 'testUser/.Trash/testing';
         $rootScope.$digest();
         expect(component.text()).toContain('Trashed items will be kept a maximum of 90 days.');
 
+        $rootScope.listing.params.system = 'project-12345';
         $rootScope.listing.params.path = '.Trash/';
         $rootScope.$digest();
         expect(component.text()).toContain('Trashed items will be kept a maximum of 90 days.');
