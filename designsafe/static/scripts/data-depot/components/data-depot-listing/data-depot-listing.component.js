@@ -156,9 +156,8 @@ class FilesListingCtrl {
             if (this.listing.params.system == 'designsafe.storage.default' &&
                 filePath[1] == '.Trash')
                 return true;
-            else
-                if (filePath[0] == '.Trash')
-                    return true;
+            else if (filePath[0] == '.Trash')
+                return true;
         }
         return false;
     }
