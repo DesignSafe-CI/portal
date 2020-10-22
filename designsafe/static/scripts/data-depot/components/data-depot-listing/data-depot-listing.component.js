@@ -151,10 +151,14 @@ class FilesListingCtrl {
     };
 
     isInTrash() {
-        if (this.listing.params.path) {
-            let filePath = this.listing.params.path.split('/')
-            if (filePath[1] == '.Trash' || filePath[0] == '.Trash')
+        if (this.listing.params.path && this.listing.params.system) {
+            let filePath = this.listing.params.path.split('/');                            
+            if (this.listing.params.system == 'designsafe.storage.default' &&
+                filePath[1] == '.Trash')
                 return true;
+            else
+                if (filePath[0] == '.Trash')
+                    return true;
         }
         return false;
     }
