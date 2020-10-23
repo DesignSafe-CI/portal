@@ -10,7 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-
+from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
+from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 
 logger = logging.getLogger(__name__)
 
@@ -263,6 +264,87 @@ class Project(MetadataModel):
         else:
             update_archive(proj_dir)
 
+    def to_dataset_json(self):
+        """
+        Serialize project to json for google dataset search
+        https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/BMNJPS
+        """
+
+        dataset_json = {
+            "@context": "http://schema.org",
+            "@type": "Dataset",
+            "@id": "",
+            "identifier": "",
+            "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
+            "name": self.title,
+            "creator": [
+                {
+                    "name": "",
+                    "affiliation": "",
+                    "@id": "",
+                    "identifier": ""
+                }
+            ],
+            "author": [
+                {
+                    "name": "",
+                    "affiliation": "",
+                    "@id": "",
+                    "identifier": ""
+                }
+            ],
+            "datePublished": self.created,
+            "dateModified": self.to_body_dict()['lastUpdated'],
+            "description": self.description,
+            "keywords": self.keywords.split(','),
+            "license": {
+                "@type": "Dataset",
+                "text": ""
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "Designsafe-CI"
+            },
+            "provider": {
+                "@type": "Organization",
+                "name": "Designsafe-CI"
+            },
+            "includedInDataCatalog": {
+                "@type": "Organization",
+                "name": "Designsafe-CI",
+                "url": "https://designsafe-ci.org"
+            },
+        }
+        if self.dois:
+            dataset_json["distribution"] = {
+                    "@type": "DataDownload",
+                    "name": self.to_body_dict()['value']['projectId'] + "_archive.zip",
+                    "fileFormat": "application/zip",
+                    "contentSize": "",
+                    "@id": "",
+                    "identifier": ""
+            }
+
+        if self.dois:
+            dataset_json['@id'] = self.dois[0]
+            dataset_json['identifier'] = self.dois[0]
+        else:
+            related_ents = self.related_entities()
+            logger.debug(related_ents)
+        if getattr(self, 'team_order', False):
+            authors = sorted(self.team_order, key=lambda x: x['order'])
+        else:
+            authors = [{'name': username} for username in [self.pi] + self.co_pis]
+        dataset_json['creator'] = generate_creators(authors)
+        dataset_json['author'] = generate_creators(authors)
+        if BaseESPublication(project_id=self.project_id):
+            pub = BaseESPublication(project_id=self.project_id)
+            dataset_json['license'] = pub.licenses.works
+        elif BaseESPublicationLegacy(project_id=self.project_id):
+            pub = BaseESPublicationLegacy(project_id=self.project_id)
+            dataset_json['license'] = pub.licenses.works
+        return dataset_json
+
     def to_datacite_json(self):
         """Serialize project to datacite json."""
         attributes = {}
@@ -336,6 +418,48 @@ class Project(MetadataModel):
             if award.get('name') and award.get('number')
         ]
         return attributes
+
+
+def generate_creators(authors):
+    creators_details = []
+    for author in authors:
+        user_obj = None
+        user_tas = None
+        user_orcid = None
+        if not author.get('guest'):
+            try:
+                user_obj = get_user_model().objects.get(username=author['name'])
+                user_orcid = user_obj.profile.orcid_id if user_obj.profile.orcid_id else None
+            except ObjectDoesNotExist:
+                pass
+
+        if user_obj:
+            user_tas = TASClient().get_user(username=user_obj.username)
+
+        if user_orcid:
+            details = {
+                '@id': user_orcid,
+                'identifier': user_orcid
+            }
+        else:
+            details = {}
+
+        if user_obj and user_tas:
+            author_name = "{} {}".format(user_obj.first_name, user_obj.last_name)
+            details.update({
+                'name': author_name,
+                "affiliation": user_tas['institution']
+            })
+            creators_details.append(details)
+        elif author.get('fname') and author.get('lname'):
+            author_name = "{} {}".format(author.get('fname'), author.get('lname'))
+            details.update({
+                'name': author_name,
+                "affiliation": getattr(author, 'inst', '')
+            })
+            creators_details.append(details)
+        return creators_details
+
 
 
 def _process_authors(authors):
