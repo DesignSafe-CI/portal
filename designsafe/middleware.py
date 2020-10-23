@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 
 class DesignSafeSupportedBrowserMiddleware:
     """
-    Middleware to check if the user is running Chrome or Firefox and 
+    Middleware to check if the user is running Chrome or Firefox and
     flash a warning otherwise.
     """
 
     def process_request(self, request):
         user_agent = request.META['HTTP_USER_AGENT']
-        agent_is_supported = ('Chrome' in user_agent) or ('Firefox' in user_agent)
+        agent_is_supported = ('Chrome' in user_agent) or ('Firefox' in user_agent) or ('FxiOS' in user_agent) or ('CriOS' in user_agent)
 
         if not agent_is_supported:
             messages.warning(request, '<h4>Unsupported Browser</h4>'
@@ -37,7 +37,7 @@ class DesignSafeSupportedBrowserMiddleware:
 class DesignsafeProfileUpdateMiddleware:
 
     """
-    Middleware to check if a user's profile has the update_required flag set to 
+    Middleware to check if a user's profile has the update_required flag set to
     True, and force them to update their profile if so.
     """
 
