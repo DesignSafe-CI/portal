@@ -42,9 +42,9 @@ class AnonymousViewTests(TestCase):
         resp = self.client.get(reverse('djangoRT:ticketcreate') + '?' + query)
 
         self.assertContains(resp, '<input id="id_error_page" name="error_page" '
-                                  'type="hidden" value="/page/that/failed" />')
+                                  'type="hidden" value="/page/that/failed" />', html=True)
         self.assertContains(resp, '<input id="id_http_referer" name="http_referer" '
-                                  'type="hidden" value="https://www.google.com" />')
+                                  'type="hidden" value="https://www.google.com" />', html=True)
 
     def test_reply(self):
         requested_url = reverse('djangoRT:ticketreply', args=[999])
@@ -159,9 +159,9 @@ class AuthenticatedViewTests(TestCase):
 
         self.assertNotContains(resp, 'Captcha')
         self.assertContains(resp, '<input id="id_error_page" name="error_page" '
-                                  'type="hidden" value="/page/that/failed" />')
+                                  'type="hidden" value="/page/that/failed" />', html=True)
         self.assertContains(resp, '<input id="id_http_referer" name="http_referer" '
-                                  'type="hidden" value="https://www.google.com" />')
+                                  'type="hidden" value="https://www.google.com" />', html=True)
 
     @requests_mock.Mocker()
     def test_reply(self, req_mock):
