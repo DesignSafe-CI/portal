@@ -25,7 +25,7 @@ class DesignSafeSupportedBrowserMiddleware:
 
     def process_request(self, request):
         user_agent = request.META['HTTP_USER_AGENT']
-        agent_is_supported = ('Chrome' in user_agent) or ('Firefox' in user_agent) or ('FxiOS' in user_agent) or ('CriOS' in user_agent)
+        agent_is_supported = any(agent in user_agent for agent in settings.SUPPORTED_USER_AGENTS)
 
         if not agent_is_supported:
             messages.warning(request, '<h4>Unsupported Browser</h4>'
