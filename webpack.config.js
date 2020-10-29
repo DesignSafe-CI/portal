@@ -84,9 +84,6 @@ module.exports = (env) => {
         resolve: {
             extensions: ['.js'],
             modules: ['node_modules'],
-            fallback: {
-                stream: require.resolve('stream-browserify'),
-            },
         },
         plugins: [
             new webpack.ProgressPlugin(),
