@@ -66,8 +66,8 @@ class FilesListingCtrl {
     constructor($state, FileListingService) {
         'ngInject';
         this.$state = $state;
-        this.FileListingService = FileListingService    
-        
+        this.FileListingService = FileListingService
+
         this.handleScroll = this.handleScroll.bind(this)
     }
 
@@ -149,6 +149,18 @@ class FilesListingCtrl {
                 return 'fa-file-o';
         }
     };
+
+    isInTrash() {
+        if (this.listing.params.path && this.listing.params.system) {
+            let filePath = this.listing.params.path.split('/');
+            if (this.listing.params.system == 'designsafe.storage.default' &&
+                filePath[1] == '.Trash')
+                return true;
+            else if (filePath[0] == '.Trash')
+                return true;
+        }
+        return false;
+    }
 }
 
 export const FilesListingComponent = {

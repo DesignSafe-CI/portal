@@ -86,7 +86,7 @@ describe('filesListing', () => {
         $rootScope.listing = {
             ...initialListing,
             listing: [
-                {   
+                {
                     name: "testfile",
                     system: 'designsafe.storage.default',
                     path: '/path/to/file',
@@ -109,7 +109,7 @@ describe('filesListing', () => {
         $rootScope.listing = {
             ...initialListing,
             listing: [
-                {   
+                {
                     name: "testfile",
                     system: 'designsafe.storage.default',
                     path: '/path/to/file',
@@ -130,7 +130,7 @@ describe('filesListing', () => {
         expect(component.find('.test-op-btn').text()).toContain('Test Operation');
         const opButton = component.find('.test-op-btn');
         opButton.triggerHandler('click');
-        expect(mockOperation).toHaveBeenCalledWith({   
+        expect(mockOperation).toHaveBeenCalledWith({
             name: "testfile",
             system: 'designsafe.storage.default',
             path: '/path/to/file',
@@ -148,7 +148,7 @@ describe('filesListing', () => {
         $rootScope.listing = {
             ...initialListing,
             listing: [
-                {   
+                {
                     name: "testfile",
                     system: 'designsafe.storage.default',
                     path: '/path/to/file',
@@ -167,7 +167,7 @@ describe('filesListing', () => {
 
         const fileHref = component.find('.test-file-name');
         fileHref.triggerHandler('click');
-        expect(mockBrowse).toHaveBeenCalledWith({   
+        expect(mockBrowse).toHaveBeenCalledWith({
             name: "testfile",
             system: 'designsafe.storage.default',
             path: '/path/to/file',
@@ -180,7 +180,7 @@ describe('filesListing', () => {
     });
 
     it('calls browseScroll on scroll to bottom', (done) => {
-        const fileMeta = {   
+        const fileMeta = {
             name: "testfile",
             system: 'designsafe.storage.default',
             path: '/path/to/file',
@@ -213,6 +213,33 @@ describe('filesListing', () => {
         }, 0)
     })
 
+    it('Render inside trash', () => {
+        $rootScope.listing = {
+            ...initialListing,
+            params: {
+                system: 'designsafe.storage.default',
+                path: 'test/.Trash/',
+            },
+        };
+
+        let el = angular.element('<files-listing listing="listing"></files-listing>');
+        component = $compile(el)($rootScope);
+        $rootScope.$digest();
+        expect(component.text()).toContain('Trashed items will be kept a maximum of 90 days.');
+
+        $rootScope.listing.params.path = 'testUser/.Trash/testing';
+        $rootScope.$digest();
+        expect(component.text()).toContain('Trashed items will be kept a maximum of 90 days.');
+
+        $rootScope.listing.params.system = 'project-12345';
+        $rootScope.listing.params.path = '.Trash/';
+        $rootScope.$digest();
+        expect(component.text()).toContain('Trashed items will be kept a maximum of 90 days.');
+
+        $rootScope.listing.params.path = '.Trash/testing';
+        $rootScope.$digest();
+        expect(component.text()).toContain('Trashed items will be kept a maximum of 90 days.');
+    });
+
 
 });
-
