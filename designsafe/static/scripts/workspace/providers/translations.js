@@ -9,5 +9,6 @@ export function translateProvider(angular) {
             apps_metadata_list_name: 'ds_apps_list',
         });
         $translateProvider.preferredLanguage('en');
+        $translateProvider.useSanitizeValueStrategy('escape');
     }]);
 }

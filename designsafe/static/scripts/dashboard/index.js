@@ -29,6 +29,7 @@ dashboardServices.config(['$translateProvider', function($translateProvider) {
         apps_metadata_list_name: 'ds_apps_list',
     });
     $translateProvider.preferredLanguage('en');
+    $translateProvider.useSanitizeValueStrategy('escape');
 }]);
 dashboardServices.requires.push(
     'pascalprecht.translate'

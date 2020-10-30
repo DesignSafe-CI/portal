@@ -1,35 +1,65 @@
 {
-    "extends": ["eslint:recommended"],
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module",
-    },
+    "root": true,
     "env": {
         "browser": true,
         "node": true,
         "es6": true,
         "jquery": true,
         "mocha": true,
-        "jasmine": true,
+        "jasmine": true
     },
-    "rules": {
-        "semi"                  : [1, "always"],
-        "require-jsdoc"         : 0,
-        "consistent-return"     : 2,
-        "indent"                : [1, 4, { "SwitchCase": 1 }],
-        "no-else-return"        : 1,
-        "space-unary-ops"       : 2,
-        "max-len"               : 0,
-        "arrow-parens"          : 1,
-        "quote-props"           : [1, "as-needed"],
-        "quotes"                : [1, "single", {"avoidEscape": true}],
-        "one-var"               : [0, "consecutive"],
-        "brace-style"           : [1, "1tbs", { "allowSingleLine": true }],
-        "object-curly-spacing"  : [1, "always"],
-    },
+    "extends": [
+        "airbnb-base",
+        "standard",
+        "prettier",
+        "prettier/standard"
+    ],
     "globals": {
         "moment": false,
         "angular": false,
         "inject": false,
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "prettier"
+    ],
+    "parser": "babel-eslint",
+    "ignorePatterns": [
+        "*.test.js"
+    ],
+    "rules": {
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": [
+                    "**/webpack.*.js",
+                    "**/*.test.js",
+                    "**/*.spec.js",
+                    "**/utils/testing.js"
+                ]
+            }
+        ],
+        "semi": [
+            1,
+            "always"
+        ],
+        "no-underscore-dangle": 0,
+        "prettier/prettier": [
+            "error",
+            {
+                "singleQuote": true
+            }
+        ],
+       "space-unary-ops"       : 2,
+       "arrow-parens"          : 1,
+       "quote-props"           : [1, "as-needed"],
+       "quotes"                : [1, "single", {"avoidEscape": true}],
+       "brace-style"           : [1, "1tbs", { "allowSingleLine": true }],
+       "object-curly-spacing"  : [1, "always"]
     }
 }
