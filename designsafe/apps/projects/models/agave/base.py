@@ -10,9 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
-from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
-
+from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
+from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 logger = logging.getLogger(__name__)
 
 
@@ -337,12 +336,18 @@ class Project(MetadataModel):
             authors = [{'name': username} for username in [self.pi] + self.co_pis]
         dataset_json['creator'] = generate_creators(authors)
         dataset_json['author'] = generate_creators(authors)
-        if BaseESPublication(project_id=self.project_id):
-            pub = BaseESPublication(project_id=self.project_id)
+        
+        try:
+            pub = IndexedPublication.from_id(self.project_id)
             dataset_json['license'] = pub.licenses.works
-        elif BaseESPublicationLegacy(project_id=self.project_id):
-            pub = BaseESPublicationLegacy(project_id=self.project_id)
+        except DocumentNotFound:
+            pass
+        try:
+            pub = IndexedPublicationLegacy.from_id(self.project_id)
             dataset_json['license'] = pub.licenses.works
+        except DocumentNotFound:
+            pass
+
         return dataset_json
 
     def to_datacite_json(self):
