@@ -293,7 +293,7 @@ CMSPLUGIN_CASCADE = {
 }
 CMSPLUGIN_CASCADE_PLUGINS = [
     'cmsplugin_cascade.bootstrap3',
-    # 'cmsplugin_cascade.link',
+    'cmsplugin_cascade.link',
 ]
 
 # These settings enable iFrames in the CMS cktext-editor.
