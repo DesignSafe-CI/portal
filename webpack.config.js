@@ -3,7 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env) => {
-    const sourceMap = env === 'production' ? 'source-map' : 'eval-cheap-module-source-map';
+    const sourceMap = env.production ? 'source-map' : 'eval-cheap-module-source-map';
     return {
         mode: process.env.NODE_ENV,
         devtool: sourceMap,
