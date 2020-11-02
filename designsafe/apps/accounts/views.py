@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required, permission_required
@@ -336,8 +336,8 @@ def profile_edit(request):
             tas_email_exists = tas.get_user(email=form.cleaned_data['email']) and (tas_user['email'] != form.cleaned_data['email'])
 
             if tas_email_exists:
-                form.cleaned_data['email'] = tas_user['email']
                 messages.error(request, 'The submitted email already exists! Your email has not been updated!')
+                return redirect(reverse('designsafe_accounts:profile_edit'))
 
             pro_form.save()
 
@@ -351,10 +351,8 @@ def profile_edit(request):
             data['source'] = tas_user['source']
 
             tas.save_user(tas_user['id'], data)
-            if tas_email_exists:
-                messages.success(request, 'Other profile information has been updated!')
-            else:
-                messages.success(request, 'Your profile has been updated!')
+
+            messages.success(request, 'Your profile has been updated!')
 
             try:
                 ds_profile = user.profile
