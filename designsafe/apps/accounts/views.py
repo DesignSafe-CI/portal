@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required, permission_required
@@ -337,7 +337,7 @@ def profile_edit(request):
 
             if tas_email_exists:
                 messages.error(request, 'The submitted email already exists! Your email has not been updated!')
-                return redirect(reverse('designsafe_accounts:profile_edit'))
+                return HttpResponseRedirect(reverse('designsafe_accounts:profile_edit'))
 
             pro_form.save()
 
