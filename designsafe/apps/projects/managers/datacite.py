@@ -15,7 +15,7 @@ from requests import HTTPError
 LOGGER = logging.getLogger(__name__)
 DATACITE_USER = settings.DATACITE_USER
 DATACITE_PASS = settings.DATACITE_PASS
-DATACITE_URL = settings.DATACITE_URI
+DATACITE_URL = settings.DATACITE_URL
 SHOULDER = getattr(settings, 'DATACITE_SHOULDER', '').strip('doi:')
 DOIS_URL = '{base_url}/dois'.format(base_url=DATACITE_URL.strip('/'))
 

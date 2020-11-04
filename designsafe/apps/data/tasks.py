@@ -5,8 +5,9 @@ from designsafe.apps.api.agave import get_service_account_client
 
 logger = logging.getLogger(__name__)
 
+
 @shared_task(bind=True, max_retries=3, retry_backoff=True, rate_limit="1/s")
-def agave_indexer(self, systemId, filePath='/', username=None, recurse=True, update_pems = False, ignore_hidden=True, reindex=False, paths_to_ignore=[]):
+def agave_indexer(self, systemId, filePath='/', username=None, recurse=True, update_pems=False, ignore_hidden=True, reindex=False, paths_to_ignore=[]):
     from designsafe.libs.elasticsearch.utils import index_level
     from designsafe.libs.elasticsearch.utils import walk_levels
 
@@ -28,4 +29,8 @@ def agave_indexer(self, systemId, filePath='/', username=None, recurse=True, upd
     index_level(client, filePath, folders, files, systemId, pems_username, update_pems=update_pems, reindex=reindex)
     if recurse:
         for child in folders:
-            self.delay(systemId, filePath=child.path, reindex=reindex, update_pems=update_pems)
+            self.apply_async(args=[systemId],
+                             kwargs={'filePath': child.path,
+                                     'reindex': reindex,
+                                     'update_pems': update_pems},
+                             queue='indexing')

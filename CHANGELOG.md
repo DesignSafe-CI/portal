@@ -1,5 +1,18 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.0.5
+Fixes:
+- Security enhancements and dependency updates.
+- Fix a bug that was causing authors to show up twice in citations.
+
+## v5.0.4
+Fixes:
+- Fix a bug preventing users from creating directories inside of projects
+- Fix a bug causing indexing tasks to target the wrong queue
+Enhancements:
+- Prevent users from moving folders containing data with associated entities.
+- Add formatted metadata to publication archives.
+
 ## v5.0.3
 Fixes:
 - Re-enable download of multiple files.

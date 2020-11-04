@@ -5,8 +5,6 @@
 """
 
 import logging
-import os
-import zipfile
 from future.utils import python_2_unicode_compatible
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.libs.elasticsearch.docs.base import BaseESResource
@@ -205,51 +203,3 @@ class BaseESPublication(BaseESResource):
                 file_paths.append(file_dict['path'])
 
         return file_paths
-
-    def archive(self):
-        archive_name = '{}_archive.zip'.format(self.projectId)
-        pub_dir = '/corral-repl/tacc/NHERI/published/'
-        arc_dir = os.path.join(pub_dir, 'archives/')
-
-        def set_perms(dir, octal, subdir=None):
-            try:
-                os.chmod(dir, octal)
-                if subdir:
-                    if not os.path.isdir(subdir):
-                        raise Exception('subdirectory does not exist!')
-                    for root, dirs, files in os.walk(subdir):
-                        os.chmod(root, octal)
-                        for d in dirs:
-                            os.chmod(os.path.join(root, d), octal)
-                        for f in files:
-                            os.chmod(os.path.join(root, f), octal)
-            except Exception as e:
-                logger.exception("Failed to set permissions for {}".format(dir))
-                os.chmod(dir, 0o555)
-
-        def create_archive():
-            arc_source = os.path.join(pub_dir, self.projectId)
-            archive_path = os.path.join(arc_dir, archive_name)
-
-            try:
-                logger.debug("Creating archive for {}".format(self.projectId))
-
-                zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
-                for dirs, _, files in os.walk(arc_source):
-                    for f in files:
-                        if f == archive_name:
-                            continue
-                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(pub_dir, ''), f))
-                zf.close()
-            except Exception as e:
-                logger.exception("Archive creation failed for {}".format(arc_source))
-            finally:
-                set_perms(pub_dir, 0o555, arc_source)
-                set_perms(arc_dir, 0o555)
-
-        try:
-            set_perms(pub_dir, 0o755, os.path.join(pub_dir, self.projectId))
-            set_perms(arc_dir, 0o755)
-            create_archive()
-        except Exception as e:
-            logger.exception('Failed to archive publication!')

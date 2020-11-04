@@ -85,6 +85,10 @@ export class FileOperationService {
 
     checkForEntities(file) {
         const inProject = ['projects.view', 'projects.curation'].includes(this.$state.current.name);
+        if (!inProject) return false
+        const entities = this.ProjectService.current.getAllRelatedObjects()
+        const entityFilePaths = entities.map((e) => e._filePaths).flat(1);
+        const hasPathPrefix = entityFilePaths.some(entityPath => entityPath.startsWith(file.path))
         const hasEntities = file._entities && file._entities.length;
         const hasTags = file._fileTags && file._fileTags.length;
         const projectFileTags = ((this.ProjectService.current || {}).value || {}).fileTags || [];
@@ -92,7 +96,7 @@ export class FileOperationService {
             (tag) => tag.path.replace(/^\/+/, '') === file.path.replace(/^\/+/, '')
         );
 
-        return inProject && (hasEntities || hasTags || hasProjectFileTags);
+        return inProject && (hasPathPrefix || hasEntities || hasTags || hasProjectFileTags);
     }
 
     /***************************************************************************
@@ -555,7 +559,7 @@ export class FileOperationService {
      * @param {function} params.successCallback Callback on success.
      */
     handleMkdir({ api, scheme, system, path, folderName, successCallback }) {
-        const mkdirUrl = `/api/datafiles/${api}/${scheme}/mkdir/${system}/${encodeURIComponent(path)}/`;
+        const mkdirUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/mkdir/${system}/${encodeURIComponent(path)}/`);
         const mkdirRequest = this.$http.put(mkdirUrl, { dir_name: folderName }).then(successCallback);
     }
 
@@ -597,7 +601,7 @@ export class FileOperationService {
      * @param {function} params.successCallback Callback on success.
      */
     handleRename({ api, scheme, system, path, newName, successCallback }) {
-        const renameUrl = `/api/datafiles/${api}/${scheme}/rename/${system}/${encodeURIComponent(path)}/`;
+        const renameUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/rename/${system}/${encodeURIComponent(path)}/`);
         const renameRequest = this.$http.put(renameUrl, { new_name: newName }).then(successCallback);
     }
 

@@ -1,6 +1,8 @@
 FROM python:3.6-buster
 
-MAINTAINER DesignSafe-CI <designsafe-ci@tacc.utexas.edu>
+LABEL MAINTAINER="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 EXPOSE 8000
 
@@ -18,34 +20,18 @@ RUN apt-get update && apt-get install -y \
 ENV LC_ALL en_US.utf-8
 ENV LANG en_US.utf-8
 
-
-
-RUN apt-get update && apt-get install -y \ 
+RUN apt-get update && apt-get install -y \
     gawk \
     unzip \
     wget \
     git \
-    vim 
-
-
-
-# Install python 3.7
-# CentOS supports 3.6 but not 3. yet. Although we can install it 
-# we should wait until everything works with python3.6
-
-# RUN curl --output /tmp/python3.7.4.tgz https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz && \
-#     tar xzf /tmp/python3.7.4.tgz -C /opt/ && \
-#     ls /opt && \
-#     cd /opt/Python-3.7.4 && \
-#     ./configure --enable-optimizations && \
-#     make altinstall
+    vim
 
 # install node 12.x
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
-# RUN pip install --upgrade pip && pip install uwsgitop
-RUN pip3 install --upgrade pip && pip3 install uwsgi uwsgitop
+RUN pip3 install --upgrade pip setuptools wheel && pip3 install uwsgi uwsgitop pip-tools
 
 RUN mkdir -p /opt/uwsgi && \
     curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
@@ -65,18 +51,12 @@ RUN chown -R tg458981:G-816877 /src
 
 USER tg458981
 
-
-RUN pip3 install --upgrade pip && \
-    pip3 install pip-tools
-
 COPY requirements.txt /tmp/
 
-RUN pip3 install -r /tmp/requirements.txt
-RUN pip3 install pytest
 ENV PATH="/home/tg458981/.local/bin:${PATH}"
+RUN pip3 install -r /tmp/requirements.txt
 
-COPY package*.json /srv/www/designsafe/
-RUN cd /srv/www/designsafe npm install
+RUN chmod u+x /srv/www/designsafe/bin/build_client.sh && /srv/www/designsafe/bin/build_client.sh $DJANGO_DEBUG
 
 RUN echo "prefix=~/.npm-global" >> ~/.npmrc
 

@@ -20,9 +20,15 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.6
-    
-    - run: pip install -r requirements.txt --no-cache
-    - run: pip install pytest
+
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - run: pip install -r requirements.txt
     - name: Run Server-side unit tests and generate coverage report
       run: |
         pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
@@ -45,7 +51,5 @@ jobs:
 
     - name: Client Side Unit Tests
       run: |
-        npm install
+        npm ci
         npm run test
-
-
