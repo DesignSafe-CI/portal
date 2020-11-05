@@ -38,5 +38,6 @@ export function appTranslateProvider(angular) {
 
         });
         $translateProvider.preferredLanguage('en');
+        $translateProvider.useSanitizeValueStrategy('escape');
     }]);
 }
