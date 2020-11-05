@@ -309,10 +309,14 @@ class ProfessionalProfileForm(forms.ModelForm):
         'would like to be involved, and any other comments that would help '
         'identify your experience and interest within the community. '
     )
+    nh_interests_primary = forms.ModelChoiceField(
+        queryset=DesignSafeProfileNHInterests.objects.all(),
+        label="Primary Natural Hazards Interest"
+    ) 
     nh_interests = forms.ModelMultipleChoiceField(
         queryset=DesignSafeProfileNHInterests.objects.all(),
-        required=True,
         widget=forms.CheckboxSelectMultiple,
+        required=False,
         label="Natural Hazards Interests (check all that apply)"
     )
     nh_technical_domains = forms.ModelMultipleChoiceField(
@@ -339,6 +343,9 @@ class ProfessionalProfileForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         label="Research Activities (check all that apply)"
     )
+
+    field_order = ['nh_interests_primary', 'nh_interests', 'nh_technical_domains',
+                  'bio', 'website', 'orcid_id', 'professional_level', 'research_activities']
 
     def clean_website(self):
         ws = self.cleaned_data['website']
@@ -392,7 +399,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
     field_order = ['firstName', 'lastName', 'email', 'confirmEmail',
                   'phone', 'institutionId', 'departmentId', 'institution',
                   'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
-                  'nh_interests', 'nh_technical_domains',
+                  'nh_interests_primary', 'nh_interests', 'nh_technical_domains',
                   'bio', 'website', 'orcid_id', 'professional_level', 'research_activities']
 
     def __init__(self, *args, **kwargs):
@@ -446,7 +453,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
                     'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
                     'source', 'piEligibility', 'username', 'password', 'confirmPassword',
                     'agree_to_terms', 'agree_to_account_limit']
-        pro_profile_fields = ['nh_interests', 'nh_technical_domains', 'bio',
+        pro_profile_fields = ['nh_interests', 'nh_interests_primary', 'nh_technical_domains', 'bio',
                                 'website', 'orcid_id', 'professional_level', 'research_activities']
         pro_profile_data = {}
         tas_data = {}
