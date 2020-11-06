@@ -616,5 +616,3 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
                                 SUPPORTED_IPYNB_PREVIEW_EXTS)
-
-SUPPORTED_USER_AGENTS = ['Chrome', 'Firefox', 'FxiOS', 'CriOS']
