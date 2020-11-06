@@ -28,8 +28,6 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__CHANGE_ME_!__')
 
 # SESSIONS
 SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
-# SESSION_ENGINE = 'redis_sessions.session'
-# SESSION_REDIS_HOST = 'redis'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -54,27 +52,20 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
 
-    'djng', #TODO: djng
-    'djng.urls',
+    'djng',
     'cms',
     'treebeard',
     'menus',
     'sekizai',
     'djangocms_style',
     'djangocms_file',
-    'djangocms_flash',
     'djangocms_googlemap',
     'djangocms_picture',
     'djangocms_video',
     'djangocms_forms',
-
-    #django recaptcha
     'snowpenguin.django.recaptcha2',
-
-    #'pipeline',
     'filer',
     'easy_thumbnails',
-    'reversion',
     'bootstrap3',
     'termsandconditions',
     'impersonate',
@@ -251,7 +242,6 @@ STATICFILES_DIRS = [
     ('vendor/objectpath', os.path.join(BASE_DIR, 'node_modules', 'objectpath')),
     ('vendor/angular-schema-form', os.path.join(BASE_DIR, 'node_modules', 'angular-schema-form')),
     ('vendor/angular-ui-bootstrap', os.path.join(BASE_DIR, 'node_modules', 'angular-ui-bootstrap')),
-    ('vendor/filesaver', os.path.join(BASE_DIR, 'node_modules', 'filesaver')),
     ('vendor/angular-ui-codemirror', os.path.join(BASE_DIR, 'node_modules', 'angular-ui-codemirror')),
     ('vendor/codemirror', os.path.join(BASE_DIR, 'node_modules', 'codemirror')),
     ('vendor/angular-material', os.path.join(BASE_DIR, 'node_modules', 'angular-material')),
@@ -266,15 +256,20 @@ STATICFILES_DIRS = [
     ('vendor/d3plus', os.path.join(BASE_DIR, 'node_modules', 'd3plus')),
 ]
 STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    #'pipeline.finders.PipelineFinder',
 )
 MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
 
+# FORM_RENDERER = 'djng.forms.renderers.DjangoAngularBootstrap3Templates'
+
+#####
+#
+# CMS Settings
+#
+#####
 DJANGOCMS_PICTURE_TEMPLATES = [
     ('non_responsive', 'Non-Responsive Image'),
     ('responsive', 'Responsive Image'),
@@ -296,18 +291,10 @@ CMSPLUGIN_CASCADE = {
         'ResponsiveEmbedPlugin',
     )
 }
-CMSPLUGIN_CASCADE_PLUGINS = (
+CMSPLUGIN_CASCADE_PLUGINS = [
     'cmsplugin_cascade.bootstrap3',
     'cmsplugin_cascade.link',
-)
-CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
-    'TextPlugin',
-    'StylePlugin',
-    'FilerImagePlugin',
-    'FormPlugin',
-    'MeetingFormPlugin',
-    'ResponsiveEmbedPlugin',
-)
+]
 
 # These settings enable iFrames in the CMS cktext-editor.
 TEXT_ADDITIONAL_TAGS = ('iframe',)
@@ -326,13 +313,9 @@ CKEDITOR_SETTINGS = {
 }
 
 #MIGRATION_MODULES = {
-#    'djangocms_flash': 'djangocms_flash.migrations_django',
 #    'djangocms_file': 'djangocms_file.migrations_django',
 #    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
-#    'djangocms_inherit': 'djangocms_inherit.migrations_django',
-#    'djangocms_link': 'djangocms_link.migrations_django',
 #    'djangocms_picture': 'djangocms_picture.migrations_django',
-#    'djangocms_teaser': 'djangocms_teaser.migrations_django',
 #    'djangocms_video': 'djangocms_video.migrations_django',
 #    'djangocms_style': 'djangocms_style.migrations_django',
 #}
@@ -375,7 +358,9 @@ BOOTSTRAP3 = {
 # Django Impersonate
 #
 #####
-IMPERSONATE_REQUIRE_SUPERUSER = True
+IMPERSONATE = {
+    'REQUIRE_SUPERUSER': True
+}
 
 
 #####
@@ -450,63 +435,6 @@ PROJECT_ADMINS_EMAIL = ['maria@tacc.utexas.edu', 'gendlerk@tacc.utexas.edu']
 # Terms and Conditions
 #
 DEFAULT_TERMS_SLUG = 'terms'
-
-###
-# Pipeline
-#
-PIPELINE = {
-    'PIPELINE_ENABLED': False
-    }
-PIPELINE['COMPILERS'] = (
-    'pipeline.compilers.sass.SASSCompiler',
-)
-PIPELINE['SASS_ARGUMENTS'] = '-C'
-PIPELINE['CSS_COMPRESSOR'] = None
-PIPELINE['JS_COMPRESSOR'] = 'pipeline.compressors.slimit.SlimItCompressor'
-PIPELINE['STYLESHEETS'] = {
-    'vendor': {
-        'source_filenames': (
-            'vendor/bootstrap-ds/css/bootstrap.css',
-            'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
-            'vendor/font-awesome/css/font-awesome.css',
-            'vendor/angular-toastr/dist/angular-toastr.css',
-            'vendor/slick-carousel/slick/slick.css',
-            'vendor/slick-carousel/slick/slick-theme.css'
-        ),
-        'output_filename': 'css/vendor.css',
-    },
-    'main': {
-        'source_filenames': (
-            'styles/typekit.css',
-            'styles/main.css',
-            'styles/corner-ribbon.css',
-            'styles/base.scss',
-            'styles/nested-list-group.scss',
-        ),
-        'output_filename': 'css/main.css',
-    },
-}
-
-PIPELINE['JAVASCRIPT'] = {
-    'vendor': {
-        'source_filenames': (
-            'vendor/modernizr/modernizr.js',
-            'vendor/jquery/dist/jquery.js',
-            'vendor/bootstrap-ds/js/bootstrap.js',
-            'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
-            'vendor/d3/d3.min.js'
-        ),
-        'output_filename': 'js/vendor.js',
-    },
-    'main': {
-        'source_filenames': (
-            'scripts/utils.js',
-            'scripts/dateinput.js',
-            'scripts/navbar.js',
-        ),
-        'output_filename': 'js/main.js',
-    },
-}
 
 ##
 # django-websockets-redis
@@ -686,7 +614,7 @@ SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_TEXT_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
-                                SUPPORTED_MS_OFFICE + 
+                                SUPPORTED_MS_OFFICE +
                                 SUPPORTED_IPYNB_PREVIEW_EXTS)
 
 SUPPORTED_USER_AGENTS = ['Chrome', 'Firefox', 'FxiOS', 'CriOS']

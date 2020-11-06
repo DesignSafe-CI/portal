@@ -84,10 +84,11 @@ export class FileOperationService {
     }
 
     checkForEntities(file) {
+        const inProject = ['projects.view', 'projects.curation'].includes(this.$state.current.name);
+        if (!inProject) return false
         const entities = this.ProjectService.current.getAllRelatedObjects()
         const entityFilePaths = entities.map((e) => e._filePaths).flat(1);
         const hasPathPrefix = entityFilePaths.some(entityPath => entityPath.startsWith(file.path))
-        const inProject = ['projects.view', 'projects.curation'].includes(this.$state.current.name);
         const hasEntities = file._entities && file._entities.length;
         const hasTags = file._fileTags && file._fileTags.length;
         const projectFileTags = ((this.ProjectService.current || {}).value || {}).fileTags || [];
