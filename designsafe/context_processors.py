@@ -28,22 +28,15 @@ def messages(request):
     """
     msgs = []
     unique_msgs = []
-    context = {}
-
-    user_agent = request.META['HTTP_USER_AGENT']
-    ga_supported_user_agents = getattr(settings, 'SUPPORTED_USER_AGENTS', False)
-    agent_is_supported = any(agent in user_agent for agent in ga_supported_user_agents)
-
     for m in get_messages(request):
         if m.message not in msgs:
             msgs.append(m.message)
             unique_msgs.append(m)
-    context = {
+
+    return {
         'messages': unique_msgs,
         'DEFAULT_MESSAGE_LEVELS': DEFAULT_LEVELS,
-        'AGENT_IS_SUPPORTED': agent_is_supported
     }
-    return context
 
 def debug(request):
     context = {}
