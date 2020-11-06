@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/DesignSafe-CI/portal/branch/master/graph/badge.svg)](https://codecov.io/gh/DesignSafe-CI/portal)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8399b864b0d115d86450/maintainability)](https://codeclimate.com/github/DesignSafe-CI/portal/maintainability)
 
-# DesignSafe-CI Portal
+# DesignSafe-CI Portall
 
 ## Prequisites for running the portal application
 
