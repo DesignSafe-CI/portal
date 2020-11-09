@@ -2,7 +2,9 @@ from designsafe.apps.data.models.elasticsearch import IndexedPublication, Indexe
 from designsafe.apps.api.publications import search_utils
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from elasticsearch_dsl import Q
+import elasticsearch
 import datetime
 import json
 import urllib
@@ -24,7 +26,12 @@ def _get_user_by_username(hit, username):
 
 
 def listing(offset=0, limit=100, limit_fields=True, *args):
-    pub_query = IndexedPublication.search()
+    es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
+                                            max_retries=3,
+                                            retry_on_timeout=True,
+                                            **{'http_auth': settings.ES_AUTH})
+
+    pub_query = IndexedPublication.search(using=es_client)
     pub_query = pub_query.filter(Q('term', status='published'))
     pub_query = pub_query.extra(from_=offset, size=limit)
     if limit_fields:
