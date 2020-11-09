@@ -331,11 +331,9 @@ def profile_edit(request):
 
     if request.method == 'POST':
         form = forms.UserProfileForm(request.POST, initial=tas_user)
-
         if form.is_valid() and pro_form.is_valid():
-            tas_email_exists = tas.get_user(email=form.cleaned_data['email']) and (tas_user['email'] != form.cleaned_data['email'])
-
-            if tas_email_exists:
+            if (tas.get_user(email=form.cleaned_data['email']) and
+                (tas_user['email'] != form.cleaned_data['email'])):
                 messages.error(request, 'The submitted email already exists! Your email has not been updated!')
                 return HttpResponseRedirect(reverse('designsafe_accounts:profile_edit'))
 
@@ -343,7 +341,6 @@ def profile_edit(request):
 
             data = form.cleaned_data
             pro_data = pro_form.cleaned_data
-
             # punt on PI Eligibility for now
             data['piEligibility'] = tas_user['piEligibility']
 
@@ -351,7 +348,6 @@ def profile_edit(request):
             data['source'] = tas_user['source']
 
             tas.save_user(tas_user['id'], data)
-
             messages.success(request, 'Your profile has been updated!')
 
             try:
