@@ -332,7 +332,9 @@ def profile_edit(request):
     if request.method == 'POST':
         form = forms.UserProfileForm(request.POST, initial=tas_user)
         if form.is_valid() and pro_form.is_valid():
-            if (tas.get_user(email=form.cleaned_data['email']) and
+            existing_user = (tas.get_user(email=form.cleaned_data['email'])
+            if existing_user and existing_user['username'] != tas_user['username]:
+                # error logic
                 (tas_user['email'] != form.cleaned_data['email'])):
                 messages.error(request, 'The submitted email already exists! Your email has not been updated!')
                 return HttpResponseRedirect(reverse('designsafe_accounts:profile_edit'))
