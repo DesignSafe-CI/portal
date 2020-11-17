@@ -69,6 +69,7 @@ class DesignSafeProfile(models.Model):
     website = models.CharField(max_length=256, default=None, null=True, blank=True)
     orcid_id = models.CharField(max_length=256, default=None, null=True, blank=True)
     nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
+    nh_interests_primary = models.ForeignKey(DesignSafeProfileNHInterests, related_name='nh_interests_primary', null=True)
     nh_technical_domains = models.ManyToManyField(DesignSafeProfileNHTechnicalDomains)
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)

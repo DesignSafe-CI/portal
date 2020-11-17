@@ -17,27 +17,10 @@ from django.shortcuts import redirect, reverse
 
 logger = logging.getLogger(__name__)
 
-class DesignSafeSupportedBrowserMiddleware:
-    """
-    Middleware to check if the user is running Chrome or Firefox and 
-    flash a warning otherwise.
-    """
-
-    def process_request(self, request):
-        user_agent = request.META['HTTP_USER_AGENT']
-        agent_is_supported = ('Chrome' in user_agent) or ('Firefox' in user_agent)
-
-        if not agent_is_supported:
-            messages.warning(request, '<h4>Unsupported Browser</h4>'
-                                      'Your browser is not supported by DesignSafe. '
-                                      'Please switch to <a href="https://www.google.com/chrome">Chrome</a> '
-                                      'or <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a> '
-                                      'if you experience issues.')
-
 class DesignsafeProfileUpdateMiddleware:
 
     """
-    Middleware to check if a user's profile has the update_required flag set to 
+    Middleware to check if a user's profile has the update_required flag set to
     True, and force them to update their profile if so.
     """
 

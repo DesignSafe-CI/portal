@@ -115,7 +115,7 @@ class AccountsTests(TestCase):
         mock_form_tas().institutions.return_value = [{'id': 1, 'name': 'inst1'}]
         mock_form_tas().get_departments.return_value = [{'id': 1, 'name': 'dep1'}]
         mock_form_tas().countries.return_value = [{'id': 1, 'name': 'country1'}]
-        
+
         url = reverse('designsafe_accounts:manage_profile')
         self.client.login(username='ds_admin', password='admin/password')
         resp = self.client.get(url)
@@ -131,7 +131,16 @@ class AccountsTests(TestCase):
         mock_form_tas().get_departments.return_value = [{'id': 1, 'name': 'dep1'}]
         mock_form_tas().countries.return_value = [{'id': 1, 'name': 'country1'}]
 
-        url = reverse('designsafe_accounts:profile_edit')
+        def mock_user_side_effect(username = 'ds_admin', email = 'test@test.test'):
+            return {'email': email,
+                    'piEligibility': True,
+                    'source': True, 'id': 1,
+                    'ethnicity': 'White', 'gender': 'Other'}
+
+        # pass test for duplicate email check
+        mock_tas().get_user.side_effect = mock_user_side_effect
+
+        edit_url = reverse('designsafe_accounts:profile_edit')
         self.client.login(username='ds_admin', password='admin/password')
 
         data = {'firstName': 'DS',
@@ -143,13 +152,19 @@ class AccountsTests(TestCase):
                 'bio': 'NEW TEST BIO',
                 'website': 'NEW_WEBSITE', 'orcid_id': 'NEW_ORCID_ID', 'nh_interests': '13',
                 'nh_technical_domains': '5',
+                'nh_interests_primary': '1',
                 'professional_level': 'Staff (support, administration, etc)',
                 'research_activities': '6'}
 
-        resp = self.client.post(url, data)
-       
-        url = reverse('designsafe_accounts:manage_profile')
-        resp = self.client.get(url) 
+        resp = self.client.post(edit_url, data)
+
+        manage_url = reverse('designsafe_accounts:manage_profile')
+        resp = self.client.get(manage_url)
         assert 'NEW TEST BIO' in str(resp.content)
         assert 'NEW_WEBSITE' in str(resp.content)
         assert 'NEW_ORCID_ID' in str(resp.content)
+
+        data['email'] = 'error@test.test'
+        resp = self.client.post(edit_url, data)
+        resp = self.client.get(manage_url)
+        assert 'The submitted email already exists! Your email has not been updated!' in str(resp.content)

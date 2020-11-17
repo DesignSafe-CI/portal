@@ -83,10 +83,16 @@
 
             <div class="col-md-6">
                     <h3>Research Interests</h3>
-                <dt> Natural Hazards Interests </dt>
+                <dt> Natural Hazards Interest</dt>
+                    {{ds_profile.nh_interests_primary.description}}
+                <dt> Other Natural Hazards Interests </dt>
+    
                 {% for interest in ds_profile.nh_interests.all %}
                     <dd> {{ interest.description }} </dd>
                 {% endfor %}
+                {% if ds_profile.nh_interests.all|length == 0 %}
+                    <dd>(None Specified)</dd>
+                {% endif %}
 
                 <dt> Technical Domains </dt>
                 {% for interest in ds_profile.nh_technical_domains.all %}
