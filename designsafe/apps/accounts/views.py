@@ -332,6 +332,11 @@ def profile_edit(request):
     if request.method == 'POST':
         form = forms.UserProfileForm(request.POST, initial=tas_user)
         if form.is_valid() and pro_form.is_valid():
+            existing_user = (tas.get_user(email=form.cleaned_data['email']))
+            if existing_user and (existing_user['email'] != tas_user['email']):
+                messages.error(request, 'The submitted email already exists! Your email has not been updated!')
+                return HttpResponseRedirect(reverse('designsafe_accounts:profile_edit'))
+
             pro_form.save()
 
             data = form.cleaned_data
@@ -353,7 +358,7 @@ def profile_edit(request):
                 ds_profile.website = pro_data['website']
                 ds_profile.orcid_id = pro_data['orcid_id']
                 ds_profile.professional_level = pro_data['professional_level']
-                
+
             except ObjectDoesNotExist as e:
                 logger.info('exception e: {} {}'.format(type(e), e ))
                 ds_profile = DesignSafeProfile(
