@@ -152,6 +152,7 @@ class AccountsTests(TestCase):
                 'bio': 'NEW TEST BIO',
                 'website': 'NEW_WEBSITE', 'orcid_id': 'NEW_ORCID_ID', 'nh_interests': '13',
                 'nh_technical_domains': '5',
+                'nh_interests_primary': '1',
                 'professional_level': 'Staff (support, administration, etc)',
                 'research_activities': '6'}
 

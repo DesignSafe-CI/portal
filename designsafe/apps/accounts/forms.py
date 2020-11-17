@@ -1,3 +1,5 @@
+import re
+import logging
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -8,14 +10,12 @@ from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from .models import (DesignSafeProfile, NotificationPreferences,
-    DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities, 
-    DesignSafeProfileNHTechnicalDomains)
+                     DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities,
+                     DesignSafeProfileNHTechnicalDomains)
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
-import re
-import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 ELIGIBLE = 'Eligible'
 INELIGIBLE = 'Ineligible'
@@ -240,6 +240,10 @@ class PasswordResetConfirmForm(forms.Form):
 
 
 class UserProfileForm(forms.Form):
+    """
+    Any changes to this for may require updates to the field_order
+    in the UserRegistrationForm.
+    """
     firstName = forms.CharField(label='First name')
     lastName = forms.CharField(label='Last name')
     email = forms.EmailField()
@@ -291,38 +295,84 @@ class TasUserProfileAdminForm(forms.Form):
        )
 
 
-class UserRegistrationForm(forms.Form):
+class ProfessionalProfileForm(forms.ModelForm):
     """
-    Except for `institution`, this is the same form as `UserProfileForm`. However,
-    due to limited ability to control field order, we cannot cleanly inherit from that
-    form.
+    Any changes made to this form need
+    to be reflected in the UserRegistrationForm
+    1) make sure the fields are in the correct order (field_order var)
+    2) Specifically, update the UserRegistrationForm.savew() function
+    to make sure all the pro profile fields are saved.
     """
-    firstName = forms.CharField(label='First name')
-    lastName = forms.CharField(label='Last name')
-    email = forms.EmailField(label='Email')
-    confirmEmail = forms.CharField(label='Confirm Email')
-    phone = forms.CharField()
-    institutionId = forms.ChoiceField(
-        label='Institution', choices=(),
-        error_messages={'invalid': 'Please select your affiliated institution'})
-    departmentId = forms.ChoiceField(label='Department', choices=(), required=False)
+    bio_placeholder = (
+        'Please provide a brief summary of your professional profile, '
+        'the natural hazards activities with which you are involved or '
+        'would like to be involved, and any other comments that would help '
+        'identify your experience and interest within the community. '
+    )
+    nh_interests_primary = forms.ModelChoiceField(
+        queryset=DesignSafeProfileNHInterests.objects.all(),
+        label="Primary Natural Hazards Interest"
+    ) 
+    nh_interests = forms.ModelMultipleChoiceField(
+        queryset=DesignSafeProfileNHInterests.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Natural Hazards Interests (check all that apply)"
+    )
+    nh_technical_domains = forms.ModelMultipleChoiceField(
+        queryset=DesignSafeProfileNHTechnicalDomains.objects.all(),
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+        label="Technical Domains (check all that apply)"
+    )
+    bio = forms.CharField(
+        max_length=4096,
+        widget=forms.Textarea(attrs={'placeholder': bio_placeholder}),
+        label='Professional and Research Interests',
+        required=False
+    )
+    website = forms.CharField(max_length=256, required=False, label="Personal Website")
+    orcid_id = forms.CharField(max_length=256, required=False, label="Orcid ID")
+    professional_level = forms.ChoiceField(
+        choices=PROFESSIONAL_LEVEL_OPTIONS,
+        widget=forms.RadioSelect,
+        required=True)
+    research_activities = forms.ModelMultipleChoiceField(
+        queryset=DesignSafeProfileResearchActivities.objects.all(),
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+        label="Research Activities (check all that apply)"
+    )
+
+    field_order = ['nh_interests_primary', 'nh_interests', 'nh_technical_domains',
+                  'bio', 'website', 'orcid_id', 'professional_level', 'research_activities']
+
+    def clean_website(self):
+        ws = self.cleaned_data['website']
+        if (ws != '') and (not ws.startswith('http://')):
+            ws = "http://" + ws
+        return ws or None
+
+    # def clean_bio(self):
+    #     bio = self.cleaned_data['bio']
+    #     bio = escape(bio)
+    #     return bio
+
+    class Meta:
+        model = DesignSafeProfile
+        exclude = ['user', 'ethnicity', 'gender', 'update_required']
+
+
+class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
+    #overriding form fields
     institution = forms.CharField(
         label='Institution name',
         help_text='If your institution is not listed, please provide the name of the '
                   'institution as it should be shown here.',
         required=False,
                                       )
-    title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
-    countryId = forms.ChoiceField(
-        label='Country of residence', choices=(),
-        error_messages={'invalid': 'Please select your Country of residence'})
-    citizenshipId = forms.ChoiceField(
-        label='Country of citizenship', choices=(),
-        error_messages={'invalid': 'Please select your Country of citizenship'})
-
-    ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
-    gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
-
+    #additional fields for registration form
+    confirmEmail = forms.CharField(label='Confirm Email')
     username = forms.RegexField(
         label='Username',
         help_text='Usernames must be 3-8 characters in length, start with a letter, and '
@@ -345,6 +395,12 @@ class UserRegistrationForm(forms.Form):
         error_messages={'required': 'Please Agree to the DesignSafe Account Limit.'})
 
     captcha = ReCaptchaField(widget=ReCaptchaWidget)
+
+    field_order = ['firstName', 'lastName', 'email', 'confirmEmail',
+                  'phone', 'institutionId', 'departmentId', 'institution',
+                  'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
+                  'nh_interests_primary', 'nh_interests', 'nh_technical_domains',
+                  'bio', 'website', 'orcid_id', 'professional_level', 'research_activities']
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
@@ -378,9 +434,9 @@ class UserRegistrationForm(forms.Form):
                 raise forms.ValidationError(error_message)
 
 
-            if email != confirmEmail:  
-                valid = False         
-                error_message = 'The email provided does not match the confirmation.' 
+            if email != confirmEmail:
+                valid = False
+                error_message = 'The email provided does not match the confirmation.'
             if not valid:
                 self.add_error('email', error_message)
                 self.add_error('confirmEmail', '')
@@ -391,18 +447,34 @@ class UserRegistrationForm(forms.Form):
         data['source'] = source
         data['piEligibility'] = pi_eligibility
 
-        safe_data = data.copy()
+        #pull out specific fields from data for tas and pro profile
+        tas_keys = ['firstName', 'lastName','email', 'confirmEmail',
+                    'phone', 'institutionId', 'departmentId', 'institution',
+                    'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
+                    'source', 'piEligibility', 'username', 'password', 'confirmPassword',
+                    'agree_to_terms', 'agree_to_account_limit']
+        pro_profile_fields = ['nh_interests', 'nh_interests_primary', 'nh_technical_domains', 'bio',
+                                'website', 'orcid_id', 'professional_level', 'research_activities']
+        pro_profile_data = {}
+        tas_data = {}
+        for key in data:
+            if key in tas_keys:
+                tas_data[key] = data[key]
+            if key in pro_profile_fields:
+                pro_profile_data[key] = data[key]
+
+        safe_data = tas_data.copy()
         safe_data['password'] = safe_data['confirmPassword'] = '********'
 
-        logger.info('Attempting new user registration: %s' % safe_data)
-        tas_user = TASClient().save_user(None, data)
+        LOGGER.info('Attempting new user registration: %s' % safe_data)
+        tas_user = TASClient().save_user(None, tas_data)
 
         # create local user
         UserModel = get_user_model()
         try:
             # the user should not exist
             user = UserModel.objects.get(username=data['username'])
-            logger.warning('On TAS registration, local user already existed? '
+            LOGGER.warning('On TAS registration, local user already existed? '
                            'user=%s' % user)
         except UserModel.DoesNotExist:
             user = UserModel.objects.create_user(
@@ -418,80 +490,40 @@ class UserRegistrationForm(forms.Form):
             ds_profile = DesignSafeProfile.objects.get(user=user)
             ds_profile.ethnicity = data['ethnicity']
             ds_profile.gender = data['gender']
+            ds_profile.bio = data['bio']
+            ds_profile.website = data['website']
+            ds_profile.orcid_id = data['orcid_id']
+            ds_profile.professional_level = data['professional_level']
+            ds_profile.update_required = False
         except DesignSafeProfile.DoesNotExist:
             ds_profile = DesignSafeProfile(
                 user=user,
                 ethnicity=data['ethnicity'],
-                gender=data['gender']
+                gender=data['gender'],
+                bio=data['bio'],
+                website=data['website'],
+                orcid_id=data['orcid_id'],
+                professional_level=data['professional_level'],
+                update_required=False
                 )
         ds_profile.save()
 
+        #save professional profile information
+        pro_profile = ProfessionalProfileForm(instance=ds_profile)
+        pro_profile.cleaned_data = pro_profile_data
+        pro_profile.save()
+
         # terms of use
-        logger.info('Prior to Registration, %s %s <%s> agreed to Terms of Use' % (
+        LOGGER.info('Prior to Registration, %s %s <%s> agreed to Terms of Use' % (
             data['firstName'], data['lastName'], data['email']))
         try:
             terms = TermsAndConditions.get_active()
             user_terms = UserTermsAndConditions(user=user, terms=terms)
             user_terms.save()
         except:
-            logger.exception('Error saving UserTermsAndConditions for user=%s', user)
+            LOGGER.exception('Error saving UserTermsAndConditions for user=%s', user)
 
         return tas_user
-
-
-class ProfessionalProfileForm(forms.ModelForm):
-    bio_placeholder = (
-        'Please provide a brief summary of your professional profile, '
-        'the natural hazards activities with which you are involved or '
-        'would like to be involved, and any other comments that would help '
-        'identify your experience and interest within the community. '
-    )
-    nh_interests = forms.ModelMultipleChoiceField(
-        queryset=DesignSafeProfileNHInterests.objects.all(),
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        label="Natural Hazards Interests (check all that apply)"
-    )
-    nh_technical_domains = forms.ModelMultipleChoiceField(
-        queryset=DesignSafeProfileNHTechnicalDomains.objects.all(),
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        label="Technical Domains (check all that apply)"
-    )
-    bio = forms.CharField(
-        max_length=4096,
-        widget=forms.Textarea(attrs={'placeholder': bio_placeholder}),
-        label='Professional and Research Interests',
-        required=False
-    )
-    website = forms.CharField(max_length=256, required=False, label="Personal Website")
-    orcid_id = forms.CharField(max_length=256, required=False, label="Orcid ID")
-    professional_level = forms.ChoiceField(
-        choices=PROFESSIONAL_LEVEL_OPTIONS,
-        widget=forms.RadioSelect,
-        required=True)
-    research_activities = forms.ModelMultipleChoiceField(
-        queryset=DesignSafeProfileResearchActivities.objects.all(),
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        label="Research Activities (check all that apply)"
-    )
-
-    def clean_website(self):
-        ws = self.cleaned_data['website']
-        if (ws != '') and (not ws.startswith('http://')):
-            ws = "http://" + ws
-        return ws or None
-
-    # def clean_bio(self):
-    #     bio = self.cleaned_data['bio']
-    #     bio = escape(bio)
-    #     return bio
-
-    class Meta:
-        model = DesignSafeProfile
-        exclude = ['user', 'ethnicity', 'gender', 'update_required']
-
 
 class NEESAccountMigrationForm(forms.Form):
 
