@@ -61,6 +61,7 @@ def call_api(request, service):
                         if pems:
                             metrics.info('agave.apps.listPermissions', extra={
                                 'operation': 'agave.apps.listPermissions',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'appId': appId
@@ -70,6 +71,7 @@ def call_api(request, service):
                         else:
                             metrics.info('agave.apps.get', extra={
                                 'operation': 'agave.apps.get',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'appId': appId
@@ -88,6 +90,7 @@ def call_api(request, service):
                     else:
                         metrics.info('agave.apps.list', extra={
                             'operation': 'agave.apps.list',
+                            'sessionId': getattr(request.session, 'session_key', ''),
                             'user': request.user.username,
                             'info': {}
                         })
@@ -99,6 +102,7 @@ def call_api(request, service):
                             username = request.GET.get('username')
                             metrics.info('agave.apps.updatePermissionsForUser', extra={
                                 'operation': 'agave.apps.updatePermissionsForUser',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'username': username
@@ -108,6 +112,7 @@ def call_api(request, service):
                         else:
                             metrics.info('agave.apps.manage', extra={
                                 'operation': 'agave.apps.manage',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'appId': appId,
@@ -118,6 +123,7 @@ def call_api(request, service):
                     else:
                         metrics.info('agave.apps.add', extra={
                             'operation': 'agave.apps.add',
+                            'sessionId': getattr(request.session, 'session_key', ''),
                             'user': request.user.username,
                             'info': {
                                 'body': body
@@ -131,6 +137,7 @@ def call_api(request, service):
                             username = request.GET.get('username')
                             metrics.info('agave.apps.deletePermissionsForUser', extra={
                                 'operation': 'agave.apps.deletePermissionsForUser',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'username': username
@@ -140,6 +147,7 @@ def call_api(request, service):
                         else:
                             metrics.info('agave.apps.delete', extra={
                                 'operation': 'agave.apps.delete',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'appId': appId
@@ -152,6 +160,7 @@ def call_api(request, service):
                 path = request.GET.get('path')
                 metrics.info('agave.files.list', extra={
                     'operation': 'agave.files.list',
+                    'sessionId': getattr(request.session, 'session_key', ''),
                     'user': request.user.username,
                     'info': {
                         'system_id': system_id,
@@ -174,6 +183,7 @@ def call_api(request, service):
                         if roles:
                             metrics.info('agave.systems.listRoles', extra={
                                 'operation': 'agave.systems.listRoles',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'system_id': system_id
@@ -183,6 +193,7 @@ def call_api(request, service):
                         elif user_role:
                             metrics.info('agave.systems.getRoleForUser', extra={
                                 'operation': 'agave.systems.getRoleForUser',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'system_id': system_id
@@ -192,6 +203,7 @@ def call_api(request, service):
                         else:
                             metrics.info('agave.systems.get', extra={
                                 'operation': 'agave.systems.get',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'system_id': system_id
@@ -205,6 +217,7 @@ def call_api(request, service):
 
                                 metrics.info('agave.systems.list', extra={
                                     'operation': 'agave.systems.list public',
+                                    'sessionId': getattr(request.session, 'session_key', ''),
                                     'user': request.user.username,
                                     'info': {
                                         'public': public,
@@ -216,6 +229,7 @@ def call_api(request, service):
                             else:
                                 metrics.info('agave.systems.list', extra={
                                     'operation': 'agave.systems.list public',
+                                    'sessionId': getattr(request.session, 'session_key', ''),
                                     'user': request.user.username,
                                     'info': {
                                         'public': public
@@ -227,6 +241,7 @@ def call_api(request, service):
                             if (type):
                                 metrics.info('agave.systems.list', extra={
                                     'operation': 'agave.systems.list',
+                                    'sessionId': getattr(request.session, 'session_key', ''),
                                     'user': request.user.username,
                                     'info': {
                                         'type': type
@@ -236,6 +251,7 @@ def call_api(request, service):
                             else:
                                 metrics.info('agave.systems.list', extra={
                                     'operation': 'agave.systems.list',
+                                    'sessionId': getattr(request.session, 'session_key', ''),
                                     'user': request.user.username,
                                     'info': {}
                                 })
@@ -250,6 +266,7 @@ def call_api(request, service):
                         if uuid:
                             metrics.info('agave.meta.listMetadataPermissions', extra={
                                 'user': request.user.username,
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'operation': 'agave.meta.listMetadataPermissions',
                                 'info': {
                                     'uuid': uuid
@@ -260,6 +277,7 @@ def call_api(request, service):
                         if uuid:
                             metrics.info('agave.meta.getMetadata', extra={
                                 'operation': 'agave.meta.getMetadata',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'uuid': uuid
@@ -269,6 +287,7 @@ def call_api(request, service):
                         elif query:
                             metrics.info('agave.meta.listMetadata', extra={
                                 'operation': 'agave.meta.listMetadata',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'query': query
@@ -282,6 +301,7 @@ def call_api(request, service):
                     body = json.loads(request.body)
                     metrics.info('meta POST body', extra={
                         'operation': 'agave.meta.listMetadata',
+                        'sessionId': getattr(request.session, 'session_key', ''),
                         'user': request.user.username,
                         'info': {
                             'body': body
@@ -293,6 +313,7 @@ def call_api(request, service):
                             metrics.info('agave.meta.updateMetadataPermissionsForUser', extra={
                                 'operation': 'agave.meta.listMetadata',
                                 'user': request.user.username,
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'info': {
                                     'uuid': uuid,
                                     'username': username
@@ -303,6 +324,7 @@ def call_api(request, service):
                             metrics.info('agave.meta.updateMetadata', extra={
                                 'operation': 'agave.meta.listMetadata',
                                 'user': request.user.username,
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'info': {
                                     'uuid': uuid
                                 }
@@ -314,6 +336,7 @@ def call_api(request, service):
                             metrics.info('agave.meta.updateMetadata uuid', extra={
                                 'operation': 'agave.meta.listMetadata',
                                 'user': request.user.username,
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'info': {
                                     'uuid': uuid
                                 }
@@ -323,6 +346,7 @@ def call_api(request, service):
                         else:
                             metrics.info('agave.meta.addMetadata', extra={
                                 'operation': 'agave.meta.listMetadata',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'body': body
@@ -336,6 +360,7 @@ def call_api(request, service):
                             username = request.GET.get('username')
                             metrics.info('agave.meta.deleteMetadataPermissionsForUser', extra={
                                 'operation': 'agave.meta.listMetadata',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'username': username
@@ -345,6 +370,7 @@ def call_api(request, service):
                         else:
                             metrics.info('agave.meta.deleteMetadata', extra={
                                 'operation': 'agave.meta.listMetadata',
+                                'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
                                     'uuid': uuid
@@ -363,6 +389,7 @@ def call_api(request, service):
                     if appId and pems:
                         metrics.info('ds_admin_client.apps.listPermissions', extra={
                             'operation': 'ds_admin_client.apps.listPermissions',
+                            'sessionId': getattr(request.session, 'session_key', ''),
                             'user': 'ds_admin',
                             'info': {
                                 'appId': appId
@@ -372,6 +399,7 @@ def call_api(request, service):
                     else:
                         metrics.info('ds_admin_client.meta.listMetadata', extra={
                             'operation': 'ds_admin_client.meta.listMetadata',
+                            'sessionId': getattr(request.session, 'session_key', ''),
                             'user': 'ds_admin',
                             'info': {
                                 'query': query
@@ -385,6 +413,7 @@ def call_api(request, service):
                     if pems and username:
                         metrics.info('ds_admin_client.meta.updateMetadataPermissionsForUser', extra={
                             'operation': 'agave.meta.listMetadata',
+                            'sessionId': getattr(request.session, 'session_key', ''),
                             'user': 'ds_admin',
                             'info': {
                                 'body': body,
@@ -407,6 +436,7 @@ def call_api(request, service):
                 metrics.info('Failed to execute {0} API call due to HTTPError={1}'.format(
                 service, json_response.get('message')), extra={
                     'operation': 'agave.meta.listMetadata',
+                    'sessionId': getattr(request.session, 'session_key', ''),
                     'user': request.user.username,
                     'info': {}
                 })
@@ -424,6 +454,7 @@ def call_api(request, service):
             metrics.info('Failed to execute {0} API call due to Exception={1}'.format(
                 service, e), extra={
                     'operation': 'agave.meta.listMetadata',
+                    'sessionId': getattr(request.session, 'session_key', ''),
                     'user': request.user.username,
                     'info': {}
                 })
