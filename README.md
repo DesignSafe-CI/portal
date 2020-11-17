@@ -189,7 +189,7 @@ Django tests should be written according to standard [Django testing procedures]
 You can run Django tests with the following command:
 
 ```shell
-$ docker run -it --rm des_django python manage.py test --settings=designsafe.settings.test_settings
+$ docker exec -it des_django pytest designsafe
 ```
 
 ### Frontend tests
