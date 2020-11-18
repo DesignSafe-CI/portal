@@ -263,6 +263,8 @@ STATICFILES_FINDERS = (
 MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
 
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 # FORM_RENDERER = 'djng.forms.renderers.DjangoAngularBootstrap3Templates'
 
 #####
