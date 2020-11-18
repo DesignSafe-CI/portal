@@ -84,10 +84,10 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
         query_filters.append(search_utils.description_query(description))
 
     # Experimental advanced filters
-    facility_name = query_dict['advancedFilters']['experimental']['experimentalFacility']
-    experiment_type = query_dict['advancedFilters']['experimental']['experimentType'] 
-    if facility_name:
-        query_filters.append(search_utils.experimental_facility_query(facility_name))
+    facility = query_dict['advancedFilters']['experimental']['experimentalFacility']
+    experiment_type = query_dict['advancedFilters']['experimental']['experimentType']
+    if facility['name']:
+        query_filters.append(search_utils.experimental_facility_query(facility))
     if experiment_type:
         query_filters.append(search_utils.experiment_type_query)
 
