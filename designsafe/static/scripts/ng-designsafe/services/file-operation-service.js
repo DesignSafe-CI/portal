@@ -3,12 +3,13 @@ import { map, tap, catchError } from 'rxjs/operators';
 import { takeLatestSubscriber } from './_rxjs-utils';
 
 export class FileOperationService {
-    constructor($http, $state, $rootScope, $uibModal, $q, ProjectService, Django) {
+    constructor($http, $state, $rootScope, $uibModal, $q, ProjectService, Django, toastr) {
         'ngInject';
         this.$state = $state;
         this.$uibModal = $uibModal;
         this.Django = Django;
         this.$q = $q;
+        this.toastr = toastr;
         this.$rootScope = $rootScope;
         this.$http = $http;
         this.ProjectService = ProjectService;
@@ -85,10 +86,10 @@ export class FileOperationService {
 
     checkForEntities(file) {
         const inProject = ['projects.view', 'projects.curation'].includes(this.$state.current.name);
-        if (!inProject) return false
-        const entities = this.ProjectService.current.getAllRelatedObjects()
+        if (!inProject) return false;
+        const entities = this.ProjectService.current.getAllRelatedObjects();
         const entityFilePaths = entities.map((e) => e._filePaths).flat(1);
-        const hasPathPrefix = entityFilePaths.some(entityPath => entityPath.startsWith(file.path))
+        const hasPathPrefix = entityFilePaths.some((entityPath) => entityPath.startsWith(file.path));
         const hasEntities = file._entities && file._entities.length;
         const hasTags = file._fileTags && file._fileTags.length;
         const projectFileTags = ((this.ProjectService.current || {}).value || {}).fileTags || [];
@@ -453,18 +454,13 @@ export class FileOperationService {
      */
     filterImages(files) {
         return files.filter(({ path }) =>
-            ['jpg', 'jpeg', 'png', 'tiff', 'gif'].includes(
-                path
-                    .split('.')
-                    .pop()
-                    .toLowerCase()
-            )
+            ['jpg', 'jpeg', 'png', 'tiff', 'gif'].includes(path.split('.').pop().toLowerCase())
         );
     }
 
     /**
      * Returns an observable of all images in an array of files. If the array
-     * of files contains any folders, images in the top level of a folder are 
+     * of files contains any folders, images in the top level of a folder are
      * returned as well.
      * @param {Object} params Destructured parameters.
      * @param {string} params.api API of current listing.
@@ -559,7 +555,9 @@ export class FileOperationService {
      * @param {function} params.successCallback Callback on success.
      */
     handleMkdir({ api, scheme, system, path, folderName, successCallback }) {
-        const mkdirUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/mkdir/${system}/${encodeURIComponent(path)}/`);
+        const mkdirUrl = this.removeDuplicateSlashes(
+            `/api/datafiles/${api}/${scheme}/mkdir/${system}/${encodeURIComponent(path)}/`
+        );
         const mkdirRequest = this.$http.put(mkdirUrl, { dir_name: folderName }).then(successCallback);
     }
 
@@ -574,7 +572,7 @@ export class FileOperationService {
      * @param {string} params.scheme Scheme (private, published, community) of current listing.
      * @param {string} params.system System of current listing
      * @param {string} params.path Path to the file being renamed.
-     * @param {Object} params.file File object ({name, system, path}) to rename. 
+     * @param {Object} params.file File object ({name, system, path}) to rename.
      */
     openRenameModal({ api, scheme, system, path, file }) {
         var modal = this.$uibModal.open({
@@ -601,7 +599,9 @@ export class FileOperationService {
      * @param {function} params.successCallback Callback on success.
      */
     handleRename({ api, scheme, system, path, newName, successCallback }) {
-        const renameUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/rename/${system}/${encodeURIComponent(path)}/`);
+        const renameUrl = this.removeDuplicateSlashes(
+            `/api/datafiles/${api}/${scheme}/rename/${system}/${encodeURIComponent(path)}/`
+        );
         const renameRequest = this.$http.put(renameUrl, { new_name: newName }).then(successCallback);
     }
 
@@ -626,7 +626,7 @@ export class FileOperationService {
                 if (file._links) {
                     return this.$http.get(downloadUrl, { params: { href: file._links.self.href } });
                 }
-                /* If we don't have the href, pass a blank string and the 
+                /* If we don't have the href, pass a blank string and the
                    backend operation will look it up. */
                 return this.$http.get(downloadUrl, { params: { href: '' } });
             case 'box':
@@ -641,14 +641,14 @@ export class FileOperationService {
      * @param {Object} params Destructured parameters.
      * @param {string} params.api API of current listing.
      * @param {string} params.scheme Scheme (private, published, community) of current listing.
-     * @param {Object} params.files File objects ({name, system, path}) to download. 
+     * @param {Object} params.files File objects ({name, system, path}) to download.
      */
     download({ api, scheme, files }) {
         if (!Array.isArray(files)) {
             files = [files];
         }
         const downloads = files.map((file) => {
-            return this.getDownloadUrl({ api, scheme, file }).then(function(resp) {
+            return this.getDownloadUrl({ api, scheme, file }).then(function (resp) {
                 var link = document.createElement('a');
                 link.style.display = 'none';
                 link.setAttribute('href', resp.data.href);
@@ -671,9 +671,9 @@ export class FileOperationService {
      * @param {Object} params Destructured parameters.
      * @param {string} params.api API of current listing.
      * @param {string} params.scheme Scheme (private, published, community) of current listing.
-     * @param {Object} params.file File object ({name, system, path}) to trash. 
-     * @param {string} params.trashPath Path to the trash folder. 
-     */    
+     * @param {Object} params.file File object ({name, system, path}) to trash.
+     * @param {string} params.trashPath Path to the trash folder.
+     */
     mapParamsToTrash({ api, scheme, file, trashPath }) {
         const trashUrl = this.removeDuplicateSlashes(
             `/api/datafiles/${api}/${scheme}/trash/${file.system}/${encodeURIComponent(file.path)}/`
@@ -686,10 +686,15 @@ export class FileOperationService {
      * @param {Object} params Destructured parameters.
      * @param {string} params.api API of current listing.
      * @param {string} params.scheme Scheme (private, published, community) of current listing.
-     * @param {Object} params.files File objects ({name, system, path}) to trash. 
-     * @param {string} params.trashPath Path to the trash folder. 
-     */   
+     * @param {Object} params.files File objects ({name, system, path}) to trash.
+     * @param {string} params.trashPath Path to the trash folder.
+     */
     trash({ api, scheme, files, trashPath }) {
+        const hasEntities = files.map(this.checkForEntities).find((x) => x);
+        if (hasEntities) {
+            this.toastr.error('This data cannot be trashed until its associated entities have been removed');
+            return;
+        }
         const filePromises = files.map((file) => this.mapParamsToTrash({ api, scheme, file, trashPath }));
         forkJoin(filePromises).subscribe(() => this.$state.reload());
     }
