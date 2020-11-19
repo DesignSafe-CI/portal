@@ -305,7 +305,14 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         meta_obj = ag.meta.getMetadata(uuid=project_id)
         cls = project_lookup_model(meta_obj)
         project = cls(**meta_obj)
-        return JsonResponse(project.to_body_dict(), safe=False)
+        project_dict = project.to_body_dict()
+
+        # serialization can change the PI order
+        try:
+            project_dict['value']['coPis'] = meta_obj['value']['coPis']
+        except KeyError:
+            pass
+        return JsonResponse(project_dict)
 
     @profile_fn
     def post(self, request, project_id):
