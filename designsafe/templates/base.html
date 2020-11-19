@@ -117,9 +117,7 @@
             });
         })(angular);
 
-        var userAgent = navigator.userAgent
-
-        if(!(userAgent.includes("Chrome") || userAgent.includes("Firefox"))) {
+        if(!(userAgent.includes("Chrome") || userAgent.includes("Firefox") || userAgent.includes("FxiOS") || userAgent.includes("CriOS"))) {
             $("#agentMessage").append("\
                 <div class='alert alert-warning'>\
                     <button type='button' class='close' data-dismiss='alert' aria-label='Close'>\
@@ -133,7 +131,6 @@
                     </p>\
                 </div>")
         }
-
     </script>
 
     {% include 'includes/analytics.html' %}
