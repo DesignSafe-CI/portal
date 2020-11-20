@@ -236,7 +236,7 @@ class DataDepotPublishedView(TemplateView):
         context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
 
         proj = ProjectsManager(service_account()).get_project_by_id(pub.projectId)
-        context['dc_json'] = json.dumps(proj.to_datacite_json())
+        context['dc_json'] = json.dumps(proj.to_dataset_json())
 
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
