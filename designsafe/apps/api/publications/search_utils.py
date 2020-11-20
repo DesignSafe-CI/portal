@@ -2,18 +2,29 @@ from elasticsearch_dsl import Q
 import logging
 logger = logging.getLogger(__name__)
 
-def experimental_facility_query(facility_name):
-    if facility_name == 'Other':
-        facility_name = 'other'
+def experimental_facility_query(facility):
+    if facility['name'] == 'Other':
+        facility['name'] = 'other'
 
-    return Q({'nested':
+    name_query =  Q({'nested':
               {'path': 'experimentsList',
                'query':
                {'nested':
                 {'path': 'experimentsList.value',
                  'query':
                  {'term':
-                  {'experimentsList.value.experimentalFacility._exact': facility_name}}}}}})
+                  {'experimentsList.value.experimentalFacility._exact': facility['name']}}}}}})
+
+    label_query =  Q({'nested':
+              {'path': 'experimentsList',
+               'query':
+               {'nested':
+                {'path': 'experimentsList.value',
+                 'query':
+                 {'term':
+                  {'experimentsList.value.experimentalFacility._exact': facility['label']}}}}}})
+
+    return name_query | label_query
 
 
 def experiment_type_query(experiment_type):

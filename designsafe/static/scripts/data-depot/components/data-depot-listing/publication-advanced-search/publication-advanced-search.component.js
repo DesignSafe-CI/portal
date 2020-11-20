@@ -16,9 +16,15 @@ class PublicationAdvancedSearchCtrl {
         ];
         this.simulationTypes = [{ name: '', label: 'All Types' }, ...simulationTypes];
 
-        this.rapidEventTypes = ['Other', 'Earthquake', 'Flood', 'Hurricane', 'Landslide', 'Tornado', 'Tsunami'].map(
-            (type) => ({ name: type, label: type })
-        );
+        this.rapidEventTypes = [
+            'Other',
+            'Earthquake',
+            'Flood',
+            'Hurricane',
+            'Landslide',
+            'Tornado',
+            'Tsunami',
+        ].map((type) => ({ name: type, label: type }));
         this.rapidEventTypes = [{ name: '', label: 'All Types' }, ...this.rapidEventTypes];
 
         this.otherTypes = [
@@ -42,7 +48,7 @@ class PublicationAdvancedSearchCtrl {
             'Video',
             'White Paper',
         ].map((type) => ({ name: type, label: type }));
-        this.otherTypes = [{ name: '', label: 'All Types' }, ...this.otherTypes]; 
+        this.otherTypes = [{ name: '', label: 'All Types' }, ...this.otherTypes];
 
         this.hybridSimulationTypes = [
             { name: '', label: 'All Types' },
@@ -62,6 +68,9 @@ class PublicationAdvancedSearchCtrl {
 
         const currentParams =
             this.$stateParams.query_string && JSON.parse(decodeURIComponent(this.$stateParams.query_string));
+        if (currentParams)
+            currentParams.advancedFilters.experimental.experimentalFacility =
+                currentParams.advancedFilters.experimental.experimentalFacility.label;
 
         this.params = currentParams || {
             queries: {
@@ -110,7 +119,7 @@ class PublicationAdvancedSearchCtrl {
         });
     }
     getValidExperimentTypes() {
-        this.params.advancedFilters.experimental.experimentType = ''
+        this.params.advancedFilters.experimental.experimentType = '';
         const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
         const facilityName = (
             this.experimentOptions.experimentalFacility.experimental.filter((x) => x.label === facilityLabel)[0] || {}
@@ -139,7 +148,16 @@ class PublicationAdvancedSearchCtrl {
             });
     }
     constructQueryString() {
-        return encodeURIComponent(JSON.stringify(this.params));
+        const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
+        const facilityName = (
+            this.experimentOptions.experimentalFacility.experimental.filter((x) => x.label === facilityLabel)[0] || {}
+        ).name;
+        const queryParams = { ...this.params };
+        queryParams.advancedFilters.experimental.experimentalFacility = {
+            name: facilityName,
+            label: this.params.advancedFilters.experimental.experimentalFacility,
+        };
+        return encodeURIComponent(JSON.stringify(queryParams));
     }
     browse() {
         this.$state.go('publicData', { query_string: this.constructQueryString() }, { reload: true });
