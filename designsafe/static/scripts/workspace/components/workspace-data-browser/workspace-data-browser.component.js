@@ -19,8 +19,8 @@ class WorkspaceDataBrowserCtrl {
             { name: 'myData', label: 'My Data' },
             { name: 'communityData', label: 'Community Data' },
             { name: 'myProjects', label: 'My Projects' },
-            { name: 'publications', label: 'Publications' },
-            { name: 'nees', label: 'Publications (NEES)' },
+            { name: 'publications', label: 'Published' },
+            { name: 'nees', label: 'Published (NEES)' },
         ];
         this.breadcrumbParams = this.FileListingService.fileMgrMappings.agave.breadcrumbParams;
         this.selectedOption = 'myData';
