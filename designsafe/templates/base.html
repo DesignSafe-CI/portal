@@ -80,8 +80,8 @@
     <script src="https://www.google.com/recaptcha/api.js"></script>
 
     <script src="{% static 'vendor/modernizr/modernizr.js' %}"></script>
-    <script src="{% static 'vendor/jquery/dist/jquery.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap-ds/js/bootstrap.js' %}"></script>
+    <script src="{% static 'vendor/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap-ds/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
     <script src="{% static 'vendor/d3/dist/d3.min.js' %}"></script>
 
@@ -104,7 +104,7 @@
     {% render_block "js" %}
         <script type="text/javascript" src="{% static 'nbviewer/lib/nbv.js' %}"></script>
         <script type="text/javascript" src="{% static 'vendor/prismjs/prism.js' %}"></script>
-        <script type="text/javascript" src="{% static 'vendor/marked/lib/marked.js' %}"></script>
+        <script type="text/javascript" src="{% static 'vendor/marked/marked.min.js' %}"></script>
         <script src="{% static 'scripts/navbar.js' %}"></script>
 
 
@@ -117,9 +117,7 @@
             });
         })(angular);
 
-        var userAgent = navigator.userAgent
-
-        if(!(userAgent.includes("Chrome") || userAgent.includes("Firefox"))) {
+        if(!(userAgent.includes("Chrome") || userAgent.includes("Firefox") || userAgent.includes("FxiOS") || userAgent.includes("CriOS"))) {
             $("#agentMessage").append("\
                 <div class='alert alert-warning'>\
                     <button type='button' class='close' data-dismiss='alert' aria-label='Close'>\
@@ -133,7 +131,6 @@
                     </p>\
                 </div>")
         }
-
     </script>
 
     {% include 'includes/analytics.html' %}

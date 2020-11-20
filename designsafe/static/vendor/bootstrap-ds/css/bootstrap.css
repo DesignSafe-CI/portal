@@ -3190,14 +3190,13 @@ select[multiple].input-lg {
   display: inline-block;
   margin-bottom: 0;
   font-weight: normal;
-  text-align: center;
+  text-align: left;
   vertical-align: middle;
   -ms-touch-action: manipulation;
       touch-action: manipulation;
   cursor: pointer;
   background-image: none;
   border: 1px solid transparent;
-  white-space: nowrap;
   padding: 6px 12px;
   font-size: 14px;
   line-height: 1.42857143;
@@ -3796,6 +3795,7 @@ fieldset[disabled] .btn-link:focus {
   font-size: 12px;
   line-height: 1.5;
   border-radius: 0px;
+  max-width: 200px;
 }
 .btn-block {
   display: block;

@@ -56,18 +56,23 @@ class Project(BaseMetadataResource):
         return [cls(agave_client=agave_client, **dict(r, **kwargs)) for r in records]
 
     @classmethod
-    def ES_search(cls, agave_client, query_string, username, **kwargs):
+    def ES_search(cls, agave_client, query_string, **kwargs):
+        """
+        Query Elasticsearch for projects matching a query string. Query the 
+        returned UUIDs with the user's client so that we return only projects
+        that the user has permission to view.
+        """
         from designsafe.apps.projects.models.elasticsearch import IndexedProject
-        from elasticsearch_dsl import Q
-   
-        pi_query = Q({'term': {'value.pi._exact': username}})
-        copi_query = Q({'term': {'value.coPis._exact': username}})
-        team_query = Q({'term': {'value.teamMembers._exact': username}})
+
         records = IndexedProject.search().query('query_string', query=query_string, default_operator='and')
-        records = records.filter(pi_query | copi_query | team_query )
         records = records.extra(from_=kwargs.get('offset', 0), size=kwargs.get('limit',100))
         records = records.execute()
-        return [cls(agave_client=agave_client, **r.to_dict()) for r in records]
+        record_uuids = list(map(lambda hit: hit.uuid, records))
+        result_query = {"uuid": {"$in": record_uuids}}
+        meta_records = agave_client.meta.listMetadata(q=json.dumps(
+            result_query), privileged=False)
+
+        return [cls(agave_client=agave_client, **dict(r, **kwargs)) for r in meta_records]
 
     @classmethod
     def search(cls, q, agave_client):

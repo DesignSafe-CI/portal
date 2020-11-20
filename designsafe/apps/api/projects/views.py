@@ -139,7 +139,7 @@ class ProjectListingView(SecureMixin, BaseApiView):
 
 class ProjectCollectionView(SecureMixin, BaseApiView):
     @profile_fn
-    def get(self, request, file_mgr_name=None, system_id=None, offset=None, limit=None):
+    def get(self, request, file_mgr_name=None, system_id=None, offset=0, limit=100):
         """
         Returns a list of Projects for the current user.
         :param request:
@@ -149,8 +149,10 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         #raise HTTPError('Custom Error')
         ag = request.user.agave_oauth.client
         query_string = request.GET.get('query_string', None)
+        offset = request.GET.get('offset', 0)
+        limit = request.GET.get('limit', 100)
         if query_string is not None:
-            projects = Project.ES_search(agave_client=ag, query_string=query_string, username=request.user.username)
+            projects = Project.ES_search(agave_client=ag, query_string=query_string, **{'offset': offset, 'limit': limit})
             data = {'projects': projects}
             return JsonResponse(data, encoder=AgaveJSONEncoder)
         # Add metadata fields to project listings for workspace browser
@@ -165,8 +167,6 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                 'path': 'Projects',
             }
         else:
-            offset = request.GET.get('offset', 0)
-            limit = request.GET.get('limit', 100)
             projects = Project.list_projects(agave_client=ag, **{'offset': offset, 'limit': limit})
             data = {'projects': projects}
 
@@ -305,7 +305,14 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         meta_obj = ag.meta.getMetadata(uuid=project_id)
         cls = project_lookup_model(meta_obj)
         project = cls(**meta_obj)
-        return JsonResponse(project.to_body_dict(), safe=False)
+        project_dict = project.to_body_dict()
+
+        # serialization can change the PI order
+        try:
+            project_dict['value']['coPis'] = meta_obj['value']['coPis']
+        except KeyError:
+            pass
+        return JsonResponse(project_dict)
 
     @profile_fn
     def post(self, request, project_id):

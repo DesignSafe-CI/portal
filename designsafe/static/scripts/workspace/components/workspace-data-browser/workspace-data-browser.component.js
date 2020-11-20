@@ -98,7 +98,7 @@ class WorkspaceDataBrowserCtrl {
         this.listingType = 'files';
         this.breadcrumbParams = {
             skipRoot: false,
-            customRoot: { label: project.value.projectId, path: '' },
+            customRoot: { label: project.value.projectId + " - " + project.value.title, path: '' },
             preRoot: { label: 'My Projects', onBrowse: () => (this.listingType = 'projects') },
         };
 

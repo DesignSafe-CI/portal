@@ -107,7 +107,13 @@ class PublicView(View):
         res_list = []
 
         try:
-            users = model.objects.all().filter(username__in=nl)
+            users = []
+            for username in nl:
+                try:
+                    users.append(model.objects.get(username=username))
+                except model.DoesNotExist:
+                    continue
+
             for user in users:
                 data = {
                     'fname': user.first_name,
