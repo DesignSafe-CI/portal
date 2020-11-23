@@ -17,10 +17,10 @@ class WorkspaceDataBrowserCtrl {
 
         this.options = [
             { name: 'myData', label: 'My Data' },
-            { name: 'communityData', label: 'Community Data' },
             { name: 'myProjects', label: 'My Projects' },
-            { name: 'publications', label: 'Publications' },
-            { name: 'nees', label: 'Publications (NEES)' },
+            { name: 'publications', label: 'Published' },
+            { name: 'nees', label: 'Published (NEES)' },
+            { name: 'communityData', label: 'Community Data' },
         ];
         this.breadcrumbParams = this.FileListingService.fileMgrMappings.agave.breadcrumbParams;
         this.selectedOption = 'myData';
@@ -58,17 +58,6 @@ class WorkspaceDataBrowserCtrl {
                 });
                 this.breadcrumbParams = this.FileListingService.fileMgrMappings.agave.breadcrumbParams;
                 break;
-            case 'communityData':
-                this.listingType = 'files';
-                this.FileListingService.browse({
-                    section: 'main',
-                    api: 'agave',
-                    scheme: 'community',
-                    system: 'designsafe.storage.community',
-                    path: '',
-                });
-                this.breadcrumbParams = this.FileListingService.fileMgrMappings.community.breadcrumbParams;
-                break;
             case 'myProjects':
                 this.listingType = 'projects';
                 this.ProjectService.listProjects({ section: 'main' });
@@ -80,6 +69,17 @@ class WorkspaceDataBrowserCtrl {
             case 'nees':
                 this.listingType = 'nees';
                 this.PublicationService.listLegacyPublications({});
+                break;
+            case 'communityData':
+                this.listingType = 'files';
+                this.FileListingService.browse({
+                    section: 'main',
+                    api: 'agave',
+                    scheme: 'community',
+                    system: 'designsafe.storage.community',
+                    path: '',
+                });
+                this.breadcrumbParams = this.FileListingService.fileMgrMappings.community.breadcrumbParams;
                 break;
         }
     }

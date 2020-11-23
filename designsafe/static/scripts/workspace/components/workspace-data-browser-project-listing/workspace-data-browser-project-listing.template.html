@@ -25,10 +25,10 @@
                             data-ds-data="agave://project-{{project.uuid}}"
                         >
                             <i class="fa fa-folder"></i>
-                            <span>{{project.value.title}}</span>
+                            <span>{{project.value.projectId}}</span>
                         </a>
                     </td>
-                    <td>{{project.value.projectId}}</td>
+                    <td>{{project.value.title}}</td>
                 </tr>
                 <tr ng-if="$ctrl.listing.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
                 <tr ng-if="$ctrl.listing.loadingScroll">
