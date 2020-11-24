@@ -1,5 +1,20 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.0.6
+Improvements:
+- Expose publication metadata to Google Dataset Search
+- Improve the styling of file listings in the Workspace
+- Update documentation for unit testing
+- Update the new user creation form and add a field for primary natural hazards interest.
+
+Fixes:
+- Prevent users from changing their email to the email of another existing Designsafe user.
+- Prevent trashing of files with associated entities
+- Fix a bug that was excluding recent projects from searches filtered by experimental facility
+- Fix a bug that was causing project co-PIs to be listed out of order
+- Fix a bug that prevented some actions in the Workspace from being logged
+- Fix a bug that was excluding projects from search results for some users
+
 ## v5.0.5
 Fixes:
 - Security enhancements and dependency updates.
