@@ -117,6 +117,7 @@
             });
         })(angular);
 
+        var userAgent = navigator.userAgent
         if(!(userAgent.includes("Chrome") || userAgent.includes("Firefox") || userAgent.includes("FxiOS") || userAgent.includes("CriOS"))) {
             $("#agentMessage").append("\
                 <div class='alert alert-warning'>\

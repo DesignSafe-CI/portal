@@ -1,5 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.0.7
+Fixes:
+- Fix bug preventing user agent from being detected
+- Fix bug preventing searchesin Publications from returning results
+
 ## v5.0.6
 Improvements:
 - Expose publication metadata to Google Dataset Search

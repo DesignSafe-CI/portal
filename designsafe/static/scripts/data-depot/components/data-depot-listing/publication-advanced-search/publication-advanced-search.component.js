@@ -154,7 +154,7 @@ class PublicationAdvancedSearchCtrl {
         ).name;
         const queryParams = { ...this.params };
         queryParams.advancedFilters.experimental.experimentalFacility = {
-            name: facilityName,
+            name: facilityName || '',
             label: this.params.advancedFilters.experimental.experimentalFacility,
         };
         return encodeURIComponent(JSON.stringify(queryParams));
