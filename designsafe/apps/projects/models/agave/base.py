@@ -336,11 +336,10 @@ class Project(MetadataModel):
             authors = [{'name': username} for username in [self.pi] + self.co_pis]
         dataset_json['creator'] = generate_creators(authors)
         dataset_json['author'] = generate_creators(authors)
-        
         try:
             pub = IndexedPublication.from_id(self.project_id)
             dataset_json['license'] = pub.licenses.works
-        except DocumentNotFound:
+        except (DocumentNotFound, AttributeError):
             pass
         try:
             pub = IndexedPublicationLegacy.from_id(self.project_id)
