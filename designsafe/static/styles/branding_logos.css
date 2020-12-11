@@ -1,0 +1,93 @@
+/* BRANDING & LOGO CLASS SELECTORS */
+/* TODO: Convert to a component */
+
+/* WARNING: NO-R/EM: Until Frontera CMS drops Bootstrap 3.7.1 (for old design)…
+            No `em` nor `rem` allowed, because they aren't consitently reliable.
+            - On Frontera CMS, `1rem` = `10px` and `body { font-size: 15px }`
+            - On any other CMS, `1rem` = `16px` (browser default). */
+
+/* Shared by All Templates */
+
+/* Branding Selectors  */
+
+.branding-header {
+  margin: 0;
+  padding: 10px 0; /* NO-R/EM: 0.4rem 0 0.4rem */
+  text-align: center;
+  background-color: #47a59d;
+  color: #fff;
+  border-bottom: 1px solid #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.branding-header a {
+  display: inline-block;
+}
+
+.branding-seperator {
+  height: 100%;
+  border-left: solid 1px #fff;
+  margin: 0 45px;
+}
+
+.branding-logo {
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.branding-text {
+  letter-spacing: -2px;
+  color: #fff;
+}
+.branding-text:hover,
+.branding-text:active,
+.branding-text h1 {
+  text-decoration: none;
+  color: #fff;
+  font-size: 35px;
+}
+
+
+/* Specific Brand Logo Selectors  */
+
+.branding-nsf {
+  height: 80px;
+}
+/*
+.branding-tacc {
+  height: 24px;
+  margin: 3px 0 0 0;
+}
+
+.branding-utaustin {
+  height: 24px;
+  margin: 3px 0 0 0;
+} */
+
+/* Logo Selectors  */
+
+.portal-logo {
+  float: left;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+
+@media (max-width: 767px) {
+  .branding-header {
+    height: 60px;
+  }
+  .branding-text h1 {
+    font-size: 30px;
+  }
+  .branding-nsf {
+    height: 50px;
+  }
+}

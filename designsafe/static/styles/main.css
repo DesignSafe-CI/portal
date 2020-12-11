@@ -1,7 +1,7 @@
 body {
-  background-image: url(../images/Map-BG.jpg);
+  /* background-image: url(../images/Map-BG.jpg);
   background-repeat: no-repeat;
-  background-size: 100% auto;
+  background-size: 100% auto; */
 }
 
 body.navbar-fixed {
@@ -76,23 +76,20 @@ body.navbar-fixed {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 1.5em;
-  padding-bottom: 1em;
+  padding: 0 5em;
+  background-image: url(../images/Map-BG.jpg);
+  background-size: cover;
+  height: 90px;
 }
 
 .site-banner-left {
-  width:55%;
+  width:32%;
+  min-width: 15em;
+  margin: auto 0;
 }
 
 .site-banner-right {
-  flex-grow: 2;
-  display: flex;
-  flex-direction: column;
-}
-
-.user-menu {
-  text-align: right;
-  margin-bottom: 20px;
+  margin: auto 0;
 }
 
 .user-menu .btn {

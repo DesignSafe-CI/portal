@@ -37,7 +37,7 @@
         <div> <span> Quick Links </span> </div>
         <div><a href="/account"> Manage Account </a> </div>
         <div> <a href="/data/browser"> Data Depot </a> </div>
-        <div> <a href="/rw/workspace"> Workspace </a> </div>
+        <div> <a href="/rw/workspace"> Tools & Applications </a> </div>
         <div> <a href="/recon-portal"> Recon Portal </a> </div>
         <div> <a href="/learning-center/overview"> Training </a> </div>
     </div>
@@ -54,8 +54,8 @@
             </div>
             <div ng-show="!$ctrl.jobs.length" class="panel-body">
                 <h3 ng-show="!$ctrl.loading_jobs">
-                    No recent jobs! You can submit jobs in the
-                    <a href="/rw/workspace"> Workspace </a>
+                    No recent jobs! You can submit jobs in
+                    <a href="/rw/workspace"> Tools & Applications </a>
                 </h3>
                 <div class="text-center" ng-show="$ctrl.loading_jobs">
                     <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
@@ -129,8 +129,8 @@
                     <a href="/rw/workspace/#/{{app}}"> {{app}} </a>
                 </li>
                 <li class="list-group-item" ng-show="!$ctrl.recent_apps.length">
-                    Wow, no recent apps! You can submit jobs in the
-                    <a href="/rw/workspace"> Workspace </a>
+                    Wow, no recent apps! You can submit jobs in
+                    <a href="/rw/workspace"> Tools & Applications </a>
                 </li>
             </ul>
         </div>
