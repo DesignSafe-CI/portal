@@ -297,8 +297,8 @@ class Project(MetadataModel):
             "description": self.description,
             "keywords": self.keywords.split(','),
             "license": {
-                "@type": "Dataset",
-                "text": ""
+                "@type": "CreativeWork",
+                "license": ""
             },
             "publisher": {
                 "@type": "Organization",
@@ -309,7 +309,7 @@ class Project(MetadataModel):
                 "name": "Designsafe-CI"
             },
             "includedInDataCatalog": {
-                "@type": "Organization",
+                "@type": "DataCatalog",
                 "name": "Designsafe-CI",
                 "url": "https://designsafe-ci.org"
             },
@@ -338,12 +338,18 @@ class Project(MetadataModel):
         dataset_json['author'] = generate_creators(authors)
         try:
             pub = IndexedPublication.from_id(self.project_id)
-            dataset_json['license'] = pub.licenses.works
+            dataset_json['license'] = {
+                "@type": "CreativeWork",
+                "license": pub.licenses.works
+                }
         except (DocumentNotFound, AttributeError):
             pass
         try:
             pub = IndexedPublicationLegacy.from_id(self.project_id)
-            dataset_json['license'] = pub.licenses.works
+            dataset_json['license'] = {
+                "@type": "CreativeWork",
+                "license":pub.licenses.works
+            }
         except DocumentNotFound:
             pass
 
@@ -451,6 +457,7 @@ def generate_creators(authors):
         if user_obj and user_tas:
             author_name = "{} {}".format(user_obj.first_name, user_obj.last_name)
             details.update({
+                "@type": "Person",
                 'name': author_name,
                 "affiliation": user_tas['institution']
             })
@@ -458,6 +465,7 @@ def generate_creators(authors):
         elif author.get('fname') and author.get('lname'):
             author_name = "{} {}".format(author.get('fname'), author.get('lname'))
             details.update({
+                "@type": "Person",
                 'name': author_name,
                 "affiliation": getattr(author, 'inst', '')
             })
