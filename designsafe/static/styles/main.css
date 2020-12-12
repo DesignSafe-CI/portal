@@ -903,3 +903,7 @@ li .popover.right {
 .o-site__body {
   padding-bottom: 20px;
 }
+
+.o-site__body > .container-fluid {
+  margin: 0 30px;
+}
