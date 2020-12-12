@@ -9,14 +9,13 @@ Styleguide Components.Footer
 */
 
 .c-footer {
-  flex-shrink: 0;
   /* TODO: Use global custom property when available */
   --line-height: 1.5; /* value (not unit) from Bootstrap via `body` */
   --min-line-count: 2;
 
   /* The minimum height of the footer should be 2 lines of text, plus padding */
   box-sizing: content-box;
-  min-height: calc(var(--line-height) * var(--min-line-count) * 1em);
+  /* min-height: calc(var(--line-height) * var(--min-line-count) * 1em); */
 
   /* Center content vertically (assuming unknown height) */
   display: flex;

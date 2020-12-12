@@ -1,6 +1,6 @@
 {% load menu_tags cms_tags %}
-<nav class="navbar navbar-default navbar-ds">
-  <div class="container">
+<nav class="navbar navbar-default navbar-inverse navbar-ds">
+  <div class="container-fluid">
     <div class="navbar-header">
       <ul class="nav navbar-nav hidden-xs">
         <li>
@@ -30,9 +30,6 @@
     <div class="collapse navbar-collapse" id="main-navigation">
       <ul class="nav navbar-nav">
          {% show_menu 1 2 100 100 "includes/cms_menu.html" %}
-      </ul>
-      <ul class="nav navbar-nav global-nav hidden-sm hidden-md hidden-lg">
-        {% include 'includes/global_nav.html' %}
       </ul>
       <form class="navbar-form navbar-right">
         <input class="form-control" id="searchfield" placeholder="Search DesignSafe"><!--

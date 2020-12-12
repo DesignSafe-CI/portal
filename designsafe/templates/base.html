@@ -64,18 +64,19 @@
       <meta name="DC.type" content="dataset">
       {% endblock %}
   </head>
-  <body ng-app="designsafe.portal">
+  <body ng-app="designsafe.portal" class="o-site">
     {% cms_toolbar %}
-    {% include 'includes/header.html' %}
-    {% include 'includes/navigation.html' %}
-
-    {% include 'includes/messages.html' %}
-
-    {% block breadcrumb %}{% endblock %}
-
-    {% block content %}{% endblock %}
-
+    <div>
+        {% include 'includes/header.html' %}
+        {% include 'includes/navigation.html' %}
+    </div>
+    <div class="o-site__body">
+        {% include 'includes/messages.html' %}
+        {% block breadcrumb %}{% endblock %}
+        {% block content %}{% endblock %}
+    </div>
     {% include 'includes/footer.html' %}
+
     <!-- scripts -->
     <script src="https://www.google.com/recaptcha/api.js"></script>
 
