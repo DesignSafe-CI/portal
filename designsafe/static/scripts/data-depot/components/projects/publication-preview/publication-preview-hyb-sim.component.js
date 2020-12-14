@@ -23,7 +23,8 @@ class PublicationPreviewHybSimCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.ui = {
             fileNav: true,
-            loading: true
+            loading: true,
+            loadingUsers: true
         };
         this.fl = {
             showSelect: false,
@@ -62,6 +63,13 @@ class PublicationPreviewHybSimCtrl {
                 this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
                     this.ui.loading = false;
                 });
+                this.ProjectService.getPiData({
+                    pi: project.value.pi,
+                    coPis: project.value.coPis
+                }).subscribe(x => {
+                    this.ui.loadingUsers = false;
+                    this.piMap = x;
+                })
             });
     }
 

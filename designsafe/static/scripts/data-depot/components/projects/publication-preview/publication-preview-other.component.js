@@ -24,6 +24,7 @@ class PublicationPreviewOtherCtrl {
         this.data = this.ProjectService.resolveParams.data;
         this.ui = {
             loading: true,
+            loadingUsers: true
         };
         this.fl = {
             showSelect: false,
@@ -32,7 +33,7 @@ class PublicationPreviewOtherCtrl {
             editTags: false,
         };
 
-        if (!this.data || this.data.listing.path != this.filePath) {
+        if (!this.data || !this.data.listing || this.data.listing.path !== this.filePath) {
             this.$q.all([
                 this.ProjectService.get({ uuid: this.projectId }),
                 this.FileListingService.browse({
@@ -51,6 +52,13 @@ class PublicationPreviewOtherCtrl {
                 this.browser.project = project;
                 this.browser.listing = listing;
                 this.ui.loading = false;
+                this.ProjectService.getPiData({
+                    pi: project.value.pi,
+                    coPis: project.value.coPis
+                }).subscribe(x => {
+                    this.ui.loadingUsers = false;
+                    this.piMap = x;
+                })
             });
         } else {
             this.browser = this.data;

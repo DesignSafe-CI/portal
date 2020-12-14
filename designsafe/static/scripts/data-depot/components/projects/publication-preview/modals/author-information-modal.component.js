@@ -13,8 +13,14 @@ class AuthorInformationModalCtrl {
         this.email = this.author.email;
         this.institution = this.author.inst;
         this.username = this.author.name;
-        this.loading = true;
-        this.getOrcid(this.username);
+        if (this.resolve.needsOrcid) {
+            this.loading = true;
+            this.getOrcid(this.username);
+        } else {
+            this.loading = false
+            this.orcid = this.author.orcid
+        }
+        
     }
 
     getOrcid(username) {

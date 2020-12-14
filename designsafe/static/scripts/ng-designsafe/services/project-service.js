@@ -1,5 +1,5 @@
-import { from } from 'rxjs';
-import { map, tap, concatMap, take } from 'rxjs/operators';
+import { from, forkJoin, of } from 'rxjs';
+import { map, tap, concatMap, take, catchError } from 'rxjs/operators';
 import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
 import experimentalData from '../../projects/components/manage-experiments/experimental-data.json';
 
@@ -103,6 +103,43 @@ export class ProjectService {
             return projectList;
         });
         return from(piPromise);
+    }
+
+    getPiData(piMap) {
+        const obs = [piMap.pi, ...piMap.coPis].map(u =>
+            from(this.UserService.get(u))
+                .pipe(
+                    map(
+                        r => createObj(r)
+                    ), catchError(
+                        () => from(this.UserService.getPublic(u)).pipe(
+                            map(r => createObj(r)),
+                            catchError(() => of(undefined)))
+                    ))
+        );
+        const fork = forkJoin(obs).pipe(
+            map(
+                data => {
+                    const values = data.filter(Boolean)
+                    const piData = values.find(v => v.name === piMap.pi);
+                    const map = {
+                        pi: piData,
+                        coPis: piMap.coPis.map(coPi => values.find(v => v.name === coPi))
+                    }
+                    return map;
+                }
+            )
+        )
+        const createObj = (obj) => ({
+            fname: obj.first_name,
+            lname: obj.last_name,
+            email: obj.email,
+            name: obj.username,
+            inst: obj.profile.institution,
+            formattedName: `${obj['last_name']}, ${obj['first_name']}`,
+            orcid: obj['orcid_id'] ? obj['orcid_id'] : null
+        })
+        return fork
     }
 
     listProjects({ section, offset, limit, query_string }) {

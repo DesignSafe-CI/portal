@@ -18,7 +18,12 @@
             <tr class="prj-row">
                 <td ng-if="!$ctrl.readOnly">PI</td>
                 <td class="prj-data" ng-if="!$ctrl.readOnly">
-                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
+                    <span data-ng-if="$ctrl.ui.loadingUsers">Loading...</span>
+                    <span data-ng-if="!$ctrl.ui.loadingUsers">
+                        <a href="javascript:;" ng-click="$ctrl.showAuthor($ctrl.piMap.pi, false)">
+                            {{ $ctrl.piMap.pi.formattedName }}
+                        </a>
+                    </span>
                 </td>
                 <td ng-if="$ctrl.readOnly">Author</td>
                 <td ng-if="$ctrl.readOnly">
@@ -30,7 +35,12 @@
             <tr ng-if="$ctrl.browser.project.value.coPis.length && !$ctrl.readOnly">
                 <td>CoPIs</td>
                 <td class="prj-data">
-                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
+                    <span data-ng-if="$ctrl.ui.loadingUsers">Loading...</span>
+                    <span data-ng-if="!$ctrl.ui.loadingUsers" ng-repeat="coPi in $ctrl.piMap.coPis">
+                        <a href="javascript:;" ng-click="$ctrl.showAuthor(coPi, false)">
+                            {{ coPi.formattedName }}<span ng-if="!$last">; </span>
+                        </a>
+                    </span>
                 </td>
             </tr>
             <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">

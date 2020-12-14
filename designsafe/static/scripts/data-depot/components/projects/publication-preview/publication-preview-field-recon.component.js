@@ -23,7 +23,8 @@ class PublicationPreviewFieldReconCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.ui = {
             fileNav: true,
-            loading: true
+            loading: true,
+            loadingUsers: true
         };
         this.fl = {
             showSelect: false,
@@ -80,6 +81,13 @@ class PublicationPreviewFieldReconCtrl {
                 this.ui.loading = false;
                 //this.$scope.$apply();
             });
+            this.ProjectService.getPiData({
+                pi: project.value.pi,
+                coPis: project.value.coPis
+            }).subscribe(x => {
+                this.ui.loadingUsers = false;
+                this.piMap = x;
+            })
         });
     }
 

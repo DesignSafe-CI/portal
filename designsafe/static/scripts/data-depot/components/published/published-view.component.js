@@ -8,7 +8,7 @@ import { isEqual, has } from 'underscore';
 import { publish } from 'rxjs/operators';
 
 class PublishedViewCtrl {
-    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, FileListingService, FileOperationService, PublicationService, UserService){
+    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, FileListingService, FileOperationService, PublicationService, UserService, ProjectService){
         'ngInject';
         this.$anchorScroll = $anchorScroll;
         this.$state = $state;
@@ -19,6 +19,7 @@ class PublishedViewCtrl {
         this.FileOperationService = FileOperationService;
         this.PublicationService= PublicationService;
         this.UserService = UserService;
+        this.ProjectService = ProjectService;
     }
 
     $onInit() {
@@ -30,6 +31,7 @@ class PublishedViewCtrl {
             experimentTypes: experimentalData.experimentTypes,
             fileNav: true,
             loading: true,
+            loadingUsers: true
         };
         this.browser = {}
         this.browser.listings = {};
@@ -73,10 +75,13 @@ class PublishedViewCtrl {
         this.type = this.browser.publication.project.value.projectType;
         this.ui.loading = false;
         
-        // // Generate text for PI
-        // this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi);
-        // // Generate CoPI list
-        // this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
+        this.ProjectService.getPiData({
+            pi: this.publication.project.value.pi,
+            coPis: this.publication.project.value.coPis
+        }).subscribe(x => {
+            this.ui.loadingUsers = false;
+            this.piMap = x;
+        })
 
         this.prepProject();
                 
