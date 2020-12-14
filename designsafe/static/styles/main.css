@@ -60,11 +60,11 @@ body.navbar-fixed {
 
 .ef-site-title a {
   text-decoration: none;
-  color: #fff;
+  color: #333;
 }
 
 .ef-site-title a:hover {
-  color: #fff;
+  color: #444;
 }
 
 .ef-site-title a h1 {
@@ -82,13 +82,21 @@ body.navbar-fixed {
   height: 90px;
 }
 
+.site-banner-ef {
+  height: unset;
+  padding: 1.5em 5em;
+}
+
 .site-banner-left {
-  width: 450px;
   margin: auto 0;
 }
 
+.site-banner .logo {
+  width: 450px;
+}
+
 @media (max-width: 767px) {
-  .site-banner-left {
+  .site-banner .logo {
     width: 300px;
   }
 }
@@ -166,6 +174,13 @@ body.navbar-fixed {
 }
 
 .navbar-ds .navbar-nav > li > a {
+  color: #fff;
+  font-size: 1.3em;
+}
+
+.navbar-ds .navbar-nav > .active > a,
+.navbar-ds .navbar-nav > .active > a:hover,
+.navbar-ds .navbar-nav > .active > a:focus {
   color: #fff;
   font-size: 1.3em;
 }
