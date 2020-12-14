@@ -83,9 +83,14 @@ body.navbar-fixed {
 }
 
 .site-banner-left {
-  width:32%;
-  min-width: 15em;
+  width: 450px;
   margin: auto 0;
+}
+
+@media (max-width: 767px) {
+  .site-banner-left {
+    width: 300px;
+  }
 }
 
 .site-banner-right {
@@ -152,22 +157,21 @@ body.navbar-fixed {
   font-stretch: condensed;
   font-family: futura-pt, "HelveticaNeue-CondensedBold", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-color: #525151;
-  /* border-top: 1px solid #ccc;
-  border-bottom: 2px solid #ccc; */
+  padding: 0 2.5em;
 }
 
 .navbar-ds .navbar-brand {
   color: #fff;
-  font-size: 1.5em;
+  font-size: 1.3em;
 }
 
 .navbar-ds .navbar-nav > li > a {
   color: #fff;
-  font-size: 1.5em;
+  font-size: 1.3em;
 }
 
 .navbar-ds .navbar-nav .dropdown-menu > li > a {
-  font-size: 1.5em;
+  font-size: 1.3em;
 }
 
 @media (min-width: 768px) {
@@ -186,9 +190,9 @@ body.navbar-fixed {
 }
 
 .navbar-ds .dropdown.open,
-.navbar-ds .navbar-inverse .navbar-nav > .open > a,
-.navbar-ds .navbar-inverse .navbar-nav > .open > a:hover,
-.navbar-ds .navbar-inverse .navbar-nav > .open > a:focus {
+.navbar-ds.navbar-inverse .navbar-nav > .open > a,
+.navbar-ds.navbar-inverse .navbar-nav > .open > a:hover,
+.navbar-ds.navbar-inverse .navbar-nav > .open > a:focus {
   background-color: #7d7d7d;
 }
 
@@ -231,11 +235,14 @@ body.navbar-fixed {
   left: 0;
 }
 
+.navbar-ds.navbar-inverse .navbar-nav .caret {
+  display: none;
+}
+
 @media (min-width: 768px) and (max-width: 991px) {
   .navbar-ds .navbar-nav > li > a {
     padding-left: 8px;
     padding-right: 8px;
-    font-size: 1.05em;
   }
 }
 
