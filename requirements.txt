@@ -1,4 +1,5 @@
 agavepy==0.9.3
+tapipy==0.2.5
 alabaster==0.7.10
 amqp==2.2.1
 appnope==0.1.0
@@ -15,7 +16,7 @@ billiard==3.5.0.3
 boxsdk==2.9.0
 cachetools==2.0.1
 celery==4.1.0
-certifi==2017.7.27.1
+certifi==14.05.14
 cffi==1.10.0
 chardet==3.0.4
 click==7.1.2
@@ -24,7 +25,7 @@ codecov==2.0.15
 configparser==3.5.0
 cookies==2.2.1
 coverage==4.5.1
-cryptography==2.3.1
+cryptography==2.9.2
 decorator==4.1.2
 Django==1.11.29
 django-angular==2.2.4
@@ -121,7 +122,7 @@ pycparser==2.18
 pydocstyle==2.1.1
 pyflakes==1.6.0
 Pygments==2.2.0
-PyJWT==1.4.2
+PyJWT==1.7.1
 pylint==1.9.3
 pymongo==3.9.0
 pyOpenSSL==17.2.0
@@ -132,7 +133,7 @@ pytest-asyncio==0.14.0
 pytest-cov==2.10.0
 pytest-django==3.7.0
 pytest-mock==3.1.1
-python-dateutil==2.4.2
+python-dateutil==2.5.3
 python-magic==0.4.13
 python-memcached==1.59
 pytz==2015.4

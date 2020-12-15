@@ -2,7 +2,7 @@ import DataBrowserServicePreviewTemplate from './data-browser-service-preview.co
 import 'leaflet/dist/leaflet.css';
 import 'leaflet/dist/images/marker-shadow.png';
 import * as L from 'leaflet';
-import { valid as validateGeoJson }from 'geojson-validation';
+import { valid as validateGeoJson } from 'geojson-validation';
 
 class DataBrowserServicePreviewCtrl {
     constructor($sce, $http, $scope, $state, FileListingService, FileOperationService, ProjectService, Django) {

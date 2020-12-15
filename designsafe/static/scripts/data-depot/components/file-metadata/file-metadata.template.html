@@ -4,6 +4,7 @@
             <span> File Metadata </span>
             <i class="pull-right fa" ng-class="{'fa-chevron-circle-up': status.open, 'fa-chevron-circle-down': !status.open}"></i>
         </uib-accordion-heading>
+        <label>File Details</label>
         <table class="table-preview" style="table-layout: fixed;" id="file_metadata_table">
             <tbody>
                 <tr>
@@ -25,9 +26,33 @@
                 </tr>
             </tbody>
         </table>
-        <button class="btn btn-accept" ng-click="$ctrl.testQuery()"> QUERY </button>
-        <button class="btn btn-accept" ng-click="$ctrl.testAdd()"> ADD </button>
-        <button class="btn btn-accept" ng-click="$ctrl.testDelete()"> DELETE </button>
+        <hr>
+        <div class="form-group" ng-if="!$ctrl.edit">
+            <label>File Metadata</label>
+            <pre class="table-preview">{{$ctrl.testmeta}}</pre>
+            <button class="btn btn-sm" ng-click="$ctrl.editMeta()"> Edit </button>
+        </div>
+        <div class="form-group" ng-if="$ctrl.edit">
+            <label>Update Metadata</label>
+            <div>Your supplied metadata must be in JSON format</div>
+            <textarea type="text"
+                    class="table-preview"
+                    style="resize: vertical;"
+                    rows="4"
+                    id="user-meta"
+                    ng-value="$ctrl.testmeta"
+                    ng-model="$ctrl.userMeta"
+                    ng-required="true">
+            </textarea>
+            <button class="btn btn-sm btn-add" ng-click="$ctrl.testAdd()"> Submit </button>
+            <button class="btn btn-sm" ng-click="$ctrl.editMeta()"> Cancel </button>
+        </div>
+        <hr>
+        <h3>TESTING</h3>
+        <button class="btn btn-sm" ng-click="$ctrl.testQuery()"> QUERY </button>
+        <button class="btn btn-sm" ng-click="$ctrl.testAdd()"> ADD </button>
+        <button class="btn btn-sm" ng-click="$ctrl.testAdd()"> UPDATE </button>
+        <button class="btn btn-sm" ng-click="$ctrl.testDelete()"> DELETE </button>
     </div>
 </uib-accordion>
 <hr>
