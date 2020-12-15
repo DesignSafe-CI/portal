@@ -3,19 +3,6 @@
   var supportPageOffset = window.pageXOffset !== undefined;
   var isCSS1Compat = ((document.compatMode || "") === "CSS1Compat");
 
-  var fixer = function(e) {
-    var h = $('.site-banner').outerHeight();
-    var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
-    if (y > h) {
-      $('.navbar-ds').addClass('navbar-fixed-top');
-      $('body').addClass('navbar-fixed');
-    } else {
-      $('.navbar-ds').removeClass('navbar-fixed-top');
-      $('body').removeClass('navbar-fixed');
-    }
-  };
-  $(document).on('scroll', window.throttle(fixer, 100));
-  fixer();
 
   // if (window.location.pathname === '/search/') {
   //   $('#sitewide_search').hide();
@@ -31,62 +18,62 @@
 
 
 
-  if (window.location.pathname === '/') {
-    var navbar = $('.navbar-ds');
-    var getCurrentSection = function(e) {
-      var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
-      y = y+1;
-      var active = {
-        community: false,
-        research: false,
-        ef: false,
-        learning: false
-      };
-      var pos = {
-        community: $('#community').offset().top,
-        research: $('#research').offset().top,
-        ef: $('#ef').offset().top,
-        learning: $('#learning').offset().top
-      };
-      if (y >= pos.learning) {
-        return 'learning';
-      } else if (y >= pos.ef) {
-        return 'ef';
-      } else if (y >= pos.research) {
-        return 'research';
-      } else if (y >= pos.community) {
-        return 'community';
-      } else {
-        return false;
-      }
-    };
+  // if (window.location.pathname === '/') {
+  //   var navbar = $('.navbar-ds');
+  //   var getCurrentSection = function(e) {
+  //     var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
+  //     y = y+1;
+  //     var active = {
+  //       community: false,
+  //       research: false,
+  //       ef: false,
+  //       learning: false
+  //     };
+  //     var pos = {
+  //       community: $('#community').offset().top,
+  //       research: $('#research').offset().top,
+  //       ef: $('#ef').offset().top,
+  //       learning: $('#learning').offset().top
+  //     };
+  //     if (y >= pos.learning) {
+  //       return 'learning';
+  //     } else if (y >= pos.ef) {
+  //       return 'ef';
+  //     } else if (y >= pos.research) {
+  //       return 'research';
+  //     } else if (y >= pos.community) {
+  //       return 'community';
+  //     } else {
+  //       return false;
+  //     }
+  //   };
 
-    window.history.replaceState({}, 'current_section', window.location.hash);
+  //   window.history.replaceState({}, 'current_section', window.location.hash);
 
-    var activateSection = function() {
-      var section = getCurrentSection();
-      var state = {};
-      var hash = window.location.hash;
+  //   var activateSection = function() {
+  //     var section = getCurrentSection();
+  //     var state = {};
+  //     var hash = window.location.hash;
 
-      if (section) {
-        hash = '#' + section;
-        state.section = hash;
-      }
+  //     if (section) {
+  //       hash = '#' + section;
+  //       state.section = hash;
+  //     }
 
-      if (hash.length) {
-        window.history.replaceState(state, 'current_section', hash);
-      }
+  //     if (hash.length) {
+  //       window.history.replaceState(state, 'current_section', hash);
+  //     }
 
-      var activeNav = false;
-      if (hash.length && hash !== '#') {
-        activeNav = $('a[href="/' + hash + '"]', navbar);
-        activeNav.parent().addClass('active');
-      }
-      $('a', navbar).not(activeNav).parent().removeClass('active');
-    };
+  //     var activeNav = false;
+  //     if (hash.length && hash !== '#') {
+  //       activeNav = $('a[href="/' + hash + '"]', navbar);
+  //       activeNav.parent().addClass('active');
+  //     }
+  //     $('a', navbar).not(activeNav).parent().removeClass('active');
+  //   };
 
-    $(document).on('scroll', window.throttle(activateSection, 100));
-    //activateSection();
-  }
+  //   $(document).on('scroll', window.throttle(activateSection, 100));
+  //   //activateSection();
+  // }
 
 })(window, jQuery);

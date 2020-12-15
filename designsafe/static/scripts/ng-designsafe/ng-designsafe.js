@@ -2,6 +2,8 @@
 // they will stomp on eachother
 import '../../styles/base.scss';
 import '../../styles/main.css';
+import '../../styles/branding_logos.css';
+import '../../styles/c-footer.css';
 import '../projects/components/file-categories/file-categories.scss';
 import '../projects/components/file-category-selector/file-category-selector.scss';
 import '../data-depot/components/projects/publication-preview/publication-preview.scss';

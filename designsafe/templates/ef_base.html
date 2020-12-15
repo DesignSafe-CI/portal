@@ -1,89 +1,64 @@
 {% load cms_tags staticfiles sekizai_tags menu_tags%}
 <!DOCTYPE html>
 <html>
+
   <head>
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} | DesignSafe-CI</title>
-      <meta name="viewport" content="width=device-width">
-      <meta name="description" content="{{ site.description }}">
-      <link rel="icon" href="{% static 'favicon.ico' %}">
-      <link rel="canonical" href="{{request.get_full_path}}">
-      <!-- styles -->
-      <link href="{% static 'vendor/bootstrap-ds/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/angular-toastr/dist/angular-toastr.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/slick-carousel/slick/slick.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/slick-carousel/slick/slick-theme.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/typekit.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/main.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/corner-ribbon.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
-      <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
-      {% render_block "css" %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} | DesignSafe-CI</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="{{ site.description }}">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <link rel="canonical" href="{{request.get_full_path}}">
+    <!-- styles -->
+    <link href="{% static 'vendor/bootstrap-ds/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css' %}" rel="stylesheet"
+      type="text/css">
+    <link href="{% static 'vendor/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'vendor/angular-toastr/dist/angular-toastr.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'vendor/slick-carousel/slick/slick.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'vendor/slick-carousel/slick/slick-theme.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'styles/typekit.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'styles/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'styles/branding_logos.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'styles/c-footer.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'styles/corner-ribbon.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
+    <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
+    {% render_block "css" %}
   </head>
-  <body>
+
+  <body class="o-site">
     {% cms_toolbar %}
-
-    <header class="container site-banner">
-      <div class="site-banner-left">
-        <div class="ef-site-title">
-          <a href="/">
-            {% static_placeholder 'ef_site_title' site or %}
-              <h1>
-                Edit EF Site Name<br>
-                <small>Experimental Facility</small>
-              </h1>
-            {% endstatic_placeholder %}
-          </a>
+    <div>
+      {% include 'includes/branding.html' %}
+      <header class="site-banner site-banner-ef">
+        <div class="site-banner-left">
+          <div class="ef-site-title">
+            <a href="/">
+              {% static_placeholder 'ef_site_title' site or %}
+                <h1>
+                    Edit EF Site Name<br>
+                    <small>Experimental Facility</small>
+                </h1>
+              {% endstatic_placeholder %}
+            </a>
+          </div>
         </div>
-      </div>
-
-      <div class="site-banner-right">
-<!--
-        <div class="user-menu" style="margin-bottom:10px">
-          {% if user.is_authenticated %}
-            <span style="vertical-align:middle">Welcome, {{ user.first_name }}!</span>
-            <span id="id_user_notify">
-              <a href="{% url 'designsafe_notifications:notifications' %}" class="btn btn-link">
-                <span class="sr-only">Notifications</span>
-                <span class="badge badge-default" title="You have no unread notifications">&nbsp;</span>
-              </a>
-            </span>
-            <div class="btn-group">
-              <a href="{% url 'designsafe_accounts:index' %}" class="btn btn-link-alt">My account</a>
-              <button type="button" class="btn btn-link-alt dropdown-toggle"
-                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="{% url 'logout' %}">Log out</a></li>
-              </ul>
-            </div>
-
-          {% else %}
-            <a href="{% url 'login' %}" class="btn btn-link-alt">Log in</a>
-          {% endif %}
-        </div>
- -->
-        <div class="text-right">
-          <a class="logo" href="https://www.designsafe-ci.org/">
+        <div class="site-banner-right logo">
+          <a href="https://www.designsafe-ci.org/">
             <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Community</h1>
-            <img alt="DesignSafe-CI" src="{% static 'images/ds-logo-horiz.png' %}" height="60" width="225">
+            <img alt="DesignSafe-CI" src="{% static 'images/org_logos/Horizontal-DS.svg' %}" width="100%">
           </a>
         </div>
-      </div>
-    </header>
-
-    {% include 'includes/ef_navigation.html' %}
-
-    {% include 'includes/messages.html' %}
-
-    {% block content %}{% endblock %}
-
+      </header>
+      {% include 'includes/ef_navigation.html' %}
+    </div>
+    <div class="o-site__body">
+      {% include 'includes/messages.html' %}
+      {% block content %}{% endblock %}
+    </div>
     {% include 'includes/footer.html' %}
     <!-- scripts -->
     <script src="{% static 'vendor/modernizr/modernizr.js' %}"></script>
@@ -91,7 +66,6 @@
     <script src="{% static 'vendor/bootstrap-ds/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
     <script src="{% static 'vendor/d3/dist/d3.min.js' %}"></script>
-
     <script src="{% static 'scripts/utils.js' %}"></script>
     <script src="{% static 'scripts/dateinput.js' %}"></script>
     <script src="{% static 'scripts/navbar.js' %}"></script>
@@ -99,4 +73,5 @@
     {% block scripts %}{% endblock %}
     {% include 'includes/analytics.html' %}
   </body>
+
 </html>

@@ -1,4 +1,6 @@
 import './styles/rapid.css';
+import '../../styles/branding_logos.css';
+import '../../styles/c-footer.css';
 import { mod as rapid_controllers } from './controllers';
 import { mod as rapid_services } from './services';
 import { mod as rapid_directives } from './directives';

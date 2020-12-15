@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/DesignSafe-CI/portal.svg?branch=master)](https://travis-ci.org/DesignSafe-CI/portal) 
+[![Build Status](https://travis-ci.org/DesignSafe-CI/portal.svg?branch=master)](https://travis-ci.org/DesignSafe-CI/portal)
 [![codecov](https://codecov.io/gh/DesignSafe-CI/portal/branch/master/graph/badge.svg)](https://codecov.io/gh/DesignSafe-CI/portal)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8399b864b0d115d86450/maintainability)](https://codeclimate.com/github/DesignSafe-CI/portal/maintainability)
 
@@ -59,7 +59,7 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    These lines install the node packages required for DesignSafe,
    and build the frontend package.
    ```
-   $ npm install
+   $ npm ci
    $ npm run build
    ```
 
