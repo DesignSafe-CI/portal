@@ -2,6 +2,7 @@ import angular from 'angular';
 
 import { FileListingService } from './file-listing-service';
 import { FileOperationService } from './file-operation-service';
+import { FileMetaService } from './file-meta-service';
 import { LoggingServiceProvider } from './logging-service';
 import { notificationFactory } from './notification-factory';
 import { ProjectEntitiesService } from './project-entity-service';
@@ -25,6 +26,7 @@ designsafeServices.service('TicketsService', TicketsService);
 designsafeServices.service('UserService', UserService);
 designsafeServices.service('FileListingService', FileListingService);
 designsafeServices.service('FileOperationService', FileOperationService);
+designsafeServices.service('FileMetaService', FileMetaService);
 designsafeServices.service('PublicationService', PublicationService);
 // TODO: Move these components to /static/scripts/projects/components/index.js
 designsafeServices.component('confirmMessage', ConfirmMessageComponent);

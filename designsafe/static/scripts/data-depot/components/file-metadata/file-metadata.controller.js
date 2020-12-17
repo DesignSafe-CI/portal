@@ -1,73 +1,81 @@
 
 
 class FileMetadataComponentCtrl {
-    constructor(FileOperationService, $http) {
+    constructor(FileOperationService, FileMetaService, $http) {
         'ngInject';
         this.FileOperationService = FileOperationService;
+        this.FileMetaService = FileMetaService;
         this.$http = $http;
     }
 
     $onInit() {
-        this.show = false;
-        this.edit = false;
-        this.loading = false;
-        let urlParts = ['/api/restheart/files/v3/', this.file.system];
-        let filePath = this.file.path
-        if (filePath) {
-            urlParts.push(filePath.replace('#', '%23'));
+        this._ui = {
+            show: false,
+            edit: false,
+            loading: true
         }
-        this.metaPath = urlParts.join('');
-        console.log(this.metaPath);
-        
-        this.testmeta = JSON.stringify({ foo: "sample", bar: "sample" }, null, 3)
-        /* 
-        We'll need to query the file path for existing metadata and display it.
-        If nothing is found give the ability to add
-        If data is found give options to update or delete
-        */
-        // this.$http.get(this.metaPath).then((resp) => {
-        //     console.log(resp);
-        // }).finally(() => {
-        //     this.loading = false;
-        // });
-        // this.loading = false;
+        this.metaInput = {};
+        this.FileMetaService.get({
+            system: this.file.system,
+            filePath: this.file.path.replace('#', '%23')
+        }).then((resp) => {
+            if (resp.data.error) {
+                this.data = undefined;
+            } else {
+                this.data = resp.data;
+                this.metaInput = JSON.stringify(resp.data.file_meta, null, 3);
+            }
+            this._ui.loading = false;
+        });
     }
 
     toggle() {
-        this.show = !this.show;
+        this._ui.show = !this._ui.show;
     }
 
     editMeta() {
-        this.edit = !this.edit;
+        this._ui.edit = !this._ui.edit;
     }
 
-    testQuery() {
-        this.$http.get(this.metaPath).then((resp) => {
-            console.log(resp);
+    deleteMeta() {
+        // update UI when this happens...
+        this._ui.loading = true;
+        this.FileMetaService.delete({docId: this.data._id.$oid}).then((resp) => {
+            this.metaInput = {};
+            this.data = undefined;
+            this._ui.loading = false;
         });
     }
-    testAdd() {
-        this.metaInput;
-        let meta = {
-            'name' : this.file.name,
-            'path' : this.file.path,
-            'system' : this.file.system,
-            'type' : this.file.type,
-            'size' : this.file.length.toString(),
-            'file_meta' : this.testmeta,
+
+    saveMeta() {
+        this._ui.loading = true;
+        try {
+            let input = JSON.parse(this.metaInput);
+            if (this.data) {
+                this.data.file_meta = input;
+            } else {
+                this.data = {
+                    'name' : this.file.name,
+                    'path' : this.file.path,
+                    'system' : this.file.system,
+                    'type' : this.file.type,
+                    'size' : this.file.length.toString(),
+                    'file_meta' : input,
+                };
+            }
+            this.FileMetaService.save({
+                system: this.file.system,
+                filePath: this.file.path.replace('#', '%23'),
+                body: this.data
+            }).then((resp) => {
+                this.editMeta();
+                this._ui.loading = false;
+            });
+        } catch {
+            // needs error msg...
+            this.editMeta();
+            this._ui.loading = false;
         }
-        console.log('Adding metadata...');
-        console.log(meta);
-        this.$http.post(this.metaPath, meta).then((resp) => {
-            console.log(resp);
-        });
-    }
-
-    testDelete() {
-        console.log('delete');
-        // this.file.deleteMongoMetadata().then((resp) => {
-        //     console.log(resp);
-        // });
     }
 
 }

@@ -27,32 +27,49 @@
             </tbody>
         </table>
         <hr>
-        <div class="form-group" ng-if="!$ctrl.edit">
-            <label>File Metadata</label>
-            <pre class="table-preview">{{$ctrl.testmeta}}</pre>
-            <button class="btn btn-sm" ng-click="$ctrl.editMeta()"> Edit </button>
-        </div>
-        <div class="form-group" ng-if="$ctrl.edit">
-            <label>Update Metadata</label>
-            <div>Your supplied metadata must be in JSON format</div>
-            <textarea type="text"
-                    class="table-preview"
-                    style="resize: vertical;"
-                    rows="4"
-                    id="user-meta"
-                    ng-value="$ctrl.testmeta"
-                    ng-model="$ctrl.userMeta"
-                    ng-required="true">
-            </textarea>
-            <button class="btn btn-sm btn-add" ng-click="$ctrl.testAdd()"> Submit </button>
-            <button class="btn btn-sm" ng-click="$ctrl.editMeta()"> Cancel </button>
+        <!-- Static Display -->
+        <div class="form-group">
+            <label>File Metadata (no edit)</label>
+            <pre class="table-preview" ng-if="$ctrl.data && !$ctrl._ui.loading">{{$ctrl.metaInput}}</pre>
+            <div class="table-preview" ng-if="!$ctrl.data && !$ctrl._ui.loading">
+                This file does not have associated Metadata.
+            </div>
         </div>
         <hr>
-        <h3>TESTING</h3>
-        <button class="btn btn-sm" ng-click="$ctrl.testQuery()"> QUERY </button>
-        <button class="btn btn-sm" ng-click="$ctrl.testAdd()"> ADD </button>
-        <button class="btn btn-sm" ng-click="$ctrl.testAdd()"> UPDATE </button>
-        <button class="btn btn-sm" ng-click="$ctrl.testDelete()"> DELETE </button>
+        <!-- Modify Display -->
+        <div class="form-group">
+            <label>File Metadata (edit)</label>
+            <div ng-if="!$ctrl._ui.loading">
+                <div ng-if="!$ctrl._ui.edit && !$ctrl.data">
+                    <div class="table-preview">This file does not have associated Metadata.</div>
+                    <button class="btn btn-sm" ng-click="$ctrl.editMeta()"> Add Metadata </button>
+                </div>
+                <div ng-if="!$ctrl._ui.edit && $ctrl.data">
+                    <pre class="table-preview">{{$ctrl.metaInput}}</pre>
+                    <button class="btn btn-sm" ng-click="$ctrl.editMeta()"> Edit </button>
+                    <button class="btn btn-sm" ng-click="$ctrl.deleteMeta()"> Delete </button>
+                </div>
+                <div ng-if="$ctrl._ui.edit">
+                    <div>Your supplied metadata must be in JSON format</div>
+                    <textarea type="text"
+                            class="table-preview"
+                            style="resize: vertical;"
+                            rows="4"
+                            id="user-meta"
+                            ng-value="$ctrl.metaInput"
+                            ng-model="$ctrl.metaInput"
+                            ng-required="true">
+                    </textarea>
+                    <button class="btn btn-sm btn-add" ng-click="$ctrl.saveMeta()"> Submit </button>
+                    <button class="btn btn-sm" ng-click="$ctrl.editMeta()"> Cancel </button>
+                </div>
+            </div>
+            <div ng-if="$ctrl._ui.loading">
+                <h3 class="text-center">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </h3>
+            </div>
+        </div>
     </div>
 </uib-accordion>
 <hr>

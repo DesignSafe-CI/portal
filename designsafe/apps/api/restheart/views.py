@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.views.generic.base import View
 from requests import HTTPError
+from django.core.exceptions import ObjectDoesNotExist
 
 
 logger = logging.getLogger(__name__)
@@ -16,28 +17,24 @@ logger = logging.getLogger(__name__)
 class RestHeartFileMetaView(View):
 
     def get(self, request, system_id, file_path):
-        """
-        BOOKMARK:
-        The file path param is missing the first /... This might be fixable in the urls section.
-        This is causing an issue with getting the file based on the system and path...
-        """
-        # designsafe.storage.default
-        # keiths/image.png
-        # col_meta = fmm.get_all_test()
         fmm = FileMetaManager()
         col_meta = fmm.get_file_doc(system_id=system_id, file_path=file_path)
-        if col_meta:
-            return JsonResponse({'col_meta': col_meta})
+        if type(col_meta) is dict:
+            return JsonResponse(col_meta)
         else:
             logger.exception('Error: failed to query meta document for file: {p} in system : {s}'.format(p=file_path, s=system_id))
             return JsonResponse({'error':'Error: failed to query meta document for: {p}'.format(p=file_path)})
+        # except ObjectDoesNotExist as e:
+        #     logger.exception(e)
+        #     return JsonResponse(e)
 
     def post(self, request, system_id, file_path):
         fmm = FileMetaManager()
         resp = fmm.create_file_doc(body=request.body, system_id=system_id, file_path=file_path)
         return JsonResponse(resp)
 
-    # def delete(self, request, system_id, file_path):
-    #     mm = FileMetaManager(collection='metadata')
-    #     resp = fmm.delete_file_doc(system_id=system_id, file_path=file_path)
-    #     return resp
+    def delete(self, request, doc_id):
+        logger.info('DOC_ID =====> {}'.format(doc_id))
+        fmm = FileMetaManager()
+        resp = fmm.delete_file_doc(doc_id=doc_id)
+        return resp
