@@ -27,7 +27,7 @@
             </tbody>
         </table>
         <hr>
-        <!-- Static Display -->
+        <!-- Static -->
         <div class="form-group">
             <label>File Metadata (no edit)</label>
             <pre class="table-preview" ng-if="$ctrl.data && !$ctrl._ui.loading">{{$ctrl.metaInput}}</pre>
@@ -36,7 +36,7 @@
             </div>
         </div>
         <hr>
-        <!-- Modify Display -->
+        <!-- Modify -->
         <div class="form-group">
             <label>File Metadata (edit)</label>
             <div ng-if="!$ctrl._ui.loading">
@@ -47,7 +47,6 @@
                 <div ng-if="!$ctrl._ui.edit && $ctrl.data">
                     <pre class="table-preview">{{$ctrl.metaInput}}</pre>
                     <button class="btn btn-sm" ng-click="$ctrl.editMeta()"> Edit </button>
-                    <button class="btn btn-sm" ng-click="$ctrl.deleteMeta()"> Delete </button>
                 </div>
                 <div ng-if="$ctrl._ui.edit">
                     <div>Your supplied metadata must be in JSON format</div>
@@ -61,6 +60,7 @@
                             ng-required="true">
                     </textarea>
                     <button class="btn btn-sm btn-add" ng-click="$ctrl.saveMeta()"> Submit </button>
+                    <button class="btn btn-sm btn-danger" ng-click="$ctrl.deleteMeta()"> Delete </button>
                     <button class="btn btn-sm" ng-click="$ctrl.editMeta()"> Cancel </button>
                 </div>
             </div>

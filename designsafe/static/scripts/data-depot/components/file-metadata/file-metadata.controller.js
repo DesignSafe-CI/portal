@@ -43,6 +43,7 @@ class FileMetadataComponentCtrl {
         this.FileMetaService.delete({docId: this.data._id.$oid}).then((resp) => {
             this.metaInput = {};
             this.data = undefined;
+            this.editMeta();
             this._ui.loading = false;
         });
     }

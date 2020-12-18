@@ -48,7 +48,7 @@ class FileMetaManager():
 
     def create_file_doc(self, body, system_id, file_path):
         """
-        Create file metadata document
+        Create/Update file metadata document
         This will automatically update if an "_id" exists in the body
         that matches an "_id" in the database
         """
@@ -56,34 +56,29 @@ class FileMetaManager():
         self.tapis.meta.createDocument(db='designsafedb',
                                        collection='files',
                                        request_body=body)
-        return body
+        resp = {
+            'success': 'Created/Updated meta document',
+            'data': body
+        }
+        return resp
 
     def delete_file_doc(self, doc_id):
         """
         Delete file metadata document
         """
-        try:
-            self.tapis.meta.deleteDocument(db='designsafedb',
-                                           collection='files',
-                                           docId=doc_id)
-            resp = JsonResponse({
-                'success': 'Deleted meta document',
-                'path': doc_id
-            })
-            return resp
-        except:
-            logger.exception('Error: failed to delete meta document for: {p}'.format(p=file_path))
-            resp = JsonResponse({
-                'error': 'Failed to delete meta document',
-                'path': file_path
-            })
+        self.tapis.meta.deleteDocument(db='designsafedb',
+                                        collection='files',
+                                        docId=doc_id)
+        resp = {
+            'success': 'Deleted meta document',
+            'path': doc_id
+        }
         return resp
 
     # def move():
+    # if we move we want to update the existing metadata document.
     #     return 'move'
 
     # def copy():
+    # if we copy we want to create another the metadata document with the new path.
     #     return 'copy'
-
-    # def update():
-    #     return 'update'
