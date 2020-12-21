@@ -28,9 +28,12 @@ class EditProjectCtrl {
         this.rapidEventTypes = [
             'Other',
             'Earthquake',
+            'Fire',
             'Flood',
             'Hurricane',
             'Landslide',
+            'Pandemic',
+            'Storm Surge',
             'Tornado',
             'Tsunami'
         ];
@@ -179,6 +182,24 @@ class EditProjectCtrl {
             } else {
                 this.form.guestMembers = new Array (1);
             }
+            // natural hazard type ++
+            if (this.project.value.nhTypes && this.project.value.nhTypes.length > 0) {
+                this.form.nhTypes = [];
+                this.form.nhTypesOther = [];
+                this.project.value.nhTypes.forEach((type) => {
+                    if (!this.isNhTypeInDropdown(type)) {
+                        this.form.nhTypes.push("Other");
+                        this.form.nhTypesOther.push(type);
+                    } else {
+                        this.form.nhTypes.push(type);
+                        this.form.nhTypesOther.push(null);
+                    }
+                });
+            } else {
+                this.form.nhTypes = new Array (1);
+                this.form.nhTypesOther = [null];
+            }
+            // field research projects
             if (this.project.value.projectType === 'field_recon') {
                 this.form.nhEvent = this.project.value.nhEvent;
                 if (this.project.value.nhEventStart) {
@@ -191,22 +212,22 @@ class EditProjectCtrl {
                         this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                     }
                 }
-                if (this.project.value.nhTypes && this.project.value.nhTypes.length > 0) {
-                    this.form.nhTypes = [];
-                    this.form.nhTypesOther = [];
-                    this.project.value.nhTypes.forEach((type) => {
-                        if (!this.isNhTypeInDropdown(type)) {
-                            this.form.nhTypes.push("Other");
-                            this.form.nhTypesOther.push(type);
-                        } else {
-                            this.form.nhTypes.push(type);
-                            this.form.nhTypesOther.push(null);
-                        }
-                    });
-                } else {
-                    this.form.nhTypes = new Array (1);
-                    this.form.nhTypesOther = [null];
-                }
+                // if (this.project.value.nhTypes && this.project.value.nhTypes.length > 0) {
+                //     this.form.nhTypes = [];
+                //     this.form.nhTypesOther = [];
+                //     this.project.value.nhTypes.forEach((type) => {
+                //         if (!this.isNhTypeInDropdown(type)) {
+                //             this.form.nhTypes.push("Other");
+                //             this.form.nhTypesOther.push(type);
+                //         } else {
+                //             this.form.nhTypes.push(type);
+                //             this.form.nhTypesOther.push(null);
+                //         }
+                //     });
+                // } else {
+                //     this.form.nhTypes = new Array (1);
+                //     this.form.nhTypesOther = [null];
+                // }
                 if (this.project.value.nhLocation && this.project.value.nhLatitude && this.project.value.nhLongitude) {
                     this.form.nhLocation = this.project.value.nhLocation;
                     this.form.nhLatitude = this.project.value.nhLatitude;

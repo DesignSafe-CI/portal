@@ -25,53 +25,16 @@ class PublicationPreviewOtherCtrl {
         this.ui = {
             loading: true,
         };
-        this.fl = {
-            showSelect: false,
-            showHeader: false,
-            showTags: true,
-            editTags: false,
-        };
 
-        if (!this.data || this.data.listing.path != this.filePath) {
-            this.$q.all([
-                this.ProjectService.get({ uuid: this.projectId }),
-                this.FileListingService.browse({
-                    section: 'main',
-                    api: 'agave',
-                    scheme: 'private',
-                    system: 'project-' + this.projectId,
-                    path: this.filePath,
-                }),
-            ]).then(([project, listing]) => {
-                this.breadcrumbParams = {
-                    root: {label: project.value.projectId, path: ''}, 
-                    path: this.FileListingService.listings.main.params.path,
-                    skipRoot: false
-                };
+        if (!this.data) {
+                // we do not display a file listing in other's preview section
+                this.ProjectService.get({ uuid: this.projectId }).then((project) => {
                 this.browser.project = project;
-                this.browser.listing = listing;
                 this.ui.loading = false;
             });
         } else {
             this.browser = this.data;
             this.ui.loading = false;
-        }
-    }
-
-    matchingGroup(exp, model) {
-        if (!exp) {
-            // if the category is related to the project level
-            if (model.associationIds.indexOf(this.projectId) > -1 && !model.value.experiments.length) {
-                return true;
-            }
-            return false;
-        } else {
-            // if the category is related to the experiment level
-            // match appropriate data to corresponding experiment
-            if(model.associationIds.indexOf(exp.uuid) > -1) {
-                return true;
-            }
-            return false;
         }
     }
     
@@ -84,7 +47,6 @@ class PublicationPreviewOtherCtrl {
     }
 
     editProject() {
-        // need to refresh project data when this is closed (not working atm)
         this.ProjectService.editProject(this.browser.project);
     }
 
@@ -113,31 +75,8 @@ class PublicationPreviewOtherCtrl {
         });
     }
 
-    treeDiagram(rootCategory) {
-        this.$uibModal.open({
-            component: 'projectTree',
-            resolve: {
-                project: () => {return this.browser.project; },
-                rootCategoryUuid: () => {return rootCategory.uuid; },
-                readOnly: () => {return true;},
-            },
-            size: 'lg'
-        });
-    }
-
-    showAuthor(author) {
-        this.$uibModal.open({
-            component: 'authorInformationModal',
-            resolve: {
-                author,
-            },
-            size: 'author',
-        });
-    }
-
     onBrowse(file) {
         if (file.type === 'dir') {
-            //this.$state.go(this.$state.current.name, {filePath: file.path.replace(/^\/+/, '')}, {inherit: false})
             this.$state.go(this.$state.current.name, {filePath: file.path})
         }
         else {

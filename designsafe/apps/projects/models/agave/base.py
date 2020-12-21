@@ -91,6 +91,7 @@ class Project(MetadataModel):
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
     keywords = fields.CharField('Keywords', default='')
     file_tags = fields.ListField('File Tags')
+    nh_types = fields.ListField('Natural Hazard Type')
     dois = fields.ListField('Dois')
 
     @property
