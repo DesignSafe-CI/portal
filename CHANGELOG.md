@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.1.1
+Fixes:
+- Fix a bug prevening Hybrid Simulation projects from displaying correctly.
+
 ## v5.1.0
 Enhancements:
 - New redesigned header, nav, footer, and body layout
