@@ -621,44 +621,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Event Type -->
-                <!-- <div class="form-group" style="width:100%;">
-                    <label for="id-nh-event-type">
-                        <span class="pull-left">Event Type</span>
-                        <span class="label label-danger" style="margin-left: 5px">Required</span>
-                        <span style="font-weight:normal; display:inline-block;">
-                            The hazards occurring from an event. An event can have multiple hazard types (Hurricanes also have storm surge and floods).
-                        </span>
-                    </label>
-                    <div ng-repeat="nhType in $ctrl.form.nhTypes track by $index">
-                        <select id="id-nh-event-type"
-                                style="margin-bottom: 5px;"
-                                data-ng-options="item for item in $ctrl.rapidEventTypes"
-                                data-ng-model="$ctrl.form.nhTypes[$index]"
-                                data-ng-required="$first"
-                                class="form-control"
-                                data-ng-if="$ctrl.showNhTypesDropdown($index)">
-                            <option value="">-- Select Event Type --</option>
-                        </select>
-                        <div class="nh-types-input-wrapper"
-                             data-ng-if="$ctrl.showNhTypesInput($index)">
-                            <input type="text"
-                                   data-ng-model="$ctrl.form.nhTypesOther[$index]"
-                                   class="form-control"
-                               />
-                        </div>
-                    </div>
-                    <button class="btn-project-add-rm"
-                            ng-click="$ctrl.addField($ctrl.form.nhTypes); $ctrl.addField($ctrl.form.nhTypesOther)">
-                            &#x2b; Add another Event Type
-                    </button>
-                    |
-                    <button class="btn-project-add-rm"
-                            ng-click="$ctrl.dropEventType()"
-                            ng-disabled="$ctrl.checkEmpty($ctrl.form.nhTypes)">
-                            &#x2212; Remove Event Type
-                    </button>
-                </div> -->
             </div>
             <!-- Project Keywords -->
             <div class="form-group" style="width:100%; display:inline-block;">

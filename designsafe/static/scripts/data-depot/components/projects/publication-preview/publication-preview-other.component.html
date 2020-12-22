@@ -37,6 +37,10 @@
                 <td>Project Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</td>
             </tr>
+            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
+                <td>Data Type</td>
+                <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
+            </tr>
             <tr class="prj-row" ng-if="$ctrl.browser.project.value.nhTypes.length">
                 <td>Natural Hazard Type</td>
                 <td class="prj-data">
@@ -45,10 +49,6 @@
                         <span ng-if="$last">{{ nhtype }}</span>
                     </span>
                 </td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-                <td>Data Type</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
             <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
                 ng-if="!$ctrl.readOnly">
