@@ -41,6 +41,7 @@ class FieldReconProject(Project):
     nh_latitude = fields.CharField('Natural Hazard Latitude', default='')
     nh_longitude = fields.CharField('Natural Hazard Longitude', default='')
     nh_types = fields.ListField('Natural Hazard Type')
+    fr_types = fields.ListField('Field Research Type')
     dois = fields.ListField('Dois')
 
 

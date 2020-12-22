@@ -32,10 +32,18 @@
                       ng-click="$ctrl.overview()">
                       View Overview
                   </a>
-              </td>
-              <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
-                  Field Research &nbsp;
-                  <a ng-click="$ctrl.overview()">View Overview</a>
+                </td>
+                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
+                    Field Research
+                    <span ng-if="!$ctrl.browser.project.value.frTypes.length">&nbsp;</span>
+                    <span ng-if="$ctrl.browser.project.value.frTypes.length">
+                        |
+                        <span ng-repeat="frType in $ctrl.browser.project.value.frTypes">
+                            <span ng-if="!$last">{{ frType }},</span>
+                            <span ng-if="$last">{{ frType }}</span>
+                        </span>
+                    </span>
+                    <a ng-click="$ctrl.overview()">View Overview</a>
                 </td>
               </tr>
               <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">

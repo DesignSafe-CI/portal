@@ -37,6 +37,15 @@ class EditProjectCtrl {
             'Tornado',
             'Tsunami'
         ];
+        this.fieldResearchTypes = [
+            'Engineering',
+            'Field Experiment',
+            'Geosciences',
+            'Interdisciplinary',
+            'Longitudinal Study',
+            'Reconnaissance',
+            'Social Sciences'
+        ];
         this.otherTypes = [
             'Custom',
             'Code',
@@ -182,7 +191,7 @@ class EditProjectCtrl {
             } else {
                 this.form.guestMembers = new Array (1);
             }
-            // natural hazard type ++
+            // natural hazard type
             if (this.project.value.nhTypes && this.project.value.nhTypes.length > 0) {
                 this.form.nhTypes = [];
                 this.form.nhTypesOther = [];
@@ -202,6 +211,13 @@ class EditProjectCtrl {
             // field research projects
             if (this.project.value.projectType === 'field_recon') {
                 this.form.nhEvent = this.project.value.nhEvent;
+                if (this.project.value.frTypes && this.project.value.frTypes.length > 0) {
+                    console.log('using existing fr types');
+                    this.form.frTypes = this.project.value.frTypes;
+                } else {
+                    console.log('making new fr types');
+                    this.form.frTypes = new Array (1);
+                }
                 if (this.project.value.nhEventStart) {
                     this.form.nhEventDateStart = new Date(this.project.value.nhEventStart);
                 }
@@ -212,22 +228,6 @@ class EditProjectCtrl {
                         this.form.nhEventDateEnd = new Date(this.project.value.nhEventEnd);
                     }
                 }
-                // if (this.project.value.nhTypes && this.project.value.nhTypes.length > 0) {
-                //     this.form.nhTypes = [];
-                //     this.form.nhTypesOther = [];
-                //     this.project.value.nhTypes.forEach((type) => {
-                //         if (!this.isNhTypeInDropdown(type)) {
-                //             this.form.nhTypes.push("Other");
-                //             this.form.nhTypesOther.push(type);
-                //         } else {
-                //             this.form.nhTypes.push(type);
-                //             this.form.nhTypesOther.push(null);
-                //         }
-                //     });
-                // } else {
-                //     this.form.nhTypes = new Array (1);
-                //     this.form.nhTypesOther = [null];
-                // }
                 if (this.project.value.nhLocation && this.project.value.nhLatitude && this.project.value.nhLongitude) {
                     this.form.nhLocation = this.project.value.nhLocation;
                     this.form.nhLatitude = this.project.value.nhLatitude;
@@ -373,38 +373,42 @@ class EditProjectCtrl {
             })
             .filter(input => input);
         }
-
-        // clear any empty inputs...
-        var i = this.form.copi.length;
-        this.form.copiPrune = [];
-        while(i--) {
-            if (typeof this.form.copi[i] != 'object') {
-                this.form.copi.splice(i, 1);
-            } else {
-                this.form.copiPrune.push(this.form.copi[i]);
-            }
+        if (this.form.frTypes && this.form.frTypes.filter(Boolean).length) {
+            projectData.frTypes = this.form.frTypes.filter(Boolean);
         }
-        i = this.form.team.length;
-        this.form.teamPrune = [];
-        while(i--) {
-            if (typeof this.form.team[i] != 'object') {
-                this.form.team.splice(i, 1);
-            } else {
-                this.form.teamPrune.push(this.form.team[i]);
-            }
+        // project members...
+        if (this.form.pi) {
+            projectData.pi = this.form.pi.username;
         }
-        i = this.form.guests.length;
-        this.form.guestsPrune = [];
-        while (i--) {
-            if (typeof this.form.guests[i] != 'object') {
-                this.form.guests.splice(i, 1);
-            } else {
-                this.form.guestsPrune.push(this.form.guests[i]);
-            }
+        if (this.form.copi && this.form.copi.filter(Boolean).length) {
+            this.form.copi.forEach((user) => {
+              if (typeof user == 'object' && user.username){
+                projectData.coPis.push(user.username);
+              }
+            });
+        }
+        if (this.form.team && this.form.team.filter(Boolean).length) {
+            this.form.team.forEach((user) => {
+              if (typeof user == 'object' && user.username){
+                projectData.teamMembers.push(user.username);
+              }
+            });
+        }
+        if (this.form.guests) {
+            let guests = this.form.guests.filter(g => Object.keys(g).length > 1);
+            guests.forEach((g, i) => {
+                // create a "username" for guests
+                if (!g.user) {
+                    g.user = "guest" + g.fname + g.lname.charAt(0) + i;
+                }
+                if (g.lname && g.fname) {
+                    projectData.guestMembers.push(g);
+                }
+            });
         }
 
         if (this.form.uuid) {
-            i = this.form.awardNumber.length;
+            let i = this.form.awardNumber.length;
             this.form.awardPrune = [];
             while(i--) {
                 if (typeof this.form.awardNumber[i] === 'undefined') {
@@ -434,30 +438,6 @@ class EditProjectCtrl {
                     this.form.workPrune.push(this.form.associatedProjects[i]);
                 }
             }
-        }
-        if (this.form.pi) {
-            projectData.pi = this.form.pi.username;
-        }
-        if (this.form.copiPrune) {
-            this.form.copiPrune.forEach((ent) => {
-                projectData.coPis.push(ent.username);
-            });
-        }
-        if (this.form.teamPrune) {
-            this.form.teamPrune.forEach((ent) => {
-                projectData.teamMembers.push(ent.username);
-            });
-        }
-        if (this.form.guests && this.form.guests.indexOf(null) === -1) {
-            this.form.guests.forEach((g, i) => {
-                // create a "username" for guests
-                if (!g.user) {
-                    g.user = "guest" + g.fname + g.lname.charAt(0) + i;
-                }
-                if (g.lname && g.fname) {
-                    projectData.guestMembers.push(g);
-                }
-            });
         }
         if (this.form.awardPrune) {
             projectData.awardNumber = this.form.awardPrune;

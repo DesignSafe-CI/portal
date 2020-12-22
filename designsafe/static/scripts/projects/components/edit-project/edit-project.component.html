@@ -136,14 +136,48 @@
             </table>
             <a ng-click="$ctrl.type($ctrl.form.uuid && $ctrl.form.projectType)">Change Project Type</a>
         </div>
-        <!-- Natural Hazard Type -->
-        <div class="form-group" style="width:100%;" ng-if="$ctrl.project.value.projectType !== 'field_recon'">
+        <!-- Field Research Type -->
+        <div class="form-group" style="width:100%;" ng-if="$ctrl.project.value.projectType === 'field_recon'">
             <label for="id-nh-event-type">
-                <span class="pull-left">Natural Hazard Type</span>
-                <span class="label label-danger" style="margin-left: 5px">Required</span>
-                <span style="font-weight:normal; display:inline-block;">
+                <div>
+                    <span class="pull-left">Field Research Type</span>
+                    <span class="label label-danger" style="margin-left: 5px">Required</span>
+                </div>
+                <div style="font-weight:normal; display:inline-block;">
+                    Specify the Field Research being researched.
+                </div>
+            </label>
+            <div ng-repeat="frType in $ctrl.form.frTypes track by $index">
+                <select id="id-nh-event-type"
+                        style="margin-bottom: 5px;"
+                        data-ng-options="item for item in $ctrl.fieldResearchTypes"
+                        data-ng-model="$ctrl.form.frTypes[$index]"
+                        data-ng-required="$first"
+                        class="form-control">
+                    <option value="">-- Select Field Research Type --</option>
+                </select>
+            </div>
+            <button class="btn-project-add-rm"
+                    ng-click="$ctrl.addField($ctrl.form.frTypes)">
+                    &#x2b; Add another Field Research Type
+            </button>
+            |
+            <button class="btn-project-add-rm"
+                    ng-click="$ctrl.form.frTypes.pop()"
+                    ng-disabled="$ctrl.checkEmpty($ctrl.form.frTypes)">
+                    &#x2212; Remove Field Research Type
+            </button>
+        </div>
+        <!-- Natural Hazard Type -->
+        <div class="form-group" style="width:100%;">
+            <label for="id-nh-event-type">
+                <div>
+                    <span class="pull-left">Natural Hazard Type</span>
+                    <span class="label label-danger" style="margin-left: 5px">Required</span>
+                </div>
+                <div style="font-weight:normal; display:inline-block;">
                     Specify the natural hazard being researched.
-                </span>
+                </div>
             </label>
             <div ng-repeat="nhType in $ctrl.form.nhTypes track by $index">
                 <select id="id-nh-event-type"
@@ -153,7 +187,7 @@
                         data-ng-required="$first"
                         class="form-control"
                         data-ng-if="$ctrl.showNhTypesDropdown($index)">
-                    <option value="">-- Select Event Type --</option>
+                    <option value="">-- Select Natural Hazard Type --</option>
                 </select>
                 <div class="nh-types-input-wrapper"
                         data-ng-if="$ctrl.showNhTypesInput($index)">
@@ -165,13 +199,13 @@
             </div>
             <button class="btn-project-add-rm"
                     ng-click="$ctrl.addField($ctrl.form.nhTypes); $ctrl.addField($ctrl.form.nhTypesOther)">
-                    &#x2b; Add another Event Type
+                    &#x2b; Add another Natural Hazard Type
             </button>
             |
             <button class="btn-project-add-rm"
                     ng-click="$ctrl.dropEventType()"
                     ng-disabled="$ctrl.checkEmpty($ctrl.form.nhTypes)">
-                    &#x2212; Remove Event Type
+                    &#x2212; Remove Natural Hazard Type
             </button>
         </div>
         <!-- Add PI and PRJ Members -->
@@ -588,7 +622,7 @@
                     </div>
                 </div>
                 <!-- Event Type -->
-                <div class="form-group" style="width:100%;">
+                <!-- <div class="form-group" style="width:100%;">
                     <label for="id-nh-event-type">
                         <span class="pull-left">Event Type</span>
                         <span class="label label-danger" style="margin-left: 5px">Required</span>
@@ -624,7 +658,7 @@
                             ng-disabled="$ctrl.checkEmpty($ctrl.form.nhTypes)">
                             &#x2212; Remove Event Type
                     </button>
-                </div>
+                </div> -->
             </div>
             <!-- Project Keywords -->
             <div class="form-group" style="width:100%; display:inline-block;">
