@@ -337,19 +337,13 @@ class Project(MetadataModel):
         dataset_json['creator'] = generate_creators(authors)
         dataset_json['author'] = generate_creators(authors)
         try:
-            pub = IndexedPublication.from_id(self.project_id)
-            dataset_json['license'] = {
-                "@type": "CreativeWork",
-                "license": pub.licenses.works
-                }
+            pub = IndexedPublication.from_id(self.project_id) 
+            dataset_json['license'] = generate_licenses(pub)
         except (DocumentNotFound, AttributeError):
             pass
         try:
             pub = IndexedPublicationLegacy.from_id(self.project_id)
-            dataset_json['license'] = {
-                "@type": "CreativeWork",
-                "license":pub.licenses.works
-            }
+            dataset_json['license'] = generate_licenses(pub)
         except DocumentNotFound:
             pass
 
@@ -472,7 +466,16 @@ def generate_creators(authors):
             creators_details.append(details)
         return creators_details
 
-
+def generate_licenses(pub):
+    license_details = []
+    if pub.licenses.works == "Creative Commons Attribution Share Alike":
+        url = "https://creativecommons.org/licenses/by/4.0/"
+    license_details = {
+        "@type": "CreativeWork",
+        "license": pub.licenses.works,
+        "url": url
+    }
+    return license_details
 
 def _process_authors(authors):
     """Process authors.
