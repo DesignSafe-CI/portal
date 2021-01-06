@@ -545,11 +545,12 @@ class ProjectTreeCtrl {
         );
         let roots = [];
         let projectNode = {
-            name: this.project.value.projectId + ' | ' + this.project.value.title,
+            name: this.project.value.title,
             uuid: this.project.uuid,
             parent: null,
             children: [],
             rectStyle: 'stroke: none;',
+            display: this.project.value.projectId + ' | '
         };
         _.each(reports, (report) => {
             let repNode = {
@@ -689,6 +690,7 @@ class ProjectTreeCtrl {
                 parent: null,
                 children: [],
                 rectStyle: 'stroke: none;',
+                display: 'Hybrid Simulation | '
             };
             let childReports = [];
             _.each(reports, (rep) => {
@@ -1034,6 +1036,7 @@ class ProjectTreeCtrl {
                 parent: null,
                 children: [],
                 rectStyle: 'stroke: none;',
+                display: 'Simulation | '
             };
             let childReports = [];
             _.each(reports, (rep) => {
@@ -1247,6 +1250,7 @@ class ProjectTreeCtrl {
                 parent: null,
                 children: [],
                 rectStyle: 'stroke: none;',
+                display: 'Experiment | '
             };
             let childReports = [];
             _.each(reports, (rep) => {
@@ -1640,16 +1644,26 @@ class ProjectTreeCtrl {
                 if (!d.data.uuid) {
                     return 'display: none;';
                 }
+                if (d.data.uuid && d.depth === 0) {
+                    return 'font-weight: bold;';
+                }
                 return '';
             })
-            .attr('y', (d) => { if (d.depth) { return -7; } return 0; })
-            .attr('x', (d) => {
-                if (d.data.uuid && d.depth === 0) {
-                    return 10;
+            .attr('y', (d) => {
+                console.log(d);
+                if (!d.parent) {
+                    return 5;
                 }
+                return -7;
+            })
+            .attr('x', (d) => {
                 if (d.data.uuid && d.depth) {
                     let left = bboxes[d.data.uuid].width;
                     return left + 15;
+                }
+                if (d.data.uuid && !d.depth) {
+                    let left = bboxes[d.data.uuid].width;
+                    return left + 10;
                 }
                 return 0;
             })
