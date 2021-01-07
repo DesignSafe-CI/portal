@@ -468,11 +468,26 @@ def generate_creators(authors):
 
 def generate_licenses(pub):
     license_details = []
-    if pub.licenses.works == "Creative Commons Attribution Share Alike":
+    url = []
+    license_type = []
+    if pub.licenses.datasets == "Open Data Commons Attribution":
+        url = "https://opendatacommons.org/licenses/by/1-0/"
+        license_type = pub.licenses.datasets
+    elif pub.licenses.datasets == "Open Data Commons Public Domain Dedication":
+        url = "https://opendatacommons.org/licenses/pddl/1-0/"
+        license_type = pub.licenses.datasets
+    elif pub.licenses.works == "Creative Commons Attribution Share Alike":
         url = "https://creativecommons.org/licenses/by/4.0/"
+        license_type = pub.licenses.works
+    elif pub.licenses.works == "Creative Commons Public Domain Dedication":
+        url = "https://creativecommons.org/publicdomain/zero/1.0/"
+        license_type = pub.licenses.works
+    elif pub.licenses.software == "GNU General Public License":
+        url = "http://www.gnu.org/licenses/gpl.html"
+        license_type = pub.licenses.software
     license_details = {
         "@type": "CreativeWork",
-        "license": pub.licenses.works,
+        "license": license_type,
         "url": url
     }
     return license_details
