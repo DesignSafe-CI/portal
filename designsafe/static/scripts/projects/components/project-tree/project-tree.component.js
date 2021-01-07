@@ -1634,7 +1634,6 @@ class ProjectTreeCtrl {
                 }
                 return 0;
             });
-
         nodes.append('text')
             .text( (d) => {
                 return d.data.name;
@@ -1650,7 +1649,6 @@ class ProjectTreeCtrl {
                 return '';
             })
             .attr('y', (d) => {
-                console.log(d);
                 if (!d.parent) {
                     return 5;
                 }
@@ -1671,7 +1669,7 @@ class ProjectTreeCtrl {
                 if (!d.data.uuid) {
                     return 'none';
                 }
-                return 'entity-name' + d.data.uuid;
+                return 'entity-name' + d.data.uuid + treeIndex;
             });
 
         svg.selectAll('text.entity-name')
@@ -1693,7 +1691,7 @@ class ProjectTreeCtrl {
                     });
                 }
                 if (d.data.uuid && d.depth) {
-                    d3plus.textwrap().container("#entity-name" + d.data.uuid).draw();
+                    d3plus.textwrap().container("#entity-name" + d.data.uuid + treeIndex).draw();
                 }
             });
 
