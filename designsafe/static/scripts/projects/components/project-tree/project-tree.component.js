@@ -519,7 +519,8 @@ class ProjectTreeCtrl {
         this.project.allCollections = [].concat(
             this.project.socialscience_set || [],
             this.project.geoscience_set || [],
-            this.project.planning_set || []
+            this.project.planning_set || [],
+            this.project.collection_set || [],
         );
         if (this.rootCategoryUuid) {
             missions = _.filter(
