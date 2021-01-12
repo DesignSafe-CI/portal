@@ -15,7 +15,7 @@
     </h4>
 </div>
 <div class="modal-body" style="padding: 30px;">
-    <form name="projForm">
+    <form name="projForm" autocomplete="off">
         <!-- Project Title -->
         <div class="form-group">
             <label for="id-project-title">
@@ -162,7 +162,7 @@
                                     type="text"
                                     id="id_pi"
                                     name="pi"
-                                    autocomplete="username"
+                                    autocomplete="chrome-off"
                                     ng-model="$ctrl.form.pi"
                                     placeholder="Lookup user by name or email address"
                                     uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
@@ -177,7 +177,7 @@
                                         type="text"
                                         id="id_copi"
                                         name="copi"
-                                        autocomplete="username"
+                                        autocomplete="chrome-off"
                                         ng-model="$ctrl.form.copi[i]"
                                         ng-style="{'float': $even ? 'right' : 'none'}"
                                         placeholder="Lookup user by name or email address"
@@ -213,7 +213,7 @@
                                 type="text"
                                 id="id_user"
                                 name="user"
-                                autocomplete="username"
+                                autocomplete="chrome-off"
                                 ng-style="{'float': $odd ? 'right' : 'none'}"
                                 ng-model="$ctrl.form.team[i]"
                                 placeholder="Lookup user by name or email address"
@@ -470,6 +470,7 @@
                                     ng-model="$ctrl.form.nhEventDateStart"
                                     is-open="isStartOpen"
                                     placeholder="mm-dd-yyyy"
+                                    autocomplete="chrome-off"
                                     datepicker-options="dateOptions"
                                     date-disabled="disabled(date, mode)"
                                     ng-required="true"
@@ -490,6 +491,7 @@
                                     ng-model="$ctrl.form.nhEventDateEnd"
                                     is-open="isEndOpen"
                                     placeholder="mm-dd-yyyy"
+                                    autocomplete="chrome-off"
                                     datepicker-options="dateOptions"
                                     date-disabled="disabled(date, mode)"
                                     ng-required="false"
