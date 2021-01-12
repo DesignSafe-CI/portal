@@ -53,6 +53,12 @@
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
+            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumbers | orderBy:'order' track by $index"
+                ng-if="$ctrl.readOnly">
+                <td ng-if="$first">Awards</td>
+                <td ng-if="!$first"></td>
+                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+            </tr>
             <tr ng-repeat="doi in $ctrl.hsDOIList">
                 <td ng-if="$first">DOI(s) in Dataset</td>
                 <td ng-if="!$first"></td>
