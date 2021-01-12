@@ -546,11 +546,12 @@ class ProjectTreeCtrl {
         );
         let roots = [];
         let projectNode = {
-            name: this.project.value.projectId + ' | ' + this.project.value.title,
+            name: this.project.value.title,
             uuid: this.project.uuid,
             parent: null,
             children: [],
             rectStyle: 'stroke: none;',
+            display: this.project.value.projectId + ' | '
         };
         _.each(reports, (report) => {
             let repNode = {
@@ -690,6 +691,7 @@ class ProjectTreeCtrl {
                 parent: null,
                 children: [],
                 rectStyle: 'stroke: none;',
+                display: 'Hybrid Simulation | '
             };
             let childReports = [];
             _.each(reports, (rep) => {
@@ -1035,6 +1037,7 @@ class ProjectTreeCtrl {
                 parent: null,
                 children: [],
                 rectStyle: 'stroke: none;',
+                display: 'Simulation | '
             };
             let childReports = [];
             _.each(reports, (rep) => {
@@ -1248,6 +1251,7 @@ class ProjectTreeCtrl {
                 parent: null,
                 children: [],
                 rectStyle: 'stroke: none;',
+                display: 'Experiment | '
             };
             let childReports = [];
             _.each(reports, (rep) => {
@@ -1631,7 +1635,6 @@ class ProjectTreeCtrl {
                 }
                 return 0;
             });
-
         nodes.append('text')
             .text( (d) => {
                 return d.data.name;
@@ -1641,16 +1644,25 @@ class ProjectTreeCtrl {
                 if (!d.data.uuid) {
                     return 'display: none;';
                 }
+                if (d.data.uuid && d.depth === 0) {
+                    return 'font-weight: bold;';
+                }
                 return '';
             })
-            .attr('y', (d) => { if (d.depth) { return -7; } return 0; })
-            .attr('x', (d) => {
-                if (d.data.uuid && d.depth === 0) {
-                    return 10;
+            .attr('y', (d) => {
+                if (!d.parent) {
+                    return 5;
                 }
+                return -7;
+            })
+            .attr('x', (d) => {
                 if (d.data.uuid && d.depth) {
                     let left = bboxes[d.data.uuid].width;
                     return left + 15;
+                }
+                if (d.data.uuid && !d.depth) {
+                    let left = bboxes[d.data.uuid].width;
+                    return left + 10;
                 }
                 return 0;
             })
@@ -1658,7 +1670,7 @@ class ProjectTreeCtrl {
                 if (!d.data.uuid) {
                     return 'none';
                 }
-                return 'entity-name' + d.data.uuid;
+                return 'entity-name' + d.data.uuid + treeIndex;
             });
 
         svg.selectAll('text.entity-name')
@@ -1680,7 +1692,7 @@ class ProjectTreeCtrl {
                     });
                 }
                 if (d.data.uuid && d.depth) {
-                    d3plus.textwrap().container("#entity-name" + d.data.uuid).draw();
+                    d3plus.textwrap().container("#entity-name" + d.data.uuid + treeIndex).draw();
                 }
             });
 
