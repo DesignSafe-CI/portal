@@ -63,12 +63,14 @@ class PublicationLegacyListingCtrl {
 }
 
 class FilesListingCtrl {
-    constructor($state, FileListingService) {
+    constructor($state, FileListingService, Django, FileOperationService, PublicationService) {
         'ngInject';
         this.$state = $state;
-        this.FileListingService = FileListingService
-
-        this.handleScroll = this.handleScroll.bind(this)
+        this.FileListingService = FileListingService;
+        this.Django = Django;
+        this.FileOperationService = FileOperationService;
+        this.PublicationService = PublicationService;
+        this.handleScroll = this.handleScroll.bind(this);
     }
 
     $onInit() {
@@ -77,14 +79,14 @@ class FilesListingCtrl {
     handleScroll() {
         if (!this.listing.reachedEnd) {
             const { section, api, scheme, system, path } = this.listing.params;
-            this.FileListingService.browseScroll({section, api, scheme, system, path})
+            this.FileListingService.browseScroll({ section, api, scheme, system, path });
         }
     }
 
     browse($event, file) {
         $event.preventDefault();
         $event.stopPropagation();
-        this.onBrowse({ file })
+        this.onBrowse({ file });
     }
 
     href(system, path) {
@@ -148,6 +150,27 @@ class FilesListingCtrl {
             default:
                 return 'fa-file-o';
         }
+    }
+    isNotebook(file) {
+        const extension = file.name.split('.').pop();
+        return extension === 'ipynb';
+    }
+    hasNotebooks() {
+        const listing = this.FileListingService.listings.main.listing;
+        if (!listing || window.location.href.includes('agave')) return false;
+
+        const pyNb = listing.filter(this.isNotebook);
+        if (_.isEmpty(pyNb)) return false;
+        return true;
+    }
+    openInApp(file) {
+        const params = {
+            system: this.FileListingService.listings.main.params,
+            loc: this.$state.current.name,
+            path: file.path,
+            projectId: this.PublicationService.current ? this.PublicationService.current.projectId : null
+        };
+        return this.FileOperationService.openInJupyter(params);
     };
 
     isInTrash() {
@@ -197,4 +220,4 @@ export const PublicationsLegacyListingComponent = {
     bindings: {
         listing: '<'
     }
-}
+};
