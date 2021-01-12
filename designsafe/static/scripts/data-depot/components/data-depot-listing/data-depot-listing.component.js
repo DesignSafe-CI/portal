@@ -158,9 +158,9 @@ class FilesListingCtrl {
     hasNotebooks() {
         const listing = this.FileListingService.listings.main.listing;
         if (!listing || window.location.href.includes('agave')) return false;
-        
+
         const pyNb = listing.filter(this.isNotebook);
-        if (_.isEmpty(pyNb)) return false; 
+        if (_.isEmpty(pyNb)) return false;
         return true;
     }
     openInApp(file) {
@@ -171,6 +171,18 @@ class FilesListingCtrl {
             projectId: this.PublicationService.current ? this.PublicationService.current.projectId : null
         };
         return this.FileOperationService.openInJupyter(params);
+    };
+
+    isInTrash() {
+        if (this.listing.params.path && this.listing.params.system) {
+            let filePath = this.listing.params.path.split('/');
+            if (this.listing.params.system == 'designsafe.storage.default' &&
+                filePath[1] == '.Trash')
+                return true;
+            else if (filePath[0] == '.Trash')
+                return true;
+        }
+        return false;
     }
 }
 

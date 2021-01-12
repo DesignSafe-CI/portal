@@ -1,5 +1,49 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.1.1
+Fixes:
+- Fix a bug prevening Hybrid Simulation projects from displaying correctly.
+
+## v5.1.0
+Enhancements:
+- New redesigned header, nav, footer, and body layout
+- "Research Workbench" renamed to "Workspace"
+- "Workspace" renamed to "Tools and Applications"
+
+Fixes:
+- Resolved Google Dataset Search tag errors
+- Fix natural hazards event searches
+
+## v5.0.8
+
+Fixes:
+- Fix an issue preventing legacy publications from rendering.
+
+## v5.0.7
+Fixes:
+- Fix bug preventing user agent from being detected
+- Fix bug preventing searchesin Publications from returning results
+
+## v5.0.6
+Improvements:
+- Expose publication metadata to Google Dataset Search
+- Improve the styling of file listings in the Workspace
+- Update documentation for unit testing
+- Update the new user creation form and add a field for primary natural hazards interest.
+
+Fixes:
+- Prevent users from changing their email to the email of another existing Designsafe user.
+- Prevent trashing of files with associated entities
+- Fix a bug that was excluding recent projects from searches filtered by experimental facility
+- Fix a bug that was causing project co-PIs to be listed out of order
+- Fix a bug that prevented some actions in the Workspace from being logged
+- Fix a bug that was excluding projects from search results for some users
+
+## v5.0.5
+Fixes:
+- Security enhancements and dependency updates.
+- Fix a bug that was causing authors to show up twice in citations.
+
 ## v5.0.4
 Fixes:
 - Fix a bug preventing users from creating directories inside of projects
@@ -19,10 +63,10 @@ Fixes:
 
 ## v5.0.1
 Fixes:
-- Add missing fields to projects search. 
+- Add missing fields to projects search.
 
 ## v5.0.0
-Fixes: 
+Fixes:
 - Prevent background clicks from closing some modals.
 - Fix bug preventing publication status from being set correctly for Other-type publications.
 - Fix bug preventing award numbers from being assigned to projects
@@ -81,11 +125,11 @@ Fixes:
 - Bug/DES-1674 - Fix bug with FR ordering in "Relate Data" modal
 - Bug/DES-1662 - Fix issue with project file listings overloading agave with requests
 ## v5.0.0-20200802
-Fixes: 
+Fixes:
 - Insert missing ngInject
 
 ## v5.0.0-20200801
-Enhancements: 
+Enhancements:
 - All listings have been reimplemented on both the frontend and backend. DataBrowserService and FileListing are refactored into a FileListingService and FileOperationService.
 - All listings in the Data Depot now use a shared FilesListing component
 - New “transfer” endpoint to copy files between any 2 storage backends.
@@ -93,7 +137,7 @@ Enhancements:
 - Working search inside of projects and publications
 - Reduced loading times for publications and fixes for common display bugs.
 - Publications listings now fetch ~90% less data from Elasticsearch
-- Rewritten Workspace data browser 
+- Rewritten Workspace data browser
 
 ## v4.9.9-20200703
 Fixes:

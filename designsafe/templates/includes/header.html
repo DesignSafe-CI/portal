@@ -1,11 +1,12 @@
 {% load staticfiles %}
 {% load static %}
 {% load auth_extras %}
-<header class="container site-banner">
-  <div class="site-banner-left">
-    <a class="logo" href="/">
+{% include 'includes/branding.html' %}
+<header class="site-banner">
+  <div class="site-banner-left logo">
+    <a href="/">
       <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Research Infrastructure (NHERI)</h1>
-      <img alt="DesignSafe-CI" src="{% static 'images/nsf-designsafe-logo.png' %}" width="100%">
+      <img alt="DesignSafe-CI" src="{% static 'images/org_logos/Horizontal-DS.svg' %}" width="100%">
     </a>
   </div>
 

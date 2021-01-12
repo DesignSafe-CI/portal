@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/DesignSafe-CI/portal.svg?branch=master)](https://travis-ci.org/DesignSafe-CI/portal) 
+[![Build Status](https://travis-ci.org/DesignSafe-CI/portal.svg?branch=master)](https://travis-ci.org/DesignSafe-CI/portal)
 [![codecov](https://codecov.io/gh/DesignSafe-CI/portal/branch/master/graph/badge.svg)](https://codecov.io/gh/DesignSafe-CI/portal)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8399b864b0d115d86450/maintainability)](https://codeclimate.com/github/DesignSafe-CI/portal/maintainability)
 
@@ -59,7 +59,7 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    These lines install the node packages required for DesignSafe,
    and build the frontend package.
    ```
-   $ npm install
+   $ npm ci
    $ npm run build
    ```
 
@@ -113,10 +113,18 @@ Every file needed is in `conf/nginx/certs`.
 
 #### Linux
 
+##### Ubuntu & Debian
 1. `$ cd $PROJECT/conf/nginx/certificates`
 2. `$ sudo mkdir /usr/local/share/ca-certificates/extra`
 3. `$ sudo cp ca.pem /usr/local/share/ca-certificates/extra/designsafeCA.pem`
 4. `$ sudo update-ca-certificates`
+
+##### Fedora & CentOS & RHEL
+1. `$ sudo dnf install ca-certificates` or </br>`$ sudo yum install ca-certificates`
+2. `$ sudo update-ca-trust enable`
+3. `$ cd $PROJECT/conf/nginx/certificates`
+4. `$ sudo cp ca.pem /usr/share/pki/ca-trust-source/anchors/designsafeCA.pem` or </br>`$ sudo cp ca.pem /etc/pki/ca-trust/source/anchors/designsafeCA.pem`
+5. `$ sudo update-ca-trust`
 
 #### Firefox UI
 
@@ -181,7 +189,7 @@ Django tests should be written according to standard [Django testing procedures]
 You can run Django tests with the following command:
 
 ```shell
-$ docker run -it --rm des_django python manage.py test --settings=designsafe.settings.test_settings
+$ docker exec -it des_django pytest designsafe
 ```
 
 ### Frontend tests

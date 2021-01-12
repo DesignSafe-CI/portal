@@ -352,7 +352,7 @@ export class PublicationService {
         } else if (_.has(resp.data, 'missions')) {
             entities.push(...resp.data.missions);
         } else if (_.has(resp.data, 'hybrid_simulations')) {
-            sSimulation = true;
+            isSimulation = true;
             entities.push(...resp.data.hybrid_simulations);
         }
 

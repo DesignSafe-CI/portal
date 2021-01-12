@@ -17,7 +17,6 @@
         </div>
         <div ng-if="$ctrl.entity && $ctrl.version !== 1">
             <ds-author-list format="hname" authors="$ctrl.auths"></ds-author-list>
-            <ds-user-list usernames="$ctrl.auths" format="other"></ds-user-list>
             <span>
                 ({{ $ctrl.citationDate }}) "{{ $ctrl.entity.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
                 <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.

@@ -101,6 +101,11 @@
                 </tr>
             </tbody>
             <caption style="padding:0px;">
+                <div data-ng-if="$ctrl.isInTrash()">
+                    <div class="alert alert-warning text-center">
+                        Trashed items will be kept a maximum of 90 days.
+                    </div>
+                </div>
                 <div data-ng-if="$ctrl.listing.loading"
                      style="padding:10px; font-size:large; width:100%;"
                      class="bg-info"

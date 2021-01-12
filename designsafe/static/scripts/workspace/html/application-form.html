@@ -2,9 +2,9 @@
     <div class="jumbotron">
         <h1>Select an app</h1>
         <p>Select an application from the tray above.</p>
-        <p> The <em>Workspace</em> allows users to perform simulations and analyze 
-            data using popular simulation codes including OpenSees, ADCIRC, and OpenFOAM, 
-            as well as data analysis and visualization tools including Jupyter, MATLAB, 
+        <p> The <em>Tools & Applications</em> space allows users to perform simulations and analyze
+            data using popular simulation codes including OpenSees, ADCIRC, and OpenFOAM,
+            as well as data analysis and visualization tools including Jupyter, MATLAB,
             Paraview and VisIt.
         </p>
     </div>
@@ -47,7 +47,7 @@
     <div class="lead alert alert-warning" ng-if="data.systemDown">
         <h2>Application Unavailable</h2>
         <p>
-            This application's execution system ({{data.app.executionSystem}}) is not currently accepting requests. Please try again later, 
+            This application's execution system ({{data.app.executionSystem}}) is not currently accepting requests. Please try again later,
             or submit a ticket for assistance.
         </p>
     </div>
@@ -70,7 +70,7 @@
           sf-model="form.model"
           sf-options="{ supressPropertyTitles: true }"
           ng-submit="!data.submitting && onSubmit(appForm)"></form>
-    
+
     <!-- error message for when form is invalid -->
     <div ng-if="data.formValid === false">
         Please enter a value for all required fields, shown in red above.
