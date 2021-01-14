@@ -300,6 +300,7 @@ class Project(MetadataModel):
                 "@type": "CreativeWork",
                 "license": ""
             },
+            "hasPart":[],
             "publisher": {
                 "@type": "Organization",
                 "name": "Designsafe-CI"
@@ -338,12 +339,15 @@ class Project(MetadataModel):
         dataset_json['author'] = generate_creators(authors)
         try:
             pub = IndexedPublication.from_id(self.project_id) 
-            dataset_json['license'] = generate_licenses(pub)
+            dataset_json['hasPart'] = generate_licenses(pub)
+            dataset_json['license'] = dataset_json['hasPart'][0]["url"]
         except (DocumentNotFound, AttributeError):
             pass
         try:
             pub = IndexedPublicationLegacy.from_id(self.project_id)
-            dataset_json['license'] = generate_licenses(pub)
+            dataset_json['hasPart'] = generate_licenses(pub)
+            dataset_json['license'] = dataset_json['hasPart'][0]["url"]
+
         except DocumentNotFound:
             pass
 
@@ -471,25 +475,40 @@ def generate_licenses(pub):
     url = []
     license_type = []
     if pub.licenses.datasets == "Open Data Commons Attribution":
-        url = "https://opendatacommons.org/licenses/by/1-0/"
-        license_type = pub.licenses.datasets
-    elif pub.licenses.datasets == "Open Data Commons Public Domain Dedication":
-        url = "https://opendatacommons.org/licenses/pddl/1-0/"
-        license_type = pub.licenses.datasets
-    elif pub.licenses.works == "Creative Commons Attribution Share Alike":
-        url = "https://creativecommons.org/licenses/by/4.0/"
-        license_type = pub.licenses.works
-    elif pub.licenses.works == "Creative Commons Public Domain Dedication":
-        url = "https://creativecommons.org/publicdomain/zero/1.0/"
-        license_type = pub.licenses.works
-    elif pub.licenses.software == "GNU General Public License":
-        url = "http://www.gnu.org/licenses/gpl.html"
-        license_type = pub.licenses.software
-    license_details = {
-        "@type": "CreativeWork",
-        "license": license_type,
-        "url": url
-    }
+        license_details.append({
+            "@type": "Dataset",
+            "url": "https://opendatacommons.org/licenses/by/1-0/",
+            "description": pub.project.value.description,
+            "license": pub.licenses.datasets
+        })
+    if pub.licenses.datasets == "Open Data Commons Public Domain Dedication":
+        license_details.append({
+            "@type": "Dataset",
+            "url": "https://opendatacommons.org/licenses/pddl/1-0/",
+            "description": pub.project.value.description,
+            "license": pub.licenses.datasets
+        })
+    if pub.licenses.works == "Creative Commons Attribution Share Alike":
+        license_details.append({
+            "@type": "CreativeWork",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "description": pub.project.value.description,
+            "license": pub.licenses.works
+        })
+    if pub.licenses.works == "Creative Commons Public Domain Dedication":
+        license_details.append({
+            "@type": "CreativeWork",
+            "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "description": pub.project.value.description,
+            "license": pub.licenses.works
+        })
+    if pub.licenses.software == "GNU General Public License":
+        license_details.append({
+            "@type": "CreativeWork",
+            "url": "http://www.gnu.org/licenses/gpl.html",
+            "description": pub.project.value.description,
+            "license": pub.licenses.software
+        })
     return license_details
 
 def _process_authors(authors):
