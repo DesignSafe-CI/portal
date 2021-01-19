@@ -98,10 +98,10 @@ def resource_unconnected_handler(api):
 
 def resource_expired_handler(api):
     if api == 'googledrive':
-        message = 'While you previously granted this application access to Dropbox, ' \
+        message = 'While you previously granted this application access to Google Drive, ' \
             'that grant appears to be no longer valid. Please ' \
-            '<a href="%s">disconnect and reconnect your Dropbox.com account</a> ' \
-            'to continue using Dropbox data.' % reverse('dropbox_integration:index')
+            '<a href="%s">disconnect and reconnect your Google Drive account</a> ' \
+            'to continue using Google Drive data.' % reverse('googledrive_integration:index')
         return ApiException(status=403, message=message)
     if api == 'dropbox':
         message = 'While you previously granted this application access to Dropbox, ' \
