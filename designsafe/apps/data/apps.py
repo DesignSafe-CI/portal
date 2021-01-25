@@ -24,6 +24,12 @@ class DataConfig(AppConfig):
                                           http_auth=settings.ES_AUTH,
                                           max_retries=3,
                                           retry_on_timeout=True,
+                                          use_ssl=True,
+                                          sniff_on_start=True,
+                                          # refresh nodes after a node fails to respond
+                                          sniff_on_connection_fail=True,
+                                          # and also every 60 seconds
+                                          sniffer_timeout=60
                                           )
         except AttributeError as exc:
             logger.error('Missing ElasticSearch config. %s', exc)
@@ -52,4 +58,3 @@ class DataConfig(AppConfig):
         from designsafe.apps.data.models.agave.base import set_lazy_rels
         set_lazy_rels()
         super(DataConfig, self).ready()
-
