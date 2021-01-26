@@ -1,0 +1,26 @@
+<div class="pipeline-nav">
+    <a ng-click="$ctrl.goStart()">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+    <button class="btn btn-small btn-add" ng-click="$ctrl.goVersionChanges()">Continue</button>
+</div>
+<div class="pipeline-page">
+    <div class="pipeline-header">
+        <h3>Version Selection</h3>
+        If you need help, attend <a href="/learning-center/training/" target="_blank">curation office hours</a>.
+        <div ng-if="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+    </div>
+    <div ng-if="!$ctrl.ui.loading">
+        <ul>
+            <li>Select what files you want in the new version.</li>
+            <li>The new version will only include the files selected here, so select any previously published files that you still want in the new version.</li>
+        </ul>
+        <div class="pipeline-section">
+            <label>[File Listing]</label>
+        </div>
+    </div>
+</div>
