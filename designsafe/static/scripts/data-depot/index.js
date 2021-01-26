@@ -300,6 +300,42 @@ function config(
                 ],
             },
         })
+        .state('projects.pipelineStart', {
+            url: '/projects/{projectId}/curation/start',
+            component: 'pipelineStart',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                }]
+            }
+        })
+        .state('projects.pipelineAmend', {
+            url: '/projects/{projectId}/curation/amend',
+            component: 'pipelineAmend',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                }]
+            }
+        })
+        .state('projects.pipelineVersion', {
+            url: '/projects/{projectId}/curation/version',
+            component: 'pipelineVersion',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                }]
+            }
+        })
+        .state('projects.pipelineVersionChanges', {
+            url: '/projects/{projectId}/curation/version',
+            component: 'pipelineVersionChanges',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                }]
+            }
+        })
         .state('projects.pipelineSelectExp', {
             url: '/projects/{projectId}/curation/selection',
             component: 'pipelineSelectExp',
