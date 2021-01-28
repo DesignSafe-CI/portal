@@ -8,7 +8,7 @@
 </div>
 <div class="modal-body">
   <div class="well">
-    <form name='addForm' ng-hide="$ctrl.ui.showEditExperimentForm">
+    <form name='addForm' ng-hide="$ctrl.ui.showEditExperimentForm" autocomplete="off">
       <!-- Title -->
       <div class="expTitle form-group">
         <label>
@@ -38,6 +38,7 @@
                     ng-model="$ctrl.form.addExperiments[0].procedureStart"
                     is-open="isStartOpen"
                     placeholder="mm-dd-yyyy"
+                    autocomplete="chrome-off"
                     datepicker-options="dateOptions"
                     date-disabled="disabled(date, mode)"
                     ng-required="true"
@@ -58,6 +59,7 @@
                     ng-model="$ctrl.form.addExperiments[0].procedureEnd"
                     is-open="isEndOpen"
                     placeholder="mm-dd-yyyy"
+                    autocomplete="chrome-off"
                     datepicker-options="dateOptions"
                     date-disabled="disabled(date, mode)"
                     ng-required="false"
@@ -180,7 +182,7 @@
         </div>
       </div>
     </form>
-    <form name='editForm' ng-show="$ctrl.ui.showEditExperimentForm">
+    <form name='editForm' ng-show="$ctrl.ui.showEditExperimentForm" autocomplete="off">
         <!-- Edit Title -->
         <div class="expTitle form-group">
           <label>
@@ -210,6 +212,7 @@
                       ng-model="$ctrl.editExpForm.start"
                       is-open="isStartOpen"
                       placeholder="{{$ctrl.editExpForm.start | date:'MM-dd-yyyy'}}"
+                      autocomplete="chrome-off"
                       datepicker-options="dateOptions"
                       date-disabled="disabled(date, mode)"
                       ng-required="true"
@@ -230,6 +233,7 @@
                       ng-model="$ctrl.editExpForm.end"
                       is-open="isEndOpen"
                       placeholder="{{$ctrl.editExpForm.end ? ($ctrl.editExpForm.end | date:'MM-dd-yyyy') : 'mm-dd-yyyy'}}"
+                      autocomplete="chrome-off"
                       datepicker-options="dateOptions"
                       date-disabled="disabled(date, mode)"
                       ng-required="false"

@@ -116,15 +116,19 @@ class PublishedViewCtrl {
             if (typeof this.browser.publication.reports != 'undefined') {
                 this.browser.publication.reports.forEach(this.getFileObjs);
             }
-
-            this.browser.publication.hybrid_simulations.forEach(this.getFileObjs);
+            if (typeof this.browser.publication.coordinator_outputs != 'undefined') {
+                this.browser.publication.coordinator_outputs.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.exp_outputs != 'undefined') {
+                this.browser.publication.exp_outputs.forEach(this.getFileObjs);
+            }
+            if (typeof this.browser.publication.sim_outputs != 'undefined') {
+                this.browser.publication.sim_outputs.forEach(this.getFileObjs);
+            }
             this.browser.publication.global_models.forEach(this.getFileObjs);
             this.browser.publication.coordinators.forEach(this.getFileObjs);
-            this.browser.publication.coordinator_outputs.forEach(this.getFileObjs);
             this.browser.publication.exp_substructures.forEach(this.getFileObjs);
-            this.browser.publication.exp_outputs.forEach(this.getFileObjs);
             this.browser.publication.sim_substructures.forEach(this.getFileObjs);
-            this.browser.publication.sim_outputs.forEach(this.getFileObjs);
         } else if (this.browser.publication.project.value.projectType === 'field_recon') {
             if (typeof this.browser.publication.analysiss != 'undefined') {
                 this.browser.publication.analysiss.forEach(this.getFileObjs);
@@ -172,7 +176,7 @@ class PublishedViewCtrl {
             });
         }
         if (this.project.value.projectType === 'hybrid_simulation'){
-            this.browser.project.hybridsimlation_set = this.browser.publication.hybrid_simulations;
+            this.browser.project.hybridsimulation_set = this.browser.publication.hybrid_simulations;
             this.browser.project.globalmodel_set = this.browser.publication.global_models;
             this.browser.project.coordinator_set = this.browser.publication.coordinators;
             this.browser.project.simsubstructure_set = this.browser.publication.sim_substructures;
@@ -182,7 +186,7 @@ class PublishedViewCtrl {
             this.browser.project.expoutput_set = this.browser.publication.exp_outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
-            this.hsDOIList = this.browser.project.hybridsimlation_set.map(({ doi, uuid }) => ({
+            this.hsDOIList = this.browser.project.hybridsimulation_set.map(({ doi, uuid }) => ({
                 value: doi,
                 uuid,
                 hash: `details-${uuid}`,

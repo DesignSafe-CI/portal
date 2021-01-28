@@ -63,6 +63,12 @@
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
+            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumbers | orderBy:'order' track by $index"
+                ng-if="$ctrl.readOnly">
+                <td ng-if="$first">Awards</td>
+                <td ng-if="!$first"></td>
+                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+            </tr>
             <tr ng-repeat="doi in $ctrl.hsDOIList">
                 <td ng-if="$first">DOI(s) in Dataset</td>
                 <td ng-if="!$first"></td>
@@ -148,7 +154,6 @@
             <i class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
-    
     <!-- Project Reports -->
     <div ng-if="$ctrl.matchingGroup(hybsim, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
@@ -171,10 +176,7 @@
             </div>
         </div>
     </div>
-
-
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
-        
         <breadcrumb
         path="$ctrl.breadcrumbParams.path"
         system="$ctrl.FileListingService.listings.main.params.path"
@@ -188,7 +190,7 @@
             on-browse="$ctrl.onBrowse(file)"
         >&nbsp;</files-listing>
     </div>
-    <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
+    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
             <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}" style="width:100%;">
                 <div class="collapse-tab">
