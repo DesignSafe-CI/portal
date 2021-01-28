@@ -18,7 +18,7 @@ class DataConfig(AppConfig):
 
     def ready(self):  # pylint:disable=too-many-locals
         """Run stuff when app is ready."""
-        enable_sniffing = (not settings.DEBUG)
+        enable_sniffing = (not settings.DESIGNSAFE_ENVIRONMENT == 'dev')
         try:
             connections.create_connection('default',
                                           hosts=settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
