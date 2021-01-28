@@ -69,7 +69,7 @@ class PublicationPreviewSimCtrl {
             this.ProjectService.getPiData({
                 pi: project.value.pi,
                 coPis: project.value.coPis
-            }).subscribe(x => {
+            }).then(x => {
                 this.ui.loadingUsers = false;
                 this.piMap = x;
             })

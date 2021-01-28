@@ -65,11 +65,11 @@ class PublicationPreviewHybSimCtrl {
                 });
                 this.ProjectService.getPiData({
                     pi: project.value.pi,
-                    coPis: project.value.coPis
-                }).subscribe(x => {
+                    coPis: project.value.coPis,
+                }).then(x => {
                     this.ui.loadingUsers = false;
                     this.piMap = x;
-                })
+                });
             });
     }
 

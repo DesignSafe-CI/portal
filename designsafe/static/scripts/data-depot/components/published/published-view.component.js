@@ -78,7 +78,7 @@ class PublishedViewCtrl {
         this.ProjectService.getPiData({
             pi: this.publication.project.value.pi,
             coPis: this.publication.project.value.coPis
-        }).subscribe(x => {
+        }).then(x => {
             this.ui.loadingUsers = false;
             this.piMap = x;
         })

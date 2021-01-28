@@ -106,7 +106,9 @@ export class ProjectService {
     }
 
     getPiData(piMap) {
-        const obs = [piMap.pi, ...piMap.coPis].map(u =>
+        const hasCoPis = piMap.coPis && piMaps.coPis.length
+        const arr = hasCoPis ? [piMap.pi, ...piMap.coPis] : [piMap.pi]
+        const obs = arr.map(u =>
             from(this.UserService.get(u))
                 .pipe(
                     map(
@@ -124,7 +126,7 @@ export class ProjectService {
                     const piData = values.find(v => v.name === piMap.pi);
                     const map = {
                         pi: piData,
-                        coPis: piMap.coPis.map(coPi => values.find(v => v.name === coPi))
+                        coPis: hasCoPis ? piMaps.coPis.map(coPi => values.find(v => v.name === coPi)) : []
                     }
                     return map;
                 }
@@ -139,7 +141,7 @@ export class ProjectService {
             formattedName: `${obj['last_name']}, ${obj['first_name']}`,
             orcid: obj['orcid_id'] ? obj['orcid_id'] : null
         })
-        return fork
+        return fork.toPromise();
     }
 
     listProjects({ section, offset, limit, query_string }) {
