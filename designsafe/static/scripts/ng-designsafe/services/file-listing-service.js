@@ -1,5 +1,5 @@
 import { Subject, Observable, from, of, forkJoin, race } from 'rxjs';
-import { map, tap, take, catchError } from 'rxjs/operators';
+import { map, tap, take, catchError, delay } from 'rxjs/operators';
 import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
 import { uuid } from 'uuidv4';
 
@@ -9,6 +9,7 @@ export class FileListingService {
         $uibModal,
         $rootScope,
         $q,
+        $timeout,
         ProjectService,
         ProjectEntitiesService,
         FileOperationService,
@@ -21,6 +22,7 @@ export class FileListingService {
         this.Django = Django;
         this.$q = $q;
         this.$http = $http;
+        this.$timeout = $timeout;
         this.ProjectService = ProjectService;
         this.FileOperationService = FileOperationService;
         this.ProjectEntitiesService = ProjectEntitiesService;
@@ -181,7 +183,7 @@ export class FileListingService {
         this.listings[section].listing[idx].selected = !this.listings[section].listing[idx].selected;
         const selectedFiles = this.listings[section].listing.filter((f) => f.selected);
         this.listings[section].selectedFiles = selectedFiles;
-        /* If there are multiple listings per page (e.g. abstract listings) the 
+        /* If there are multiple listings per page (e.g. abstract listings) the
         other listings must be considered when updating tests. */
         const allSelected = Object.keys(this.listings)
             .map((key) => this.listings[key].selectedFiles)
@@ -190,7 +192,7 @@ export class FileListingService {
     }
 
     /**
-     * Select or deselect all files in a given section. 
+     * Select or deselect all files in a given section.
      * @param {string} section Section ('main', 'modal') to target.
      * @param {boolean} setValue If true, select all. If false, deselect all.
      */
@@ -199,7 +201,7 @@ export class FileListingService {
         this.listings[section].selectAll = _setValue;
         this.listings[section].listing = this.listings[section].listing.map((f) => ({ ...f, selected: _setValue }));
         this.listings[section].selectedFiles = this.listings[section].listing.filter((f) => f.selected);
-        /* If there are multiple listings per page (e.g. abstract listings) the 
+        /* If there are multiple listings per page (e.g. abstract listings) the
         other listings must be considered when updating tests. */
         const allSelected = Object.keys(this.listings)
             .map((key) => this.listings[key].selectedFiles)
@@ -475,7 +477,7 @@ export class FileListingService {
     ***************************************************************************/
 
     /**
-     * Return a list of ProjectEntityModel objects for each entity 
+     * Return a list of ProjectEntityModel objects for each entity
      * associated with a given file.
      * @param {string} path Path to the file.
      * @param {Object[]} entities Array of ProjectEntityModel objects.
@@ -529,28 +531,36 @@ export class FileListingService {
     }
 
     /**
-     * 
+     *
      * @param {Object} params
      * @param {Object} entitiesPerPath Object with file paths as keys and arrays of entities as values.
      * @param {string} system System to list in
      * @param {string} path Path to list in.
      * @param {number} offset Listing offset.
      * @param {number} limit Number of results to return.
+     * @param {number} delayTime Time to delay execution of the request (for throttling)
      */
-    mapParamsToAbstractListing({ entitiesPerPath, system, path, offset, limit }) {
+    mapParamsToAbstractListing({ entitiesPerPath, system, path, offset, limit, delayTime }) {
         const listingUrl = this.removeDuplicateSlashes(`/api/datafiles/agave/private/listing/${system}/${path}/`);
-        const request = this.$http.get(listingUrl, {
-            params: { offset, limit },
-        });
+        const request = this.$timeout(
+            () =>
+                this.$http.get(listingUrl, {
+                    params: { offset, limit },
+                }),
+            delayTime
+        );
 
-        const listingObservable$ = from(request).pipe(tap(this.abstractListingSuccessCallback(entitiesPerPath)));
+        const listingObservable$ = from(request).pipe(
+            tap(this.abstractListingSuccessCallback(entitiesPerPath)),
+            catchError(() => {})
+        );
         return listingObservable$;
     }
 
     /**
-     * Callback for successful abstract listing. On success, add listed files to 
+     * Callback for successful abstract listing. On success, add listed files to
      * the abstract listing for each associated entity.
-     * @param {Object} entityMapping Object with file paths as keys and arrays of entities as values. 
+     * @param {Object} entityMapping Object with file paths as keys and arrays of entities as values.
      */
     abstractListingSuccessCallback(entityMapping) {
         return (resp) => {
@@ -568,10 +578,10 @@ export class FileListingService {
     }
 
     /**
-     * Perform an abstract listing given a set of entities. This will create a 
+     * Perform an abstract listing given a set of entities. This will create a
      * new listing section for each entity and populate it with the files associated
      * to that entity.
-     * @param {Object[]} entities Array of ProjectEntityModel objects. 
+     * @param {Object[]} entities Array of ProjectEntityModel objects.
      * @param {string} projectId projectId of project containing the entities.
      * @param {number} offset Offset to pass to Agave.
      * @param {number} limit Limit to pass to Agave.
@@ -597,20 +607,22 @@ export class FileListingService {
 
         let reducedPaths = { files: allPaths, directories: [...new Set(listingPaths)] };
 
-        const abstractListings = reducedPaths.directories.map((path) =>
+        const abstractListings = reducedPaths.directories.map((path, idx) =>
             this.mapParamsToAbstractListing({
                 entitiesPerPath,
                 system: 'project-' + projectId,
                 path,
                 offset,
                 limit,
+                // Send 5 requests at a time with 0.5-second delay between bunches
+                delayTime: Math.floor(idx / 5.0) * 500,
             })
         );
-        
+
         // forkJoin doesn't emit when passed an empty array so we need to return
         // early if there are no listings to perform.
-        if(!abstractListings.length) {
-            return this.$q(resolve => resolve(null))
+        if (!abstractListings.length) {
+            return this.$q((resolve) => resolve(null));
         }
 
         const abstractListingsObservable$ = forkJoin(abstractListings);
@@ -622,8 +634,8 @@ export class FileListingService {
 
     /**
      * Set the selectedForPublication tag on a listing.
-     * @param {string} section 
-     * @param {boolean} valueToSet 
+     * @param {string} section
+     * @param {boolean} valueToSet
      */
     setPublicationSelection(section, valueToSet) {
         this.listings[section].selectedForPublication = valueToSet;
@@ -635,11 +647,11 @@ export class FileListingService {
     clearPublicationSelections() {
         Object.keys(this.listings).forEach((key) => {
             this.listings[key].selectedForPublication = false;
-        })
+        });
     }
 
     /**
-     * Perform an abstract listing for a publication. This will create a new listing 
+     * Perform an abstract listing for a publication. This will create a new listing
      * section for each entity and populate it with the files associated to that
      * entity.
      * @param {Object} publication Publication to list under.
