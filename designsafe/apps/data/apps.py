@@ -18,12 +18,19 @@ class DataConfig(AppConfig):
 
     def ready(self):  # pylint:disable=too-many-locals
         """Run stuff when app is ready."""
+        enable_sniffing = (not settings.DESIGNSAFE_ENVIRONMENT == 'dev')
         try:
             connections.create_connection('default',
                                           hosts=settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
                                           http_auth=settings.ES_AUTH,
                                           max_retries=3,
                                           retry_on_timeout=True,
+                                          use_ssl=enable_sniffing,
+                                          sniff_on_start=enable_sniffing,
+                                          # refresh nodes after a node fails to respond
+                                          sniff_on_connection_fail=enable_sniffing,
+                                          # and also every 60 seconds
+                                          sniffer_timeout=60
                                           )
         except AttributeError as exc:
             logger.error('Missing ElasticSearch config. %s', exc)
@@ -52,4 +59,3 @@ class DataConfig(AppConfig):
         from designsafe.apps.data.models.agave.base import set_lazy_rels
         set_lazy_rels()
         super(DataConfig, self).ready()
-
