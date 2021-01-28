@@ -448,8 +448,7 @@ export class PublishedDataCtrl {
         this.$uibModal.open({
             component: 'publicationDownloadModal',
             resolve: {
-                publication: () => {return this.browser.publication;},
-                mediaUrl: () => {return this.browser.listing.mediaUrl();},
+                publication: () => {return this.browser.publication;}
             },
             size: 'lg'
         });

@@ -8,7 +8,7 @@
 </div>
 <div class="modal-body">
     <div class="well">
-        <ng-form name="addForm" data-ng-hide="$ctrl.ui.showEditCollectionForm">
+        <ng-form name="addForm" data-ng-hide="$ctrl.ui.showEditCollectionForm" autocomplete="off">
             <div class="collection-type form-group">
                 <div style="padding-bottom: 10px;">
                     <label for="id-type">
@@ -201,6 +201,7 @@
                             data-ng-model="$ctrl.form.dateStart"
                             data-is-open="isStartOpen"
                             placeholder="mm-dd-yyyy"
+                            autocomplete="chrome-off"
                             data-date-picker-options="dateOptions"
                             data-date-disabled="disabled(date, mode)"
                             data-ng-required="true"
@@ -223,6 +224,7 @@
                             data-ng-model="$ctrl.form.dateEnd"
                             data-is-open="isEndOpen"
                             placeholder="mm-dd-yyyy"
+                            autocomplete="chrome-off"
                             data-date-picker-options="dateOptions"
                             data-date-disabled="disabled(date, mode)"
                             data-ng-required="false"
