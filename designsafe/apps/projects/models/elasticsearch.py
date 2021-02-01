@@ -68,6 +68,7 @@ class IndexedProject(Document):
             'nhLocation': Text(fields={'_exact': Keyword()}),
             'nhLatitude': Text(fields={'_exact': Keyword()}),
             'nhLongitude': Text(fields={'_exact': Keyword()}),
+            'fr_types': Text(fields={'_exact': Keyword()}, multi=True),
 
             'coPis': Text(fields={'_exact': Keyword()}, multi=True),
             'projectType': Text(fields={'_exact': Keyword()}, analyzer='english'),
