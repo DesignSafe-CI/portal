@@ -1,5 +1,21 @@
 # DesignSafe-CI Portal Release Notes
 
+
+## v5.1.2
+Fixes:
+- Render awards correctly on published Hybrid Simulations
+- Fix alignment in Project Entity tree and support old entity types
+- Disable autocomplete for date and username inputs in forms
+- Throttle abstract listing requests and handle exceptions
+- Add license URLs to Google Dataset metadata tags
+- Fix a bug preventing legacy publication files from being downloaded
+- Correct a message prompting users to connect their Google Drive accounts
+Enhancements:
+- Add “Natural Hazard Event” and “Field Research Type” fields to projects
+- Add support for previewing .do files.
+- Reduce loading times for Search and Publications
+
+
 ## v5.1.1
 Fixes:
 - Fix a bug prevening Hybrid Simulation projects from displaying correctly.
