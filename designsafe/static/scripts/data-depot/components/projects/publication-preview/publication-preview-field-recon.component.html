@@ -44,11 +44,30 @@
                 <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
                     {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}
                 </td>
-                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">Field Research</td>
+                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
+                    Field Research
+                    <span ng-if="$ctrl.browser.project.value.frTypes.length">
+                        |
+                        <span ng-repeat="frType in $ctrl.browser.project.value.frTypes">
+                            <span ng-if="!$last">{{ frType }},</span>
+                            <span ng-if="$last">{{ frType }}</span>
+                        </span>
+                    </span>
+                </td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
+            </tr>
+            <tr class="prj-row"
+                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes.length">
+                <td>Natural Hazard Type</td>
+                <td class="prj-data">
+                    <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
+                        <span ng-if="!$last">{{ nhtype }},</span>
+                        <span ng-if="$last">{{ nhtype }}</span>
+                    </span>
+                </td>
             </tr>
             <!-- FR -->
             <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
@@ -65,16 +84,6 @@
                         rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLatitude">
                         Lat {{ $ctrl.browser.project.value.nhLatitude }} Long {{ $ctrl.browser.project.value.nhLongitude }}
                     </a>
-                </td>
-            </tr>
-            <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes.length">
-                <td>Event Type</td>
-                <td class="prj-data">
-                    <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
-                        <span ng-if="!$last">{{ nhtype }},</span>
-                        <span ng-if="$last">{{ nhtype }}</span>
-                    </span>
                 </td>
             </tr>
             <!-- FR -->

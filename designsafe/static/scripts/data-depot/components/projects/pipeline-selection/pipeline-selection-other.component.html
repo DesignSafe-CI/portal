@@ -56,19 +56,19 @@
         </p>
     </div>
         <!-- Files -->
-        <div ng-show="$ctrl.ui.loading">
+        <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
-        <div class="well" style="margin-bottom: 20px;" ng-hide="$ctrl.ui.loading || !$ctrl.selectedListing">
+        <div class="well" style="margin-bottom: 20px;" ng-if="!$ctrl.ui.loading && $ctrl.selectedListing">
             <h4>These files will be published:</h4>
             <files-listing listing=$ctrl.selectedListing show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
         </div>
-        <div ng-hide="$ctrl.ui.loading" style="text-align: center;">
+        <div ng-if="!$ctrl.ui.loading" style="text-align: center;">
             <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
         </div>
-        <div ng-hide="$ctrl.ui.loading">
+        <div ng-if="!$ctrl.ui.loading">
             <breadcrumb
             path="$ctrl.FileListingService.listings.main.params.path"
             system="$ctrl.FileListingService.listings.main.params.path"
