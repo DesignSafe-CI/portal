@@ -1,5 +1,8 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.1.3
+Fixes:
+- Fix name order in publication listings.
 
 ## v5.1.2
 Fixes:

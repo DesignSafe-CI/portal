@@ -16,7 +16,7 @@ def _get_user_by_username(hit, username):
     if not users:
         try:
             user_obj = get_user_model().objects.get(username=username)
-            return "{}, {}".format(user_obj.first_name, user_obj.last_name)
+            return "{}, {}".format(user_obj.last_name, user_obj.first_name)
         except:
             return username
     user = next(_user for _user in users if _user['username'] == username)
