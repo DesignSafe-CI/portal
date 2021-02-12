@@ -1,7 +1,5 @@
-body {
-  /* background-image: url(../images/Map-BG.jpg);
-  background-repeat: no-repeat;
-  background-size: 100% auto; */
+body, html {
+  background-color: #ffffff;
 }
 
 body.navbar-fixed {
@@ -940,4 +938,11 @@ li .popover.right {
 
 .o-site__body > .container-fluid {
   margin: 0 30px;
+}
+
+.bg-image-5ysp {
+  background-image: url(../images/muhry_northamerica-blue@2x.png);
+}
+.bg-image-gs {
+  background-image:url(../images/muhry_northamerica-Green@2x.png);
 }
