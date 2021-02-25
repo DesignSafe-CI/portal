@@ -8,6 +8,7 @@ class PipelineSelectionCtrl {
     constructor(
         ProjectEntitiesService,
         ProjectService,
+        PublicationService,
         FileListingService,
         FileOperationService,
         $state,
@@ -17,6 +18,7 @@ class PipelineSelectionCtrl {
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
+        this.PublicationService = PublicationService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
         this.browser = {};
@@ -34,17 +36,23 @@ class PipelineSelectionCtrl {
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
             loading: true,
+            published: false
         };
 
         this.$q
             .all([
                 this.ProjectService.get({ uuid: this.projectId }),
-                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }),
+                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
             ])
             .then(([project, entities]) => {
                 this.browser.project = project;
                 this.browser.project.appendEntitiesRel(entities);
                 this.prepProject();
+                this.PublicationService.getPublished(this.browser.project.value.projectId).then((published) => {
+                    if (published.data.project) {
+                        this.ui.published = true;
+                    }
+                });
                 this.FileListingService.abstractListing(entities, project.uuid).then((_) => {
                     this.ui.loading = false;
                 });

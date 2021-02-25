@@ -75,6 +75,18 @@
                 </div>
             </div>
         </div>
+        <div ng-if="$ctrl.ui.published">
+            <div class="alert alert-warning-flex">
+                <i class="fa fa-exclamation-triangle fa-2x"></i>
+                <div>
+                    If you already published and would like to publish additional data in this same project,
+                    <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+update+to+existing+publication:+{{$ctrl.browser.project.value.projectId}}"
+                    target="_blank">submit a ticket</a>
+                    with the project ID, project title, what you want to publish, and the order of the authors.
+                    Do not continue the Prepare to Publish process or it will overwrite what you have already published.
+                </div>
+            </div>
+        </div>
         <p>
             <h3 style="text-align: center">Select what you want to publish</h3>
             <li>Click "Select this Experiment and all of its files" for each Experiment you want to publish.</li>

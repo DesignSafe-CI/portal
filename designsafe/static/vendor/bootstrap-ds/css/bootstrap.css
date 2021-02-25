@@ -5448,6 +5448,21 @@ a.thumbnail.active {
 .alert-warning .alert-link {
   color: #66512c;
 }
+.alert-warning-flex {
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+  color: #8a6d3b;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.alert-warning-flex div {
+  margin-left: 20px;
+}
+.alert-warning-flex i {
+  margin-left: 10px;
+}
 .alert-danger {
   background-color: #f2dede;
   border-color: #ebccd1;

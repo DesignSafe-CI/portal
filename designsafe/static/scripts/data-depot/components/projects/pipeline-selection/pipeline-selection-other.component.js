@@ -2,10 +2,11 @@ import PipelineSelectionOtherTemplate from './pipeline-selection-other.component
 
 class PipelineSelectionOtherCtrl {
 
-    constructor(ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
+    constructor(ProjectService, PublicationService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectService = ProjectService;
+        this.PublicationService = PublicationService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
         this.browser = {}
@@ -19,6 +20,7 @@ class PipelineSelectionOtherCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.ui = {
             loading: true,
+            published: false
         };
 
         this.selectedListing = null;
@@ -31,10 +33,15 @@ class PipelineSelectionOtherCtrl {
                 scheme: 'private',
                 system: 'project-' + this.projectId,
                 path: this.filePath,
-            }),
+            })
         ]).then(([project, listing]) => {
             this.browser.project = project;
             this.browser.listing = listing;
+            this.PublicationService.getPublished(this.browser.project.value.projectId).then((published) => {
+                if (published.data.project) {
+                    this.ui.published = true;
+                }
+            });
             this.ui.loading = false;
         });
     }
