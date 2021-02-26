@@ -1,7 +1,5 @@
-body {
-  /* background-image: url(../images/Map-BG.jpg);
-  background-repeat: no-repeat;
-  background-size: 100% auto; */
+body, html {
+  background-color: #ffffff;
 }
 
 body.navbar-fixed {
@@ -79,7 +77,8 @@ body.navbar-fixed {
   padding: 0 5em;
   background-image: url(../images/Map-BG.jpg);
   background-size: cover;
-  height: 90px;
+  min-height: 90px;
+  flex-wrap: wrap;
 }
 
 .site-banner-ef {
@@ -87,26 +86,53 @@ body.navbar-fixed {
   padding: 1.5em 5em;
 }
 
-.site-banner-left {
-  margin: auto 0;
-}
-
-.site-banner .logo {
+.site-banner img {
   width: 450px;
 }
 
-@media (max-width: 767px) {
-  .site-banner .logo {
+.site-banner-right {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.social-media-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 50px 0 0;
+}
+
+.social-media-list li {
+    display: inline-block;
+}
+
+.social-media-list img {
+  width: 35px;
+  height: 35px;
+}
+
+.site-banner-right .btn {
+  padding: 2px 8px;
+}
+
+@media (max-width: 1025px) {
+  .site-banner > * {
+    margin: auto;
+  }
+  .social-media-list img {
+    width: 25px;
+    height: 25px;
+  }
+  .site-banner-left img {
     width: 300px;
   }
-}
-
-.site-banner-right {
-  margin: auto 0;
-}
-
-.user-menu .btn {
-  padding: 2px 8px;
+  .site-banner-right {
+    flex-wrap: wrap;
+  }
+  .site-banner-right > * {
+    margin: auto;
+  }
 }
 
 .tagline {
@@ -128,12 +154,6 @@ body.navbar-fixed {
   font-size: 20px;
 }
 
-@media (min-width: 768px) and (max-width: 991px) {
-  .site-banner-right {
-    margin-right: -1px
-  }
-}
-
 @media (min-width: 768px) {
   .tagline {
     text-align: right;
@@ -146,18 +166,8 @@ body.navbar-fixed {
 }
 
 @media (max-width: 767px) {
-  .site-banner {
-    flex-direction: column;
-  }
-
   .tagline {
     text-align: center;
-  }
-
-  .user-menu {
-    text-align: center;
-    margin: 0;
-    order: 1;
   }
 }
 
@@ -928,4 +938,11 @@ li .popover.right {
 
 .o-site__body > .container-fluid {
   margin: 0 30px;
+}
+
+.bg-image-5ysp {
+  background-image: url(../images/muhry_northamerica-blue@2x.png);
+}
+.bg-image-gs {
+  background-image:url(../images/muhry_northamerica-Green@2x.png);
 }
