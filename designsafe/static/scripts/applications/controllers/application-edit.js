@@ -1868,7 +1868,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                                             if (appCategories.includes(appCategory)) {
                                                                                 app.appCategory = appCategory;
                                                                             } else if (appCategory == 'Data Collections') {
-                                                                                app.appCategory = 'Partner Data Apps';
+                                                                                app.appCategory = 'Hazard Apps';
                                                                             }
                                                                             if (app.appCategory) {
                                                                                 app.tags.splice(app.tags.indexOf(app.tags.filter(s => s.includes('appCategory'))[0]));
@@ -1986,7 +1986,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                             if (appCategories.includes(appCategory)) {
                                 app.appCategory = appCategory;
                             } else if (appCategory == 'Data Collections') {
-                                app.appCategory = 'Partner Data Apps';
+                                app.appCategory = 'Hazard Apps';
                             }
                             if (app.appCategory) {
                                 app.tags.splice(app.tags.indexOf(app.tags.filter(s => s.includes('appCategory'))[0]));
