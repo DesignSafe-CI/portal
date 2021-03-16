@@ -105,7 +105,7 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
                             if (appCategory in appsByCategory) {
                                 appsByCategory[appCategory].push(appMeta);
                             } else if (appCategory == 'Data Collections') {
-                                appsByCategory['Partner Data Apps'].push(appMeta);
+                                appsByCategory['Hazard Apps'].push(appMeta);
                             } else {
                                 // If App has no category, place in Simulation tab
                                 appsByCategory['Simulation'].push(appMeta);
