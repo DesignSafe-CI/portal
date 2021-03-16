@@ -106,7 +106,7 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
                                 appsByCategory[appCategory].push(appMeta);
                             } else if (appCategory === 'Data Collections' || appCategory === 'Partner Data Apps') {
                                 app.appCategory = 'Hazard Apps';
-                            } else if (appCategory == 'Data Processing') {
+                            } else if (appCategory === 'Data Processing') {
                                 app.appCategory = 'Analysis';
                             } else {
                                 // If App has no category, place in Simulation tab

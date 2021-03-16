@@ -1869,7 +1869,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                                                                 app.appCategory = appCategory;
                                                                             } else if (appCategory === 'Data Collections' || appCategory === 'Partner Data Apps') {
                                                                                 app.appCategory = 'Hazard Apps';
-                                                                            } else if (appCategory == 'Data Processing') {
+                                                                            } else if (appCategory === 'Data Processing') {
                                                                                 app.appCategory = 'Analysis';
                                                                             }
                                                                             if (app.appCategory) {
