@@ -28,6 +28,8 @@ from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.api.publications.operations import save_publication
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
+from designsafe.apps.data.models.elasticsearch import IndexedPublication
+from elasticsearch_dsl import Q
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
 
@@ -62,35 +64,49 @@ class PublicationView(BaseApiView):
             data = request.POST
 
         status = data.get('status', 'saved')
-        pub = save_publication(data['publication'], status)
-        
+        revision = data.get('revision', None)
+
+        project_id = data['publication']['project']['value']['projectId']
+
+        current_revision = None
+        # If revision is truthy, increment the revision count and pass it to the pipeline.
+        if revision:
+            latest_revision = IndexedPublication.max_revision(project_id=project_id)
+            current_revision = latest_revision + 1
+
+        pub = save_publication(data['publication'], status, revision=current_revision)
+
         if data.get('status', 'save').startswith('publish'):
             (
                 tasks.freeze_publication_meta.s(
                     pub.projectId,
-                    data.get('mainEntityUuids')
-                ).set(queue='api') | 
+                    data.get('mainEntityUuids'),
+                    revision=current_revision
+                ).set(queue='api') |
                 group(
                     tasks.save_publication.si(
                         pub.projectId,
-                        data.get('mainEntityUuids')
+                        data.get('mainEntityUuids'),
+                        revision=current_revision
                     ).set(
                         queue='files',
                         countdown=60
                     ),
                     tasks.copy_publication_files_to_corral.si(
-                        pub.projectId
+                        pub.projectId,
+                        revision=current_revision
                     ).set(
                         queue='files',
                         countdown=60
                     )
                 ) |
-                tasks.swap_file_tag_uuids.si(pub.projectId) |
+                tasks.swap_file_tag_uuids.si(pub.projectId, revision=current_revision) |
                 tasks.set_publish_status.si(
                     pub.projectId,
-                    data.get('mainEntityUuids')
+                    data.get('mainEntityUuids'),
+                    revision=current_revision
                 ) |
-                tasks.zip_publication_files.si(pub.projectId) | 
+                tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
                 tasks.email_user_publication_request_confirmation.si(request.user.username)
             ).apply_async()
 
