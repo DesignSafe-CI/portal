@@ -73,15 +73,8 @@ class ProjectViewCtrl {
     return false;
   }
 
-  editProject($event) {
-    if ($event) {
-      $event.preventDefault();
-    }
-    this.ProjectService.editProject(this.browser.project);
-  }
-
-  testManageProject() {
-    let modalInstance = this.$uibModal.open({
+  manageProject() {
+    return this.$uibModal.open({
       component: 'manageProject',
       resolve: {
           project: () => this.browser.project,
@@ -89,7 +82,6 @@ class ProjectViewCtrl {
       backdrop: 'static',
       size: 'lg',
     });
-    return modalInstance;
   }
 
   overview() {

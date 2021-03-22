@@ -48,8 +48,6 @@ import { ProjectTreeComponent } from '../../../projects/components/project-tree/
 import { PublishedCitationComponent } from '../../../projects/components/publication-citation/publication-citation.component.js';
 import { AuthorInformationModalComponent } from './publication-preview/modals/author-information-modal.component';
 import { PublicationDownloadModalComponent } from '../../../projects/components/publication-download/publication-download.component.js';
-// delete EditProjectComponent when finished...
-import { EditProjectComponent } from '../../../projects/components/edit-project/edit-project.component';
 import { ConfirmMessageComponent } from '../../../projects/components/confirm-message/confirm-message.component';
 import { FileCategorySelectorComponent } from '../../../projects/components/file-category-selector/file-category-selector';
 import { FileCategoriesComponent } from '../../../projects/components/file-categories/file-categories.component';
@@ -97,8 +95,6 @@ ddProjectsComponents.component('projectTree', ProjectTreeComponent);
 ddProjectsComponents.component('publishedCitationModal', PublishedCitationComponent);
 ddProjectsComponents.component('authorInformationModal', AuthorInformationModalComponent);
 ddProjectsComponents.component('publicationDownloadModal', PublicationDownloadModalComponent);
-// delete EditProjectComponent when finished...
-ddProjectsComponents.component('editProject', EditProjectComponent);
 ddProjectsComponents.component('confirmMessage', ConfirmMessageComponent);
 ddProjectsComponents.component('fileCategorySelector', FileCategorySelectorComponent);
 ddProjectsComponents.component('fileCategories', FileCategoriesComponent);

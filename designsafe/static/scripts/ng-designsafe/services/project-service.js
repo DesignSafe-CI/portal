@@ -448,23 +448,6 @@ export class ProjectService {
     }
 
     /**
-     * @param {Project} [project]
-     * @return {Promise}
-     * remove this...
-     */
-    editProject(project) {
-        let modalInstance = this.$uibModal.open({
-            component: 'editProject',
-            resolve: {
-                project: () => project,
-            },
-            backdrop: 'static',
-            size: 'lg',
-        });
-        return modalInstance;
-    }
-
-    /**
      *
      * @param options
      * @param {string} options.uuid The Project uuid

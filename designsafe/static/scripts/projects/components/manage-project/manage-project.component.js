@@ -15,6 +15,7 @@ class ManageProjectCtrl {
 
     $onInit() {
         this.ui = {
+            hasType: true,
             loading: true,
             error: null,
         };
@@ -27,14 +28,17 @@ class ManageProjectCtrl {
         if (this.project) {
             if (this.project.value.projectType in this.formDefaults) {
                 this.form = this.formDefaults[this.project.value.projectType];
-            } else {
-                this.form = this.formDefaults.none
             }
-
-            this.form.uuid = this.project.uuid
+            else {
+                this.form = this.formDefaults.new;
+                this.ui.hasType = false;
+            }
+            this.form.uuid = this.project.uuid;
             for (const field in this.project.value) {
                 if (this.project.value[field] && this.project.value[field].length) {
-                    this.form[field] = this.project.value[field];
+                    (['nhEventStart', 'nhEventEnd'].includes(field)
+                    ? this.form[field] = new Date(this.project.value[field])
+                    : this.form[field] = this.project.value[field])
                 }
             }
             const usernames = new Set([
@@ -56,21 +60,76 @@ class ManageProjectCtrl {
                 this.ui.loading = false;
             });
         } else {
-            this.form = this.formDefaults.new;
-            this.ui.loading = false;
+            this.UserService.authenticate().then((creator) => {
+                this.form = this.formDefaults.new;
+                this.form.creator = creator
+                this.ui.loading = false;
+            });
         }
     }
 
-    create(data) {
-        return this.$http.post(`/api/projects/`, data).then((resp) => {
-            return new this.ProjectModel(resp.data);
-        });
+    create() {
+        let data = this.prepareData(false);
+        if (this.missingCreator(data)) {
+            this.confirmMessage().result.then((resp) => {
+                if (!resp) {
+                    this.ui.loading = false;
+                    return
+                }
+                this.$http.post(`/api/projects/`, data).then((resp) => {
+                    let project = resp.data;
+                    this.$state.go(
+                        'projects.view',
+                        {
+                            projectId: project.uuid,
+                            filePath: '/',
+                            projectTitle: project.value.title
+                        },
+                        { reload: true }
+                    );
+                    this.ui.loading = false;
+                    this.close({ $value: project });
+                });
+            });
+        } else {
+            this.$http.post(`/api/projects/`, data).then((resp) => {
+                let project = resp.data;
+                this.$state.go(
+                    'projects.view',
+                    {
+                        projectId: project.uuid,
+                        filePath: '/',
+                        projectTitle: project.value.title
+                    },
+                    { reload: true }
+                );
+                this.ui.loading = false;
+                this.close({ $value: project });
+            });
+        }
     }
 
-    update(uuid, data) {
-        return this.$http.post(`/api/projects/${uuid}/`, data).then((resp) => {
-            return new this.ProjectModel(resp.data);
-        });
+    update() {
+        let data = this.prepareData(true);
+        if (this.missingCreator(data)) {
+            this.confirmMessage().result.then((resp) => {
+                if (!resp) {
+                    this.ui.loading = false;
+                    return
+                }
+                this.$http.post(`/api/projects/${data.uuid}/`, data).then((resp) => {
+                    this.project.value = resp.data.value;
+                    this.ui.loading = false;
+                    this.close({ $value: this.project });
+                });
+            });
+        } else {
+            this.$http.post(`/api/projects/${data.uuid}/`, data).then((resp) => {
+                this.project.value = resp.data.value;
+                this.ui.loading = false;
+                this.close({ $value: this.project });
+            });
+        }
     }
 
     validInputs(objArray, reqKeys, objValue) {
@@ -94,13 +153,13 @@ class ManageProjectCtrl {
         });
     }
 
-    checkInputs() {
+    prepareData(updating) {
         this.ui.loading = true;
         let projectData = {...this.form};
         projectData.pi = this.form.pi.username;
         projectData.coPis = this.validInputs(this.form.coPis, ['username'], 'username');
         projectData.teamMembers = this.validInputs(this.form.teamMembers, ['username'], 'username');
-        if (this.form.uuid) {
+        if (updating) {
             projectData.guestMembers = this.validInputs(this.form.guestMembers, ['fname', 'lname']);
             projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number']);
             projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
@@ -111,48 +170,11 @@ class ManageProjectCtrl {
             if (projectData.projectType === 'field_recon') {
                 projectData.frTypes = this.form.frTypes.filter(type => typeof type === 'string' && type.length);
             }
-
-            /*
-            Bookmark:
-            - Make sure that changing the project type clears all of the meta fields (except the users).
-            - Move update and create methods so that we don't have to check for form uuid here.
-              Revert back to the two save buttons to determine update or create
-            - Keep checkInputs to only checking inputs
-            - Test the creation of a project
-            - Test the change of a project type
-            - Test saving a Field Research project
-            - Test saving an Experimental project
-            - Replace the ProjectService.editProject() calls...
-            */
-
-            this.update(projectData.uuid, projectData).then((project) => {
-                this.project.value = project.value;
-                this.ui.loading = false;
-                this.close({ $value: project });
-            });
-        } else {
-            this.create(projectData).then((project) => {
-                this.$state.go(
-                    'projects.view',
-                    {
-                        projectId: project.uuid,
-                        filePath: '/',
-                        projectTitle: project.value.title
-                    },
-                    { reload: true }
-                );
-                this.ui.loading = false;
-                this.close({ $value: project });
-            });
         }
+        return projectData;
     }
 
-    creatorInProject(data) {
-        let names = [data.pi, 'prjadmin'].concat(data.coPis, data.teamMembers)
-        return names.includes(this.form.creator);
-    }
-
-    projectType(warn) {
+    changeProjectType(warn) {
         this.$uibModal.open({
             component: 'manageProjectType',
             resolve: {
@@ -163,10 +185,32 @@ class ManageProjectCtrl {
         this.close();
     }
 
+    confirmMessage() {
+        return this.$uibModal.open({
+            component: 'confirmMessage',
+            resolve: {
+                message: () => `
+                    You will not have access to this project if you do
+                    not include yourself. Do you want to continue?
+                `,
+            },
+            size: 'sm'
+        });
+    }
+
+    missingCreator(data) {
+        let names = [data.pi, 'prjadmin'].concat(data.coPis, data.teamMembers)
+        return !names.includes(this.form.creator.username);
+    }
+
     searchUsers(q) {
         if (q.length > 2) {
             return this.UserService.search({ q: q });
         }
+    }
+
+    setDate(dateString) {
+        return Date(dateString);
     }
 
     formatSelection(user) {
