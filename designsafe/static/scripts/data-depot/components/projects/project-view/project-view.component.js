@@ -77,7 +77,7 @@ class ProjectViewCtrl {
     return this.$uibModal.open({
       component: 'manageProject',
       resolve: {
-          project: () => this.browser.project,
+        project: () => this.browser.project,
       },
       backdrop: 'static',
       size: 'lg',

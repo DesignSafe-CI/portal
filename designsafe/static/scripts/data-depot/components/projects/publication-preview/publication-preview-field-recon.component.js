@@ -119,14 +119,14 @@ class PublicationPreviewFieldReconCtrl {
 
     manageProject() {
         return this.$uibModal.open({
-          component: 'manageProject',
-          resolve: {
-              project: () => this.browser.project,
-          },
-          backdrop: 'static',
-          size: 'lg',
+            component: 'manageProject',
+            resolve: {
+                project: () => this.browser.project,
+            },
+            backdrop: 'static',
+            size: 'lg',
         });
-      }
+    }
 
     ordered(parent, entities) {
         let order = (ent) => {

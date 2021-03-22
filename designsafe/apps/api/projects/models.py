@@ -153,7 +153,7 @@ class Project(BaseMetadataResource):
             Remember to use :func:`add_collaborator` or :func:`remove_collaborator` respectively.
         '''
         logger.debug('updating project metadata: {"id": "%s", "updates": %s}', self.uuid, kwargs)
-        for key, value in kwargs.items():
+        for key, value in six.iteritems(kwargs):
             camel_key = to_camel_case(key)
             self.value[camel_key] = value
 

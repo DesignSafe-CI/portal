@@ -115,14 +115,14 @@ class PipelineProjectCtrl {
 
     manageProject() {
         return this.$uibModal.open({
-          component: 'manageProject',
-          resolve: {
-              project: () => this.project,
-          },
-          backdrop: 'static',
-          size: 'lg',
+            component: 'manageProject',
+            resolve: {
+                project: () => this.project,
+            },
+            backdrop: 'static',
+            size: 'lg',
         });
-      }
+    }
 
 }
 

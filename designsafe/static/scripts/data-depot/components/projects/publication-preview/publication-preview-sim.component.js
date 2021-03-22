@@ -95,14 +95,14 @@ class PublicationPreviewSimCtrl {
 
     manageProject() {
         return this.$uibModal.open({
-          component: 'manageProject',
-          resolve: {
-              project: () => this.browser.project,
-          },
-          backdrop: 'static',
-          size: 'lg',
+            component: 'manageProject',
+            resolve: {
+                project: () => this.browser.project,
+            },
+            backdrop: 'static',
+            size: 'lg',
         });
-      }
+    }
 
     prepareModal() {
         this.$uibModal.open({

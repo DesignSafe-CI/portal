@@ -315,70 +315,6 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         return JsonResponse(project_dict)
 
     @profile_fn
-    def post_old(self, request, project_id):
-        """
-        This is the old post method for updating project information...
-        :param request:
-        :return:
-        """
-        ag = get_service_account_client()
-
-        if request.is_ajax():
-            post_data = json.loads(request.body)
-        else:
-            post_data = request.POST.copy()
-
-        meta_obj = ag.meta.getMetadata(uuid=project_id)
-        cls = project_lookup_model(meta_obj)
-        logger.info('post_data: %s', post_data)
-        p = cls(value=post_data, uuid=project_id)
-
-        new_pi = post_data.get('pi', p.pi)
-        new_co_pis = post_data.get('coPis', p.co_pis)
-        new_team_members = post_data.get('teamMembers', p.team_members)
-
-        # we need to compare the existing project data with the updated project data
-        if new_pi and new_pi != 'null' and meta_obj.value['pi'] != new_pi:
-            names = list(set(meta_obj.value['teamMembers'] + meta_obj.value['coPis'] + [meta_obj.value['pi']]))
-            updatednames = list(set(new_team_members + new_co_pis + [new_pi]))
-        else:
-            names = list(set(meta_obj.value['teamMembers'] + meta_obj.value['coPis']))
-            updatednames = list(set(new_team_members + new_co_pis))
-
-        add_perm_usrs = [u for u in updatednames if u not in names]
-        rm_perm_usrs = [u for u in names if u not in updatednames]
-
-        # remove permissions for users not on project and add permissions for new members
-        p.manager().set_client(ag)
-        if rm_perm_usrs:
-            if p.pi not in rm_perm_usrs:
-                p._remove_team_members_pems(rm_perm_usrs)
-        if add_perm_usrs:
-            p._add_team_members_pems(add_perm_usrs)
-
-        tasks.check_project_files_meta_pems.apply_async(args=[p.uuid], queue='api')
-        tasks.set_facl_project.apply_async(
-            args=[
-                p.uuid,
-                add_perm_usrs
-            ],
-            queue='api'
-        )
-        tasks.email_collaborator_added_to_project.apply_async(
-            args=[
-                p.project_id,
-                p.uuid,
-                p.title,
-                request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), p.uuid)),
-                add_perm_usrs,
-                []
-            ]
-        )
-
-        p.save(ag)
-        return JsonResponse(p.to_body_dict())
-
-    @profile_fn
     def post(self, request, project_id):
         """
         Update a Project. Projects and the root File directory for a Project should
@@ -451,19 +387,18 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
             ],
             queue='api'
         )
-        # DISABLED FOR TESTING
-        # tasks.email_collaborator_added_to_project.apply_async(
-        #     args=[
-        #         project.project_id,
-        #         project.uuid,
-        #         project.title,
-        #         request.build_absolute_uri(
-        #             '{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project.uuid)
-        #         ),
-        #         add_perm_usrs,
-        #         []
-        #     ]
-        # )
+        tasks.email_collaborator_added_to_project.apply_async(
+            args=[
+                project.project_id,
+                project.uuid,
+                project.title,
+                request.build_absolute_uri(
+                    '{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project.uuid)
+                ),
+                add_perm_usrs,
+                []
+            ]
+        )
         project.save(client)
         return JsonResponse(project.to_body_dict())
 

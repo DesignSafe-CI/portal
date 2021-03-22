@@ -104,14 +104,14 @@ class CurationDirectoryCtrl {
 
     manageProject() {
         return this.$uibModal.open({
-          component: 'manageProject',
-          resolve: {
-              project: () => this.browser.project,
-          },
-          backdrop: 'static',
-          size: 'lg',
+            component: 'manageProject',
+            resolve: {
+                project: () => this.browser.project,
+            },
+            backdrop: 'static',
+            size: 'lg',
         });
-      }
+    }
 
     overview() {
         this.$uibModal.open({

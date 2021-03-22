@@ -3,7 +3,6 @@ import datetime
 import logging
 import six
 import json
-import zipfile
 import os
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
