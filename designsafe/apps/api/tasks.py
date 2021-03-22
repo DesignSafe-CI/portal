@@ -605,7 +605,7 @@ def copy_publication_files_to_corral(self, project_id, revision=None):
 
     os.chmod(prefix_dest, 0o555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0o555)
-    save_to_fedora.apply_async(args=[project_id])
+    save_to_fedora.apply_async(args=[project_id, revision])
     index_path = '/' + project_id
     if revision:
         index_path += 'r{}'.format(revision)
@@ -713,12 +713,12 @@ def set_publish_status(self, project_id, entity_uuids=None, publish_dois=False, 
     )
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
-def save_to_fedora(self, project_id):
+def save_to_fedora(self, project_id, revision=None):
     import requests
     import magic
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication 
     try:
-        pub = BaseESPublication(project_id=project_id)
+        pub = BaseESPublication(project_id=project_id, revision=revision)
         pub.update(status='published')
         _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
         fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'
