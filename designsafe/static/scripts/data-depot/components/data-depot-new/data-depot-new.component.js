@@ -2,12 +2,13 @@ import _ from 'underscore';
 import DataDepotNewTemplate from './data-depot-new.component.html';
 
 class DataDepotNewCtrl {
-  constructor($scope, $rootScope, $state, $sce, Django, ProjectService, FileListingService, FileOperationService) {
+  constructor($scope, $rootScope, $state, $sce, $uibModal, Django, ProjectService, FileListingService, FileOperationService) {
     'ngInject';
     this.$scope = $scope;
     this.$rootScope = $rootScope
     this.$state = $state;
     this.$sce = $sce;
+    this.$uibModal = $uibModal;
     this.Django = Django;
     this.ProjectService = ProjectService;
     this.FileListingService = FileListingService;
@@ -54,7 +55,12 @@ class DataDepotNewCtrl {
 
     createProject($event) {
       if (this.test.createProject) {
-        this.ProjectService.editProject();
+        let modalInstance = this.$uibModal.open({
+          component: 'manageProject',
+          backdrop: 'static',
+          size: 'lg',
+        });
+        return modalInstance;
       } else {
         $event.preventDefault();
         $event.stopPropagation();

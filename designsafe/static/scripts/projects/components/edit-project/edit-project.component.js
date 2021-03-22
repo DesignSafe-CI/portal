@@ -3,11 +3,12 @@ import _ from 'underscore';
 
 class EditProjectCtrl {
 
-    constructor(ProjectService, UserService, httpi, ProjectModel, $uibModal, $state) {
+    constructor(ProjectService, UserService, httpi, $http, ProjectModel, $uibModal, $state) {
         'ngInject';
         this.ProjectService = ProjectService;
         this.UserService = UserService;
         this.httpi = httpi;
+        this.$http = $http;
         this.ProjectModel = ProjectModel;
         this.$uibModal = $uibModal;
         this.$state = $state;
@@ -238,6 +239,7 @@ class EditProjectCtrl {
         this.UserService.authenticate().then((u) => {
             this.form.creator = u;
         });
+        // gotta fix this bullshit
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     }
 
@@ -314,8 +316,11 @@ class EditProjectCtrl {
         this.close();
     }
 
-    savePrj(options) {
-        return this.projectResource.post({ data: options }).then((resp) => {
+    // might need a createProject func
+    savePrj(uuid, data) {
+        return this.$http.post(`/api/projects/${uuid}/`, data).then((resp) => {
+        // return this.projectResource.post({ data: data }).then((resp) => {
+            console.log(resp);
             return new this.ProjectModel(resp.data);
         });
     }
@@ -475,7 +480,7 @@ class EditProjectCtrl {
                 if (!res) {
                     this.ui.busy = false;
                 } else {
-                    this.savePrj(projectData).then((project) => {
+                    this.savePrj(this.form.uuid, projectData).then((project) => {
                         if (this.project) {
                             this.project.value = project.value;
                         }
@@ -486,7 +491,13 @@ class EditProjectCtrl {
                 }
             });
         } else {
-            this.savePrj(projectData).then((project) => {
+            projectData = {
+                "title" : "Walk Other Demo (saved2)",
+                "description" : "This is the new description...",
+                "uuid" : this.form.uuid
+            };
+            // this.form.uuid may not exist (when creating a new project...)
+            this.savePrj(this.form.uuid, projectData).then((project) => {
                 if (this.project) {
                     this.project.value = project.value;
                 }

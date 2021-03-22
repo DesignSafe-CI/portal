@@ -450,13 +450,13 @@ export class ProjectService {
     /**
      * @param {Project} [project]
      * @return {Promise}
+     * remove this...
      */
     editProject(project) {
         let modalInstance = this.$uibModal.open({
             component: 'editProject',
             resolve: {
                 project: () => project,
-                efs: () => this.efs,
             },
             backdrop: 'static',
             size: 'lg',

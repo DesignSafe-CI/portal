@@ -182,6 +182,10 @@ class Project(MetadataModel):
         return self
 
     def add_admin(self, username):
+        """
+        Gives the provided user access to a project
+        without listing them among the authors/creators.
+        """
         self.set_pem(username, 'ALL')
         self.manager().agave_client.systems.updateRole(
             systemId=self.system,
@@ -205,64 +209,6 @@ class Project(MetadataModel):
             limit=limit)
         ents = [lookup_model(rsp)(**rsp) for rsp in resp]
         return ents
-
-    def archive(self):
-        ARCHIVE_NAME = str(self.project_id) + '_archive.zip'
-        proj_dir = '/corral-repl/tacc/NHERI/projects/{}'.format(self.uuid)
-
-        def create_archive(project_directory):
-            try:
-                logger.debug("Creating new archive for %s" % project_directory)
-
-                # create archive within the project directory
-                archive_path = os.path.join(project_directory, ARCHIVE_NAME)
-                abs_path = project_directory.rsplit('/',1)[0]
-
-                
-
-                zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
-                for dirs, _, files in os.walk(project_directory):
-                    for f in files:
-                        if f == ARCHIVE_NAME:
-                            continue
-                        # write files without abs file path
-                        zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(abs_path,''), f))
-                zf.close()
-            except:
-                logger.debug("Creating archive failed for " % 
-                    project_directory)
-
-        def update_archive(project_directory):
-            try:
-                logger.debug("Updating archive for %s" % project_directory)
-
-                archive_path = os.path.join(project_directory, ARCHIVE_NAME)
-                archive_timestamp = os.path.getmtime(archive_path)
-                zf = zipfile.ZipFile(archive_path, mode='a', allowZip64=True)
-                for dirs, _, files in os.walk(project_directory):
-                    for f in files:
-                        if f == ARCHIVE_NAME:
-                            continue
-                        file_path = os.path.join(dirs, f)
-                        file_timestamp = os.path.getmtime(file_path)
-                        if file_timestamp > archive_timestamp:
-                            if file_path in zf.namelist():
-                                zf.close()
-                                logger.debug(
-                                    "Modified file, deleting archive and " \
-                                    "re-archiving project directory %s" % 
-                                    project_directory)
-                                os.remove(archive_path)
-                                create_archive(project_directory)
-                                break
-            except:
-                logger.debug("Updating archive failed for project directory" % 
-                    project_directory)
-        
-        if ARCHIVE_NAME not in os.listdir(proj_dir):
-            create_archive(proj_dir)
-        else:
-            update_archive(proj_dir)
 
     def to_dataset_json(self):
         """
