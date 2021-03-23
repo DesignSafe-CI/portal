@@ -1,4 +1,5 @@
 import ManageProjectTemplate from './manage-project.template.html';
+import AmendProjectTemplate from './amend-project.template.html';
 import FormOptions from './project-form-options.json';
 import FormDefaults from './project-form-defaults.json';
 
@@ -269,6 +270,17 @@ class ManageProjectCtrl {
 
 export const ManageProjectComponent = {
     template: ManageProjectTemplate,
+    controller: ManageProjectCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const AmendProjectComponent = {
+    template: AmendProjectTemplate,
     controller: ManageProjectCtrl,
     controllerAs: '$ctrl',
     bindings: {
