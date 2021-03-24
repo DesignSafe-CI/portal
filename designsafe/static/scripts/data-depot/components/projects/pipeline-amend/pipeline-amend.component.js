@@ -3,11 +3,15 @@ import PipelineAmendTemplate from './pipeline-amend.template.html';
 class PipelineAmendCtrl {
     constructor(
         ProjectService,
-        $state
+        $uibModal,
+        $state,
+        $http
     ) {
         'ngInject';
         this.ProjectService = ProjectService;
+        this.$uibModal = $uibModal
         this.$state = $state;
+        this.$http = $http;
     }
 
     $onInit() {
@@ -17,6 +21,28 @@ class PipelineAmendCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.ProjectService.get({ uuid: this.projectId }).then((project) => {
             this.project = project;
+            this.ui.loading = false;
+        });
+    }
+
+    amendProject() {
+        return this.$uibModal.open({
+            component: 'amendProject',
+            resolve: {
+                project: () => this.project,
+            },
+            backdrop: 'static',
+            size: 'lg',
+        });
+    }
+
+    submitAmend() {
+        this.ui.loading = true;
+        this.$http.post(
+            // This needs to route to the amend endpoint...
+        ).then((resp) => {
+            this.ui.submitted = true;
+        }).finally( () => {
             this.ui.loading = false;
         });
     }
