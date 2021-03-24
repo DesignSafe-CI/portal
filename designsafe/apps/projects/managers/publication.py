@@ -18,6 +18,7 @@ from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from designsafe.apps.projects.managers.base import ProjectsManager
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
+from designsafe.apps.data.models.elasticsearch import IndexedPublication
 
 
 logger = logging.getLogger(__name__)
@@ -178,7 +179,7 @@ def draft_publication(
     return responses
 
 
-def publish_resource(project_id, entity_uuids=None, publish_dois=False):
+def publish_resource(project_id, entity_uuids=None, publish_dois=False, revision=None):
     """Publish a resource.
 
     Retrieves a project and/or an entity and set any saved DOIs
@@ -194,7 +195,11 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
 
     :param str project_id: Project Id to publish.
     :param list entity_uuids: list of str Entity uuids to publish.
+    :param int revision: Revision number to publish.
     """
+
+    # If revision number passed, set status to "published" for specified revision and
+    # set status to "revised" for old versions
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     responses = []
@@ -205,19 +210,24 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
                 entity = None
                 if ent_uuid:
                     entity = mgr.get_entity_by_uuid(ent_uuid)
-                
+
                 if entity:
                     for doi in entity.dois:
                         res = DataciteManager.publish_doi(doi)
                         responses.append(res)
-        
+
         for doi in prj.dois:
             res = DataciteManager.publish_doi(doi)
             responses.append(res)
 
-
-    pub = BaseESPublication(project_id=project_id)
+    pub = BaseESPublication(project_id=project_id, revision=revision)
     pub.update(status='published')
+
+    if revision:
+        # Revising a publication sets the status of the previous document to 'archived'
+        last_revision = revision - 1
+        archived_pub = pub = BaseESPublication(project_id=project_id, revision=last_revision)
+        archived_pub.update(status='archived')
 
     for res in responses:
         logger.info(
@@ -307,8 +317,8 @@ def _delete_unused_fields(dict_obj):
         dict_obj.pop(key, '')
 
 
-def fix_file_tags(project_id):
-    pub = BaseESPublication(project_id=project_id)
+def fix_file_tags(project_id, revision=None):
+    pub = BaseESPublication(project_id=project_id, revision=revision)
     pub_dict = pub.to_dict()
 
     entities_to_check = list(set(pub_dict.keys()).intersection(list(FIELD_MAP.values())))
@@ -376,16 +386,22 @@ def fix_file_tags(project_id):
     pub.update(**pub_dict)
 
 
-def archive(project_id):
+def archive(project_id, revision=None):
     """Archive Published Files and Metadata
 
     When given a project_id, this function will copy and compress all of the published files
     for a project, and it will also include a formatted json document of the published metadata.
     Note: This metadata file is will only be used until the Fedora system is set up again.
     """
-    pub = BaseESPublication(project_id=project_id)
-    archive_name = '{}_archive.zip'.format(pub.projectId)
-    metadata_name = '{}_metadata.json'.format(pub.projectId)
+    # TODO: Add revision number argument and format archive name if exists
+    pub = BaseESPublication(project_id=project_id, revision=revision)
+    if revision:
+        archive_prefix = '{}r{}'.format(pub.projectId, revision)
+    else:
+        archive_prefix = pub.projectId
+    archive_name = '{}_archive.zip'.format(archive_prefix)
+    metadata_name = '{}_metadata.json'.format(archive_prefix)
+
     pub_dir = settings.DESIGNSAFE_PUBLISHED_PATH
     arc_dir = os.path.join(pub_dir, 'archives/')
     archive_path = os.path.join(arc_dir, archive_name)
@@ -409,10 +425,10 @@ def archive(project_id):
 
     # compress published files into a zip archive
     def create_archive():
-        arc_source = os.path.join(pub_dir, pub.projectId)
+        arc_source = os.path.join(pub_dir, archive_prefix)
 
         try:
-            logger.debug("Creating archive for {}".format(pub.projectId))
+            logger.debug("Creating archive for {}".format(archive_prefix))
             zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
             for dirs, _, files in os.walk(arc_source):
                 for f in files:
@@ -442,7 +458,7 @@ def archive(project_id):
 
         project_uuid = pub_dict['project']['uuid']
         try:
-            logger.debug("Creating metadata for {}".format(pub.projectId))
+            logger.debug("Creating metadata for {}".format(archive_prefix))
             if pub_dict['project']['value']['projectType'] in entity_type_map:
                 ent_type = entity_type_map[pub_dict['project']['value']['projectType']]
                 entity_uuids = []
@@ -472,7 +488,7 @@ def archive(project_id):
             logger.exception("Failed to create metadata!")
 
     try:
-        set_perms(pub_dir, 0o755, os.path.join(pub_dir, pub.projectId))
+        set_perms(pub_dir, 0o755, os.path.join(pub_dir, archive_prefix))
         set_perms(arc_dir, 0o755)
         create_metadata()
         create_archive()
@@ -480,7 +496,7 @@ def archive(project_id):
         logger.exception('Failed to archive publication!')
 
 
-def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
+def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=None):
     """Freeze project and entity metadata.
 
     Given a project id and an entity uuid (should be a main entity) this function
@@ -497,7 +513,7 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     """
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
-    pub_doc = BaseESPublication(project_id=project_id)
+    pub_doc = BaseESPublication(project_id=project_id, revision=revision)
     publication = pub_doc.to_dict()
 
     if entity_uuids:
@@ -536,7 +552,7 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
 
                 if entity_json['value']['dois']:
                     entity_json['doi'] = entity_json['value']['dois'][-1]
-                
+
                 _delete_unused_fields(entity_json)
                 publication[pub_entities_field_name].append(entity_json)
 
