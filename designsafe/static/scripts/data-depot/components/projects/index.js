@@ -8,6 +8,9 @@ import { PublicationPreviewSimComponent } from './publication-preview/publicatio
 import { PublicationPreviewHybSimComponent } from './publication-preview/publication-preview-hyb-sim.component';
 import { PublicationPreviewOtherComponent } from './publication-preview/publication-preview-other.component';
 import { PublicationPreviewFieldReconComponent } from './publication-preview/publication-preview-field-recon.component';
+import { PipelineStartComponent } from './pipeline-start/pipeline-start.component';
+import { PipelineVersionComponent, PipelineVersionChangesComponent } from './pipeline-version/pipeline-version.component';
+import { PipelineAmendComponent } from './pipeline-amend/pipeline-amend.component';
 import {
     PipelineSelectionExpComponent,
     PipelineSelectionSimComponent,
@@ -58,6 +61,10 @@ ddProjectsComponents.component('publicationPreviewSim', PublicationPreviewSimCom
 ddProjectsComponents.component('publicationPreviewHybSim', PublicationPreviewHybSimComponent);
 ddProjectsComponents.component('publicationPreviewOther', PublicationPreviewOtherComponent);
 ddProjectsComponents.component('publicationPreviewFieldRecon', PublicationPreviewFieldReconComponent);
+ddProjectsComponents.component('pipelineStart', PipelineStartComponent);
+ddProjectsComponents.component('pipelineAmend', PipelineAmendComponent);
+ddProjectsComponents.component('pipelineVersion', PipelineVersionComponent);
+ddProjectsComponents.component('pipelineVersionChanges', PipelineVersionChangesComponent);
 ddProjectsComponents.component('pipelineSelectExp', PipelineSelectionExpComponent);
 ddProjectsComponents.component('pipelineSelectSim', PipelineSelectionSimComponent);
 ddProjectsComponents.component('pipelineSelectHybSim', PipelineSelectionHybSimComponent);
