@@ -2,10 +2,12 @@ import PipelineStartTemplate from './pipeline-start.template.html';
 
 class PipelineStartCtrl {
     constructor(
+        PublicationService,
         ProjectService,
         $state
     ) {
         'ngInject';
+        this.PublicationService = PublicationService;
         this.ProjectService = ProjectService;
         this.$state = $state;
     }
@@ -21,39 +23,41 @@ class PipelineStartCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.ProjectService.get({ uuid: this.projectId }).then((project) => {
             this.project = project;
-            switch(this.project.value.projectType) {
-                case 'experimental': {
-                    this.ui.directSelect = 'projects.pipelineSelectExp'
-                    this.ui.directPreview = 'projects.preview'
-                    break;
-                }
-                case 'simulation': {
-                    this.ui.directSelect = 'projects.pipelineSelectSim'
-                    this.ui.directPreview = 'projects.previewSim'
-                    break;
-                }
-                case 'hybrid_simulation': {
-                    this.ui.directSelect = 'projects.pipelineSelectHybSim'
-                    this.ui.directPreview = 'projects.previewHybSim'
-                    break;
-                }
-                case 'field_recon': {
-                    this.ui.directSelect = 'projects.pipelineSelectField'
-                    this.ui.directPreview = 'projects.previewFieldRecon'
-                    break;
-                }
-                case 'other': {
-                    this.ui.directSelect = 'projects.pipelineSelectOther'
-                    this.ui.directPreview = 'projects.previewOther'
-                    this.ui.showAmendVersion = true;
-                    // NOTE: We're planning to allow users to choose which
-                    // part of the project their DOIs will be placed (project or entity level).
-                    if (this.project.value.dois.length) {
-                        this.ui.isPublished = true;
+            this.PublicationService.getPublished(this.project.value.projectId).then((resp) => {
+                // this resp.data can be used to check the status of the publication "saved", "publishing", "published"
+                this.publication = resp.data;
+                switch(this.project.value.projectType) {
+                    case 'experimental': {
+                        this.ui.directSelect = 'projects.pipelineSelectExp'
+                        this.ui.directPreview = 'projects.preview'
+                        break;
+                    }
+                    case 'simulation': {
+                        this.ui.directSelect = 'projects.pipelineSelectSim'
+                        this.ui.directPreview = 'projects.previewSim'
+                        break;
+                    }
+                    case 'hybrid_simulation': {
+                        this.ui.directSelect = 'projects.pipelineSelectHybSim'
+                        this.ui.directPreview = 'projects.previewHybSim'
+                        break;
+                    }
+                    case 'field_recon': {
+                        this.ui.directSelect = 'projects.pipelineSelectField'
+                        this.ui.directPreview = 'projects.previewFieldRecon'
+                        break;
+                    }
+                    case 'other': {
+                        this.ui.directSelect = 'projects.pipelineSelectOther'
+                        this.ui.directPreview = 'projects.previewOther'
+                        this.ui.showAmendVersion = true;
+                        if (this.publication.status) {
+                            this.ui.isPublished = true;
+                        }
                     }
                 }
-            }
-            this.ui.loading = false;
+                this.ui.loading = false;
+            });
         });
     }
 
@@ -66,13 +70,16 @@ class PipelineStartCtrl {
     }
 
     goPublish() {
-        // should drop into pipeline based on project type
+        // drop into pipeline based on project type
         this.$state.go(this.ui.directSelect, { projectId: this.projectId }, { reload: true });
     }
 
     goVersion() {
         // version selection for other will allow users to select the files they want to publish
-        this.$state.go('projects.pipelineVersion', { projectId: this.projectId }, { reload: true });
+        this.$state.go('projects.pipelineVersion', {
+            projectId: this.projectId,
+            publication: this.publication
+        }, { reload: true });
     }
 }
 
