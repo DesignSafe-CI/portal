@@ -2778,6 +2778,12 @@ input[type="search"] {
 .pipeline-section button {
   font-weight: bold;
 }
+.pipeline-section textarea {
+  width:100%;
+  height:5em;
+  margin-top: 20px;
+  resize: vertical;
+}
 .form-group {
   margin-bottom: 20px;
 }
