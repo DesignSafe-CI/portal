@@ -18,7 +18,7 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.projects.models.agave.base import Project as BaseProject
 from designsafe.apps.projects.models.categories import Category
-from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.agave import get_service_account_client, to_camel_case
 from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
@@ -333,66 +333,90 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
     @profile_fn
     def post(self, request, project_id):
         """
+        Update a Project. Projects and the root File directory for a Project should
+        be owned by the portal, with roles/permissions granted to the creating user.
 
-        :param request:
+        1. Get the metadata record for the project
+        2. Get the metadata permissions for the project
+        3. Update the metadata record with changes from the post data and initilize the
+           appropriate project class.
+        4. Use the metadata permissions and the metadata record to determine which users
+           to add and/or remove from the project
+        5. Update file metadata permissions
+        6. Set ACLs on the project
+        7. Email users who have been added to the project
+
+        :param request: 
         :return:
         """
-        ag = get_service_account_client()
-
         if request.is_ajax():
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
 
-        meta_obj = ag.meta.getMetadata(uuid=project_id)
-        cls = project_lookup_model(meta_obj)
-        logger.info('post_data: %s', post_data)
-        p = cls(value=post_data, uuid=project_id)
+        client = get_service_account_client()
+        meta_obj = client.meta.getMetadata(uuid=project_id)
+        meta_perms = client.meta.listMetadataPermissions(uuid=project_id)
 
-        new_pi = post_data.get('pi', p.pi)
-        new_co_pis = post_data.get('coPis', p.co_pis)
-        new_team_members = post_data.get('teamMembers', p.team_members)
+        # update the meta_obj
+        for key, value in post_data.items():
+            camel_key = to_camel_case(key)
+            meta_obj.value[camel_key] = value
 
-        # we need to compare the existing project data with the updated project data
-        if new_pi and new_pi != 'null' and meta_obj.value['pi'] != new_pi:
-            names = list(set(meta_obj.value['teamMembers'] + meta_obj.value['coPis'] + [meta_obj.value['pi']]))
-            updatednames = list(set(new_team_members + new_co_pis + [new_pi]))
-        else:
-            names = list(set(meta_obj.value['teamMembers'] + meta_obj.value['coPis']))
-            updatednames = list(set(new_team_members + new_co_pis))
+        # get users to add/remove
+        admins = ['ds_admin', 'prjadmin']
+        users_with_access = [x['username'] for x in meta_perms]
+        updated_users = list(set(
+            meta_obj['value']['teamMembers'] +
+            meta_obj['value']['coPis'] +
+            [meta_obj['value']['pi']]
+        ))
+        add_perm_usrs = [
+            u for u in updated_users + admins
+            if u not in users_with_access
+        ]
+        rm_perm_usrs = [
+            u for u in users_with_access
+            if u not in updated_users + admins
+        ]
 
-        add_perm_usrs = [u for u in updatednames if u not in names]
-        rm_perm_usrs = [u for u in names if u not in updatednames]
+        prj_class = project_lookup_model(meta_obj)
+        project = prj_class(value=meta_obj.value, uuid=project_id)
+        project.manager().set_client(client)
+
+        try:
+            ds_user = get_user_model().objects.get(username=project.pi)
+        except:
+            return HttpResponseBadRequest('Project update requires a valid PI')
 
         # remove permissions for users not on project and add permissions for new members
-        p.manager().set_client(ag)
         if rm_perm_usrs:
-            if p.pi not in rm_perm_usrs:
-                p._remove_team_members_pems(rm_perm_usrs)
+            project._remove_team_members_pems(rm_perm_usrs)
         if add_perm_usrs:
-            p._add_team_members_pems(add_perm_usrs)
+            project._add_team_members_pems(add_perm_usrs)
 
-        tasks.check_project_files_meta_pems.apply_async(args=[p.uuid], queue='api')
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
         tasks.set_facl_project.apply_async(
             args=[
-                p.uuid,
+                project.uuid,
                 add_perm_usrs
             ],
             queue='api'
         )
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
-                p.project_id,
-                p.uuid,
-                p.title,
-                request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), p.uuid)),
+                project.project_id,
+                project.uuid,
+                project.title,
+                request.build_absolute_uri(
+                    '{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project.uuid)
+                ),
                 add_perm_usrs,
                 []
             ]
         )
-
-        p.save(ag)
-        return JsonResponse(p.to_body_dict())
+        project.save(client)
+        return JsonResponse(project.to_body_dict())
 
 
 class ProjectCollaboratorsView(SecureMixin, BaseApiView):

@@ -93,9 +93,15 @@ class PublicationPreviewSimCtrl {
         this.$state.go('projects.curation', {projectId: this.browser.project.uuid});
     }
 
-    editProject() {
-        // need to refresh project data when this is closed (not working atm)
-        this.ProjectService.editProject(this.browser.project);
+    manageProject() {
+        return this.$uibModal.open({
+            component: 'manageProject',
+            resolve: {
+                project: () => this.browser.project,
+            },
+            backdrop: 'static',
+            size: 'lg',
+        });
     }
 
     prepareModal() {
@@ -108,7 +114,7 @@ class PublicationPreviewSimCtrl {
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineSelectSim', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineStart', {projectId: browser.project.uuid}, {reload: true});
                 };
             }],
             resolve: {

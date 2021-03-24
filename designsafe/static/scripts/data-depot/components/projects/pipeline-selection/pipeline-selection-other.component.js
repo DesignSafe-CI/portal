@@ -73,7 +73,7 @@ class PipelineSelectionOtherCtrl {
         else {
             this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
         }
-      }
+    }
 
 }
 

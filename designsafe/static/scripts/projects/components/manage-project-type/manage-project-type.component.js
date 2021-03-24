@@ -2,11 +2,10 @@ import ManageProjectTypeTemplate from './manage-project-type.template.html';
 
 class ManageProjectTypeCtrl {
 
-    constructor(ProjectEntitiesService, ProjectModel, httpi, ProjectService, $state) {
+    constructor($http, $uibModal, ProjectService, $state) {
         'ngInject';
-        this.ProjectEntitiesService = ProjectEntitiesService;
-        this.ProjectModel = ProjectModel;
-        this.httpi = httpi;
+        this.$http = $http
+        this.$uibModal = $uibModal;
         this.ProjectService = ProjectService;
         this.$state = $state;
     }
@@ -15,7 +14,6 @@ class ManageProjectTypeCtrl {
         this.project = this.resolve.options.project;
         this.warning = this.resolve.options.warning;
         this.preview = this.resolve.options.preview;
-        this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
         this.prjType = '';
         this.slide = 'type';
         this.protectedData = -1;
@@ -34,24 +32,26 @@ class ManageProjectTypeCtrl {
             this.close();
         } else if (this.prjType) {
             this.loading = true;
-            var projectData = {};
-            projectData.projectType = this.prjType;
-            projectData.title = this.project.value.title;
-            projectData.pi = this.project.value.pi;
-            projectData.coPis = this.project.value.coPis;
-            projectData.teamMembers = this.project.value.teamMembers;
-            projectData.projectId = this.project.value.projectId;
-            projectData.uuid = this.project.uuid;
-
+            var projectData = {
+                projectType: this.prjType,
+                uuid: this.project.uuid,
+            };
             if (this.prjType === 'field_recon' && this.protectedData > 0) {
                 this.sendNotificationEmail();
             }
-
-            this.savePrj(projectData).then((project) => {
-                this.close({$value: project});
+            this.$http.post(`/api/projects/${projectData.uuid}/`, projectData).then((resp) => {
+                this.project.value = resp.data.value;
                 this.loading = false;
-                this.$state.go('projects.curation', { projectId: project.uuid }, { reload: true }).then(() => {
-                    this.ProjectService.editProject(project);
+                this.close();
+                this.$state.go('projects.curation', { projectId: this.project.uuid }, { reload: true }).then(() => {
+                    this.$uibModal.open({
+                        component: 'manageProject',
+                        resolve: {
+                            project: () => this.project,
+                        },
+                        backdrop: 'static',
+                        size: 'lg',
+                    });
                 });
             });
         }
@@ -63,18 +63,6 @@ class ManageProjectTypeCtrl {
             username: this.project.value.pi
         })
     }
-
-    savePrj(options) {
-        return this.projectResource.post({ data: options }).then((resp) => {
-            return new this.ProjectModel(resp.data);
-        });
-    }
-
-    cancel() {
-        this.close();
-    }
-
-
 }
 
 export const ManageProjectTypeComponent = {

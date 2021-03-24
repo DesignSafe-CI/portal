@@ -7,7 +7,7 @@
             Project Overview
         </span>
         <span ng-if="$ctrl.prjType === 'field_recon' && $ctrl.slide != 'type'"> | 5 minutes to read</span>
-        <span class="pull-right" ng-click="$ctrl.cancel()">
+        <span class="pull-right" ng-click="$ctrl.close()">
             <i class="fa fa-times"></i>
         </span>
     </h4>
@@ -1154,9 +1154,17 @@
                     </a>
                 </td>
                 <td class="overview-continue">
-                    <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.finish()">
+                    <button class="btn btn-add"
+                            style="width: 100%;"
+                            ng-click="$ctrl.finish()"
+                            ng-if="!$ctrl.loading"
+                    >
                         Finish
-                    </button> 
+                    </button>
+                    <div ng-if="$ctrl.loading">
+                        <i class="fa fa-spinner fa-spin"></i>
+                        Saving project...
+                    </div>
                 </td>
             </tr>
         </table>

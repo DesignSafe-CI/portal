@@ -61,21 +61,23 @@
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
-        <div class="well" style="margin-bottom: 20px;" ng-if="!$ctrl.ui.loading && $ctrl.selectedListing">
-            <h4>These files will be published:</h4>
-            <files-listing listing=$ctrl.selectedListing show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
-        </div>
-        <div ng-if="!$ctrl.ui.loading" style="text-align: center;">
-            <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
-        </div>
         <div ng-if="!$ctrl.ui.loading">
-            <breadcrumb
-            path="$ctrl.FileListingService.listings.main.params.path"
-            system="$ctrl.FileListingService.listings.main.params.path"
-            on-browse="$ctrl.onBrowse(file)"
-            custom-root="{label: $ctrl.browser.project.value.projectId, path: ''}"
-        ></breadcrumb>
-            <files-listing listing="$ctrl.FileListingService.listings.main" show-select="true" show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
+            <div class="well" style="margin-bottom: 20px;" ng-if="$ctrl.selectedListing">
+                <h4>These files will be published:</h4>
+                <files-listing listing=$ctrl.selectedListing show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
+            </div>
+            <div>
+                <breadcrumb
+                    path="$ctrl.FileListingService.listings.main.params.path"
+                    system="$ctrl.FileListingService.listings.main.params.path"
+                    on-browse="$ctrl.onBrowse(file)"
+                    custom-root="{label: $ctrl.browser.project.value.projectId, path: ''}"
+                ></breadcrumb>
+                <files-listing listing="$ctrl.FileListingService.listings.main" show-select="true" show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
+            </div>
         </div>
     </div>
 </div>

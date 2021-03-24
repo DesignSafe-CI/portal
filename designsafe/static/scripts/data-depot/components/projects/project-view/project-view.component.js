@@ -73,11 +73,15 @@ class ProjectViewCtrl {
     return false;
   }
 
-  editProject($event) {
-    if ($event) {
-      $event.preventDefault();
-    }
-    this.ProjectService.editProject(this.browser.project);
+  manageProject() {
+    return this.$uibModal.open({
+      component: 'manageProject',
+      resolve: {
+        project: () => this.browser.project,
+      },
+      backdrop: 'static',
+      size: 'lg',
+    });
   }
 
   overview() {
@@ -104,18 +108,24 @@ class ProjectViewCtrl {
   }
 
   publicationPreview() {
-    if (this.browser.project.value.projectType === 'experimental') {
-      this.$state.go('projects.preview', { projectId: this.browser.project.uuid});
-    } else if (this.browser.project.value.projectType === 'simulation') {
-      this.$state.go('projects.previewSim', { projectId: this.browser.project.uuid});
-    } else if (this.browser.project.value.projectType === 'hybrid_simulation') {
-      this.$state.go('projects.previewHybSim', {projectId: this.browser.project.uuid});
-    } else if (this.browser.project.value.projectType === 'other') {
-      this.$state.go('projects.previewOther', { projectId: this.browser.project.uuid});
-    } else if (this.browser.project.value.projectType === 'field_recon') {
-      this.$state.go('projects.previewFieldRecon', { projectId: this.browser.project.uuid});
-    } else {
-      this.overview();
+    switch (this.browser.project.value.projectType) {
+      case 'experimental':
+        this.$state.go('projects.preview', {projectId: this.browser.project.uuid});
+        break;
+      case 'simulation':
+        this.$state.go('projects.previewSim', {projectId: this.browser.project.uuid});
+        break;
+      case 'hybrid_simulation':
+        this.$state.go('projects.previewHybSim', {projectId: this.browser.project.uuid});
+        break;
+      case 'field_recon':
+        this.$state.go('projects.previewFieldRecon', {projectId: this.browser.project.uuid});
+        break;
+      case 'other':
+        this.$state.go('projects.previewOther', {projectId: this.browser.project.uuid});
+        break;
+      default:
+        this.overview();
     }
   }
 
