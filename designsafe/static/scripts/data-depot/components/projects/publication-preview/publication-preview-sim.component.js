@@ -93,9 +93,15 @@ class PublicationPreviewSimCtrl {
         this.$state.go('projects.curation', {projectId: this.browser.project.uuid});
     }
 
-    editProject() {
-        // need to refresh project data when this is closed (not working atm)
-        this.ProjectService.editProject(this.browser.project);
+    manageProject() {
+        return this.$uibModal.open({
+            component: 'manageProject',
+            resolve: {
+                project: () => this.browser.project,
+            },
+            backdrop: 'static',
+            size: 'lg',
+        });
     }
 
     prepareModal() {
