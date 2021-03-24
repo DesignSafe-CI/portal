@@ -14,6 +14,7 @@ class PipelineStartCtrl {
         this.ui = {
             loading: true,
             showAmendVersion: false,
+            isPublished: false,
             directSelect: '',
             directPreview: ''
         };
@@ -45,6 +46,11 @@ class PipelineStartCtrl {
                     this.ui.directSelect = 'projects.pipelineSelectOther'
                     this.ui.directPreview = 'projects.previewOther'
                     this.ui.showAmendVersion = true;
+                    // NOTE: We're planning to allow users to choose which
+                    // part of the project their DOIs will be placed (project or entity level).
+                    if (this.project.value.dois.length) {
+                        this.ui.isPublished = true;
+                    }
                 }
             }
             this.ui.loading = false;

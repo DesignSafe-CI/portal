@@ -319,16 +319,18 @@ function config(
             }
         })
         .state('projects.pipelineVersion', {
-            url: '/projects/{projectId}/curation/version',
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
             component: 'pipelineVersion',
+            params: {filePath: ''},
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                 }]
             }
         })
         .state('projects.pipelineVersionChanges', {
-            url: '/projects/{projectId}/curation/version',
+            url: '/projects/{projectId}/curation/versionChanges',
             component: 'pipelineVersionChanges',
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {

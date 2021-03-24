@@ -24,7 +24,12 @@
                 <li>The project will recieve a new citation and DOI to include any new authors.</li>
                 <li>The updated project will display as a new version.</li>
             </ul>
-            <button class="btn btn-small btn-add" ng-click="$ctrl.goPublish()">Publish</button>
+            <button class="btn btn-small btn-add"
+                    ng-click="$ctrl.goPublish()"
+                    ng-disabled="$ctrl.ui.isPublished"
+            >
+                Publish
+            </button>
         </div>
         <div ng-if="$ctrl.ui.showAmendVersion">
             <div class="pipeline-section">
@@ -36,7 +41,12 @@
                         order and descriptions in published metadata without adding a new version
                     </li>
                 </ul>
-                <button class="btn btn-small btn-add" ng-click="$ctrl.goAmend()">Amend</button>
+                <button class="btn btn-small btn-add"
+                        ng-click="$ctrl.goAmend()"
+                        ng-disabled="!$ctrl.ui.isPublished"
+                >
+                    Amend
+                </button>
             </div>
             <div class="pipeline-section">
                 <h3>Versioning</h3>
@@ -47,7 +57,12 @@
                     <li>You will be required to explain the reason for a new version.</li>
                     <li>The DOI will not change, but the citation title will include a version number.</li>
                 </ul>
-                <button class="btn btn-small btn-add" ng-click="$ctrl.goVersion()">Version</button>
+                <button class="btn btn-small btn-add"
+                        ng-click="$ctrl.goVersion()"
+                        ng-disabled="!$ctrl.ui.isPublished"
+                >
+                    Version
+                </button>
             </div>
             <div class="pipeline-section">
                 <h3>Add/Remove Authors</h3>

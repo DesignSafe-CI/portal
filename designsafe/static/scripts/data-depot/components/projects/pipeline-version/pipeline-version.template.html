@@ -15,12 +15,31 @@
         </div>
     </div>
     <div ng-if="!$ctrl.ui.loading">
-        <ul>
-            <li>Select what files you want in the new version.</li>
-            <li>The new version will only include the files selected here, so select any previously published files that you still want in the new version.</li>
-        </ul>
         <div class="pipeline-section">
-            <label>[File Listing]</label>
+            <ul>
+                <li>Select what files you want in the new version.</li>
+                <li>The new version will only include the files selected here, so select any previously published files that you still want in the new version.</li>
+            </ul>
+        </div>
+        <div ng-if="$ctrl.selectedListing">
+            <div class="pipeline-nav">
+                <h3>These files will be published</h3>
+                <button class="btn btn-danger" ng-click="$ctrl.undoSelections()">Undo Selections</button>
+            </div>
+            <files-listing listing=$ctrl.selectedListing show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
+        </div>
+        <div ng-if="!$ctrl.selectedListing">
+            <div class="pipeline-nav">
+                <h3>Select files</h3>
+                <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
+            </div>
+            <breadcrumb
+                path="$ctrl.FileListingService.listings.main.params.path"
+                system="$ctrl.FileListingService.listings.main.params.path"
+                on-browse="$ctrl.onBrowse(file)"
+                custom-root="{label: $ctrl.project.value.projectId, path: ''}"
+            ></breadcrumb>
+            <files-listing listing="$ctrl.FileListingService.listings.main" show-select="true" show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
         </div>
     </div>
 </div>
