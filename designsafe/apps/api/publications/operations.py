@@ -195,7 +195,7 @@ def neesdescription(project_id, *args):
     return {'description': desc}
 
 
-def save_publication(publication, status='publishing', revision=None):
+def save_publication(publication, status='publishing', revision=None, revision_text=None):
         """Save publication."""
         # TODO: Add revision and revision_log if they exist.
         publication['projectId'] = publication['project']['value']['projectId']
@@ -209,6 +209,7 @@ def save_publication(publication, status='publishing', revision=None):
             publication['created'] = base_pub['created']
             publication['revision'] = revision
             publication['revisionDate'] = datetime.datetime.now().isoformat()
+            publication['revisionText'] = revision_text
         else:
             publication['created'] = datetime.datetime.now().isoformat()
         try:
