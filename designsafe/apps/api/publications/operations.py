@@ -195,17 +195,24 @@ def neesdescription(project_id, *args):
     return {'description': desc}
 
 
-def save_publication(publication, status='publishing'):
+def save_publication(publication, status='publishing', revision=None):
         """Save publication."""
+        # TODO: Add revision and revision_log if they exist.
         publication['projectId'] = publication['project']['value']['projectId']
-        publication['created'] = datetime.datetime.now().isoformat()
         publication['status'] = status
         publication['version'] = 2
         publication['licenses'] = publication.pop('license', [])
         publication['license'] = ''
         es_client = new_es_client()
+        if revision:
+            base_pub = IndexedPublication.from_id(publication['projectId'], revision=None, using=es_client)
+            publication['created'] = base_pub['created']
+            publication['revision'] = revision
+            publication['revisionDate'] = datetime.datetime.now().isoformat()
+        else:
+            publication['created'] = datetime.datetime.now().isoformat()
         try:
-            pub = IndexedPublication.from_id(publication['projectId'], using=es_client)
+            pub = IndexedPublication.from_id(publication['projectId'], revision=revision, using=es_client)
             pub.update(using=es_client, **publication)
         except DocumentNotFound:
             pub = IndexedPublication(project_id=publication['projectId'], **publication)
