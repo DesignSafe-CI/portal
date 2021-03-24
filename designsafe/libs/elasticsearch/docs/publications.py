@@ -31,7 +31,8 @@ class BaseESPublication(BaseESResource):
 
     """
 
-    def __init__(self, wrapped_doc=None, project_id=None, using='default', **kwargs):
+
+    def __init__(self, wrapped_doc=None, project_id=None, revision=None, using='default', **kwargs):
         """Elastic Search File representation.
 
         This class directly wraps an Agave indexed file.
@@ -40,12 +41,12 @@ class BaseESPublication(BaseESResource):
         super(BaseESPublication, self).__init__(wrapped_doc, **kwargs)
 
         if not wrapped_doc:
-            self._populate(project_id, using=using, **kwargs)
+            self._populate(project_id, revision=revision, using=using, **kwargs)
 
-    def _populate(self, project_id, using='default', **kwargs):
+    def _populate(self, project_id, revision=None, using='default', **kwargs):
 
         try:
-            wrapped_doc = self._index_cls.from_id(project_id, using=using)
+            wrapped_doc = self._index_cls.from_id(project_id, revision=revision, using=using)
             self._wrap(wrapped_doc, **kwargs)
         except DocumentNotFound:
             self._wrapped = self._index_cls(
