@@ -372,6 +372,12 @@ class Model(object, metaclass=BaseModel):
             return None
     
     def set_pem(self, username, pem):
+        """
+        Potential Issue: v2 meta can't update multiple users at once, so
+        we have to update user permissions separately across multiple
+        pieces of project metadata. This might cause a timeout (similar
+        to how files would timeout in large preview queries)
+        """
         pem = self.manager().agave_client.meta.updateMetadataPermissions(
             uuid=self.uuid, body={'username': username, 'permission': pem})
         self.permissions = pem

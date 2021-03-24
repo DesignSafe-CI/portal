@@ -119,6 +119,7 @@ class PublicView(View):
                     'fname': user.first_name,
                     'lname': user.last_name,
                     'username': user.username,
+                    'email': user.email,
                 }
                 res_list.append(data)
         except ObjectDoesNotExist as err:
