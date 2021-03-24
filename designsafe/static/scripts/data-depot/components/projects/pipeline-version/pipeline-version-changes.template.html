@@ -16,11 +16,11 @@
     </div>
     <div ng-if="!$ctrl.ui.loading">
         <div class="pipeline-section">
-            <label>Version Changes</label>(required)
+            <label>Version Changes</label>&nbsp;<span class="label label-danger">Required</span>
             <div>
                 Specify what files you are adding, removing, or replacing, and why these changes are needed.
             </div>
-            <textarea></textarea>
+            <textarea ng-model="$ctrl.revisionText"></textarea>
         </div>
     </div>
 </div>

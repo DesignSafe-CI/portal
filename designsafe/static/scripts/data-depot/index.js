@@ -321,20 +321,32 @@ function config(
         .state('projects.pipelineVersion', {
             url: '/projects/{projectId}/curation/version/{filePath:any}',
             component: 'pipelineVersion',
-            params: {filePath: ''},
+            params: {
+                filePath: '',
+                publication: null,
+                selectedListing: null,
+            },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
                     ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing || null;
                 }]
             }
         })
         .state('projects.pipelineVersionChanges', {
             url: '/projects/{projectId}/curation/versionChanges',
             component: 'pipelineVersionChanges',
+            params: {
+                publication: null,
+                selectedListing: null,
+            },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
                 }]
             }
         })
