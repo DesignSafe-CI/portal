@@ -108,7 +108,7 @@ class PublicationPreviewSimCtrl {
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineSelectSim', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineStart', {projectId: browser.project.uuid}, {reload: true});
                 };
             }],
             resolve: {

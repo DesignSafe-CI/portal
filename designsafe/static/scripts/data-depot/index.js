@@ -300,6 +300,44 @@ function config(
                 ],
             },
         })
+        .state('projects.pipelineStart', {
+            url: '/projects/{projectId}/curation/start',
+            component: 'pipelineStart',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                }]
+            }
+        })
+        .state('projects.pipelineAmend', {
+            url: '/projects/{projectId}/curation/amend',
+            component: 'pipelineAmend',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                }]
+            }
+        })
+        .state('projects.pipelineVersion', {
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            component: 'pipelineVersion',
+            params: {filePath: ''},
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                }]
+            }
+        })
+        .state('projects.pipelineVersionChanges', {
+            url: '/projects/{projectId}/curation/versionChanges',
+            component: 'pipelineVersionChanges',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                }]
+            }
+        })
         .state('projects.pipelineSelectExp', {
             url: '/projects/{projectId}/curation/selection',
             component: 'pipelineSelectExp',
