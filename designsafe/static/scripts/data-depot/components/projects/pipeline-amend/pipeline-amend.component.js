@@ -39,8 +39,12 @@ class PipelineAmendCtrl {
     submitAmend() {
         this.ui.loading = true;
         this.$http.post(
-            // This needs to route to the amend endpoint...
+            '/api/projects/amend-publication/',
+            {
+                projectId: this.project.value.projectId,
+            }
         ).then((resp) => {
+            console.log(resp);
             this.ui.submitted = true;
         }).finally( () => {
             this.ui.loading = false;

@@ -118,6 +118,39 @@ class PublicationView(BaseApiView):
                                  'status': status}},
                             status=200)
 
+class AmendPublicationView(BaseApiView):
+    @method_decorator(agave_jwt_login)
+    @method_decorator(login_required)
+    def post(self, request, **kwargs):
+        """
+        Amend a Publication
+        """
+        logger.info('Amending Publication')
+        if request.is_ajax():
+            data = json.loads(request.body)
+        else:
+            data = request.POST
+        
+        project_id = data['projectId']
+        logger.info('AMEND DATA ======================> %s', project_id)
+        current_revision = IndexedPublication.max_revision(project_id=project_id)
+
+        (
+            tasks.amend_publication_data.s(
+                roject_id=project_id,
+                revision=current_revision
+            ).set(queue='api') |
+            tasks.zip_publication_files.s(
+                roject_id=project_id,
+                revision=current_revision
+            ).set(queue='files')
+        ).apply_async()
+        
+        return JsonResponse({'status': 200, 'response': {
+            'message': 'Your publication has been '
+            'scheduled to be amended'}},
+            status=200)
+
 
 class NeesPublicationView(BaseApiView):
     """

@@ -365,7 +365,8 @@ class IndexedPublication(Document):
         max_agg = res.execute().aggregations.max_revision.value
         if max_agg:
             return int(max_agg)
-        return None
+        # return None
+        return 0
 
     class Index:
         name = settings.ES_INDICES['publications']['alias']

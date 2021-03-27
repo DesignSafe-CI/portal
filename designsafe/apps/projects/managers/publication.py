@@ -17,6 +17,7 @@ from designsafe.apps.api.agave import service_account
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from designsafe.apps.projects.managers.base import ProjectsManager
+from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 
@@ -177,6 +178,72 @@ def draft_publication(
             {"doi": res['data']['id']}
         )
     return responses
+
+def amend_publication(project_id, revision=None):
+    """Amend a Publication
+    
+    Update Amendable fields on a publication and the corrosponding DataCite
+    records. These changes do not produce a new version of a publication, but
+    they do allow for limited changes to a published project. This is currently
+    configured to support "Other" publications only.
+    
+    :param str project_id: Project uuid to amend
+    :param int revision: Revision number to amend
+    """
+    mgr = ProjectsManager(service_account())
+    prj = mgr.get_project_by_id(project_id)
+    pub = BaseESPublication(project_id=project_id, revision=revision)
+    if prj.project_type != 'other':
+        return
+
+    prj_dict = prj.to_body_dict()
+    pub_dict = pub.to_dict()
+    _delete_unused_fields(prj_dict)
+
+    # weird key swap for old issues with awardnumber(s)
+    award_number = prj.award_number or []
+    if not isinstance(award_number, list):
+        award_number = []
+    prj_dict['value']['awardNumbers'] = award_number
+    prj_dict['value'].pop('awardNumber', None)
+
+    amends_dict = {
+        'nhTypes': [],
+        'dataType': '',
+        'awardNumbers': [],
+        'associatedProjects': [],
+        'keywords': '',
+        'description': '',
+    }
+    for key in amends_dict:
+        amends_dict[key] = prj_dict['value'][key]
+
+    pub_dict['project']['value'].update(amends_dict)
+    pub.update(**pub_dict)
+
+    return pub
+
+def amend_datacite_doi(publication):
+    """Amend a citation on DataCite
+    
+    Use the published project to update the DOI on Datacite
+    
+    Note: This assumes that the DOI being updated is related to the project.
+    We may want to change this to accept dict objects which are being amended.
+    
+    :param elasticsearch publication: Publication to amend
+    """
+    pub_dict = publication.to_dict()
+    prj_class = project_lookup_model(pub_dict['project'])
+    project = prj_class(value=pub_dict['project']['value'], uuid=pub_dict['project']['uuid'])
+    prj_datacite_json = project.to_datacite_json()
+    prj_doi = project.dois[0]
+
+    response = DataciteManager.create_or_update_doi(
+        prj_datacite_json,
+        prj_doi
+    )
+    return response
 
 
 def publish_resource(project_id, entity_uuids=None, publish_dois=False, revision=None):

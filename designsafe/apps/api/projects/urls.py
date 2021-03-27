@@ -19,12 +19,15 @@ from designsafe.apps.api.projects.views import (ProjectListingView,
                                                 ProjectMetaView,
                                                 ProjectNotificationView,
                                                 PublicationView,
+                                                AmendPublicationView,
                                                 NeesPublicationView)
 
 urlpatterns = [
     url(r'^/?$', ProjectCollectionView.as_view(), name='index'),
 
     url(r'^publication/((?P<project_id>[a-zA-Z0-9\-\_\.]+)/?)?', PublicationView.as_view(), name='publication'),
+
+    url(r'^amend-publication/((?P<project_id>[a-zA-Z0-9\-\_\.]+)/?)?', AmendPublicationView.as_view(), name='publication'),
 
     url(r'^nees-publication/((?P<nees_id>[a-zA-Z0-9\-\_\.]+)/?)?', NeesPublicationView.as_view(), name='nees-publication'),
 
