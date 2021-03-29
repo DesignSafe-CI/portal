@@ -1329,6 +1329,9 @@ mark,
   padding-bottom: 6px;
   text-transform:capitalize;
 }
+.prj-dropdown {
+  width: 16%;
+}
 .prj-agree-body {
   padding-bottom: 10px;
 }

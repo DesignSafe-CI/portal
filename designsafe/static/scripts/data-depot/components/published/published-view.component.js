@@ -22,7 +22,6 @@ class PublishedViewCtrl {
     }
 
     $onInit() {
-        //this.version = this.resolve.version;
         this.readOnly = true;
         this.ui = {
             efs: experimentalData.experimentalFacility,
@@ -43,6 +42,10 @@ class PublishedViewCtrl {
             path: this.projId,
             skipRoot: true
         }
+
+        // We will need the returned latest version of a publication with every request for one.
+        this.versions = [0, 1] // for testing
+        this.selectedVersion = this.versions[this.versions.length-1]
 
         this.getFileObjs = (evt) => {
             this.FileListingService.publishedListing(this.browser.publication, evt)
@@ -68,19 +71,9 @@ class PublishedViewCtrl {
         }
         
         //add metadata to header
-        //this.PublicationServicevice.updateHeaderMetadata(projId, resp);
-        this.version = this.browser.publication.version || 1;
         this.type = this.browser.publication.project.value.projectType;
-        this.ui.loading = false;
-        
-        // // Generate text for PI
-        // this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi);
-        // // Generate CoPI list
-        // this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
-
         this.prepProject();
-                
-        
+        this.ui.loading = false;
     }
 
     getProjectListings() {
@@ -219,6 +212,15 @@ class PublishedViewCtrl {
                 hash: `anchor-${uuid}`
             }));
         }
+    }
+
+    getVersion(revision) {
+        this.PublicationService.getPublishedVersion(
+                this.projId,
+                revision
+            ).then((resp) => {
+                console.log(resp);
+            })
     }
 
     ordered(parent, entities) {

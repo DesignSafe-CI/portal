@@ -47,7 +47,11 @@ def template_project_storage_system(project):
 class PublicationView(BaseApiView):
     @profile_fn
     def get(self, request, project_id):
-        pub = BaseESPublication(project_id=project_id)
+        """
+        Get the latest revision of a publication
+        """
+        revision = IndexedPublication.max_revision(project_id=project_id)
+        pub = BaseESPublication(project_id=project_id, revision=revision)
         if pub is not None and hasattr(pub, 'project'):
             return JsonResponse(pub.to_dict())
         else:
@@ -58,6 +62,9 @@ class PublicationView(BaseApiView):
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
     def post(self, request, **kwargs):
+        """
+        Publish a project or version a publication
+        """
         if request.is_ajax():
             data = json.loads(request.body)
         else:
@@ -118,21 +125,36 @@ class PublicationView(BaseApiView):
                                  'status': status}},
                             status=200)
 
-class AmendPublicationView(BaseApiView):
+class PublicationRevisionView(BaseApiView):
+    @profile_fn
+    def get(self, request, project_id, revision):
+        """
+        Get a version of a publication by it's project ID and revision number
+        """
+        pub = BaseESPublication(project_id=project_id, revision=revision)
+        latest_revision = IndexedPublication.max_revision(project_id=project_id)
+        if pub is not None and hasattr(pub, 'project'):
+            return JsonResponse({
+                'publication': pub.to_dict(),
+                'latestVersion': latest_revision,
+                })
+        else:
+            return JsonResponse({'status': 404,
+                                 'message': 'Not found'},
+                                status=404)
+
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
     def post(self, request, **kwargs):
         """
         Amend a Publication
         """
-        logger.info('Amending Publication')
         if request.is_ajax():
             data = json.loads(request.body)
         else:
             data = request.POST
         
         project_id = data['projectId']
-        logger.info('AMEND DATA ======================> %s', project_id)
         current_revision = IndexedPublication.max_revision(project_id=project_id)
 
         (
