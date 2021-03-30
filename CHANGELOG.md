@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.1.4
+Enhancements:
+Fixes:
+- Update Celery version and fix namespacing.
+Enhancements:
+- Add social media links to site header
+- Rename "Data Processing" apps tab to "Analysis"
+- Rename "Partner Data Apps" to "Hazard Apps"
+
 ## v5.1.3
 Fixes:
 - Fix name order in publication listings.
