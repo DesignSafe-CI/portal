@@ -2762,6 +2762,11 @@ input[type="search"] {
   justify-content: space-between;
   align-items: center;
 }
+.pipeline-notification {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .pipeline-header {
   text-align: center;
   margin-bottom: 40px;

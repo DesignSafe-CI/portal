@@ -23,7 +23,11 @@ class PipelineVersionCtrl {
 
     $onInit() {
         this.ui = {
-            loading: true
+            loading: true,
+            success: false,
+            warning: false,
+            error: false,
+            submitted: false,
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
@@ -64,10 +68,9 @@ class PipelineVersionCtrl {
     }
 
     submitVersion() {
-        // need a notification banner for issues...
-        // ex: missing selections/changelog or submission failure response
-        if (!this.revisionText.length) {
-            return this.ui.errorMessage = "We've encountered an error with your request...";
+        this.ui.warning = false;
+        if (this.revisionText.length < 10) {
+            return this.ui.warning = true;
         }
         this.ui.loading = true;
         let filePaths = this.selectedListing.listing.map( file => file.path);
@@ -81,8 +84,12 @@ class PipelineVersionCtrl {
                 selectedFiles: filePaths
             }
         ).then((resp) => {
+            this.ui.success = true;
             this.ui.submitted = true;
-        }).finally( () => {
+            this.ui.loading = false;
+        }, (error) => {
+            this.ui.error = true;
+            this.ui.submitted = true;
             this.ui.loading = false;
         });
     }
@@ -97,6 +104,10 @@ class PipelineVersionCtrl {
 
     undoSelections() {
         this.selectedListing = null;
+    }
+
+    returnToProject() {
+        this.$state.go('projects.view', { projectId: this.project.uuid }, { reload: true });
     }
 
     goStart() {

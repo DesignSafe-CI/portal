@@ -119,13 +119,10 @@ class PublicationView(BaseApiView):
                 tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
                 tasks.email_user_publication_request_confirmation.si(request.user.username)
             ).apply_async()
-
-        return JsonResponse({'status': 200,
-                             'response': {
-                                 'message': 'Your publication has been '
-                                            'schedule for publication',
-                                 'status': status}},
-                            status=200)
+        
+        return JsonResponse({
+            'success': 'Project is publishing.'
+        }, status=200)
 
 class PublicationRevisionView(BaseApiView):
     @profile_fn
@@ -170,10 +167,9 @@ class PublicationRevisionView(BaseApiView):
             ).set(queue='files')
         ).apply_async()
         
-        return JsonResponse({'status': 200, 'response': {
-            'message': 'Your publication has been '
-            'scheduled to be amended'}},
-            status=200)
+        return JsonResponse({
+            'success': 'Publication is being amended.'
+        }, status=200)
 
 
 class NeesPublicationView(BaseApiView):
