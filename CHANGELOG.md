@@ -3,6 +3,7 @@
 ## v5.1.4
 Fixes:
 - Update Celery version and fix namespacing.
+
 Enhancements:
 - Add social media links to site header
 - Rename "Data Processing" apps tab to "Analysis"
