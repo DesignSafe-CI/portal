@@ -1,7 +1,6 @@
 # DesignSafe-CI Portal Release Notes
 
 ## v5.1.4
-Enhancements:
 Fixes:
 - Update Celery version and fix namespacing.
 Enhancements:
