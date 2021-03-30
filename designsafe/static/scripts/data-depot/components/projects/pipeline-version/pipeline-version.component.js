@@ -67,16 +67,18 @@ class PipelineVersionCtrl {
         // need a notification banner for issues...
         // ex: missing selections/changelog or submission failure response
         if (!this.revisionText.length) {
-            return this.ui.change = true;
+            return this.ui.errorMessage = "We've encountered an error with your request...";
         }
         this.ui.loading = true;
+        let filePaths = this.selectedListing.listing.map( file => file.path);
         this.$http.post(
             '/api/projects/publication/',
             {
                 publication: this.pubData,
                 status: 'publishing',
                 revision: true,
-                revision_text: this.revisionText
+                revisionText: this.revisionText,
+                selectedFiles: filePaths
             }
         ).then((resp) => {
             this.ui.submitted = true;

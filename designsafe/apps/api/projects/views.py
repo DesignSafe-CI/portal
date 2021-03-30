@@ -73,6 +73,7 @@ class PublicationView(BaseApiView):
         status = data.get('status', 'saved')
         revision = data.get('revision', None)
         revision_text = data.get('revisionText', None)
+        selected_files = data.get('selectedFiles', None)
 
         project_id = data['publication']['project']['value']['projectId']
 
@@ -87,22 +88,23 @@ class PublicationView(BaseApiView):
         if data.get('status', 'save').startswith('publish'):
             (
                 tasks.freeze_publication_meta.s(
-                    pub.projectId,
-                    data.get('mainEntityUuids'),
+                    project_id=pub.projectId,
+                    entity_uuids=data.get('mainEntityUuids'),
                     revision=current_revision
                 ).set(queue='api') |
                 group(
                     tasks.save_publication.si(
-                        pub.projectId,
-                        data.get('mainEntityUuids'),
+                        project_id=pub.projectId,
+                        entity_uuids=data.get('mainEntityUuids'),
                         revision=current_revision
                     ).set(
                         queue='files',
                         countdown=60
                     ),
                     tasks.copy_publication_files_to_corral.si(
-                        pub.projectId,
-                        revision=current_revision
+                        project_id=pub.projectId,
+                        revision=current_revision,
+                        selected_files=selected_files
                     ).set(
                         queue='files',
                         countdown=60
@@ -110,8 +112,8 @@ class PublicationView(BaseApiView):
                 ) |
                 tasks.swap_file_tag_uuids.si(pub.projectId, revision=current_revision) |
                 tasks.set_publish_status.si(
-                    pub.projectId,
-                    data.get('mainEntityUuids'),
+                    project_id=pub.projectId,
+                    entity_uuids=data.get('mainEntityUuids'),
                     revision=current_revision
                 ) |
                 tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
