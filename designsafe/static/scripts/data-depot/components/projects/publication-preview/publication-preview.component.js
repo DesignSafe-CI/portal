@@ -118,8 +118,15 @@ class PublicationPreviewCtrl {
         this.$state.go('projects.curation', {projectId: this.browser.project.uuid});
     }
 
-    editProject() {
-        this.ProjectService.editProject(this.browser.project);
+    manageProject() {
+            return this.$uibModal.open({
+            component: 'manageProject',
+            resolve: {
+                project: () => this.browser.project,
+            },
+            backdrop: 'static',
+            size: 'lg',
+        });
     }
 
     prepareModal() {
@@ -132,7 +139,7 @@ class PublicationPreviewCtrl {
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineSelectExp', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineStart', {projectId: browser.project.uuid}, {reload: true});
                 };
             }],
             resolve: {

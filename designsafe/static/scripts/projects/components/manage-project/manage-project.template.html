@@ -7,15 +7,15 @@
 </script>
 <div class="modal-header" style="background: #e6e6e6;">
     <h4 class="modal-title" style="border:none;">
-        <span ng-if="!$ctrl.form.uuid">Add New Project</span>
-        <span ng-if="$ctrl.form.uuid">Edit Project</span>
-        <span class="pull-right" ng-click="$ctrl.cancel()">
+        <span ng-if="!$ctrl.project">Add New Project</span>
+        <span ng-if="$ctrl.project">Edit Project</span>
+        <span class="pull-right" ng-click="$ctrl.close()">
             <i class="fa fa-times"></i>
         </span>
     </h4>
 </div>
 <div class="modal-body" style="padding: 30px;">
-    <form name="projForm" autocomplete="off">
+    <form name="projForm" autocomplete="off" ng-if="!$ctrl.ui.loading">
         <!-- Project Title -->
         <div class="form-group">
             <label for="id-project-title">
@@ -39,7 +39,7 @@
                     ng-required="true">
         </div>
         <!-- Project Type -->
-        <div class="form-group" ng-if="$ctrl.form.uuid">
+        <div class="form-group" ng-if="$ctrl.project">
             <label for="id-project-type">
                 <div class="label-form">
                     <div>
@@ -54,7 +54,7 @@
                     <col style="width: 16.5%">
                 </colgroup>
                 <tr>
-                    <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'experimental'">
+                    <table style="width: 100%;" ng-if="$ctrl.form.projectType === 'experimental'">
                         <tr>
                             <td style="width: 9%;">
                                 <span class="curation-experiment" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
@@ -67,7 +67,7 @@
                             </td>
                         </tr>
                     </table>
-                    <table style="width: 100%;"  ng-if="$ctrl.project.value.projectType === 'simulation'">
+                    <table style="width: 100%;"  ng-if="$ctrl.form.projectType === 'simulation'">
                         <tr>
                             <td style="width: 9%;">
                                 <span class="curation-simulation" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
@@ -80,7 +80,7 @@
                             </td>
                         </tr>
                     </table>
-                    <table style="width: 100%;"  ng-if="$ctrl.project.value.projectType === 'hybrid_simulation'">
+                    <table style="width: 100%;"  ng-if="$ctrl.form.projectType === 'hybrid_simulation'">
                         <tr>
                             <td style="width: 9%;">
                                 <span class="curation-hybrid" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
@@ -93,7 +93,7 @@
                             </td>
                         </tr>
                     </table>
-                    <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'field_recon'">
+                    <table style="width: 100%;" ng-if="$ctrl.form.projectType === 'field_recon'">
                         <tr>
                             <td style="width: 9%;">
                                 <span class="curation-recon" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
@@ -106,7 +106,7 @@
                             </td>
                         </tr>
                     </table>
-                    <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'other'">
+                    <table style="width: 100%;" ng-if="$ctrl.form.projectType === 'other'">
                         <tr>
                             <td style="width: 9%;">
                                 <span class="curation-other" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
@@ -119,7 +119,7 @@
                             </td>
                         </tr>
                     </table>
-                    <table style="width: 100%;" ng-if="$ctrl.project.value.projectType === 'None'">
+                    <table style="width: 100%;" ng-if="$ctrl.form.projectType === 'None'">
                         <tr>
                             <td style="width: 9%;">
                                 <span class="curation-close-window" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
@@ -134,10 +134,13 @@
                     </table>
                 </tr>
             </table>
-            <a ng-click="$ctrl.type($ctrl.form.uuid && $ctrl.form.projectType)">Change Project Type</a>
+            <a ng-click="$ctrl.changeProjectType($ctrl.ui.hasType)">Change Project Type</a>
         </div>
         <!-- Field Research Type -->
-        <div class="form-group" style="width:100%;" ng-if="$ctrl.project.value.projectType === 'field_recon'">
+        <div class="form-group"
+             style="width:100%;"
+             ng-if="$ctrl.project && $ctrl.form.projectType === 'field_recon'"
+        >
             <label for="id-nh-event-type">
                 <div>
                     <span class="pull-left">Field Research Type</span>
@@ -148,12 +151,12 @@
                 </div>
             </label>
             <div ng-repeat="frType in $ctrl.form.frTypes track by $index">
-                <select id="id-nh-event-type"
+                <select class="form-control"
+                        id="id-fr-type"
                         style="margin-bottom: 5px;"
-                        data-ng-options="item for item in $ctrl.fieldResearchTypes"
-                        data-ng-model="$ctrl.form.frTypes[$index]"
-                        data-ng-required="$first"
-                        class="form-control">
+                        ng-options="item for item in $ctrl.fieldResearchTypes"
+                        ng-model="$ctrl.form.frTypes[$index]"
+                        ng-required="$first">
                     <option value="">-- Select Field Research Type --</option>
                 </select>
             </div>
@@ -169,7 +172,7 @@
             </button>
         </div>
         <!-- Natural Hazard Type -->
-        <div class="form-group" style="width:100%;">
+        <div class="form-group" style="width:100%;" ng-if="$ctrl.project && $ctrl.ui.hasType">
             <label for="id-nh-event-type">
                 <div>
                     <span class="pull-left">Natural Hazard Type</span>
@@ -180,30 +183,29 @@
                 </div>
             </label>
             <div ng-repeat="nhType in $ctrl.form.nhTypes track by $index">
-                <select id="id-nh-event-type"
+                <select class="form-control"
+                        id="id-nh-event-type"
                         style="margin-bottom: 5px;"
-                        data-ng-options="item for item in $ctrl.rapidEventTypes"
-                        data-ng-model="$ctrl.form.nhTypes[$index]"
-                        data-ng-required="$first"
-                        class="form-control"
-                        data-ng-if="$ctrl.showNhTypesDropdown($index)">
+                        ng-options="item for item in $ctrl.naturalHazardTypes"
+                        ng-model="$ctrl.form.nhTypes[$index]"
+                        ng-required="$first"
+                        ng-if="!$ctrl.isOther($ctrl.form.nhTypes[$index], $ctrl.naturalHazardTypes)">
                     <option value="">-- Select Natural Hazard Type --</option>
                 </select>
-                <div class="nh-types-input-wrapper"
-                        data-ng-if="$ctrl.showNhTypesInput($index)">
+                <div ng-if="$ctrl.isOther($ctrl.form.nhTypes[$index], $ctrl.naturalHazardTypes)">
                     <input type="text"
-                            data-ng-model="$ctrl.form.nhTypesOther[$index]"
-                            class="form-control"
-                        />
+                           ng-model="$ctrl.form.nhTypes[$index]"
+                           class="form-control"
+                    />
                 </div>
             </div>
             <button class="btn-project-add-rm"
-                    ng-click="$ctrl.addField($ctrl.form.nhTypes); $ctrl.addField($ctrl.form.nhTypesOther)">
+                    ng-click="$ctrl.addField($ctrl.form.nhTypes)">
                     &#x2b; Add another Natural Hazard Type
             </button>
             |
             <button class="btn-project-add-rm"
-                    ng-click="$ctrl.dropEventType()"
+                    ng-click="$ctrl.dropField($ctrl.form.nhTypes)"
                     ng-disabled="$ctrl.checkEmpty($ctrl.form.nhTypes)">
                     &#x2212; Remove Natural Hazard Type
             </button>
@@ -244,13 +246,13 @@
                                     typeahead-template-url="itemTmpl.html"
                                     ng-required="true"
                             >
-                            <span ng-repeat="(i, usr) in $ctrl.form.copi track by $index">
+                            <span ng-repeat="(i, usr) in $ctrl.form.coPis track by $index">
                                 <input  class="project-form-input project-form-name"
                                         type="text"
                                         id="id_copi"
                                         name="copi"
                                         autocomplete="chrome-off"
-                                        ng-model="$ctrl.form.copi[i]"
+                                        ng-model="$ctrl.form.coPis[i]"
                                         ng-style="{'float': $even ? 'right' : 'none'}"
                                         placeholder="Lookup user by name or email address"
                                         uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
@@ -261,13 +263,13 @@
                             </span>
                             <div>
                                 <button class="btn-project-add-rm"
-                                        ng-click="$ctrl.addField($ctrl.form.copi)">
+                                        ng-click="$ctrl.addField($ctrl.form.coPis)">
                                         &#x2b; Add another PI
                                 </button>
                                 |
                                 <button class="btn-project-add-rm"
-                                        ng-click="$ctrl.dropField($ctrl.form.copi)"
-                                        ng-disabled="$ctrl.checkEmpty($ctrl.form.copi)">
+                                        ng-click="$ctrl.dropField($ctrl.form.coPis)"
+                                        ng-disabled="$ctrl.checkEmpty($ctrl.form.coPis)">
                                         &#x2212; Remove PI
                                 </button>
                             </div>
@@ -280,14 +282,14 @@
                     </div>
                 </tr>
                 <tr class="tg-0lax">
-                    <span ng-repeat="(i, usr) in $ctrl.form.team track by $index">
+                    <span ng-repeat="(i, usr) in $ctrl.form.teamMembers track by $index">
                         <input  class="project-form-input project-form-name"
                                 type="text"
                                 id="id_user"
                                 name="user"
                                 autocomplete="chrome-off"
                                 ng-style="{'float': $odd ? 'right' : 'none'}"
-                                ng-model="$ctrl.form.team[i]"
+                                ng-model="$ctrl.form.teamMembers[i]"
                                 placeholder="Lookup user by name or email address"
                                 uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
                                 typeahead-loading="searching"
@@ -297,20 +299,20 @@
                     </span>
                     <div>
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.addField($ctrl.form.team)">
+                                ng-click="$ctrl.addField($ctrl.form.teamMembers)">
                                 &#x2b; Add another Project Member
                         </button>
                         |
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.dropField($ctrl.form.team)"
-                                ng-disabled="$ctrl.checkEmpty($ctrl.form.team)">
+                                ng-click="$ctrl.dropField($ctrl.form.teamMembers)"
+                                ng-disabled="$ctrl.checkEmpty($ctrl.form.teamMembers)">
                                 &#x2212; Remove Project Member
                         </button>
                     </div>
                 </tr>
             </table>
         </div>
-        <div class="expAuthorsAssign form-group" ng-if="$ctrl.form.uuid && $ctrl.form.projectType">
+        <div class="expAuthorsAssign form-group" ng-if="$ctrl.project && $ctrl.ui.hasType">
             <label for="id-project-guest">
                 <div class="label-form">
                     <div>
@@ -332,36 +334,36 @@
                     <td>Email</td>
                     <td>Institution</td>
                 </tr>
-                <tr ng-repeat="(i, usr) in $ctrl.form.guests track by $index">
+                <tr ng-repeat="(i, usr) in $ctrl.form.guestMembers track by $index">
                     <td>
-                        <input class="project-form-input" style="width: 95%" type="text" name="guestFName" id="id_guest_fname" ng-model="$ctrl.form.guests[i].fname" autocomplete="additional-name">
+                        <input class="project-form-input" style="width: 95%" type="text" name="guestFName" id="id_guest_fname" ng-model="$ctrl.form.guestMembers[i].fname" autocomplete="additional-name">
                     </td>
                     <td>
-                        <input class="project-form-input" style="width: 95%" type="text" name="guestLName" id="id_guest_lname" ng-model="$ctrl.form.guests[i].lname" autocomplete="additional-name">
+                        <input class="project-form-input" style="width: 95%" type="text" name="guestLName" id="id_guest_lname" ng-model="$ctrl.form.guestMembers[i].lname" autocomplete="additional-name">
                     </td>
                     <td>
-                        <input class="project-form-input" style="width: 95%" type="text" name="guestEmail" id="id_guest_email" ng-model="$ctrl.form.guests[i].email" autocomplete="email">
+                        <input class="project-form-input" style="width: 95%" type="text" name="guestEmail" id="id_guest_email" ng-model="$ctrl.form.guestMembers[i].email" autocomplete="email">
                     </td>
                     <td>
-                        <input class="project-form-input" style="width: 100%" type="text" name="ExpAuthorInst" id="id_guest_inst" ng-model="$ctrl.form.guests[i].inst" autocomplete="organization">
+                        <input class="project-form-input" style="width: 100%" type="text" name="ExpAuthorInst" id="id_guest_inst" ng-model="$ctrl.form.guestMembers[i].inst" autocomplete="organization">
                     </td>
                 </tr>
             </table>
             <button class="btn-project-add-rm"
-                    ng-click="$ctrl.addGuests()">
+                    ng-click="$ctrl.addField($ctrl.form.guestMembers)">
                     &#x2b; Add another Unregistered Project Member
             </button>
             |
             <button class="btn-project-add-rm"
-                    ng-click="$ctrl.dropField($ctrl.form.guests)"
-                    ng-disabled="$ctrl.checkEmpty($ctrl.form.guests)">
+                    ng-click="$ctrl.dropField($ctrl.form.guestMembers)"
+                    ng-disabled="$ctrl.checkEmpty($ctrl.form.guestMembers)">
                     &#x2212; Remove Unregistered Project Member
             </button>
         </div>
         <!-- Edit Project Section -->
-        <div ng-if="$ctrl.form.uuid && $ctrl.form.projectType">
+        <div ng-if="$ctrl.project && $ctrl.ui.hasType">
             <!-- Project Other Data Types -->
-            <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.project.value.projectType === 'other'">
+            <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.form.projectType === 'other'">
                 <label class="label-form">
                     <div>
                         <span class="label-form-name">Data Type(s)</span>
@@ -374,14 +376,16 @@
                 <div>
                     <select ng-options="type as type for type in $ctrl.otherTypes"
                             ng-model="$ctrl.form.dataType"
+                            ng-if="!$ctrl.isOther($ctrl.form.dataType, $ctrl.otherTypes)"
                             required
                     >
                         <option value="" disabled selected>--Data Type--</option>
                     </select>
                     <input type="text"
                            class="project-form-input"
-                           ng-model="$ctrl.form.dataTypeCustom"
-                           ng-if="$ctrl.form.dataType === 'Custom'"
+                           ng-model="$ctrl.form.dataType"
+                           ng-if="$ctrl.isOther($ctrl.form.dataType, $ctrl.otherTypes)"
+                           required
                     />
                 </div>
             </div>
@@ -504,7 +508,7 @@
                 </div>
             </div>
             <!-- FR Fields -->
-            <div data-ng-if="$ctrl.project.value.projectType === 'field_recon'">
+            <div ng-if="$ctrl.form.projectType === 'field_recon'">
                 <div style="width: 100%;">
                     <!-- Event -->
                     <div style="width:45%; display:inline-block;" class="pull-left form-group">
@@ -521,8 +525,8 @@
                                 id="id-nh-event"
                                 name="nh-event"
                                 style="width:100%"
-                                data-ng-model="$ctrl.form.nhEvent"
-                                data-ng-required="true"/>
+                                ng-model="$ctrl.form.nhEvent"
+                                ng-required="true"/>
                     </div>
                     <!-- Event Dates -->
                     <div style="width:50%;" class="form-group">
@@ -539,7 +543,7 @@
                             <input  class="project-form-input"
                                     type="text" 
                                     uib-datepicker-popup="MM-dd-yyyy"
-                                    ng-model="$ctrl.form.nhEventDateStart"
+                                    ng-model="$ctrl.form.nhEventStart"
                                     is-open="isStartOpen"
                                     placeholder="mm-dd-yyyy"
                                     autocomplete="chrome-off"
@@ -560,7 +564,7 @@
                             <span class="input-group" style="width:45%;">
                             <input  type="text"
                                     uib-datepicker-popup="MM-dd-yyyy"
-                                    ng-model="$ctrl.form.nhEventDateEnd"
+                                    ng-model="$ctrl.form.nhEventEnd"
                                     is-open="isEndOpen"
                                     placeholder="mm-dd-yyyy"
                                     autocomplete="chrome-off"
@@ -595,8 +599,8 @@
                             </label>
                             <input type="text"
                                     id="id-location"
-                                    data-ng-model="$ctrl.form.nhLocation"
-                                    data-ng-required="true"
+                                    ng-model="$ctrl.form.nhLocation"
+                                    ng-required="true"
                                     class="form-control"/>
                         </div>
                         <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -605,8 +609,8 @@
                             </label>
                             <input type="text"
                                     id="id-latitude"
-                                    data-ng-model="$ctrl.form.nhLatitude"
-                                    data-ng-required="true"
+                                    ng-model="$ctrl.form.nhLatitude"
+                                    ng-required="true"
                                     class="form-control"/>
                         </div>
                         <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -615,8 +619,8 @@
                             </label>
                             <input type="text"
                                     id="id-longitude"
-                                    data-ng-model="$ctrl.form.nhLongitude"
-                                    data-ng-required="true"
+                                    ng-model="$ctrl.form.nhLongitude"
+                                    ng-required="true"
                                     class="form-control" />
                         </div>
                     </div>
@@ -641,7 +645,7 @@
                             style="width:100%;"
                             id="id_keywords"
                             ng-model="$ctrl.form.keywords"
-                            ng-required="$ctrl.form.uuid && $ctrl.form.projectType"><br>
+                            ng-required="$ctrl.project && $ctrl.ui.hasType"><br>
                 </div>
             </div>
             <!-- Project Description -->
@@ -663,7 +667,7 @@
                                 style="width:100%; height:3em; resize: vertical;"
                                 id="id_description"
                                 ng-model="$ctrl.form.description"
-                                ng-required="$ctrl.form.uuid && $ctrl.form.projectType"></textarea>
+                                ng-required="$ctrl.project && $ctrl.ui.hasType"></textarea>
                 </div>
             </div>
         </div>
@@ -678,16 +682,24 @@
                     <td class="tg-0lax" valign="center">
                     </td>
                     <td class="tg-0lax" valign="center" style="text-align: right;">
-                        <div ng-if="!$ctrl.ui.busy">
-                            <button class="btn btn-add" type="submit" ng-click="projForm.$valid && $ctrl.save($event)" ng-if="!$ctrl.form.uuid">
+                        <div ng-if="!$ctrl.ui.loading">
+                            <button class="btn btn-add"
+                                    type="submit"
+                                    ng-click="projForm.$valid && $ctrl.create($event)"
+                                    ng-if="!$ctrl.project"
+                            >
                                 &#x2b; Add Project
                             </button>
-                            <button class="btn btn-add" type="submit" ng-click="projForm.$valid && $ctrl.save($event)" ng-if="$ctrl.form.uuid">
+                            <button class="btn btn-add"
+                                    type="submit"
+                                    ng-click="projForm.$valid && $ctrl.update($event)"
+                                    ng-if="$ctrl.project"
+                            >
                                 Update Project
                             </button>
                         </div>
                         <div>
-                            <span ng-if="$ctrl.ui.busy">
+                            <span ng-if="$ctrl.ui.loading">
                                 <i class="fa fa-spinner fa-spin"></i>
                                 Saving project...
                             </span>

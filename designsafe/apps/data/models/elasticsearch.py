@@ -140,6 +140,9 @@ class IndexedFileLegacy(Document):
 
 @python_2_unicode_compatible
 class IndexedPublication(Document):
+    revision = Long()
+    revisionText = Text()
+    revisionDate = Date()
     analysisList = Nested(properties={
         'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
@@ -330,26 +333,39 @@ class IndexedPublication(Document):
     })
 
     @classmethod
-    def from_id(cls, project_id):
+    def from_id(cls, project_id, revision=None):
+        # if revision number is specified, get that revision, otherwise use
+        # "exists" query to get the version where "revision" does NOT exist
         if project_id is None:
             raise DocumentNotFound()
+
+        if revision:
+            revision_filter = Q('match', **{'revision': revision})
+        else:
+            # Search for documents where revision is not specified.
+            revision_filter = ~Q('exists', **{'field': 'revision'})
+
         id_filter = Q('term', **{'projectId._exact': project_id})
-        search = cls.search().filter(id_filter)
+        search = cls.search().filter(id_filter & revision_filter)
         try:
             res = search.execute()
         except Exception as e:
             raise e
-        if res.hits.total.value > 1:
-            id_filter = Q('term', **{'_id': res[0].meta.id}) 
-            # Delete all files indexed with the same system/path, except the first result
-            delete_query = id_filter & ~id_filter
-            cls.search().filter(delete_query).delete()
-            return cls.get(res[0].meta.id)
-        elif res.hits.total.value == 1:
+        if res.hits.total.value >= 1:
             return cls.get(res[0].meta.id)
         else:
             raise DocumentNotFound("No document found for "
                                    "{}".format(project_id))
+
+    @classmethod
+    def max_revision(cls, project_id):
+        id_filter = Q('term', **{'projectId._exact': project_id})
+        res = cls.search().filter(id_filter)
+        res.aggs.metric('max_revision', 'max', field='revision')
+        max_agg = res.execute().aggregations.max_revision.value
+        if max_agg:
+            return int(max_agg)
+        return None
 
     class Index:
         name = settings.ES_INDICES['publications']['alias']
