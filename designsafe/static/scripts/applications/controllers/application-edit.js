@@ -1987,7 +1987,7 @@ export function applicationEditCtrl(window, angular, $, _) {
 
                             if (appCategories.includes(appCategory)) {
                                 app.appCategory = appCategory;
-                            } else if (appCategory == 'Data Collections') {
+                            } else if (appCategory === 'Data Collections' || appCategory === 'Partner Data Apps') {
                                 app.appCategory = 'Hazard Apps';
                             }
                             if (app.appCategory) {

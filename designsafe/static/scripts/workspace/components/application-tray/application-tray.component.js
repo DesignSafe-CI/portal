@@ -129,8 +129,7 @@ class AppTrayCtrl {
                     this.tabs.push(
                         {
                             title: element,
-                            content: this.simpleList.lists[element],
-                            count: this.simpleList.lists[element].length,
+                            content: this.simpleList.lists[element]
                         }
                     );
                 }, this);
