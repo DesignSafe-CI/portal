@@ -1329,6 +1329,9 @@ mark,
   padding-bottom: 6px;
   text-transform:capitalize;
 }
+.prj-dropdown {
+  width: 16%;
+}
 .prj-agree-body {
   padding-bottom: 10px;
 }
@@ -2757,6 +2760,11 @@ input[type="search"] {
 .pipeline-nav {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+.pipeline-notification {
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 .pipeline-header {

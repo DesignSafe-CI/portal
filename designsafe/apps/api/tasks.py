@@ -535,7 +535,14 @@ def reindex_projects(self):
 
 
 @shared_task(bind=True, max_retries=5)
-def copy_publication_files_to_corral(self, project_id, revision=None):
+def copy_publication_files_to_corral(self, project_id, revision=None, selected_files=None):
+    """
+    Takes a project ID and copies project files to a published directory.
+    
+    :param str project_id: Project ID
+    :param int revision: The revision number of the publication
+    :param list of selected_files strings: Only provided if project type == other.
+    """
     # Only copy published files while in prod
     if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
         return
@@ -547,17 +554,10 @@ def copy_publication_files_to_corral(self, project_id, revision=None):
     publication = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
 
     filepaths = publication.related_file_paths()
-    if not len(filepaths):
-        res = get_service_account_client().files.list(
-            systemId='project-{project_uuid}'.format(
-                project_uuid=publication.project.uuid
-            ),
-            filePath='/'
-        )
+    if not len(filepaths) and selected_files:
+        # Project is "Other" so we just copy the selected files
         filepaths = [
-            _file.path.strip('/') for _file in res if (
-                _file.name != '.' and _file.name != 'Trash'
-            )
+            file_path.strip('/') for file_path in selected_files if (file_path != '.Trash')
         ]
 
     filepaths = list(set(filepaths))
@@ -631,6 +631,24 @@ def freeze_publication_meta(self, project_id, entity_uuids=None, revision=None):
             entity_uuids,
             revision=revision
         )
+    except Exception as exc:
+        logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
+        raise self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=1, default_retry_delay=60)
+def amend_publication_data(self, project_id, revision=None):
+    """Amend publication.
+
+    This task will update the published metadata in Elasticsearch and DataCite
+
+    :param str project_id: Project Id.
+    :param list of entity_uuid strings: Main entity uuid.
+    """
+    from designsafe.apps.projects.managers import publication as PublicationManager
+    try:
+        amended_pub = PublicationManager.amend_publication(project_id, revision)
+        PublicationManager.amend_datacite_doi(amended_pub)
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
@@ -832,6 +850,7 @@ def email_collaborator_added_to_project(self, project_id, project_uuid, project_
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def email_user_publication_request_confirmation(self, username):
+    return
     user = get_user_model().objects.get(username=username)
     email_subject = 'Your DesignSafe Publication Request Has Been Issued'
     email_body = """

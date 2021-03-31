@@ -89,6 +89,19 @@
                 </td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly">
+                <td>
+                    <span>Version</span>
+                </td>
+                <td>
+                    <select class="prj-dropdown"
+                            ng-options="version for version in $ctrl.versions"
+                            ng-change="$ctrl.getVersion()"
+                            ng-model="$ctrl.selectedVersion">
+                    </select>
+                    &nbsp;<a>Version Changes</a>
+                </td>
+            </tr>
+            <tr class="prj-row" ng-if="$ctrl.readOnly">
                 <td ng-if="$ctrl.browser.project.value.keywords">License(s)</td>
                 <td class="prj-data">
                     <strong>

@@ -16,7 +16,10 @@ class PipelineAmendCtrl {
 
     $onInit() {
         this.ui = {
-            loading: true
+            loading: true,
+            success: false,
+            error: false,
+            submitted: false,
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.ProjectService.get({ uuid: this.projectId }).then((project) => {
@@ -39,12 +42,21 @@ class PipelineAmendCtrl {
     submitAmend() {
         this.ui.loading = true;
         this.$http.post(
-            // This needs to route to the amend endpoint...
+            '/api/projects/amend-publication/',
+            {projectId: this.project.value.projectId}
         ).then((resp) => {
+            this.ui.success = true;
             this.ui.submitted = true;
-        }).finally( () => {
+            this.ui.loading = false;
+        }, (error) => {
+            this.ui.error = true;
+            this.ui.submitted = true;
             this.ui.loading = false;
         });
+    }
+
+    returnToProject() {
+        this.$state.go('projects.view', { projectId: this.project.uuid }, { reload: true });
     }
 
     goStart() {
