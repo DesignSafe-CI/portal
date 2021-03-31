@@ -53,7 +53,7 @@ class PipelineSelectionOtherCtrl {
         this.$state.go('projects.pipelineProject', {
             projectId: this.projectId,
             project: this.browser.project,
-            selectedListings: this.selectedFiles,
+            selectedListings: this.selectedListing
         }, {reload: true});
     }
 
@@ -64,6 +64,10 @@ class PipelineSelectionOtherCtrl {
         };
 
         this.FileListingService.selectedListing = this.selectedListing;
+    }
+
+    undoSelections() {
+        this.selectedListing = null;
     }
 
     onBrowse(file) {

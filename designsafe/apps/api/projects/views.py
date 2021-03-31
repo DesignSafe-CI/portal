@@ -47,7 +47,11 @@ def template_project_storage_system(project):
 class PublicationView(BaseApiView):
     @profile_fn
     def get(self, request, project_id):
-        pub = BaseESPublication(project_id=project_id)
+        """
+        Get the latest revision of a publication
+        """
+        revision = IndexedPublication.max_revision(project_id=project_id)
+        pub = BaseESPublication(project_id=project_id, revision=revision)
         if pub is not None and hasattr(pub, 'project'):
             return JsonResponse(pub.to_dict())
         else:
@@ -58,6 +62,9 @@ class PublicationView(BaseApiView):
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
     def post(self, request, **kwargs):
+        """
+        Publish a project or version a publication
+        """
         if request.is_ajax():
             data = json.loads(request.body)
         else:
@@ -66,6 +73,7 @@ class PublicationView(BaseApiView):
         status = data.get('status', 'saved')
         revision = data.get('revision', None)
         revision_text = data.get('revisionText', None)
+        selected_files = data.get('selectedFiles', None)
 
         project_id = data['publication']['project']['value']['projectId']
 
@@ -80,22 +88,23 @@ class PublicationView(BaseApiView):
         if data.get('status', 'save').startswith('publish'):
             (
                 tasks.freeze_publication_meta.s(
-                    pub.projectId,
-                    data.get('mainEntityUuids'),
+                    project_id=pub.projectId,
+                    entity_uuids=data.get('mainEntityUuids'),
                     revision=current_revision
                 ).set(queue='api') |
                 group(
                     tasks.save_publication.si(
-                        pub.projectId,
-                        data.get('mainEntityUuids'),
+                        project_id=pub.projectId,
+                        entity_uuids=data.get('mainEntityUuids'),
                         revision=current_revision
                     ).set(
                         queue='files',
                         countdown=60
                     ),
                     tasks.copy_publication_files_to_corral.si(
-                        pub.projectId,
-                        revision=current_revision
+                        project_id=pub.projectId,
+                        revision=current_revision,
+                        selected_files=selected_files
                     ).set(
                         queue='files',
                         countdown=60
@@ -103,20 +112,64 @@ class PublicationView(BaseApiView):
                 ) |
                 tasks.swap_file_tag_uuids.si(pub.projectId, revision=current_revision) |
                 tasks.set_publish_status.si(
-                    pub.projectId,
-                    data.get('mainEntityUuids'),
+                    project_id=pub.projectId,
+                    entity_uuids=data.get('mainEntityUuids'),
                     revision=current_revision
                 ) |
                 tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
                 tasks.email_user_publication_request_confirmation.si(request.user.username)
             ).apply_async()
+        
+        return JsonResponse({
+            'success': 'Project is publishing.'
+        }, status=200)
 
-        return JsonResponse({'status': 200,
-                             'response': {
-                                 'message': 'Your publication has been '
-                                            'schedule for publication',
-                                 'status': status}},
-                            status=200)
+class PublicationRevisionView(BaseApiView):
+    @profile_fn
+    def get(self, request, project_id, revision):
+        """
+        Get a version of a publication by it's project ID and revision number
+        """
+        pub = BaseESPublication(project_id=project_id, revision=revision)
+        latest_revision = IndexedPublication.max_revision(project_id=project_id)
+        if pub is not None and hasattr(pub, 'project'):
+            return JsonResponse({
+                'publication': pub.to_dict(),
+                'latestVersion': latest_revision,
+                })
+        else:
+            return JsonResponse({'status': 404,
+                                 'message': 'Not found'},
+                                status=404)
+
+    @method_decorator(agave_jwt_login)
+    @method_decorator(login_required)
+    def post(self, request, **kwargs):
+        """
+        Amend a Publication
+        """
+        if request.is_ajax():
+            data = json.loads(request.body)
+        else:
+            data = request.POST
+        
+        project_id = data['projectId']
+        current_revision = IndexedPublication.max_revision(project_id=project_id)
+
+        (
+            tasks.amend_publication_data.s(
+                roject_id=project_id,
+                revision=current_revision
+            ).set(queue='api') |
+            tasks.zip_publication_files.s(
+                roject_id=project_id,
+                revision=current_revision
+            ).set(queue='files')
+        ).apply_async()
+        
+        return JsonResponse({
+            'success': 'Publication is being amended.'
+        }, status=200)
 
 
 class NeesPublicationView(BaseApiView):

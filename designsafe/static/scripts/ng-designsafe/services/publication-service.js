@@ -191,7 +191,21 @@ export class PublicationService {
      */
     getPublished(projId) {
         // Retrieve current details if they are already in state.
-        return this.$http.get('/api/projects/publication/' + projId).then((resp) => {
+        return this.$http.get(`/api/projects/publication/${projId}/`).then((resp) => {
+            this.current = resp.data;
+            return resp;
+        });
+    }
+
+    /**
+     * Retrieve details for a specific publication version using 
+     * its project ID and revision number.
+     * @param {string} projId Project ID to retrieve.
+     * @param {string} revision version of project to retrieve.
+     */
+    getPublishedVersion(projId, revision) {
+        // Retrieve current details if they are already in state.
+        return this.$http.get(`/api/projects/publication/${projId}/${revision}/`).then((resp) => {
             this.current = resp.data;
             return resp;
         });

@@ -95,6 +95,8 @@ class PipelinePublishCtrl {
                 publication[this.entityListName].push({uuid: entity.uuid});
                 this.mainEntityUuids.push(entity.uuid);
             });
+        } else {
+            this.filePaths = this.selectedListings.listing.map(file => file.path);
         }
         this.publication = publication;
         this.PublicationService.getPublished(this.project.value.projectId).then((resp) => {
@@ -124,8 +126,9 @@ class PipelinePublishCtrl {
             '/api/projects/publication/',
             {
                 publication: this.publication,
-                mainEntityUuids: this.mainEntityUuids,
                 status: 'publishing',
+                mainEntityUuids: this.mainEntityUuids,
+                selectedFiles: this.filePaths
             }
         ).then((resp) => {
             this.ui.submitted = true;

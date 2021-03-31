@@ -55,26 +55,30 @@
             <li>If you need help, attend <a href="/learning-center/training/" target="_blank">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
-        <!-- Files -->
+        <!-- file selection -->
         <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
         <div ng-if="!$ctrl.ui.loading">
-            <div class="well" style="margin-bottom: 20px;" ng-if="$ctrl.selectedListing">
-                <h4>These files will be published:</h4>
+            <div ng-if="$ctrl.selectedListing">
+                <div class="pipeline-nav">
+                    <h3>These files will be published</h3>
+                    <button class="btn btn-danger" ng-click="$ctrl.undoSelections()">Undo Selections</button>
+                </div>
                 <files-listing listing=$ctrl.selectedListing show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
             </div>
-            <div style="text-align: center;">
-                <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
-            </div>
-            <div>
+            <div ng-if="!$ctrl.selectedListing">
+                <div class="pipeline-nav">
+                    <h3>Select files</h3>
+                    <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
+                </div>
                 <breadcrumb
                     path="$ctrl.FileListingService.listings.main.params.path"
                     system="$ctrl.FileListingService.listings.main.params.path"
                     on-browse="$ctrl.onBrowse(file)"
-                    custom-root="{label: $ctrl.browser.project.value.projectId, path: ''}"
+                    custom-root="{label: $ctrl.project.value.projectId, path: ''}"
                 ></breadcrumb>
                 <files-listing listing="$ctrl.FileListingService.listings.main" show-select="true" show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
             </div>
