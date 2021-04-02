@@ -618,3 +618,9 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
                                 SUPPORTED_IPYNB_PREVIEW_EXTS)
+
+
+# FEDORA REPO SETTINGS
+FEDORA_URL = os.environ.get('FEDORA_URL')
+FEDORA_USERNAME = os.environ.get('FEDORA_USERNAME')
+FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
