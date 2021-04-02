@@ -1,6 +1,6 @@
 # DesignSafe-CI Portal Release Notes
 
-## v5.15
+## v5.1.5
 Fixes:
 - Update Redis Python client.
 
