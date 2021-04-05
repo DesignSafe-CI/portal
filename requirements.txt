@@ -137,7 +137,7 @@ python-magic==0.4.13
 python-memcached==1.59
 pytz==2015.4
 PyYAML==3.12
-redis==2.10.5
+redis==3.5.3
 requests==2.24.0
 requests-mock==1.0.0
 requests-oauthlib==0.8.0
