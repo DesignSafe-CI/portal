@@ -416,16 +416,19 @@ class Project(MetadataModel):
             self.award_number,
             key=lambda x: (x.get('order', 0), x.get('name', ''))
         )
-        attributes['identifiers'] += [
-            {
-                'identifierType': 'NSF Award Number',
-                'identifier': '{name} - {number}'.format(
-                    name=award['name'],
-                    number=award['number']
-                ),
-            } for award in awards
-            if award.get('name') and award.get('number')
-        ]
+        attributes['fundingReferences'] = {'fundername': [], 'awardnumber': []}
+        for award in awards:
+           attributes['fundingReferences']['fundername'].append(award['name'])
+           attributes['fundingReferences']['awardnumber'].append(award['number'])
+
+        if len(self.related_entities()) and type(self.related_entities()[0]) is not dict:
+            self.relatedIdentifiers = [{'doi': self.related_entities()[0].dois, 'title': self.related_entities()[0].title)}]
+        awards = sorted(
+            self.award_number,
+            def key(x): return (x.get('doi', related_entities()[0]), x.get('title', ''))
+        )
+        attributes['relatedIdentifiers'] = {'relatedIdentifier': [], 'relatedIdentifierType': [], 'relationType': []}
+        #relatedIdentifiself.related_entities
         return attributes
 
 
