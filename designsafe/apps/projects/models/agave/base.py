@@ -416,19 +416,29 @@ class Project(MetadataModel):
             self.award_number,
             key=lambda x: (x.get('order', 0), x.get('name', ''))
         )
-        attributes['fundingReferences'] = {'fundername': [], 'awardnumber': []}
+        attributes['fundingReferences'] = []
         for award in awards:
-           attributes['fundingReferences']['fundername'].append(award['name'])
-           attributes['fundingReferences']['awardnumber'].append(award['number'])
+            attributes['fundingReferences'].append({
+               'fundername' : award['name'],
+               'awardnumber' : award['number']
+            })
 
-        if len(self.related_entities()) and type(self.related_entities()[0]) is not dict:
-            self.relatedIdentifiers = [{'doi': self.related_entities()[0].dois, 'title': self.related_entities()[0].title)}]
-        awards = sorted(
-            self.award_number,
-            def key(x): return (x.get('doi', related_entities()[0]), x.get('title', ''))
-        )
-        attributes['relatedIdentifiers'] = {'relatedIdentifier': [], 'relatedIdentifierType': [], 'relationType': []}
-        #relatedIdentifiself.related_entities
+        attributes['relatedIdentifiers'] = []
+        for related_entity in self.related_entities():
+            rel_ent_dict = related_entity.to_body_dict()
+            if 'dois' in rel_ent_dict['value'] and len(rel_ent_dict['value']['dois']):
+                attributes['relatedIdentifiers'].append({
+                    'relatedIdentifier' : rel_ent_dict['value']['dois'],
+                    'relatedIdentifierType' : 'DOI', 
+                    'relationType' : 'IsPartOf'
+                })
+            elif 'uuid' in rel_ent_dict['value'] and len(rel_ent_dict['value']['uuid']):
+                attributes['relatedIdentifiers'].append({
+                    'relatedIdentifier' : 'https://agave.designsafe-ci.org/meta/v2/data/' + related_entity['value']['uuid'],
+                    'relatedIdentifierType' : 'URL',
+                    'relationType' : 'IsPartOf'
+                })
+
         return attributes
 
 
