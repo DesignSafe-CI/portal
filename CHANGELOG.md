@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.1.5
+Fixes:
+- Update Redis Python client.
+
 ## v5.1.4
 Fixes:
 - Update Celery version and fix namespacing.
