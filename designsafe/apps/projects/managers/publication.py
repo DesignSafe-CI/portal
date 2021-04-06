@@ -15,9 +15,11 @@ from pytas.http import TASClient
 from designsafe import settings
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.data.models.agave.files import BaseFileResource
+from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from designsafe.apps.projects.managers.base import ProjectsManager
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
+from designsafe.libs.elasticsearch.utils import new_es_client
 
 
 logger = logging.getLogger(__name__)
@@ -195,6 +197,7 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
     :param str project_id: Project Id to publish.
     :param list entity_uuids: list of str Entity uuids to publish.
     """
+    es_client = new_es_client()
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     responses = []
@@ -216,8 +219,8 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
             responses.append(res)
 
 
-    pub = BaseESPublication(project_id=project_id)
-    pub.update(status='published')
+    pub = BaseESPublication(project_id=project_id, using=es_client)
+    pub.update(status='published', using=es_client)
 
     for res in responses:
         logger.info(
@@ -308,7 +311,8 @@ def _delete_unused_fields(dict_obj):
 
 
 def fix_file_tags(project_id):
-    pub = BaseESPublication(project_id=project_id)
+    es_client = new_es_client()
+    pub = BaseESPublication(project_id=project_id, using=es_client)
     pub_dict = pub.to_dict()
 
     entities_to_check = list(set(pub_dict.keys()).intersection(list(FIELD_MAP.values())))
@@ -383,7 +387,8 @@ def archive(project_id):
     for a project, and it will also include a formatted json document of the published metadata.
     Note: This metadata file is will only be used until the Fedora system is set up again.
     """
-    pub = BaseESPublication(project_id=project_id)
+    es_client = new_es_client()
+    pub = BaseESPublication(project_id=project_id, using=es_client)
     archive_name = '{}_archive.zip'.format(pub.projectId)
     metadata_name = '{}_metadata.json'.format(pub.projectId)
     pub_dir = settings.DESIGNSAFE_PUBLISHED_PATH
@@ -495,9 +500,10 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     :param str project_id: Project id.
     :param list of entity_uuid strings: Entity uuids.
     """
+    es_client = new_es_client()
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
-    pub_doc = BaseESPublication(project_id=project_id)
+    pub_doc = IndexedPublication.from_id(project_id=project_id, using=es_client)
     publication = pub_doc.to_dict()
 
     if entity_uuids:
@@ -555,5 +561,5 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     else:
         publication['project'] = prj_json
 
-    pub_doc.update(**publication)
+    pub_doc.update(**publication, using=es_client)
     return pub_doc
