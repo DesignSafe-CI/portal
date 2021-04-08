@@ -852,7 +852,7 @@ li .popover.right {
 }
 
 .workspace-tab {
-  width: calc((100% - 20px)/6);
+  width: calc((100% - 20px)/7);
 }
 
 #workspace-tabs a h3 {
