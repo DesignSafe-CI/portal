@@ -221,6 +221,7 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
 
     pub = BaseESPublication(project_id=project_id, using=es_client)
     pub.update(status='published', using=es_client)
+    IndexedPublication._index.refresh(using=es_client)
 
     for res in responses:
         logger.info(
@@ -377,7 +378,8 @@ def fix_file_tags(project_id):
             elif 'value' in pub_dict[entname] and 'fileTags' in pub_dict[entname]['value']:
                 fix_tags_no_path(pub_dict[entname])
 
-    pub.update(**pub_dict)
+    pub.update(using=es_client, **pub_dict)
+    IndexedPublication._index.refresh(using=es_client)
 
 
 def archive(project_id):
@@ -561,5 +563,6 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     else:
         publication['project'] = prj_json
 
-    pub_doc.update(**publication, using=es_client)
+    pub_doc.update(using=es_client, **publication)
+    IndexedPublication._index.refresh(using=es_client)
     return pub_doc
