@@ -76,7 +76,7 @@ export const ngDesignsafe = angular.module('designsafe',
             );
         }
     ])
-    .constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Partner Data Apps', 'Utilities'])
+    .constant('appCategories', ['Simulation', 'SimCenter Tools', 'Visualization', 'Analysis', 'Hazard Apps', 'Utilities'])
     // Current list of icons for apps
     .constant('appIcons', ['Compress', 'Extract', 'MATLAB', 'Paraview', 'Hazmapper', 'Jupyter', 'ADCIRC', 'QGIS', 'LS-DYNA', 'LS-Pre/Post', 'VisIt', 'OpenFOAM', 'OpenSees', 'NGL']);
 

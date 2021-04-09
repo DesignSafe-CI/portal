@@ -10,7 +10,7 @@
   <uib-tabset id="workspace-tabs" ng-show="!$ctrl.requesting" active="$ctrl.activeTab">
     <uib-tab class="workspace-tab" ng-repeat="tab in $ctrl.tabs" focusout="$ctrl.showApps($event, tab)">
       <uib-tab-heading>
-        <h3 class="workspace-tab-title">{{tab.title}} [{{tab.count}}]</h3>
+        <h3 class="workspace-tab-title">{{tab.title}}</h3>
       </uib-tab-heading>
       <div ng-show="!tab.edit" class="apps-tray">
         <md-grid-list md-cols="6" md-row-height="3:2" md-gutter="0px">

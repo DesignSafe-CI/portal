@@ -3,52 +3,78 @@
 {% load auth_extras %}
 {% include 'includes/branding.html' %}
 <header class="site-banner">
-  <div class="site-banner-left logo">
+  <div class="site-banner-left">
     <a href="/">
       <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Research Infrastructure (NHERI)</h1>
-      <img alt="DesignSafe-CI" src="{% static 'images/org_logos/Horizontal-DS.svg' %}" width="100%">
+      <img alt="DesignSafe-CI" src="{% static 'images/org_logos/Horizontal-DS.svg' %}" />
     </a>
   </div>
-
   <div class="site-banner-right">
-    <div class="user-menu">
-      {% if user.is_authenticated %}
-        <span style="vertical-align:middle">
-          {% if not agave_ready %}
-            &nbsp;
-            <a class="text-danger" title="API Session Not Available. Click for details." href="{% url 'designsafe_auth:agave_session_error' %}"><i class="fa fa-exclamation-triangle"></i><span class="sr-only">API Session Not Available. Click for details.</span></a>
-          {% endif %}
-        </span>
-        <span ng-controller="NotificationBadgeCtrl" id="id_user_notify" ng-include="'{% static 'scripts/notifications/html/badge.html' %}'">
-        </span>
-        <div class="btn-group">
-          <a href="{% url 'designsafe_dashboard:index' %}" class="btn btn-link-alt">Welcome, {{ user.first_name }}!</a>
-          <button type="button" class="btn btn-link-alt dropdown-toggle"
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'designsafe_dashboard:index' %}">My Dashboard</a></li>
-            <li><a href="{% url 'designsafe_accounts:index' %}">Manage Account</a></li>
-            <li><a href="{% url 'designsafe_notifications:index' %}">Notifications</a></li>
-            <li><a href="{% url 'djangoRT:mytickets' %}">My Tickets</a></li>
-            {% if user|has_group:'Rapid Admin' %}
-              <li><a href="{% url 'designsafe_rapid:admin'%}" target="_self"> Rapid Admin </a></li>
-            {% endif %}
-            <li><a href="{% url 'logout' %}">Log out</a></li>
-            {% if user.is_impersonate %}
-              <li><a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a></li>
-            {% endif %}
-          </ul>
-        </div>
-
-      {% else %}
-      <div class="btn-group">
-        <a href="{% url 'login' %}" class="btn btn-link-alt">Log in</a>
-        <a href="{% url 'register' %}" class="btn btn-link-alt">Register</a>
-      </div>
+    <ul class="social-media-list">
+      <li>
+        <a href="https://www.facebook.com/NaturalHazardsEngineeringResearchInfrastructure" target="_blank">
+          <img alt="Facebook" src="{% static 'images/social-media/Facebook.svg' %}" />
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/NHERIDesignSafe" target="_blank">
+          <img alt="Twitter" src="{% static 'images/social-media/Twitter.svg' %}" />
+        </a>
+      </li>
+      <li>
+        <a href="https://www.linkedin.com/company/nheri-designsafe/" target="_blank">
+          <img alt="LinkedIn" src="{% static 'images/social-media/Linkedin.svg' %}" />
+        </a>
+      </li>
+      <li>
+        <a href="https://www.youtube.com/c/DesignSafe/videos" target="_blank">
+          <img alt="YouTube" src="{% static 'images/social-media/Youtube.svg' %}" />
+        </a>
+      </li>
+      <li>
+        <a href="https://www.designsafe-ci.org/community/slack-online-collaboration/" target="_blank">
+          <img alt="Slack" src="{% static 'images/social-media/Slack.svg' %}" />
+        </a>
+      </li>
+    </ul>
+    {% if user.is_authenticated %}
+    <span style="vertical-align:middle">
+      {% if not agave_ready %}
+      &nbsp;
+      <a class="text-danger" title="API Session Not Available. Click for details."
+        href="{% url 'designsafe_auth:agave_session_error' %}"><i class="fa fa-exclamation-triangle"></i><span
+          class="sr-only">API Session Not Available. Click for details.</span></a>
       {% endif %}
+    </span>
+    <span ng-controller="NotificationBadgeCtrl" id="id_user_notify"
+      ng-include="'{% static 'scripts/notifications/html/badge.html' %}'">
+    </span>
+    <div class="btn-group">
+      <a href="{% url 'designsafe_dashboard:index' %}" class="btn btn-link-alt">Welcome, {{ user.first_name }}!</a>
+      <button type="button" class="btn btn-link-alt dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="{% url 'designsafe_dashboard:index' %}">My Dashboard</a></li>
+        <li><a href="{% url 'designsafe_accounts:index' %}">Manage Account</a></li>
+        <li><a href="{% url 'designsafe_notifications:index' %}">Notifications</a></li>
+        <li><a href="{% url 'djangoRT:mytickets' %}">My Tickets</a></li>
+        {% if user|has_group:'Rapid Admin' %}
+        <li><a href="{% url 'designsafe_rapid:admin'%}" target="_self"> Rapid Admin </a></li>
+        {% endif %}
+        <li><a href="{% url 'logout' %}">Log out</a></li>
+        {% if user.is_impersonate %}
+        <li><a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a></li>
+        {% endif %}
+      </ul>
     </div>
+    {% else %}
+    <div class="btn-group">
+      <a href="{% url 'login' %}" class="btn btn-link-alt">Log in</a>
+      <a href="{% url 'register' %}" class="btn btn-link-alt">Register</a>
+    </div>
+    {% endif %}
   </div>
 </header>
