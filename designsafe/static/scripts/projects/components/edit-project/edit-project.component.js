@@ -62,7 +62,7 @@ class EditProjectCtrl {
             'Report',
             'REU',
             'Social Sciences',
-            'Softwarem',
+            'Software',
             'Survey',
             'Video',
             'White Paper',
