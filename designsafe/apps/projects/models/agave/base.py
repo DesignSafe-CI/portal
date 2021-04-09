@@ -416,16 +416,28 @@ class Project(MetadataModel):
             self.award_number,
             key=lambda x: (x.get('order', 0), x.get('name', ''))
         )
-        attributes['identifiers'] += [
-            {
-                'identifierType': 'NSF Award Number',
-                'identifier': '{name} - {number}'.format(
-                    name=award['name'],
-                    number=award['number']
-                ),
-            } for award in awards
-            if award.get('name') and award.get('number')
-        ]
+        attributes['fundingReferences'] = []
+        for award in awards:
+            attributes['fundingReferences'].append({
+                'fundername': award['name'],
+                'awardnumber': award['number']
+                })
+
+        attributes['relatedIdentifiers'] = []
+        for related_entity in self.related_entities():
+            rel_ent_dict = related_entity.to_body_dict()
+            if 'dois' in rel_ent_dict['value'] and len(rel_ent_dict['value']['dois']):
+                attributes['relatedIdentifiers'].append({
+                    'relatedIdentifier': rel_ent_dict['value']['dois'],
+                    'relatedIdentifierType': 'DOI',
+                    'relationType': 'IsPartOf'
+                })
+            elif 'uuid' in rel_ent_dict['value'] and len(rel_ent_dict['value']['uuid']):
+                attributes['relatedIdentifiers'].append({
+                    'relatedIdentifier': 'https://agave.designsafe-ci.org/meta/v2/data/' + related_entity['value']['uuid'],
+                    'relatedIdentifierType': 'URL',
+                    'relationType': 'IsPartOf'
+                })
         return attributes
 
 
