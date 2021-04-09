@@ -330,7 +330,7 @@ class IndexedPublication(Document):
     })
 
     @classmethod
-    def from_id(cls, project_id):
+    def from_id(cls, project_id, using='default'):
         if project_id is None:
             raise DocumentNotFound()
         id_filter = Q('term', **{'projectId._exact': project_id})
@@ -343,10 +343,10 @@ class IndexedPublication(Document):
             id_filter = Q('term', **{'_id': res[0].meta.id}) 
             # Delete all files indexed with the same system/path, except the first result
             delete_query = id_filter & ~id_filter
-            cls.search().filter(delete_query).delete()
-            return cls.get(res[0].meta.id)
+            cls.search(using=using).filter(delete_query).delete()
+            return cls.get(res[0].meta.id, using=using)
         elif res.hits.total.value == 1:
-            return cls.get(res[0].meta.id)
+            return cls.get(res[0].meta.id, using=using)
         else:
             raise DocumentNotFound("No document found for "
                                    "{}".format(project_id))

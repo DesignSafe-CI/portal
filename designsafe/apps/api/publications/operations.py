@@ -1,6 +1,7 @@
 from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
 from designsafe.apps.api.publications import search_utils
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
+from designsafe.libs.elasticsearch.utils import new_es_client
 from django.contrib.auth import get_user_model
 from elasticsearch_dsl import Q
 import datetime
@@ -202,11 +203,15 @@ def save_publication(publication, status='publishing'):
         publication['version'] = 2
         publication['licenses'] = publication.pop('license', [])
         publication['license'] = ''
+        es_client = new_es_client()
         try:
-            pub = IndexedPublication.from_id(publication['projectId'])
-            pub.update(**publication)
+            pub = IndexedPublication.from_id(publication['projectId'], using=es_client)
+            pub.update(using=es_client, **publication)
         except DocumentNotFound:
             pub = IndexedPublication(project_id=publication['projectId'], **publication)
-            pub.save()
-        pub.save()
+            pub.save(using=es_client)
+        pub.save(using=es_client)
+
+        # Refresh index so that search works in subsequent pipeline operations.
+        IndexedPublication._index.refresh(using=es_client)
         return pub

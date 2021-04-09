@@ -1,5 +1,6 @@
 from future.utils import python_2_unicode_compatible
 import urllib.request, urllib.parse, urllib.error
+from elasticsearch import Elasticsearch
 import logging
 import os 
 
@@ -196,3 +197,15 @@ def full_dedup(limit=1000):
         res = file_search.execute()
 
 
+def new_es_client():
+    """
+    Instantiate a new Elasticsearch client to use when overriding the default.
+    """
+    use_ssl = (not settings.DESIGNSAFE_ENVIRONMENT == 'dev')
+    return Elasticsearch(
+        hosts=settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
+        http_auth=settings.ES_AUTH,
+        max_retries=3,
+        retry_on_timeout=True,
+        use_ssl=use_ssl
+    )
