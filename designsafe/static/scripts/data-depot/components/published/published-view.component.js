@@ -36,16 +36,18 @@ class PublishedViewCtrl {
         this.browser.project = this.publication.project;
         this.project = this.publication.project;
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
+        this.versions = this.prepVersions(this.publication);
+        this.selectedVersion = this.publication.revision || 'Original';
+        this.prjBasePath = (this.publication.revision && this.publication.revision < 0
+            ? this.publication.projectId + 'r' + this.publication.revision
+            : this.publication.projectId
+        );
 
         this.breadcrumbParams = {
-            root: {label: this.projId, path: this.projId}, 
-            path: this.projId,
+            root: {label: this.prjBasePath, path: this.prjBasePath}, 
+            path: this.prjBasePath,
             skipRoot: true
         }
-
-        // We will need the returned latest version of a publication with every request for one.
-        this.versions = [0, 1] // for testing
-        this.selectedVersion = this.versions[this.versions.length-1]
 
         this.getFileObjs = (evt) => {
             this.FileListingService.publishedListing(this.browser.publication, evt)
@@ -214,13 +216,25 @@ class PublishedViewCtrl {
         }
     }
 
-    getVersion(revision) {
-        this.PublicationService.getPublishedVersion(
-                this.projId,
-                revision
-            ).then((resp) => {
-                console.log(resp);
-            })
+    getVersion() {
+        let path = (typeof this.selectedVersion === 'number'
+            ? this.browser.publication.projectId + 'r' + this.selectedVersion
+            : this.browser.publication.projectId
+        )
+        this.$state.go('publishedData', {
+            filePath: path,
+        }, { reload: true });
+    }
+
+    prepVersions(publication) {
+        let vers = ['Original'];
+        let max = publication.latestRevision;
+        if (typeof max == 'number') {
+            for (let i = 1; i <= max; i++) {
+                vers.push(i);
+            }
+        }
+        return vers;
     }
 
     ordered(parent, entities) {
@@ -336,6 +350,22 @@ class PublishedViewCtrl {
         });
     }
 
+    showVersionInfo() {
+        let date = new Date(this.browser.publication.revisionDate);
+        let modalData = [
+            {label: 'Version', data: this.browser.publication.revision},
+            {label: 'Date of Publication', data: `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`},
+            {label: null, data: this.browser.publication.revisionText}
+        ]
+        this.$uibModal.open({
+            component: 'publishedDataModal',
+            resolve: {
+                data: () => { return modalData },
+            },
+            size: 'citation'
+        });
+    }
+
     goToHash(hash) {
         this.$location.hash(hash);
         this.$anchorScroll.yOffset = 64;
@@ -404,6 +434,7 @@ export const OtherPublishedViewComponent = {
     controller: PublishedViewCtrl,
     controllerAs: '$ctrl',
     bindings: {
-        publication: '<'
+        publication: '<',
+        // latestVersion: '<'
     }
 };

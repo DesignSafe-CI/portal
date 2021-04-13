@@ -179,7 +179,8 @@ def neessearch(offset=0, limit=100, query_string='', limit_fields=True, *args):
     return {'listing': hits}
 
 
-def description(project_id, *args):
+def description(project_id, revision=None, *args):
+    # TODO: Handle revision for returning description.
     pub_query = IndexedPublication.search()\
         .filter(Q({'term': {'projectId._exact': project_id}}))\
         .source(includes=['project.value.description'])
@@ -197,7 +198,6 @@ def neesdescription(project_id, *args):
 
 def save_publication(publication, status='publishing', revision=None, revision_text=None):
         """Save publication."""
-        # TODO: Add revision and revision_log if they exist.
         publication['projectId'] = publication['project']['value']['projectId']
         publication['status'] = status
         publication['version'] = 2

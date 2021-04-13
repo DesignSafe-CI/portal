@@ -63,10 +63,6 @@ export class PublishedDataCtrl {
                 query_string: this.$stateParams.query_string,
             });
         }
-        //var pi = _.find(this.browser.publication.users, (usr) => {
-        //    return usr.username === this.project.value.pi;
-        //});
-        //this.project.piLabel = pi.last_name + ', ' + pi.first_name;
         if (this.browser.publication.project.value.projectType === 'experimental') {
             _.each(this.browser.publication.eventsList, this.getFileObjs);
             _.each(this.browser.publication.modelConfigs, this.getFileObjs);
@@ -96,38 +92,6 @@ export class PublishedDataCtrl {
         this.version = this.browser.publication.version || 1;
         this.type = this.browser.publication.project.value.projectType;
         this.ui.loadingProjectMeta = false;
-                
-        
-        /*
-        if (!this.browser.error) {
-            this.browser.listing.href = this.$state.href(
-                'publishedData.view', {
-                    system: this.FileListingService.listings.main.params.system,
-                    filePath: this.FileListingService.listings.main.params.path.replace(/^\/+/, '')
-                });
-            _.each(this.browser.listing.children, (child) => {
-                child.href = this.$state.href(
-                    'publishedData.view', {
-                        system: child.system,
-                        filePath: child.path.replace(/^\/+/, '')
-                });
-            });
-
-        }
-        */
-        /*
-        this.data = {
-            customRoot: {
-                name: 'Published',
-                href: this.$state.href('publicData', {
-                    systemId: 'nees.public',
-                    filePath: ''
-                }),
-                system: 'nees.public',
-                filePath: '/'
-            }
-        };
-        */
     }
 
     getFileObjs(evt) {

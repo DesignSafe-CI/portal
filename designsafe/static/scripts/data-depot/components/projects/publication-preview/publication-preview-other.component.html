@@ -88,7 +88,7 @@
                     <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
                 </td>
             </tr>
-            <tr class="prj-row" ng-if="$ctrl.readOnly">
+            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
                 <td>
                     <span>Version</span>
                 </td>
@@ -98,7 +98,7 @@
                             ng-change="$ctrl.getVersion()"
                             ng-model="$ctrl.selectedVersion">
                     </select>
-                    &nbsp;<a>Version Changes</a>
+                    &nbsp;<a ng-click=$ctrl.showVersionInfo()><strong>Version Changes</strong></a>
                 </td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly">

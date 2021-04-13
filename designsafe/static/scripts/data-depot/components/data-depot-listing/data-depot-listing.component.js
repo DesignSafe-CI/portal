@@ -13,6 +13,7 @@ class PublicationListingCtrl {
     }
 
     href(publication) {
+        // TODO: This will need to point to the latest version of a publication. PRJ-XXXX or PRJ-XXXXrX
         return this.$state.href('publishedData', {filePath: publication.projectId})
     }
 

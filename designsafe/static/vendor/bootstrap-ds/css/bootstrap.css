@@ -2754,6 +2754,18 @@ input[type="search"] {
 .project-form-name {
   width:49%;
 }
+.pub-info-modal-field {
+  padding-bottom: 10px;
+}
+.pub-info-modal-label {
+  display: inline-block;
+  width:30%;
+}
+.pub-info-modal-data {
+  display: inline-block;
+  width: 68%;
+  font-weight:bold;
+}
 .pipeline-page {
   margin: 20px 0px 20px 0px;
 }
