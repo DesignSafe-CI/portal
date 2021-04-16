@@ -23,41 +23,46 @@ class PipelineStartCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.ProjectService.get({ uuid: this.projectId }).then((project) => {
             this.project = project;
-            this.PublicationService.getPublished(this.project.value.projectId).then((resp) => {
-                // this resp.data can be used to check the status of the publication "saved", "publishing", "published"
-                this.publication = resp.data;
-                switch(this.project.value.projectType) {
-                    case 'experimental': {
-                        this.ui.directSelect = 'projects.pipelineSelectExp'
-                        this.ui.directPreview = 'projects.preview'
-                        break;
-                    }
-                    case 'simulation': {
-                        this.ui.directSelect = 'projects.pipelineSelectSim'
-                        this.ui.directPreview = 'projects.previewSim'
-                        break;
-                    }
-                    case 'hybrid_simulation': {
-                        this.ui.directSelect = 'projects.pipelineSelectHybSim'
-                        this.ui.directPreview = 'projects.previewHybSim'
-                        break;
-                    }
-                    case 'field_recon': {
-                        this.ui.directSelect = 'projects.pipelineSelectField'
-                        this.ui.directPreview = 'projects.previewFieldRecon'
-                        break;
-                    }
-                    case 'other': {
-                        this.ui.directSelect = 'projects.pipelineSelectOther'
-                        this.ui.directPreview = 'projects.previewOther'
-                        this.ui.showAmendVersion = true;
-                        if (this.publication.status) {
-                            this.ui.isPublished = true;
-                        }
-                    }
+            this.PublicationService.getPublished(this.project.value.projectId)
+            .then((resp) => {
+                this.publication = (resp.data.latestRevision
+                    ? resp.data.latestRevision
+                    : resp.data
+                );
+                if (this.publication.status) {
+                    this.ui.isPublished = true;
                 }
                 this.ui.loading = false;
+            }, (error) => {
+                this.ui.loading = false;
             });
+            switch(this.project.value.projectType) {
+                case 'experimental': {
+                    this.ui.directSelect = 'projects.pipelineSelectExp'
+                    this.ui.directPreview = 'projects.preview'
+                    break;
+                }
+                case 'simulation': {
+                    this.ui.directSelect = 'projects.pipelineSelectSim'
+                    this.ui.directPreview = 'projects.previewSim'
+                    break;
+                }
+                case 'hybrid_simulation': {
+                    this.ui.directSelect = 'projects.pipelineSelectHybSim'
+                    this.ui.directPreview = 'projects.previewHybSim'
+                    break;
+                }
+                case 'field_recon': {
+                    this.ui.directSelect = 'projects.pipelineSelectField'
+                    this.ui.directPreview = 'projects.previewFieldRecon'
+                    break;
+                }
+                case 'other': {
+                    this.ui.directSelect = 'projects.pipelineSelectOther'
+                    this.ui.directPreview = 'projects.previewOther'
+                    this.ui.showAmendVersion = true;
+                }
+            }
         });
     }
 
@@ -66,7 +71,11 @@ class PipelineStartCtrl {
     }
 
     goAmend() {
-        this.$state.go('projects.pipelineAmend', { projectId: this.projectId }, { reload: true });
+        this.$state.go('projects.pipelineAmend', {
+            projectId: this.projectId,
+            project: this.project,
+            publication: this.publication
+        }, { reload: true });
     }
 
     goPublish() {

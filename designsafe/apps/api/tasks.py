@@ -637,7 +637,7 @@ def freeze_publication_meta(self, project_id, entity_uuids=None, revision=None):
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def amend_publication_data(self, project_id, revision=None):
+def amend_publication_data(self, project_id, authors=None, revision=None):
     """Amend publication.
 
     This task will update the published metadata in Elasticsearch and DataCite
@@ -647,7 +647,7 @@ def amend_publication_data(self, project_id, revision=None):
     """
     from designsafe.apps.projects.managers import publication as PublicationManager
     try:
-        amended_pub = PublicationManager.amend_publication(project_id, revision)
+        amended_pub = PublicationManager.amend_publication(project_id, authors, revision)
         PublicationManager.amend_datacite_doi(amended_pub)
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)

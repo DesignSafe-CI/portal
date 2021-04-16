@@ -43,6 +43,7 @@ import {
     ManageProjectComponent,
     AmendProjectComponent
 } from '../../../projects/components/manage-project/manage-project.component';
+import { ManageAuthorsComponent } from '../../../projects/components/manage-authors/manage-authors.component.js';
 import { ManageProjectTypeComponent } from '../../../projects/components/manage-project-type/manage-project-type.component.js';
 import { ManageCategoriesComponent } from '../../../projects/components/manage-categories/manage-categories.component.js';
 import { ManageExperimentsComponent } from '../../../projects/components/manage-experiments/manage-experiments.component';
@@ -96,6 +97,7 @@ ddProjectsComponents.component('pipelinePublishModal', PipelinePublishComponent)
 ddProjectsComponents.component('pipelinePrivacyPublishModal', PipelinePrivacyPublishComponent);
 ddProjectsComponents.component('manageProject', ManageProjectComponent);
 ddProjectsComponents.component('amendProject', AmendProjectComponent);
+ddProjectsComponents.component('manageAuthors', ManageAuthorsComponent);
 ddProjectsComponents.component('manageProjectType', ManageProjectTypeComponent);
 ddProjectsComponents.component('manageCategories', ManageCategoriesComponent);
 ddProjectsComponents.component('manageExperimentsModal', ManageExperimentsComponent);

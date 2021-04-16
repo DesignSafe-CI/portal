@@ -37,7 +37,7 @@ class PipelineProjectCtrl {
                 } else if (this.projType === 'field_recon') {
                     this.$state.go('projects.pipelineSelectField', {projectId: this.uuid}, {reload: true});
                 } else if (this.projType === 'other') {
-                    this.$state.go('projects.pipelineSelectOther', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineStart', {projectId: this.uuid}, {reload: true});
                 }
             });
         } else {

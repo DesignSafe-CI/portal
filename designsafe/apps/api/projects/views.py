@@ -49,15 +49,21 @@ class PublicationView(BaseApiView):
     def get(self, request, project_id, revision=None):
         """
         Get a publication. If a revision is not supplied, return
-        the "Original" publication and return the latest version
-        number with the request.
+        the "Original" publication. Include the latest version if it
+        is not being queried.
         """
-        latest_revision = IndexedPublication.max_revision(project_id=project_id)
         pub = BaseESPublication(project_id=project_id, revision=revision)
+        latest_revision = IndexedPublication.max_revision(project_id=project_id)
+        latest_pub_dict = None
+        if latest_revision > 0 and latest_revision != revision:
+            latest_pub = BaseESPublication(project_id=project_id, revision=latest_revision)
+            if latest_pub is not None and hasattr(latest_pub, 'project'):
+                latest_pub_dict = latest_pub.to_dict()
+
         if pub is not None and hasattr(pub, 'project'):
             pub_dict = pub.to_dict()
-            if latest_revision > 0:
-                pub_dict['latestRevision'] = latest_revision
+            if latest_pub_dict:
+                pub_dict['latestRevision'] = latest_pub_dict
             return JsonResponse(pub_dict)
         else:
             return JsonResponse({'status': 404,
@@ -160,16 +166,18 @@ class AmendPublicationView(BaseApiView):
             data = request.POST
         
         project_id = data['projectId']
+        authors = data['authors'] if 'authors' in data else None
         current_revision = IndexedPublication.max_revision(project_id=project_id)
 
         (
             tasks.amend_publication_data.s(
-                roject_id=project_id,
-                revision=current_revision
+                project_id,
+                authors,
+                current_revision
             ).set(queue='api') |
-            tasks.zip_publication_files.s(
-                roject_id=project_id,
-                revision=current_revision
+            tasks.zip_publication_files.si(
+                project_id,
+                current_revision
             ).set(queue='files')
         ).apply_async()
         

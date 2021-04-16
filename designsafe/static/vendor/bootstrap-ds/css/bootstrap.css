@@ -2741,6 +2741,9 @@ input[type="search"] {
 .prj-head-edit {
   font-size: 14px;
 }
+.prj-ent-amend {
+  font-size: 18px;
+}
 .prj-head-download {
   display: flex;
   align-items: center;
@@ -2768,6 +2771,14 @@ input[type="search"] {
 }
 .pipeline-page {
   margin: 20px 0px 20px 0px;
+}
+.pipeline-authors {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.pipeline-authors-item {
+  margin-right: 20px;
 }
 .pipeline-nav {
   display: flex;

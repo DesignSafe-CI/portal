@@ -3,12 +3,14 @@ import PipelineAmendTemplate from './pipeline-amend.template.html';
 class PipelineAmendCtrl {
     constructor(
         ProjectService,
+        UserService,
         $uibModal,
         $state,
         $http
     ) {
         'ngInject';
         this.ProjectService = ProjectService;
+        this.UserService = UserService;
         this.$uibModal = $uibModal
         this.$state = $state;
         this.$http = $http;
@@ -20,12 +22,15 @@ class PipelineAmendCtrl {
             success: false,
             error: false,
             submitted: false,
+            sortAuthors: false,
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
-        this.ProjectService.get({ uuid: this.projectId }).then((project) => {
-            this.project = project;
-            this.ui.loading = false;
-        });
+        this.publication = this.ProjectService.resolveParams.publication;
+        this.project = this.ProjectService.resolveParams.project;
+        if (!this.publication || !this.project) {
+            this.goStart();
+        }
+        this.ui.loading = false;
     }
 
     amendProject() {
@@ -39,11 +44,19 @@ class PipelineAmendCtrl {
         });
     }
 
+    amendAuthors() {
+        this.authors = this.publication.project.value.teamOrder;
+        this.ui.sortAuthors = true;
+    }
+
     submitAmend() {
         this.ui.loading = true;
         this.$http.post(
             '/api/projects/amend-publication/',
-            {projectId: this.project.value.projectId}
+            {
+                projectId: this.project.value.projectId,
+                authors: this.authors || undefined
+            }
         ).then((resp) => {
             this.ui.success = true;
             this.ui.submitted = true;

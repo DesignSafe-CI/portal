@@ -228,7 +228,7 @@ class PublishedViewCtrl {
 
     prepVersions(publication) {
         let vers = ['Original'];
-        let max = publication.latestRevision;
+        let max = publication.latestRevision.revision;
         if (typeof max == 'number') {
             for (let i = 1; i <= max; i++) {
                 vers.push(i);
@@ -434,7 +434,6 @@ export const OtherPublishedViewComponent = {
     controller: PublishedViewCtrl,
     controllerAs: '$ctrl',
     bindings: {
-        publication: '<',
-        // latestVersion: '<'
+        publication: '<'
     }
 };

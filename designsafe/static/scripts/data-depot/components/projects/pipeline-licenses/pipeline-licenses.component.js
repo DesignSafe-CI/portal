@@ -55,7 +55,7 @@ class PipelineLicensesCtrl {
             this.selectDest = 'projects.pipelineSelectField';
             this.placeholder = 'Mission';
         } else if (this.project.value.projectType === 'other') {
-            this.selectDest = 'projects.pipelineSelectOther';
+            this.selectDest = 'projects.pipelineStart';
         }
     }
 

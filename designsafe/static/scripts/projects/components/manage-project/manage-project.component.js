@@ -70,6 +70,7 @@ class ManageProjectCtrl {
     }
 
     create() {
+        this.ui.loading = true;
         let data = this.prepareData(false);
         if (this.missingCreator(data)) {
             this.confirmMessage().result.then((resp) => {
@@ -111,6 +112,7 @@ class ManageProjectCtrl {
     }
 
     update() {
+        this.ui.loading = true;
         let data = this.prepareData(true);
         if (this.missingCreator(data)) {
             this.confirmMessage().result.then((resp) => {
@@ -155,7 +157,6 @@ class ManageProjectCtrl {
     }
 
     prepareData(updating) {
-        this.ui.loading = true;
         let projectData = {...this.form};
         projectData.pi = this.form.pi.username;
         projectData.coPis = this.validInputs(this.form.coPis, ['username'], 'username');
@@ -263,6 +264,9 @@ class ManageProjectCtrl {
 
     isOther(input, optionsList) {
         // check form options
+        if (input === null) {
+            return
+        }
         let options = optionsList.filter(type => type != 'Other')
         return !options.includes(input) && typeof input !== 'undefined'
     }

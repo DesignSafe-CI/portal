@@ -99,13 +99,15 @@ class PipelinePublishCtrl {
             this.filePaths = this.selectedListings.listing.map(file => file.path);
         }
         this.publication = publication;
-        this.PublicationService.getPublished(this.project.value.projectId).then((resp) => {
-            let data = resp.data;
-            if (data.project) {
+        this.PublicationService.getPublished(this.project.value.projectId)
+        .then((resp) => {
+            let publication = resp.data;
+            if (publication.status) {
                 this.ui.published = true;
-            } else {
-                this.ui.published = false;
             }
+            this.ui.loading = false;
+        }, (error) => {
+            this.ui.published = false;
             this.ui.loading = false;
         });
     }
@@ -132,7 +134,10 @@ class PipelinePublishCtrl {
             }
         ).then((resp) => {
             this.ui.submitted = true;
-        }).finally( () => {
+            this.busy = false;
+        }, (error) => {
+            this.ui.error = true;
+            this.ui.submitted = true;
             this.busy = false;
         });
     }

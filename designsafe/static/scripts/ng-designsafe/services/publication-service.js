@@ -188,15 +188,9 @@ export class PublicationService {
     /**
      * Retrieve details for a publication using its project ID.
      * @param {string} projId Project ID to retrieve.
-     * @param {int} revision revision number of publication to return.
      */
-    getPublished(projId, revision) {
-        // Retrieve current details if they are already in state.
-        let revNum = '';
-        if (revision) {
-            revNum = 'r' + revision;
-        }
-        return this.$http.get(`/api/projects/publication/${projId}${revNum}/`).then((resp) => {
+    getPublished(projId) {
+        return this.$http.get(`/api/projects/publication/${projId}/`).then((resp) => {
             this.current = resp.data;
             return resp;
         });
