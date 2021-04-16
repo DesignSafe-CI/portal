@@ -10,5 +10,5 @@ urlpatterns = [
     #     GET     /listing/<file_mgr_name>/<system_id>/<file_path>/
     url(r'^(?P<operation>[\w.-]+)/$',
         PublicationListingView.as_view(), name='publication_listing'),
-    url(r'^(?P<operation>[\w.-]+)/(?P<project_id>[\w.\-]+)/$', PublicationDetailView.as_view(), name='publication_detail')
+    url(r'^(?P<operation>[\w.-]+)/(?P<project_id>[A-Z\-]+-[0-9]+)(r(?P<revision>[0-9]+))?/$', PublicationDetailView.as_view(), name='publication_detail')
 ]

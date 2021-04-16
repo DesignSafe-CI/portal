@@ -46,14 +46,25 @@ def template_project_storage_system(project):
 
 class PublicationView(BaseApiView):
     @profile_fn
-    def get(self, request, project_id):
+    def get(self, request, project_id, revision=None):
         """
-        Get the latest revision of a publication
+        Get a publication. If a revision is not supplied, return
+        the "Original" publication. Include the latest version if it
+        is not being queried.
         """
-        revision = IndexedPublication.max_revision(project_id=project_id)
         pub = BaseESPublication(project_id=project_id, revision=revision)
+        latest_revision = IndexedPublication.max_revision(project_id=project_id)
+        latest_pub_dict = None
+        if latest_revision > 0 and latest_revision != revision:
+            latest_pub = BaseESPublication(project_id=project_id, revision=latest_revision)
+            if latest_pub is not None and hasattr(latest_pub, 'project'):
+                latest_pub_dict = latest_pub.to_dict()
+
         if pub is not None and hasattr(pub, 'project'):
-            return JsonResponse(pub.to_dict())
+            pub_dict = pub.to_dict()
+            if latest_pub_dict:
+                pub_dict['latestRevision'] = latest_pub_dict
+            return JsonResponse(pub_dict)
         else:
             return JsonResponse({'status': 404,
                                  'message': 'Not found'},
@@ -124,23 +135,24 @@ class PublicationView(BaseApiView):
             'success': 'Project is publishing.'
         }, status=200)
 
-class PublicationRevisionView(BaseApiView):
-    @profile_fn
-    def get(self, request, project_id, revision):
-        """
-        Get a version of a publication by it's project ID and revision number
-        """
-        pub = BaseESPublication(project_id=project_id, revision=revision)
-        latest_revision = IndexedPublication.max_revision(project_id=project_id)
-        if pub is not None and hasattr(pub, 'project'):
-            return JsonResponse({
-                'publication': pub.to_dict(),
-                'latestVersion': latest_revision,
-                })
-        else:
-            return JsonResponse({'status': 404,
-                                 'message': 'Not found'},
-                                status=404)
+class AmendPublicationView(BaseApiView):
+    # not using GET for anything...
+    # @profile_fn
+    # def get(self, request, project_id, revision):
+    #     """
+    #     Get a version of a publication by it's project ID and revision number
+    #     """
+    #     pub = BaseESPublication(project_id=project_id, revision=revision)
+    #     latest_revision = IndexedPublication.max_revision(project_id=project_id)
+    #     if pub is not None and hasattr(pub, 'project'):
+    #         return JsonResponse({
+    #             'publication': pub.to_dict(),
+    #             'latestVersion': latest_revision,
+    #             })
+    #     else:
+    #         return JsonResponse({'status': 404,
+    #                              'message': 'Not found'},
+    #                             status=404)
 
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
@@ -154,16 +166,18 @@ class PublicationRevisionView(BaseApiView):
             data = request.POST
         
         project_id = data['projectId']
+        authors = data['authors'] if 'authors' in data else None
         current_revision = IndexedPublication.max_revision(project_id=project_id)
 
         (
             tasks.amend_publication_data.s(
-                roject_id=project_id,
-                revision=current_revision
+                project_id,
+                authors,
+                current_revision
             ).set(queue='api') |
-            tasks.zip_publication_files.s(
-                roject_id=project_id,
-                revision=current_revision
+            tasks.zip_publication_files.si(
+                project_id,
+                current_revision
             ).set(queue='files')
         ).apply_async()
         

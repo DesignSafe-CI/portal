@@ -43,6 +43,7 @@ import {
     ManageProjectComponent,
     AmendProjectComponent
 } from '../../../projects/components/manage-project/manage-project.component';
+import { ManageAuthorsComponent } from '../../../projects/components/manage-authors/manage-authors.component.js';
 import { ManageProjectTypeComponent } from '../../../projects/components/manage-project-type/manage-project-type.component.js';
 import { ManageCategoriesComponent } from '../../../projects/components/manage-categories/manage-categories.component.js';
 import { ManageExperimentsComponent } from '../../../projects/components/manage-experiments/manage-experiments.component';
@@ -54,6 +55,7 @@ import { ProjectTreeComponent } from '../../../projects/components/project-tree/
 import { PublishedCitationComponent } from '../../../projects/components/publication-citation/publication-citation.component.js';
 import { AuthorInformationModalComponent } from './publication-preview/modals/author-information-modal.component';
 import { PublicationDownloadModalComponent } from '../../../projects/components/publication-download/publication-download.component.js';
+import { PublishedDataModalComponent } from '../../../projects/components/published-data-modal/published-data-modal.component';
 import { ConfirmMessageComponent } from '../../../projects/components/confirm-message/confirm-message.component';
 import { FileCategorySelectorComponent } from '../../../projects/components/file-category-selector/file-category-selector';
 import { FileCategoriesComponent } from '../../../projects/components/file-categories/file-categories.component';
@@ -95,6 +97,7 @@ ddProjectsComponents.component('pipelinePublishModal', PipelinePublishComponent)
 ddProjectsComponents.component('pipelinePrivacyPublishModal', PipelinePrivacyPublishComponent);
 ddProjectsComponents.component('manageProject', ManageProjectComponent);
 ddProjectsComponents.component('amendProject', AmendProjectComponent);
+ddProjectsComponents.component('manageAuthors', ManageAuthorsComponent);
 ddProjectsComponents.component('manageProjectType', ManageProjectTypeComponent);
 ddProjectsComponents.component('manageCategories', ManageCategoriesComponent);
 ddProjectsComponents.component('manageExperimentsModal', ManageExperimentsComponent);
@@ -106,6 +109,7 @@ ddProjectsComponents.component('projectTree', ProjectTreeComponent);
 ddProjectsComponents.component('publishedCitationModal', PublishedCitationComponent);
 ddProjectsComponents.component('authorInformationModal', AuthorInformationModalComponent);
 ddProjectsComponents.component('publicationDownloadModal', PublicationDownloadModalComponent);
+ddProjectsComponents.component('publishedDataModal', PublishedDataModalComponent);
 ddProjectsComponents.component('confirmMessage', ConfirmMessageComponent);
 ddProjectsComponents.component('fileCategorySelector', FileCategorySelectorComponent);
 ddProjectsComponents.component('fileCategories', FileCategoriesComponent);

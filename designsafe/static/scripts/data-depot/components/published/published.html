@@ -3,7 +3,7 @@ Loading... <i class="fa fa-spinner fa-spin"></i>
 </div>
 
 <div 
-     data-ng-if="$ctrl.viewToShow()==='v1'">
+     data-ng-if="$ctrl.viewToShow() === 'v1'">
      <published publication=$ctrl.publication></published>
 </div>
 
@@ -16,7 +16,7 @@ Loading... <i class="fa fa-spinner fa-spin"></i>
     <sim-published-view publication=$ctrl.publication></sim-published-view>
 </div>
 <div 
-     data-ng-if="$ctrl.viewToShow()==='hybrid_simulation'">
+     data-ng-if="$ctrl.viewToShow() === 'hybrid_simulation'">
     <sim-hyb-published-view publication=$ctrl.publication></sim-hyb-published-view>
 </div>
 <div
@@ -24,6 +24,6 @@ Loading... <i class="fa fa-spinner fa-spin"></i>
     <field-recon-published-view publication=$ctrl.publication></field-recon-published-view>
 </div>
 <div 
-     data-ng-if="$ctrl.viewToShow()==='other'">
+     data-ng-if="$ctrl.viewToShow() === 'other'">
     <other-published-view publication=$ctrl.publication></other-published-view>
 </div> 

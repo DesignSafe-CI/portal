@@ -95,9 +95,13 @@ class PipelineVersionCtrl {
     }
 
     saveSelections() {
+        let selectedFiles = this.FileListingService.getSelectedFiles('main')
+        if (!selectedFiles.length) {
+            return;
+        }
         this.selectedListing = {
             ...this.FileListingService.listings.main,
-            listing: this.FileListingService.getSelectedFiles('main'),
+            listing: selectedFiles,
         };
         this.FileListingService.selectedListing = this.selectedListing;
     }

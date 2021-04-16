@@ -10,11 +10,11 @@ from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = [
     url(
-        r'^browser/public/designsafe.storage.published/(?P<project_id>[\w.\-]+)/(?P<file_path>[ \S]+)/?',
+        r'^browser/public/designsafe.storage.published/(?P<project_id>[A-Z\-]+-[0-9]+)(r(?P<revision>[0-9]+))?/(?P<file_path>[ \S]+)/?',
         DataDepotPublishedView.as_view()
     ),
     url(
-        r'^browser/public/designsafe.storage.published/(?P<project_id>[\w.\-]+)/?',
+        r'^browser/public/designsafe.storage.published/(?P<project_id>[A-Z\-]+-[0-9]+)(r(?P<revision>[0-9]+))?/?',
         DataDepotPublishedView.as_view()
     ),
     url(

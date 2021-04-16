@@ -312,9 +312,15 @@ function config(
         .state('projects.pipelineAmend', {
             url: '/projects/{projectId}/curation/amend',
             component: 'pipelineAmend',
+            params: {
+                project: null,
+                publication: null,
+            },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
                 }]
             }
         })

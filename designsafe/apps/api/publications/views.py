@@ -27,11 +27,11 @@ class PublicationListingView(BaseApiView):
 View for getting details (description, full definition) from a specific publication.
 """
 class PublicationDetailView(BaseApiView):
-    def get(self, request, operation, project_id):
+    def get(self, request, operation, project_id, revision=None):
         client = get_service_account_client()
         try:
             _operation = getattr(operations, operation)
-            response = _operation(project_id, **request.GET.dict())
+            response = _operation(project_id, revision, **request.GET.dict())
             return JsonResponse(response)
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)

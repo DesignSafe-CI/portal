@@ -180,7 +180,7 @@ def draft_publication(
         )
     return responses
 
-def amend_publication(project_id, revision=None):
+def amend_publication(project_id, authors=None, revision=None):
     """Amend a Publication
     
     Update Amendable fields on a publication and the corrosponding DataCite
@@ -218,6 +218,8 @@ def amend_publication(project_id, revision=None):
     }
     for key in amends_dict:
         amends_dict[key] = prj_dict['value'][key]
+    if authors:
+        amends_dict['teamOrder'] = authors
 
     pub_dict['project']['value'].update(amends_dict)
     pub.update(**pub_dict)

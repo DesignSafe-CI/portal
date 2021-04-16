@@ -54,7 +54,6 @@
             <div class="prj-head-container">
                 <span class="prj-head-title">
                     {{$ctrl.project.value.projectId}} | <strong>{{ $ctrl.project.value.title }}</strong>
-                    <a class="prj-head-edit" ng-click="$ctrl.amendProject($event)"><strong>Edit Project</strong></a>
                 </span>
             </div>
             <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
@@ -138,6 +137,15 @@
             </table>
             <div ng-if="$ctrl.project.value.description">
                 <p>{{ $ctrl.project.value.description }}</p>
+            </div>
+            <div>
+                <a class="prj-ent-amend" ng-click="$ctrl.amendProject($event)"><strong>Edit Project Metadata</strong></a>
+            </div>
+            <div>
+                <div ng-if="$ctrl.ui.sortAuthors">
+                    <manage-authors title=$ctrl.project.value.title authors=$ctrl.authors></manage-authors>
+                </div>
+                <a class="prj-ent-amend" ng-click="$ctrl.amendAuthors()" ng-if="!$ctrl.ui.sortAuthors"><strong>Edit Author Order</strong></a>
             </div>
         </div>
     </div>
