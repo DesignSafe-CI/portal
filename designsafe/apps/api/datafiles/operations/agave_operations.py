@@ -560,7 +560,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
     elif file_ext in settings.SUPPORTED_HAZMAPPER_PREVIEW_EXTS:
         file_type = 'hazmapper'
         uuid = os.path.splitext(file_name)[0]
-        url = 'http://localhost:4200/project/{uuid}'.format(uuid=uuid)
+        url = 'https://hazmapper.tacc.utexas.edu/hazmapper/project/{uuid}'.format(uuid=uuid)
     else:
         file_type = 'other'
 

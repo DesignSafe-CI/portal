@@ -72,7 +72,7 @@ class DataBrowserServicePreviewCtrl {
                 }
                 if (this.fileType === 'hazmapper') {
                     const uuid = this.resolve.file.name.split('.')[0];
-                    this.hazmapperHref = 'http://localhost:4200/project/' + uuid;
+                    this.hazmapperHref = 'https://hazmapper.tacc.utexas.edu/hazmapper/project/' + uuid;
                     this.loading = false;
                 }
             },
