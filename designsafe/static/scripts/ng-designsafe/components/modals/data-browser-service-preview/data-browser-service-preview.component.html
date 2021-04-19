@@ -31,10 +31,14 @@
             <i class="fa fa-cloud-download"></i> Download
         </button>
 
-            <button class="btn btn-sm btn-default" ng-show="$ctrl.isJupyter()" ng-click="$ctrl.openInJupyter()">
-                <i class="fa fa-file-image-o"></i></i> Open In Jupyter
-            </button>
-    </div> 
+        <button class="btn btn-sm btn-default" ng-show="$ctrl.isJupyter()" ng-click="$ctrl.openInJupyter()">
+            <i class="fa fa-file-image-o"></i></i> Open In Jupyter
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.fileType === 'hazmapper'" ng-click="$ctrl.openInHazMapper()">
+            <i class="fa fa-file-image-o"></i> Open in HazMapper
+        </button>
+    </div>
 
     <div class="text-center nbv-preview">
 
@@ -70,6 +74,10 @@
         <div ng-if="$ctrl.mapError.show" class="alert alert-warning">
             <p class="lead">Unable to show a preview</p>
             <p>{{ $ctrl.mapError.message }}</p>
+        </div>
+
+        <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.fileType === 'hazmapper'" ng-show="!$ctrl.loading">
+            <iframe class="embed-responsive-item" ng-src="{{ $ctrl.href }}" id="framepreview" iframe-onload="$ctrl.onLoad()"></iframe>
         </div>
 
         <div ng-if="$ctrl.fileType === 'text'" ng-show="!$ctrl.loading" >

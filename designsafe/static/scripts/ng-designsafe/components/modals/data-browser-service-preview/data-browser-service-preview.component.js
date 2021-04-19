@@ -21,6 +21,7 @@ class DataBrowserServicePreviewCtrl {
         //TODO DES-1689: working metadata table and operation buttons
         this.textContent = '';
         this.videoHref = '';
+        this.hazmapperHref = '';
         this.loading = true;
         this.error = false;
 
@@ -69,6 +70,11 @@ class DataBrowserServicePreviewCtrl {
                     };
                     oReq.send();
                 }
+                if (this.fileType === 'hazmapper') {
+                    const uuid = this.resolve.file.name.split('.')[0];
+                    this.hazmapperHref = 'http://localhost:4200/project/' + uuid;
+                    this.loading = false;
+                }
             },
             // eslint-disable-next-line
             (err) => {
@@ -114,7 +120,7 @@ class DataBrowserServicePreviewCtrl {
     isJupyter() {
         if (this.resolve.api !== 'agave') {
             return false;
-        } 
+        }
         const fileExtension = this.resolve.file.name.split('.').pop();
         return fileExtension === 'ipynb';
 
@@ -131,10 +137,14 @@ class DataBrowserServicePreviewCtrl {
         window.open(jupyterPath);
     }
 
+    openInHazMapper() {
+        window.open(this.hazmapperHref);
+    }
+
     renderGeoJson(data) {
         const mapWrapper = document.getElementById('preview_map_wrapper');
         mapWrapper.style.display = 'block';
-        
+
         this.mapElement = document.createElement('div');
         this.mapElement.setAttribute('id', 'preview_map');
         this.mapElement.style.height = '500px';

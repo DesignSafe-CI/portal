@@ -598,6 +598,10 @@ SUPPORTED_OBJECT_PREVIEW_EXTS = [
     '.pdf',
 ]
 
+SUPPORTED_HAZMAPPER_PREVIEW_EXTS = [
+    '.hazmapper',
+]
+
 SUPPORTED_VIDEO_EXTS = [
     '.webm', '.ogv', '.ogg', '.mp4'
 ]

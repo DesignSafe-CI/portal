@@ -56,7 +56,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
 
 def detail(client, system, path, *args, **kwargs):
     """
-    Retrieve the uuid for a file by parsing the query string in _links.metadata.href 
+    Retrieve the uuid for a file by parsing the query string in _links.metadata.href
     """
     listing = client.files.list(systemId=system, filePath=urllib.parse.quote(path), offset=0, limit=1)
 
@@ -557,6 +557,10 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
         file_type = 'ipynb'
         tmp = url.replace('https://', '')
         url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
+    elif file_ext in settings.SUPPORTED_HAZMAPPER_PREVIEW_EXTS:
+        file_type = 'hazmapper'
+        uuid = os.path.splitext(file_name)[0]
+        url = 'http://localhost:4200/project/{uuid}'.format(uuid=uuid)
     else:
         file_type = 'other'
 
