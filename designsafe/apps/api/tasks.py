@@ -543,7 +543,7 @@ def copy_publication_files_to_corral(self, project_id):
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
     import shutil
     es_client = new_es_client()
-    publication = IndexedPublication.from_id(project_id=project_id, using=es_client)
+    publication = BaseESPublication(project_id=project_id, using=es_client)
     filepaths = publication.related_file_paths()
     if not len(filepaths):
         res = get_service_account_client().files.list(
