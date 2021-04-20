@@ -227,14 +227,17 @@ class PublishedViewCtrl {
     }
 
     prepVersions(publication) {
-        let vers = ['Original'];
-        let max = publication.latestRevision.revision;
-        if (typeof max == 'number') {
-            for (let i = 1; i <= max; i++) {
-                vers.push(i);
+        if (publication.latestRevision) {
+            let vers = ['Original'];
+            let max = publication.latestRevision.revision;
+            if (typeof max == 'number') {
+                for (let i = 1; i <= max; i++) {
+                    vers.push(i);
+                }
             }
+            return vers;
         }
-        return vers;
+        return null;
     }
 
     ordered(parent, entities) {
