@@ -26,11 +26,11 @@ class DataConfig(AppConfig):
                                           max_retries=3,
                                           retry_on_timeout=True,
                                           use_ssl=enable_sniffing,
-                                          sniff_on_start=enable_sniffing,
+                                          # sniff_on_start=enable_sniffing,
                                           # refresh nodes after a node fails to respond
-                                          sniff_on_connection_fail=enable_sniffing,
+                                          # sniff_on_connection_fail=enable_sniffing,
                                           # and also every 60 seconds
-                                          sniffer_timeout=60
+                                          # sniffer_timeout=60
                                           )
         except AttributeError as exc:
             logger.error('Missing ElasticSearch config. %s', exc)
