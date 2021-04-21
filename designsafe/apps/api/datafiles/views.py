@@ -13,6 +13,7 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.datafiles.handlers import datafiles_get_handler, datafiles_post_handler, datafiles_put_handler, resource_unconnected_handler, resource_expired_handler
 from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
 from designsafe.apps.api.datafiles.notifications import notify
+from designsafe.apps.api.datafiles.models import DataFilesSurveyResult, DataFilesSurveyCounter
 # Create your views here.
 
 logger = logging.getLogger(__name__)
@@ -99,7 +100,7 @@ class DataFilesView(BaseApiView):
     def post(self, request, api, operation=None, scheme='private',
              handler=None, system=None, path='/'):
         post_files = request.FILES.dict()
-        post_body = request.POST.dict()
+        post_body = body.dict()
         metrics.info('Data Depot',
                      extra={
                          'user': request.user.username,
@@ -154,3 +155,24 @@ class TransferFilesView(BaseApiView):
             notify(request.user.username, 'transfer', 'Copy operation has failed.', 'ERROR', {})
             logger.info(exc)
             raise exc
+
+
+class MicrosurveyView(BaseApiView):
+    def post(self, request):
+        body = json.loads(request.body)
+        survey_result = DataFilesSurveyResult(
+            project_id=body.get('projectId'),
+            comments=body.get('comments'),
+            reasons=body.get('reasons'),
+            professional_level=body.get('professionalLevel'),
+            did_collect=body.get('didCollect')
+        )
+        survey_result.save()
+
+        return JsonResponse({'success': True})
+
+    def put(self, request):
+        counter = DataFilesSurveyCounter.objects.all()[0]
+        counter.count += 1
+        counter.save()
+        return JsonResponse({'show': (counter.count % 10 == 0)})

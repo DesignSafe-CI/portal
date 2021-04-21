@@ -42,6 +42,7 @@ class PublicationDownloadModalCtrl {
         this.FileOperationService.download({ api: 'agave', scheme: 'public', files }).then(
             (_) => (this.retrievingPostit = false)
         );
+        this.FileOperationService.microsurvey({projectId: this.prjId})
     }
 
     cancel() {

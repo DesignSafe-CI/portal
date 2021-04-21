@@ -84,9 +84,13 @@ class DataBrowserServicePreviewCtrl {
     }
 
     download() {
-        const { api, scheme } = this.FileListingService.listings.main.params;
+        const { api, scheme, system, path } = this.FileListingService.listings.main.params;
         const files = [this.resolve.file];
         this.FileOperationService.download({ api, scheme, files });
+        if (system === 'designsafe.storage.published') {
+            const projectId = path.split('/')[0] // Paths in Published are of form PRJ-XXX/.../...
+            this.FileOperationService.microsurvey({projectId})
+        }
     }
 
     copy() {
