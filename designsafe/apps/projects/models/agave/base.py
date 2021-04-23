@@ -399,9 +399,8 @@ def generate_creators(authors):
             except ObjectDoesNotExist:
                 pass
 
-        # Bypassing TAS issue for testing...
-        # if user_obj:
-        #     user_tas = TASClient().get_user(username=user_obj.username)
+        if user_obj:
+            user_tas = TASClient().get_user(username=user_obj.username)
 
         if user_orcid:
             details = {
@@ -411,15 +410,13 @@ def generate_creators(authors):
         else:
             details = {}
 
-        # Bypassing TAS issue for testing...
-        # if user_obj and user_tas:
+        if user_obj and user_tas:
         if user_obj:
             author_name = "{} {}".format(user_obj.first_name, user_obj.last_name)
             details.update({
                 "@type": "Person",
                 'name': author_name,
-                # Bypassing TAS issue for testing...
-                "affiliation": "user_tas['institution']"
+                "affiliation": user_tas['institution']
             })
             creators_details.append(details)
         elif author.get('fname') and author.get('lname'):
@@ -499,9 +496,8 @@ def _process_authors(authors):
             except ObjectDoesNotExist:
                 pass
 
-        # Bypassing TAS issue for testing...
-        # if user_obj:
-        #     user_tas = TASClient().get_user(username=user_obj.username)
+        if user_obj:
+            user_tas = TASClient().get_user(username=user_obj.username)
 
         if user_obj and user_tas:
             creators_details.append({
@@ -509,8 +505,7 @@ def _process_authors(authors):
                 'givenName': user_obj.first_name,
                 'familyName': user_obj.last_name,
             })
-            # Bypassing TAS issue for testing...
-            institutions.append("user_tas['institution']")
+            institutions.append(user_tas['institution'])
         elif author.get('fname') and author.get('lname'):
             creators_details.append({
                 'nameType': 'Personal',
