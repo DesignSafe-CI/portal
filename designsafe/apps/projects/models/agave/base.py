@@ -411,7 +411,6 @@ def generate_creators(authors):
             details = {}
 
         if user_obj and user_tas:
-        if user_obj:
             author_name = "{} {}".format(user_obj.first_name, user_obj.last_name)
             details.update({
                 "@type": "Person",
