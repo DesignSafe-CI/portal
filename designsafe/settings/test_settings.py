@@ -91,6 +91,7 @@ INSTALLED_APPS = (
     'designsafe.apps.googledrive_integration',
     'designsafe.apps.licenses',
     'designsafe.apps.dashboard',
+    'designsafe.apps.api.datafiles',
 
     # signals
     'designsafe.apps.signals',
