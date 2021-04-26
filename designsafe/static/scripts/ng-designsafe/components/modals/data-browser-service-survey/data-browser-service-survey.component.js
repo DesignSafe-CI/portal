@@ -1,6 +1,7 @@
 import DataBrowserServiceSurveyTemplate from './data-browser-service-survey.template.html';
 class DataBrowserServiceSurveyCtrl {
     constructor($http) {
+        'ngInject';
         this.$http = $http;
     }
 
