@@ -54,6 +54,14 @@ class DataBrowserServicePreviewCtrl {
                                 const isGeoJson = validateGeoJson(body);
                                 if (isGeoJson) this.renderGeoJson(body);
                             }
+
+                            if (extension.includes('hazmapper')) {
+                                const body = JSON.parse(text);
+                                let uuid = body['uuid'];
+                                this.hazmapperHref = `https://hazmapper.tacc.utexas.edu/staging/project/${uuid}`
+                                this.href = this.$sce.trustAs('resourceUrl', this.hazmapperHref);
+                            }
+
                             this.loading = false;
                             this.$scope.$apply();
                         });
@@ -69,11 +77,6 @@ class DataBrowserServicePreviewCtrl {
                         this.$scope.$apply();
                     };
                     oReq.send();
-                }
-                if (this.fileType === 'hazmapper') {
-                    const uuid = this.resolve.file.name.split('.')[0];
-                    this.hazmapperHref = 'https://hazmapper.tacc.utexas.edu/staging/project/{uuid}'.format(uuid=uuid)
-                    this.loading = false;
                 }
             },
             // eslint-disable-next-line
@@ -135,6 +138,15 @@ class DataBrowserServicePreviewCtrl {
         };
         const jupyterPath = this.FileOperationService.openInJupyter(params);
         window.open(jupyterPath);
+    }
+
+    isHazmapper() {
+        if (this.resolve.api !== 'agave') {
+            return false;
+        }
+
+        const fileExtension = this.resolve.file.name.split('.').pop();
+        return fileExtension === 'hazmapper';
     }
 
     openInHazMapper() {

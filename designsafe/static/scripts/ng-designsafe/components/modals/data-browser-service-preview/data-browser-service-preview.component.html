@@ -35,7 +35,7 @@
             <i class="fa fa-file-image-o"></i></i> Open In Jupyter
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="$ctrl.fileType === 'hazmapper'" ng-click="$ctrl.openInHazMapper()">
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.isHazmapper()" ng-click="$ctrl.openInHazMapper()">
             <i class="fa fa-file-image-o"></i> Open in HazMapper
         </button>
     </div>
@@ -76,13 +76,14 @@
             <p>{{ $ctrl.mapError.message }}</p>
         </div>
 
-        <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.fileType === 'hazmapper'" ng-show="!$ctrl.loading">
+        <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.hazmapperHref !== ''" ng-show="!$ctrl.loading">
             <iframe class="embed-responsive-item" ng-src="{{ $ctrl.href }}" id="framepreview" iframe-onload="$ctrl.onLoad()"></iframe>
         </div>
 
-        <div ng-if="$ctrl.fileType === 'text'" ng-show="!$ctrl.loading" >
+        <div ng-if="$ctrl.fileType === 'text' && $ctrl.hazmapperHref === ''" ng-show="!$ctrl.loading" >
             <pre style="height:500px">{{$ctrl.textContent}}</pre>
         </div>
+
         <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.fileType==='video'" ng-show="!$ctrl.loading" >
             <video id="videoPlayer" class="embed-responsive-item" ng-src="{{$ctrl.videoHref}}" id="framepreview" controls autoplay>
         </div>

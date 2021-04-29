@@ -557,10 +557,6 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
         file_type = 'ipynb'
         tmp = url.replace('https://', '')
         url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
-    elif file_ext in settings.SUPPORTED_HAZMAPPER_PREVIEW_EXTS:
-        file_type = 'hazmapper'
-        uuid = os.path.splitext(file_name)[0]
-        url = 'https://hazmapper.tacc.utexas.edu/staging/project/{uuid}'.format(uuid=uuid)
     else:
         file_type = 'other'
 
