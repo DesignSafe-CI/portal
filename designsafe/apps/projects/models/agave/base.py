@@ -4,6 +4,7 @@ import logging
 import six
 import json
 import os
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
@@ -400,7 +401,10 @@ def generate_creators(authors):
                 pass
 
         if user_obj:
-            user_tas = TASClient().get_user(username=user_obj.username)
+            if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
+                user_tas = TASClient().get_user(username=user_obj.username)
+            else:
+                user_tas = {'institution': 'dev_staging_placeholder'}
 
         if user_orcid:
             details = {
@@ -496,7 +500,10 @@ def _process_authors(authors):
                 pass
 
         if user_obj:
-            user_tas = TASClient().get_user(username=user_obj.username)
+            if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
+                user_tas = TASClient().get_user(username=user_obj.username)
+            else:
+                user_tas = {'institution': 'dev_staging_placeholder'}
 
         if user_obj and user_tas:
             creators_details.append({
