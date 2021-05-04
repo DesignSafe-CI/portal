@@ -1,5 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
+
+## v5.1.7
+Enhancements:
+- Add a microsurvey for users to report on their data usage.
+
 ## v5.1.6
 Fixes:
 - Backend stability fixes to the Publication Pipeline

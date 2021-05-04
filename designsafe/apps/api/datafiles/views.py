@@ -100,7 +100,7 @@ class DataFilesView(BaseApiView):
     def post(self, request, api, operation=None, scheme='private',
              handler=None, system=None, path='/'):
         post_files = request.FILES.dict()
-        post_body = body.dict()
+        post_body = request.POST.dict()
         metrics.info('Data Depot',
                      extra={
                          'user': request.user.username,
