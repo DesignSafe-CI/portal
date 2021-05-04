@@ -141,10 +141,6 @@ class DataBrowserServicePreviewCtrl {
     }
 
     isHazmapper() {
-        if (this.resolve.api !== 'agave') {
-            return false;
-        }
-
         const fileExtension = this.resolve.file.name.split('.').pop();
         return fileExtension === 'hazmapper';
     }
