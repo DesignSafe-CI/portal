@@ -24,6 +24,35 @@
                     {{ member.lname }}, {{ member.fname }}
                 </div>
             </div>
+            <div class="pipeline-authors-submit" ng-if="$ctrl.submit">
+                <button class="btn btn-add" ng-click="$ctrl.submit()">{{$ctrl.label}}</button>
+            </div>
         </div>
     </div>
+    <!-- Mockup Design -->
+    <!-- <table class="author-table table table-bordered table-striped"
+           style="background-color: #fff;"
+    >
+        <thead>
+            <tr>
+                <th>Authors</th>
+                <th>Order</th>
+            </tr>
+        </thead>
+        <colgroup>
+            <col class="author-table-author">
+            <col class="author-table-order">
+         </colgroup>
+        <tbody>
+            <tr ng-repeat="member in $ctrl.authors | orderBy: 'order'">
+                <td class="author-col">
+                    {{ member.lname }}, {{ member.fname }}
+                </td>
+                <td class="order-col">
+                    <i class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderMembers(true)"></i>
+                    <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderMembers(false)"></i>
+                </td>
+            </tr>
+        </tbody>
+    </table> -->
 </div>

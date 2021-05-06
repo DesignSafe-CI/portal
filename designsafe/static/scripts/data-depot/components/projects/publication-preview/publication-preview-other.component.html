@@ -88,7 +88,8 @@
                     <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
                 </td>
             </tr>
-            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+            <!-- Commenting out until after group feature review -->
+            <!-- <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
                 <td>
                     <span>Version</span>
                 </td>
@@ -98,9 +99,9 @@
                             ng-change="$ctrl.getVersion()"
                             ng-model="$ctrl.selectedVersion">
                     </select>
-                    &nbsp;<a ng-click=$ctrl.showVersionInfo()><strong>Version Changes</strong></a>
+                    &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != 'Original'"><strong>Version Changes</strong></a>
                 </td>
-            </tr>
+            </tr> -->
             <tr class="prj-row" ng-if="$ctrl.readOnly">
                 <td ng-if="$ctrl.browser.project.value.keywords">License(s)</td>
                 <td class="prj-data">
@@ -120,6 +121,15 @@
         </table>
         <div ng-if="$ctrl.browser.project.value.description">
             <p>{{ $ctrl.browser.project.value.description }}</p>
+        </div>
+        <div ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+            <span>Version</span>&nbsp;
+            <select class="prj-dropdown"
+                    ng-options="version for version in $ctrl.versions"
+                    ng-change="$ctrl.getVersion()"
+                    ng-model="$ctrl.selectedVersion">
+            </select>
+            &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != 'Original'"><strong>Version Changes</strong></a>
         </div>
     </div>
     <!-- Project Header End -->

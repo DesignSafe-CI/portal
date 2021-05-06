@@ -341,6 +341,21 @@ function config(
                 }]
             }
         })
+        .state('projects.pipelineVersionProject', {
+            url: '/projects/{projectId}/curation/versionProject',
+            component: 'pipelineVersionProject',
+            params: {
+                publication: null,
+                selectedListing: null,
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                }]
+            }
+        })
         .state('projects.pipelineVersionChanges', {
             url: '/projects/{projectId}/curation/versionChanges',
             component: 'pipelineVersionChanges',

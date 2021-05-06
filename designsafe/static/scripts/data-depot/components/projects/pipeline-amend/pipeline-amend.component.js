@@ -22,15 +22,17 @@ class PipelineAmendCtrl {
             success: false,
             error: false,
             submitted: false,
-            sortAuthors: false,
+            confirmed: false
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.publication = this.ProjectService.resolveParams.publication;
         this.project = this.ProjectService.resolveParams.project;
         if (!this.publication || !this.project) {
             this.goStart();
+        } else {
+            this.authors = this.publication.project.value.teamOrder;
+            this.ui.loading = false;
         }
-        this.ui.loading = false;
     }
 
     amendProject() {
@@ -44,9 +46,8 @@ class PipelineAmendCtrl {
         });
     }
 
-    amendAuthors() {
-        this.authors = this.publication.project.value.teamOrder;
-        this.ui.sortAuthors = true;
+    saveAuthors() {
+        this.ui.confirmed = true;
     }
 
     submitAmend() {

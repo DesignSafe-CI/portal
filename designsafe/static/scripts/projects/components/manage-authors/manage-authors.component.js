@@ -6,8 +6,8 @@ class ManageAuthorsCtrl {
     }
 
     $onInit() {
-
         this.title;
+        this.label;
         this.authors;
         this.selectedMember;
         this.currentDate = new Date().getFullYear();
@@ -47,6 +47,8 @@ export const ManageAuthorsComponent = {
     controllerAs: '$ctrl',
     bindings: {
         title: '<',
-        authors: '='
+        label: '<',
+        authors: '=',
+        submit: '&?'
     }
 };

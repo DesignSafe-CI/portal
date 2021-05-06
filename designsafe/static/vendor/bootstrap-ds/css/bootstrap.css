@@ -2780,6 +2780,10 @@ input[type="search"] {
 .pipeline-authors-item {
   margin-right: 20px;
 }
+.pipeline-authors-submit {
+  flex-grow: 2;
+  text-align: center;
+}
 .pipeline-nav {
   display: flex;
   justify-content: space-between;
@@ -2814,6 +2818,23 @@ input[type="search"] {
   height:5em;
   margin-top: 20px;
   resize: vertical;
+}
+.author-table {
+  width:100%;
+}
+.author-col {
+  text-align: left;
+  vertical-align: middle !important;
+}
+.order-col {
+  text-align: center;
+  vertical-align: middle !important;
+}
+.author-table-author {
+  width:90%;
+}
+.author-table-order {
+  width:auto;
 }
 .form-group {
   margin-bottom: 20px;

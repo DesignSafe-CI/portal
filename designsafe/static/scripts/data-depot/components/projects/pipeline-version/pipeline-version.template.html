@@ -3,7 +3,7 @@
         <i class="fa fa-arrow-left"></i> Back
     </a>
     <button class="btn btn-small btn-add"
-            ng-click="$ctrl.goVersionChanges()"
+            ng-click="$ctrl.goVersionProject()"
             ng-disabled="!$ctrl.selectedListing"
     >
         Continue
@@ -22,8 +22,8 @@
     <div ng-if="!$ctrl.ui.loading">
         <div class="pipeline-section">
             <ul>
-                <li>Select what files you want in the new version.</li>
-                <li>The new version will only include the files selected here, so select any previously published files that you still want in the new version.</li>
+                <li>The new version will only include the files selected here.</li>
+                <li>Select any previously published files that you still want in the new version.</li>
             </ul>
         </div>
         <div ng-if="$ctrl.selectedListing">

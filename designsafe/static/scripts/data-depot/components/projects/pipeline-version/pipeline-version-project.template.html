@@ -1,17 +1,17 @@
 <div class="pipeline-nav">
-    <a ng-click="$ctrl.goStart()">
+    <a ng-click="$ctrl.goVersion()">
         <i class="fa fa-arrow-left"></i> Back
     </a>
     <button class="btn btn-small btn-add"
-            ng-click="$ctrl.submitAmend()"
-            ng-disabled="$ctrl.ui.loading || $ctrl.ui.submitted || !$ctrl.ui.confirmed"
+            ng-click="$ctrl.goVersionChanges()"
+            ng-disabled="!$ctrl.selectedListing || !$ctrl.ui.success"
     >
-        Amend Publication
+        Continue
     </button>
 </div>
 <div class="pipeline-page">
     <div class="pipeline-header">
-        <h3>Amend Metadata</h3>
+        <h3>Version Metadata</h3>
         If you need help, attend <a href="/learning-center/training/" target="_blank">curation office hours</a>.
         <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
@@ -23,21 +23,13 @@
     <div class="pipeline-notification">
         <div class="alert alert-success" ng-if="$ctrl.ui.success">
             <strong>SUCCESS:</strong>
-            Your publication amendment has been submitted.
-            <strong>Do not attempt to amend your publication again.</strong>
-            Please wait until the publication has reappeared in the publications
-            area before changing anything in the project. This process can take
-            up to an hour or more for large datasets.
-        </div>
-        <div class="alert alert-success" ng-if="$ctrl.ui.confirmed && !$ctrl.ui.success">
-            <strong>SUCCESS:</strong>
-            Your authors have been confirmed. Click the "Amend Publication" button to finalize your changes.
+            Your authors have been saved. Click the "Continue" button to proceed to the next step.
         </div>
         <div class="alert alert-danger" ng-if="$ctrl.ui.error">
             <strong>ERROR:</strong>
-            There was an issue when attempting to amend your publication.
-            <strong>Do not attempt to amend your publication again.</strong> Please
-            <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+amendments+to+existing+publication:+{{$ctrl.project.value.projectId}}"
+            There was an issue when attempting to save your authors.
+            If you are unable to save your authors, please
+            <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Failure+to+save+project+authors:+{{$ctrl.project.value.projectId}}"
             target="_blank">submit a ticket</a> and we will assist you with this issue.
         </div>
         <button class="btn btn-small btn-add"
@@ -47,12 +39,12 @@
             Return to Project
         </button>
     </div>
-    <div ng-if="!$ctrl.ui.loading && !$ctrl.ui.submitted">
+    <div ng-if="!$ctrl.ui.loading">
         <div class="pipeline-section">
             <ul>
-                <li>The following metadata (excluding titles) can be amended.</li>
-                <li>Your citation will be updated with the order of authors displayed in the Citation Preview.</li>
-                <li>When you are finished and have proofread your changes, click 'Amend Publication' and the published project will be updated.</li>
+                <li>Update any project metadata as needed.</li>
+                <li>You are required to confirm the list of Authors on your Citation before continuing.</li>
+                <li>When you have finished ordering click the "Save" button to continue.</li>
             </ul>
         </div>
         <!-- Project Header Start -->
@@ -145,24 +137,23 @@
                 <p>{{ $ctrl.project.value.description }}</p>
             </div>
             <div>
-                <a class="prj-ent-amend" ng-click="$ctrl.amendProject($event)"><strong>Edit Project Metadata</strong></a>
+                <a class="prj-ent-amend" ng-click="$ctrl.manageProject($event)"><strong>Edit Project Metadata</strong></a>
             </div>
         </div>
         <hr>
         <!-- Project Authors Start -->
         <div class="pipeline-header">
             <h3>Confirm Author Order</h3>
-            <strong>You must confirm the order of authors.</strong>
+            <strong>You are required to confirm the list of Authors on your Citation before continuing.</strong>
             Your citation will be updated to match what is shown in the preview.
         </div>
         <div class="pipeline-section">
             <manage-authors
                 title="$ctrl.project.value.title"
-                label="'Confirm Authors'"
-                authors="$ctrl.authors"
+                label="'Save Authors'"
+                authors="$ctrl.project.value.teamOrder"
                 submit="$ctrl.saveAuthors()">
             </manage-authors>
         </div>
     </div>
-    <!-- Project Header End -->
 </div>

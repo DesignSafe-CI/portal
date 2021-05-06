@@ -1,4 +1,5 @@
 import PipelineVersionTemplate from './pipeline-version.template.html';
+import PipelineVersionProjectTemplate from './pipeline-version-project.template.html';
 import PipelineVersionChangesTemplate from './pipeline-version-changes.template.html';
 
 class PipelineVersionCtrl {
@@ -7,6 +8,7 @@ class PipelineVersionCtrl {
         FileListingService,
         PublicationService,
         ProjectService,
+        $uibModal,
         $state,
         $http,
         $q
@@ -16,6 +18,7 @@ class PipelineVersionCtrl {
         this.FileListingService = FileListingService;
         this.PublicationService = PublicationService;
         this.ProjectService = ProjectService;
+        this.$uibModal = $uibModal
         this.$state = $state;
         this.$http = $http;
         this.$q = $q;
@@ -32,7 +35,7 @@ class PipelineVersionCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.publication = this.ProjectService.resolveParams.publication;
-        this.selectedListing = this.ProjectService.resolveParams.selectedListing; // for handling selected files...
+        this.selectedListing = this.ProjectService.resolveParams.selectedListing;
         this.revisionText = '';
         if (!this.publication) {
             this.goStart();
@@ -94,6 +97,22 @@ class PipelineVersionCtrl {
         });
     }
 
+    saveAuthors() {
+        this.ui.loading = true;
+        let data = {
+            uuid: this.project.uuid,
+            teamOrder: this.project.value.teamOrder,
+        };
+        this.$http.post(`/api/projects/${data.uuid}/`, data).then((resp) => {
+            this.project.value = resp.data.value;
+            this.ui.success = true;
+            this.ui.loading = false;
+        }, (error) => {
+            this.ui.error = true;
+            this.ui.loading = false;
+        });
+    }
+
     saveSelections() {
         let selectedFiles = this.FileListingService.getSelectedFiles('main')
         if (!selectedFiles.length) {
@@ -104,6 +123,17 @@ class PipelineVersionCtrl {
             listing: selectedFiles,
         };
         this.FileListingService.selectedListing = this.selectedListing;
+    }
+
+    manageProject() {
+        return this.$uibModal.open({
+          component: 'manageProject',
+          resolve: {
+            project: () => this.project,
+          },
+          backdrop: 'static',
+          size: 'lg',
+        });
     }
 
     undoSelections() {
@@ -119,7 +149,18 @@ class PipelineVersionCtrl {
     }
 
     goVersion() {
-        this.$state.go('projects.pipelineVersion', { projectId: this.projectId }, { reload: true });
+        this.$state.go('projects.pipelineVersion', {
+            projectId: this.projectId,
+            publication: this.publication
+        }, { reload: true });
+    }
+
+    goVersionProject() {
+        this.$state.go('projects.pipelineVersionProject', {
+            projectId: this.projectId,
+            publication: this.publication,
+            selectedListing: this.selectedListing
+        }, { reload: true });
     }
 
     goVersionChanges() {
@@ -133,6 +174,17 @@ class PipelineVersionCtrl {
 
 export const PipelineVersionComponent = {
     template: PipelineVersionTemplate,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const PipelineVersionProjectComponent = {
+    template: PipelineVersionProjectTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
