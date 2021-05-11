@@ -544,8 +544,8 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
     :param list of selected_files strings: Only provided if project type == other.
     """
     # Only copy published files while in prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
-        return
+    # if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
+    #     return
 
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
     import shutil
@@ -610,7 +610,11 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
 
     os.chmod(prefix_dest, 0o555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0o555)
-    save_to_fedora.apply_async(args=[project_id, revision])
+
+    # Only save to fedora while in prod
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
+        save_to_fedora.apply_async(args=[project_id, revision])
+
     index_path = '/' + project_id
     if revision:
         index_path += 'r{}'.format(revision)
@@ -683,8 +687,8 @@ def save_publication(self, project_id, entity_uuids=None, revision=None):
 def zip_publication_files(self, project_id, revision=None):
     from designsafe.apps.projects.managers import publication as PublicationManager
     # Only create archive in prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
-        return
+    # if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
+    #     return
 
     try:
         PublicationManager.archive(project_id=project_id, revision=revision)
