@@ -37,7 +37,8 @@ def listing(offset=0, limit=100, limit_fields=True, *args):
                                             'created',
                                             'projectId',
                                             'users',
-                                            'system'])
+                                            'system',
+                                            'revision'])
     pub_query = pub_query.sort(
         {'created': {'order': 'desc'}}
     )
