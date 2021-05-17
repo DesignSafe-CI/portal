@@ -47,15 +47,14 @@ class DataBrowserServicePreviewCtrl {
                         e.target.response.text().then((text) => {
                             this.textContent = text;
                             const extension = this.resolve.file.name.split('.').pop();
+
                             if (extension.includes('json')) {
                                 const body = JSON.parse(text);
                                 // Pretty Print JSON
                                 this.textContent = JSON.stringify(body, null, 4);
                                 const isGeoJson = validateGeoJson(body);
                                 if (isGeoJson) this.renderGeoJson(body);
-                            }
-
-                            if (extension.includes('hazmapper')) {
+                            } else if (extension.endsWith('hazmapper')) {
                                 const body = JSON.parse(text);
                                 let uuid = body['uuid'];
                                 this.hazmapperHref = `https://hazmapper.tacc.utexas.edu/staging/project/${uuid}`
