@@ -543,10 +543,6 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
     :param int revision: The revision number of the publication
     :param list of selected_files strings: Only provided if project type == other.
     """
-    # Only copy published files while in prod
-    # if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
-    #     return
-
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
     import shutil
 
@@ -686,10 +682,6 @@ def save_publication(self, project_id, entity_uuids=None, revision=None):
 @shared_task(bind=True)
 def zip_publication_files(self, project_id, revision=None):
     from designsafe.apps.projects.managers import publication as PublicationManager
-    # Only create archive in prod
-    # if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
-    #     return
-
     try:
         PublicationManager.archive(project_id=project_id, revision=revision)
     except Exception as exc:
