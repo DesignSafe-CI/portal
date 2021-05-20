@@ -268,14 +268,24 @@ class PublishedViewCtrl {
         }
         return false;
     }
-    
+
     download() {
         this.$uibModal.open({
             component: 'publicationDownloadModal',
             resolve: {
                 publication: () => {return this.browser.publication;},
             },
-            size: 'download'
+            size: 'citation'
+        });
+    }
+
+    metrics() {
+        this.$uibModal.open({
+            component: 'publicationMetricsModal',
+            resolve: {
+                publication: () => {return this.browser.publication;},
+            },
+            size: 'md'
         });
     }
 

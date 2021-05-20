@@ -2731,6 +2731,10 @@ input[type="search"] {
   align-items: start;
   justify-content: space-between;
 }
+.prj-head-buttons {
+  display: flex;
+  flex-direction: column;
+}
 .prj-head-title {
   width: 83%;
   font-size: 20px;

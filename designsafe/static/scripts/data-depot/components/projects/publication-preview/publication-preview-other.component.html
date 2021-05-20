@@ -6,9 +6,16 @@
                 {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
                 <a class="prj-head-edit" ng-click="$ctrl.editProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
             </span>
-            <span class="prj-head-download">
-                <a class="curation-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly"> <strong>Download Dataset</strong></a>
-            </span>
+            <div class="prj-head-buttons">
+                <a class="prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
+                    <span class="curation-download"></span>
+                    <strong>&nbsp;Download Dataset</strong>
+                </a>
+                <a class="prj-head-download" ng-click="$ctrl.metrics()" ng-if="$ctrl.readOnly">
+                    <span class="curation-experiment"></span>
+                    <strong>&nbsp;View Data Metrics</strong>
+                </a>
+            </div>
         </div>
         <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
             <colgroup>
