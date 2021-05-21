@@ -16,7 +16,10 @@ class PublicationDownloadModalCtrl {
         this.publication = this.resolve.publication;
         this.prjId = this.publication.project.value.projectId;
         
-        const archive_path = `/archives/${this.prjId}_archive.zip`;
+        const archive_path = (this.publication.revision
+            ? `/archives/${this.prjId}r${this.publication.revision}_archive.zip`
+            : `/archives/${this.prjId}_archive.zip`
+        )
         const archive_system = 'designsafe.storage.published'
 
         this.FileListingService.getDetail({
