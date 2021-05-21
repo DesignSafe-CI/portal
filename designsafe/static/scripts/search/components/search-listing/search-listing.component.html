@@ -4,7 +4,7 @@
             <span class="label label-default"> File </span>
             <span class="label label-primary"> {{$ctrl.data.length | bytes }} </span>
             <h4> <a ng-href="/data/browser/public/{{$ctrl.data.system}}/{{ $ctrl.data.basePath }}" target="_self"> {{$ctrl.data.name}} </a> </h4>
-            <p> {{$ctrl.data.path}} </p>
+            <p> {{$ctrl.data.path}} <span ng-if="$ctrl.data.prjId">(<a ng-href="/data/browser/public/designsafe.storage.published/{{$ctrl.data.prjId}}"  target="_self">Go to Publication</a>)</span> </p>
             <span class="label label-primary" ng-if='$ctrl.data.lastModified' style="background-color:#5b4d92">Last Modified: {{ $ctrl.data.lastModified | date:'short'}} </span>
             <hr>
         </div>

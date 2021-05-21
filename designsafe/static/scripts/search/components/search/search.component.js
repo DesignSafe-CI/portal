@@ -55,7 +55,25 @@ class SearchCtrl {
 
         this.searchService.search(this.data.search_text, this.results_per_page, this.offset, this.data.type_filter).then( resp => {
             this.data.search_results = resp.data;
-            this.max_pages = this.Math.ceil(this.data.search_results.all_total / this.results_per_page);
+            console.log(resp.data)
+            switch(this.data.type_filter) {
+              case 'cms':
+                this.total_results = resp.data.cms_total;
+                break;
+              case 'public_files':
+                this.total_results = resp.data.public_files_total;
+                break;
+                case 'published_files':
+                  this.total_results = resp.data.published_files_total;
+                  break;
+              case 'published':
+                this.total_results = resp.data.published_total;
+                break;
+              default:
+                this.total_results = resp.data.all_total;
+            }
+            console.log(this.data.search_results)
+            this.max_pages = this.Math.ceil(this.total_results / this.results_per_page);
             this.searching = false;
             this.$window.scrollTo(0, 0);
         }, err => {
