@@ -218,7 +218,7 @@ class PublishedViewCtrl {
 
     getVersion() {
         let path = (typeof this.selectedVersion === 'number'
-            ? this.browser.publication.projectId + 'r' + this.selectedVersion
+            ? `${this.browser.publication.projectId}v${this.selectedVersion}`
             : this.browser.publication.projectId
         )
         this.$state.go('publishedData', {
@@ -231,7 +231,7 @@ class PublishedViewCtrl {
             let vers = ['Original'];
             let max = publication.latestRevision.revision;
             if (typeof max == 'number') {
-                for (let i = 1; i <= max; i++) {
+                for (let i = 2; i <= max; i++) {
                     vers.push(i);
                 }
             }

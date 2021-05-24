@@ -14,7 +14,7 @@ class PublicationListingCtrl {
 
     href(publication) {
         let path = (publication.revision
-            ? publication.projectId + 'r' + publication.revision
+            ? `${publication.projectId}v${publication.revision}`
             : publication.projectId
         )
         return this.$state.href('publishedData', {filePath: path})

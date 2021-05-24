@@ -92,7 +92,7 @@ class PublicationView(BaseApiView):
         # If revision is truthy, increment the revision count and pass it to the pipeline.
         if revision:
             latest_revision = IndexedPublication.max_revision(project_id=project_id)
-            current_revision = latest_revision + 1
+            current_revision = latest_revision + 1 if latest_revision >= 2 else 2
 
         pub = save_publication(data['publication'], status, revision=current_revision, revision_text=revision_text)
 

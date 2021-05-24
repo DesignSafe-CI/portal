@@ -89,7 +89,7 @@
                 </td>
             </tr>
             <!-- Commenting out until after group feature review -->
-            <!-- <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
                 <td>
                     <span>Version</span>
                 </td>
@@ -101,7 +101,7 @@
                     </select>
                     &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != 'Original'"><strong>Version Changes</strong></a>
                 </td>
-            </tr> -->
+            </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly">
                 <td ng-if="$ctrl.browser.project.value.keywords">License(s)</td>
                 <td class="prj-data">
@@ -122,7 +122,7 @@
         <div ng-if="$ctrl.browser.project.value.description">
             <p>{{ $ctrl.browser.project.value.description }}</p>
         </div>
-        <div ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+        <!-- <div ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
             <span>Version</span>&nbsp;
             <select class="prj-dropdown"
                     ng-options="version for version in $ctrl.versions"
@@ -130,7 +130,7 @@
                     ng-model="$ctrl.selectedVersion">
             </select>
             &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != 'Original'"><strong>Version Changes</strong></a>
-        </div>
+        </div> -->
     </div>
     <!-- Project Header End -->
     <table class="tg" style="table-layout: fixed; width: 100%;"
