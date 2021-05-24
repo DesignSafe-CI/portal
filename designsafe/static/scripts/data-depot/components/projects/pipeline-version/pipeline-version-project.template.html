@@ -22,11 +22,11 @@
     <!-- Notifications -->
     <div class="pipeline-notification">
         <div class="alert alert-success" ng-if="$ctrl.ui.success">
-            <strong>SUCCESS:</strong>
+            <i class="fa fa-check"></i>
             Your authors have been saved. Click the "Continue" button to proceed to the next step.
         </div>
         <div class="alert alert-danger" ng-if="$ctrl.ui.error">
-            <strong>ERROR:</strong>
+            <i class="fa fa-times"></i>
             There was an issue when attempting to save your authors.
             If you are unable to save your authors, please
             <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Failure+to+save+project+authors:+{{$ctrl.project.value.projectId}}"
