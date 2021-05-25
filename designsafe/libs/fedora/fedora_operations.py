@@ -2,6 +2,9 @@ import requests
 from requests import HTTPError
 from django.conf import settings
 import json
+import magic
+import os
+from urllib import parse
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.api.publications.operations import _get_user_by_username
 
@@ -10,7 +13,8 @@ FEDORA_HEADERS = {
     'content-type': 'application/ld+json'
 }
 
-PUBLICATIONS_CONTAINER = 'publications-test'
+PUBLICATIONS_CONTAINER = 'designsafe-publications'
+PUBLICATIONS_MOUNT_ROOT = '/corral-repl/tacc/NHERI/published/'
 
 FEDORA_CONTEXT = {
     "description": {
@@ -112,6 +116,19 @@ def fedora_post(container_path):
 
 
 def fedora_update(project_id, update_body={}):
+    """"
+    Patches a Fedora container with updated metadata.
+
+    Params
+    ------
+    project_id: Project ID to look up (e.g. PRJ-1234)
+    update_body: Dictionary of fields to update. Fields not contained in the
+    update body will be unchanged.
+
+    Returns
+    -------
+    dict: Publication metadata in compact JSON format.
+    """
     initial_data = fedora_get(project_id)
     updated_data = {**initial_data, **update_body}
     updated_data['@context'] = {**initial_data['@context'], **FEDORA_CONTEXT}
@@ -127,6 +144,9 @@ def fedora_update(project_id, update_body={}):
 
 
 def format_metadata_for_fedora(project_id, version=None):
+    """
+    Format a publication's metadata so that it can be ingested into Fedora.
+    """
     doc = IndexedPublication.from_id(project_id)
     pub_meta = doc.project.value
 
@@ -182,10 +202,44 @@ def format_metadata_for_fedora(project_id, version=None):
     return fc_meta
 
 
+def ingest_files_other(project_id, version=None):
+    """
+    Ingest an Other type publication's files into fedora. All files are ingested
+    as children of the base project, with a slug that indicates the path in the
+    directory hierarchy.
+    """
+
+    archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
+    fedora_root = parse.urljoin(settings.FEDORA_URL, PUBLICATIONS_CONTAINER)
+    for root, _, files in os.walk(archive_path):
+
+        for file in files:
+            print(file)
+            headers = {'Content-Type': 'text/plain'}
+            mime = magic.Magic(mime=True)
+            headers['Content-Type'] = mime.from_file(os.path.join(root, file))
+
+            fc_relative_path = os.path.join(root.replace(PUBLICATIONS_MOUNT_ROOT, '', 1), file)
+            fc_put_url = os.path.join(fedora_root, parse.quote(fc_relative_path))
+            print(fc_put_url)
+            with open(os.path.join(root, file), 'rb') as _file:
+                request = requests.put(fc_put_url,
+                                    auth=(settings.FEDORA_USERNAME,
+                                            settings.FEDORA_PASSWORD),
+                                    headers=headers,
+                                    data=_file)
+                request.raise_for_status()
+
+
 def ingest_project(project_id):
+    """
+    Ingest a project into Fedora by creating a record in the repo, updating it
+    with the published metadata, and uploading its files.
+    """
     fedora_post(project_id)
     project_meta = format_metadata_for_fedora(project_id)
     res = fedora_update(project_id, project_meta)
+    ingest_files_other(project_id)
     return res
 
 
@@ -265,7 +319,3 @@ def walk_experimental(project_id):
                     relation_map[sl.uuid]['children'].append(event.uuid)
 
     return relation_map
-
-def format_experiment_metadata(project_id):
-    doc = IndexedPublication.from_id(project_id)
-

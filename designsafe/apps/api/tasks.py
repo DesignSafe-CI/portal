@@ -705,6 +705,11 @@ def set_publish_status(self, project_id, entity_uuids=None, publish_dois=False):
     )
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
+def fedora_ingest_other(self, project_id):
+    from designsafe.libs.fedora.fedora_operations import ingest_project
+    ingest_project(project_id)
+
+@shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_to_fedora(self, project_id):
     import requests
     import magic
