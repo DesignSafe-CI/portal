@@ -227,9 +227,13 @@ class PublishedViewCtrl {
     }
 
     prepVersions(publication) {
+        // returns a list of publication versions
         if (publication.latestRevision) {
             let vers = ['Original'];
-            let max = publication.latestRevision.revision;
+            let max = (publication.latestRevision.status === 'published'
+                ? publication.latestRevision.revision
+                : publication.latestRevision.revision - 1
+            )
             if (typeof max == 'number') {
                 for (let i = 2; i <= max; i++) {
                     vers.push(i);

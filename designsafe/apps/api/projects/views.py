@@ -136,24 +136,6 @@ class PublicationView(BaseApiView):
         }, status=200)
 
 class AmendPublicationView(BaseApiView):
-    # not using GET for anything...
-    # @profile_fn
-    # def get(self, request, project_id, revision):
-    #     """
-    #     Get a version of a publication by it's project ID and revision number
-    #     """
-    #     pub = BaseESPublication(project_id=project_id, revision=revision)
-    #     latest_revision = IndexedPublication.max_revision(project_id=project_id)
-    #     if pub is not None and hasattr(pub, 'project'):
-    #         return JsonResponse({
-    #             'publication': pub.to_dict(),
-    #             'latestVersion': latest_revision,
-    #             })
-    #     else:
-    #         return JsonResponse({'status': 404,
-    #                              'message': 'Not found'},
-    #                             status=404)
-
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
     def post(self, request, **kwargs):
