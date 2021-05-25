@@ -17,6 +17,7 @@ class PipelineStartCtrl {
             loading: true,
             showAmendVersion: false,
             isPublished: false,
+            isProcessing: false,
             directSelect: '',
             directPreview: ''
         };
@@ -31,6 +32,9 @@ class PipelineStartCtrl {
                 );
                 if (this.publication.status) {
                     this.ui.isPublished = true;
+                    if (this.publication.status != 'published') {
+                        this.ui.isProcessing = true;
+                    }
                 }
                 this.ui.loading = false;
             }, (error) => {
