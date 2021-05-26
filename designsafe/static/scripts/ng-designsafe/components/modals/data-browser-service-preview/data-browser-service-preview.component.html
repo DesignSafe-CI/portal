@@ -2,19 +2,16 @@
     <h3 class="modal-title">File Preview: {{ $ctrl.resolve.file.name }}</h3>
 </div>
 <div class="modal-body">
-    <div ng-if="!$ctrl.isHazmapper()">
-        <div ng-if="notInJupyterTree()">
-            <div class="alert alert-warning">
-                <p class="lead">Unsupported file path</p>
-                <p>If you want to open this file from DesignSafe you have to copy it to MyData or to a project.</p>
-            </div>
-        </div>
-        <div class="caption">
-            <file-metadata file="$ctrl.resolve.file"></file-metadata>
+    <div ng-if="notInJupyterTree() && !$ctrl.isHazmapper">
+        <div class="alert alert-warning">
+            <p class="lead">Unsupported file path</p>
+            <p>If you want to open this file from DesignSafe you have to copy it to MyData or to a project.</p>
         </div>
     </div>
+    <div class="caption">
+        <file-metadata file="$ctrl.resolve.file"></file-metadata>
+    </div>
     <div ng-if="!$ctrl.isHazmapper()" class="table-preview actions text-center">
-
         <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.rename" ng-click="$ctrl.rename()">
             <i class="fa fa-pencil"></i> Rename
         </button>
@@ -75,11 +72,7 @@
             <p>{{ $ctrl.mapError.message }}</p>
         </div>
 
-        <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.hazmapperHref !== ''" ng-show="!$ctrl.loading">
-            <iframe class="embed-responsive-item" ng-src="{{ $ctrl.href }}" id="framepreview" iframe-onload="$ctrl.onLoad()"></iframe>
-        </div>
-
-        <div ng-if="$ctrl.fileType === 'text' && $ctrl.hazmapperHref === ''" ng-show="!$ctrl.loading" >
+        <div ng-if="$ctrl.fileType === 'text' && !$ctrl.isHazmapper()" ng-show="!$ctrl.loading" >
             <pre style="height:500px">{{$ctrl.textContent}}</pre>
         </div>
 

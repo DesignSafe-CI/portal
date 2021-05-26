@@ -145,10 +145,6 @@ class DataBrowserServicePreviewCtrl {
         return fileExtension === 'hazmapper';
     }
 
-    openInHazMapper() {
-        window.open(this.hazmapperHref);
-    }
-
     renderGeoJson(data) {
         const mapWrapper = document.getElementById('preview_map_wrapper');
         mapWrapper.style.display = 'block';
