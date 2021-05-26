@@ -2,7 +2,7 @@
     <h3 class="modal-title">File Preview: {{ $ctrl.resolve.file.name }}</h3>
 </div>
 <div class="modal-body">
-    <div>
+    <div ng-if="!$ctrl.isHazmapper()">
         <div ng-if="notInJupyterTree()">
             <div class="alert alert-warning">
                 <p class="lead">Unsupported file path</p>
@@ -13,7 +13,7 @@
             <file-metadata file="$ctrl.resolve.file"></file-metadata>
         </div>
     </div>
-    <div class="table-preview actions text-center">
+    <div ng-if="!$ctrl.isHazmapper()" class="table-preview actions text-center">
 
         <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.rename" ng-click="$ctrl.rename()">
             <i class="fa fa-pencil"></i> Rename
@@ -33,10 +33,6 @@
 
         <button class="btn btn-sm btn-default" ng-show="$ctrl.isJupyter()" ng-click="$ctrl.openInJupyter()">
             <i class="fa fa-file-image-o"></i></i> Open In Jupyter
-        </button>
-
-        <button class="btn btn-sm btn-default" ng-if="$ctrl.isHazmapper()" ng-click="$ctrl.openInHazMapper()">
-            <i class="fa fa-file-image-o"></i> Open in HazMapper
         </button>
     </div>
 
@@ -64,6 +60,9 @@
         </div>
 
         <div ng-if="$ctrl.loading">
+            <div ng-if="$ctrl.isHazmapper()" style="font-size:32px">
+              Opening in HazMapper
+            </div>
             <i class="fa fa-spinner fa-spin" style="font-size:150px;line-height:400px" ng-if="$ctrl.loading" id="loading_ind"></i>
         </div>
 

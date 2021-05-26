@@ -57,8 +57,9 @@ class DataBrowserServicePreviewCtrl {
                             } else if (extension.endsWith('hazmapper')) {
                                 const body = JSON.parse(text);
                                 let uuid = body['uuid'];
-                                this.hazmapperHref = `https://hazmapper.tacc.utexas.edu/staging/project/${uuid}`
-                                this.href = this.$sce.trustAs('resourceUrl', this.hazmapperHref);
+                                this.hazmapperHref = `http://localhost:4200/project/${uuid}`
+                                window.open(this.hazmapperHref);
+                                this.close();
                             }
 
                             this.loading = false;
