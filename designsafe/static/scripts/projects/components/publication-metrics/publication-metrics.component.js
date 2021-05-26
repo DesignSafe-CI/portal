@@ -38,7 +38,7 @@ class PublicationMetricsCtrl {
 
     cumulativeMetrics(meta) {
         let projectDownloads = 0;
-        const archiveMetrics = meta.value.find((v) => v.doi === 'archive') || [];
+        const archiveMetrics = meta.value.find((v) => v.doi === 'archive') || { metrics: [] };
         archiveMetrics.metrics.forEach((m) => (projectDownloads += m.Downloads));
         let fileDownloads = 0;
         let filePreviews = 0;
