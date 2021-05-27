@@ -618,7 +618,7 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def freeze_publication_meta(self, project_id, entity_uuids=None, revision=None):
+def freeze_publication_meta(self, project_id, entity_uuids=None, revision=None, revised_authors=None):
     """Freeze publication meta.
 
     :param str project_id: Project Id.
@@ -629,7 +629,8 @@ def freeze_publication_meta(self, project_id, entity_uuids=None, revision=None):
         PublicationManager.freeze_project_and_entity_metadata(
             project_id,
             entity_uuids,
-            revision=revision
+            revision,
+            revised_authors
         )
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
@@ -655,7 +656,7 @@ def amend_publication_data(self, project_id, authors=None, revision=None):
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def save_publication(self, project_id, entity_uuids=None, revision=None):
+def save_publication(self, project_id, entity_uuids=None, revision=None, revised_authors=None):
     """Save publication.
 
     This task will create a draft DOI and copy all metadata to ES.
@@ -668,12 +669,16 @@ def save_publication(self, project_id, entity_uuids=None, revision=None):
     try:
         PublicationManager.draft_publication(
             project_id,
-            entity_uuids
+            entity_uuids,
+            revision=revision,
+            revised_authors=revised_authors
         )
+        # TODO: Why are we running this here if we're already calling it in the task chain?
         PublicationManager.freeze_project_and_entity_metadata(
             project_id,
             entity_uuids,
-            revision=revision
+            revision=revision,
+            revised_authors=revised_authors
         )
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
