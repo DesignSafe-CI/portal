@@ -987,3 +987,7 @@ i[class^="icon-ls-pre/post"]:before,
         content: "\e913";
         font-size: 20px;
     }
+
+.ds-icon-metrics {
+    background-image: url('/static/images/ds-icons/icon-metrics.svg');
+    }
