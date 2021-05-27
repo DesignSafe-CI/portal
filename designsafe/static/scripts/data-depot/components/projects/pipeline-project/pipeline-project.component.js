@@ -55,6 +55,13 @@ class PipelineProjectCtrl {
 
     }
 
+    isOther() {
+        if (this.project.value.projectType === 'other') {
+            return true;
+        }
+        return false;
+    }
+
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view', {projectId: this.project.uuid}, {reload: true});
