@@ -15,6 +15,12 @@
                     <span class="badge" ng-show='$ctrl.data.search_results.published_total'> {{ $ctrl.data.search_results.published_total }}</span>
                 </a>
                 <a class="list-group-item" 
+                    uib-tooltip="Search files published on DesignSafe."
+                    ng-class='{"active": $ctrl.data.type_filter == "published_files"}' 
+                    ng-click='$ctrl.filter("published_files")'> Published Files
+                    <span class="badge" ng-show='$ctrl.data.search_results.published_files_total'> {{ $ctrl.data.search_results.published_files_total }}</span>
+                </a>
+                <a class="list-group-item" 
                     uib-tooltip="Search all publicly available files."
                     ng-class='{"active": $ctrl.data.type_filter == "public_files"}' ng-click='$ctrl.filter("public_files")'> Public Files
                     <span class="badge" ng-show='$ctrl.data.search_results.public_files_total'> {{ $ctrl.data.search_results.public_files_total }}</span>

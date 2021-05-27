@@ -50,25 +50,41 @@ export class FileOperationService {
     getTests(files) {
         const externalDataStates = ['boxData', 'dropboxData', 'googledriveData'];
         const agaveDataStates = ['myData', 'projects.view', 'projects.curation'];
+        let isHazmapper = files.length > 0
+            ? files.some(e => e.name.endsWith('hazmapper'))
+            : false;
         const tests = {
-            copy: this.Django.context.authenticated && files.length > 0,
+            copy: this.Django.context.authenticated && !isHazmapper && files.length > 0,
             move:
                 this.Django.context.authenticated &&
                 files.length > 0 &&
+                !isHazmapper &&
                 agaveDataStates.includes(this.$state.current.name),
             rename:
                 this.Django.context.authenticated &&
                 files.length === 1 &&
+                !isHazmapper &&
                 [...agaveDataStates].includes(this.$state.current.name),
-            upload: this.Django.context.authenticated && agaveDataStates.includes(this.$state.current.name),
-            preview: files.length === 1 && files[0].format !== 'folder',
-            previewImages: files.length > 0 && !externalDataStates.includes(this.$state.current.name),
+            upload:
+                this.Django.context.authenticated &&
+                !isHazmapper &&
+                agaveDataStates.includes(this.$state.current.name),
+            preview:
+                files.length === 1 &&
+                !isHazmapper &&
+                files[0].format !== 'folder',
+            previewImages:
+                files.length > 0 &&
+                !isHazmapper &&
+                !externalDataStates.includes(this.$state.current.name),
             download:
                 files.length > 0 &&
+                !isHazmapper &&
                 !files.some((f) => f.format === 'folder') &&
                 !externalDataStates.includes(this.$state.current.name),
             trash:
                 this.Django.context.authenticated &&
+                !isHazmapper &&
                 files.length > 0 &&
                 agaveDataStates.includes(this.$state.current.name),
         };

@@ -21,6 +21,7 @@ class DataBrowserServicePreviewCtrl {
         //TODO DES-1689: working metadata table and operation buttons
         this.textContent = '';
         this.videoHref = '';
+        this.hazmapperHref = '';
         this.loading = true;
         this.error = false;
 
@@ -46,13 +47,21 @@ class DataBrowserServicePreviewCtrl {
                         e.target.response.text().then((text) => {
                             this.textContent = text;
                             const extension = this.resolve.file.name.split('.').pop();
+
                             if (extension.includes('json')) {
                                 const body = JSON.parse(text);
                                 // Pretty Print JSON
                                 this.textContent = JSON.stringify(body, null, 4);
                                 const isGeoJson = validateGeoJson(body);
                                 if (isGeoJson) this.renderGeoJson(body);
+                            } else if (extension.endsWith('hazmapper')) {
+                                const body = JSON.parse(text);
+                                let uuid = body['uuid'];
+                                this.hazmapperHref = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${uuid}`
+                                window.open(this.hazmapperHref);
+                                this.close();
                             }
+
                             this.loading = false;
                             this.$scope.$apply();
                         });
@@ -118,7 +127,7 @@ class DataBrowserServicePreviewCtrl {
     isJupyter() {
         if (this.resolve.api !== 'agave') {
             return false;
-        } 
+        }
         const fileExtension = this.resolve.file.name.split('.').pop();
         return fileExtension === 'ipynb';
 
@@ -135,10 +144,15 @@ class DataBrowserServicePreviewCtrl {
         window.open(jupyterPath);
     }
 
+    isHazmapper() {
+        const fileExtension = this.resolve.file.name.split('.').pop();
+        return fileExtension === 'hazmapper';
+    }
+
     renderGeoJson(data) {
         const mapWrapper = document.getElementById('preview_map_wrapper');
         mapWrapper.style.display = 'block';
-        
+
         this.mapElement = document.createElement('div');
         this.mapElement.setAttribute('id', 'preview_map');
         this.mapElement.style.height = '500px';

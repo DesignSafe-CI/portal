@@ -63,7 +63,7 @@ import { PublishedDataModalComponent } from '../../../projects/components/publis
 import { ConfirmMessageComponent } from '../../../projects/components/confirm-message/confirm-message.component';
 import { FileCategorySelectorComponent } from '../../../projects/components/file-category-selector/file-category-selector';
 import { FileCategoriesComponent } from '../../../projects/components/file-categories/file-categories.component';
-
+import { PublicationMetricsComponent } from '../../../projects/components/publication-metrics/publication-metrics.component.js';
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
@@ -118,5 +118,6 @@ ddProjectsComponents.component('publishedDataModal', PublishedDataModalComponent
 ddProjectsComponents.component('confirmMessage', ConfirmMessageComponent);
 ddProjectsComponents.component('fileCategorySelector', FileCategorySelectorComponent);
 ddProjectsComponents.component('fileCategories', FileCategoriesComponent);
+ddProjectsComponents.component('publicationMetricsModal', PublicationMetricsComponent);
 
 export default ddProjectsComponents;

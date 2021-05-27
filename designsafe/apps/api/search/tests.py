@@ -27,6 +27,7 @@ class SearchViewTests(TestCase):
         self.assertEqual(response.json(), {'hits': [],
                                            'public_files_total': 0,
                                            'published_total': 0,
+                                           'published_files_total': 0,
                                            'cms_total': 0,
                                            'all_total': 0})
 

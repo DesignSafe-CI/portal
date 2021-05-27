@@ -1,0 +1,105 @@
+<div class="modal-header" style="background: #e6e6e6">
+    <h4 class="modal-title" style="border: none">
+        Project Data Metrics <span ng-if="!$ctrl.loading">(updated {{$ctrl.lastUpdated | date:'MM/dd/yyyy'}})</span>
+        <a uib-tooltip="Metrics collected using Make Data Count standards." tooltip-placement="right"
+            ><i class="fa fa-info-circle"></i
+        ></a>
+        <span class="pull-right" ng-click="$ctrl.close()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <div data-ng-if="$ctrl.loading && !$ctrl.error" style="padding: 10px; font-size: large; width: 100%" class="bg-info">
+        <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
+    </div>
+    <div data-ng-if="$ctrl.error" style="padding: 10px; font-size: large; width: 100%" class="bg-danger">
+        <span> Data metrics could not be retrieved for this publication.  </span>
+    </div>
+    <div style="display: flex; flex-direction: row" ng-if="!$ctrl.loading && !$ctrl.error">
+        <div style="flex-grow: 1; margin-right: 100px">
+            <table class="table table-borderless">
+                <tr style="border-top: hidden">
+                    <td>Data Reuse Breakdown</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        Project Downloads
+                        <a
+                            uib-tooltip="Downloads of a compressed entire project to a user’s machine."
+                            tooltip-placement="right"
+                            ><i class="fa fa-info-circle"></i
+                        ></a>
+                    </td>
+                    <td>{{$ctrl.cumMetrics.projectDownloads}}</td>
+                </tr>
+                <tr style="border-top: hidden">
+                    <td>
+                        File Downloads
+                        <a
+                            uib-tooltip="Aggregated file downloads to a user’s machine or file copies to their workspace in DesignSafe. "
+                            tooltip-placement="right"
+                            ><i class="fa fa-info-circle"></i
+                        ></a>
+                    </td>
+                    <td>{{$ctrl.cumMetrics.fileDownloads}}</td>
+                </tr>
+                <tr style="border-top: hidden">
+                    <td>
+                        File Previews
+                        <a
+                            uib-tooltip="Aggregated user requests for file previews in a browser window."
+                            tooltip-placement="right"
+                            ><i class="fa fa-info-circle"></i
+                        ></a>
+                    </td>
+                    <td>{{$ctrl.cumMetrics.filePreviews}}</td>
+                </tr>
+                <tr style="border-top: hidden">
+                    <td>
+                        File Views
+                        <a uib-tooltip="Aggregated file Previews and Downloads." tooltip-placement="right"
+                            ><i class="fa fa-info-circle"></i
+                        ></a>
+                    </td>
+                    <td>{{$ctrl.cumMetrics.fileViews}}</td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td>{{$ctrl.cumMetrics.total}}</td>
+                </tr>
+            </table>
+        </div>
+        <div style="flex-grow: 1">
+            <table class="table table-borderless">
+                <tr style="border-top: hidden">
+                    <td>Quarterly Reuse</td>
+                    <td>
+                        <select
+                            ng-model="$ctrl.selectedYear"
+                            ng-options="item for item in $ctrl.years"
+                            ng-change="$ctrl.onYearSelect()"
+                        ></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Jan-Mar</td>
+                    <td>{{$ctrl.qMetrics[0]}}</td>
+                </tr>
+                <tr style="border-top: hidden">
+                    <td>Apr-Jul</td>
+                    <td>{{$ctrl.qMetrics[1]}}</td>
+                </tr>
+                <tr style="border-top: hidden">
+                    <td>Aug-Oct</td>
+                    <td>{{$ctrl.qMetrics[2]}}</td>
+                </tr>
+                <tr style="border-top: hidden">
+                    <td>Oct-Dec</td>
+                    <td>{{$ctrl.qMetrics[3]}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
