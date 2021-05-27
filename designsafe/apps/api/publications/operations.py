@@ -197,8 +197,8 @@ def neesdescription(project_id, *args):
     return {'description': desc}
 
 
-def save_publication(publication, status='publishing', revision=None, revision_text=None):
-        """Save publication."""
+def initilize_publication(publication, status='publishing', revision=None, revision_text=None):
+        """initilize publication."""
         publication['projectId'] = publication['project']['value']['projectId']
         publication['status'] = status
         publication['version'] = 2

@@ -25,7 +25,7 @@ from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 from designsafe.libs.common.decorators import profile as profile_fn
-from designsafe.apps.api.publications.operations import save_publication
+from designsafe.apps.api.publications.operations import initilize_publication
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
@@ -84,6 +84,7 @@ class PublicationView(BaseApiView):
         status = data.get('status', 'saved')
         revision = data.get('revision', None)
         revision_text = data.get('revisionText', None)
+        revised_authors = data.get('revisionAuthors', None)
         selected_files = data.get('selectedFiles', None)
 
         project_id = data['publication']['project']['value']['projectId']
@@ -92,22 +93,24 @@ class PublicationView(BaseApiView):
         # If revision is truthy, increment the revision count and pass it to the pipeline.
         if revision:
             latest_revision = IndexedPublication.max_revision(project_id=project_id)
-            current_revision = latest_revision + 1
+            current_revision = latest_revision + 1 if latest_revision >= 2 else 2
 
-        pub = save_publication(data['publication'], status, revision=current_revision, revision_text=revision_text)
+        pub = initilize_publication(data['publication'], status, revision=current_revision, revision_text=revision_text)
 
         if data.get('status', 'save').startswith('publish'):
             (
                 tasks.freeze_publication_meta.s(
                     project_id=pub.projectId,
                     entity_uuids=data.get('mainEntityUuids'),
-                    revision=current_revision
+                    revision=current_revision,
+                    revised_authors=revised_authors
                 ).set(queue='api') |
                 group(
                     tasks.save_publication.si(
                         project_id=pub.projectId,
                         entity_uuids=data.get('mainEntityUuids'),
-                        revision=current_revision
+                        revision=current_revision,
+                        revised_authors=revised_authors
                     ).set(
                         queue='files',
                         countdown=60
@@ -136,24 +139,6 @@ class PublicationView(BaseApiView):
         }, status=200)
 
 class AmendPublicationView(BaseApiView):
-    # not using GET for anything...
-    # @profile_fn
-    # def get(self, request, project_id, revision):
-    #     """
-    #     Get a version of a publication by it's project ID and revision number
-    #     """
-    #     pub = BaseESPublication(project_id=project_id, revision=revision)
-    #     latest_revision = IndexedPublication.max_revision(project_id=project_id)
-    #     if pub is not None and hasattr(pub, 'project'):
-    #         return JsonResponse({
-    #             'publication': pub.to_dict(),
-    #             'latestVersion': latest_revision,
-    #             })
-    #     else:
-    #         return JsonResponse({'status': 404,
-    #                              'message': 'Not found'},
-    #                             status=404)
-
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
     def post(self, request, **kwargs):

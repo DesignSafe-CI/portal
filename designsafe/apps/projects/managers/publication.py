@@ -65,6 +65,8 @@ def draft_publication(
     main_entity_doi=None,
     upsert_project_doi=False,
     upsert_main_entity_doi=True,
+    revision=None,
+    revised_authors=None
 ):
     """Reserve a publication.
 
@@ -101,6 +103,9 @@ def draft_publication(
     :param bool upsert_project_doi: Update or insert project doi.
     :param bool upsert_main_entity_doi: Update or insert main entity doi.
     """
+    # TODO: We need to consider how we will prepare DataCite JSON data:
+    # 1) How do we manage conditional changes for versioning?
+    # 2) How do we cite related/unrelated entities for the DOI?
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     responses = []
@@ -148,8 +153,21 @@ def draft_publication(
 
     ### Draft Project DOI ###
     prj_url = TARGET_BASE.format(project_id=project_id)
-    prj_datacite_json = prj.to_datacite_json()
-    prj_datacite_json['url'] = prj_url
+
+    if revision:
+        # Versions should not update certain fields per Maria Esteva
+        # Add version number to DataCite info
+        pub = BaseESPublication(project_id=project_id, revision=revision)
+        prj.title = pub.project.value.title
+        prj.team_order = pub.project.value.teamOrder
+        if revised_authors:
+            prj.team_order = revised_authors
+        prj_datacite_json = prj.to_datacite_json()
+        prj_datacite_json['url'] = prj_url
+        prj_datacite_json['version'] = str(revision)
+    else:
+        prj_datacite_json = prj.to_datacite_json()
+        prj_datacite_json['url'] = prj_url
 
     if upsert_project_doi and project_doi:
         prj_res = DataciteManager.create_or_update_doi(
@@ -301,7 +319,7 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False, revision
 
     if revision:
         # Revising a publication sets the status of the previous document to 'archived'
-        last_revision = revision - 1
+        last_revision = revision - 1 if revision > 2 else 0
         archived_pub = pub = BaseESPublication(project_id=project_id, revision=last_revision)
         archived_pub.update(status='archived')
 
@@ -392,6 +410,23 @@ def _delete_unused_fields(dict_obj):
     for key in keys_to_delete:
         dict_obj.pop(key, '')
 
+def _preserve_version_values(prj_obj, revised_authors):
+    """Preserve Values for new Version
+    Some metadata values are not meant to be modified
+    when publishing a new version of a project. To prevent
+    changes when publishing new versions, we'll copy those
+    values from the original publication.
+    """
+    original_pub = BaseESPublication(project_id=prj_obj['value']['projectId'])
+    original_prj = original_pub.project.to_dict()
+    preservables = ['title', 'pi', 'coPis', 'guestMembers']
+
+    for field in preservables:
+        if field in original_prj['value']:
+            prj_obj['value'][field] = original_prj['value'][field]
+        elif field in prj_obj['value']:
+            del prj_obj['value'][field]
+    prj_obj['value']['teamOrder'] = revised_authors
 
 
 def fix_file_tags(project_id, revision=None):
@@ -576,7 +611,7 @@ def archive(project_id, revision=None):
         logger.exception('Failed to archive publication!')
 
 
-def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=None):
+def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=None, revised_authors=None):
     """Freeze project and entity metadata.
 
     Given a project id and an entity uuid (should be a main entity) this function
@@ -639,6 +674,8 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=N
 
     prj_json = prj.to_body_dict()
     _delete_unused_fields(prj_json)
+    if revision:
+        _preserve_version_values(prj_json, revised_authors)
 
     award_number = prj.award_number or []
 

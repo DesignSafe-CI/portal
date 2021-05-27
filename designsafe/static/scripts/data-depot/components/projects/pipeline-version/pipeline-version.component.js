@@ -31,6 +31,7 @@ class PipelineVersionCtrl {
             warning: false,
             error: false,
             submitted: false,
+            confirmed: false
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
@@ -52,9 +53,10 @@ class PipelineVersionCtrl {
             ]).then(([project, listing]) => {
                 this.project = project;
                 this.listing = listing;
+                this.authors = this.publication.project.value.teamOrder;
                 this.pubData = {
                     project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
-                    license: this.publication.licenses,
+                    license: this.publication.licenses
                 };
                 this.ui.loading = false;
             });
@@ -84,6 +86,7 @@ class PipelineVersionCtrl {
                 status: 'publishing',
                 revision: true,
                 revisionText: this.revisionText,
+                revisionAuthors: this.authors,
                 selectedFiles: filePaths
             }
         ).then((resp) => {
@@ -98,19 +101,7 @@ class PipelineVersionCtrl {
     }
 
     saveAuthors() {
-        this.ui.loading = true;
-        let data = {
-            uuid: this.project.uuid,
-            teamOrder: this.project.value.teamOrder,
-        };
-        this.$http.post(`/api/projects/${data.uuid}/`, data).then((resp) => {
-            this.project.value = resp.data.value;
-            this.ui.success = true;
-            this.ui.loading = false;
-        }, (error) => {
-            this.ui.error = true;
-            this.ui.loading = false;
-        });
+        this.ui.confirmed = true;
     }
 
     saveSelections() {
@@ -123,17 +114,6 @@ class PipelineVersionCtrl {
             listing: selectedFiles,
         };
         this.FileListingService.selectedListing = this.selectedListing;
-    }
-
-    manageProject() {
-        return this.$uibModal.open({
-          component: 'manageProject',
-          resolve: {
-            project: () => this.project,
-          },
-          backdrop: 'static',
-          size: 'lg',
-        });
     }
 
     undoSelections() {
