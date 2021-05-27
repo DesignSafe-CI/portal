@@ -5,15 +5,19 @@ import json
 import magic
 import os
 from urllib import parse
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.api.publications.operations import _get_user_by_username
+import logging
+logger = logging.getLogger(__name__)
 
 FEDORA_HEADERS = {
     'accept': 'application/ld+json;profile="http://www.w3.org/ns/json-ld#compacted"',
     'content-type': 'application/ld+json'
 }
 
-PUBLICATIONS_CONTAINER = 'designsafe-publications'
+PUBLICATIONS_CONTAINER = 'publications-test'
 PUBLICATIONS_MOUNT_ROOT = '/corral-repl/tacc/NHERI/published/'
 
 FEDORA_CONTEXT = {
@@ -132,6 +136,7 @@ def fedora_update(project_id, update_body={}):
     initial_data = fedora_get(project_id)
     updated_data = {**initial_data, **update_body}
     updated_data['@context'] = {**initial_data['@context'], **FEDORA_CONTEXT}
+    updated_data['@type'] = initial_data['@type'] + ['http://purl.org/dc/dcmitype/Dataset']
 
     request = requests.put('{}{}/{}'.format(settings.FEDORA_URL,
                                             PUBLICATIONS_CONTAINER, project_id),
@@ -184,7 +189,7 @@ def format_metadata_for_fedora(project_id, version=None):
         'generatedAtTime': doc.project.created.isoformat(),
         'contributor': contributors,
         'type': getattr(pub_meta, 'dataType', None),
-        'publisher': 'Designsafe'
+        'publisher': 'Designsafe',
     }
 
     licenses = getattr(doc, 'licenses', None)
@@ -202,12 +207,38 @@ def format_metadata_for_fedora(project_id, version=None):
     return fc_meta
 
 
+def create_fc_version(container_path):
+    """Create a new version of the publication in Fedora. This uses Fedora's
+    versioning system and is meant to be used for amendments in the publication
+    pipeline."""
+
+    try:
+        request = requests.post('{}{}/{}/fcr:versions'.format(settings.FEDORA_URL,
+                                                PUBLICATIONS_CONTAINER, container_path),
+                               auth=(settings.FEDORA_USERNAME,
+                                     settings.FEDORA_PASSWORD))
+        request.raise_for_status()
+    except HTTPError as error:
+        if error.response.status_code == 409:
+            return fedora_get(container_path)
+        raise error
+
+
 def ingest_files_other(project_id, version=None):
     """
     Ingest an Other type publication's files into fedora. All files are ingested
     as children of the base project, with a slug that indicates the path in the
     directory hierarchy.
     """
+
+    retry_strategy = Retry(
+    total=3,
+    backoff_factor=5
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    http.mount("http://", adapter)
 
     archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
     fedora_root = parse.urljoin(settings.FEDORA_URL, PUBLICATIONS_CONTAINER)
@@ -223,23 +254,43 @@ def ingest_files_other(project_id, version=None):
             fc_put_url = os.path.join(fedora_root, parse.quote(fc_relative_path))
             print(fc_put_url)
             with open(os.path.join(root, file), 'rb') as _file:
-                request = requests.put(fc_put_url,
-                                    auth=(settings.FEDORA_USERNAME,
-                                            settings.FEDORA_PASSWORD),
-                                    headers=headers,
-                                    data=_file)
-                request.raise_for_status()
+                try:
+                    request = http.put(fc_put_url,
+                                        auth=(settings.FEDORA_USERNAME,
+                                                settings.FEDORA_PASSWORD),
+                                        headers=headers,
+                                        data=_file)
+                    request.raise_for_status()
+                except HTTPError:
+                    logger.error('Fedora ingest failed: {}'.format(fc_put_url))
 
 
-def ingest_project(project_id):
+
+def ingest_project(project_id, version=None):
     """
     Ingest a project into Fedora by creating a record in the repo, updating it
     with the published metadata, and uploading its files.
     """
-    fedora_post(project_id)
+    container_path = project_id
+    if version:
+        container_path = '{}v{}'.format(container_path, str(version))
+    fedora_post(container_path)
     project_meta = format_metadata_for_fedora(project_id)
-    res = fedora_update(project_id, project_meta)
-    ingest_files_other(project_id)
+    res = fedora_update(container_path, project_meta)
+    ingest_files_other(container_path)
+    return res
+
+
+def amend_project(project_id, version=None):
+    """Amend a publication by creating a new version in Fedora and updating the 
+    metadata"""
+    container_path = project_id
+    if version:
+        container_path = '{}v{}'.format(container_path, str(version))
+
+    create_fc_version(container_path)
+    project_meta = format_metadata_for_fedora(project_id)
+    res = fedora_update(container_path, project_meta)
     return res
 
 
