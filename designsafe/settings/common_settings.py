@@ -592,7 +592,7 @@ SUPPORTED_TEXT_PREVIEW_EXTS = [
     '.java', '.js', '.less', '.m', '.make', '.md', '.ml', '.mm', '.msg', '.php',
     '.pl', '.properties', '.py', '.rb', '.sass', '.scala', '.script', '.sh', '.sml',
     '.sql', '.txt', '.vi', '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl',
-    '.json', '.out', '.err', '.geojson', '.do', '.sas'
+    '.json', '.out', '.err', '.geojson', '.do', '.sas', '.hazmapper'
 ]
 
 SUPPORTED_OBJECT_PREVIEW_EXTS = [
