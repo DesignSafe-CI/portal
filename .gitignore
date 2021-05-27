@@ -80,6 +80,7 @@ docs/_build/
 .docs/build
 target/
 venv/
+metrics/
 
 # ignore Google Drive API secrets
 *secrets.json

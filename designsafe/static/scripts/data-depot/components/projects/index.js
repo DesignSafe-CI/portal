@@ -47,6 +47,7 @@ import { ManageFieldReconCollectionsComponent } from '../../../projects/componen
 import { PublishedCitationComponent } from '../../../projects/components/publication-citation/publication-citation.component.js';
 import { AuthorInformationModalComponent } from './publication-preview/modals/author-information-modal.component';
 import { PublicationDownloadModalComponent } from '../../../projects/components/publication-download/publication-download.component.js';
+import { PublicationMetricsComponent } from '../../../projects/components/publication-metrics/publication-metrics.component.js';
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
@@ -90,5 +91,6 @@ ddProjectsComponents.component('fieldReconCollectionsModal', ManageFieldReconCol
 ddProjectsComponents.component('publishedCitationModal', PublishedCitationComponent);
 ddProjectsComponents.component('authorInformationModal', AuthorInformationModalComponent);
 ddProjectsComponents.component('publicationDownloadModal', PublicationDownloadModalComponent);
+ddProjectsComponents.component('publicationMetricsModal', PublicationMetricsComponent);
 
 export default ddProjectsComponents;
