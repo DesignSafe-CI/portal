@@ -370,14 +370,14 @@ export class FileOperationService {
      * @param {Object} params
      * @param {String} params.system System where file is located
      * @param {String} params.path Path to file
-     * @param {String} params.loc Specific location of notebook 
+     * @param {String} params.loc Specific location of notebook
      */
     openInJupyter(params) {
         const { user } = this.Django;
         const { system, path, loc } = params;
         let pathToFile = path;
         let specificLocation = loc;
-        
+
         // Check Path
         if (path.includes(this.Django.user)) {
             const lengthUserName = this.Django.user.length;
@@ -396,9 +396,8 @@ export class FileOperationService {
 
         // Check System
         if (system === 'designsafe.storage.published') specificLocation = 'NHERI-Published';
-        
+
         return `http://jupyter.designsafe-ci.org/user/${user}/notebooks/${specificLocation}/${pathToFile}`;
-        
     }
 
     /***************************************************************************
@@ -732,5 +731,21 @@ export class FileOperationService {
         }
         const filePromises = files.map((file) => this.mapParamsToTrash({ api, scheme, file, trashPath }));
         forkJoin(filePromises).subscribe(() => this.$state.reload());
+    }
+
+    microsurvey({ projectId, fileName }) {
+        const counterResponse = this.$http.put('/api/datafiles/microsurvey/').then((resp) => {
+            if (resp.data.show) {
+                var modal = this.$uibModal.open({
+                    component: 'ddsurvey',
+                    resolve: {
+                        projectId: () => projectId,
+                        fileName: () => fileName,
+                    },
+                    size: 'lg',
+                    backdrop: 'static',
+                });
+            }
+        });
     }
 }

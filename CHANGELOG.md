@@ -1,5 +1,24 @@
 # DesignSafe-CI Portal Release Notes
 
+
+## v5.1.7
+Enhancements:
+- Add a microsurvey for users to report on their data usage.
+
+## v5.1.6
+Fixes:
+- Backend stability fixes to the Publication Pipeline
+- Corrections to formatting of Datacite metadata
+- Author sorting in Field Recon publications should now work as intended
+- Links to DOIs in legacy NEES publications now work correctly
+
+Enhancements:
+- Add support for preview of .sas files
+
+## v5.1.5
+Fixes:
+- Update Redis Python client.
+
 ## v5.1.4
 Fixes:
 - Update Celery version and fix namespacing.

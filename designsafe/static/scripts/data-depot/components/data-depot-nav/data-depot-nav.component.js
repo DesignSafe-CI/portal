@@ -27,7 +27,7 @@ class DataDepotNavCtrl {
         name: 'Published (NEES)',
         collapsible: false,
         state: 'publicDataLegacy',
-        description: "Network for Earthquake Engineers Simulation (1999-2005)"
+        description: "Network for Earthquake Engineers Simulation (1999-2015)"
       },
       {
         name: 'Community Data',

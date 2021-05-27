@@ -15,6 +15,8 @@ from requests.exceptions import HTTPError
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.projects.models.elasticsearch import IndexedProject
+from designsafe.apps.data.models.elasticsearch import IndexedPublication
+from designsafe.libs.elasticsearch.utils import new_es_client
 from designsafe.apps.data.tasks import agave_indexer
 from elasticsearch_dsl.query import Q
 from elasticsearch.helpers import bulk
@@ -540,7 +542,8 @@ def copy_publication_files_to_corral(self, project_id):
 
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
     import shutil
-    publication = BaseESPublication(project_id=project_id)
+    es_client = new_es_client()
+    publication = BaseESPublication(project_id=project_id, using=es_client)
     filepaths = publication.related_file_paths()
     if not len(filepaths):
         res = get_service_account_client().files.list(
@@ -715,8 +718,9 @@ def save_to_fedora(self, project_id):
     import magic
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication 
     try:
-        pub = BaseESPublication(project_id=project_id)
-        pub.update(status='published')
+        es_client = new_es_client()
+        pub = BaseESPublication(project_id=project_id, using=es_client)
+        pub.update(status='published', using=es_client)
         _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
         fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'
         res = requests.get(fedora_base)

@@ -7,6 +7,7 @@ import { DataBrowserServiceMkdir } from './data-browser-service-mkdir/data-brows
 import { DataBrowserServiceRename } from './data-browser-service-rename/data-browser-service-rename.component';
 import { DataBrowserServicePreviewComponent } from './data-browser-service-preview/data-browser-service-preview.component';
 import { ImagePreviewComponent } from './data-browser-service-image-preview/image-preview.component';
+import {DataBrowserServiceSurveyComponent} from './data-browser-service-survey/data-browser-service-survey.component';
 
 let ddComponentsModals = angular.module('designsafe.components.modals', ['ui.bootstrap']);
 
@@ -17,5 +18,6 @@ ddComponentsModals.component('mkdirModal', DataBrowserServiceMkdir);
 ddComponentsModals.component('renameModal', DataBrowserServiceRename)
 ddComponentsModals.component('preview', DataBrowserServicePreviewComponent);
 ddComponentsModals.component('ddimagepreview', ImagePreviewComponent);
+ddComponentsModals.component('ddsurvey', DataBrowserServiceSurveyComponent)
 
 export default ddComponentsModals;

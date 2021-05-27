@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from designsafe.apps.api.datafiles.views import DataFilesView, TransferFilesView
+from designsafe.apps.api.datafiles.views import DataFilesView, TransferFilesView, MicrosurveyView
 from django.http import JsonResponse
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
         DataFilesView.as_view(), name='agave_files'),
     url(r'^(?P<api>[\w.-]+)/(?P<scheme>[\w.-]+)/(?P<operation>[\w.-]+)/(?P<system>[\w.-]+)/$',
         DataFilesView.as_view(), name='agave_files'),
+    url(r'^microsurvey/$', MicrosurveyView.as_view(), name='microsurvey')
 ]

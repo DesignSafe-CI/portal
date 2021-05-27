@@ -1,0 +1,76 @@
+<div class="modal-header">
+    <h3 class="modal-title">DesignSafe User Data Download Microsurvey</h3>
+</div>
+<div class="modal-body">
+    <p>
+        While your data is downloading, please helps us support the natural hazards community by completing this
+        anonymous survey. This will help the researcher who published the data understand where their data is being used
+        and it will help us to improve our metrics reports to the NSF. Thank you for your participation.
+    </p>
+    <div>
+        <p><b>Reason(s) you download data from DesignSafe</b> (Select all that apply)</p>
+        <div ng-if="$ctrl.validationErrors.reasons">This field is required</div>
+        <p>
+            <input
+                type="checkbox"
+                ng-model="$ctrl.reasonModel.integration"
+                ng-true-value="'Integration with other datasets for analysis'"
+            />&nbsp;Integration with other datasets for analysis
+        </p>
+        <p>
+            <input
+                type="checkbox"
+                ng-model="$ctrl.reasonModel.train"
+                ng-true-value="'Train AI/ML algorithm'"
+            />&nbsp;Train AI/ML algorithm
+        </p>
+        <p>
+            <input
+                type="checkbox"
+                ng-model="$ctrl.reasonModel.validate"
+                ng-true-value="'Validate/calibrate numerical model'"
+            />&nbsp;Validate/calibrate numerical model
+        </p>
+        <p>
+            <input
+                type="checkbox"
+                ng-model="$ctrl.reasonModel.input"
+                ng-true-value="'Use data for simulation input'"
+            />&nbsp;Use data for simulation input
+        </p>
+        <p>
+            <input type="checkbox" ng-model="$ctrl.reasonModel.education" ng-true-value="'Education'" />&nbsp;Education
+        </p>
+        <p>
+            <input type="checkbox" ng-model="$ctrl.customReasonSelected" />&nbsp;Other(please specify):
+            <input ng-model="$ctrl.customReason" />
+        </p>
+    </div>
+
+    <div>
+        <p><b>Did you participate in collecting/publishing this data?</b></p>
+        <div ng-if="$ctrl.validationErrors.didCollect">This field is required</div>
+        <p><input type="radio" ng-model="$ctrl.didCollect" ng-value="true">&nbsp; Yes</p>
+        <p><input type="radio" ng-model="$ctrl.didCollect" ng-value="false">&nbsp; No</p>
+    </div>
+
+    <div>
+        <p><b>Professional level</b></p>
+        <div ng-if="$ctrl.validationErrors.professionalLevel">This field is required</div>
+        <p><input type="radio" ng-model="$ctrl.professionalLevel" ng-value="'Undergraduate Student'">&nbsp;Undergraduate Student</p>
+        <p><input type="radio" ng-model="$ctrl.professionalLevel" ng-value="'Graduate student'">&nbsp;Graduate student</p>
+        <p><input type="radio" ng-model="$ctrl.professionalLevel" ng-value="'Postdoctoral researcher'">&nbsp;Postdoctoral researcher</p>
+        <p><input type="radio" ng-model="$ctrl.professionalLevel" ng-value="'Faculty or Researcher'">&nbsp;Faculty or Researcher</p>
+        <p><input type="radio" ng-model="$ctrl.professionalLevel" ng-value="'Staff (support, administration, etc.)'">&nbsp;Staff (support, administration, etc.)</p>
+        <p><input type="radio" ng-model="$ctrl.professionalLevel" ng-value="'Practicing Engineer or Architect'">&nbsp;Practicing Engineer or Architect</p>
+        <p><input type="radio" ng-model="$ctrl.professionalLevel" ng-value="'other'">&nbsp;Other(please specify): <input ng-model="$ctrl.customProfessionalLevel"></p>
+    </div>
+
+        <p><b>Please share any additional comments you have on data downloads, processes, or uses.</b></p>
+        <p><textarea class="form-control" ng-model="$ctrl.comments"></textarea></p>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="$ctrl.submit()">Submit</button>
+    <button class="btn btn-primary" type="button" ng-click="$ctrl.dismiss()">Skip</button>
+</div>

@@ -31,7 +31,7 @@ class BaseESPublication(BaseESResource):
 
     """
 
-    def __init__(self, wrapped_doc=None, project_id=None, **kwargs):
+    def __init__(self, wrapped_doc=None, project_id=None, using='default', **kwargs):
         """Elastic Search File representation.
 
         This class directly wraps an Agave indexed file.
@@ -40,12 +40,12 @@ class BaseESPublication(BaseESResource):
         super(BaseESPublication, self).__init__(wrapped_doc, **kwargs)
 
         if not wrapped_doc:
-            self._populate(project_id, **kwargs)
+            self._populate(project_id, using=using, **kwargs)
 
-    def _populate(self, project_id, **kwargs):
+    def _populate(self, project_id, using='default', **kwargs):
 
         try:
-            wrapped_doc = self._index_cls.from_id(project_id)
+            wrapped_doc = self._index_cls.from_id(project_id, using=using)
             self._wrap(wrapped_doc, **kwargs)
         except DocumentNotFound:
             self._wrapped = self._index_cls(
@@ -57,14 +57,14 @@ class BaseESPublication(BaseESResource):
     def _index_cls(self):
         return IndexedPublication
 
-    def save(self, using=None, index=None, validate=True,
+    def save(self, using='default', index=None, validate=True,
              **kwargs):  # pylint: disable=unused-argument
         """Save document."""
-        self._wrapped.save()
+        self._wrapped.save(using=using)
 
-    def delete(self):
+    def delete(self, using='default'):
         """Delete."""
-        self._wrapped.delete()
+        self._wrapped.delete(using=using)
 
     @staticmethod
     def hit_to_file(hit):
