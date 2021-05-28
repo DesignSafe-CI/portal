@@ -39,10 +39,13 @@ class SearchView(BaseApiView):
         }
 
         public_files_query = CommunityDataSearchManager(request).construct_query() | PublishedDataSearchManager(request).construct_query()
+        published_files_query = PublishedDataSearchManager(request).construct_query()
         publications_query = PublicationsSiteSearchManager(request).construct_query()
         cms_query = es_query = CMSSearchManager(request).construct_query()
 
         if type_filter == 'public_files':
+            es_query = Search().query(public_files_query)
+        if type_filter == 'published_files':
             es_query = Search().query(public_files_query)
         elif type_filter == 'published':
             es_query = Search().query(publications_query)
@@ -86,9 +89,9 @@ class SearchView(BaseApiView):
 
         out['hits'] = hits
         out['all_total'] = Search().query(public_files_query | publications_query | cms_query).count()
+        out['published_files_total'] = Search().query(published_files_query).count()
         out['public_files_total'] = Search().query(public_files_query).count()
         out['published_total'] = Search().query(publications_query).count()
         out['cms_total'] = Search().query(cms_query).count()
-        print(out)
 
         return JsonResponse(out, safe=False)

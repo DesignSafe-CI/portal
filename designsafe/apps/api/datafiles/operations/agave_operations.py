@@ -56,7 +56,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
 
 def detail(client, system, path, *args, **kwargs):
     """
-    Retrieve the uuid for a file by parsing the query string in _links.metadata.href 
+    Retrieve the uuid for a file by parsing the query string in _links.metadata.href
     """
     listing = client.files.list(systemId=system, filePath=urllib.parse.quote(path), offset=0, limit=1)
 

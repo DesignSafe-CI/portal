@@ -104,6 +104,10 @@ export class PublicationService {
         });
     }
 
+    getMetrics(projectId) {
+        return this.$http.get(`/api/publications/metrics/${projectId}/`)
+    }
+
     openDescriptionModal(projectId, title) {
         this.getDescription(projectId);
         var modal = this.$uibModal.open({

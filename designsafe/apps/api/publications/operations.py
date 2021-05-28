@@ -1,5 +1,6 @@
 from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
 from designsafe.apps.api.publications import search_utils
+from designsafe.apps.api.agave import get_service_account_client
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 from designsafe.libs.elasticsearch.utils import new_es_client
 from django.contrib.auth import get_user_model
@@ -142,6 +143,15 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     return {'listing': hits}
 
 
+def metrics(project_id, *args, **kwargs):
+    """retrieve metrics for a given project ID"""
+
+    client = get_service_account_client()
+    query = {'name': 'designsafe.metrics.{}'.format(project_id)}
+    metrics_meta = client.meta.listMetadata(q=json.dumps(query))[0]
+    return metrics_meta
+
+
 def neeslisting(offset=0, limit=100, limit_fields=True, *args):
     pub_query = IndexedPublicationLegacy.search()
     pub_query = pub_query.extra(from_=offset, size=limit)
@@ -197,8 +207,8 @@ def neesdescription(project_id, *args):
     return {'description': desc}
 
 
-def save_publication(publication, status='publishing', revision=None, revision_text=None):
-        """Save publication."""
+def initilize_publication(publication, status='publishing', revision=None, revision_text=None):
+        """initilize publication."""
         publication['projectId'] = publication['project']['value']['projectId']
         publication['status'] = status
         publication['version'] = 2

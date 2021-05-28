@@ -1,5 +1,7 @@
 <div class="pipeline-nav">
-    <a ng-click="$ctrl.goVersionProject()">
+    <a ng-class="{'btn disabled': $ctrl.ui.loading || $ctrl.ui.submitted}"
+       ng-click="$ctrl.goVersionProject()"
+    >
         <i class="fa fa-arrow-left"></i> Back
     </a>
     <button class="btn btn-small btn-add"

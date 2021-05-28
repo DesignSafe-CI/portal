@@ -4,15 +4,16 @@
     </a>
     <button class="btn btn-small btn-add"
             ng-click="$ctrl.goVersionChanges()"
-            ng-disabled="!$ctrl.selectedListing || !$ctrl.ui.success"
+            ng-disabled="!$ctrl.selectedListing || !$ctrl.ui.confirmed"
     >
         Continue
     </button>
 </div>
 <div class="pipeline-page">
     <div class="pipeline-header">
-        <h3>Version Metadata</h3>
-        If you need help, attend <a href="/learning-center/training/" target="_blank">curation office hours</a>.
+        <h3>Confirm Author Order</h3>
+        <strong>You are required to confirm the list of Authors on your Citation before continuing.</strong>
+        Your citation will be updated to match what is shown in the preview.
         <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
                 <i class="fa fa-spinner fa-spin"></i> Loading...
@@ -21,16 +22,9 @@
     </div>
     <!-- Notifications -->
     <div class="pipeline-notification">
-        <div class="alert alert-success" ng-if="$ctrl.ui.success">
+        <div class="alert alert-success" ng-if="$ctrl.ui.confirmed">
             <i class="fa fa-check"></i>
             Your authors have been saved. Click the "Continue" button to proceed to the next step.
-        </div>
-        <div class="alert alert-danger" ng-if="$ctrl.ui.error">
-            <i class="fa fa-times"></i>
-            There was an issue when attempting to save your authors.
-            If you are unable to save your authors, please
-            <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Failure+to+save+project+authors:+{{$ctrl.project.value.projectId}}"
-            target="_blank">submit a ticket</a> and we will assist you with this issue.
         </div>
         <button class="btn btn-small btn-add"
             ng-click="$ctrl.returnToProject()"
@@ -41,117 +35,10 @@
     </div>
     <div ng-if="!$ctrl.ui.loading">
         <div class="pipeline-section">
-            <ul>
-                <li>Update any project metadata as needed.</li>
-                <li>You are required to confirm the list of Authors on your Citation before continuing.</li>
-                <li>When you have finished ordering click the "Save" button to continue.</li>
-            </ul>
-        </div>
-        <!-- Project Header Start -->
-        <div class="pipeline-section">
-            <div class="prj-head-container">
-                <span class="prj-head-title">
-                    {{$ctrl.project.value.projectId}} | <strong>{{ $ctrl.project.value.title }}</strong>
-                </span>
-            </div>
-            <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
-                <colgroup>
-                    <col style="width: 15%">
-                    <col style="width: 84%">
-                </colgroup>
-                <tr class="prj-row">
-                    <td>PI</td>
-                    <td class="prj-data">
-                        <ds-user-list usernames="[$ctrl.project.value.pi]"></ds-user-list>
-                    </td>
-                </tr>
-                <tr ng-if="$ctrl.project.value.coPis.length">
-                    <td>CoPIs</td>
-                    <td class="prj-data">
-                        <ds-user-list usernames="$ctrl.project.value.coPis"></ds-user-list>
-                    </td>
-                </tr>
-                <tr class="prj-row" ng-hide="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
-                    <td>Project Type</td>
-                    <td class="prj-data" ng-if="$ctrl.project.value.projectType !== 'field_recon'">
-                        {{ $ctrl.project.value.projectType.replace('_', ' ') }}
-                    </td>
-                    <td class="prj-data" ng-if="$ctrl.project.value.projectType === 'field_recon'">
-                        Field Research
-                        <span ng-if="$ctrl.project.value.frTypes.length">
-                            |
-                            <span ng-repeat="frType in $ctrl.project.value.frTypes">
-                                <span ng-if="!$last">{{ frType }},</span>
-                                <span ng-if="$last">{{ frType }}</span>
-                            </span>
-                        </span>
-                    </td>
-                </tr>
-                <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
-                    <td>Data Type</td>
-                    <td class="prj-data">{{ $ctrl.project.value.dataType }}</td>
-                </tr>
-                <tr class="prj-row" ng-if="$ctrl.project.value.nhTypes.length">
-                    <td>Natural Hazard Type</td>
-                    <td class="prj-data">
-                        <span ng-repeat="nhtype in $ctrl.project.value.nhTypes">
-                            <span ng-if="!$last">{{ nhtype }},</span>
-                            <span ng-if="$last">{{ nhtype }}</span>
-                        </span>
-                    </td>
-                </tr>
-                <!-- FR -->
-                <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhEvent">
-                    <td>Event</td>
-                    <td class="prj-data">
-                        {{ $ctrl.project.value.nhEvent }} |
-                        <span ng-if="$ctrl.project.value.nhLocation">{{ $ctrl.project.value.nhLocation }} |</span>
-                        {{$ctrl.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                        <span ng-if="$ctrl.project.value.nhEventEnd && $ctrl.project.value.nhEventStart !== $ctrl.project.value.nhEventEnd">
-                            ― {{$ctrl.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
-                        </span>
-                        <span ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">|</span>
-                        <a href="http://www.google.com/maps/place/{{ $ctrl.project.value.nhLatitude }},{{ $ctrl.project.value.nhLongitude }}"
-                            rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">
-                            Lat {{ $ctrl.project.value.nhLatitude }} Long {{ $ctrl.project.value.nhLongitude }}
-                        </a>
-                    </td>
-                </tr>
-                <!-- FR -->
-                <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
-                    <td ng-if="$first">Awards</td>
-                    <td ng-if="!$first"></td>
-                    <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-                </tr>
-                <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
-                    <td ng-if="$first">Related Work</td>
-                    <td ng-if="!$first"></td>
-                    <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
-                </tr>
-                <tr class="prj-row">
-                    <td ng-if="$ctrl.project.value.keywords">Keywords</td>
-                    <td class="prj-data">{{ $ctrl.project.value.keywords }}</td>
-                </tr>
-            </table>
-            <div ng-if="$ctrl.project.value.description">
-                <p>{{ $ctrl.project.value.description }}</p>
-            </div>
-            <div>
-                <a class="prj-ent-amend" ng-click="$ctrl.manageProject($event)"><strong>Edit Project Metadata</strong></a>
-            </div>
-        </div>
-        <hr>
-        <!-- Project Authors Start -->
-        <div class="pipeline-header">
-            <h3>Confirm Author Order</h3>
-            <strong>You are required to confirm the list of Authors on your Citation before continuing.</strong>
-            Your citation will be updated to match what is shown in the preview.
-        </div>
-        <div class="pipeline-section">
             <manage-authors
                 title="$ctrl.project.value.title"
-                label="'Save Authors'"
-                authors="$ctrl.project.value.teamOrder"
+                label="'Confirm Authors'"
+                authors="$ctrl.authors"
                 submit="$ctrl.saveAuthors()">
             </manage-authors>
         </div>

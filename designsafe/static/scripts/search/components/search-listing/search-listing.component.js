@@ -12,6 +12,10 @@ class SearchListingCtrl {
                 this.author = `${res.userData[0].lname}, ${res.userData[0].fname}`;
             });
         }
+
+        if (this.data.system === 'designsafe.storage.published') {
+            this.data.prjId = this.data.path.split('/')[1]
+        }
     }
 }
 
