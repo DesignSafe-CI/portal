@@ -17,7 +17,7 @@ FEDORA_HEADERS = {
     'content-type': 'application/ld+json'
 }
 
-PUBLICATIONS_CONTAINER = 'publications-test'
+PUBLICATIONS_CONTAINER = settings.FEDORA_CONTAINER
 PUBLICATIONS_MOUNT_ROOT = '/corral-repl/tacc/NHERI/published/'
 
 FEDORA_CONTEXT = {
@@ -188,7 +188,7 @@ def format_metadata_for_fedora(project_id, version=None):
         'issued': doc.project.created.isoformat(),
         'generatedAtTime': doc.project.created.isoformat(),
         'contributor': contributors,
-        'type': getattr(pub_meta, 'dataType', None),
+        'type': getattr(pub_meta, 'dataType', "other"),
         'publisher': 'Designsafe',
     }
 
@@ -281,7 +281,7 @@ def ingest_project(project_id, version=None):
     return res
 
 
-def amend_project(project_id, version=None):
+def amend_project_fedora(project_id, version=None):
     """Amend a publication by creating a new version in Fedora and updating the 
     metadata"""
     container_path = project_id

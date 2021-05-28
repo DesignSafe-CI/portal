@@ -562,7 +562,7 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
     os.chmod('/corral-repl/tacc/NHERI/published', 0o755)
     prefix_dest = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
     if revision:
-        prefix_dest += 'r{}'.format(revision)
+        prefix_dest += 'v{}'.format(revision)
     if not os.path.isdir(prefix_dest):
         os.mkdir(prefix_dest)
 
@@ -608,7 +608,7 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
     os.chmod('/corral-repl/tacc/NHERI/published', 0o555)
 
     # Only save to fedora while in prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') in ['default', 'staging']:
         save_to_fedora.apply_async(args=[project_id, revision])
 
     index_path = '/' + project_id
@@ -647,9 +647,11 @@ def amend_publication_data(self, project_id, authors=None, revision=None):
     :param list of entity_uuid strings: Main entity uuid.
     """
     from designsafe.apps.projects.managers import publication as PublicationManager
+    from designsafe.libs.fedora.fedora_operations import amend_project_fedora
     try:
         amended_pub = PublicationManager.amend_publication(project_id, authors, revision)
         PublicationManager.amend_datacite_doi(amended_pub)
+        amend_project_fedora(project_id, version=revision)
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
@@ -729,7 +731,7 @@ def fedora_ingest_other(self, project_id):
     ingest_project(project_id)
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
-def save_to_fedora(self, project_id):
+def save_to_fedora(self, project_id, revision=None):
     import requests
     import magic
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication 
@@ -738,12 +740,17 @@ def save_to_fedora(self, project_id):
         pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
         pub.update(status='published', using=es_client)
 
+        if pub.project.value.projectType == 'other':
+           from designsafe.libs.fedora.fedora_operations import ingest_project
+           ingest_project(project_id, version=revision)
+           return
+
         _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
         fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'
         res = requests.get(fedora_base)
         if res.status_code == 404 or res.status_code == 410:
             requests.put(fedora_base)
-        
+
         fedora_project_base = ''.join([fedora_base, '/', project_id])
         res = requests.get(fedora_project_base)
         if res.status_code == 404 or res.status_code == 410:

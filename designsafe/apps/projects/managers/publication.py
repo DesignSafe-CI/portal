@@ -209,9 +209,10 @@ def amend_publication(project_id, authors=None, revision=None):
     :param str project_id: Project uuid to amend
     :param int revision: Revision number to amend
     """
+    es_client = new_es_client()
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
-    pub = BaseESPublication(project_id=project_id, revision=revision)
+    pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     if prj.project_type != 'other':
         return
 
@@ -241,7 +242,7 @@ def amend_publication(project_id, authors=None, revision=None):
 
     pub_dict['project']['value'].update(amends_dict)
     pub.update(**pub_dict)
-
+    IndexedPublication._index.refresh(using=es_client)
     return pub
 
 def amend_datacite_doi(publication):
@@ -512,7 +513,7 @@ def archive(project_id, revision=None):
     es_client = new_es_client()
     pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     if revision:
-        archive_prefix = '{}r{}'.format(pub.projectId, revision)
+        archive_prefix = '{}v{}'.format(pub.projectId, revision)
     else:
         archive_prefix = pub.projectId
     archive_name = '{}_archive.zip'.format(archive_prefix)
