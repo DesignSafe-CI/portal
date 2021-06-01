@@ -26,7 +26,8 @@ def _get_user_by_username(hit, username):
 
 
 def listing(offset=0, limit=100, limit_fields=True, *args):
-    pub_query = IndexedPublication.search()
+    client = new_es_client()
+    pub_query = IndexedPublication.search(using=client)
     pub_query = pub_query.filter(Q('term', status='published'))
     pub_query = pub_query.extra(from_=offset, size=limit)
     if limit_fields:
@@ -65,7 +66,8 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     selected_filters = list(filter(lambda key: bool(type_filters[key]), type_filters.keys()))
 
     type_query = Q('bool', should=list(map(filter_query, selected_filters)))
-    search = IndexedPublication.search()
+    client = new_es_client()
+    search = IndexedPublication.search(using=client)
     if has_type_filters:
         search = search.filter(type_query)
 
@@ -153,7 +155,8 @@ def metrics(project_id, *args, **kwargs):
 
 
 def neeslisting(offset=0, limit=100, limit_fields=True, *args):
-    pub_query = IndexedPublicationLegacy.search()
+    client = new_es_client()
+    pub_query = IndexedPublicationLegacy.search(using=client)
     pub_query = pub_query.extra(from_=offset, size=limit)
     if limit_fields:
         pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
@@ -177,8 +180,8 @@ def neessearch(offset=0, limit=100, query_string='', limit_fields=True, *args):
                                     "lenient": True}}}})
 
     nees_query_string_query = Q('query_string', query=query_string, default_operator='and')
-
-    pub_query = IndexedPublicationLegacy.search().filter(nees_pi_query | nees_query_string_query)
+    client = new_es_client()
+    pub_query = IndexedPublicationLegacy.search(using=client).filter(nees_pi_query | nees_query_string_query)
     pub_query = pub_query.extra(from_=offset, size=limit)
     if limit_fields:
         pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
