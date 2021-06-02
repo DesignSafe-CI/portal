@@ -93,9 +93,9 @@ class PublicationCitationCtrl {
             return a.order - b.order;
         });
         this.auths.forEach(
-            (a) => {
+            (a, idx) => {
                 if (a && a.lname && a.fname && a.authorship) {
-                    this.authors += a.lname + ', ' + a.fname + ', ';
+                    this.authors += a.lname + ', ' + a.fname + (idx === this.auths.length - 1 ? '' : ', ');
                 }
             }
         );
