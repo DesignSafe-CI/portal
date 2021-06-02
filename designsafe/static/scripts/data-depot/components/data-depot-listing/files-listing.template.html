@@ -143,11 +143,19 @@
                             Learn how to move files to a project
                         </a>
                     </p>
-                    <p class="lead" style="margin-top:20px" ng-if="$ctrl.editTags">
+                    <p class="lead" style="margin-top:20px" ng-if="$ctrl.editTags && !$ctrl.getType(listing.params.system) == 'Other'">
                         <i class="fa fa-file-text-o">&nbsp;</i><br/>
                         <a href="https://www.youtube.com/watch?v=lfBe04ihQUs&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
                             <i class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
                             Learn how to assign files to categories<br/>
+                        </a>  
+                    </p>
+                    <p class="lead" style="margin-top:20px" ng-if="$ctrl.editTags && $ctrl.getType(listing.params.system) == 'Other'">
+                        <i class="fa fa-folder-open-o">&nbsp;</i><br />
+                        <a data-ng-if="$ctrl.listing.params.system.includes('project-')"
+                            href="https://www.youtube.com/watch?v=ITf4hlBamGU&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+                            <i class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
+                            Learn how to move files to a project
                         </a>
                     </p>
                 </div>

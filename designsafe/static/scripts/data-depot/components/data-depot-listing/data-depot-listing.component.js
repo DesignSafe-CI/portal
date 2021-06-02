@@ -188,6 +188,19 @@ class FilesListingCtrl {
         }
         return false;
     }
+    
+    getType(type) {
+        if (!type) {
+            return 'Other';
+        }
+        if (type === 'field_recon') {
+            return 'Field Research';
+        }
+        if (type === 'hybrid_simulation') {
+            return 'Hybrid Simulation';
+        }
+        return type;
+    }
 }
 
 export const FilesListingComponent = {
