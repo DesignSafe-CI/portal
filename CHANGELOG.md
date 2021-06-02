@@ -1,6 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
 
+## v5.1.8
+Fixes:
+- Fix a display issue in the Citation modal for legacy publications.
+
 ## v5.1.7
 Enhancements:
 - Add a microsurvey for users to report on their data usage.
