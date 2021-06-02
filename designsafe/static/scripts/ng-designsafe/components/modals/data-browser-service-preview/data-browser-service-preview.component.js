@@ -57,7 +57,11 @@ class DataBrowserServicePreviewCtrl {
                             } else if (extension.endsWith('hazmapper')) {
                                 const body = JSON.parse(text);
                                 let uuid = body['uuid'];
-                                this.hazmapperHref = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${uuid}`
+                                if (window.location.origin.includes('designsafeci-dev.tacc.utexas.edu')) {
+                                  this.hazmapperHref = `https://hazmapper.tacc.utexas.edu/staging/project/${uuid}`
+                                } else {
+                                  this.hazmapperHref = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${uuid}`
+                                }
                                 window.open(this.hazmapperHref);
                                 this.close();
                             }
