@@ -495,16 +495,11 @@ def fix_file_tags(project_id, revision=None):
                     fix_tags_no_path(entity)
         else:
             if 'value' in pub_dict[entname] and 'fileTags' in pub_dict[entname]['value'] and check_complete_tags(pub_dict[entname]['value']['fileTags']):
-                logger.info('FIRST IF')
                 fix_tags_path(pub_dict[entname])
             elif 'value' in pub_dict[entname] and 'fileTags' in pub_dict[entname]['value']:
                 fix_tags_no_path(pub_dict[entname])
 
-    logger.info('PubDICT ======> %s', pub_dict)
-    logger.info('EntityCHECK ======> %s', entities_to_check)
-
     pub.update(using=es_client, **pub_dict)
-    logger.info('PUB ======> %s', pub)
     IndexedPublication._index.refresh(using=es_client)
 
 
