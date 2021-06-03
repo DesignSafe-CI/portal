@@ -2,6 +2,7 @@ import ManageProjectTemplate from './manage-project.template.html';
 import AmendProjectTemplate from './amend-project.template.html';
 import FormOptions from './project-form-options.json';
 import FormDefaults from './project-form-defaults.json';
+import angular from 'angular';
 
 class ManageProjectCtrl {
     constructor(UserService, ProjectModel, $http, $q, $uibModal, $state) {
@@ -147,13 +148,16 @@ class ManageProjectCtrl {
                    object array (ex: returning an array of strings
                    from valid objects)
         */
+       if (angular.isUndefined(objArray)) {
+           return objArray;
+       }
         return objArray.filter((obj) => {
             return obj && reqKeys.every((key) => {
                 return typeof obj[key] !== 'undefined' && obj[key] !== '';
             });
         }).map((obj) => {
-            return obj[objValue] || obj;
-        });
+                return obj[objValue] || obj;
+            });
     }
 
     prepareData(updating) {
@@ -165,10 +169,14 @@ class ManageProjectCtrl {
             projectData.guestMembers = this.validInputs(this.form.guestMembers, ['fname', 'lname']);
             projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number']);
             projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
-            projectData.guestMembers.forEach((guest, i) => {
-                guest.user = "guest" + guest.fname + guest.lname.charAt(0) + i;
-            });
-            projectData.nhTypes = this.form.nhTypes.filter(type => typeof type === 'string' && type.length);
+            if (angular.isDefined(projectData.guestMembers)){
+                projectData.guestMembers.forEach((guest, i) => {
+                    guest.user = "guest" + guest.fname + guest.lname.charAt(0) + i;
+                });
+            }
+            if (angular.isDefined(projectData.nhTypes)) {
+                projectData.nhTypes = this.form.nhTypes.filter(type => typeof type === 'string' && type.length);
+            }
             if (projectData.projectType === 'field_recon') {
                 projectData.frTypes = this.form.frTypes.filter(type => typeof type === 'string' && type.length);
             }
