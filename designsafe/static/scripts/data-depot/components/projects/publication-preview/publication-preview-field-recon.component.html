@@ -164,7 +164,7 @@
             <strong>View Data Diagram</strong>
         </a>
         <span> | </span>
-        <a style="font-weight: bold; cursor: pointer;" ng-click="$ctrl.leaveFeedback()">
+        <a style="cursor: pointer;" ng-if="$ctrl.readOnly" ng-click="$ctrl.leaveFeedback()">
             <strong>Leave Feedback</strong>
         </a>
         <breadcrumb
@@ -181,6 +181,9 @@
         </h3>
     </div>
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
+        <a style="cursor: pointer;" ng-if="$ctrl.readOnly" ng-click="$ctrl.leaveFeedback()">
+            <strong>Leave Feedback</strong>
+        </a>
         <breadcrumb
             path="$ctrl.breadcrumbParams.path"
             system="$ctrl.FileListingService.listings.main.params.path"

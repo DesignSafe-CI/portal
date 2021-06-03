@@ -22,7 +22,7 @@ class LeaveFeedbackModalCtrl {
         this.submitted = false;
         this.error = '';
         this.feedbackForm.subject = `Project Feedback for ${this.project.value.projectId}`;
-        this.feedbackFrom.projectId = this.project.value.projectId;
+        this.feedbackForm.projectId = this.project.value.projectId;
         this.feedbackForm.title = this.project.value.title;
         this.TicketsService.feedback(this.feedbackForm).then(
             (resp) => {
