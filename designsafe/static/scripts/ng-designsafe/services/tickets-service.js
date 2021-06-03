@@ -1,4 +1,4 @@
-export default function TicketsService($http, $q, djangoUrl) {
+export function TicketsService($http, $q, djangoUrl) {
     'ngInject';
 
     /**
@@ -12,7 +12,7 @@ export default function TicketsService($http, $q, djangoUrl) {
         });
     }
     function feedback(formData) {
-        return $http.post('/help/feedback', formData).then((resp) => {
+        return $http.post('/help/feedback/', formData).then((resp) => {
             return resp.data;
         });
     }

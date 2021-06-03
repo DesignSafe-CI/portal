@@ -338,6 +338,11 @@ class PublishedViewCtrl {
             component: 'leaveFeedbackModal',
             size: 'md',
             windowClass: 'feedback-modal',
+            resolve: {
+                project: () => {
+                    return this.browser.project;
+                },
+            },
         });
     }
 
