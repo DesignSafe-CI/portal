@@ -110,7 +110,7 @@
                 <td ng-if="!$first"></td>
                 <td>
                     <strong>
-                        <a 
+                        <a
                             ng-click="$ctrl.goToHash(doi.hash)"
                             data-toggle="collapse"
                             data-target="{{ doi.type === 'mission' ? '#data-' : '#files-' }}{{doi.uuid}}"
@@ -160,8 +160,12 @@
     </table>
     <br>
     <div style="margin-bottom: 2px;" ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading">
-        <a data-ng-click="$ctrl.treeDiagram()">
+        <a style="font-weight: bold; cursor: pointer;" data-ng-click="$ctrl.treeDiagram()">
             <strong>View Data Diagram</strong>
+        </a>
+        <span> | </span>
+        <a style="font-weight: bold; cursor: pointer;" ng-click="$ctrl.leaveFeedback()">
+            <strong>Leave Feedback</strong>
         </a>
         <breadcrumb
             path="$ctrl.breadcrumbParams.path"
@@ -589,7 +593,7 @@
                                                     on-scroll="$ctrl.scrollToBottom()"
                                                     listing="$ctrl.FileListingService.listings[collection.uuid]"
                                                     on-browse="$ctrl.onBrowse(file)"
-                                                >&nbsp;</files-listing>                                        
+                                                >&nbsp;</files-listing>
                                             </div>
                                     </div>
                                 </div>
@@ -678,7 +682,7 @@
                                                 on-scroll="$ctrl.scrollToBottom()"
                                                 listing="$ctrl.FileListingService.listings[collection.uuid]"
                                                 on-browse="$ctrl.onBrowse(file)"
-                                        >       &nbsp;</files-listing>                                      
+                                        >       &nbsp;</files-listing>
                                           </div>
                                     </div>
                                 </div>
@@ -722,7 +726,7 @@
                                             on-scroll="$ctrl.scrollToBottom()"
                                             listing="$ctrl.FileListingService.listings[collection.uuid]"
                                             on-browse="$ctrl.onBrowse(file)"
-                                             >&nbsp;</files-listing>                                        
+                                             >&nbsp;</files-listing>
                                         </div>
                                     </div>
                                 </div>

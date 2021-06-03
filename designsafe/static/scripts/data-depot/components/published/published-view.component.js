@@ -39,7 +39,7 @@ class PublishedViewCtrl {
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
 
         this.breadcrumbParams = {
-            root: {label: this.projId, path: this.projId}, 
+            root: {label: this.projId, path: this.projId},
             path: this.projId,
             skipRoot: true
         }
@@ -66,21 +66,21 @@ class PublishedViewCtrl {
         else {
             this.getProjectListings();
         }
-        
+
         //add metadata to header
         //this.PublicationServicevice.updateHeaderMetadata(projId, resp);
         this.version = this.browser.publication.version || 1;
         this.type = this.browser.publication.project.value.projectType;
         this.ui.loading = false;
-        
+
         // // Generate text for PI
         // this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi);
         // // Generate CoPI list
         // this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
 
         this.prepProject();
-                
-        
+
+
     }
 
     getProjectListings() {
@@ -157,7 +157,7 @@ class PublishedViewCtrl {
             this.expDOIList = this.browser.project.experiment_set.map(({ doi, uuid }) => {
                 return { value: doi, uuid, hash: `anchor-${uuid}` };
             });
-            
+
         }
         if (this.project.value.projectType === 'simulation'){
             this.browser.project.simulation_set = this.browser.publication.simulations;
@@ -330,6 +330,14 @@ class PublishedViewCtrl {
                 readOnly: () => {return true;},
             },
             size: 'lg'
+        });
+    }
+
+    leaveFeedback() {
+        this.$uibModal.open({
+            component: 'leaveFeedbackModal',
+            size: 'md',
+            windowClass: 'feedback-modal',
         });
     }
 

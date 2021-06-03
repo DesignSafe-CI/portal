@@ -48,6 +48,7 @@ import { PublishedCitationComponent } from '../../../projects/components/publica
 import { AuthorInformationModalComponent } from './publication-preview/modals/author-information-modal.component';
 import { PublicationDownloadModalComponent } from '../../../projects/components/publication-download/publication-download.component.js';
 import { PublicationMetricsComponent } from '../../../projects/components/publication-metrics/publication-metrics.component.js';
+import LeaveFeedbackModalComponent from '../../../projects/components/leave-feedback-modal/leave-feedback-modal.component';
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
@@ -92,5 +93,6 @@ ddProjectsComponents.component('publishedCitationModal', PublishedCitationCompon
 ddProjectsComponents.component('authorInformationModal', AuthorInformationModalComponent);
 ddProjectsComponents.component('publicationDownloadModal', PublicationDownloadModalComponent);
 ddProjectsComponents.component('publicationMetricsModal', PublicationMetricsComponent);
+ddProjectsComponents.component('leaveFeedbackModal', LeaveFeedbackModalComponent);
 
 export default ddProjectsComponents;
