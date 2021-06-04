@@ -287,7 +287,7 @@ class FileCategoriesCtrl {
 
         if (this.scheme === 'public') {
             return tags.filter((tag) => {
-                return tag.path == this.file.path.replace(/^\/*PRJ-[0-9]{4}/g, '');
+                return tag.path == this.file.path.replace(/(\/*PRJ-[0-9]+)?(v([0-9]+))?/g, '');
             });
         }
    
@@ -302,7 +302,6 @@ export const FileCategoriesComponent = {
     controller: FileCategoriesCtrl,
     controllerAs: '$ctrl',
     bindings: {
-        //roject: '=',
         file: '=',
         showTags: '=',
         editTags: '=',

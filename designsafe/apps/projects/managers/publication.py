@@ -447,10 +447,11 @@ def fix_file_tags(project_id, revision=None):
     def fix_tags_path(entity):
         for tag in entity['value']['fileTags']:
             try:
+                pub_base = "{}v{}".format(project_id, revision) if revision else project_id
                 pub_file = BaseFileResource.listing(
                     service_account(),
                     system="designsafe.storage.published",
-                    path="{}{}".format(project_id, tag['path'])
+                    path="{}{}".format(pub_base, tag['path'])
                 )
                 tag['fileUuid'] = pub_file.uuid
             except Exception as err:
@@ -462,7 +463,8 @@ def fix_file_tags(project_id, revision=None):
             proj_other = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path="")
             for child in proj_other.children:
                 try:
-                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, child.path))
+                    pub_base = "{}v{}".format(project_id, revision) if revision else project_id
+                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(pub_base, child.path))
                     proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path=child.path)
                     for tag in entity['value']['fileTags']:
                         if tag['fileUuid'] == proj_file.uuid:
