@@ -58,7 +58,7 @@
     <div style="padding-top: 40px; padding-bottom: 40px;">
         <p>
             <h3 style="text-align: center">Proofread your Project Metadata</h3>
-            <h3 style="text-align: center; color: orange;">
+            <h3 ng-if="$ctrl.project.value.projectType != 'other'" style="text-align: center; color: orange;">
                 <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
             </h3>
             <div>
@@ -73,7 +73,7 @@
         <div class="prj-head-container">
             <span class="prj-head-title">
                 {{$ctrl.project.value.projectId}} | <strong>{{ $ctrl.project.value.title }}</strong>
-                <a class="prj-head-edit" ng-click="$ctrl.editProject($event)"><strong>Edit Project</strong></a>
+                <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)"><strong>Edit Project</strong></a>
             </span>
         </div>
         <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">

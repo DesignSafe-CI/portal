@@ -535,27 +535,25 @@ def reindex_projects(self):
 
 
 @shared_task(bind=True, max_retries=5)
-def copy_publication_files_to_corral(self, project_id):
-    # Only copy published files while in prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
-        return
-
+def copy_publication_files_to_corral(self, project_id, revision=None, selected_files=None):
+    """
+    Takes a project ID and copies project files to a published directory.
+    
+    :param str project_id: Project ID
+    :param int revision: The revision number of the publication
+    :param list of selected_files strings: Only provided if project type == other.
+    """
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
     import shutil
+
     es_client = new_es_client()
-    publication = BaseESPublication(project_id=project_id, using=es_client)
+    publication = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
+
     filepaths = publication.related_file_paths()
-    if not len(filepaths):
-        res = get_service_account_client().files.list(
-            systemId='project-{project_uuid}'.format(
-                project_uuid=publication.project.uuid
-            ),
-            filePath='/'
-        )
+    if not len(filepaths) and selected_files:
+        # Project is "Other" so we just copy the selected files
         filepaths = [
-            _file.path.strip('/') for _file in res if (
-                _file.name != '.' and _file.name != 'Trash'
-            )
+            file_path.strip('/') for file_path in selected_files if (file_path != '.Trash')
         ]
 
     filepaths = list(set(filepaths))
@@ -563,6 +561,8 @@ def copy_publication_files_to_corral(self, project_id):
     base_path = ''.join(['/', publication.projectId])
     os.chmod('/corral-repl/tacc/NHERI/published', 0o755)
     prefix_dest = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
+    if revision:
+        prefix_dest += 'v{}'.format(revision)
     if not os.path.isdir(prefix_dest):
         os.mkdir(prefix_dest)
 
@@ -606,12 +606,19 @@ def copy_publication_files_to_corral(self, project_id):
 
     os.chmod(prefix_dest, 0o555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0o555)
-    save_to_fedora.apply_async(args=[project_id])
-    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': '/' + project_id, 'recurse':True}, queue='indexing')
+
+    # Only save to fedora while in prod
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') in ['default', 'staging']:
+        save_to_fedora.apply_async(args=[project_id, revision])
+
+    index_path = '/' + project_id
+    if revision:
+        index_path += 'r{}'.format(revision)
+    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': index_path, 'recurse':True}, queue='indexing')
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def freeze_publication_meta(self, project_id, entity_uuids=None):
+def freeze_publication_meta(self, project_id, entity_uuids=None, revision=None, revised_authors=None):
     """Freeze publication meta.
 
     :param str project_id: Project Id.
@@ -621,7 +628,9 @@ def freeze_publication_meta(self, project_id, entity_uuids=None):
     try:
         PublicationManager.freeze_project_and_entity_metadata(
             project_id,
-            entity_uuids
+            entity_uuids,
+            revision,
+            revised_authors
         )
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
@@ -629,7 +638,27 @@ def freeze_publication_meta(self, project_id, entity_uuids=None):
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def save_publication(self, project_id, entity_uuids=None):
+def amend_publication_data(self, project_id, authors=None, revision=None):
+    """Amend publication.
+
+    This task will update the published metadata in Elasticsearch and DataCite
+
+    :param str project_id: Project Id.
+    :param list of entity_uuid strings: Main entity uuid.
+    """
+    from designsafe.apps.projects.managers import publication as PublicationManager
+    from designsafe.libs.fedora.fedora_operations import amend_project_fedora
+    try:
+        amended_pub = PublicationManager.amend_publication(project_id, authors, revision)
+        PublicationManager.amend_datacite_doi(amended_pub)
+        amend_project_fedora(project_id, version=revision)
+    except Exception as exc:
+        logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
+        raise self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=1, default_retry_delay=60)
+def save_publication(self, project_id, entity_uuids=None, revision=None, revised_authors=None):
     """Save publication.
 
     This task will create a draft DOI and copy all metadata to ES.
@@ -642,44 +671,32 @@ def save_publication(self, project_id, entity_uuids=None):
     try:
         PublicationManager.draft_publication(
             project_id,
-            entity_uuids
+            entity_uuids,
+            revision=revision,
+            revised_authors=revised_authors
         )
+        # TODO: Why are we running this here if we're already calling it in the task chain?
         PublicationManager.freeze_project_and_entity_metadata(
             project_id,
-            entity_uuids
+            entity_uuids,
+            revision=revision,
+            revised_authors=revised_authors
         )
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
-def zip_project_files(self, project_uuid):
-    from designsafe.apps.projects.models.agave.base import Project
-    from designsafe.apps.api.agave import get_service_account_client
-
-    try:
-        ag = get_service_account_client()
-        proj = Project.manager().get(ag, uuid=project_uuid)
-        proj.archive()
-    except Exception as exc:
-        logger.error('Zip Proj UUID: %s. %s', project_uuid, exc, exc_info=True)
-        raise self.retry(exc=exc)
-
-@shared_task(bind=True)
-def zip_publication_files(self, project_id):
+def zip_publication_files(self, project_id, revision=None):
     from designsafe.apps.projects.managers import publication as PublicationManager
-    # Only create archive in prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
-        return
-
     try:
-        PublicationManager.archive(project_id=project_id)
+        PublicationManager.archive(project_id=project_id, revision=revision)
     except Exception as exc:
         logger.error('Zip Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
-def swap_file_tag_uuids(self, project_id):
+def swap_file_tag_uuids(self, project_id, revision=None):
     """Swap File Tag UUID's
 
     This task will update each file tag's file uuid from the file in
@@ -689,13 +706,13 @@ def swap_file_tag_uuids(self, project_id):
     """
     from designsafe.apps.projects.managers import publication as PublicationManager
     try:
-        PublicationManager.fix_file_tags(project_id)
+        PublicationManager.fix_file_tags(project_id, revision=revision)
     except Exception as exc:
         logger.error('File Tag Correction Error: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
-def set_publish_status(self, project_id, entity_uuids=None, publish_dois=False):
+def set_publish_status(self, project_id, entity_uuids=None, publish_dois=False, revision=None):
     from designsafe.apps.projects.managers import publication as PublicationManager
     # Only publish DOIs created from prod
     if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
@@ -704,7 +721,8 @@ def set_publish_status(self, project_id, entity_uuids=None, publish_dois=False):
     PublicationManager.publish_resource(
         project_id,
         entity_uuids,
-        publish_dois
+        publish_dois,
+        revision=revision
     )
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
@@ -713,20 +731,26 @@ def fedora_ingest_other(self, project_id):
     ingest_project(project_id)
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
-def save_to_fedora(self, project_id):
+def save_to_fedora(self, project_id, revision=None):
     import requests
     import magic
     from designsafe.libs.elasticsearch.docs.publications import BaseESPublication 
     try:
         es_client = new_es_client()
-        pub = BaseESPublication(project_id=project_id, using=es_client)
+        pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
         pub.update(status='published', using=es_client)
+
+        if pub.project.value.projectType == 'other':
+           from designsafe.libs.fedora.fedora_operations import ingest_project
+           ingest_project(project_id, version=revision)
+           return
+
         _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
         fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'
         res = requests.get(fedora_base)
         if res.status_code == 404 or res.status_code == 410:
             requests.put(fedora_base)
-        
+
         fedora_project_base = ''.join([fedora_base, '/', project_id])
         res = requests.get(fedora_project_base)
         if res.status_code == 404 or res.status_code == 410:
@@ -839,6 +863,7 @@ def email_collaborator_added_to_project(self, project_id, project_uuid, project_
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def email_user_publication_request_confirmation(self, username):
+    return
     user = get_user_model().objects.get(username=username)
     email_subject = 'Your DesignSafe Publication Request Has Been Issued'
     email_body = """

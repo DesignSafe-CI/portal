@@ -1,0 +1,58 @@
+<div>
+    <!-- Citation Preview -->
+    <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
+    <div class="well" style="margin-bottom:20px">
+        <div>
+            <span ng-repeat="member in $ctrl.authors | orderBy: 'order'">
+                <span>{{ member.lname }}, {{ member.fname[0] }}., </span>
+            </span>
+            <span style="background: #f5f5f5;padding-left: 7px;margin-left: -9px;">
+                ({{ $ctrl.currentDate }}) “{{ $ctrl.title }}.” DesignSafe-CI. <a>https://doi.org/10.12345/ABCDEF</a>.
+            </span>
+        </div>
+    </div>
+    <!-- Order Team Start -->
+    <div class="well">
+        <div class="pipeline-authors">
+            <div class="pipeline-authors-item">
+                <i class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderMembers(true)"></i>
+                <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderMembers(false)"></i>
+            </div>
+            <div class="pipeline-authors-item">
+                <div ng-repeat="member in $ctrl.authors | orderBy: 'order'">
+                    <input type="radio" name="member" format="lname" ng-model="$ctrl.selectedMember" ng-value="member">
+                    {{ member.lname }}, {{ member.fname }}
+                </div>
+            </div>
+            <div class="pipeline-authors-submit" ng-if="$ctrl.submit">
+                <button class="btn btn-add" ng-click="$ctrl.submit()">{{$ctrl.label}}</button>
+            </div>
+        </div>
+    </div>
+    <!-- Mockup Design -->
+    <!-- <table class="author-table table table-bordered table-striped"
+           style="background-color: #fff;"
+    >
+        <thead>
+            <tr>
+                <th>Authors</th>
+                <th>Order</th>
+            </tr>
+        </thead>
+        <colgroup>
+            <col class="author-table-author">
+            <col class="author-table-order">
+         </colgroup>
+        <tbody>
+            <tr ng-repeat="member in $ctrl.authors | orderBy: 'order'">
+                <td class="author-col">
+                    {{ member.lname }}, {{ member.fname }}
+                </td>
+                <td class="order-col">
+                    <i class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderMembers(true)"></i>
+                    <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderMembers(false)"></i>
+                </td>
+            </tr>
+        </tbody>
+    </table> -->
+</div>

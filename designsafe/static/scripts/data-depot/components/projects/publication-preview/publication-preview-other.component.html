@@ -4,7 +4,7 @@
         <div class="prj-head-container">
             <span class="prj-head-title">
                 {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
-                <a class="prj-head-edit" ng-click="$ctrl.editProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
+                <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
             </span>
             <div class="prj-head-buttons">
                 <a class="prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
@@ -12,7 +12,7 @@
                     <strong>&nbsp;Download Dataset</strong>
                 </a>
                 <a class="prj-head-download" ng-click="$ctrl.metrics()" ng-if="$ctrl.readOnly">
-                    <span class="curation-experiment"></span>
+                    <img src='/static/images/ds-icons/icon-metrics.svg' style="width: 20px;">
                     <strong>&nbsp;View Data Metrics</strong>
                 </a>
             </div>
@@ -95,6 +95,19 @@
                     <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
                 </td>
             </tr>
+            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+                <td>
+                    <span>Version</span>
+                </td>
+                <td>
+                    <select class="prj-dropdown"
+                            ng-options="version for version in $ctrl.versions"
+                            ng-change="$ctrl.getVersion()"
+                            ng-model="$ctrl.selectedVersion">
+                    </select>
+                    &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != 'Original'"><strong>Version Changes</strong></a>
+                </td>
+            </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly">
                 <td ng-if="$ctrl.browser.project.value.keywords">License(s)</td>
                 <td class="prj-data">
@@ -115,6 +128,15 @@
         <div ng-if="$ctrl.browser.project.value.description">
             <p>{{ $ctrl.browser.project.value.description }}</p>
         </div>
+        <!-- <div ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+            <span>Version</span>&nbsp;
+            <select class="prj-dropdown"
+                    ng-options="version for version in $ctrl.versions"
+                    ng-change="$ctrl.getVersion()"
+                    ng-model="$ctrl.selectedVersion">
+            </select>
+            &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != 'Original'"><strong>Version Changes</strong></a>
+        </div> -->
     </div>
     <!-- Project Header End -->
     <table class="tg" style="table-layout: fixed; width: 100%;"
@@ -143,25 +165,28 @@
             </td>
             <td class="tg-0lax">
                 <div class="btn-group pull-right" role="group" aria-label="Publish buttons">
-                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
+                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-if="!$ctrl.browser.project.value.dois">
                         Prepare to Publish <i class="fa fa-arrow-right"></i>
+                    </button>
+                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-if="$ctrl.browser.project.value.dois">
+                        Prepare to Amend or Version <i class="fa fa-arrow-right"></i>
                     </button>
                 </div>
             </td>
         </tr>
     </table>
     <br>
-    <div ng-if="!$ctrl.readOnly">
+    <div ng-if="!$ctrl.readOnly && !$ctrl.ui.loading">
         <p>
             <h3 style="text-align: center;">You will select the data to be published in the next step</h3>
         </p>
     </div>
+    <div ng-if="$ctrl.ui.loading">
+        <h3 class="text-center">
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+        </h3>
+    </div>
     <div ng-if="$ctrl.readOnly">
-        <div ng-show="$ctrl.ui.loading">
-            <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
-            </h3>
-        </div>
         <div ng-if="$ctrl.ui.fileNav">
             <breadcrumb
             path="$ctrl.breadcrumbParams.path"

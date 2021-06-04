@@ -7,7 +7,7 @@
             Project Overview
         </span>
         <span ng-if="$ctrl.prjType === 'field_recon' && $ctrl.slide != 'type'"> | 5 minutes to read</span>
-        <span class="pull-right" ng-click="$ctrl.cancel()">
+        <span class="pull-right" ng-click="$ctrl.close()">
             <i class="fa fa-times"></i>
         </span>
     </h4>
@@ -119,7 +119,7 @@
                             <label for="field-recon-type">
                                 <strong>Field Research Project</strong>
                                 <div style="font-weight: normal;">
-                                    For work done by observation in areas affected by a natural hazard.
+                                    For work done in areas affected by natural hazards.
                                 </div>
                             </label>
                         </td>
@@ -714,7 +714,9 @@
                 <hr>
                 <p>
                     Research planning collections group files related to planning and logistics,
-                    administration, design, institutional review board (IRB), or permits.
+                    permits, administration, design, gathering, institutional review board (IRB),
+                    and processing, of the data obtained in a particular mission.
+                    These files help others understand the context of your data.
                 </p>
                 <ul>
                     <li>Users find these files very helpful for understanding projects and planning new ones.</li>
@@ -740,7 +742,7 @@
                     <td class="overview-continue">
                         <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.continue('collections1')">
                             Continue
-                        </button> 
+                        </button>
                     </td>
                 </tr>
             </table>
@@ -1154,9 +1156,17 @@
                     </a>
                 </td>
                 <td class="overview-continue">
-                    <button class="btn btn-add" style="width: 100%;" ng-click="$ctrl.finish()">
+                    <button class="btn btn-add"
+                            style="width: 100%;"
+                            ng-click="$ctrl.finish()"
+                            ng-if="!$ctrl.loading"
+                    >
                         Finish
-                    </button> 
+                    </button>
+                    <div ng-if="$ctrl.loading">
+                        <i class="fa fa-spinner fa-spin"></i>
+                        Saving project...
+                    </div>
                 </td>
             </tr>
         </table>

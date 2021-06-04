@@ -1329,6 +1329,9 @@ mark,
   padding-bottom: 6px;
   text-transform:capitalize;
 }
+.prj-dropdown {
+  width: 16%;
+}
 .prj-agree-body {
   padding-bottom: 10px;
 }
@@ -2742,6 +2745,9 @@ input[type="search"] {
 .prj-head-edit {
   font-size: 14px;
 }
+.prj-ent-amend {
+  font-size: 18px;
+}
 .prj-head-download {
   display: flex;
   align-items: center;
@@ -2754,6 +2760,89 @@ input[type="search"] {
 }
 .project-form-name {
   width:49%;
+}
+.pub-info-modal-field {
+  padding-bottom: 10px;
+}
+.pub-info-modal-label {
+  display: inline-block;
+  width:30%;
+}
+.pub-info-modal-data {
+  display: inline-block;
+  width: 68%;
+  font-weight:bold;
+}
+.pipeline-page {
+  margin: 20px 0px 20px 0px;
+}
+.pipeline-authors {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.pipeline-authors-item {
+  margin-right: 20px;
+}
+.pipeline-authors-submit {
+  flex-grow: 2;
+  text-align: center;
+}
+.pipeline-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pipeline-notification {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pipeline-notification.div {
+  display: flex;
+  align-items: center;
+}
+.pipeline-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.pipeline-header ul {
+  text-align: left;
+}
+.pipeline-section {
+  margin-bottom: 30px;
+}
+.pipeline-section h3 {
+  margin-bottom: 2px;
+}
+.pipeline-section hr {
+  margin: 4px 0px 12px 0px;
+}
+.pipeline-section button {
+  font-weight: bold;
+}
+.pipeline-section textarea {
+  width:100%;
+  height:5em;
+  margin-top: 20px;
+  resize: vertical;
+}
+.author-table {
+  width:100%;
+}
+.author-col {
+  text-align: left;
+  vertical-align: middle !important;
+}
+.order-col {
+  text-align: center;
+  vertical-align: middle !important;
+}
+.author-table-author {
+  width:90%;
+}
+.author-table-order {
+  width:auto;
 }
 .form-group {
   margin-bottom: 20px;
@@ -3194,7 +3283,7 @@ select[multiple].input-lg {
   display: inline-block;
   margin-bottom: 0;
   font-weight: normal;
-  text-align: left;
+  text-align: center;
   vertical-align: middle;
   -ms-touch-action: manipulation;
       touch-action: manipulation;

@@ -1,29 +1,26 @@
 import publishedTemplate from './published.html';
 
 export class PublishedParentCtrl {
-    constructor($stateParams, PublicationService){
+    constructor($stateParams, PublicationService, $q){
         'ngInject';
         this.$stateParams = $stateParams;
         this.PublicationService = PublicationService;
+        this.$q = $q;
     }
 
     $onInit() {
-        //this.version = this.resolve.version;
-        this.ui = {};
-        this.browser = {}
-        var projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
-        this.ui.loading = true;
-        this.project = null;
-
+        this.ui = { loading: true };
+        let projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
+        
         if (projId) {
             this.PublicationService.getPublished(projId)
-                .then((resp) => {
-                    this.PublicationService.updateHeaderMetadata(projId, resp)
-                    this.version = resp.data.version || 1;
-                    this.type = resp.data.project.value.projectType;
-                    this.publication = resp.data
-                    this.ui.loading = false;
-                });
+            .then((resp) => {
+                this.publication = resp.data;
+                this.PublicationService.updateHeaderMetadata(this.publication, projId)
+                this.type = this.publication.project.value.projectType;
+                this.version = this.publication.version || 1;
+                this.ui.loading = false;
+            });
         }
     }
 
@@ -35,36 +32,6 @@ export class PublishedParentCtrl {
             return 'v1';
         }
         return this.type.toLowerCase();
-    }
-
-    showV1View() {
-        return this.version === 1 && !this.ui.loading;
-    }
-
-    showExpView() {
-        return (this.version === 2 &&
-               this.type.toLowerCase() === 'experimental' &&
-               !this.ui.loading);
-    }
-    showSimView() {
-        return (this.version === 2 &&
-               this.type.toLowerCase() === 'simulation' &&
-               !this.ui.loading);
-    }
-    showHybSimView() {
-        return (this.version === 2 &&
-               this.type.toLowerCase() === 'hybrid_simulation' &&
-               !this.ui.loading);
-    }
-    showFieldReconView() {
-        return (this.version === 2 &&
-               this.type.toLowerCase() === 'field_recon' &&
-               !this.ui.loading);
-    }
-    showOtherView() {
-        return (this.version === 2 &&
-               this.type.toLowerCase() === 'other' &&
-               !this.ui.loading);
     }
 }
 

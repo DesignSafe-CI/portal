@@ -40,7 +40,15 @@
                 <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish
             </button>
         </div>
-        <div ng-if="$ctrl.ui.submitted">
+        <div class="alert alert-danger" ng-if="$ctrl.ui.error">
+            <i class="fa fa-times"></i>
+            There was an issue when attempting to submit your project
+            for revision.
+            <strong>Do not attempt to publish your project again.</strong> Please
+            <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Failure+to+publish:+{{$ctrl.project.value.projectId}}"
+            target="_blank">submit a ticket</a> and we will assist you with this issue.
+        </div>
+        <div ng-if="$ctrl.ui.submitted && !$ctrl.ui.error">
             <div class="alert alert-warning">
                 Your project is being published. <strong>Do not attempt to publish your project again.</strong>
                 Please wait until the project has finished publishing to edit or add anything in the project.

@@ -1,0 +1,23 @@
+<div class="modal-header"  style="background: #e6e6e6;">
+    <h4 class="modal-title">
+        <span>Version Changes</span>
+        <span class="pull-right" ng-click="$ctrl.cancel()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <div ng-repeat="field in $ctrl.data track by $index">
+        <div class="pub-info-modal-field" ng-if="field.label">
+            <div class="pub-info-modal-label">
+                {{field.label}}
+            </div>
+            <div class="pub-info-modal-data">
+                {{field.data}}
+            </div>
+        </div>
+        <div class="pub-info-modal-field" ng-if="!field.label">
+            {{field.data}}
+        </div>
+    </div>
+</div>

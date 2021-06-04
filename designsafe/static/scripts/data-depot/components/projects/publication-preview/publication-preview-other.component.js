@@ -46,8 +46,15 @@ class PublicationPreviewOtherCtrl {
         this.$state.go('projects.curation', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
     }
 
-    editProject() {
-        this.ProjectService.editProject(this.browser.project);
+    manageProject() {
+        return this.$uibModal.open({
+            component: 'manageProject',
+            resolve: {
+                project: () => this.browser.project,
+            },
+            backdrop: 'static',
+            size: 'lg',
+        });
     }
 
     prepareModal() {
@@ -60,7 +67,7 @@ class PublicationPreviewOtherCtrl {
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineSelectOther', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineStart', {projectId: browser.project.uuid}, {reload: true});
                 };
             }],
             resolve: {

@@ -8,7 +8,9 @@
         "iPad Rugged Case w/Keyboard | ZAGG Rugged Messenger",
         "iPAD accessories | Tripod, HD Microphone, External battery, Apple Pencil",
         "Flash Drive | For backing up iPad (SanDisk Wireless Stick 256GB)",
-        "External Hard Drive | 2 TB Drive for drone footage, protective bumpers, integrated microSD, USB-C"
+        "External Hard Drive | 2 TB Drive for drone footage, protective bumpers, integrated microSD, USB-C",
+        "Custom Processing Desktop PC | 3.3 GHz i9-7900X, 128GB DDR4 RAM, Nvidia GeForce RTX 2080 Ti",
+        "Processing Laptop | 2.9GHz Intel i9-8950HK, 64GB DDR4 RAM, NVIDIA GeForce RTX 2070"
     ],
     "Terrestrial Laser Scanning": [
         "Short Range Scanner | Leica BLK360",
@@ -21,19 +23,16 @@
         "Robotic Total Station | Leica Nova TS16I instrument package",
         "Survey (Digital level) | Leica LS15 digital level package",
         "Survey (GNSS receiver) | Leica GS18T SmartAntenna package",
-        "Structure Sensor | Structure sensor bundle; 3-D scanner attaches to iPAD",
         "Thermometer/Digital Compass/Barometer/Humidity Sensor | Kestrel Meter 5500 Weather Meter"
     ],
     "Unmanned Aerial Systems": [
         "Small Portable (backpack-size) Drone | DJI Mavic Pro",
         "Small Portable (backpack-size) Drone | DJI Mavic Pro 2",
-        "Small Portable (backpack-size) Drone | DJI Mavic Air ",
         "Small to Medium-Sized Drone | DJI Phantom 4 Pro+ ",
         "Small to Medium-Sized Drone | DJI Phantom 4 Pro+ RTK ",
         "Medium Size Drone | DJI Inspire2",
         "Mid-grade Industral Weather Resistant Drone | DJI Matrice 210 ",
         "High-end Industrial Weather Resistant Drone | DJI Matrice 210 RTK",
-        "Fixed Wing Training Drone | Parrot Disco Adventurer package",
         "Large Fixed Wing Drone | Sense fly Ebee with RTK and base station",
         "Kite Balloon with Tether | SkyShot Hybrid HeliKite (already purchased)",
         "High-end Drone with UAS LiDAR System | DJI M600 drone with Phoenix Aerial Mini Ranger LiDAR system",
@@ -42,9 +41,9 @@
     "Imaging": [
         "Digital SLR Camera | Canon 7D Mark II, with narrow and wide angle lenses",
         "Robotic Camera Mount | GigaPan Epic Pro V (for DSLR) and Tripod",
-        "3-axis Camera with Stabilizer | DJI Osmo 3-axis Gimbal and 4k camera",
         "360 Degree Camera | Insta360 One for Apple Products",
         "Car Camera System | Applied Streetview 360 degree panorama GPS camera system",
+        "Car Camera System | NCTech iSTAR Pulsar+ (streetview) 360 degree Panorama GPS Camera system",
         "Thermal Camera | Flir One Pro"
     ],
     "3D Visualization": [
