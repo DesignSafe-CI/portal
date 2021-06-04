@@ -946,3 +946,9 @@ li .popover.right {
 .bg-image-gs {
   background-image:url(../images/muhry_northamerica-Green@2x.png);
 }
+.feedback-modal .modal-dialog {
+    max-width: 600px;
+}
+.feedback-modal .modal-body {
+    padding: 30px;
+}

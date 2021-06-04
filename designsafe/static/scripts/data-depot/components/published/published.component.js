@@ -39,7 +39,7 @@ export class PublishedDataCtrl {
         this.browser.publication = this.publication;
         this.project = this.publication.project;
         this.breadcrumbParams = {
-            root: {label: this.project.value.projectId, path: this.project.value.projectId}, 
+            root: {label: this.project.value.projectId, path: this.project.value.projectId},
             path: this.project.value.projectId,
             skipRoot: true
         }
@@ -214,13 +214,13 @@ export class PublishedDataCtrl {
 
     viewCollabs() {
         this.$uibModal.open({
-            template: require('../..//templates/view-collabs.html'), 
+            template: require('../..//templates/view-collabs.html'),
             controller: ['$uibModalInstance', 'browser', 'getUserDets', function ($uibModalInstance, browser, getUserDets) {
                 var $ctrl = this;
                 $ctrl.data = {};
                 $ctrl.getUserDets = getUserDets;
                 $ctrl.data.project = browser.publication.project;
-                
+
                 $ctrl.close = function () {
                     $uibModalInstance.dismiss('close');
                 };
@@ -242,7 +242,7 @@ export class PublishedDataCtrl {
                 $ctrl.data = {};
 
                 $ctrl.data.publication = browser.publication;
-                
+
                 $ctrl.data.piDets = this.getUserDets($ctrl.data.publication.project.value.pi);
                 $ctrl.close = function () {
                     $uibModalInstance.dismiss('close');
@@ -286,7 +286,7 @@ export class PublishedDataCtrl {
                 $ctrl.data = {};
 
                 $ctrl.data.publication = browser.publication;
-                
+
                 $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
@@ -317,7 +317,7 @@ export class PublishedDataCtrl {
                 $ctrl.data = {};
 
                 $ctrl.data.publication = browser.publication;
-                
+
                 $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
@@ -348,7 +348,7 @@ export class PublishedDataCtrl {
                 $ctrl.data = {};
 
                 $ctrl.data.publication = browser.publication;
-                
+
                 $ctrl.getRelated = getRelated;
                 $ctrl.data.selectedUuid = uuid;
                 $ctrl.isSelected = function (entityUuid) {
@@ -415,6 +415,19 @@ export class PublishedDataCtrl {
                 publication: () => {return this.browser.publication;}
             },
             size: 'lg'
+        });
+    }
+
+    leaveFeedback() {
+        this.$uibModal.open({
+            component: 'leaveFeedbackModal',
+            size: 'md',
+            windowClass: 'feedback-modal',
+            resolve: {
+                project: () => {
+                    return this.browser.publication.project;
+                },
+            },
         });
     }
 

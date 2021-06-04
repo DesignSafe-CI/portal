@@ -44,7 +44,7 @@ class PublishedViewCtrl {
         );
 
         this.breadcrumbParams = {
-            root: {label: this.prjBasePath, path: this.prjBasePath}, 
+            root: {label: this.prjBasePath, path: this.prjBasePath},
             path: this.prjBasePath,
             skipRoot: true
         }
@@ -71,7 +71,7 @@ class PublishedViewCtrl {
         else {
             this.getProjectListings();
         }
-        
+
         //add metadata to header
         this.type = this.browser.publication.project.value.projectType;
         this.prepProject();
@@ -152,7 +152,7 @@ class PublishedViewCtrl {
             this.expDOIList = this.browser.project.experiment_set.map(({ doi, uuid }) => {
                 return { value: doi, uuid, hash: `anchor-${uuid}` };
             });
-            
+
         }
         if (this.project.value.projectType === 'simulation'){
             this.browser.project.simulation_set = this.browser.publication.simulations;
@@ -353,6 +353,19 @@ class PublishedViewCtrl {
                 readOnly: () => {return true;},
             },
             size: 'lg'
+        });
+    }
+
+    leaveFeedback() {
+        this.$uibModal.open({
+            component: 'leaveFeedbackModal',
+            size: 'md',
+            windowClass: 'feedback-modal',
+            resolve: {
+                project: () => {
+                    return this.browser.project;
+                },
+            },
         });
     }
 

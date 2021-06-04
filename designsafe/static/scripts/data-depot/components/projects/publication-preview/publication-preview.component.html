@@ -63,7 +63,7 @@
                 <td ng-if="!$first"></td>
                 <td>
                     <strong>
-                        <a 
+                        <a
                             ng-click="$ctrl.goToHash(doi.hash)"
                             data-toggle="collapse"
                             data-target="#data-{{doi.uuid}}"
@@ -144,8 +144,12 @@
     </table>
     <br>
     <div style="margin-bottom: 2px;" ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading">
-        <a data-ng-click="$ctrl.treeDiagram()">
+        <a style="cursor: pointer;" data-ng-click="$ctrl.treeDiagram()">
             <strong>View Data Diagram</strong>
+        </a>
+        <span> | </span>
+        <a style="cursor: pointer;" ng-if="$ctrl.readOnly" ng-click="$ctrl.leaveFeedback()">
+            <strong>Leave Feedback</strong>
         </a>
         <breadcrumb
             path="$ctrl.breadcrumbParams.path"
@@ -181,6 +185,9 @@
         </div>
     </div>
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
+        <a style="cursor: pointer;" ng-if="$ctrl.readOnly" ng-click="$ctrl.leaveFeedback()">
+            <strong>Leave Feedback</strong>
+        </a>
         <breadcrumb
             path="$ctrl.breadcrumbParams.path"
             system="$ctrl.FileListingService.listings.main.params.path"
@@ -224,7 +231,7 @@
                         <div class="entity-meta-data">
                             <span ng-if="$ctrl.readOnly">
                                 <span ng-repeat="author in $ctrl.sortAuthors(experiment.authors) | filter: { authorship: true }">
-                                    <a href="javascript:;" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span> 
+                                    <a href="javascript:;" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
                                 </span>
                             </span>
                             <span ng-if="!$ctrl.readOnly">
@@ -299,7 +306,7 @@
                                 <span>{{ $ctrl.browser.publication.licenses.datasets }}</span>
                             </div>
                             <div data-ng-if="$ctrl.browser.publication.licenses.works" class="license-element">
-                                <span 
+                                <span
                                     class="curation-cc-share"
                                     style="font-size:32px;"
                                     ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
@@ -324,10 +331,10 @@
                         <!-- Experiment Reports -->
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button 
-                                    class="btn collapsed tab-report" 
-                                    data-toggle="collapse" 
-                                    data-target="#files-{{report.uuid}}-{{experiment.uuid}}" 
+                                <button
+                                    class="btn collapsed tab-report"
+                                    data-toggle="collapse"
+                                    data-target="#files-{{report.uuid}}-{{experiment.uuid}}"
                                     style="width:100%;"
                                 >
                                     <div class="collapse-tab">

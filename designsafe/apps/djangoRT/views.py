@@ -1,14 +1,16 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from designsafe.apps.djangoRT import rtUtil, forms, rtModels
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
+from designsafe.apps.api.exceptions import ApiException
+from designsafe.apps.api.views import BaseApiView
 import logging
 import mimetypes
-import pytz
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -209,3 +211,56 @@ def ticketattachment(request, ticketId, attachmentId):
         response = HttpResponse(attachment['Content'], content_type=attachment['Headers']['Content-Type'])
         response['Content-Disposition'] = attachment['Headers']['Content-Disposition']
         return response
+
+
+class FeedbackView(BaseApiView):
+    def post(self, request):
+        """Post a feedback response
+        """
+        rt = rtUtil.DjangoRt(queue=settings.DJANGO_RT['RT_FEEDBACK_QUEUE'])
+
+        data = json.loads(request.body)
+        email = request.user.email if request.user.is_authenticated else data['email']
+        name = "{} {}".format(request.user.first_name, request.user.last_name) if request.user.is_authenticated else data['name']
+        subject = data['subject']
+        body = data['body']
+        project_id = data['projectId']
+        project_title = data['title']
+
+        if subject is None or email is None or body is None:
+            return HttpResponseBadRequest()
+
+        requestor_meta = '%s <%s>' % (
+            name,
+            email
+        )
+
+        meta = (
+            ('Opened by', request.user.username),
+            ('Category', 'Project Feedback'),
+            ('Resource', 'DesignSafe'),
+            ('Project ID', project_id),
+            ('Project Title', project_title),
+        )
+
+        header = '\n'.join('[%s] %s' % m for m in meta)
+
+        ticket_body = '%s\n\n%s\n\n---\n%s' % (
+            header,
+            body,
+            requestor_meta
+        )
+
+        ticket = rtModels.Ticket(subject=subject,
+                                 problem_description="\n  ".join(ticket_body.splitlines()),
+                                 requestor=email,
+                                 cc='')
+
+        logger.debug('Creating ticket for user: %s' % ticket)
+
+        ticket_id = rt.createTicket(ticket)
+
+        if ticket_id > -1:
+            return HttpResponse("OK")
+        else:
+            return ApiException(status=400, message="There was a problem submittin your ticket.")

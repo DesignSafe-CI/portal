@@ -64,6 +64,7 @@ import { ConfirmMessageComponent } from '../../../projects/components/confirm-me
 import { FileCategorySelectorComponent } from '../../../projects/components/file-category-selector/file-category-selector';
 import { FileCategoriesComponent } from '../../../projects/components/file-categories/file-categories.component';
 import { PublicationMetricsComponent } from '../../../projects/components/publication-metrics/publication-metrics.component.js';
+import LeaveFeedbackModalComponent from '../../../projects/components/leave-feedback-modal/leave-feedback-modal.component';
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
@@ -119,5 +120,6 @@ ddProjectsComponents.component('confirmMessage', ConfirmMessageComponent);
 ddProjectsComponents.component('fileCategorySelector', FileCategorySelectorComponent);
 ddProjectsComponents.component('fileCategories', FileCategoriesComponent);
 ddProjectsComponents.component('publicationMetricsModal', PublicationMetricsComponent);
+ddProjectsComponents.component('leaveFeedbackModal', LeaveFeedbackModalComponent);
 
 export default ddProjectsComponents;

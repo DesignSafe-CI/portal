@@ -187,6 +187,14 @@
         </h3>
     </div>
     <div ng-if="$ctrl.readOnly">
+        <div ng-show="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+        <a style="cursor: pointer;" ng-click="$ctrl.leaveFeedback()">
+            <strong>Leave Feedback</strong>
+        </a>
         <div ng-if="$ctrl.ui.fileNav">
             <breadcrumb
             path="$ctrl.breadcrumbParams.path"

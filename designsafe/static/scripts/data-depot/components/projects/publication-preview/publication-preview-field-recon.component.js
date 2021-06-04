@@ -16,7 +16,7 @@ class PublicationPreviewFieldReconCtrl {
         this.$stateParams = $stateParams
         this.$q = $q;
     }
-    
+
     $onInit() {
         this.readOnly = this.$state.current.name.indexOf('publishedData') === 0;
         this.projectId = this.ProjectService.resolveParams.projectId;
@@ -35,7 +35,7 @@ class PublicationPreviewFieldReconCtrl {
         if (this.filePath === '/' && !this.$stateParams.query_string) {
             this.ui.fileNav = false;
         }
-    
+
         this.$q.all([
             this.ProjectService.get({ uuid: this.projectId }),
             this.FileListingService.browse({
@@ -50,13 +50,13 @@ class PublicationPreviewFieldReconCtrl {
         ])
         .then(([project, listing, ents]) => {
             this.breadcrumbParams = {
-                root: {label: project.value.projectId, path: ''}, 
+                root: {label: project.value.projectId, path: ''},
                 path: this.FileListingService.listings.main.params.path,
                 skipRoot: false
             };
             this.browser.project = project;
             this.browser.project.appendEntitiesRel(ents);
-            
+
             this.primaryEnts = [].concat(
                 this.browser.project.mission_set || [],
                 this.browser.project.report_set || []
@@ -74,7 +74,7 @@ class PublicationPreviewFieldReconCtrl {
                 }
             });
 
-            
+
             this.browser.listing = this.FileListingService.listings.main.listing;
             this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
                 this.ui.loading = false;
@@ -108,7 +108,7 @@ class PublicationPreviewFieldReconCtrl {
             return false;
         }
     }
-    
+
     goWork() {
         this.$state.go('projects.view', {projectId: this.browser.project.uuid, data: this.browser});
     }

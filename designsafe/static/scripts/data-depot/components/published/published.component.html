@@ -109,7 +109,7 @@
                     <th style="border-top:none; width:25%">Associated Projects</th>
                     <td style="border-top:none; width:75%">
                       <div data-ng-repeat="asc in $ctrl.project.value.associatedProjects">
-                          <span>{{asc.title}} - <a ng-href="{{asc.href}}">{{asc.href}}</a></span> 
+                          <span>{{asc.title}} - <a ng-href="{{asc.href}}">{{asc.href}}</a></span>
                       </div>
                     </td>
                   </tr>
@@ -132,9 +132,11 @@
     Loading... <i class="fa fa-spinner fa-spin"></i>
   </div>
   <hr>
-  
-  <dd-altmetrics publication="$ctrl.browser.publication"></dd-altmetrics>  
 
+  <dd-altmetrics publication="$ctrl.browser.publication"></dd-altmetrics>
+  <a style="cursor: pointer;" ng-click="$ctrl.leaveFeedback()">
+    <strong>Leave Feedback</strong>
+  </a>
   <breadcrumb
             path="$ctrl.breadcrumbParams.path"
             system="$ctrl.FileListingService.listings.main.params.path"
@@ -153,7 +155,7 @@
         data-bottom-height="0">
     <files-listing show-select="true" on-browse="$ctrl.onBrowse(file)" listing="$ctrl.FileListingService.listings.main"></files-listing>
   </div>
-    
+
 
 </div><!-- Closing file listing view -->
 
@@ -337,9 +339,9 @@
                    data-toggle="collapse" data-target="#files-{{$ctrl.getRelated('modelConfigs', event, [experiment.uuid])[0].uuid}}">
                   Model Configuration
                 </a>
-                <a class="ds-text-green" href="#details-{{$ctrl.getRelated('sensorLists', event, [experiment.uuid, 
+                <a class="ds-text-green" href="#details-{{$ctrl.getRelated('sensorLists', event, [experiment.uuid,
                                                $ctrl.getRelated('modelConfigs', event, [experiment.uuid])[0].uuid])[0].uuid}}"
-                   data-toggle="collapse" data-target="#files-{{$ctrl.getRelated('sensorLists', event, [experiment.uuid, 
+                   data-toggle="collapse" data-target="#files-{{$ctrl.getRelated('sensorLists', event, [experiment.uuid,
                                                        $ctrl.getRelated('modelConfigs', event, [experiment.uuid, event.uuid])[0].uuid])[0].uuid}}">
                   Sensor List
                 </a>
@@ -357,7 +359,7 @@
               </div>
               <div>
                 <a class="ds-text-green" href="" ng-click="$ctrl.viewRelations($ctrl.getRelated('sensorLists', event, [experiment.uuid, $ctrl.getRelated('modelConfigs', event, [experiment.uuid])[0].uuid])[0].uuid)">
-                  {{$ctrl.getRelated('sensorLists', event, [experiment.uuid, 
+                  {{$ctrl.getRelated('sensorLists', event, [experiment.uuid,
                   $ctrl.getRelated('modelConfigs', event, [experiment.uuid])[0].uuid])[0].value.title}}
                 </a>
               </div>
@@ -396,7 +398,7 @@
       </div>
     </div> <!-- sensor lists -->
     <div ng-repeat="analysis in $ctrl.browser.publication.analysisList | orderBy: 'value.title'">
-      <div class="entity-wrapper" 
+      <div class="entity-wrapper"
            ng-if="analysis.fileObjs.length">
         <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
           <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
@@ -489,7 +491,7 @@
             </div>
             <div>
               <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span>
-                {{simulation.doi}}  
+                {{simulation.doi}}
             </div>
             <div>
               <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Type: </span>
@@ -541,7 +543,7 @@
                 <div ng-repeat="simInput in $ctrl.getRelated('inputs', false, model.uuid)"
                      style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
                             padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
-                  <a class="ds-text-green" 
+                  <a class="ds-text-green"
                      href=""
                      ng-click="$ctrl.viewSimulationRelations(simInput.uuid)">
                     {{simInput.value.title}}
@@ -820,7 +822,7 @@
                           <files-listing show-select="true" on-browse="$ctrl.onBrowse(file)" listing="$ctrl.FileListingService.listings[output.uuid]"></files-listing>
                       </div>
                       <!--coordinator output loop end-->
-          
+
                       <!--sim_substructures loop start-->
                       <div
                           class="simulation-simsubstructure"
@@ -837,7 +839,7 @@
                               listing="$ctrl.FileListingService.listings[substructure.uuid]"
                               nested="true"
                           ></files-listing>
-          
+
                           <!--sim_outputs loop start -->
                           <div
                               ng-repeat="output in $ctrl.getRelated('sim_outputs', false, [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: 'value.title'"
@@ -858,7 +860,7 @@
                       </div>
                       <!--sim_substructures loop end-->
                   </files-listing>
-          
+
                   <!--exp_substructures loop start--><div
                       class="simulation-simsubstructure"
                       style="background:#fff; border:none;"
@@ -886,7 +888,7 @@
               <!-- coordinator loop end-->
           </files-listing>
           <!--hyb sim listing table end-->
-    
+
             </div>
           </div>
 
@@ -926,7 +928,7 @@
       </button>
           <div id="data-{{report.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
-              <files-listing show-select="true" on-browse="$ctrl.onBrowse(file)" listing="$ctrl.FileListingService.listings[report.uuid]"></files-listing> 
+              <files-listing show-select="true" on-browse="$ctrl.onBrowse(file)" listing="$ctrl.FileListingService.listings[report.uuid]"></files-listing>
             </div>
           </div>
     </div>
