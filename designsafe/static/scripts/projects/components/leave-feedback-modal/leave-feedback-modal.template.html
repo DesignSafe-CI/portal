@@ -11,27 +11,34 @@
         <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </div>
     <div class="alert alert-error" ng-if="$ctrl.error">
-        <p>There was a problem submitting your feedback: {{$ctrl.error}}</p>
+        <p>There was a problem submitting your feedback.</p>
     </div>
-    <div class="alert alert-success" ng-if="!$ctrl.error && $ctrl.submitted">
+    <div class="alert alert-success" ng-if="$ctrl.success">
         <p>Your feedback was submitted!</p>
     </div>
     <form name="feedback">
-        <label for="feedback-name">Full Name</label>
-        <input name="feedback-name" type="text" style="width:100%;" ng-model="$ctrl.feedbackForm.name" ng-required="true" />
-        <br>
-        <br>
-        <label for="feedback-email">Email</label>
-        <input name="feedback-email" type="text" style="width:100%;" ng-model="$ctrl.feedbackForm.email" ng-required="true" />
-        <br>
-        <br>
-        <label for="feedback-body" style="margin-bottom:0;">Feedback</label>
-        <div style="margin-bottom:5px;">
-            Leave constructive feedback for the author(s) of this publication.
-        </div>
-        <textarea name="feedback-body" type="text" style="width:100%; height:80px;" ng-model="$ctrl.feedbackForm.body" ng-required="true" ></textarea>
+        <fieldset ng-disabled="$ctrl.submitting">
+            <label for="feedback-name">Full Name</label>
+            <input name="feedback-name" type="text" style="width:100%;" ng-model="$ctrl.feedbackForm.name" ng-required="true" ng-disabled="$ctrl.Django.context.authenticated" />
+            <br>
+            <br>
+            <label for="feedback-email">Email</label>
+            <input name="feedback-email" type="text" style="width:100%;" ng-model="$ctrl.feedbackForm.email" ng-required="true" ng-disabled="$ctrl.Django.context.authenticated" />
+            <br>
+            <br>
+            <label for="feedback-body" style="margin-bottom:0;">Feedback</label>
+            <div style="margin-bottom:5px;">
+                Leave constructive feedback for the author(s) of this publication.
+            </div>
+            <textarea name="feedback-body" type="text" style="width:100%; height:80px;" ng-model="$ctrl.feedbackForm.body" ng-required="true" ></textarea>
+        </fieldset>
     </form>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-disabled="feedback.$invalid" ng-click="$ctrl.onSubmit()">Submit</button>
+    <button class="btn btn-primary" ng-disabled="feedback.$invalid || $ctrl.submitting" ng-click="$ctrl.onSubmit()">
+        <span ng-if="$ctrl.submitting">
+            <i class="fa fa-spinner fa-spin"></i>
+        </span>
+        Submit
+    </button>
 </div>
