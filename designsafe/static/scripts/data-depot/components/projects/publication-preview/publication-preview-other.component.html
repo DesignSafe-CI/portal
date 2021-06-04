@@ -165,8 +165,11 @@
             </td>
             <td class="tg-0lax">
                 <div class="btn-group pull-right" role="group" aria-label="Publish buttons">
-                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
+                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-if="!$ctrl.browser.project.value.dois">
                         Prepare to Publish <i class="fa fa-arrow-right"></i>
+                    </button>
+                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-if="$ctrl.browser.project.value.dois">
+                        Prepare to Amend or Version <i class="fa fa-arrow-right"></i>
                     </button>
                 </div>
             </td>

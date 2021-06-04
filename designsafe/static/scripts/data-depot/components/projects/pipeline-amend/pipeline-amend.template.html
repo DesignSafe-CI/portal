@@ -24,7 +24,7 @@
     <!-- Notifications -->
     <div class="pipeline-notification">
         <div class="alert alert-success" ng-if="$ctrl.ui.success">
-            <strong>SUCCESS:</strong>
+            <i class="fa fa-check"></i>
             Your publication amendment has been submitted.
             <strong>Do not attempt to amend your publication again.</strong>
             Please wait until the publication has reappeared in the publications
@@ -32,11 +32,11 @@
             up to an hour or more for large datasets.
         </div>
         <div class="alert alert-success" ng-if="$ctrl.ui.confirmed && !$ctrl.ui.success">
-            <strong>SUCCESS:</strong>
+            <i class="fa fa-check"></i>
             Your authors have been confirmed. Click the "Amend Publication" button to finalize your changes.
         </div>
         <div class="alert alert-danger" ng-if="$ctrl.ui.error">
-            <strong>ERROR:</strong>
+            <i class="fa fa-times"></i>
             There was an issue when attempting to amend your publication.
             <strong>Do not attempt to amend your publication again.</strong> Please
             <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+amendments+to+existing+publication:+{{$ctrl.project.value.projectId}}"

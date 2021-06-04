@@ -23,7 +23,7 @@
     </div>
     <div class="pipeline-notification">
         <div class="alert alert-success" ng-if="$ctrl.ui.success">
-            <strong>SUCCESS:</strong>
+            <i class="fa fa-check"></i>
             Your publication revision has been submitted.
             <strong>Do not attempt to update your publication again.</strong>
             Please wait until the publication has reappeared in the publications
@@ -31,12 +31,12 @@
             up to an hour or more for large datasets.
         </div>
         <div class="alert alert-warning" ng-if="$ctrl.ui.warning">
-            <strong>NOTE:</strong>
+            <i class="fa fa-exclamation-triangle"></i>
             You are required to provide a revision description. This
             will be displayed in the publication.
         </div>
         <div class="alert alert-danger" ng-if="$ctrl.ui.error">
-            <strong>ERROR:</strong>
+            <i class="fa fa-times"></i>
             There was an issue when attempting to submit your project
             for revision.
             <strong>Do not attempt to update your publication again.</strong> Please
@@ -54,7 +54,7 @@
         <div class="pipeline-section">
             <label>Version Changes</label>&nbsp;<span class="label label-danger">Required</span>
             <div>
-                Specify what files you are adding, removing, or replacing, and why these changes are needed.
+                Specify what files you are adding, removing, or replacing, and why these changes are needed. This will be displayed to those viewing your publication, so be detailed and formal in your explanation.
             </div>
             <textarea ng-model="$ctrl.revisionText"></textarea>
         </div>

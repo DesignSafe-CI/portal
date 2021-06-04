@@ -21,10 +21,11 @@
     </div>
     <div ng-if="!$ctrl.ui.loading">
         <div class="pipeline-section">
-            <ul>
-                <li>The new version will only include the files selected here.</li>
-                <li>Select any previously published files that you still want in the new version.</li>
-            </ul>
+            <div class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle"></i>
+                The new version will only include the files selected here. Select any previously published files that you still want in
+                the new version.
+            </div>
         </div>
         <div ng-if="$ctrl.selectedListing">
             <div class="pipeline-nav">

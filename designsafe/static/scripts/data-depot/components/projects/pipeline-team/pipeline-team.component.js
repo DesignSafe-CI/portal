@@ -139,7 +139,6 @@ class PipelineTeamCtrl {
             selectedListings: this.selectedListings,
         }, {reload: true});
     }
-
 }
 
 export const PipelineTeamComponent = {
