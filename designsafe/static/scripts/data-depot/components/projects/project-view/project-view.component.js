@@ -101,7 +101,7 @@ class ProjectViewCtrl {
 
   curationDirectory() {
     if (this.browser.project.value.projectType === 'None') {
-      this.overview();
+      this.manageProject();
     } else {
       this.$state.go('projects.curation', { projectId: this.projectId, data: this.browser, filePath: this.filePath});
     }
@@ -125,7 +125,7 @@ class ProjectViewCtrl {
         this.$state.go('projects.previewOther', {projectId: this.browser.project.uuid});
         break;
       default:
-        this.overview();
+        this.manageProject();
     }
   }
 

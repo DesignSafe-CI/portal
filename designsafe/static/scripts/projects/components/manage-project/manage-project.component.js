@@ -18,6 +18,7 @@ class ManageProjectCtrl {
         this.ui = {
             hasType: true,
             loading: true,
+            submitting: false,
             error: null,
         };
         this.project = this.resolve.project;
@@ -70,12 +71,12 @@ class ManageProjectCtrl {
     }
 
     create() {
-        this.ui.loading = true;
+        this.ui.submitting = true;
         let data = this.prepareData(false);
         if (this.missingCreator(data)) {
             this.confirmMessage().result.then((resp) => {
                 if (!resp) {
-                    this.ui.loading = false;
+                    this.ui.submitting = false;
                     return
                 }
                 this.$http.post(`/api/projects/`, data).then((resp) => {
@@ -89,7 +90,7 @@ class ManageProjectCtrl {
                         },
                         { reload: true }
                     );
-                    this.ui.loading = false;
+                    this.ui.submitting = false;
                     this.close({ $value: project });
                 });
             });
@@ -105,31 +106,34 @@ class ManageProjectCtrl {
                     },
                     { reload: true }
                 );
-                this.ui.loading = false;
+                this.ui.submitting = false;
                 this.close({ $value: project });
             });
         }
     }
 
     update() {
-        this.ui.loading = true;
-        let data = this.prepareData(true);
+        this.ui.submitting = true;
+        let data = (this.project.value.projectType === 'None'
+            ? this.prepareData(false)
+            : this.prepareData(true)
+        );
         if (this.missingCreator(data)) {
             this.confirmMessage().result.then((resp) => {
                 if (!resp) {
-                    this.ui.loading = false;
+                    this.ui.submitting = false;
                     return
                 }
                 this.$http.post(`/api/projects/${data.uuid}/`, data).then((resp) => {
                     this.project.value = resp.data.value;
-                    this.ui.loading = false;
+                    this.ui.submitting = false;
                     this.close({ $value: this.project });
                 });
             });
         } else {
             this.$http.post(`/api/projects/${data.uuid}/`, data).then((resp) => {
                 this.project.value = resp.data.value;
-                this.ui.loading = false;
+                this.ui.submitting = false;
                 this.close({ $value: this.project });
             });
         }
@@ -156,12 +160,12 @@ class ManageProjectCtrl {
         });
     }
 
-    prepareData(updating) {
+    prepareData(hasPrjType) {
         let projectData = {...this.form};
         projectData.pi = this.form.pi.username;
         projectData.coPis = this.validInputs(this.form.coPis, ['username'], 'username');
         projectData.teamMembers = this.validInputs(this.form.teamMembers, ['username'], 'username');
-        if (updating) {
+        if (hasPrjType) {
             projectData.guestMembers = this.validInputs(this.form.guestMembers, ['fname', 'lname']);
             projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number']);
             projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
