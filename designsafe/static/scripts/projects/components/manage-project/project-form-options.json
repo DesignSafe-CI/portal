@@ -1,0 +1,41 @@
+{
+    "nhTypes": [
+        "Other",
+        "Earthquake",
+        "Flood",
+        "Hurricane",
+        "Landslide",
+        "Tornado",
+        "Tsunami"
+    ],
+    "frTypes": [
+        "Engineering",
+        "Field Experiment",
+        "Geosciences",
+        "Interdisciplinary",
+        "Longitudinal Study",
+        "Reconnaissance",
+        "Social Sciences"
+    ],
+    "otherTypes": [
+        "Other",
+        "Code",
+        "Database",
+        "Dataset",
+        "Image",
+        "Jupyter Notebook",
+        "Learning Object",
+        "Model",
+        "Paper",
+        "Proceeding",
+        "Poster",
+        "Presentation",
+        "Report",
+        "REU",
+        "Social Sciences",
+        "Softwarem",
+        "Survey",
+        "Video",
+        "White Paper"
+    ]
+}

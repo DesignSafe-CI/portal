@@ -4,7 +4,7 @@
         <div class="prj-head-container">
             <span class="prj-head-title">
                 {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
-                <a class="prj-head-edit" ng-click="$ctrl.editProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
+                <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
             </span>
             <div class="prj-head-buttons">
                 <a class="prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">

@@ -34,7 +34,7 @@ class PipelineOtherCtrl {
             rebuild the project and selected files if a refresh occurs...
             for now we can send them back to the selection area
             */
-            this.$state.go('projects.pipelineSelectOther', {projectId: this.projectId}, {reload: true});
+            this.$state.go('projects.pipelineStart', {projectId: this.projectId}, {reload: true});
         }
     }
 

@@ -18,6 +18,7 @@ from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from designsafe.apps.projects.managers.base import ProjectsManager
+from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
 
@@ -64,6 +65,8 @@ def draft_publication(
     main_entity_doi=None,
     upsert_project_doi=False,
     upsert_main_entity_doi=True,
+    revision=None,
+    revised_authors=None
 ):
     """Reserve a publication.
 
@@ -100,6 +103,9 @@ def draft_publication(
     :param bool upsert_project_doi: Update or insert project doi.
     :param bool upsert_main_entity_doi: Update or insert main entity doi.
     """
+    # TODO: We need to consider how we will prepare DataCite JSON data:
+    # 1) How do we manage conditional changes for versioning?
+    # 2) How do we cite related/unrelated entities for the DOI?
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     responses = []
@@ -147,8 +153,21 @@ def draft_publication(
 
     ### Draft Project DOI ###
     prj_url = TARGET_BASE.format(project_id=project_id)
-    prj_datacite_json = prj.to_datacite_json()
-    prj_datacite_json['url'] = prj_url
+
+    if revision:
+        # Versions should not update certain fields per Maria Esteva
+        # Add version number to DataCite info
+        pub = BaseESPublication(project_id=project_id, revision=revision)
+        prj.title = pub.project.value.title
+        prj.team_order = pub.project.value.teamOrder
+        if revised_authors:
+            prj.team_order = revised_authors
+        prj_datacite_json = prj.to_datacite_json()
+        prj_datacite_json['url'] = prj_url
+        prj_datacite_json['version'] = str(revision)
+    else:
+        prj_datacite_json = prj.to_datacite_json()
+        prj_datacite_json['url'] = prj_url
 
     if upsert_project_doi and project_doi:
         prj_res = DataciteManager.create_or_update_doi(
@@ -179,8 +198,81 @@ def draft_publication(
         )
     return responses
 
+def amend_publication(project_id, authors=None, revision=None):
+    """Amend a Publication
+    
+    Update Amendable fields on a publication and the corrosponding DataCite
+    records. These changes do not produce a new version of a publication, but
+    they do allow for limited changes to a published project. This is currently
+    configured to support "Other" publications only.
+    
+    :param str project_id: Project uuid to amend
+    :param int revision: Revision number to amend
+    """
+    es_client = new_es_client()
+    mgr = ProjectsManager(service_account())
+    prj = mgr.get_project_by_id(project_id)
+    pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
+    if prj.project_type != 'other':
+        return
 
-def publish_resource(project_id, entity_uuids=None, publish_dois=False):
+    prj_dict = prj.to_body_dict()
+    pub_dict = pub.to_dict()
+    _delete_unused_fields(prj_dict)
+
+    # weird key swap for old issues with awardnumber(s)
+    award_number = prj.award_number or []
+    if not isinstance(award_number, list):
+        award_number = []
+    prj_dict['value']['awardNumbers'] = award_number
+    prj_dict['value'].pop('awardNumber', None)
+
+    amends_dict = {
+        'nhTypes': [],
+        'dataType': '',
+        'awardNumbers': [],
+        'associatedProjects': [],
+        'keywords': '',
+        'description': '',
+    }
+    for key in amends_dict:
+        amends_dict[key] = prj_dict['value'][key]
+    if authors:
+        amends_dict['teamOrder'] = authors
+
+    pub_dict['project']['value'].update(amends_dict)
+    pub.update(**pub_dict)
+    IndexedPublication._index.refresh(using=es_client)
+    return pub
+
+def amend_datacite_doi(publication):
+    """Amend a citation on DataCite
+    
+    Use the published project to update the DOI on Datacite
+    
+    Note: This assumes that the DOI being updated is related to the project.
+    We may want to change this to accept dict objects which are being amended.
+    
+    :param elasticsearch publication: Publication to amend
+    """
+    # Only amend doi while in prod
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
+        return
+
+    pub_dict = publication.to_dict()
+    prj_class = project_lookup_model(pub_dict['project'])
+    project = prj_class(value=pub_dict['project']['value'], uuid=pub_dict['project']['uuid'])
+    prj_datacite_json = project.to_datacite_json()
+    prj_doi = project.dois[0]
+
+    response = DataciteManager.create_or_update_doi(
+        prj_datacite_json,
+        prj_doi
+    )
+    return response
+
+
+def publish_resource(project_id, entity_uuids=None, publish_dois=False, revision=None):
     """Publish a resource.
 
     Retrieves a project and/or an entity and set any saved DOIs
@@ -196,8 +288,12 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
 
     :param str project_id: Project Id to publish.
     :param list entity_uuids: list of str Entity uuids to publish.
+    :param int revision: Revision number to publish.
     """
     es_client = new_es_client()
+
+    # If revision number passed, set status to "published" for specified revision and
+    # set status to "revised" for old versions
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     responses = []
@@ -208,20 +304,25 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False):
                 entity = None
                 if ent_uuid:
                     entity = mgr.get_entity_by_uuid(ent_uuid)
-                
+
                 if entity:
                     for doi in entity.dois:
                         res = DataciteManager.publish_doi(doi)
                         responses.append(res)
-        
+
         for doi in prj.dois:
             res = DataciteManager.publish_doi(doi)
             responses.append(res)
 
-
-    pub = BaseESPublication(project_id=project_id, using=es_client)
+    pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     pub.update(status='published', using=es_client)
     IndexedPublication._index.refresh(using=es_client)
+
+    if revision:
+        # Revising a publication sets the status of the previous document to 'archived'
+        last_revision = revision - 1 if revision > 2 else 0
+        archived_pub = pub = BaseESPublication(project_id=project_id, revision=last_revision)
+        archived_pub.update(status='archived')
 
     for res in responses:
         logger.info(
@@ -310,10 +411,28 @@ def _delete_unused_fields(dict_obj):
     for key in keys_to_delete:
         dict_obj.pop(key, '')
 
+def _preserve_version_values(prj_obj, revised_authors):
+    """Preserve Values for new Version
+    Some metadata values are not meant to be modified
+    when publishing a new version of a project. To prevent
+    changes when publishing new versions, we'll copy those
+    values from the original publication.
+    """
+    original_pub = BaseESPublication(project_id=prj_obj['value']['projectId'])
+    original_prj = original_pub.project.to_dict()
+    preservables = ['title', 'pi', 'coPis', 'guestMembers']
 
-def fix_file_tags(project_id):
+    for field in preservables:
+        if field in original_prj['value']:
+            prj_obj['value'][field] = original_prj['value'][field]
+        elif field in prj_obj['value']:
+            del prj_obj['value'][field]
+    prj_obj['value']['teamOrder'] = revised_authors
+
+
+def fix_file_tags(project_id, revision=None):
     es_client = new_es_client()
-    pub = BaseESPublication(project_id=project_id, using=es_client)
+    pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     pub_dict = pub.to_dict()
 
     entities_to_check = list(set(pub_dict.keys()).intersection(list(FIELD_MAP.values())))
@@ -328,10 +447,11 @@ def fix_file_tags(project_id):
     def fix_tags_path(entity):
         for tag in entity['value']['fileTags']:
             try:
+                pub_base = "{}v{}".format(project_id, revision) if revision else project_id
                 pub_file = BaseFileResource.listing(
                     service_account(),
                     system="designsafe.storage.published",
-                    path="{}{}".format(project_id, tag['path'])
+                    path="{}{}".format(pub_base, tag['path'])
                 )
                 tag['fileUuid'] = pub_file.uuid
             except Exception as err:
@@ -343,7 +463,8 @@ def fix_file_tags(project_id):
             proj_other = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path="")
             for child in proj_other.children:
                 try:
-                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, child.path))
+                    pub_base = "{}v{}".format(project_id, revision) if revision else project_id
+                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(pub_base, child.path))
                     proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path=child.path)
                     for tag in entity['value']['fileTags']:
                         if tag['fileUuid'] == proj_file.uuid:
@@ -382,17 +503,23 @@ def fix_file_tags(project_id):
     IndexedPublication._index.refresh(using=es_client)
 
 
-def archive(project_id):
+def archive(project_id, revision=None):
     """Archive Published Files and Metadata
 
     When given a project_id, this function will copy and compress all of the published files
     for a project, and it will also include a formatted json document of the published metadata.
     Note: This metadata file is will only be used until the Fedora system is set up again.
     """
+
+    # TODO: Add revision number argument and format archive name if exists
     es_client = new_es_client()
-    pub = BaseESPublication(project_id=project_id, using=es_client)
-    archive_name = '{}_archive.zip'.format(pub.projectId)
-    metadata_name = '{}_metadata.json'.format(pub.projectId)
+    pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
+    if revision:
+        archive_prefix = '{}v{}'.format(pub.projectId, revision)
+    else:
+        archive_prefix = pub.projectId
+    archive_name = '{}_archive.zip'.format(archive_prefix)
+    metadata_name = '{}_metadata.json'.format(archive_prefix)
     pub_dir = settings.DESIGNSAFE_PUBLISHED_PATH
     arc_dir = os.path.join(pub_dir, 'archives/')
     archive_path = os.path.join(arc_dir, archive_name)
@@ -416,10 +543,10 @@ def archive(project_id):
 
     # compress published files into a zip archive
     def create_archive():
-        arc_source = os.path.join(pub_dir, pub.projectId)
+        arc_source = os.path.join(pub_dir, archive_prefix)
 
         try:
-            logger.debug("Creating archive for {}".format(pub.projectId))
+            logger.debug("Creating archive for {}".format(archive_prefix))
             zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
             for dirs, _, files in os.walk(arc_source):
                 for f in files:
@@ -449,7 +576,7 @@ def archive(project_id):
 
         project_uuid = pub_dict['project']['uuid']
         try:
-            logger.debug("Creating metadata for {}".format(pub.projectId))
+            logger.debug("Creating metadata for {}".format(archive_prefix))
             if pub_dict['project']['value']['projectType'] in entity_type_map:
                 ent_type = entity_type_map[pub_dict['project']['value']['projectType']]
                 entity_uuids = []
@@ -479,7 +606,7 @@ def archive(project_id):
             logger.exception("Failed to create metadata!")
 
     try:
-        set_perms(pub_dir, 0o755, os.path.join(pub_dir, pub.projectId))
+        set_perms(pub_dir, 0o755, os.path.join(pub_dir, archive_prefix))
         set_perms(arc_dir, 0o755)
         create_metadata()
         create_archive()
@@ -487,7 +614,7 @@ def archive(project_id):
         logger.exception('Failed to archive publication!')
 
 
-def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
+def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=None, revised_authors=None):
     """Freeze project and entity metadata.
 
     Given a project id and an entity uuid (should be a main entity) this function
@@ -505,7 +632,7 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
     es_client = new_es_client()
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
-    pub_doc = IndexedPublication.from_id(project_id=project_id, using=es_client)
+    pub_doc = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     publication = pub_doc.to_dict()
 
     if entity_uuids:
@@ -544,12 +671,14 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None):
 
                 if entity_json['value']['dois']:
                     entity_json['doi'] = entity_json['value']['dois'][-1]
-                
+
                 _delete_unused_fields(entity_json)
                 publication[pub_entities_field_name].append(entity_json)
 
     prj_json = prj.to_body_dict()
     _delete_unused_fields(prj_json)
+    if revision:
+        _preserve_version_values(prj_json, revised_authors)
 
     award_number = prj.award_number or []
 

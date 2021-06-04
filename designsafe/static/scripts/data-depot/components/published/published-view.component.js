@@ -22,7 +22,6 @@ class PublishedViewCtrl {
     }
 
     $onInit() {
-        //this.version = this.resolve.version;
         this.readOnly = true;
         this.ui = {
             efs: experimentalData.experimentalFacility,
@@ -37,10 +36,16 @@ class PublishedViewCtrl {
         this.browser.project = this.publication.project;
         this.project = this.publication.project;
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
+        this.versions = this.prepVersions(this.publication);
+        this.selectedVersion = this.publication.revision || 'Original';
+        this.prjBasePath = (this.publication.revision && this.publication.revision < 0
+            ? this.publication.projectId + 'r' + this.publication.revision
+            : this.publication.projectId
+        );
 
         this.breadcrumbParams = {
-            root: {label: this.projId, path: this.projId},
-            path: this.projId,
+            root: {label: this.prjBasePath, path: this.prjBasePath},
+            path: this.prjBasePath,
             skipRoot: true
         }
 
@@ -68,19 +73,9 @@ class PublishedViewCtrl {
         }
 
         //add metadata to header
-        //this.PublicationServicevice.updateHeaderMetadata(projId, resp);
-        this.version = this.browser.publication.version || 1;
         this.type = this.browser.publication.project.value.projectType;
-        this.ui.loading = false;
-
-        // // Generate text for PI
-        // this.piDisplay = this.browser.publication.authors.find((author) => author.name === this.browser.project.value.pi);
-        // // Generate CoPI list
-        // this.coPIDisplay = this.project.value.coPis.map((coPi) => this.browser.publication.authors.find((author) => author.name === coPi));
-
         this.prepProject();
-
-
+        this.ui.loading = false;
     }
 
     getProjectListings() {
@@ -221,6 +216,34 @@ class PublishedViewCtrl {
         }
     }
 
+    getVersion() {
+        let path = (typeof this.selectedVersion === 'number'
+            ? `${this.browser.publication.projectId}v${this.selectedVersion}`
+            : this.browser.publication.projectId
+        )
+        this.$state.go('publishedData', {
+            filePath: path,
+        }, { reload: true });
+    }
+
+    prepVersions(publication) {
+        // returns a list of publication versions
+        if (publication.latestRevision) {
+            let vers = ['Original'];
+            let max = (publication.latestRevision.status === 'published'
+                ? publication.latestRevision.revision
+                : publication.latestRevision.revision - 1
+            )
+            if (typeof max == 'number') {
+                for (let i = 2; i <= max; i++) {
+                    vers.push(i);
+                }
+            }
+            return vers;
+        }
+        return null;
+    }
+
     ordered(parent, entities) {
         let order = (ent) => {
             if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
@@ -352,6 +375,22 @@ class PublishedViewCtrl {
             resolve: {
                 publication: () => { return this.browser.publication; },
                 entity: () => { return entity; },
+            },
+            size: 'citation'
+        });
+    }
+
+    showVersionInfo() {
+        let date = new Date(this.browser.publication.revisionDate);
+        let modalData = [
+            {label: 'Version', data: this.browser.publication.revision},
+            {label: 'Date of Publication', data: `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`},
+            {label: null, data: this.browser.publication.revisionText}
+        ]
+        this.$uibModal.open({
+            component: 'publishedDataModal',
+            resolve: {
+                data: () => { return modalData },
             },
             size: 'citation'
         });

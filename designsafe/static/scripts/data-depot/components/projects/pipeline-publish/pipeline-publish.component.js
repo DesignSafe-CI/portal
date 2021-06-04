@@ -95,15 +95,19 @@ class PipelinePublishCtrl {
                 publication[this.entityListName].push({uuid: entity.uuid});
                 this.mainEntityUuids.push(entity.uuid);
             });
+        } else {
+            this.filePaths = this.selectedListings.listing.map(file => file.path);
         }
         this.publication = publication;
-        this.PublicationService.getPublished(this.project.value.projectId).then((resp) => {
-            let data = resp.data;
-            if (data.project) {
+        this.PublicationService.getPublished(this.project.value.projectId)
+        .then((resp) => {
+            let publication = resp.data;
+            if (publication.status) {
                 this.ui.published = true;
-            } else {
-                this.ui.published = false;
             }
+            this.ui.loading = false;
+        }, (error) => {
+            this.ui.published = false;
             this.ui.loading = false;
         });
     }
@@ -124,12 +128,16 @@ class PipelinePublishCtrl {
             '/api/projects/publication/',
             {
                 publication: this.publication,
-                mainEntityUuids: this.mainEntityUuids,
                 status: 'publishing',
+                mainEntityUuids: this.mainEntityUuids,
+                selectedFiles: this.filePaths
             }
         ).then((resp) => {
             this.ui.submitted = true;
-        }).finally( () => {
+            this.busy = false;
+        }, (error) => {
+            this.ui.error = true;
+            this.ui.submitted = true;
             this.busy = false;
         });
     }

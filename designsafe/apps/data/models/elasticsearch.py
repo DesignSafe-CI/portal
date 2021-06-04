@@ -140,6 +140,9 @@ class IndexedFileLegacy(Document):
 
 @python_2_unicode_compatible
 class IndexedPublication(Document):
+    revision = Long()
+    revisionText = Text()
+    revisionDate = Date()
     analysisList = Nested(properties={
         'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
@@ -330,11 +333,20 @@ class IndexedPublication(Document):
     })
 
     @classmethod
-    def from_id(cls, project_id, using='default'):
+    def from_id(cls, project_id, revision=None, using='default'):
+        # if revision number is specified, get that revision, otherwise use
+        # "exists" query to get the version where "revision" does NOT exist
         if project_id is None:
             raise DocumentNotFound()
+
+        if revision:
+            revision_filter = Q('match', **{'revision': revision})
+        else:
+            # Search for documents where revision is not specified.
+            revision_filter = ~Q('exists', **{'field': 'revision'})
+
         id_filter = Q('term', **{'projectId._exact': project_id})
-        search = cls.search().filter(id_filter)
+        search = cls.search().filter(id_filter & revision_filter)
         try:
             res = search.execute()
         except Exception as e:
@@ -350,6 +362,17 @@ class IndexedPublication(Document):
         else:
             raise DocumentNotFound("No document found for "
                                    "{}".format(project_id))
+
+    @classmethod
+    def max_revision(cls, project_id):
+        id_filter = Q('term', **{'projectId._exact': project_id})
+        res = cls.search().filter(id_filter)
+        res.aggs.metric('max_revision', 'max', field='revision')
+        max_agg = res.execute().aggregations.max_revision.value
+        if max_agg:
+            return int(max_agg)
+        # return None
+        return 0
 
     class Index:
         name = settings.ES_INDICES['publications']['alias']

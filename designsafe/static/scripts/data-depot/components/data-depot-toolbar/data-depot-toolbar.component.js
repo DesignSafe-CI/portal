@@ -25,6 +25,7 @@ class DataDepotToolbarCtrl {
             'projects.view': 'Project View',
             'projects.curation': 'Project Curation',
             'neesPublished': 'NEES Published',
+            'publishedData': 'this Dataset',
             'publicDataLegacy': 'Published (NEES)'
         };
 
