@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^tickets/(?P<ticketId>\d+)/reply/$', views.ticketreply, name='ticketreply'),
     url(r'^tickets/(?P<ticketId>\d+)/close/$', views.ticketclose, name='ticketclose'),
     url(r'^tickets/(?P<ticketId>\d+)/attachment/(?P<attachmentId>\d+)/$', views.ticketattachment, name='ticketattachment'),
+    url(r'^feedback/$', views.FeedbackView.as_view(), name='feedback'),
 ]

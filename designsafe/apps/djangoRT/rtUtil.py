@@ -14,11 +14,11 @@ class DjangoRt:
     NEW = 'new'
     RESPONSE_REQUIRED = 'response required'
 
-    def __init__(self):
+    def __init__(self, queue=settings.DJANGO_RT['RT_QUEUE']):
         self.rtHost = settings.DJANGO_RT['RT_HOST']
         self.rtUn = settings.DJANGO_RT['RT_UN']
         self.rtPw = settings.DJANGO_RT['RT_PW']
-        self.rtQueue = settings.DJANGO_RT['RT_QUEUE']
+        self.rtQueue = queue
 
         self.tracker = rt.Rt(self.rtHost, default_queue=self.rtQueue,
                              default_login=self.rtUn, default_password=self.rtPw)
