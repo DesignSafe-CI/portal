@@ -139,13 +139,6 @@ class PipelineTeamCtrl {
             selectedListings: this.selectedListings,
         }, {reload: true});
     }
-
-    isOther() {
-        if (this.project.value.projectType === 'other') {
-            return true;
-        }
-        return false;
-    }
 }
 
 export const PipelineTeamComponent = {

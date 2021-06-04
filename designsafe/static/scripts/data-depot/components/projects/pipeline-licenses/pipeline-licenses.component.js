@@ -59,13 +59,6 @@ class PipelineLicensesCtrl {
         }
     }
 
-    isOther() {
-        if (this.project.value.projectType === 'other') {
-            return true;
-        }
-        return false;
-    }
-
     validSelection() {
         if (this.project) {
             if (typeof this.project.value.projectType === 'undefined') {

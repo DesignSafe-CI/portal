@@ -50,7 +50,7 @@
         <div style="padding-top: 40px; padding-bottom: 40px;">
             <p>
                 <h3 style="text-align: center">Proofread your Data</h3>
-                <h3 ng-if="!$ctrl.isOther()" style="text-align: center; color: orange;">
+                <h3 ng-if="$ctrl.project.value.projectType != 'other'" style="text-align: center; color: orange;">
                     <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
                 </h3>
                 <li>If you selected the wrong files, go back to Selection.</li>
