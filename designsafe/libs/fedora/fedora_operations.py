@@ -266,7 +266,7 @@ def ingest_files_other(project_id, version=None):
 
 
 
-def ingest_project(project_id, version=None):
+def ingest_project(project_id, upload_files=True, version=None):
     """
     Ingest a project into Fedora by creating a record in the repo, updating it
     with the published metadata, and uploading its files.
@@ -277,7 +277,8 @@ def ingest_project(project_id, version=None):
     fedora_post(container_path)
     project_meta = format_metadata_for_fedora(project_id)
     res = fedora_update(container_path, project_meta)
-    ingest_files_other(container_path)
+    if upload_files:
+        ingest_files_other(container_path)
     return res
 
 
