@@ -82,6 +82,18 @@ class DataBrowserServicePreviewCtrl {
                     };
                     oReq.send();
                 }
+                if (this.fileType === 'object') {
+                    const oReq = new XMLHttpRequest();
+                    oReq.open('GET', this.href);
+                    oReq.responseType = 'blob';
+                    oReq.onload = (e) => {
+                        this.href = URL.createObjectURL(e.target.response);
+                        this.href = this.$sce.trustAs('resourceUrl', this.href);
+                        this.loading = false;
+                        this.$scope.$apply();
+                    };
+                    oReq.send();
+                }
             },
             // eslint-disable-next-line
             (err) => {
