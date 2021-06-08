@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.2.0
+Enhancements:
+- Add the ability for users to revise and amend Other-type projects.
+- Add the ability to view publication metrics in accordance with Make Your Data Count standards.
+- Add the ability to submit feedback on a published project.
+- Hazmapper maps can now be previewed in the data depot.
+- Add a "Published Files" tab to Site Search that links to the relevant publication.
+
+Fixes:
+- Fix table headers in the Workspace data browser
+- Fix bugs that could occur when trying to edit a project with no set type.
+- Update the browser icon
 
 ## v5.1.8
 Fixes:
