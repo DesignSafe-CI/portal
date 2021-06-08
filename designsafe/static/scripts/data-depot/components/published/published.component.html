@@ -10,10 +10,16 @@
       <span class="prj-head-title">
         <strong>{{$ctrl.project.value.projectId}}: {{ $ctrl.project.value.title }}</strong>
       </span>
+      <div class="prj-head-buttons">
       <a class="prj-head-download" ng-click="$ctrl.download()">
         <span class="curation-download"></span>
         <strong>&nbsp;Download Dataset</strong>
       </a>
+      <a class="prj-head-download" ng-click="$ctrl.metrics()">
+        <img src='/static/images/ds-icons/icon-metrics.svg' style="width: 20px;">
+        <strong>&nbsp;View Data Metrics</strong>
+    </a>
+  </div>
     </div>
     <div class="table-responsive">
       <table class="table" style="margin-bottom:0;">

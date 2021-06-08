@@ -431,6 +431,16 @@ export class PublishedDataCtrl {
         });
     }
 
+    metrics() {
+        this.$uibModal.open({
+            component: 'publicationMetricsModal',
+            resolve: {
+                publication: () => {return this.browser.publication;},
+            },
+            size: 'md'
+        });
+    }
+
 }
 
 export const PublishedComponent = {
