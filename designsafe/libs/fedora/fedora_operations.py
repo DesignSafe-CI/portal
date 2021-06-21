@@ -94,25 +94,36 @@ def fedora_get(project_id):
     return request.json()
 
 
-def fedora_post(container_path):
+def fedora_post(container_path, data_container=True):
     """"
     Create a Fedora container for a project if none exists; otherwise, return
     existing metadata for that project.
 
     Params
     ------
-    project_id: Project ID to look up (e.g. PRJ-1234)
+    container_path: Path to create the container relative to the publication
+        root. (e.g. PRJ-1234)
+    data_container: If truthy, create an additional "/data" container under
+        container_path.
 
     Returns
     -------
     dict: Publication metadata in compact JSON format.
     """
+    fc_url = '{}{}/{}'.format(settings.FEDORA_URL,
+                              PUBLICATIONS_CONTAINER, container_path)
     try:
-        request = requests.put('{}{}/{}'.format(settings.FEDORA_URL,
-                                                PUBLICATIONS_CONTAINER, container_path),
+        request = requests.put(fc_url,
                                auth=(settings.FEDORA_USERNAME,
                                      settings.FEDORA_PASSWORD))
         request.raise_for_status()
+
+        if data_container:
+            dc_request = requests.put(fc_url + "/data",
+                                      auth=(settings.FEDORA_USERNAME,
+                                            settings.FEDORA_PASSWORD))
+            dc_request.raise_for_status()
+
     except HTTPError as error:
         if error.response.status_code == 409:
             return fedora_get(container_path)
@@ -214,9 +225,9 @@ def create_fc_version(container_path):
 
     try:
         request = requests.post('{}{}/{}/fcr:versions'.format(settings.FEDORA_URL,
-                                                PUBLICATIONS_CONTAINER, container_path),
-                               auth=(settings.FEDORA_USERNAME,
-                                     settings.FEDORA_PASSWORD))
+                                                              PUBLICATIONS_CONTAINER, container_path),
+                                auth=(settings.FEDORA_USERNAME,
+                                      settings.FEDORA_PASSWORD))
         request.raise_for_status()
     except HTTPError as error:
         if error.response.status_code == 409:
@@ -232,8 +243,8 @@ def ingest_files_other(project_id, version=None):
     """
 
     retry_strategy = Retry(
-    total=3,
-    backoff_factor=5
+        total=3,
+        backoff_factor=5
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     http = requests.Session()
@@ -245,25 +256,25 @@ def ingest_files_other(project_id, version=None):
     for root, _, files in os.walk(archive_path):
 
         for file in files:
-            print(file)
             headers = {'Content-Type': 'text/plain'}
             mime = magic.Magic(mime=True)
             headers['Content-Type'] = mime.from_file(os.path.join(root, file))
-
-            fc_relative_path = os.path.join(root.replace(PUBLICATIONS_MOUNT_ROOT, '', 1), file)
+            # project_archive_path will be something like /corral-repl/tacc/NHERI/published/PRJ-1234
+            project_archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
+            # fc_relative_path is of form /PRJ-1234/data/path/to/folder/file
+            fc_relative_path = os.path.join(project_id, 'data', root.replace(project_archive_path, '', 1).strip('/'), file)
             fc_put_url = os.path.join(fedora_root, parse.quote(fc_relative_path))
-            print(fc_put_url)
             with open(os.path.join(root, file), 'rb') as _file:
                 try:
+                    pass
                     request = http.put(fc_put_url,
-                                        auth=(settings.FEDORA_USERNAME,
-                                                settings.FEDORA_PASSWORD),
-                                        headers=headers,
-                                        data=_file)
+                                       auth=(settings.FEDORA_USERNAME,
+                                             settings.FEDORA_PASSWORD),
+                                       headers=headers,
+                                       data=_file)
                     request.raise_for_status()
                 except HTTPError:
                     logger.error('Fedora ingest failed: {}'.format(fc_put_url))
-
 
 
 def ingest_project(project_id, upload_files=True, version=None):
@@ -283,7 +294,7 @@ def ingest_project(project_id, upload_files=True, version=None):
 
 
 def amend_project_fedora(project_id, version=None):
-    """Amend a publication by creating a new version in Fedora and updating the 
+    """Amend a publication by creating a new version in Fedora and updating the
     metadata"""
     container_path = project_id
     if version:
