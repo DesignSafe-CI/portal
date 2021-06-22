@@ -387,7 +387,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
                   '<li>Must contain characters from at least three of the following: '
                   'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
     agree_to_terms = forms.BooleanField(
-        label='I Agree to the <a href="/terms/" target="_blank">Terms of Use</a>',
+        label='I Agree to the <a href="/account/terms-conditions/" target="_blank">Terms of Use</a>',
         error_messages={'required': 'Please Accept the DesignSafe Terms of Use.'})
     agree_to_account_limit = forms.BooleanField(
         label='One account per user. I hereby verify that this is my only DesignSafe/TACC account'

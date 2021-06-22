@@ -1,5 +1,15 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.2.2
+Fixes:
+- Refactor Fedora indexer to prevent timeouts on amendment.
+- Fix broken link to Terms and Conditions in the registration form.
+
+## v5.2.1
+Fixes:
+- Metrics can now be viewed for legacy publications.
+- Hide empty fields in Site Search.
+
 ## v5.2.0
 Enhancements:
 - Add the ability for users to revise and amend Other-type projects.
