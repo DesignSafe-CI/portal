@@ -136,21 +136,20 @@ def handle_webhook_request(job):
             event_data[Notification.MESSAGE] = "Job '%s' Failed. Please try again..." % (job_name)
             event_data[Notification.OPERATION] = 'job_failed'
 
-            with transaction.atomic():
-                last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
-                should_notify = True
+            last_notification = Notification.objects.filter(jobId=job_id).last()
+            should_notify = True
 
-                if last_notification:
-                    last_status = last_notification.to_dict()['extra']['status']
-                    logger.debug('last status: ' + last_status)
+            if last_notification:
+                last_status = last_notification.to_dict()['extra']['status']
+                logger.debug('last status: ' + last_status)
 
-                    if job_status == last_status:
-                        logger.debug('duplicate notification received.')
-                        should_notify = False
+                if job_status == last_status:
+                    logger.debug('duplicate notification received.')
+                    should_notify = False
 
-                if should_notify:
-                    n = Notification.objects.select_for_update().create(**event_data)
-                    n.save()
+            if should_notify:
+                n = Notification.objects.create(**event_data)
+                n.save()
 
         elif job_status == 'FINISHED':
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
@@ -165,31 +164,31 @@ def handle_webhook_request(job):
             event_data[Notification.MESSAGE] = "Job '%s' finished!" % (job_name)
             event_data[Notification.OPERATION] = 'job_finished'
 
-            with transaction.atomic():
-                last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
-                should_notify = True
 
-                if last_notification:
-                    last_status = last_notification.to_dict()['extra']['status']
-                    logger.debug('last status: ' + last_status)
+            last_notification = Notification.objects.filter(jobId=job_id).last()
+            should_notify = True
 
-                    if job_status == last_status:
-                        logger.debug('duplicate notification received.')
-                        should_notify = False
+            if last_notification:
+                last_status = last_notification.to_dict()['extra']['status']
+                logger.debug('last status: ' + last_status)
 
-                if should_notify:
-                    n = Notification.objects.select_for_update().create(**event_data)
-                    n.save()
-                    logger.debug('Event data with action link %s' % event_data)
+                if job_status == last_status:
+                    logger.debug('duplicate notification received.')
+                    should_notify = False
 
-                    try:
-                        logger.debug('Preparing to Index Job Output job=%s', job_name)
+            if should_notify:
+                n = Notification.objects.create(**event_data)
+                n.save()
+                logger.debug('Event data with action link %s' % event_data)
 
-                        archivePath = '/'.join([job['archiveSystem'], job['archivePath']])
-                        agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': job['archiveSystem'], 'filePath': job['archivePath'], 'recurse':True}, queue='indexing')
-                        logger.debug('Finished Indexing Job Output job=%s', job_name)
-                    except Exception as e:
-                        logger.exception('Error indexing job output')
+                try:
+                    logger.debug('Preparing to Index Job Output job=%s', job_name)
+
+                    archivePath = '/'.join([job['archiveSystem'], job['archivePath']])
+                    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': job['archiveSystem'], 'filePath': job['archivePath'], 'recurse':True}, queue='indexing')
+                    logger.debug('Finished Indexing Job Output job=%s', job_name)
+                except Exception as e:
+                    logger.exception('Error indexing job output')
 
         else:
             # notify
@@ -198,24 +197,24 @@ def handle_webhook_request(job):
             event_data[Notification.MESSAGE] = "Job '%s' updated to %s." % (job_name, job_status)
             event_data[Notification.OPERATION] = 'job_status_update'
 
-            with transaction.atomic():
-                last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
 
-                should_notify = True
+            last_notification = Notification.objects.filter(jobId=job_id).last()
 
-                if last_notification:
-                    last_status = last_notification.to_dict()['extra']['status']
-                    logger.debug('last status: ' + last_status)
+            should_notify = True
 
-                    if job_status == last_status:
-                        logger.debug('duplicate notification received.')
-                        should_notify = False
+            if last_notification:
+                last_status = last_notification.to_dict()['extra']['status']
+                logger.debug('last status: ' + last_status)
 
-                if should_notify:
-                    n = Notification.objects.select_for_update().create(**event_data)
-                    n.save()
+                if job_status == last_status:
+                    logger.debug('duplicate notification received.')
+                    should_notify = False
 
-                    logger.debug(n.pk)
+            if should_notify:
+                n = Notification.objects.create(**event_data)
+                n.save()
+
+                logger.debug(n.pk)
 
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
