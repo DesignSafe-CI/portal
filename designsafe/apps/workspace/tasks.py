@@ -136,7 +136,7 @@ def handle_webhook_request(job):
             event_data[Notification.MESSAGE] = "Job '%s' Failed. Please try again..." % (job_name)
             event_data[Notification.OPERATION] = 'job_failed'
 
-            last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
+            last_notification = Notification.objects.filter(jobId=job_id).last()
             should_notify = True
 
             if last_notification:
@@ -148,7 +148,7 @@ def handle_webhook_request(job):
                     should_notify = False
 
             if should_notify:
-                n = Notification.objects.select_for_update().create(**event_data)
+                n = Notification.objects.create(**event_data)
                 n.save()
 
         elif job_status == 'FINISHED':
@@ -165,7 +165,7 @@ def handle_webhook_request(job):
             event_data[Notification.OPERATION] = 'job_finished'
 
 
-            last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
+            last_notification = Notification.objects.filter(jobId=job_id).last()
             should_notify = True
 
             if last_notification:
@@ -177,7 +177,7 @@ def handle_webhook_request(job):
                     should_notify = False
 
             if should_notify:
-                n = Notification.objects.select_for_update().create(**event_data)
+                n = Notification.objects.create(**event_data)
                 n.save()
                 logger.debug('Event data with action link %s' % event_data)
 
@@ -198,7 +198,7 @@ def handle_webhook_request(job):
             event_data[Notification.OPERATION] = 'job_status_update'
 
 
-            last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
+            last_notification = Notification.objects.filter(jobId=job_id).last()
 
             should_notify = True
 
@@ -211,7 +211,7 @@ def handle_webhook_request(job):
                     should_notify = False
 
             if should_notify:
-                n = Notification.objects.select_for_update().create(**event_data)
+                n = Notification.objects.create(**event_data)
                 n.save()
 
                 logger.debug(n.pk)
