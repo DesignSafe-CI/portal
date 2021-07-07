@@ -1,0 +1,20 @@
+{% extends "base_angular.html" %}
+{% load sekizai_tags %}
+{% load static %}
+
+{% block head_extra %}
+    <base href="{% url 'designsafe_search:index' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <ui-view></ui-view>
+  {{message}}
+  </div>
+</div>
+{% addtoblock "js" %}
+  <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
+  <script src="<%= htmlWebpackPlugin.files.js %>"></script>
+{% endaddtoblock %}
+
+{% endblock %}

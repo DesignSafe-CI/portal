@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load sekizai_tags %}
+{% load static %}
+{% load ds_filters %}
+
+{% block head_extra %}
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet">
+{% endblock %}
+
+
+
+
+{% block content %}
+
+  {% block main %} {% endblock main %}
+
+{% addtoblock "js" %}
+  <script src="<%= htmlWebpackPlugin.files.js %>"></script>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css %>">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" />
+{% endaddtoblock %}
+
+{% endblock content %}

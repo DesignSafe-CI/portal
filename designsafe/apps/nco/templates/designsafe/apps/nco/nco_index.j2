@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load cms_tags staticfiles sekizai_tags%}
+
+{% block title %}
+NCO scheduling
+{% endblock %}
+{% block head_extra %}
+    <base href="{% url 'nco:index' %}">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1> NHERI Project List </h1>
+        <nco-scheduler>
+            <div class="bg-info text-info" data-ng-if="!$ctrl.initialized">
+                <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+            </div>
+        </nco-scheduler>
+    </div>
+
+    {% addtoblock "css" %}
+    {% endaddtoblock %}
+
+    {% addtoblock "js" %}
+
+    <script src="<%= htmlWebpackPlugin.files.js %>"></script>
+    {% endaddtoblock %}
+{% endblock %}

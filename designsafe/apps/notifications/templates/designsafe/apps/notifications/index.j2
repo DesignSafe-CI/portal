@@ -1,0 +1,22 @@
+{% extends "base_angular.html" %}
+{% load sekizai_tags %}
+{% load static %}
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="container">
+<h1 class="headline headline-research">Notifications</h1>
+  <div ng-controller="NotificationListCtrl" ng-include="'{% static 'scripts/notifications/html/notification_list.html' %}'">
+  {{message}}
+  </div>
+</div>
+{% addtoblock "js" %}
+  <script type="text/javascript" src="{% static 'vendor/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js' %}"></script>
+  <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+<script src="<%= htmlWebpackPlugin.files.js %>"></script>
+{% endaddtoblock %}
+
+{% endblock %}
