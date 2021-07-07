@@ -29,6 +29,7 @@ from designsafe.apps.api.publications.operations import initilize_publication
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
+from designsafe.libs.elasticsearch.utils import new_es_client
 from elasticsearch_dsl import Q
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
@@ -52,11 +53,12 @@ class PublicationView(BaseApiView):
         the "Original" publication. Include the latest version if it
         is not being queried.
         """
-        pub = BaseESPublication(project_id=project_id, revision=revision)
-        latest_revision = IndexedPublication.max_revision(project_id=project_id)
+        es_client = new_es_client()
+        pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
+        latest_revision = IndexedPublication.max_revision(project_id=project_id, using=es_client)
         latest_pub_dict = None
         if latest_revision > 0 and latest_revision != revision:
-            latest_pub = BaseESPublication(project_id=project_id, revision=latest_revision)
+            latest_pub = BaseESPublication(project_id=project_id, revision=latest_revision, using=es_client)
             if latest_pub is not None and hasattr(latest_pub, 'project'):
                 latest_pub_dict = latest_pub.to_dict()
 
