@@ -4,7 +4,6 @@
  * @param {Object} $rootScope
  * @param {Object} logger
  * @param {Object} toastr
- * @param {Object} djangoUrl
  * @param {Object} $http
  * @param {Object} $mdToast
  * @return {Object} service;
@@ -13,7 +12,6 @@ function NotificationService(
     $rootScope,
     logger,
     toastr,
-    djangoUrl,
     $http,
     $mdToast
 ) {
@@ -27,6 +25,7 @@ function NotificationService(
      * @return {string} url
      */
     function renderLink(msg) {
+        console.log('rendering link?')
         const eventType = msg.event_type.toLowerCase();
         let url = '';
         if (typeof processors[eventType] !== 'undefined' &&
@@ -36,15 +35,9 @@ function NotificationService(
         }
         if (msg.status != 'ERROR') {
             if (msg.event_type == 'job') {
-                url=djangoUrl.reverse(
-                    'designsafe_workspace:process_notification',
-                    {pk: msg.pk}
-                );
+                url=`/rw/workspace/notification/process/${msg.pk}`
             } else if (msg.event_type == 'data_depot') {
-                url=djangoUrl.reverse(
-                    'designsafe_api:process_notification',
-                    {pk: msg.pk}
-                );
+                url=`/rw/workspace/notification/process/${msg.pk}`
             }
         }
         return url;
@@ -94,7 +87,7 @@ function NotificationService(
     function list(opts) {
         return $http(
             {
-                url: djangoUrl.reverse('designsafe_api:index'),
+                url: '/api/notifications/',
                 method: 'GET',
                 params: opts,
             }
@@ -117,11 +110,7 @@ function NotificationService(
      * @return {Object} $http - promise
      */
     function del(pk) {
-        return $http.delete(
-            djangoUrl.reverse(
-                'designsafe_api:delete_notification',
-                {pk: encodeURIComponent(pk)})
-        );
+        return $http.delete(`/api/notifications/delete/${encodeURIComponent(pk)}`);
     }
 
     /**
@@ -192,7 +181,6 @@ export class NotificationServiceProvider {
      * @param {Object} $rootScope
      * @param {Object} logger
      * @param {Object} toastr
-     * @param {Object} djangoUrl
      * @param {Object} $http
      * @param {Object} $mdToast
      * @return {function} Notification Service
@@ -201,7 +189,6 @@ export class NotificationServiceProvider {
         $rootScope,
         logger,
         toastr,
-        djangoUrl,
         $http,
         $mdToast
     ) {
@@ -209,7 +196,6 @@ export class NotificationServiceProvider {
             $rootScope,
             logger,
             toastr,
-            djangoUrl,
             $http,
             $mdToast
         );

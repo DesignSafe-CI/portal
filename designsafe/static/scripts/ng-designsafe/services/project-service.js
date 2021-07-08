@@ -11,7 +11,6 @@ export class ProjectService {
         $q,
         $state,
         $uibModal,
-        Logging,
         ProjectModel,
         UserService,
     ) {
@@ -22,7 +21,6 @@ export class ProjectService {
         this.$q = $q;
         this.$state = $state;
         this.$uibModal = $uibModal;
-        this.Logging = Logging;
         this.ProjectModel = ProjectModel;
         this.UserService = UserService;
 

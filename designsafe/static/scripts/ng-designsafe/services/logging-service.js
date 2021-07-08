@@ -17,7 +17,7 @@
    * @constructor
    */
   export function LoggingServiceProvider() {
-    this.$get = function($http, djangoUrl) {
+    this.$get = function($http) {
         'ngInject';
 
       var _logLevels = {
@@ -72,7 +72,7 @@
         }
 
         /* Send log message to backend */
-        $http.post(djangoUrl.reverse('designsafe_api:logger'),
+        $http.post('/api/logger/',
           {level: level, name: this._name, message: args[0], args: args.slice(1)});
       };
 

@@ -67,7 +67,6 @@ angular.module('workspace').requires.push(
     'designsafe',
     'ds.wsBus',
     'ds.notifications',
-    'logging',
     'dndLists',
     'xeditable',
     'pascalprecht.translate',

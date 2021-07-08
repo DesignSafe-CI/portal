@@ -13,11 +13,11 @@ function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateP
 }
 
 var app = angular.module('designsafe');
-app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr', 'ui.bootstrap');   //TODO: djng
+app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'toastr', 'ui.bootstrap');   //TODO: djng
 
 app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
-angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','NotificationService', 'djangoUrl', function($scope,$rootScope,NotificationService, djangoUrl) {
+angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','NotificationService', function($scope,$rootScope,NotificationService) {
     $scope.data = {};
     $scope.showRawMessage = false;
 
@@ -35,11 +35,10 @@ angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$root
             // $scope.data.notifications[i] = angular.fromJson($scope.data.notifications[i]);
             // $scope.data.notifications[i]['fields']['extra'] = angular.fromJson($scope.data.notifications[i]['fields']['extra']);
             // $scope.data.notifications[i]['datetime'] = Date($scope.data.notifications[i]['datetime']);
-
             if ($scope.data.notifications[i]['event_type'] == 'job') {
-            $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': $scope.data.notifications[i]['pk']});
+            $scope.data.notifications[i]['action_link']=`/rw/workspace/notification/process/${$scope.data.notifications[i]['pk']}`;
             } else if ($scope.data.notifications[i]['event_type'] == 'data_depot') {
-            $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_api:process_notification', {'pk': $scope.data.notifications[i]['pk']});
+            $scope.data.notifications[i]['action_link']=`/rw/workspace/notification/process/${$scope.data.notifications[i]['pk']}`;
             }
         }
 

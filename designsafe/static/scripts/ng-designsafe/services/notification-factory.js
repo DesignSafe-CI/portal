@@ -1,15 +1,15 @@
-export function notificationFactory($http, djangoUrl) {
+export function notificationFactory($http) {
     'ngInject';
       var service = {};
 
       service.list = function() {
-        return $http.get(djangoUrl.reverse('designsafe_api:index', []));
+        return $http.get('/api/notifications/');
       };
 
       service.delete = function(pk) {
-        return $http.delete(djangoUrl.reverse('designsafe_api:delete_notification', {'pk': encodeURIComponent(pk)}));
+        return $http.delete(`/api/notifications/delete/${encodeURIComponent(pk)}`);
       };
 
       return service;
     }
-  
+

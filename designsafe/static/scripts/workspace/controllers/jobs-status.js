@@ -1,4 +1,4 @@
-export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
+export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, Jobs, logger, NotificationService) {
     'ngInject';
     NotificationService.subscribe(() => { $scope.refresh(); });
 
@@ -108,7 +108,7 @@ export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djang
     });
 }
 
-export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job, djangoUrl, logger) {
+export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job, logger) {
     'ngInject';
     $scope.job = job;
     $scope.jobFinished = jobIsFinished($scope.job);
@@ -119,7 +119,7 @@ export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job,
 
     $scope.deleteJob = function() {
         logger.log('deleteJob button clicked with jobId=', job.id);
-        $http.delete(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
+        $http.delete('/rw/workspace/api/jobs/', {
             params: {job_id: job.id},
 
         }).then(function(response) {
@@ -132,7 +132,7 @@ export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job,
 
     $scope.cancelJob = function() {
         logger.log('cancelJob button clicked with jobId=', job.id);
-        $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
+        $http.post('/rw/workspace/api/jobs/', {
             job_id: job.id,
             params: {job_id: job.id, action: 'cancel', body: '{"action":"stop"}'},
         }).then(function(response) {
