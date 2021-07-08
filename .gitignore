@@ -22,6 +22,7 @@ rabbitmq.conf
 mysql.cnf
 
 # ignore templated html files
+designsafe/templates/base.html
 designsafe/apps/applications/templates/designsafe/apps/applications/index.html
 designsafe/apps/data/templates/data/data_depot.html
 designsafe/apps/workspace/templates/designsafe/apps/workspace/index.html
