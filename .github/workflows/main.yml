@@ -23,7 +23,7 @@ jobs:
 
     - name: Copy base.html for use in unit tests
       run: |
-        cp --force designsafe/template/base.j2 designsafe/templates/base.html
+        cp --force designsafe/templates/base.j2 designsafe/templates/base.html
 
     - uses: actions/cache@v2
       with:
