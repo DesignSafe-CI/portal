@@ -13,7 +13,7 @@ function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateP
 }
 
 var app = angular.module('designsafe');
-app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'toastr', 'ui.bootstrap');   //TODO: djng
+app.requires.push('ds.wsBus', 'ds.notifications', 'toastr', 'ui.bootstrap');
 
 app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 

@@ -108,7 +108,6 @@ module.exports = (env) => {
             moment: 'moment',
             _: '_',
             window: 'window',
-            djng: 'djng',
             d3plus: 'd3plus',
         },
     };

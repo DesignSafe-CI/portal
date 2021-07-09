@@ -74,7 +74,6 @@ function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateP
 let app = angular.module('designsafe');
 app.requires.push(
     'django.context',
-    'djng.urls', // TODO: djng
     'dndLists',
     'ds.wsBus',
     'ds.notifications',
