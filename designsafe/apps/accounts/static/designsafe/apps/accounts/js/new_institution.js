@@ -13,7 +13,7 @@ jQuery(function($) {
   updateNewInstitutionFieldStatus();
 
   $('#id_institutionId').children().last().wrap('<optgroup label="Not Listed"></optgroup>');
-  $('#id_departmentId').parent().after('<p><a tabindex="-1" href="#" id="id_institutionNotListed"><i class="fa fa-question-circle"></i> My Institution is not listed</a></p>')
+  $('#id_institutionId').parent().after('<p><a tabindex="-1" href="#" id="id_institutionNotListed"><i class="fa fa-question-circle"></i> My Institution is not listed</a></p>')
 
   $('#id_institutionNotListed').on('click', function(e) {
     e.preventDefault();

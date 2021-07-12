@@ -113,7 +113,6 @@ class AccountsTests(TestCase):
     def test_professional_profile_manage(self, mock_tas_user, mock_form_tas):
 
         mock_form_tas().institutions.return_value = [{'id': 1, 'name': 'inst1'}]
-        mock_form_tas().get_departments.return_value = [{'id': 1, 'name': 'dep1'}]
         mock_form_tas().countries.return_value = [{'id': 1, 'name': 'country1'}]
 
         url = reverse('designsafe_accounts:manage_profile')
@@ -128,7 +127,6 @@ class AccountsTests(TestCase):
     def test_professional_profile_post(self, mock_form_tas, mock_tas_user, mock_tas):
 
         mock_form_tas().institutions.return_value = [{'id': 1, 'name': 'inst1'}]
-        mock_form_tas().get_departments.return_value = [{'id': 1, 'name': 'dep1'}]
         mock_form_tas().countries.return_value = [{'id': 1, 'name': 'country1'}]
 
         def mock_user_side_effect(username = 'ds_admin', email = 'test@test.test'):
@@ -145,7 +143,7 @@ class AccountsTests(TestCase):
 
         data = {'firstName': 'DS',
                 'lastName': 'User', 'email': 'test@test.test',
-                'phone': '555-555-5555', 'institutionId': '1', 'departmentId': '1',
+                'phone': '555-555-5555', 'institutionId': '1',
                 'title': 'Center Non-Researcher Staff',
                 'countryId': '1', 'citizenshipId': '1',
                 'ethnicity': 'White', 'gender': 'Other',
