@@ -9,8 +9,6 @@
     "lastName": "User",
     "institution": "University of Texas at Austin",
     "institutionId": 1,
-    "department": "Texas Advanced Computing Center",
-    "departmentId": 127,
     "country": "United States",
     "countryId": 230,
     "citizenship": "United States",
