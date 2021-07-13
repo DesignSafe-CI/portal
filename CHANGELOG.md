@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.2.4
+Fixes:
+- Remove department field from the profile management form.
+
 ## v5.2.3
 Fixes:
 - Fix an infinite scroll bug in publications
