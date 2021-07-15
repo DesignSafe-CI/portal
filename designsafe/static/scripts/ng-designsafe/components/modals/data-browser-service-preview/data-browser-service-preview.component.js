@@ -151,7 +151,7 @@ class DataBrowserServicePreviewCtrl {
 
     openInJupyter() {
         const params = {
-            system: this.FileListingService.listings.main.params,
+            system: this.FileListingService.listings.main.params.system,
             loc: this.$state.current.name,
             path: this.resolve.file.path,
             projectId: this.ProjectService.current ? this.ProjectService.current.value.projectId : null
