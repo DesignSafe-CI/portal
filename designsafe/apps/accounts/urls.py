@@ -17,7 +17,6 @@ urlpatterns = [
     url(r'^registration-successful/$', views.registration_successful, name='registration_successful'),
     url(r'^password-reset/(?:(?P<code>.+)/)?$', views.password_reset, name='password_reset'),
     url(r'^activate/(?:(?P<code>.+)/)?$', views.email_confirmation, name='email_confirmation'),
-    url(r'^departments\.json$', views.departments_json, name='departments_json'),
 
     url(r'^mailing-list/(?P<list_name>.*)/$', views.mailing_list_subscription,
         name='mailing_list_subscription'),

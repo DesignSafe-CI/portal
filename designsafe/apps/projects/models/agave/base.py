@@ -341,14 +341,6 @@ class Project(MetadataModel):
         attributes['subjects'] = [
             {'subject': keyword} for keyword in self.keywords.split(',')
         ]
-        attributes['dates'] = [{
-            'dateType': 'Accepted',
-            'date': '{}-{}-{}'.format(
-                utc_now.year,
-                utc_now.month,
-                utc_now.day
-            )
-        }]
         attributes['language'] = 'English'
         attributes['identifiers'] = [
             {
@@ -365,8 +357,8 @@ class Project(MetadataModel):
         attributes['fundingReferences'] = []
         for award in awards:
             attributes['fundingReferences'].append({
-                'fundername': award['name'],
-                'awardnumber': award['number']
+                'funderName': award['name'],
+                'awardNumber': award['number']
                 })
 
         attributes['relatedIdentifiers'] = []

@@ -102,7 +102,7 @@ def create_or_update_doi(attributes=None, doi=None):
         http_verb = requests.post
         url = DOIS_URL
 
-    # Remove non kernel-4 schema fields. We cannot update these field.
+    # Remove non kernel-4 schema fields. We cannot update these fields.
     # These fields are part of the metadata handled by DataCite.
     # For more info:
     # https://schema.datacite.org/meta/kernel-4.3/example/datacite-example-full-v4.xml

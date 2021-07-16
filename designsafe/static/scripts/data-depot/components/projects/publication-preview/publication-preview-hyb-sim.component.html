@@ -289,13 +289,13 @@
                             ng-if="$ctrl.matchingGroup(hybsim, report)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+                                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{hybsim.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>
                                     </div>
                                 </button>
-                                <div id="files-{{report.uuid}}" class="collapse">
+                                <div id="files-{{report.uuid}}-{{hybsim.uuid}}" class="collapse">
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
@@ -313,14 +313,14 @@
                             ng-if="$ctrl.matchingGroup(hybsim, model)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
-                                <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
+                                <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}-{{hybsim.uuid}}"
                                     style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Global Model | <strong>{{model.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>
                                     </div>
                                 </button>
-                                <div id="files-{{model.uuid}}" class="collapse">
+                                <div id="files-{{model.uuid}}-{{hybsim.uuid}}" class="collapse">
                                     <div class="well" ng-if="model.value.description">
                                         <p>{{ model.value.description }}</p>
                                     </div>
@@ -348,14 +348,14 @@
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
-                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}{{model.uuid}}"
+                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                 style="width:100%;">
                                                 <div class="collapse-tab">
                                                     <span class="collapse-tab-content-left">Coordinator | <strong>{{coordinator.value.title}}</strong></span>
                                                     <span class="collapse-tab-content-right curation-chevron"></span>
                                                 </div>
                                             </button>
-                                            <div id="files-{{coordinator.uuid}}{{model.uuid}}" class="collapse">
+                                            <div id="files-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}" class="collapse">
                                                 <div class="well" ng-if="coordinator.value.description">
                                                     <p>{{ coordinator.value.description }}</p>
                                                 </div>
@@ -385,13 +385,13 @@
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{cout.uuid}}{{model.uuid}}" style="width:100%;">
+                                                        <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{cout.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}" style="width:100%;">
                                                             <div class="collapse-tab">
                                                                 <span class="collapse-tab-content-left">Coordinator Output | <strong>{{cout.value.title}}</strong></span>
                                                                 <span class="collapse-tab-content-right curation-chevron"></span>
                                                             </div>
                                                         </button>
-                                                        <div id="files-{{cout.uuid}}{{model.uuid}}" class="collapse">
+                                                        <div id="files-{{cout.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}" class="collapse">
                                                             <div class="well" ng-if="cout.value.description">
                                                                 <p>{{ cout.value.description }}</p>
                                                             </div>
@@ -426,7 +426,7 @@
                                                     <td style="width: 100%;">
                                                         <button class="btn collapsed tab-sim-subst dropdown-spacer-sm"
                                                                 data-toggle="collapse"
-                                                                data-target="#files-{{simsub.uuid}}{{model.uuid}}"
+                                                                data-target="#files-{{simsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                                 style="width:100%;"
                                                         >
                                                             <div class="collapse-tab">
@@ -434,7 +434,7 @@
                                                                 <span class="collapse-tab-content-right curation-chevron"></span>
                                                             </div>
                                                         </button>
-                                                        <div id="files-{{simsub.uuid}}{{model.uuid}}" class="collapse">
+                                                        <div id="files-{{simsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}" class="collapse">
                                                             <div class="well" ng-if="simsub.value.description">
                                                                 <p>{{ simsub.value.description }}</p>
                                                             </div>
@@ -469,7 +469,7 @@
                                                             <td style="width: 100%;">
                                                                 <button class="btn collapsed tab-event dropdown-spacer-sm"
                                                                         data-toggle="collapse"
-                                                                        data-target="#files-{{sout.uuid}}{{model.uuid}}{{simsub.uuid}}"
+                                                                        data-target="#files-{{sout.uuid}}-{{simsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                                         style="width:100%;"
                                                                 >
                                                                     <div class="collapse-tab">
@@ -477,7 +477,7 @@
                                                                         <span class="collapse-tab-content-right curation-chevron"></span>
                                                                     </div>
                                                                 </button>
-                                                                <div id="files-{{sout.uuid}}{{model.uuid}}{{simsub.uuid}}" class="collapse">
+                                                                <div id="files-{{sout.uuid}}-{{simsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}" class="collapse">
                                                                     <div class="well" ng-if="sout.value.description">
                                                                         <p>{{ sout.value.description }}</p>
                                                                     </div>
@@ -515,7 +515,7 @@
                                                     <td style="width: 100%;">
                                                         <button class="btn collapsed tab-exp-subst dropdown-spacer-sm"
                                                                 data-toggle="collapse"
-                                                                data-target="#files-{{expsub.uuid}}{{model.uuid}}"
+                                                                data-target="#files-{{expsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                                 style="width:100%;"
                                                         >
                                                             <div class="collapse-tab">
@@ -523,7 +523,7 @@
                                                                 <span class="collapse-tab-content-right curation-chevron"></span>
                                                             </div>
                                                         </button>
-                                                        <div id="files-{{expsub.uuid}}{{model.uuid}}" class="collapse">
+                                                        <div id="files-{{expsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}" class="collapse">
                                                             <div class="well" ng-if="expsub.value.description">
                                                                 <p>{{ expsub.value.description }}</p>
                                                             </div>
@@ -558,7 +558,7 @@
                                                             <td style="width: 100%;">
                                                                 <button class="btn collapsed tab-event"
                                                                         data-toggle="collapse"
-                                                                        data-target="#files-{{eout.uuid}}{{model.uuid}}{{expsub.uuid}}"
+                                                                        data-target="#files-{{eout.uuid}}-{{expsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                                         style="width:100%;"
                                                                 >
                                                                     <div class="collapse-tab">
@@ -566,7 +566,7 @@
                                                                         <span class="collapse-tab-content-right curation-chevron"></span>
                                                                     </div>
                                                                 </button>
-                                                                <div id="files-{{eout.uuid}}{{model.uuid}}{{expsub.uuid}}" class="collapse">
+                                                                <div id="files-{{eout.uuid}}-{{expsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}" class="collapse">
                                                                     <div class="well" ng-if="eout.value.description">
                                                                         <p>{{ eout.value.description }}</p>
                                                                     </div>
@@ -596,14 +596,14 @@
                             ng-if="$ctrl.matchingGroup(hybsim, analysis)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+                                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{hybsim.uuid}}"
                                     style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>
                                     </div>
                                 </button>
-                                <div id="files-{{analysis.uuid}}" class="collapse">
+                                <div id="files-{{analysis.uuid}}-{{hybsim.uuid}}" class="collapse">
                                     <div class="well" ng-if="analysis.value.refs && analysis.value.description">
                                         <table class="tg" style="table-layout: fixed; width: 100%;">
                                             <colgroup>
