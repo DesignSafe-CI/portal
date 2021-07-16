@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.2.4
+Fixes:
+- Remove department field from the profile management form.
+
+## v5.2.3
+Fixes:
+- Fix an infinite scroll bug in publications
+- Fix an issue preventing job status notifications from being processed correctly.
+
+Enhancements:
+- Update help menu items in the Data Depot
+
 ## v5.2.2
 Fixes:
 - Refactor Fedora indexer to prevent timeouts on amendment.
