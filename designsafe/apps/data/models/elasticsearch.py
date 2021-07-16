@@ -346,7 +346,7 @@ class IndexedPublication(Document):
             revision_filter = ~Q('exists', **{'field': 'revision'})
 
         id_filter = Q('term', **{'projectId._exact': project_id})
-        search = cls.search().filter(id_filter & revision_filter)
+        search = cls.search(using=using).filter(id_filter & revision_filter)
         try:
             res = search.execute()
         except Exception as e:
@@ -364,9 +364,9 @@ class IndexedPublication(Document):
                                    "{}".format(project_id))
 
     @classmethod
-    def max_revision(cls, project_id):
+    def max_revision(cls, project_id, using='default'):
         id_filter = Q('term', **{'projectId._exact': project_id})
-        res = cls.search().filter(id_filter)
+        res = cls.search(using=using).filter(id_filter)
         res.aggs.metric('max_revision', 'max', field='revision')
         max_agg = res.execute().aggregations.max_revision.value
         if max_agg:
