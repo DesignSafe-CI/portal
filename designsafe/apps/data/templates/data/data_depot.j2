@@ -105,6 +105,6 @@ Data Depot
 
     {% addtoblock "js" %}
 
-    <script type="text/javascript" src="{% static 'build/dd.bundle.js' %}"></script>
+    <script src="<%= htmlWebpackPlugin.files.js %>"></script>
     {% endaddtoblock %}
 {% endblock %}

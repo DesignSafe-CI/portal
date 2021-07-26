@@ -21,6 +21,18 @@ rabbitmq.env
 rabbitmq.conf
 mysql.cnf
 
+# ignore templated html files
+designsafe/templates/base.html
+designsafe/apps/applications/templates/designsafe/apps/applications/index.html
+designsafe/apps/data/templates/data/data_depot.html
+designsafe/apps/workspace/templates/designsafe/apps/workspace/index.html
+designsafe/apps/rapid/templates/designsafe/apps/rapid/rapid_base.html
+designsafe/apps/geo/templates/designsafe/apps/geo/index.html
+designsafe/apps/search/templates/designsafe/apps/search/index.html
+designsafe/apps/dashboard/templates/designsafe/apps/dashboard/index.html
+designsafe/apps/notifications/templates/designsafe/apps/notifications/index.html
+designsafe/apps/nco/templates/designsafe/apps/nco/nco_index.html
+
 # local config files
 conf/elasticsearch/logging.yml
 conf/redis.conf
