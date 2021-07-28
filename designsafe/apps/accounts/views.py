@@ -346,7 +346,6 @@ def profile_edit(request):
 
             # retain original account source
             data['source'] = tas_user['source']
-
             tas.save_user(tas_user['id'], data)
             messages.success(request, 'Your profile has been updated!')
 
@@ -524,16 +523,6 @@ def email_confirmation(request, code=None):
     context['form'] = form
 
     return render(request, 'designsafe/apps/accounts/email_confirmation.html', context)
-
-
-def departments_json(request):
-    institution_id = request.GET.get('institutionId')
-    if institution_id:
-        tas = TASClient()
-        departments = tas.get_departments(institution_id)
-    else:
-        departments = {}
-    return HttpResponse(json.dumps(departments), content_type='application/json')
 
 
 @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)

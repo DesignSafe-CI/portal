@@ -29,7 +29,7 @@
       <!--<link href="{% static 'styles/main.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/corner-ribbon.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css"> -->
-      <link href="{% static 'build/base.bundle.css' %}"rel="stylesheet" type="text/css">
+      <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css %>">
       <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
       <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
       {% block styles %}{% endblock %}
@@ -93,7 +93,7 @@
     <script src="{% static 'vendor/js-custom-select/js/customSelect.js' %}"></script>
 
     <script type="text/javascript" src="{% static 'scripts/ng-modernizr/ng-modernizr.js' %}"></script>
-    <script type="text/javascript" src="{% static 'build/base.bundle.js' %}"></script>
+    <script src="<%= htmlWebpackPlugin.files.js %>"></script>
 
     <script type="text/javascript" src="{% static 'scripts/logging/logger.js' %}"></script>
 

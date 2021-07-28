@@ -21,9 +21,7 @@
                     <dd>{{profile.phone}}</dd>
 
                     <dt>Institution</dt>
-                    <dd>{{profile.institution}}{% if profile.department %},<br>
-                        {{profile.department}}{% endif %}
-                    </dd>
+                    <dd>{{profile.institution}}</dd>
 
                     <dt>Title</dt>
                     <dd>{{profile.title}}</dd>
@@ -49,7 +47,7 @@
         </div>
         <hr>
         <div class="row">
-                
+
             <div class="col-md-6">
                 <h3>Professional information</h3>
                 <dt>Professional and Research Interests</dt>
@@ -65,14 +63,14 @@
                 {% else %}
                 <dd class='text-warning'> No website given </dd>
                 {% endif %}
-               
+
                 <dt> Orcid ID </dt>
                 {% if ds_profile.orcid_id %}
                 <dd> {{ ds_profile.orcid_id }} </a> </dd>
                 {% else %}
                 <dd class='text-warning'> Not given </dd>
-                {% endif %} 
-                
+                {% endif %}
+
                 <dt> Professional Level </dt>
                 {% if ds_profile.professional_level %}
                 <dd> {{ ds_profile.professional_level }}
@@ -86,7 +84,7 @@
                 <dt> Natural Hazards Interest</dt>
                     {{ds_profile.nh_interests_primary.description}}
                 <dt> Other Natural Hazards Interests </dt>
-    
+
                 {% for interest in ds_profile.nh_interests.all %}
                     <dd> {{ interest.description }} </dd>
                 {% endfor %}

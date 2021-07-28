@@ -406,8 +406,6 @@ export class FileOperationService {
         } else if (loc.includes('projects')) {
             const prjNumber = this.ProjectService.current.value.projectId;
             specificLocation = 'projects/' + prjNumber;
-        } else if (loc === 'publishedData.view') {
-            specificLocation = 'Published';
         }
 
         // Check System

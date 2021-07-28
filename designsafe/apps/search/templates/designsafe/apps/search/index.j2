@@ -13,7 +13,7 @@
   </div>
 </div>
 {% addtoblock "js" %}
-  <script type="text/javascript" src="{% static 'build/search.bundle.js' %}"></script>
+  <script src="<%= htmlWebpackPlugin.files.js %>"></script>
 {% endaddtoblock %}
 
 {% endblock %}

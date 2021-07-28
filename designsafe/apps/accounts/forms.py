@@ -86,12 +86,6 @@ def get_institution_choices():
     return (('', 'Choose one'),) + tuple((c['id'], c['name']) for c in institutions_list)
 
 
-def get_department_choices(institutionId):
-    tas = TASClient()
-    departments_list = tas.get_departments(institutionId)
-    return (('', 'Choose one'),) + tuple((c['id'], c['name']) for c in departments_list)
-
-
 def get_country_choices():
     tas = TASClient()
     countries_list = tas.countries()
@@ -251,7 +245,6 @@ class UserProfileForm(forms.Form):
     institutionId = forms.ChoiceField(
         label='Institution', choices=(),
         error_messages={'invalid': 'Please select your affiliated institution'})
-    departmentId = forms.ChoiceField(label='Department', choices=(), required=False)
     title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
     countryId = forms.ChoiceField(
         label='Country of residence', choices=(),
@@ -265,11 +258,6 @@ class UserProfileForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
         self.fields['institutionId'].choices = get_institution_choices()
-        data = self.data or self.initial
-        if data is not None and 'institutionId' in data and data['institutionId']:
-            self.fields['departmentId'].choices = get_department_choices(
-                data['institutionId'])
-
         self.fields['countryId'].choices = get_country_choices()
         self.fields['citizenshipId'].choices = get_country_choices()
 
@@ -312,7 +300,7 @@ class ProfessionalProfileForm(forms.ModelForm):
     nh_interests_primary = forms.ModelChoiceField(
         queryset=DesignSafeProfileNHInterests.objects.all(),
         label="Primary Natural Hazards Interest"
-    ) 
+    )
     nh_interests = forms.ModelMultipleChoiceField(
         queryset=DesignSafeProfileNHInterests.objects.all(),
         widget=forms.CheckboxSelectMultiple,
@@ -397,7 +385,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
     captcha = ReCaptchaField(widget=ReCaptchaWidget)
 
     field_order = ['firstName', 'lastName', 'email', 'confirmEmail',
-                  'phone', 'institutionId', 'departmentId', 'institution',
+                  'phone', 'institutionId', 'institution',
                   'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
                   'nh_interests_primary', 'nh_interests', 'nh_technical_domains',
                   'bio', 'website', 'orcid_id', 'professional_level', 'research_activities']
@@ -406,11 +394,6 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
         self.fields['institutionId'].choices = get_institution_choices()
         self.fields['institutionId'].choices += (('-1', 'My Institution is not listed'),)
-
-        data = self.data or self.initial
-        if data is not None and 'institutionId' in data and data['institutionId']:
-            self.fields['departmentId'].choices = get_department_choices(data['institutionId'])
-
         self.fields['countryId'].choices = get_country_choices()
         self.fields['citizenshipId'].choices = get_country_choices()
 
@@ -449,7 +432,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
 
         #pull out specific fields from data for tas and pro profile
         tas_keys = ['firstName', 'lastName','email', 'confirmEmail',
-                    'phone', 'institutionId', 'departmentId', 'institution',
+                    'phone', 'institutionId', 'institution',
                     'title', 'countryId', 'citizenshipId', 'ethnicity', 'gender',
                     'source', 'piEligibility', 'username', 'password', 'confirmPassword',
                     'agree_to_terms', 'agree_to_account_limit']
