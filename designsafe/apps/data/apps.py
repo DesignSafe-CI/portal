@@ -3,6 +3,7 @@ import logging
 from django.apps import AppConfig
 from django.conf import settings
 from elasticsearch_dsl.connections import connections
+from elasticsearch.connection import RequestsHttpConnection
 
 
 # pylint: disable=invalid-name
@@ -26,6 +27,7 @@ class DataConfig(AppConfig):
                                           max_retries=3,
                                           retry_on_timeout=True,
                                           use_ssl=enable_sniffing,
+                                          connection_class=RequestsHttpConnection,
                                           # sniff_on_start=enable_sniffing,
                                           # refresh nodes after a node fails to respond
                                           # sniff_on_connection_fail=enable_sniffing,
