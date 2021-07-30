@@ -48,7 +48,7 @@
 {% addtoblock "js" %}
 <script src="{% static 'scripts/applications/services/apps-wizard-service.js' %}"></script>
 <script src="{% static 'scripts/workspace/directives/asf-agave-file-picker.js' %}"></script>
-<script src="{% static 'build/workspace.bundle.js' %}"></script>
+<script src="<%= htmlWebpackPlugin.files.js %>"></script>
 {% endaddtoblock %}
 
 {% endblock %}

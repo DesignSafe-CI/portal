@@ -15,11 +15,11 @@
     <div ui-view></div>
 </div>
 {% addtoblock "js" %}
-  <script type="text/javascript" src="{% static 'build/geo.bundle.js' %}"></script>
+   <script src="<%= htmlWebpackPlugin.files.js %>"></script>
 {% endaddtoblock %}
 
 {% addtoblock "css" %}
-    <link rel="stylesheet" href="{% static 'build/geo.bundle.css' %}" />
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css %>" />
 {% endaddtoblock %}
 
 {% endblock %}

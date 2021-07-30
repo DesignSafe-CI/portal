@@ -21,6 +21,10 @@ jobs:
       with:
         python-version: 3.6
 
+    - name: Copy base.html for use in unit tests
+      run: |
+        cp --force designsafe/templates/base.j2 designsafe/templates/base.html
+
     - uses: actions/cache@v2
       with:
         path: ~/.cache/pip

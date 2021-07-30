@@ -16,7 +16,7 @@
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}
-<script type="text/javascript" src="{% static 'build/notifications.bundle.js' %}"></script>
+<script src="<%= htmlWebpackPlugin.files.js %>"></script>
 {% endaddtoblock %}
 
 {% endblock %}

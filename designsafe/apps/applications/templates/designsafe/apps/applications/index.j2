@@ -33,7 +33,7 @@
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}
-<script src="{% static 'build/applications.bundle.js' %}"></script>
+<script src="<%= htmlWebpackPlugin.files.js %>"></script>
 <script src="{% static 'scripts/applications/services/apps-wizard-service.js' %}"></script>
 {% endaddtoblock %}
 
