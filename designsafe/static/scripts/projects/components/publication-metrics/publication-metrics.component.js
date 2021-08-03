@@ -29,10 +29,16 @@ class PublicationMetricsCtrl {
                 this.error = false;
                 this.loading = false;
             })
-            .catch((e) => (this.error = true));
+            .catch((e) => {
+                this.error = true;
+                this.loading = false;
+                this.cumMetrics = { projectDownloads: 0, fileDownloads: 0, filePreviews: 0, fileViews: 0, total: 0 };
+                this.qMetrics = [0, 0, 0, 0];
+            });
     }
 
     onYearSelect() {
+        if (this.error) return (this.qMetrics = [0, 0, 0, 0]);
         this.qMetrics = this.quarterlyMetrics(this.data, this.selectedYear);
     }
 
