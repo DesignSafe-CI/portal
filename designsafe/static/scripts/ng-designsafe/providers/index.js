@@ -5,7 +5,7 @@ import {WSBusServiceProvider} from './ws-provider';
 import '../services';
 
 const dsNotifications = angular.module(
-    'ds.notifications', ['toastr', 'djng.urls']
+    'ds.notifications', ['toastr']
 );
 dsNotifications.provider(
     'NotificationService',

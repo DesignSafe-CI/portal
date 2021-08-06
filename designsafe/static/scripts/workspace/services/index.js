@@ -8,9 +8,9 @@ import { workspaceSystemsService } from './systems-service';
 
 let workspaceServices = angular.module('workspace.services', []);
 
-workspaceServices.factory('WorkspaceApps', ['$http', '$q', '$translate', 'djangoUrl', 'Django', appsService]);
+workspaceServices.factory('WorkspaceApps', ['$http', '$q', '$translate', 'Django', appsService]);
 workspaceServices.factory('Jobs', jobsService);
-workspaceServices.factory('SimpleList', ['$http', '$q', 'djangoUrl', 'appCategories', 'appIcons', simpleListService]);
+workspaceServices.factory('SimpleList', ['$http', '$q', 'appCategories', 'appIcons', simpleListService]);
 workspaceServices.factory('Systems', workspaceSystemsService);
 
 export default workspaceServices;

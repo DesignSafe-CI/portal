@@ -4,7 +4,6 @@
  * @param {Object} $rootScope
  * @param {Object} $scope
  * @param {Object} $filter
- * @param {Object} djangoUrl
  * @param {Object} Logging
  * @param {Object} Django
  * @param {Object} NotificationService
@@ -15,7 +14,6 @@ export function NotificationBadgeCtrl(
     $rootScope,
     $scope,
     $filter,
-    djangoUrl,
     Logging,
     Django,
     NotificationService,
@@ -44,9 +42,9 @@ export function NotificationBadgeCtrl(
 
           for (var i=0; i < $scope.data.notifications.length; i++){
             if ($scope.data.notifications[i]['event_type'] == 'job') {
-              $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': $scope.data.notifications[i]['pk']});
+              $scope.data.notifications[i]['action_link']=$scope.data.notifications[i]['action_link']=`/rw/workspace/notification/process/${$scope.data.notifications[i]['pk']}`;
             } else if ($scope.data.notifications[i]['event_type'] == 'data_depot') {
-              $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_api:process_notification', {'pk': $scope.data.notifications[i]['pk']});
+              $scope.data.notifications[i]['action_link']=$scope.data.notifications[i]['action_link']=`/rw/workspace/notification/process/${$scope.data.notifications[i]['pk']}`;
             }
           }
         });
@@ -59,11 +57,11 @@ export function NotificationBadgeCtrl(
       };
 
       $scope.data = {
-        'notificationsurl': djangoUrl.reverse('designsafe_notifications:index', [])
+        'notificationsurl': '/notifications'
       };
 
       $scope.count = function() {
-        $http.get(djangoUrl.reverse('designsafe_api:badge', [])).then(
+        $http.get('/api/notifications/badge/').then(
           function(resp) {
             $scope.data.unread = resp.data.unread;
           });

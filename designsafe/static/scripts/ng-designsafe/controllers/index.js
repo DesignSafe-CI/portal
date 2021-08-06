@@ -13,7 +13,6 @@ designsafeControllers.controller(
         '$rootScope',
         '$scope',
         '$filter',
-        'djangoUrl',
         'Logging',
         'Django',
         'NotificationService',

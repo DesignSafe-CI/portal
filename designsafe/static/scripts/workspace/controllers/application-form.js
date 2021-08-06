@@ -265,32 +265,6 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         }
     };
 
-    $scope.onLaunchNotebook = function(path, jupyterBaseUrl = 'https://jupyter.designsafe-ci.org', copy = true) {
-        let filePath = path.split(/\/(.+)/)[1],
-            fileMgrName = 'community', // path.split('/')[0];
-            systemId = 'designsafe.storage.community';
-
-        $scope.data.launching = true;
-        if (copy) {
-            WorkspaceApps.copyNotebook(fileMgrName, systemId, filePath)
-                .then(function(resp) {
-                    $scope.data.launching = false;
-                    window.open(`${jupyterBaseUrl}/user/${Django.user}/notebooks/mydata/${resp.data.name}`, '').focus();
-                }, function(err) {
-                    $scope.data.launching = false;
-                });
-        } else {
-            // create dir of parent folder in user's mydata
-            WorkspaceApps.setupNotebook(filePath.split('/').slice(-2, -1)[0])
-                .then(function(resp) {
-                    $scope.data.launching = false;
-                    window.open(`${jupyterBaseUrl}/user/${Django.user}/notebooks/${path}`, '').focus();
-                }, function(err) {
-                    $scope.data.launching = false;
-                });
-        }
-    };
-
     function refocus() {
         $location.hash('workspace');
         $anchorScroll();

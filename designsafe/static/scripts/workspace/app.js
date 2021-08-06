@@ -60,14 +60,12 @@ translateProvider(angular);
 
 angular.module('workspace').requires.push(
     'ngCookies',
-    'djng.urls',
     'ui.bootstrap',
     'ui.router',
     'schemaForm',
     'designsafe',
     'ds.wsBus',
     'ds.notifications',
-    'logging',
     'dndLists',
     'xeditable',
     'pascalprecht.translate',
