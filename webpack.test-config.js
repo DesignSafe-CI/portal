@@ -71,6 +71,5 @@ module.exports = {
         _: '_',
         L: 'L',
         window: 'window',
-        djng: 'djng',
     },
 };

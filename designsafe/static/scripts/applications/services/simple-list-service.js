@@ -1,11 +1,10 @@
 import _ from 'underscore';
 
 export class SimpleList {
-    constructor($http, $q, djangoUrl, appIcons) {
+    constructor($http, $q, appIcons) {
         'ngInject';
         this.$http = $http;
         this.$q = $q;
-        this.djangoUrl = djangoUrl;
         this.appIcons = appIcons;
         this.selected;
         this.lists = {};
@@ -31,7 +30,7 @@ export class SimpleList {
         let self = this,
             deferred = this.$q.defer();
         this.$http({
-            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            url: '/applications/api/meta/',
             method: 'GET',
             params: { q: query },
         }).then(

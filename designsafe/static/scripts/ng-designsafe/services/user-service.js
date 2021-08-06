@@ -1,15 +1,21 @@
-export function UserService($http, $q) {
-    'ngInject';
+export class UserService{
 
-    var user = null;
+    constructor($http, $q) {
+      'ngInject';
+      this.$http = $http;
+      this.$q = $q
+      this.user = null;
+    }
+
+
     /**
      * Get user by username
      * @param {string} username the username of the user to look up
      * @returns {Promise}
      */
-    this.get = function (username) {
-      return $http.get("/api/users", {params: {username: username}})
-        .then(function (resp) {
+    get(username) {
+      return this.$http.get("/api/users", {params: {username: username}})
+        .then(resp => {
           return resp.data;
         });
     };
@@ -19,9 +25,9 @@ export function UserService($http, $q) {
      * @param {array} users an array of usernames to look up
      * @returns {Promise}
      */
-    this.getPublic = function (users) {
-      return $http.get("/api/users/public/", {params: {usernames: JSON.stringify(users)}})
-        .then(function (resp) {
+    getPublic(users) {
+      return this.$http.get("/api/users/public/", {params: {usernames: JSON.stringify(users)}})
+        .then(resp => {
           return resp.data;
         });
     };
@@ -32,9 +38,9 @@ export function UserService($http, $q) {
      * @param {string} options.q the query to search by
      * @returns {Promise}
      */
-    this.search = function (options) {
-      return $http.get("/api/users", {params: {q: options.q, role:options.role}})
-        .then(function (resp) {
+    search(options) {
+      return this.$http.get("/api/users", {params: {q: options.q, role:options.role}})
+        .then(resp =>{
           return resp.data;
         });
     };
@@ -44,9 +50,9 @@ export function UserService($http, $q) {
      * a JSON  response with the oauth credentials for agave.
      * @returns {Promise}
      */
-    this.authenticate = function () {
-      return $http.get('/api/users/auth').then(function (resp) {
-        user = resp.data;
+    authenticate() {
+      return this.$http.get('/api/users/auth').then(resp => {
+        this.user = resp.data;
         return resp.data;
       });
     };
@@ -55,20 +61,20 @@ export function UserService($http, $q) {
       * Returns if the current user is even authenticated
       * @returns {boolean}
     */
-    this.userAuthenticated = function () {
-      return user ? true : false;
+    userAuthenticated() {
+      return this.user ? true : false;
     };
 
     /**
       * Returns if the current user is even authenticated
       * @returns {object} currentUser
     */
-    this.currentUser = function () {
-      return user;
+    currentUser() {
+      return this.user;
     };
 
-    this.usage = function () {
-      return $http.get('/api/users/usage/').then(function (resp) {
+    usage() {
+      return this.$http.get('/api/users/usage/').then(resp => {
         return resp.data;
       });
     };

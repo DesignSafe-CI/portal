@@ -6,33 +6,49 @@
         </span>
     </h4>
 </div>
-<div class="modal-body">
-    <div class="loading bg-info" ng-if="$ctrl._ui.loading">
-        <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+<div class="modal-body feedback-container">
+    <div class="feedback-item">
+        <div class="loading bg-info" ng-if="$ctrl._ui.loading">
+            <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+        </div>
+        <div class="alert alert-error" ng-if="$ctrl.error">
+            <p>There was a problem submitting your feedback.</p>
+        </div>
+        <div class="alert alert-success" ng-if="$ctrl.success">
+            <p>Your feedback was submitted!</p>
+        </div>
+        <form name="feedback">
+            <fieldset ng-disabled="$ctrl.submitting">
+                <label for="feedback-name">Full Name</label>
+                <input name="feedback-name" type="text" style="width:100%;" ng-model="$ctrl.feedbackForm.name" ng-required="true" ng-disabled="$ctrl.Django.context.authenticated" />
+                <br>
+                <br>
+                <label for="feedback-email">Email</label>
+                <input name="feedback-email" type="text" style="width:100%;" ng-model="$ctrl.feedbackForm.email" ng-required="true" ng-disabled="$ctrl.Django.context.authenticated" />
+                <br>
+                <br>
+                <label for="feedback-body" style="margin-bottom:0;">Feedback</label>
+                <div style="margin-bottom:5px;">
+                    Leave constructive feedback for the author(s) of this publication.
+                </div>
+                <textarea name="feedback-body" type="text" style="width:100%; height:80px;" ng-model="$ctrl.feedbackForm.body" ng-required="true" ></textarea>
+            </fieldset>
+        </form>
     </div>
-    <div class="alert alert-error" ng-if="$ctrl.error">
-        <p>There was a problem submitting your feedback.</p>
+    <div class="feedback-item">
+        <strong>Examples of constructive questions and concerns:</strong>
+        <ul>
+            <li>Questions about the dataset that are not answered in the published metadata and or documentation</li>
+            <li>Missing documentation</li>
+            <li>Questions about the method/instruments used to generate the data</li>
+            <li>Questions about data validation</li>
+            <li>Concerns about data organization and or inability to find desired files</li>
+            <li>Interest in bibliography about the data/related to the data</li>
+            <li>Interest in reusing the data</li>
+            <li>Comments about the experience of reusing the data</li>
+            <li>Request to access raw data if not published</li>
+            <li>Congratulations</li>
     </div>
-    <div class="alert alert-success" ng-if="$ctrl.success">
-        <p>Your feedback was submitted!</p>
-    </div>
-    <form name="feedback">
-        <fieldset ng-disabled="$ctrl.submitting">
-            <label for="feedback-name">Full Name</label>
-            <input name="feedback-name" type="text" style="width:100%;" ng-model="$ctrl.feedbackForm.name" ng-required="true" ng-disabled="$ctrl.Django.context.authenticated" />
-            <br>
-            <br>
-            <label for="feedback-email">Email</label>
-            <input name="feedback-email" type="text" style="width:100%;" ng-model="$ctrl.feedbackForm.email" ng-required="true" ng-disabled="$ctrl.Django.context.authenticated" />
-            <br>
-            <br>
-            <label for="feedback-body" style="margin-bottom:0;">Feedback</label>
-            <div style="margin-bottom:5px;">
-                Leave constructive feedback for the author(s) of this publication.
-            </div>
-            <textarea name="feedback-body" type="text" style="width:100%; height:80px;" ng-model="$ctrl.feedbackForm.body" ng-required="true" ></textarea>
-        </fieldset>
-    </form>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-disabled="feedback.$invalid || $ctrl.submitting" ng-click="$ctrl.onSubmit()">

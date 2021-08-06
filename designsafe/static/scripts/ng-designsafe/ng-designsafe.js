@@ -41,7 +41,6 @@ import './components';
 
 export const ngDesignsafe = angular.module('designsafe',
     ['ng.modernizr',
-        'djng.urls',
         'slickCarousel',
         'designsafe.services',
         'designsafe.directives',
@@ -83,7 +82,6 @@ export const ngDesignsafe = angular.module('designsafe',
 ngDesignsafe.requires.push('django.context',
     'httpi',
     'ngCookies',
-    'djng.urls',  //TODO: djng
     'ui.bootstrap',
     'ds.notifications',
     'toastr',

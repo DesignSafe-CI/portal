@@ -3,7 +3,7 @@
  * lookup right now, but it will be nicer to go ahead and code against this service
  * rather than having stubs all over the place.
  */
-export function workspaceSystemsService($q, $http, djangoUrl) {
+export function workspaceSystemsService($q, $http) {
     'ngInject';
     let service = {};
 
@@ -56,7 +56,7 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
 
     service.getMonitor = function(systemId) {
         return $http({
-            url: djangoUrl.reverse('designsafe_workspace:call_api', ['monitors']),
+            url: '/rw/workspace/api/monitors/',
             method: 'GET',
             params: { target: systemId },
             cache: false,

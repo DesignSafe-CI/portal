@@ -5,7 +5,6 @@ import './components';
 let ncoModule = angular.module('nco', ['designsafe', 'nco.components']);
 ncoModule.requires.push(
     'ui.router',
-    'djng.urls', //TODO: djng
     'ui.bootstrap',
     'django.context',
     'ds.notifications',

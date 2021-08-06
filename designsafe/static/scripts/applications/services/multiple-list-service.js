@@ -1,7 +1,7 @@
 export function appsMultipleListService(window, angular, $, _) {
   'ngInject';
   "use strict";
-  angular.module('designsafe').factory('MultipleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
+  angular.module('designsafe').factory('MultipleList', ['$http', '$q', function($http, $q) {
 
     var MultipleList = function() {
           this.lists = []
@@ -12,7 +12,7 @@ export function appsMultipleListService(window, angular, $, _) {
         var deferred = $q.defer();
 
         $http({
-          url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+          url: '/applications/api/meta/',
           method: 'GET',
           params: {'q': query}
         }).then(
@@ -67,7 +67,7 @@ export function appsMultipleListService(window, angular, $, _) {
         var deferred = $q.defer();
 
         $http({
-          url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+          url: '/applications/api/meta/',
           method: 'GET',
           params: {'q': query}
         }).then(

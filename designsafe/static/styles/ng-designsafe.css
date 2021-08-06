@@ -928,11 +928,11 @@ i[class^="icon-ls-pre/post"]:before,
 
 @font-face {
     font-family: 'Curation-Icons';
-        src: url('/static/fonts/Curation_Icons.ttf') format('truetype');        
+        src: url('/static/fonts/Curation_Icons.ttf') format('truetype');
         font-weight: normal;
         font-style: normal;
     }
-        
+
     [class^="curation-"]:before,
     [class*=" curation-"]:before {
         font-family: 'Curation-Icons';
@@ -943,7 +943,7 @@ i[class^="icon-ls-pre/post"]:before,
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
     }
-    
+
     .curation-hybrid:before {
         content: "\e907";
     }
@@ -991,3 +991,13 @@ i[class^="icon-ls-pre/post"]:before,
 .ds-icon-metrics {
     background-image: url('/static/images/ds-icons/icon-metrics.svg');
     }
+
+.feedback-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.feedback-item {
+    width: 50%;
+    padding: 10px;
+}

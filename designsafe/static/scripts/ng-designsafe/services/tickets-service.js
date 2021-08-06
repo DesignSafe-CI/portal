@@ -1,4 +1,4 @@
-export function TicketsService($http, $q, djangoUrl) {
+export function TicketsService($http, $q) {
     'ngInject';
 
     /**
