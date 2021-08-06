@@ -12,16 +12,13 @@
 </div>
 <div class="modal-body">
     <div
-        data-ng-if="$ctrl.loading && !$ctrl.error"
+        data-ng-if="$ctrl.loading"
         style="padding: 10px; font-size: large; width: 100%"
         class="bg-info"
     >
         <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
     </div>
-    <div data-ng-if="$ctrl.error" style="padding: 10px; font-size: large; width: 100%" class="bg-danger">
-        <span> Data metrics could not be retrieved for this publication. </span>
-    </div>
-    <div ng-if="!$ctrl.loading && !$ctrl.error">
+    <div ng-if="!$ctrl.loading">
         These metrics are presented according to the <a target="_blank" href="https://makedatacount.org/">Make Your Data Count</a> standard.
         <p></p>
         <div style="display: flex; flex-direction: row" >
@@ -83,6 +80,13 @@
                         <td>Quarterly Reuse</td>
                         <td>
                             <select
+                                data-ng-if="$ctrl.error"
+                                disabled
+                            >
+                                <option>2021</option>
+                            </select>
+                            <select
+                                data-ng-if="!$ctrl.error"
                                 ng-model="$ctrl.selectedYear"
                                 ng-options="item for item in $ctrl.years"
                                 ng-change="$ctrl.onYearSelect()"
