@@ -6,7 +6,6 @@ import './components';
 let ddModule = angular.module('ds-data', ['designsafe', 'dd.components']);
 ddModule.requires.push(
     'ui.router',
-    'djng.urls', //TODO: djng
     'ui.bootstrap',
     'django.context',
     'ds.notifications',

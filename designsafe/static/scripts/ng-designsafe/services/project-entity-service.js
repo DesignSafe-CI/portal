@@ -1,9 +1,8 @@
 import _ from 'underscore';
 
-export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, Logging, ProjectEntityModel) {
+export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, ProjectEntityModel) {
     'ngInject';
 
-    var logger = Logging.getLogger('DataDepot.ProjectService');
 
     var service = {};
 

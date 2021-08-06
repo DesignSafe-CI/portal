@@ -1,7 +1,7 @@
 export function appsPemsService(window, angular, $, _) {
   'ngInject';
   "use strict";
-  angular.module('designsafe').service('AppsPems', ['$http', '$q', '$rootScope', '$uibModal', '$translate', 'djangoUrl', function($http, $q, $rootScope, $uibModal, $translate, djangoUrl) {
+  angular.module('designsafe').service('AppsPems', ['$http', '$q', '$rootScope', '$uibModal', '$translate', function($http, $q, $rootScope, $uibModal, $translate) {
 
     var self = this;
 
@@ -150,7 +150,7 @@ export function appsPemsService(window, angular, $, _) {
 
                 // get metadata uuid to save later
                 $http({
-                  url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+                  url: '/applications/api/meta/',
                   method: 'GET',
                   params: {'q': {'name': $translate.instant('apps_metadata_name'), 'value.definition.id': $scope.resource.definition.id} }
                 }).then(
@@ -161,7 +161,7 @@ export function appsPemsService(window, angular, $, _) {
 
                       if (response.data[0].value.type === 'agave'){
                         $http({
-                          url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+                          url: '/applications/api/apps/',
                           method: 'GET',
                           params: {'appId': $scope.resource.definition.id, 'pems': true}
                         }).then(
@@ -264,7 +264,7 @@ export function appsPemsService(window, angular, $, _) {
                         )
                       } else {
                         $http({
-                          url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+                          url: '/applications/api/meta/',
                           method: 'GET',
                           params: {'pems': true, 'uuid': $scope.uuid}
                         }).then(
@@ -395,7 +395,7 @@ export function appsPemsService(window, angular, $, _) {
                   if ($scope.resource.type === 'agave'){
                     promises.push(
                       $http({
-                        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+                        url: '/applications/api/apps/',
                         method: 'DELETE',
                         data: permission,
                         params: {'appId': $scope.resource.definition.id, 'username': permission.username, 'pems': true}
@@ -405,7 +405,7 @@ export function appsPemsService(window, angular, $, _) {
 
                   promises.push(
                     $http({
-                      url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+                      url: '/applications/api/meta/',
                       method: 'DELETE',
                       data: permission,
                       params: {'uuid': $scope.uuid, 'username': permission.username, 'pems': true}
@@ -417,7 +417,7 @@ export function appsPemsService(window, angular, $, _) {
                   if ($scope.resource.type === 'agave'){
                     promises.push(
                       $http({
-                        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+                        url: '/applications/api/apps/',
                         method: 'POST',
                         data: permission,
                         params: {'appId': $scope.resource.definition.id, 'username': permission.username, 'pems': true}
@@ -427,7 +427,7 @@ export function appsPemsService(window, angular, $, _) {
 
                   promises.push(
                     $http({
-                      url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+                      url: '/applications/api/meta/',
                       method: 'POST',
                       data: self.mapAppPemToMetaPem(permission),
                       params: {'uuid': $scope.uuid, 'username': permission.username, 'pems': true}

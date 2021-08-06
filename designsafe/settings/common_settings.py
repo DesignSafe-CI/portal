@@ -52,7 +52,6 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
 
-    'djng',
     'cms',
     'treebeard',
     'menus',
@@ -125,7 +124,6 @@ CACHES = {
 
 MIDDLEWARE_CLASSES = (
     'designsafe.middleware.RequestProfilingMiddleware',
-    'djng.middleware.AngularUrlMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -266,7 +264,6 @@ MEDIA_URL = '/media/'
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-# FORM_RENDERER = 'djng.forms.renderers.DjangoAngularBootstrap3Templates'
 
 #####
 #

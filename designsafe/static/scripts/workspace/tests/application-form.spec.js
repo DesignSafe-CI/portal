@@ -105,10 +105,6 @@ describe('ApplicationFormCtrl', function() {
         expect(ctrl).toBeDefined(ctrl.closeApp);
     });
 
-    it('Should define onLaunchNotebook', () => {
-        expect(ctrl).toBeDefined(ctrl.onLaunchNotebook);
-    });
-
     it('Should define resetForm', () => {
         expect(ctrl).toBeDefined(ctrl.resetForm);
     });
