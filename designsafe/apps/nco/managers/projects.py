@@ -91,7 +91,7 @@ class NcoProjectsManager(object):
 
         query = {}
         for fil in filters:
-            if fil["name"] == "facilities":
+            if fil["name"] == "Facility":
                 query["facility"] = fil["value"]
             elif fil["name"] == "locations":
                 query["location"] = fil["value"]
@@ -109,8 +109,11 @@ class NcoProjectsManager(object):
         sort_switch = {
             "Project Id A-Z": ("projectId", 1),
             "Event Title A-Z": ("eventTitle", 1),
-            "Event Start Newer First": ("dateStart", -1),
-            "Event Start Older First": ("dateStart", 1),
+            "Start Date - newest first": ("dateStart", -1),
+            "Start Date - oldest first": ("dateStart", 1),
+            "Award Number": ("awardNumber", 1),
+            "Facility": ("facility", 1),
+            "PI Name": ("piName", 1),
         }
         return [
             sort_switch[val] for val in sorts

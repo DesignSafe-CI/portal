@@ -2,19 +2,88 @@
 {% load cms_tags staticfiles sekizai_tags%}
 
 {% block title %}
-NCO scheduling
+NHERI Facilities Scheduling Dashbaord
 {% endblock %}
 {% block head_extra %}
     <base href="{% url 'nco:index' %}">
+    <style>
+        .top-row { display: flex; }
+	.title-intro-box { flex: 1; }
+        .title-intro-box h1 { margin-bottom: 5px; }
+	.title-intro-box h3 { margin-top: 0px; margin-bottom: 25px; }
+        .top-action-box { margin-left: 100px; margin-top: 75px; width: 30%;
+		          display: flex; flex-direction: column; justify-content: space-around; }
+        h3.top-action-title { margin-bottom: 0px; margin-top: 0px; margin-left: 25px; }
+	a.top-action { margin: 25px !important; font-size: 1.1em; }
+	div.top-action-icon { width: 60px; height: 60px; float: left; margin: 0px 7px 3px 0px; }
+	hr.top-line { margin-top: 40px; }
+	hr.mid-line { margin-top: 100px; }
+	.phase-diagram { width: 75%; margin-left: auto; margin-right: auto; display: block; }
+	.phase-title:first-of-type { margin-top: 25px; }
+	.phase-text { margin-left: 40px; margin-bottom: 25px; }
+	hr.bottom-line { margin-top: 25px; margin-bottom: 25px; }
+	.pdf-link { margin-top: 25px; }
+	.bottom-row { display: flex; }
+	.bottom-left { flex: 1; margin-right: 25px; }
+    </style>
 {% endblock %}
 {% block content %}
     <div class="container">
-        <h1> NHERI Project List </h1>
+	<!-- PAGE INTRO ROW -->
+        <div class="top-row">
+	  <!-- SCHEDULER INTRO -->
+	  <div class="title-intro-box">
+            <h1> Facility Scheduling Dashboard </h1>
+            <h3><em>Centralized management for NSF-funded NHERI grant awards</em></h3>
+	    <p>Welcome to the NHERI Facility Scheduling Dashboard.</p>
+	    <p>At any given time, dozens of research projects are underway at NHERI's <a href="https://www.designsafe-ci.org/facilities/experimental/">eight Experimental Facilities</a>.  The Dashboard providers researchers with a centralized location for managing project experiments and offers a public view of the work underway at NHERI facilities.</p>
+	    <p>The NHERI <a href="https://www.designsafe-ci.org/facilities/nco">Network Coordination Office (NCO)</a> oversee's NHERI's centralized scheduling.  Questions?  Contact <a href="mailto:zehner2@purdue.edu" target="_blank">Dan Zehner</a>, NCO Facility Scheduling and Operations Coordinator.</p>
+	  </div>
+	  <!-- TOP ACTION BOX -->
+	  <div class="top-action-box">
+            <div style="clear: both;">
+              <div class="box-topper box-topper-ef text-center top-action-icon"><i class="ds-icon ds-icon-toolbox"></i></div>
+              <div style="padding-top: 10px;">
+              <p><b><a href="/facilities/scheduling/request/">Request a New Project</a></b></p>
+</div>
+            </div>
+
+            <div style="clear: both;">
+              <div class="box-topper box-topper-ef text-center top-action-icon"><i class="ds-icon ds-icon-toolbox"></i></div>
+              <div style="padding-top: 10px;">
+              <p><b><a href="/facilities/scheduling/protocol/">NHERI Scheduling Protocol</a></b></p>
+</div>
+            </div>
+
+            <div style="clear: both;">
+              <div class="box-topper box-topper-ef text-center top-action-icon"><i class="ds-icon ds-icon-toolbox"></i></div>
+              <div style="padding-top: 10px;">
+              <p><b><a href="/facilities/">NHERI Experimental Facilities</a></b></p>
+</div>
+            </div>
+
+            <div style="clear: both;">
+              <div class="box-topper box-topper-ef text-center top-action-icon"><i class="ds-icon ds-icon-toolbox"></i></div>
+              <div style="padding-top: 10px;">
+              <p><b><a href="/facilities/nco/contact/">Questions? Contact Us</a></b></p>
+</div>
+            </div>
+
+	  </div>
+	</div>
+	<hr class="top-line"/>
+
+	<!-- SCHEDULER VIEW -->
         <nco-scheduler>
             <div class="bg-info text-info" data-ng-if="!$ctrl.initialized">
                 <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
             </div>
         </nco-scheduler>
+	
+	<!-- CLOSING ROW -->
+	<hr class="mid-line"/>
+        <h3>About the NHERI Network Coordination Office</h3>
+        <p>The NCO's centralized facility oversight and coordination allows for fair and transparent use of these NSF-funded Experimental Facilities following a scheduling protocol developed in cooperation with facilities.  The <a href="https://www.designsafe-ci.org/facilities/nco">NHERI NCO</a> developed and currently maintains the NHERI Facility Scheduling Dashboard as part of its administrative and governance roles within the NHERI network.  The NHERI scheduling protocol is available <a href="https://www.designsafe-ci.org/facilities/scheduling/protocol">here</a>.</p>
     </div>
 
     {% addtoblock "css" %}

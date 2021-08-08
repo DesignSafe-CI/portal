@@ -8,7 +8,7 @@
                 data-ng-options="name for name in filter.value"
                 data-ng-change="$ctrl.applyFilterAndSort()"
                 class="form-control">
-            <option value="">-- Filter by "{{filter.name}}" --</option>
+            <option value="">-- Filter by {{filter.name}} --</option>
         </select>
     </div>
     <div class="filter form-group">
@@ -18,9 +18,10 @@
                 data-ng-options="name for name in $ctrl._ui.timeFilters"
                 data-ng-change="$ctrl.applyFilterAndSort()"
                 class="form-control">
-            <option value="">-- Filter by "date start" --</option>
+            <option value="">-- Filter by Start Date --</option>
         </select>
     </div>
+    <span style="width: 75px; display: inline-block;">&nbsp;</span>
     <h3 class="sort-title">Sort by:</h3>
     <div class="sort form-group">
         <select name="sort-by"
