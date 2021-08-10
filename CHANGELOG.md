@@ -1,5 +1,21 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.2.5
+Fixes:
+- [Published] [Text] Instead of "Data Metrics not available for this publication", show the table with 0 in the values
+- Author is now Author(s) for Other published projects
+- Fix malformed Jupyter hub links.
+- Update link to Recon Portal documentation.
+- Fix issues with collapse tab target on published entities.
+- Fix an issue preventing Other type projects from being published successfully
+
+Enhancements:
+- Addition to the Help Menu and the Download Dataset modal called "Data Usage Agreement"
+- Subtext for Description in Manage Project modal updated
+- Leave Feedback modal updated
+- Implement cache busting to prevent stale resources from being loaded into the browser.
+- Replace angular-django middleware
+
 ## v5.2.4
 Fixes:
 - Remove department field from the profile management form.
