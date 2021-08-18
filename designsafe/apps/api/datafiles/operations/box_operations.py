@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     offset = int(offset)
-    limit = int(limit)  
+    limit = int(limit)
 
     if not path:
         folder = client.root_folder()
@@ -15,6 +15,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         folder = client.folder(folder_id=path)
 
     items = folder.get_items(limit=limit, offset=offset, fields=['name', 'size', 'type', 'modified_at', 'id'])
+
     mapped_items = map(lambda f: {
         'system': None,
         'type': 'dir' if f.type == 'folder' else 'file',
@@ -22,7 +23,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         'mimeType': f.type,
         'path': f.id,
         'name': f.name,
-        'length': f.size,
+        'length': f.size if f.type != 'web_link' else '',
         'lastModified': f.modified_at,
 
     }, items)
@@ -86,4 +87,4 @@ def mkdir(client, system, path, dirname):
     return {'name': dirname, 'path': newdir.id}
 
 
-    
+
