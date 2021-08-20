@@ -14,10 +14,11 @@ class NcoSchedulerFiltersCtrl {
                 this._ui.error = err.message;
             });
         this._ui.sortBy = [
-            'Event Start Newer First',
-            'Event Start Older First',
-            'Event Title A-Z',
-            'Project Id A-Z',
+            'Start Date - newest first',
+            'Start Date - oldest first',
+            'Award Number',
+            'Facility',
+	    'PI Name'
         ];
         this._ui.timeFilters = [
             'Event Started Last 7 Days',
@@ -29,7 +30,7 @@ class NcoSchedulerFiltersCtrl {
             'Happening This Week',
             'Happening This Month',
         ];
-        this.sortby = 'Event Start Newer First';
+        this.sortby = 'Start Date - newest first';
     }
 
     applyFilterAndSort(){

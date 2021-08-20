@@ -73,7 +73,7 @@ class MongoProjectsHelper(object):
                 "event": ent,
             }
             mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-            mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects')]
+            mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects_v2')]
             result = mongo_collection.find_one_and_replace(
                 {"uuid": ent['uuid']},
                 entity,
@@ -90,9 +90,9 @@ class MongoProjectsHelper(object):
         :param hex last_id: Last mongo id.
         """
         query = query or {}
-        sort = sort or [("_id", 1)]
+        sort = sort or [("dateStart", -1)]
         mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-        mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects')]
+        mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects_v2')]
         offset = page_size * page_number
         cursor = mongo_collection.find(query).sort(sort).skip(offset).limit(page_size)
         for event in cursor:
@@ -104,13 +104,13 @@ class MongoProjectsHelper(object):
         :param dict query: A mongo query.
         """
         mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-        mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects')]
+        mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects_v2')]
         return mongo_collection.count_documents(query)
 
     def filters(self):
         """Return all filters."""
         mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-        cursor = mongo_db.filters.find()
+        cursor = mongo_db.filters_v2.find()
         filters = list(cursor)
         for f in filters:
             f['value'].sort()
@@ -123,7 +123,7 @@ class MongoProjectsHelper(object):
             One of: ["facilities", "places", "instruments"]
         """
         mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-        col = mongo_db.filters
+        col = mongo_db.filters_v2
         filter_doc = {
             "name": name,
             "value": value,
