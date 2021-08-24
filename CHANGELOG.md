@@ -1,5 +1,16 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.2.6
+Fixes:
+- Fix a 404 error on clicking "open in Jupyter" in the Data Depot
+- Support weblinks in Box listings
+- Wording changes for publication metrics
+
+Enhancements:
+- Enhanced UI for the NCO application
+
+
+
 ## v5.2.5
 Fixes:
 - [Published] [Text] Instead of "Data Metrics not available for this publication", show the table with 0 in the values
