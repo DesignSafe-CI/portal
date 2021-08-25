@@ -2,16 +2,29 @@
     <div data-ng-if="$ctrl.events==[]">Error: No events found</div>
     <table>
         <tr>
-            <th>Begin Date</th>
-            <th>End Date</th>
-            <th>Title (PRJ)</th>
+            <th>Start Date</th>
+            <th>Estimated End Date</th>
+            <th>Facility</th>
+            <th>Event</th>
             <th>Description</th>
+            <th>Actions</th>
         </tr>
         <tr data-ng-repeat="event in $ctrl.events">
             <td class="date-start">{{event.dateStart|date:"M/d/y h:mm a"}}</td>
             <td class="date-end">{{event.dateEnd|date:"M/d/y h:mm a"}}</td>
-            <td class="event-title-prj">{{event.eventTitle}} ({{event.projectId}})</td>
-            <td class="event-desc">{{event.eventDesc}}</td>
+            <td class="event-fac">{{event.facility}}</td>
+	    <td class="event-title-prj"><!-- we want to show both, but not enough data points have both yet.
+	                                     <p class="event-title">{{event.eventTitle}}</p>
+		                             <p class="project-title">Award Title</p> -->
+				        <p class="event-title">{{event.awardTitle}}</p>
+					<p data-ng-if="event.awardNumber"><a class="nsf" href="https://www.nsf.gov/awardsearch/showAward?AWD_ID={{event.awardNumber}}">NSF #{{event.awardNumber}}</a></p>
+					<span class="pi-name">PI: {{event.piName || 'not reported'}}</span></td>
+            <td class="event-desc">{{event.awardDescription || 'N/A' }}</td>
+	    <td class="event-action">
+	       <div class="a-fac"><span><a href="mailto:zehner2@purdue.edu?subject=Requesting Contact with {{event.facility}}&body=Contact Request for {{event.facility}}%0D%0A%0D%0APlease provide details about why you would like to be placed in contact with the {{event.facility}} experimental facility and how best to contact you if not via a reply to this email address.%0D%0A%0D%0A--------------------%0D%0A%0D%0A">Contact Facility</a></span></div>
+	      <div class="a-payload"><span><a href="mailto:zehner2@purdue.edu?subject=Payload Request for Award #{{event.awardNumber || ' N/A'}}&body=PAYLOAD REQUEST%0D%0A%0D%0AProject: {{event.awardTitle}}%0D%0AAward #{{event.awardNumber || ' N/A'}}%0D%0AFacility: {{event.facility}}%0D%0AStart Date: {{event.dateStart}}%0D%0AEnd Date: {{event.dateEnd}}%0D%0APlease provide details about your payload project for the award listed above and how best to contact you.%0D%0A%0D%0A--------------------%0D%0A%0D%0A">Request Payload</a></span></div>
+	       <!-- TODO: create a generic FSOC forwarding email address or load it from a variable -->
+	    </td>
         </tr>
     </table>
 </div>

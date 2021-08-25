@@ -169,7 +169,7 @@ class FilesListingCtrl {
     }
     openInApp(file) {
         const params = {
-            system: this.FileListingService.listings.main.params,
+            system: this.FileListingService.listings.main.params.system,
             loc: this.$state.current.name,
             path: file.path,
             projectId: this.PublicationService.current ? this.PublicationService.current.projectId : null

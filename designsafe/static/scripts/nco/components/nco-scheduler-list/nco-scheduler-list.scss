@@ -1,7 +1,7 @@
 .nco-scheduler-component {
     .nco-scheduler-list {
         table th {
-            font-size: 1.2em;
+            font-size: 1.1em;
             border: 1px solid gray;
             padding: 5px;
             background: white;
@@ -11,16 +11,50 @@
             border-top: none;
             padding: 5px;
             margin-bottom: 5px;
-            background: #eee;
+            //background: #eee;
         }
+	table tr:nth-child(odd) {
+	    background: #eee;
+	}
+	table tr:nth-child(even) {
+	    background: #ddd;
+	}
         .date-start .date-end {
             width: 7%;
         }
+        .event-fac {
+            width: 7%;
+        }
         .event-title-prj {
-            width: 43%;
+            width: 29%;
         }
         .event-desc {
-            width: 43%;
+            width: 37%;
         }
+        .event-action {
+            width: 13%;
+        }
+        .a-pi .a-fac .a-payload {
+            display: block;
+	    margin-top: 20px;
+	    margin-bottom: 5px;
+	}
+	.nsf {
+	    margin-top: 20px;
+	    margin-bottom: 10px;
+	    font-style: italic;
+	}
+	.event-title {
+	    margin-bottom: 25px;
+	    font-weight: 600;
+	}
+	.project-title {
+	    margin-bottom: 5px;
+	    font-size: 0.9em;
+	    font-style: italic;
+	}
+	.pi-name {
+	    font-style: italic;
+	}
     }
 }
