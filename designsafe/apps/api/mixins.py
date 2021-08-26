@@ -27,12 +27,8 @@ class SecureMixin(object):
     then it will continue and check if the request is using a regular django session cookie.
     Either way the request will be correctly authenticated. This way we can easily
     use the same API endpoints and put them behind WSO2.
-
-    TODO: When moving into Django 1.9 @method_decorator(login_required)
-    should be a class wrapper @method_decorator(login_required, name='dispatch')
-    as per: https://docs.djangoproject.com/en/1.9/topics/class-based-views/intro/#decorating-the-class
     """
     @method_decorator(agave_jwt_login)
-    @method_decorator(login_required)
+    @method_decorator(login_required, name='dispatch')
     def dispatch(self, request, *args, **kwargs):
         return super(SecureMixin, self).dispatch(request, *args, **kwargs)
