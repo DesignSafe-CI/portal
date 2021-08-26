@@ -368,9 +368,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
 @method_decorator(profile_fn, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProjectInstanceView(BaseApiView):
-    # @method_decorator(agave_jwt_login)
-    # @method_decorator(profile_fn)
-    # @method_decorator(login_required)
+
     def get(self, request, project_id):
         """
 
@@ -390,9 +388,6 @@ class ProjectInstanceView(BaseApiView):
             pass
         return JsonResponse(project_dict)
 
-    # @method_decorator(agave_jwt_login)
-    # @method_decorator(profile_fn)
-    # @method_decorator(login_required)
     def post(self, request, project_id):
         """
         Update a Project. Projects and the root File directory for a Project should
