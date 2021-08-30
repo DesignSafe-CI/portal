@@ -1,4 +1,3 @@
-from designsafe.apps.api.datafiles.operations import agave_operations
 from designsafe.apps.api.datafiles.notifications import notify
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied

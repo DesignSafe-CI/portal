@@ -9,6 +9,7 @@ from dropbox.exceptions import AuthError as DropboxAuthError
 from google.auth.exceptions import GoogleAuthError
 import json
 import logging
+from designsafe.apps.api.agave import service_account
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.datafiles.handlers import datafiles_get_handler, datafiles_post_handler, datafiles_put_handler, resource_unconnected_handler, resource_expired_handler
 from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
@@ -111,6 +112,7 @@ class DataFilesView(BaseApiView):
                              'scheme': scheme,
                              'system': system,
                              'path': path,
+                             'body': post_body
                          }})
 
         if request.user.is_authenticated:
@@ -122,6 +124,31 @@ class DataFilesView(BaseApiView):
         response = datafiles_post_handler(api, request.user.username, client, scheme, system, path, operation, body={**post_files, **post_body})
 
         return JsonResponse(response)
+
+class FileMetaView(BaseApiView):
+    def get(self, request, api='agave', system=None, path=''):
+        """
+        This is just for testing...
+        We need to check for metadata when doing a listing on files or when retrieving file information.
+        We should also check with Steve to see if this is something we can fix with TAPIS v2 meta/files changes.
+        Ideally it would be nice to be able to get the meta object along with a file object.
+        """
+        logger.info("====================== FILE META GET =================================")
+        logger.info(api)
+        logger.info(request.user)
+        logger.info(system)
+        logger.info(path)
+
+        client = service_account()
+        query = { "name":"designsafe.file", "value.system": system, "value.path": '/'+path}
+
+        try:
+            meta = client.meta.listMetadata(q=json.dumps(query))[0]
+            logger.info(meta)
+            # maybe permissions needed to be set when the metadata object was last updated...
+            return JsonResponse({"api": api, "system": system, "path": path, "user": request.user.username, "meta": meta})
+        except:
+            return JsonResponse({"api": api, "system": system, "path": path, "user": request.user.username})
 
 
 class TransferFilesView(BaseApiView):

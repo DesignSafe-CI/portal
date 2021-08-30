@@ -1,15 +1,17 @@
-import urllib
-import os
 import datetime
 import io
-from django.conf import settings
-from requests.exceptions import HTTPError
-import logging
 import json
-from elasticsearch_dsl import Q
+import logging
 import magic
+import os
+import urllib
+from designsafe.apps.api.agave import service_account
+from designsafe.apps.api.datafiles.operations.agave_utils import file_meta_obj
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.data.tasks import agave_indexer
+from django.conf import settings
+from elasticsearch_dsl import Q
+from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
 
@@ -211,8 +213,9 @@ def mkdir(client, system, path, dir_name):
     return dict(result)
 
 
-def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
-    """Move a current file to the given destination.
+def move(client, src_system, src_path, dest_system, dest_path):
+    """
+    Move files and related file metadata
 
     Params
     ------
@@ -226,47 +229,49 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         System ID for the destination.
     dest_path: str
         Path under which the file should be moved.
-    file_name: str
-        New name for the file if desired.
 
     Returns
     -------
     dict
 
     """
+    # src_system: designsafe.storage.default
+    # dest_system: designsafe.storage.default
+    # src_path: keiths/image.png
+    # dest_path: /keiths/Projects
+    logger.info('src_system: {param}'.format(param=src_system))
+    logger.info('src_path: {param}'.format(param=src_path))
+    logger.info('dest_system: {param}'.format(param=dest_system))
+    logger.info('dest_path: {param}'.format(param=dest_path))
 
-    if file_name is None:
-        file_name = src_path.strip('/').split('/')[-1]
+    if src_system == dest_system and src_path == dest_path.strip('/'):
+        return {
+            'system': src_system,
+            'path': urllib.parse.quote(src_path),
+            'name': os.path.basename(src_path)
+        }
 
-    dest_path_full = os.path.join(dest_path.strip('/'), file_name)
-    src_path_full = urllib.parse.quote(src_path)
-
-    # Handle attempt to move a file into its current path.
-    if src_system == dest_system and src_path_full == dest_path_full:
-        return {'system': src_system, 'path': src_path_full, 'name': file_name}
-
+    src_file_name = os.path.basename(src_path)
     try:
-        client.files.list(systemId=dest_system,
-                          filePath="{}/{}".format(dest_path, file_name))
-
-        # Destination path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
+        client.files.list(systemId=dest_system, filePath="{}/{}".format(dest_path, src_file_name))
+        _ext = os.path.splitext(src_file_name)[1]
+        _name = os.path.splitext(src_file_name)[0]
         now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        file_name = '{}_{}{}'.format(_name, now, _ext)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
-
-    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
+        dst_file_name = '{}_{}{}'.format(_name, now, _ext)
+        dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
+        logger.info('Move: {src} to {dst}'.format(src=src_path, dst=dest_path))
+    except:
+        dst_file_name = src_file_name
+        dest_path = os.path.join(dest_path.strip('/'), src_file_name)
+        logger.info('Move: {src} to {dst}'.format(src=src_path, dst=dest_path))
 
     if src_system == dest_system:
-        body = {'action': 'move',
-                'path': full_dest_path}
-        move_result = client.files.manage(systemId=src_system,
-                                          filePath=urllib.parse.quote(
-                                              src_path),
-                                          body=body)
+        body = {'action': 'move', 'path': dest_path}
+        move_result = client.files.manage(
+            systemId=src_system,
+            filePath=urllib.parse.quote(src_path),
+            body=body
+        )
     else:
         src_url = 'agave://{}/{}'.format(
             src_system,
@@ -275,32 +280,79 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         move_result = client.files.importData(
             systemId=dest_system,
             filePath=urllib.parse.quote(dest_path),
-            fileName=str(file_name),
+            fileName=dst_file_name,
             urlToIngest=src_url
         )
-        client.files.delete(systemId=src_system,
-                            filePath=urllib.parse.quote(src_path))
-
-    if os.path.dirname(src_path) != dest_path or src_path != dest_path:
-        agave_indexer.apply_async(kwargs={'systemId': src_system,
-                                          'filePath': os.path.dirname(src_path),
-                                          'recurse': False},
-                                  queue='indexing')
-    agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                      'filePath': os.path.dirname(full_dest_path),
-                                      'recurse': False}, routing_key='indexing')
+        client.files.delete(
+            systemId=src_system,
+            filePath=urllib.parse.quote(src_path)
+        )
+    
+    sa_client = service_account()
     if move_result['nativeFormat'] == 'dir':
-        agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                          'filePath': full_dest_path, 'recurse': True},
-                                  queue='indexing')
+        logger.info('new meta endpoints...')
+        query = {
+            "name": "designsafe.file",
+            "value.system": src_system,
+            "value.path": { '$regex' : '^{}'.format(src_path)}
+        }
+        # NOTE: this needs to handle query pagination in the event huge 
+        # path trees need to be updated
+        meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
+        if meta_listing:
+            for meta in meta_listing:
+                logger.info('move the data...')
+        # BOOKMARK: implement bulk api calls and remove
+        # anything that adds file uuids to meta objs
+        # sa_client.meta.bulkUpdate(body=meta_listing)
+        agave_indexer.apply_async(kwargs={
+            'systemId': dest_system,
+            'filePath': dest_path,
+            'recurse': True
+        }, queue='indexing')
+    else:
+        logger.info('copying file meta...')
+        query = { "name":"designsafe.file", "value.system": src_system, "value.path": '/{}'.format(src_path)}
+        src_meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
+        if src_meta_listing:
+            src_meta = src_meta_listing[0]
+            src_meta['value']['path'] = '/{}'.format(dest_path)
+            src_meta['value']['system'] = dest_system
+            moved_meta = sa_client.meta.updateMetadata(body=src_meta, uuid=src_meta['uuid'])
+            logger.info('Moved metadata: {}'.format(moved_meta))
+
+
+    # Double check over this stuff... I need to figure out what needs indexing.
+    # Does the directory containing the moved item need to be indexed or do I just
+    # index the source item and dest items (and children if a directory is moved)
+    if os.path.dirname(src_path) != dest_path or src_path != dest_path:
+        agave_indexer.apply_async(kwargs={
+            'systemId': src_system,
+            'filePath': os.path.dirname(src_path),
+            'recurse': False
+        }, queue='indexing')
+
+    agave_indexer.apply_async(kwargs={
+        'systemId': dest_system,
+        'filePath': os.path.dirname(dest_path),
+        'recurse': False
+    }, routing_key='indexing')
+    
+    if move_result['nativeFormat'] == 'dir':
+        agave_indexer.apply_async(kwargs={
+            'systemId': dest_system,
+            'filePath': dest_path,
+            'recurse': True
+        }, queue='indexing')
 
     return move_result
 
 
-def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, *args, **kwargs):
-    """Copies the current file to the provided destination path.
+def copy(client, src_system, src_path, dest_system, dest_path):
+    """
+    Copy files and related file metadata
 
-     Params
+    Params
     ------
     client: agavepy.agave.Agave
         Tapis client to use for the listing.
@@ -311,56 +363,118 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, *
     dest_system: str
         System ID for the destination.
     dest_path: str
-        Path under which the file should be copied.
-    file_name: str
-        New name for the file if desired.
+        Path under which the file should be Copied.
 
     Returns
     -------
     dict
+
     """
-    if file_name is None:
-        file_name = src_path.strip('/').split('/')[-1]
 
+    """
+                                Notes
+    import datetime
+    import logging
+    import os
+    import urllib
+    import json
+    from designsafe.apps.api.agave import service_account
+    from designsafe.apps.api.agave import test_account_client
+    from designsafe.apps.api.datafiles.operations.agave_utils import uuid, file_meta_obj
+
+    client = service_account()
+    system = 'designsafe.storage.default'
+    file_path = '/keiths/image.png'
+
+    # example query...
+    result_query = {"name":"designsafe.file", "owner":"ds_admin"}
+    client.meta.listMetadata(q=json.dumps(result_query), privileged=False)
+    """
+    # client, src_system, src_path, dest_system, dest_path
+    # src_system: designsafe.storage.default
+    # src_path: keiths/image.png
+    # dest_system: designsafe.storage.default
+    # dest_path: /keiths/Projects
+
+    logger.info('src_system: {param}'.format(param=src_system))
+    logger.info('src_path: {param}'.format(param=src_path))
+    logger.info('dest_system: {param}'.format(param=dest_system))
+    logger.info('dest_path: {param}'.format(param=dest_path))
+
+    src_file_name = os.path.basename(src_path)
     try:
-        client.files.list(systemId=dest_system,
-                          filePath="{}/{}".format(dest_path, file_name))
-
-        # Destination path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
+        client.files.list(systemId=dest_system, filePath="{}/{}".format(dest_path, src_file_name))
+        _ext = os.path.splitext(src_file_name)[1]
+        _name = os.path.splitext(src_file_name)[0]
         now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        file_name = '{}_{}{}'.format(_name, now, _ext)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
+        dst_file_name = '{}_{}{}'.format(_name, now, _ext)
+        dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
+        logger.info('Copy: {src} to {dst}'.format(src=src_path, dst=dest_path))
+    except:
+        dst_file_name = src_file_name
+        dest_path = os.path.join(dest_path.strip('/'), src_file_name)
+        logger.info('Copy: {src} to {dst}'.format(src=src_path, dst=dest_path))
 
-    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
     if src_system == dest_system:
-        body = {'action': 'copy',
-                'path': full_dest_path}
-
-
-        copy_result = client.files.manage(systemId=src_system,
-                                        filePath=urllib.parse.quote(
-                                            src_path.strip('/')),
-                                        body=body)
-
-    else:
-        src_url = 'agave://{}/{}'.format(
-            src_system,
-            urllib.parse.quote(src_path)
+        body = {'action': 'copy', 'path': dest_path}
+        copy_result = client.files.manage(
+            systemId=src_system,
+            filePath=urllib.parse.quote(src_path.strip('/')),
+            body=body
         )
+    else:
+        src_url = 'agave://{}/{}'.format(src_system, urllib.parse.quote(src_path))
         copy_result = client.files.importData(
             systemId=dest_system,
             filePath=urllib.parse.quote(dest_path),
-            fileName=str(file_name),
+            fileName=dst_file_name,
             urlToIngest=src_url
         )
-
-    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': dest_system, 'filePath': os.path.dirname(full_dest_path), 'recurse': False}, queue='indexing')
+    
+    sa_client = service_account()
     if copy_result['nativeFormat'] == 'dir':
-        agave_indexer.apply_async(kwargs={'systemId': dest_system, 'filePath': full_dest_path, 'recurse': True}, queue='indexing')
+        logger.info('copying file meta... (new endpoints go here...)')
+        query = {
+            "name": "designsafe.file",
+            "value.system": src_system,
+            "value.path": { '$regex' : '^{}'.format(src_path)}
+        }
+        # NOTE: this needs to handle query pagination in the event huge 
+        # path trees need to be updated
+        meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
+        if meta_listing:
+            for meta in meta_listing:
+                logger.info('create duplicatated metadata to bulkCreate')
+        # BOOKMARK: implement bulk api calls and remove
+        # anything that adds file uuids to meta objs
+        # sa_client.meta.bulkCreate(body=meta_listing)
+    
+        agave_indexer.apply_async(kwargs={
+            'systemId': dest_system,
+            'filePath': dest_path,
+            'recurse': True
+        }, queue='indexing')
+    else:
+        logger.info('copying file meta...')
+        query = { "name":"designsafe.file", "value.system": src_system, "value.path": '/{}'.format(src_path)}
+        src_meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
+        if src_meta_listing:
+            src_meta = src_meta_listing[0]
+            dst_meta = file_meta_obj(
+                dest_path=os.path.join('/', dest_path),
+                dest_system=dest_system,
+                dst_file_uuid=copy_result['uuid'],
+                **src_meta['value']
+            )
+            copied_meta = sa_client.meta.addMetadata(body=json.dumps(dst_meta))
+            logger.info('Copied metadata: {}'.format(copied_meta))
+
+        agave_indexer.apply_async(kwargs={
+            'username': 'ds_admin',
+            'systemId': dest_system,
+            'filePath': os.path.dirname(dest_path),
+            'recurse': False
+        }, queue='indexing')
 
     return dict(copy_result)
 
@@ -368,7 +482,6 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, *
 def delete(client, system, path):
     return client.files.delete(systemId=system,
                                filePath=urllib.parse.quote(path))
-
 
 def rename(client, system, path, new_name):
     """Renames a file. This is performed under the hood by moving the file to
@@ -389,20 +502,65 @@ def rename(client, system, path, new_name):
     -------
     dict
     """
+    # system: designsafe.storage.default
+    # path: /keiths/metadata_operations_test/move_dest
+    # new_name: move_dest_test
+    logger.info('path: {param}'.format(param=path))
+    logger.info('system: {param}'.format(param=system))
+    logger.info('new_name: {param}'.format(param=new_name))
+
+    sa_client = service_account()
 
     body = {'action': 'rename', 'path': new_name}
     rename_result = client.files.manage(systemId=system, filePath=path, body=body)
 
-    agave_indexer.apply_async(kwargs={'systemId': system,
-                                      'filePath': os.path.dirname(path),
-                                      'recurse': False},
-                              queue='indexing'
-                              )
-    rename_result['nativeFormat'] == 'dir' and agave_indexer.apply_async(kwargs={'systemId': system,
-                                                                              'filePath': rename_result['path'],
-                                                                              'recurse': True},
-                                                                      queue='indexing'
-                                                                      )
+    # Bulk metadata query...
+    if rename_result['nativeFormat'] == 'dir':
+        query = {
+            "name": "designsafe.file",
+            "value.system": system,
+            "value.path": { '$regex' : '^{}'.format(path)}
+        }
+        # NOTE: this needs to handle query pagination in the event huge 
+        # path trees need to be updated
+        meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
+        if meta_listing:
+            for meta in meta_listing:
+                new_path = os.path.join(os.path.dirname(path), new_name)
+                meta.value['path'] = meta.value['path'].replace(path, new_path)
+        # BOOKMARK: implement bulk api calls and remove
+        # anything that adds file uuids to meta objs
+        # sa_client.meta.bulkUpdate(body=meta_listing)
+
+        agave_indexer.apply_async(
+            kwargs={
+                'systemId': system,
+                'filePath': os.path.dirname(path),
+                'recurse': False
+            }, queue='indexing')
+        agave_indexer.apply_async(kwargs={
+                'systemId': system,
+                'filePath': rename_result['path'],
+                'recurse': True
+        }, queue='indexing')
+    else:
+        query = { "name":"designsafe.file", "value.system": system, "value.path": path}
+        meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
+
+        if meta_listing:
+            meta = meta_listing[0]
+            meta['value']['path'] = '{base_path}/{file_name}'.format(
+                base_path=os.path.dirname(path),
+                file_name=new_name
+            )
+            sa_client.meta.updateMetadata(body=meta, uuid=meta['uuid'])
+
+        agave_indexer.apply_async(
+            kwargs={
+                'systemId': system,
+                'filePath': os.path.dirname(path),
+                'recurse': False
+            }, queue='indexing')
 
     return dict(rename_result)
 
@@ -441,20 +599,18 @@ def trash(client, system, path, trash_path):
             raise
         mkdir(client, system, trash_root, trash_foldername)
 
-    try:
-        client.files.list(systemId=system,
-                          filePath=os.path.join(trash_path, file_name))
-        # Trash path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        trash_name = '{}_{}{}'.format(_name, now, _ext)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            logger.error("Unexpected exception listing path {} under .trash in system {}".format(file_name, system))
-            raise
+    # system: designsafe.storage.default    src sys
+    # path: /keiths/rallyGolf%test.jpg      src path
+    # system: designsafe.storage.default    dest sys
+    # trash_path: keiths/.Trash             dest path
+    # trash_name: rallyGolf%test_2021-08-23 20-18-57.jpg
+    logger.info('system: {param}'.format(param=system))
+    logger.info('path: {param}'.format(param=path))
+    logger.info('system: {param}'.format(param=system))
+    logger.info('trash_path: {param}'.format(param=trash_path))
+    logger.info('trash_name: {param}'.format(param=trash_name))
 
-    resp = move(client, system, path, system, trash_path, trash_name)
+    resp = move(client, system, path, system, trash_path)
 
     return resp
 
@@ -477,6 +633,7 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
     dict
     """
 
+    # TODO: accept meta payload from kwargs... consider magic package for file type/info?
     # try:
     #    listing(client, system=system, path=path)
     # except HTTPError as err:

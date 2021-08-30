@@ -23,6 +23,10 @@
                     <th>Last modified</th>
                     <td>{{ $ctrl.file.lastModified|date:"short" }}</td>
                 </tr>
+                <tr ng-repeat="(k, v) in $ctrl.meta">
+                    <th>{{ k }}</th>
+                    <td>{{ v }}</td>
+                </tr>
             </tbody>
         </table>
     </div>

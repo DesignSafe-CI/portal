@@ -201,8 +201,8 @@ export class FileOperationService {
                 copyRequest = this.$http.put(copyUrl, {
                     dest_system: destSystem,
                     dest_path: destPath,
-                    filetype: f.type,
-                    filename: f.name,
+                    // filetype: f.type,
+                    // filename: f.name,
                 });
             } else {
                 const copyUrl = this.removeDuplicateSlashes(`/api/datafiles/transfer/${f.format}/`);

@@ -1,9 +1,13 @@
 from django.conf.urls import url
-from designsafe.apps.api.datafiles.views import DataFilesView, TransferFilesView, MicrosurveyView
+from designsafe.apps.api.datafiles.views import DataFilesView, FileMetaView, TransferFilesView, MicrosurveyView
 from django.http import JsonResponse
 
 urlpatterns = [
     url(r'^transfer/(?P<format>[\w.-]+)/$', TransferFilesView.as_view(), name='file_transfer'),
+    # File Metadata:
+    # GET /meta/<api>/<system_id>/<file_path>
+    url(r'^meta/(?P<api>[\w.-]+)/(?P<system>[\w.-]+)/(?P<path>[ \S]+)/$',
+        FileMetaView.as_view(), name='files_meta'),
     # Browsing:
     #
     #     GET     /listing/<file_mgr_name>/<system_id>/<file_path>/
