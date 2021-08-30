@@ -17,7 +17,7 @@ class PublicationDownloadModalCtrl {
         this.prjId = this.publication.project.value.projectId;
         
         const archive_path = (this.publication.revision
-            ? `/archives/${this.prjId}r${this.publication.revision}_archive.zip`
+            ? `/archives/${this.prjId}v${this.publication.revision}_archive.zip`
             : `/archives/${this.prjId}_archive.zip`
         )
         const archive_system = 'designsafe.storage.published'
