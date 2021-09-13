@@ -799,6 +799,11 @@ table td {
     float: left;
   }
 }
+
+.notification-raw-message {
+  overflow-wrap: anywhere;
+}
+
 #toast-container {
   position: fixed;
   bottom: 0;

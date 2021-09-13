@@ -175,4 +175,4 @@ class MicrosurveyView(BaseApiView):
         counter = DataFilesSurveyCounter.objects.all()[0]
         counter.count += 1
         counter.save()
-        return JsonResponse({'show': (counter.count % 10 == 0)})
+        return JsonResponse({'show': (counter.count % 7 == 0)})
