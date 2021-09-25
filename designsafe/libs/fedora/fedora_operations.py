@@ -84,7 +84,7 @@ FEDORA_CONTEXT = {
 }
 
 
-def fedora_get(project_id):
+def fedora_get(project_id, relative_to_root=True):
     """
     Get publication metadata from Fedora in compact JSON format.
 
@@ -96,9 +96,13 @@ def fedora_get(project_id):
     -------
     dict: Publication metadata in compact JSON format.
     """
-    request = requests.get('{}{}/{}'.format(settings.FEDORA_URL,
-                                            PUBLICATIONS_CONTAINER,
-                                            project_id),
+    url = project_id
+    if relative_to_root:
+        url = '{}{}/{}'.format(settings.FEDORA_URL,
+                               PUBLICATIONS_CONTAINER,
+                               project_id)
+
+    request = requests.get(url,
                            auth=(settings.FEDORA_USERNAME,
                                  settings.FEDORA_PASSWORD),
                            headers=FEDORA_HEADERS)
@@ -193,7 +197,7 @@ def format_metadata_for_fedora(project_id, version=None):
         contributors.append(award['number'] or None)
 
     identifiers = [pub_meta.projectId,
-                   'https://https://www.designsafe-ci.org/'
+                   'https://www.designsafe-ci.org/'
                    'data/browser/public/designsafe.storage.published/{}'
                    .format(pub_meta.projectId)]
     identifiers += getattr(pub_meta, 'dois', [])
@@ -534,3 +538,26 @@ def ingest_project_experimental(project_id, upload_files=False, version=None):
         container_path = entity['container_path']
         fedora_post(container_path)
         res = fedora_update(container_path, entity['fedora_mapping'])
+
+
+def generate_report_experimental(project_id):
+    from collections import deque
+    report_json = []
+
+    project_root = fedora_get(project_id)
+    entity_queue = deque([project_root['@id']])
+
+    # Breadth-first search on the entity tree
+    while len(entity_queue) > 0:
+        entity = entity_queue.popleft()
+        entity_json = fedora_get(entity, relative_to_root=False)
+        report_json.append(entity_json)
+
+        children = entity_json.get('contains', [])
+        if type(children) == str:
+            children = [children]
+
+        for child in children:
+            entity_queue.append(child)
+
+    return report_json
