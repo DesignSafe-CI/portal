@@ -11,7 +11,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
-TEST_AGAVE_RESOURCES = load_resource(getattr(settings, 'TEST_AGAVE_TENANT_BASEURL'))
+# TEST_AGAVE_RESOURCES = load_resource(getattr(settings, 'TEST_AGAVE_TENANT_BASEURL'))
 
 def get_service_account_client():
     """Return service account agave client.
@@ -28,11 +28,11 @@ def get_service_account_client():
                  token=settings.AGAVE_SUPER_TOKEN,
                  resources=AGAVE_RESOURCES)
 
-def test_account_client():
-    return Agave(api_server=settings.TEST_AGAVE_TENANT_BASEURL,
-                token=settings.TEST_AGAVE_SUPER_TOKEN,
-                resources=TEST_AGAVE_RESOURCES)
-
+# def test_account_client():
+#     return Agave(api_server=settings.TEST_AGAVE_TENANT_BASEURL,
+#                 token=settings.TEST_AGAVE_SUPER_TOKEN,
+#                 resources=TEST_AGAVE_RESOURCES)
+# 
 def get_sandbox_service_account_client():
     """Return sandbox service account"""
     return Agave(api_server=settings.AGAVE_SANDBOX_TENANT_BASEURL,

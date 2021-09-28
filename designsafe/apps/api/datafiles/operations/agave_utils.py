@@ -1,11 +1,8 @@
 import json
-import logging
-import urllib.parse
-from designsafe.apps.api.agave import test_account_client
+import os
+from designsafe.apps.api.agave import service_account
 
-logger = logging.getLogger(__name__)
-
-def file_meta_obj(path, system, file_uuid=None, **kwargs):
+def file_meta_obj(path, system, meta):
     """
     Base object for file metadata creation
     """
@@ -13,14 +10,53 @@ def file_meta_obj(path, system, file_uuid=None, **kwargs):
         'associationIds': [],
         'schemaId': None,
         'name': 'designsafe.file',
-        'value': kwargs
+        'value': meta
     }
-    if file_uuid:
-        defaults['associationIds'] = [file_uuid]
-        defaults['value']['fileUuid'] = file_uuid
     defaults['value']['system'] = system
     defaults['value']['path'] = path
     return defaults
+
+# Needs to go in Move, Copy, Upload
+def increment_file_name(listing, file_name):
+    if any(x['name'] for x in listing if x['name'] == file_name):
+        inc = 1
+        _ext = os.path.splitext(file_name)[1]
+        _name = os.path.splitext(file_name)[0]
+        _inc = "({})".format(inc)
+        file_name = '{}{}{}'.format(_name, _inc, _ext)
+
+        while any(x['name'] for x in listing if x['name'] == file_name):
+            inc += 1
+            _inc = "({})".format(inc)
+            file_name = '{}{}{}'.format(_name, _inc, _ext)
+    return file_name
+
+# BOOKMARK: Recursively query metadata for large results...
+# This needs to be incorporated in move/copy/rename
+def query_file_meta(system=None, path=None):
+    """
+    return all metadata objects under a given system/path
+    required for copy/move/rename/delete
+    """
+    client = service_account()
+    query = {"name": "designsafe.file"}
+    if system:
+        query['value.system'] = system
+    if path:
+        query['value.path'] = {'$regex': '^/{}'.format(path)}
+    
+    all_results = []
+    offset = 0
+
+    while True:
+        # Need to find out what the hard limit is on this...
+        result = client.meta.listMetadata(q=json.dumps(query), limit=500, offset=offset)
+        all_results = all_results + result
+        offset += 500
+        if len(result) != 500:
+            break
+    
+    return all_results
 
 
 def create_test_meta(file_listing):
@@ -41,7 +77,8 @@ def create_test_meta(file_listing):
     """
     # path = '/data/static1'
     # system = 'Aloe-storage-testuser5'
-    client = test_account_client()
+    # client = test_account_client()
+    client = service_account()
 
     create_list = []
     for file in file_listing:
