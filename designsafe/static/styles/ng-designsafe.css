@@ -354,6 +354,7 @@
 .ds-table-display-wrapper {
     height:500px;
     overflow:scroll;
+    overscroll-behavior-block: contain;
 }
 
 .ds-table-display-wrapper table tfoot tr td {
