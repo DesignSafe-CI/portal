@@ -235,20 +235,6 @@ def move(client, src_system, src_path, dest_system, dest_path):
     dict
 
     """
-    # src_system: designsafe.storage.default
-    # dest_system: designsafe.storage.default
-    # src_path: keiths/image.png
-    # dest_path: /keiths/Projects
-    logger.info('src_system: {param}'.format(param=src_system))
-    logger.info('src_path: {param}'.format(param=src_path))
-    logger.info('dest_system: {param}'.format(param=dest_system))
-    logger.info('dest_path: {param}'.format(param=dest_path))
-
-    # src_system = "designsafe.storage.default"
-    # src_path = "keiths/metadata_operations_test/move_dest(2)"
-    # dest_system = "designsafe.storage.default"
-    # dest_path = "keiths/metadata_operations_test"
-
     # do not allow moves to the same location or across systems
     if (os.path.dirname(src_path) == dest_path.strip('/') or src_system != dest_system):
         return {
@@ -262,11 +248,9 @@ def move(client, src_system, src_path, dest_system, dest_path):
         listing = client.files.list(systemId=dest_system, filePath=dest_path)
         dst_file_name = increment_file_name(listing, src_file_name)
         full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
-        logger.info('Move: {src} to {dst}'.format(src=src_path, dst=full_dest_path))
     except:
         dst_file_name = src_file_name
         full_dest_path = os.path.join(dest_path.strip('/'), src_file_name)
-        logger.info('Move: {src} to {dst}'.format(src=src_path, dst=full_dest_path))
 
     body = {'action': 'move', 'path': full_dest_path}
     move_result = client.files.manage(
@@ -277,14 +261,6 @@ def move(client, src_system, src_path, dest_system, dest_path):
 
     sa_client = service_account()
     if move_result['nativeFormat'] == 'dir':
-        # NOTE: this needs to handle query pagination we're capped at 100 per listing
-        # path trees need to be updated
-        # query = {
-        #     "name": "designsafe.file",
-        #     "value.system": src_system,
-        #     "value.path": { '$regex' : '^/{}'.format(src_path)}
-        # }
-        # meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
         meta_listing = query_file_meta(system=src_system, path=src_path)
         if meta_listing:
             updates = []
@@ -292,7 +268,7 @@ def move(client, src_system, src_path, dest_system, dest_path):
                 meta.value['path'] = meta.value['path'].replace(src_path, full_dest_path)
                 meta.value['system'] = dest_system
                 updates.append({"uuid": meta.uuid, "update": meta})
-            logger.info('updates ============================> %s', updates)
+
             sa_client.meta.bulkUpdate(body=json.dumps(updates))
 
         agave_indexer.apply_async(kwargs={
@@ -301,15 +277,12 @@ def move(client, src_system, src_path, dest_system, dest_path):
             'recurse': True
         }, queue='indexing')
     else:
-        logger.info('copying file meta...')
-        query = { "name":"designsafe.file", "value.system": src_system, "value.path": '/{}'.format(src_path)}
-        src_meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
-        if src_meta_listing:
-            src_meta = src_meta_listing[0]
-            src_meta['value']['path'] = '/{}'.format(full_dest_path)
+        meta_listing = query_file_meta(system=src_system, path=src_path)
+        if meta_listing:
+            src_meta = meta_listing[0]
+            src_meta['value']['path'] = os.path.join('/', full_dest_path)
             src_meta['value']['system'] = dest_system
-            moved_meta = sa_client.meta.updateMetadata(body=src_meta, uuid=src_meta['uuid'])
-            logger.info('Moved metadata: {}'.format(moved_meta))
+            sa_client.meta.updateMetadata(body=src_meta, uuid=src_meta['uuid'])
 
     if os.path.dirname(src_path) != full_dest_path or src_path != full_dest_path:
         agave_indexer.apply_async(kwargs={
@@ -356,71 +329,24 @@ def copy(client, src_system, src_path, dest_system, dest_path):
     dict
 
     """
-
-    """
-                                Notes
-    import datetime
-    import logging
-    import os
-    import urllib
-    import json
-    from designsafe.apps.api.agave import service_account
-    from designsafe.apps.api.agave import test_account_client
-    from designsafe.apps.api.datafiles.operations.agave_utils import file_meta_obj
-
-    client = service_account()
-    system = 'designsafe.storage.default'
-    file_path = '/keiths/image.png'
-
-    # example query...
-    result_query = {"name":"designsafe.file", "owner":"ds_admin"}
-    client.meta.listMetadata(q=json.dumps(result_query), privileged=False)
-    """
-    # client, src_system, src_path, dest_system, dest_path
-    # src_system: designsafe.storage.default
-    # src_path: keiths/image.png
-    # dest_system: designsafe.storage.default
-    # dest_path: /keiths/Projects
-    # Copying to another system...
-    # src_system: designsafe.storage.default
-    # src_path: keiths/metadata_operations_test/move_dest(2)(1)/rallyGolf.jpg
-    # dest_system: project-7448086614930166251-242ac113-0001-012
-    # dest_path: 
-    # Copy: keiths/metadata_operations_test/move_dest(2)(1)/rallyGolf.jpg to rallyGolf(1).jpg
-
-    logger.info('src_system: {param}'.format(param=src_system))
-    logger.info('src_path: {param}'.format(param=src_path))
-    logger.info('dest_system: {param}'.format(param=dest_system))
-    logger.info('dest_path: {param}'.format(param=dest_path))
-
     src_file_name = os.path.basename(src_path)
     try:
         listing = client.files.list(systemId=dest_system, filePath=dest_path)
         dst_file_name = increment_file_name(listing, src_file_name)
         full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
-        logger.info('Copy: {src} to {dst}'.format(src=src_path, dst=full_dest_path))
     except:
         dst_file_name = src_file_name
         full_dest_path = os.path.join(dest_path.strip('/'), src_file_name)
-        logger.info('Copy: {src} to {dst}'.format(src=src_path, dst=full_dest_path))
 
     if src_system == dest_system:
         body = {'action': 'copy', 'path': full_dest_path}
         copy_result = client.files.manage(
             systemId=src_system,
-            filePath=urllib.parse.quote(src_path.strip('/')),
+            filePath=urllib.parse.quote(src_path.strip('/')), # don't think we need to strip '/' here...
             body=body
         )
     else:
         src_url = 'agave://{}/{}'.format(src_system, urllib.parse.quote(src_path))
-        logger.info('COPY TO NEW SYSTEM src_url =========> : {param}'.format(param=src_url))
-        logger.info('COPY TO NEW SYSTEM dest_system =====> : {param}'.format(param=dest_system))
-        logger.info('COPY TO NEW SYSTEM dest_path ========> : {param}'.format(param=dest_path))
-        logger.info('COPY TO NEW SYSTEM dst_file_name ===> : {param}'.format(param=dst_file_name))
-        # src_url = "agave://designsafe.storage.default/keiths/ideas.jpeg"
-        # dest_system = "project-7448086614930166251-242ac113-0001-012"
-        # dest_path = ""
-        # dst_file_name = "ideas.jpeg"
         copy_result = client.files.importData(
             systemId=dest_system,
             filePath=urllib.parse.quote(dest_path),
@@ -430,18 +356,10 @@ def copy(client, src_system, src_path, dest_system, dest_path):
     
     sa_client = service_account()
     if copy_result['nativeFormat'] == 'dir':
-        # NOTE: this needs to handle query pagination in the event huge 
-        # path trees need to be updated
-        # query = {
-        #     "name": "designsafe.file",
-        #     "value.system": src_system,
-        #     "value.path": { '$regex' : '^/{}'.format(src_path)}
-        # }
-        # src_meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
-        src_meta_listing = query_file_meta(system=src_system, path=src_path)
-        if src_meta_listing:
+        meta_listing = query_file_meta(system=src_system, path=src_path)
+        if meta_listing:
             copies = []
-            for src_meta in src_meta_listing:
+            for src_meta in meta_listing:
                 meta_copy = file_meta_obj(
                     path=src_meta.value['path'].replace(src_path, full_dest_path),
                     system=dest_system,
@@ -456,19 +374,16 @@ def copy(client, src_system, src_path, dest_system, dest_path):
             'recurse': True
         }, queue='indexing')
     else:
-        logger.info('copying file meta...')
-        query = { "name":"designsafe.file", "value.system": src_system, "value.path": '/{}'.format(src_path)}
-        src_meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
-        if src_meta_listing:
-            src_meta = src_meta_listing[0]
+        meta_listing = query_file_meta(system=src_system, path=src_path)
+        if meta_listing:
+            src_meta = meta_listing[0]
             src_meta
             dst_meta = file_meta_obj(
                 path=os.path.join('/', full_dest_path),
                 system=dest_system,
                 meta=src_meta['value']
             )
-            copied_meta = sa_client.meta.addMetadata(body=json.dumps(dst_meta))
-            logger.info('Copied metadata: {}'.format(copied_meta))
+            sa_client.meta.addMetadata(body=json.dumps(dst_meta))
 
         agave_indexer.apply_async(kwargs={
             'username': 'ds_admin',
@@ -503,27 +418,25 @@ def rename(client, system, path, new_name):
     -------
     dict
     """
-    # system: designsafe.storage.default
-    # path: /keiths/metadata_operations_test/move_dest
-    # new_name: move_dest_test
-    logger.info('path: {param}'.format(param=path))
-    logger.info('system: {param}'.format(param=system))
-    logger.info('new_name: {param}'.format(param=new_name))
+    # NOTE: There seems to be inconsistant values in file operation response
+    # objects returned by tapis. The "nativeFormat" field has returned
+    # values representing a file, when the operation was carried out on
+    # a directory...
+    # listing[0].type == 'file'
+    # listing[0].type == 'dir'
+    listing = client.files.list(systemId=system, filePath=path)
 
     sa_client = service_account()
-
+    path = path.strip('/')
     body = {'action': 'rename', 'path': new_name}
-    rename_result = client.files.manage(systemId=system, filePath=path, body=body)
+    rename_result = client.files.manage(
+        systemId=system,
+        filePath=urllib.parse.quote(os.path.join('/', path)),
+        body=body
+    )
 
-    if rename_result['nativeFormat'] == 'dir':
-        # NOTE: this needs to handle query pagination in the event huge 
-        # path trees need to be updated
-        # query = {
-        #     "name": "designsafe.file",
-        #     "value.system": system,
-        #     "value.path": { '$regex' : '^{}'.format(path)}
-        # }
-        # meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
+    # if rename_result['nativeFormat'] == 'dir':
+    if listing[0].type == 'dir':
         meta_listing = query_file_meta(system=system, path=path)
         if meta_listing:
             updates = []
@@ -545,15 +458,10 @@ def rename(client, system, path, new_name):
                 'recurse': True
         }, queue='indexing')
     else:
-        query = { "name":"designsafe.file", "value.system": system, "value.path": path}
-        meta_listing = sa_client.meta.listMetadata(q=json.dumps(query))
-
+        meta_listing = query_file_meta(system=system, path=path)
         if meta_listing:
             meta = meta_listing[0]
-            meta['value']['path'] = '{base_path}/{file_name}'.format(
-                base_path=os.path.dirname(path),
-                file_name=new_name
-            )
+            meta['value']['path'] = os.path.join('/', os.path.dirname(path), new_name)
             sa_client.meta.updateMetadata(body=meta, uuid=meta['uuid'])
 
         agave_indexer.apply_async(
@@ -583,10 +491,6 @@ def trash(client, system, path, trash_path):
     -------
     dict
     """
-
-    file_name = os.path.basename(path)
-    trash_name = file_name
-
     trash_root = os.path.dirname(trash_path)
     trash_foldername = os.path.basename(trash_path)
 
@@ -599,17 +503,6 @@ def trash(client, system, path, trash_path):
             logger.error("Unexpected exception listing .trash path in {}".format(system))
             raise
         mkdir(client, system, trash_root, trash_foldername)
-
-    # system: designsafe.storage.default    src sys
-    # path: /keiths/rallyGolf%test.jpg      src path
-    # system: designsafe.storage.default    dest sys
-    # trash_path: keiths/.Trash             dest path
-    # trash_name: rallyGolf%test_2021-08-23 20-18-57.jpg
-    logger.info('system: {param}'.format(param=system))
-    logger.info('path: {param}'.format(param=path))
-    logger.info('system: {param}'.format(param=system))
-    logger.info('trash_path: {param}'.format(param=trash_path))
-    logger.info('trash_name: {param}'.format(param=trash_name))
 
     resp = move(client, system, path, system, trash_path)
 

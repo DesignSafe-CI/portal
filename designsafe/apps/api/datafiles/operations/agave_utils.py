@@ -1,6 +1,8 @@
 import json
 import os
+import re
 from designsafe.apps.api.agave import service_account
+
 
 def file_meta_obj(path, system, meta):
     """
@@ -16,8 +18,12 @@ def file_meta_obj(path, system, meta):
     defaults['value']['path'] = path
     return defaults
 
-# Needs to go in Move, Copy, Upload
+
 def increment_file_name(listing, file_name):
+    """
+    Check and append a number in parens to the end of
+    a file name which exists in the provided file listing
+    """
     if any(x['name'] for x in listing if x['name'] == file_name):
         inc = 1
         _ext = os.path.splitext(file_name)[1]
@@ -31,25 +37,26 @@ def increment_file_name(listing, file_name):
             file_name = '{}{}{}'.format(_name, _inc, _ext)
     return file_name
 
-# BOOKMARK: Recursively query metadata for large results...
-# This needs to be incorporated in move/copy/rename
-def query_file_meta(system=None, path=None):
+
+def query_file_meta(system, path):
     """
-    return all metadata objects under a given system/path
-    required for copy/move/rename/delete
+    Return all metadata objects starting with a given path
+    and matching a system exactly
     """
     client = service_account()
-    query = {"name": "designsafe.file"}
-    if system:
-        query['value.system'] = system
-    if path:
-        query['value.path'] = {'$regex': '^/{}'.format(path)}
+    query = {
+        "name": "designsafe.file",
+        "value.system": system,
+    }
+    re_path = re.escape(os.path.join('/', path))
+    query['value.path'] = {'$regex': '^{}'.format(re_path)}
     
     all_results = []
     offset = 0
 
     while True:
-        # Need to find out what the hard limit is on this...
+        # Need to find out what the hard limit is on this... Steve T mentioned it might
+        # be related to the byte size of the response object.
         result = client.meta.listMetadata(q=json.dumps(query), limit=500, offset=offset)
         all_results = all_results + result
         offset += 500
