@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+
+## v5.2.7
+Fixes:
+- Fix formatting of Notifications.
+- Fix a bug preventing downloads of project archives.
+
+Enhancements:
+- Adjust frequency of prompts for the data reuse microsurvey.
+
 ## v5.2.6
 Fixes:
 - Fix a 404 error on clicking "open in Jupyter" in the Data Depot
@@ -8,8 +17,6 @@ Fixes:
 
 Enhancements:
 - Enhanced UI for the NCO application
-
-
 
 ## v5.2.5
 Fixes:
