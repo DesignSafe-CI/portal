@@ -5,12 +5,13 @@ import * as L from 'leaflet';
 import { valid as validateGeoJson }from 'geojson-validation';
 
 class DataBrowserServicePreviewCtrl {
-    constructor($sce, $http, $scope, $state, FileListingService, FileOperationService, ProjectService, Django) {
+    constructor($sce, $http, $scope, $state, FileListingService, FileOperationService, ProjectService, PublicationService, Django) {
         'ngInject';
         this.$sce = $sce;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
         this.ProjectService = ProjectService;
+        this.PublicationService = PublicationService;
         this.Django = Django;
         this.$state = $state;
         this.$http = $http;
@@ -113,7 +114,7 @@ class DataBrowserServicePreviewCtrl {
         const files = [this.resolve.file];
         this.FileOperationService.download({ api, scheme, files });
         if (system === 'designsafe.storage.published') {
-            const projectId = path.split('/')[0] // Paths in Published are of form PRJ-XXX/.../...
+            const projectId = this.PublicationService.current.projectId;
             this.FileOperationService.microsurvey({projectId})
         }
     }

@@ -1,13 +1,14 @@
 import dataDepotToolbarTemplate from './data-depot-toolbar.component.html'
 
 class DataDepotToolbarCtrl {
-    constructor($state, $uibModal, Django, UserService, FileListingService, FileOperationService) {
+    constructor($state, $uibModal, Django, UserService, FileListingService, FileOperationService, PublicationService) {
         'ngInject';
         this.$state = $state;
         this.search = { queryString: '' };
         this.UserService = UserService;
         this.FileListingService = FileListingService
         this.FileOperationService = FileOperationService
+        this.PublicationService = PublicationService
         this.tests = {};
         this.Django = Django;
     }
@@ -45,7 +46,7 @@ class DataDepotToolbarCtrl {
         const { api, scheme, system, path } = this.FileListingService.listings.main.params;
         const files = this.getAllSelected();
         if (system === 'designsafe.storage.published') {
-            const projectId = path.split('/')[0] // Paths in Published are of form PRJ-XXX/.../...
+            const projectId = this.PublicationService.current.projectId;
             this.FileOperationService.microsurvey({projectId})
         }
         this.FileOperationService.download({api, scheme, files});
