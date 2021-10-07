@@ -2751,7 +2751,17 @@ input[type="search"] {
 .prj-head-download {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+}
+.prj-center-bar {
+  padding-bottom: 10px;
+}
+.show-less {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
 }
 .project-form-input {
   height: 32px;
@@ -3466,6 +3476,21 @@ fieldset[disabled] .btn-primary.active {
 .btn-primary .badge {
   color: #337ab7;
   background-color: #ffffff;
+}
+.btn-secondary {
+  color: #333333;
+  background-color: #f0f0f0;
+  border-color: #cccccc;
+}
+.btn-secondary.focus {
+  color: #333333;
+  background-color: #e6e6e6;
+  border-color: #8c8c8c;
+}
+.btn-secondary:hover {
+  color: #333333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
 }
 .btn-add {
   color: #ffffff;

@@ -986,7 +986,7 @@ i[class^="icon-ls-pre/post"]:before,
     }
     .curation-download:before {
         content: "\e913";
-        font-size: 20px;
+        font-size: 14px;
     }
 
 .ds-icon-metrics {

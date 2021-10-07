@@ -1,5 +1,6 @@
 import angular from 'angular';
 import './projects';
+import { ShowMoreComponent } from './_common/show-more.component';
 import { DataDepotToolbarComponent } from './data-depot-toolbar/data-depot-toolbar.component';
 import { DataDepotNavComponent } from './data-depot-nav/data-depot-nav.component';
 import { PublishedComponent } from './published/published.component';
@@ -24,6 +25,7 @@ import { publicationAdvancedSearchCheckbox } from './data-depot-listing/publicat
 
 let ddComponents = angular.module('dd.components', ['dd.components.projects']);
 
+ddComponents.component('showMore', ShowMoreComponent);
 ddComponents.component('ddtoolbar', DataDepotToolbarComponent);
 ddComponents.component('ddnav', DataDepotNavComponent);
 ddComponents.component('published', PublishedComponent);
