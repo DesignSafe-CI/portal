@@ -1,0 +1,1600 @@
+[
+    {
+        "uuid": "8795092741504101910-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "1956487276981129706-242ac11a-0001-012",
+            "7313903999355121175-242ac119-0001-012",
+            "8738412436056969706-242ac11a-0001-012",
+            "8595261176081289706-242ac11a-0001-012",
+            "8824088786383007255-242ac112-0001-002"
+        ],
+        "lastUpdated": "2020-09-09T15:51:43.792-05:00",
+        "created": "2019-11-05T14:11:59.516-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.coordinator_output",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8795092741504101910-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8795092741504101910-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "1956487276981129706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/1956487276981129706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8738412436056969706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8738412436056969706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8595261176081289706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8595261176081289706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8824088786383007255-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//test3.txt",
+                    "title": "file"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test EQ",
+            "description": "",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "1956487276981129706-242ac11a-0001-012"
+            ],
+            "globalModels": [
+                "8595261176081289706-242ac11a-0001-012"
+            ],
+            "coordinators": [
+                "8738412436056969706-242ac11a-0001-012"
+            ],
+            "files": [
+                "8824088786383007255-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "8795092741504101910-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "coordinators",
+            "files"
+        ]
+    },
+    {
+        "uuid": "1956487276981129706-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "7313903999355121175-242ac119-0001-012"
+        ],
+        "lastUpdated": "2020-09-09T15:49:18.331-05:00",
+        "created": "2019-11-05T14:09:00.348-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1956487276981129706-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1956487276981129706-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Earthquake Test",
+            "simulationType": "Earthquake",
+            "simulationTypeOther": "None",
+            "description": "This is a test of two hybrid simulations.",
+            "authors": [
+                {
+                    "authorship": true,
+                    "name": "thbrown",
+                    "order": 2
+                },
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": true,
+                    "name": "jmeiring",
+                    "order": 3
+                },
+                {
+                    "authorship": true,
+                    "name": "sal",
+                    "order": 4
+                },
+                {
+                    "name": "ojamil",
+                    "order": 6,
+                    "authorship": false
+                },
+                {
+                    "authorship": true,
+                    "name": "jarosenb",
+                    "order": 1
+                },
+                {
+                    "name": "fnetsch",
+                    "order": 7,
+                    "authorship": false
+                },
+                {
+                    "name": "guestDarylJ0",
+                    "order": 8,
+                    "authorship": false,
+                    "guest": true,
+                    "fname": "Daryl",
+                    "lname": "Johnson",
+                    "email": "djohnson@gmail.com",
+                    "inst": "ACC"
+                },
+                {
+                    "name": "guestKeithS1",
+                    "email": "jmalone@gmail.com",
+                    "lname": "Malone",
+                    "inst": "UTD",
+                    "fname": "Joe",
+                    "authorship": true,
+                    "order": 5,
+                    "guest": true
+                }
+            ],
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "dois": []
+        },
+        "_ui": {
+            "uuid": "1956487276981129706-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project"
+        ]
+    },
+    {
+        "uuid": "8595261176081289706-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "7313903999355121175-242ac119-0001-012",
+            "8517903799449424361-242ac112-0001-002",
+            "1956487276981129706-242ac11a-0001-012",
+            "6278051277157494295-242ac113-0001-002"
+        ],
+        "lastUpdated": "2020-07-28T02:02:04.115-05:00",
+        "created": "2019-11-05T14:11:34.920-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.global_model",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8595261176081289706-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8595261176081289706-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "1956487276981129706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/1956487276981129706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8517903799449424361-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//00000.jpg",
+                    "title": "file"
+                },
+                {
+                    "rel": "6278051277157494295-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//objekt.py",
+                    "title": "file"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test EQ",
+            "description": "This is a test",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "1956487276981129706-242ac11a-0001-012"
+            ],
+            "files": [
+                "6278051277157494295-242ac113-0001-002",
+                "8517903799449424361-242ac112-0001-002"
+            ],
+            "fileTags": [
+                {
+                    "fileUuid": "8517903799449424361-242ac112-0001-002",
+                    "tagName": "Assembly Document",
+                    "path": "/00000.jpg"
+                },
+                {
+                    "fileUuid": "8517903799449424361-242ac112-0001-002",
+                    "tagName": "Load",
+                    "path": "/00000.jpg"
+                }
+            ]
+        },
+        "_ui": {
+            "uuid": "8595261176081289706-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "files"
+        ]
+    },
+    {
+        "uuid": "5182205007078682135-242ac11b-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "7313903999355121175-242ac119-0001-012",
+            "4779530525672149481-242ac11b-0001-012",
+            "8513565882480464361-242ac112-0001-002",
+            "3299601202557087255-242ac119-0001-012"
+        ],
+        "lastUpdated": "2020-07-27T23:45:07.575-05:00",
+        "created": "2019-07-16T09:12:17.984-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.coordinator",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/5182205007078682135-242ac11b-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/5182205007078682135-242ac11b-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8513565882480464361-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//00001.jpg",
+                    "title": "file"
+                },
+                {
+                    "rel": "4779530525672149481-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4779530525672149481-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "3299601202557087255-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Software Configuration",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "description": "Setup details controlling the experiment and simulation",
+            "applicationVersion": "",
+            "hybridSimulations": [
+                "3299601202557087255-242ac119-0001-012"
+            ],
+            "globalModels": [
+                "4779530525672149481-242ac11b-0001-012"
+            ],
+            "files": [
+                "8513565882480464361-242ac112-0001-002"
+            ],
+            "fileTags": [
+                {
+                    "fileUuid": "8513565882480464361-242ac112-0001-002",
+                    "tagName": "Photos"
+                },
+                {
+                    "fileUuid": "8513565882480464361-242ac112-0001-002",
+                    "tagName": "Assembly Document",
+                    "path": "/00001.jpg"
+                }
+            ]
+        },
+        "_ui": {
+            "uuid": "5182205007078682135-242ac11b-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "files"
+        ]
+    },
+    {
+        "uuid": "4779530525672149481-242ac11b-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "7313903999355121175-242ac119-0001-012",
+            "7787431907178901015-242ac114-0001-002",
+            "3299601202557087255-242ac119-0001-012"
+        ],
+        "lastUpdated": "2020-07-14T12:23:19.735-05:00",
+        "created": "2019-07-16T09:09:00.427-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.global_model",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/4779530525672149481-242ac11b-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/4779530525672149481-242ac11b-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "3299601202557087255-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7787431907178901015-242ac114-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//stuff",
+                    "title": "file"
+                }
+            ]
+        },
+        "value": {
+            "title": "Rocky Slope with Loose Gravel",
+            "description": "This is a rocky slope that has loose dirt and rocks.",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "3299601202557087255-242ac119-0001-012"
+            ],
+            "files": [
+                "7787431907178901015-242ac114-0001-002"
+            ],
+            "fileTags": [
+                {
+                    "fileUuid": "7787431907178901015-242ac114-0001-002",
+                    "tagName": "Photos"
+                },
+                {
+                    "fileUuid": "8517903799449424361-242ac112-0001-002",
+                    "tagName": "Assembly Document"
+                },
+                {
+                    "fileUuid": "8517903799449424361-242ac112-0001-002",
+                    "tagName": "Connectivity File",
+                    "path": "/00000.jpg"
+                },
+                {
+                    "fileUuid": "7787431907178901015-242ac114-0001-002",
+                    "tagName": "Connectivity File",
+                    "path": "/stuff"
+                }
+            ]
+        },
+        "_ui": {
+            "uuid": "4779530525672149481-242ac11b-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "files"
+        ]
+    },
+    {
+        "uuid": "1209350574463783401-242ac11b-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "5182205007078682135-242ac11b-0001-012",
+            "8517989698795344361-242ac112-0001-002",
+            "3299601202557087255-242ac119-0001-012",
+            "7313903999355121175-242ac119-0001-012",
+            "4779530525672149481-242ac11b-0001-012"
+        ],
+        "lastUpdated": "2020-07-12T03:23:38.207-05:00",
+        "created": "2019-07-16T09:14:46.799-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.coordinator_output",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1209350574463783401-242ac11b-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1209350574463783401-242ac11b-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "5182205007078682135-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5182205007078682135-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8517989698795344361-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//00002.jpg",
+                    "title": "file"
+                },
+                {
+                    "rel": "3299601202557087255-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "4779530525672149481-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4779530525672149481-242ac11b-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Readings from Configuration",
+            "description": "This was all of the resulting output using the predefined configuration",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "3299601202557087255-242ac119-0001-012"
+            ],
+            "globalModels": [
+                "4779530525672149481-242ac11b-0001-012"
+            ],
+            "coordinators": [
+                "5182205007078682135-242ac11b-0001-012"
+            ],
+            "files": [
+                "8517989698795344361-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "1209350574463783401-242ac11b-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "coordinators",
+            "files"
+        ]
+    },
+    {
+        "uuid": "3266134196987162135-242ac11b-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "5182205007078682135-242ac11b-0001-012",
+            "3299601202557087255-242ac119-0001-012",
+            "8512964587059024361-242ac112-0001-002",
+            "6783713998742491626-242ac112-0001-002",
+            "7313903999355121175-242ac119-0001-012",
+            "4779530525672149481-242ac11b-0001-012"
+        ],
+        "lastUpdated": "2020-07-12T03:23:00.514-05:00",
+        "created": "2019-07-16T09:13:02.596-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.sim_substructure",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3266134196987162135-242ac11b-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3266134196987162135-242ac11b-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "5182205007078682135-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5182205007078682135-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "6783713998742491626-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//test/objects2.py",
+                    "title": "file"
+                },
+                {
+                    "rel": "3299601202557087255-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8512964587059024361-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//00003.jpg",
+                    "title": "file"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "4779530525672149481-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4779530525672149481-242ac11b-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Simulation Configuration Files",
+            "description": "Files and executables for the simulation",
+            "applicationVersion": "",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "3299601202557087255-242ac119-0001-012"
+            ],
+            "globalModels": [
+                "4779530525672149481-242ac11b-0001-012"
+            ],
+            "coordinators": [
+                "5182205007078682135-242ac11b-0001-012"
+            ],
+            "files": [
+                "8512964587059024361-242ac112-0001-002",
+                "6783713998742491626-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "3266134196987162135-242ac11b-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "coordinators",
+            "files"
+        ]
+    },
+    {
+        "uuid": "8623895345085541910-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "1956487276981129706-242ac11a-0001-012",
+            "9145747134409609706-242ac11a-0001-012",
+            "8601480631431327255-242ac112-0001-002",
+            "7313903999355121175-242ac119-0001-012",
+            "8738412436056969706-242ac11a-0001-012",
+            "8595261176081289706-242ac11a-0001-012"
+        ],
+        "lastUpdated": "2020-07-09T23:26:23.757-05:00",
+        "created": "2019-11-05T14:12:03.502-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.sim_output",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8623895345085541910-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8623895345085541910-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "8595261176081289706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8595261176081289706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8601480631431327255-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//test5.txt",
+                    "title": "file"
+                },
+                {
+                    "rel": "1956487276981129706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/1956487276981129706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8738412436056969706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8738412436056969706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "9145747134409609706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/9145747134409609706-242ac11a-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test EQ",
+            "description": "",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "8595261176081289706-242ac11a-0001-012"
+            ],
+            "globalModels": [
+                "8738412436056969706-242ac11a-0001-012"
+            ],
+            "simSubstructures": [
+                "9145747134409609706-242ac11a-0001-012"
+            ],
+            "files": [
+                "8601480631431327255-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "8623895345085541910-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "sim_substructures",
+            "files"
+        ]
+    },
+    {
+        "uuid": "8949474891252755990-242ac113-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "7313903999355121175-242ac119-0001-012",
+            "6267571556955254295-242ac113-0001-002"
+        ],
+        "lastUpdated": "2020-06-22T17:28:38.963-05:00",
+        "created": "2020-06-22T10:10:31.744-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.report",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8949474891252755990-242ac113-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8949474891252755990-242ac113-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "6267571556955254295-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//homepage.png",
+                    "title": "file"
+                }
+            ]
+        },
+        "value": {
+            "title": "Project Report",
+            "description": "I'm changing this report's description",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [],
+            "files": [
+                "6267571556955254295-242ac113-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "8949474891252755990-242ac113-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "files"
+        ]
+    },
+    {
+        "uuid": "4313868241663094295-242ac11b-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "7313903999355121175-242ac119-0001-012",
+            "6787708318327771626-242ac112-0001-002",
+            "3299601202557087255-242ac119-0001-012"
+        ],
+        "lastUpdated": "2020-06-17T16:49:32.125-05:00",
+        "created": "2019-07-16T09:26:57.195-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.report",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/4313868241663094295-242ac11b-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/4313868241663094295-242ac11b-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "6787708318327771626-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//test/homepage.png",
+                    "title": "file"
+                },
+                {
+                    "rel": "3299601202557087255-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Landslide Structure Tolerance",
+            "description": "This is a big experiment to show minimum safe building standards for cliffside dwellings...",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "3299601202557087255-242ac119-0001-012"
+            ],
+            "files": [
+                "6787708318327771626-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "4313868241663094295-242ac11b-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "files"
+        ]
+    },
+    {
+        "uuid": "8359969604746341910-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "1956487276981129706-242ac11a-0001-012",
+            "8963799056890981910-242ac11a-0001-012",
+            "7313903999355121175-242ac119-0001-012",
+            "8738412436056969706-242ac11a-0001-012",
+            "8595261176081289706-242ac11a-0001-012",
+            "8601265883066527255-242ac112-0001-002"
+        ],
+        "lastUpdated": "2019-11-05T14:13:40.247-06:00",
+        "created": "2019-11-05T14:12:09.647-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.exp_output",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8359969604746341910-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8359969604746341910-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "8595261176081289706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8595261176081289706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "1956487276981129706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/1956487276981129706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8601265883066527255-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//test4.txt",
+                    "title": "file"
+                },
+                {
+                    "rel": "8738412436056969706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8738412436056969706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8963799056890981910-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8963799056890981910-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test EQ",
+            "description": "",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "8595261176081289706-242ac11a-0001-012"
+            ],
+            "globalModels": [
+                "8738412436056969706-242ac11a-0001-012"
+            ],
+            "expSubstructures": [
+                "8963799056890981910-242ac11a-0001-012"
+            ],
+            "files": [
+                "8601265883066527255-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "8359969604746341910-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "exp_substructures",
+            "files"
+        ]
+    },
+    {
+        "uuid": "8963799056890981910-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "1956487276981129706-242ac11a-0001-012",
+            "8823616339980447255-242ac112-0001-002",
+            "7313903999355121175-242ac119-0001-012",
+            "8738412436056969706-242ac11a-0001-012",
+            "8595261176081289706-242ac11a-0001-012"
+        ],
+        "lastUpdated": "2019-11-05T14:13:36.771-06:00",
+        "created": "2019-11-05T14:11:55.588-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.exp_substructure",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8963799056890981910-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8963799056890981910-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "8823616339980447255-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//test2.txt",
+                    "title": "file"
+                },
+                {
+                    "rel": "1956487276981129706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/1956487276981129706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8738412436056969706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8738412436056969706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8595261176081289706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8595261176081289706-242ac11a-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test EQ",
+            "description": "",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "1956487276981129706-242ac11a-0001-012"
+            ],
+            "globalModels": [
+                "8595261176081289706-242ac11a-0001-012"
+            ],
+            "coordinators": [
+                "8738412436056969706-242ac11a-0001-012"
+            ],
+            "files": [
+                "8823616339980447255-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "8963799056890981910-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "coordinators",
+            "files"
+        ]
+    },
+    {
+        "uuid": "9145747134409609706-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "8823015044559007255-242ac112-0001-002",
+            "1956487276981129706-242ac11a-0001-012",
+            "7313903999355121175-242ac119-0001-012",
+            "8738412436056969706-242ac11a-0001-012",
+            "8595261176081289706-242ac11a-0001-012"
+        ],
+        "lastUpdated": "2019-11-05T14:13:19.227-06:00",
+        "created": "2019-11-05T14:11:47.737-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.sim_substructure",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9145747134409609706-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9145747134409609706-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "8595261176081289706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8595261176081289706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8823015044559007255-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//test1.txt",
+                    "title": "file"
+                },
+                {
+                    "rel": "8738412436056969706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8738412436056969706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "1956487276981129706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/1956487276981129706-242ac11a-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test EQ",
+            "description": "",
+            "applicationVersion": "",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "1956487276981129706-242ac11a-0001-012"
+            ],
+            "globalModels": [
+                "8595261176081289706-242ac11a-0001-012"
+            ],
+            "coordinators": [
+                "8738412436056969706-242ac11a-0001-012"
+            ],
+            "files": [
+                "8823015044559007255-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "9145747134409609706-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "coordinators",
+            "files"
+        ]
+    },
+    {
+        "uuid": "8738412436056969706-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "6285610419598454295-242ac113-0001-002",
+            "1956487276981129706-242ac11a-0001-012",
+            "8595261176081289706-242ac11a-0001-012",
+            "7313903999355121175-242ac119-0001-012"
+        ],
+        "lastUpdated": "2019-11-05T14:13:11.391-06:00",
+        "created": "2019-11-05T14:11:38.253-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.coordinator",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8738412436056969706-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8738412436056969706-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "8595261176081289706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/8595261176081289706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "1956487276981129706-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/1956487276981129706-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "6285610419598454295-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//objects2.pyc",
+                    "title": "file"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test EQ",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "description": "",
+            "applicationVersion": "",
+            "hybridSimulations": [
+                "1956487276981129706-242ac11a-0001-012"
+            ],
+            "globalModels": [
+                "8595261176081289706-242ac11a-0001-012"
+            ],
+            "files": [
+                "6285610419598454295-242ac113-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "8738412436056969706-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "files"
+        ]
+    },
+    {
+        "uuid": "8739330187483943401-242ac11b-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "6272811417056374295-242ac113-0001-002",
+            "7313903999355121175-242ac119-0001-012",
+            "3299601202557087255-242ac119-0001-012"
+        ],
+        "lastUpdated": "2019-10-17T08:28:39.502-05:00",
+        "created": "2019-07-16T09:17:42.120-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.analysis",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8739330187483943401-242ac11b-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8739330187483943401-242ac11b-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "6272811417056374295-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//testobj.ipynb",
+                    "title": "file"
+                },
+                {
+                    "rel": "3299601202557087255-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Structural Tolerance of Cliffside Structures",
+            "description": "This is what we determined from the results",
+            "refs": [
+                {
+                    "referencedoi": "www.google.com",
+                    "reference": "Houses on Mountains"
+                }
+            ],
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "3299601202557087255-242ac119-0001-012"
+            ],
+            "files": [
+                "6272811417056374295-242ac113-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "8739330187483943401-242ac11b-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "files"
+        ]
+    },
+    {
+        "uuid": "4531937274649383401-242ac11b-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "3232323120552743401-242ac11b-0001-012",
+            "5182205007078682135-242ac11b-0001-012",
+            "3299601202557087255-242ac119-0001-012",
+            "6272725517710454295-242ac113-0001-002",
+            "7313903999355121175-242ac119-0001-012",
+            "4779530525672149481-242ac11b-0001-012"
+        ],
+        "lastUpdated": "2019-10-17T08:28:09.993-05:00",
+        "created": "2019-07-16T09:16:04.159-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.exp_output",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/4531937274649383401-242ac11b-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/4531937274649383401-242ac11b-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "3232323120552743401-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3232323120552743401-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "4779530525672149481-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4779530525672149481-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "3299601202557087255-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "6272725517710454295-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//gato.jpg",
+                    "title": "file"
+                },
+                {
+                    "rel": "5182205007078682135-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5182205007078682135-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Experiment Readings",
+            "description": "Results of shake table experiment",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "4779530525672149481-242ac11b-0001-012"
+            ],
+            "globalModels": [
+                "5182205007078682135-242ac11b-0001-012"
+            ],
+            "expSubstructures": [
+                "3232323120552743401-242ac11b-0001-012"
+            ],
+            "files": [
+                "6272725517710454295-242ac113-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "4531937274649383401-242ac11b-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "exp_substructures",
+            "files"
+        ]
+    },
+    {
+        "uuid": "1066037199611162135-242ac11b-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "5182205007078682135-242ac11b-0001-012",
+            "8517345453700944361-242ac112-0001-002",
+            "3299601202557087255-242ac119-0001-012",
+            "3266134196987162135-242ac11b-0001-012",
+            "7313903999355121175-242ac119-0001-012",
+            "4779530525672149481-242ac11b-0001-012"
+        ],
+        "lastUpdated": "2019-10-17T08:28:02.242-05:00",
+        "created": "2019-07-16T09:13:53.821-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.sim_output",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1066037199611162135-242ac11b-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1066037199611162135-242ac11b-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "4779530525672149481-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4779530525672149481-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "3299601202557087255-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "3266134196987162135-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3266134196987162135-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "5182205007078682135-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5182205007078682135-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8517345453700944361-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//00004.jpg",
+                    "title": "file"
+                }
+            ]
+        },
+        "value": {
+            "title": "Simulation Readings",
+            "description": "Output of simulation data in csv spreadsheets",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "4779530525672149481-242ac11b-0001-012"
+            ],
+            "globalModels": [
+                "5182205007078682135-242ac11b-0001-012"
+            ],
+            "simSubstructures": [
+                "3266134196987162135-242ac11b-0001-012"
+            ],
+            "files": [
+                "8517345453700944361-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "1066037199611162135-242ac11b-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "sim_substructures",
+            "files"
+        ]
+    },
+    {
+        "uuid": "3232323120552743401-242ac11b-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "5182205007078682135-242ac11b-0001-012",
+            "3299601202557087255-242ac119-0001-012",
+            "8517474302719824361-242ac112-0001-002",
+            "7313903999355121175-242ac119-0001-012",
+            "4779530525672149481-242ac11b-0001-012"
+        ],
+        "lastUpdated": "2019-10-17T08:27:17.354-05:00",
+        "created": "2019-07-16T09:15:33.900-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation.exp_substructure",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3232323120552743401-242ac11b-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3232323120552743401-242ac11b-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "5182205007078682135-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5182205007078682135-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "4779530525672149481-242ac11b-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4779530525672149481-242ac11b-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "8517474302719824361-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-7313903999355121175-242ac119-0001-012//00005.jpg",
+                    "title": "file"
+                },
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "3299601202557087255-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Large Shaketable",
+            "description": "Files, Photos, Diagrams related to setup of large shake table experiment.",
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "hybridSimulations": [
+                "3299601202557087255-242ac119-0001-012"
+            ],
+            "globalModels": [
+                "4779530525672149481-242ac11b-0001-012"
+            ],
+            "coordinators": [
+                "5182205007078682135-242ac11b-0001-012"
+            ],
+            "files": [
+                "8517474302719824361-242ac112-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "3232323120552743401-242ac11b-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "hybrid_simulations",
+            "global_models",
+            "coordinators",
+            "files"
+        ]
+    },
+    {
+        "uuid": "3299601202557087255-242ac119-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "7313903999355121175-242ac119-0001-012"
+        ],
+        "lastUpdated": "2019-07-16T08:02:04.386-05:00",
+        "created": "2019-02-20T09:18:48.339-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.hybrid_simulation",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3299601202557087255-242ac119-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "7313903999355121175-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Compared Simulation and Experimental Rockslide",
+            "simulationType": "Other",
+            "simulationTypeOther": "Rockslide",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "authors": [
+                {
+                    "authorship": false,
+                    "name": "thbrown",
+                    "order": 5
+                },
+                {
+                    "authorship": true,
+                    "name": "jmeiring",
+                    "order": 2
+                },
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": true,
+                    "name": "sal",
+                    "order": 1
+                },
+                {
+                    "name": "guestDarylJ0",
+                    "email": "djohnson@gmail.com",
+                    "lname": "Johnson",
+                    "inst": "ACC",
+                    "fname": "Daryl",
+                    "authorship": true,
+                    "order": 3,
+                    "guest": true
+                },
+                {
+                    "name": "guestKeithS1",
+                    "email": "jmalone@gmail.com",
+                    "lname": "Malone",
+                    "inst": "UTD",
+                    "fname": "Joe",
+                    "authorship": true,
+                    "order": 4,
+                    "guest": true
+                }
+            ],
+            "project": [
+                "7313903999355121175-242ac119-0001-012"
+            ],
+            "dois": []
+        },
+        "_ui": {
+            "uuid": "3299601202557087255-242ac119-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project"
+        ]
+    }
+]

@@ -1,0 +1,92 @@
+{
+    "uuid": "7313903999355121175-242ac119-0001-012",
+    "schemaId": null,
+    "internalUsername": null,
+    "associationIds": [],
+    "lastUpdated": "2021-02-01T09:54:34.984000-06:00",
+    "created": "2019-02-20T09:10:05.377000-06:00",
+    "owner": "ds_admin",
+    "name": "designsafe.project",
+    "_links": {
+        "self": {
+            "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012"
+        },
+        "permissions": {
+            "href": "https://agave.designsafe-ci.org/meta/v2/data/7313903999355121175-242ac119-0001-012/pems"
+        },
+        "owner": {
+            "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+        },
+        "associationIds": []
+    },
+    "value": {
+        "teamMembers": [
+            "fnetsch"
+        ],
+        "coPis": [
+            "sterry1",
+            "ojamil",
+            "sal",
+            "jarosenb",
+            "jmeiring",
+            "keiths"
+        ],
+        "guestMembers": [
+            {
+                "lname": "Johnson",
+                "inst": "ACC",
+                "email": "djohnson@gmail.com",
+                "fname": "Daryl",
+                "user": "guestDarylJ0"
+            },
+            {
+                "lname": "Malone",
+                "inst": "UTD",
+                "email": "jmalone@gmail.com",
+                "fname": "Joe",
+                "user": "guestKeithS1"
+            }
+        ],
+        "projectType": "hybrid_simulation",
+        "projectId": "PRJ-2226",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum....",
+        "title": "Walk Hybrid-Simulation Demo",
+        "pi": "thbrown",
+        "awardNumber": [
+            {
+                "order": 0,
+                "name": "Award For Hybrid Research",
+                "number": "123456"
+            }
+        ],
+        "awardNumbers": [],
+        "associatedProjects": [
+            {
+                "href": "www.google.com",
+                "order": 0,
+                "title": "Google Search Results"
+            }
+        ],
+        "ef": "",
+        "keywords": "Walk, Demo, Hybrid, Project, Demo, Test",
+        "nhTypes": [],
+        "dois": []
+    },
+    "_ui": {
+        "uuid": "7313903999355121175-242ac119-0001-012",
+        "orders": []
+    },
+    "_related": {
+        "filemodel_set": "designsafe.file",
+        "hybridsimulation_set": "designsafe.project.hybrid_simulation",
+        "globalmodel_set": "designsafe.project.hybrid_simulation.global_model",
+        "coordinator_set": "designsafe.project.hybrid_simulation.coordinator",
+        "simsubstructure_set": "designsafe.project.hybrid_simulation.sim_substructure",
+        "expsubstructure_set": "designsafe.project.hybrid_simulation.exp_substructure",
+        "coordinatoroutput_set": "designsafe.project.hybrid_simulation.coordinator_output",
+        "simoutput_set": "designsafe.project.hybrid_simulation.sim_output",
+        "expoutput_set": "designsafe.project.hybrid_simulation.exp_output",
+        "analysis_set": "designsafe.project.hybrid_simulation.analysis",
+        "report_set": "designsafe.project.hybrid_simulation.report"
+    }
+}

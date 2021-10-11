@@ -1,0 +1,1445 @@
+[
+    {
+        "uuid": "591153797383908885-242ac117-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2021-10-08T00:10:56.457-05:00",
+        "created": "2021-07-02T11:10:07.115-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.report",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/591153797383908885-242ac117-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/591153797383908885-242ac117-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Duplication Test",
+            "authors": [
+                {
+                    "name": "keiths",
+                    "order": 0,
+                    "authorship": true
+                },
+                {
+                    "name": "jmeiring",
+                    "order": 1,
+                    "authorship": false
+                },
+                {
+                    "name": "ojamil",
+                    "order": 2,
+                    "authorship": false
+                },
+                {
+                    "name": "sterry1",
+                    "order": 3,
+                    "authorship": false
+                },
+                {
+                    "name": "jarosenb",
+                    "order": 4,
+                    "authorship": false
+                },
+                {
+                    "name": "thbrown",
+                    "order": 5,
+                    "authorship": false
+                },
+                {
+                    "name": "sgray",
+                    "order": 6,
+                    "authorship": false
+                },
+                {
+                    "name": "fnetsch",
+                    "order": 7,
+                    "authorship": false
+                },
+                {
+                    "name": "xirdneh",
+                    "order": 8,
+                    "authorship": false
+                },
+                {
+                    "name": "guestJayJ0",
+                    "order": 9,
+                    "authorship": false,
+                    "guest": true,
+                    "fname": "Jay",
+                    "lname": "Jetplane",
+                    "email": "jjjetplane@gmail.com",
+                    "inst": "inst"
+                }
+            ],
+            "referencedData": [],
+            "description": "asdf",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "files": [],
+            "fileTags": [],
+            "dois": []
+        },
+        "_ui": {
+            "uuid": "591153797383908885-242ac117-0001-012",
+            "orders": [
+                {
+                    "parent": "4453958809521426921-242ac119-0001-012",
+                    "value": 3
+                }
+            ]
+        },
+        "_relatedFields": [
+            "project",
+            "files"
+        ]
+    },
+    {
+        "uuid": "9029995223637037546-242ac116-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "20934149661650455-242ac113-0001-002",
+            "4453958809521426921-242ac119-0001-012",
+            "23940626768850455-242ac113-0001-002",
+            "8593303561356307990-242ac112-0001-002",
+            "19387961435090455-242ac113-0001-002"
+        ],
+        "lastUpdated": "2021-10-08T00:10:56.435-05:00",
+        "created": "2019-12-11T15:23:35.324-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.report",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9029995223637037546-242ac116-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/9029995223637037546-242ac116-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "20934149661650455-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-4453958809521426921-242ac119-0001-012//test3.txt",
+                    "title": "file"
+                },
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "23940626768850455-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-4453958809521426921-242ac119-0001-012//test1.txt",
+                    "title": "file"
+                },
+                {
+                    "rel": "8593303561356307990-242ac112-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-4453958809521426921-242ac119-0001-012//cats/testfolder",
+                    "title": "file"
+                },
+                {
+                    "rel": "19387961435090455-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-4453958809521426921-242ac119-0001-012//test2.txt",
+                    "title": "file"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test Report",
+            "authors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": false,
+                    "name": "jarosenb",
+                    "order": 2
+                },
+                {
+                    "authorship": false,
+                    "name": "jmeiring",
+                    "order": 3
+                },
+                {
+                    "authorship": false,
+                    "name": "thbrown",
+                    "order": 4
+                },
+                {
+                    "authorship": false,
+                    "name": "xirdneh",
+                    "order": 5
+                },
+                {
+                    "authorship": false,
+                    "name": "sal",
+                    "order": 6
+                },
+                {
+                    "name": "guestJayJ0",
+                    "email": "jjjetplane@gmail.com",
+                    "lname": "Jetplane",
+                    "inst": "inst",
+                    "fname": "Jay",
+                    "authorship": true,
+                    "order": 1,
+                    "guest": true
+                }
+            ],
+            "referencedData": [
+                {
+                    "url": "http://www.google.com",
+                    "title": "test"
+                }
+            ],
+            "description": "This is only a test... If this were a real report it would be bad.",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "files": [
+                "20934149661650455-242ac113-0001-002",
+                "8593303561356307990-242ac112-0001-002",
+                "19387961435090455-242ac113-0001-002",
+                "23940626768850455-242ac113-0001-002"
+            ],
+            "fileTags": [],
+            "dois": [
+                "10.17603/ds2-513a-ea91"
+            ]
+        },
+        "_ui": {
+            "uuid": "9029995223637037546-242ac116-0001-012",
+            "orders": [
+                {
+                    "parent": "4453958809521426921-242ac119-0001-012",
+                    "value": 0
+                }
+            ]
+        },
+        "_relatedFields": [
+            "project",
+            "files"
+        ]
+    },
+    {
+        "uuid": "2925367369974148630-242ac116-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2021-10-08T00:10:56.432-05:00",
+        "created": "2020-02-19T09:31:04.574-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.mission",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2925367369974148630-242ac116-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2925367369974148630-242ac116-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test Dates",
+            "event": "???",
+            "dateStart": "2020-02-19T06:00:00.000Z",
+            "dateEnd": "2020-02-19T06:00:00.000Z",
+            "location": "Space",
+            "latitude": "123",
+            "longitude": "123",
+            "elevation": "None",
+            "authors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "name": "jarosenb",
+                    "order": 1,
+                    "authorship": true
+                },
+                {
+                    "name": "sterry1",
+                    "order": 2,
+                    "authorship": false
+                },
+                {
+                    "name": "ojamil",
+                    "order": 3,
+                    "authorship": false
+                },
+                {
+                    "name": "jmeiring",
+                    "order": 4,
+                    "authorship": false
+                },
+                {
+                    "name": "fnetsch",
+                    "order": 5,
+                    "authorship": false
+                },
+                {
+                    "name": "thbrown",
+                    "order": 6,
+                    "authorship": false
+                },
+                {
+                    "authorship": false,
+                    "name": "xirdneh",
+                    "order": 7
+                },
+                {
+                    "name": "guestJayJ0",
+                    "order": 8,
+                    "authorship": false,
+                    "guest": true,
+                    "fname": "Jay",
+                    "lname": "Jetplane",
+                    "email": "jjjetplane@gmail.com",
+                    "inst": "inst"
+                }
+            ],
+            "description": "This is to test the thing with the stuff.",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "dois": [
+                "10.80023/gzzr-kj06"
+            ]
+        },
+        "_ui": {
+            "uuid": "2925367369974148630-242ac116-0001-012",
+            "orders": [
+                {
+                    "parent": "4453958809521426921-242ac119-0001-012",
+                    "value": 2
+                }
+            ]
+        },
+        "_relatedFields": [
+            "project"
+        ]
+    },
+    {
+        "uuid": "5701721986276397546-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2021-10-08T00:10:56.431-05:00",
+        "created": "2019-11-05T14:24:46.542-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.mission",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/5701721986276397546-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/5701721986276397546-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Test Mission",
+            "event": "Event",
+            "dateStart": "2020-02-19T06:00:00.000Z",
+            "dateEnd": "2020-02-19T06:00:00.000Z",
+            "location": "ON A BOAT",
+            "latitude": "30",
+            "longitude": "34",
+            "elevation": "None",
+            "authors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": true,
+                    "name": "jmeiring",
+                    "order": 1
+                },
+                {
+                    "authorship": false,
+                    "name": "thbrown",
+                    "order": 4
+                },
+                {
+                    "authorship": true,
+                    "name": "xirdneh",
+                    "order": 2
+                },
+                {
+                    "name": "guestJayJ0",
+                    "email": "jjjetplane@gmail.com",
+                    "lname": "Jetplane",
+                    "inst": "inst",
+                    "fname": "Jay",
+                    "authorship": true,
+                    "order": 3,
+                    "guest": true
+                }
+            ],
+            "description": "A mission in SPAAAAAAAACE!",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "dois": [
+                "10.17603/ds2-e1wj-xc14"
+            ]
+        },
+        "_ui": {
+            "uuid": "5701721986276397546-242ac11a-0001-012",
+            "orders": [
+                {
+                    "parent": "4453958809521426921-242ac119-0001-012",
+                    "value": 1
+                }
+            ]
+        },
+        "_relatedFields": [
+            "project"
+        ]
+    },
+    {
+        "uuid": "6477552508911021590-242ac116-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "20934145366683159-242ac113-0001-002",
+            "2925367369974148630-242ac116-0001-012",
+            "5701721986276397546-242ac11a-0001-012",
+            "24799620228050455-242ac113-0001-002",
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2021-09-07T22:51:41.559-05:00",
+        "created": "2019-11-21T08:31:47.605-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.geoscience",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/6477552508911021590-242ac116-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/6477552508911021590-242ac116-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "20934145366683159-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-4453958809521426921-242ac119-0001-012//00000.jpg",
+                    "title": "file"
+                },
+                {
+                    "rel": "5701721986276397546-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5701721986276397546-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "2925367369974148630-242ac116-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/2925367369974148630-242ac116-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "24799620228050455-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-4453958809521426921-242ac119-0001-012//test4.txt",
+                    "title": "file"
+                },
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "GeoEng Cat Collection",
+            "observationTypes": [
+                "Catnado",
+                "Structural"
+            ],
+            "dateStart": "2019-11-15T06:00:00.000Z",
+            "dateEnd": "2019-12-10T06:00:00.000Z",
+            "dataCollectors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "name": "ojamil",
+                    "order": 1,
+                    "authorship": false
+                },
+                {
+                    "authorship": true,
+                    "name": "jmeiring",
+                    "order": 2
+                },
+                {
+                    "authorship": true,
+                    "name": "jarosenb",
+                    "order": 3
+                },
+                {
+                    "authorship": true,
+                    "name": "xirdneh",
+                    "order": 4
+                },
+                {
+                    "name": "fnetsch",
+                    "order": 5,
+                    "authorship": false
+                },
+                {
+                    "authorship": true,
+                    "name": "thbrown",
+                    "order": 6
+                },
+                {
+                    "name": "guestJayJ0",
+                    "email": "jjjetplane@gmail.com",
+                    "lname": "Jetplane",
+                    "inst": "inst",
+                    "fname": "Jay",
+                    "authorship": true,
+                    "order": 7,
+                    "guest": true
+                }
+            ],
+            "location": "California",
+            "latitude": "35.350792",
+            "longitude": "-119.016047",
+            "equipment": [
+                "Short Range Scanner | Leica BLK360",
+                "Cat Detector"
+            ],
+            "referencedData": [],
+            "description": "This is a description. Test",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "missions": [
+                "2925367369974148630-242ac116-0001-012",
+                "5701721986276397546-242ac11a-0001-012",
+                "5820565516074020375-242ac11a-0001-012"
+            ],
+            "files": [
+                "20934145366683159-242ac113-0001-002",
+                "24799620228050455-242ac113-0001-002"
+            ],
+            "fileTags": [
+                {
+                    "fileUuid": "20934145366683159-242ac113-0001-002",
+                    "tagName": "Cats with Cell Phones",
+                    "path": "/00000.jpg"
+                }
+            ]
+        },
+        "_ui": {
+            "uuid": "6477552508911021590-242ac116-0001-012",
+            "orders": [
+                {
+                    "parent": "5701721986276397546-242ac11a-0001-012",
+                    "value": 4
+                }
+            ]
+        },
+        "_relatedFields": [
+            "project",
+            "missions",
+            "files"
+        ]
+    },
+    {
+        "uuid": "858918074949636586-242ac116-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "5701721986276397546-242ac11a-0001-012",
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2021-09-07T22:51:41.556-05:00",
+        "created": "2020-01-21T14:03:09.638-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.planning",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/858918074949636586-242ac116-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/858918074949636586-242ac116-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "5701721986276397546-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5701721986276397546-242ac11a-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Something Weird",
+            "dataCollectors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": false,
+                    "name": "jarosenb",
+                    "order": 1
+                },
+                {
+                    "authorship": true,
+                    "name": "jmeiring",
+                    "order": 2
+                },
+                {
+                    "authorship": false,
+                    "name": "thbrown",
+                    "order": 3
+                },
+                {
+                    "authorship": false,
+                    "name": "xirdneh",
+                    "order": 4
+                },
+                {
+                    "authorship": false,
+                    "name": "sal",
+                    "order": 5
+                },
+                {
+                    "name": "guestJayJ0",
+                    "email": "jjjetplane@gmail.com",
+                    "lname": "Jetplane",
+                    "inst": "inst",
+                    "fname": "Jay",
+                    "authorship": false,
+                    "order": 6,
+                    "guest": true
+                }
+            ],
+            "referencedData": [
+                {
+                    "url": "adsf",
+                    "title": "asdf"
+                }
+            ],
+            "description": "asdf",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "missions": [
+                "5701721986276397546-242ac11a-0001-012"
+            ],
+            "files": [],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "858918074949636586-242ac116-0001-012",
+            "orders": [
+                {
+                    "parent": "5701721986276397546-242ac11a-0001-012",
+                    "value": 3
+                }
+            ]
+        },
+        "_relatedFields": [
+            "project",
+            "missions",
+            "files"
+        ]
+    },
+    {
+        "uuid": "4950850719953120790-242ac116-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "9074352062741868055-242ac113-0001-002",
+            "5701721986276397546-242ac11a-0001-012",
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2021-09-07T22:51:30.250-05:00",
+        "created": "2020-01-22T10:39:17.303-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.planning",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/4950850719953120790-242ac116-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/4950850719953120790-242ac116-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "9074352062741868055-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-4453958809521426921-242ac119-0001-012//RApp",
+                    "title": "file"
+                },
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "5701721986276397546-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5701721986276397546-242ac11a-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Plans for Cat Socialization",
+            "dataCollectors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": true,
+                    "name": "jmeiring",
+                    "order": 1
+                },
+                {
+                    "name": "ojamil",
+                    "order": 2,
+                    "authorship": false
+                },
+                {
+                    "name": "jarosenb",
+                    "order": 3,
+                    "authorship": false
+                },
+                {
+                    "name": "xirdneh",
+                    "order": 4,
+                    "authorship": false
+                },
+                {
+                    "authorship": true,
+                    "name": "thbrown",
+                    "order": 5
+                },
+                {
+                    "name": "fnetsch",
+                    "order": 6,
+                    "authorship": false
+                },
+                {
+                    "name": "guestJayJ0",
+                    "email": "jjjetplane@gmail.com",
+                    "lname": "Jetplane",
+                    "inst": "inst",
+                    "fname": "Jay",
+                    "authorship": true,
+                    "order": 7,
+                    "guest": true
+                }
+            ],
+            "referencedData": [
+                {
+                    "url": "http://www.google.com",
+                    "title": "Google"
+                }
+            ],
+            "description": "Description",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "missions": [
+                "5701721986276397546-242ac11a-0001-012"
+            ],
+            "files": [
+                "9074352062741868055-242ac113-0001-002"
+            ],
+            "fileTags": [
+                {
+                    "path": "/RApp/jmeiring/Home.json",
+                    "fileUuid": "8388918227678260759-242ac113-0001-002",
+                    "tagName": "IRB Application"
+                },
+                {
+                    "fileUuid": "",
+                    "tagName": "Letters of Support",
+                    "path": "/RApp/jmeiring"
+                },
+                {
+                    "fileUuid": "9074352062741868055-242ac113-0001-002",
+                    "tagName": "Permits",
+                    "path": "/RApp"
+                },
+                {
+                    "fileUuid": "8377192971255148055-242ac113-0001-002",
+                    "tagName": "Protocol",
+                    "path": "/RApp/jmeiring/Photo 1.jpg"
+                }
+            ]
+        },
+        "_ui": {
+            "uuid": "4950850719953120790-242ac116-0001-012",
+            "orders": [
+                {
+                    "parent": "5701721986276397546-242ac11a-0001-012",
+                    "value": 1
+                }
+            ]
+        },
+        "_relatedFields": [
+            "project",
+            "missions",
+            "files"
+        ]
+    },
+    {
+        "uuid": "1805308758768685546-242ac116-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "5701721986276397546-242ac11a-0001-012",
+            "25787462706130455-242ac113-0001-002",
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2021-09-07T22:51:30.250-05:00",
+        "created": "2020-02-10T15:48:39.467-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.social_science",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1805308758768685546-242ac116-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/1805308758768685546-242ac116-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "25787462706130455-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-4453958809521426921-242ac119-0001-012//00001.jpg",
+                    "title": "file"
+                },
+                {
+                    "rel": "5701721986276397546-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5701721986276397546-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Social Test",
+            "unit": "Things",
+            "modes": [
+                "MODES1",
+                "MODES3",
+                "MODES2"
+            ],
+            "sampleApproach": [
+                "boxes of stuff"
+            ],
+            "sampleSize": "291",
+            "dateStart": "2020-02-08T06:00:00.000Z",
+            "dateEnd": "2020-02-08T06:00:00.000Z",
+            "dataCollectors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": true,
+                    "name": "jmeiring",
+                    "order": 1
+                },
+                {
+                    "name": "ojamil",
+                    "order": 2,
+                    "authorship": false
+                },
+                {
+                    "name": "jarosenb",
+                    "order": 3,
+                    "authorship": false
+                },
+                {
+                    "authorship": true,
+                    "name": "xirdneh",
+                    "order": 4
+                },
+                {
+                    "name": "thbrown",
+                    "order": 5,
+                    "authorship": false
+                },
+                {
+                    "name": "fnetsch",
+                    "order": 6,
+                    "authorship": false
+                },
+                {
+                    "name": "guestJayJ0",
+                    "order": 7,
+                    "authorship": false,
+                    "guest": true,
+                    "fname": "Jay",
+                    "lname": "Jetplane",
+                    "email": "jjjetplane@gmail.com",
+                    "inst": "inst"
+                }
+            ],
+            "location": "1",
+            "latitude": "2",
+            "longitude": "3",
+            "equipment": [
+                "Medium Range Scanner | Leica RTC360 "
+            ],
+            "restriction": "",
+            "referencedData": [],
+            "description": "I should put a real description here. It would make things look a bit nicer...",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "missions": [
+                "5701721986276397546-242ac11a-0001-012"
+            ],
+            "files": [
+                "25787462706130455-242ac113-0001-002"
+            ],
+            "fileTags": [
+                {
+                    "fileUuid": "25787462706130455-242ac113-0001-002",
+                    "tagName": "Raw Data",
+                    "path": "/00001.jpg"
+                },
+                {
+                    "fileUuid": "25787462706130455-242ac113-0001-002",
+                    "tagName": "Pickles",
+                    "path": "/00001.jpg"
+                }
+            ]
+        },
+        "_ui": {
+            "uuid": "1805308758768685546-242ac116-0001-012",
+            "orders": [
+                {
+                    "parent": "5701721986276397546-242ac11a-0001-012",
+                    "value": 0
+                }
+            ]
+        },
+        "_relatedFields": [
+            "project",
+            "missions",
+            "files"
+        ]
+    },
+    {
+        "uuid": "2990674100056616470-242ac116-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "22909834617810455-242ac113-0001-002",
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2021-03-23T16:06:59.530-05:00",
+        "created": "2020-02-19T09:16:44.060-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.geoscience",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2990674100056616470-242ac116-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/2990674100056616470-242ac116-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "22909834617810455-242ac113-0001-002",
+                    "href": "https://agave.designsafe-ci.org/files/v2/media/system/project-4453958809521426921-242ac119-0001-012//00002.jpg",
+                    "title": "file"
+                },
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "TEST DATES",
+            "observationTypes": [
+                "Field Sensors",
+                "Social Science"
+            ],
+            "dateStart": "2020-02-19T06:00:00.000Z",
+            "dateEnd": "2020-02-19T06:00:00.000Z",
+            "dataCollectors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": false,
+                    "name": "jmeiring",
+                    "order": 1
+                },
+                {
+                    "authorship": true,
+                    "name": "xirdneh",
+                    "order": 2
+                },
+                {
+                    "name": "guestJayJ0",
+                    "email": "jjjetplane@gmail.com",
+                    "lname": "Jetplane",
+                    "inst": "inst",
+                    "fname": "Jay",
+                    "authorship": false,
+                    "order": 3,
+                    "guest": true
+                }
+            ],
+            "location": "None",
+            "latitude": "None",
+            "longitude": "None",
+            "equipment": [
+                "iPAD accessories | Tripod, HD Microphone, External battery, Apple Pencil"
+            ],
+            "referencedData": [],
+            "description": "asdfasdfas",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "missions": [],
+            "files": [
+                "22909834617810455-242ac113-0001-002"
+            ],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "2990674100056616470-242ac116-0001-012",
+            "orders": [
+                {
+                    "parent": "5701721986276397546-242ac11a-0001-012",
+                    "value": 2
+                }
+            ]
+        },
+        "_relatedFields": [
+            "project",
+            "missions",
+            "files"
+        ]
+    },
+    {
+        "uuid": "873341880154198506-242ac116-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2020-02-25T14:34:53.394-06:00",
+        "created": "2019-12-03T15:01:16.684-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.collection",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/873341880154198506-242ac116-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/873341880154198506-242ac116-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "TEST",
+            "observationTypes": [
+                "Social Science"
+            ],
+            "dateStart": "2019-12-19T06:00:00.000Z",
+            "dateEnd": "2019-12-26T06:00:00.000Z",
+            "dataCollectors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": true,
+                    "name": "jmeiring",
+                    "order": 1
+                },
+                {
+                    "authorship": false,
+                    "name": "xirdneh",
+                    "order": 2
+                },
+                {
+                    "name": "guestJayJ0",
+                    "email": "jjjetplane@gmail.com",
+                    "lname": "Jetplane",
+                    "inst": "inst",
+                    "fname": "Jay",
+                    "authorship": false,
+                    "order": 3,
+                    "guest": true
+                }
+            ],
+            "guestDataCollectors": [],
+            "location": "asdfasf",
+            "latitude": "1",
+            "longitude": "3",
+            "elevation": "4",
+            "instruments": [
+                {
+                    "model": "asdf",
+                    "name": "Long Range Laser Scanner"
+                }
+            ],
+            "referencedDatas": [],
+            "description": "asdfasdf",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "missions": [
+                "4505193094819025386-242ac116-0001-012"
+            ],
+            "files": [],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "873341880154198506-242ac116-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "missions",
+            "files"
+        ]
+    },
+    {
+        "uuid": "3663217947079873001-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "5820565516074020375-242ac11a-0001-012",
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2020-01-21T11:18:07.475-06:00",
+        "created": "2019-05-14T15:38:15.205-05:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.collection",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3663217947079873001-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/3663217947079873001-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "5820565516074020375-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5820565516074020375-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Cat Pictures",
+            "observationTypes": [
+                "Social Science",
+                "Coastal"
+            ],
+            "dateStart": "2019-05-15T05:00:00.000Z",
+            "dateEnd": "2019-05-23T05:00:00.000Z",
+            "dataCollectors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": false,
+                    "name": "jmeiring",
+                    "order": 1
+                },
+                {
+                    "authorship": true,
+                    "name": "thbrown",
+                    "order": 3
+                },
+                {
+                    "authorship": false,
+                    "name": "xirdneh",
+                    "order": 3
+                },
+                {
+                    "authorship": true,
+                    "name": "sal",
+                    "order": 5
+                },
+                {
+                    "name": "guestJayJ0",
+                    "email": "jjjetplane@gmail.com",
+                    "lname": "Jetplane",
+                    "inst": "inst",
+                    "fname": "Jay",
+                    "authorship": false,
+                    "order": 5,
+                    "guest": true
+                }
+            ],
+            "guestDataCollectors": [],
+            "location": "Catsville",
+            "latitude": "200",
+            "longitude": "200",
+            "elevation": "100",
+            "instruments": [
+                {
+                    "model": "Cat Laser Inc.",
+                    "name": "Long Range Laser Scanner"
+                },
+                {
+                    "model": "Cat Drones Inc.",
+                    "name": "UAVs with Lidar"
+                }
+            ],
+            "referencedDatas": [
+                {
+                    "url": "https://www.google.com/",
+                    "title": "Google"
+                },
+                {
+                    "url": "https://www.amazon.com/",
+                    "title": "Amazon"
+                }
+            ],
+            "description": "This is a huge collection of cat pictures which is probably never going to be used.",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "missions": [
+                "5820565516074020375-242ac11a-0001-012"
+            ],
+            "files": [],
+            "fileTags": [
+                {
+                    "fileUuid": "20934145366683159-242ac113-0001-002",
+                    "tagName": "3D Model"
+                }
+            ]
+        },
+        "_ui": {
+            "uuid": "3663217947079873001-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "missions",
+            "files"
+        ]
+    },
+    {
+        "uuid": "8222223543933997546-242ac11a-0001-012",
+        "schemaId": null,
+        "internalUsername": null,
+        "associationIds": [
+            "5820565516074020375-242ac11a-0001-012",
+            "4453958809521426921-242ac119-0001-012"
+        ],
+        "lastUpdated": "2019-11-14T09:55:26.479-06:00",
+        "created": "2019-11-05T14:25:45.228-06:00",
+        "owner": "ds_admin",
+        "name": "designsafe.project.field_recon.collection",
+        "_links": {
+            "self": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8222223543933997546-242ac11a-0001-012"
+            },
+            "permissions": {
+                "href": "https://agave.designsafe-ci.org/meta/v2/data/8222223543933997546-242ac11a-0001-012/pems"
+            },
+            "owner": {
+                "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+            },
+            "associationIds": [
+                {
+                    "rel": "5820565516074020375-242ac11a-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/5820565516074020375-242ac11a-0001-012",
+                    "title": "metadata"
+                },
+                {
+                    "rel": "4453958809521426921-242ac119-0001-012",
+                    "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012",
+                    "title": "metadata"
+                }
+            ]
+        },
+        "value": {
+            "title": "Space Collection",
+            "observationTypes": [
+                "Storm Surge / Coastal"
+            ],
+            "dateStart": "2019-11-01T05:00:00.000Z",
+            "dateEnd": "2019-11-15T06:00:00.000Z",
+            "dataCollectors": [
+                {
+                    "authorship": true,
+                    "name": "keiths",
+                    "order": 0
+                },
+                {
+                    "authorship": false,
+                    "name": "jarosenb",
+                    "order": 1
+                },
+                {
+                    "authorship": true,
+                    "name": "jmeiring",
+                    "order": 2
+                },
+                {
+                    "authorship": false,
+                    "name": "thbrown",
+                    "order": 3
+                },
+                {
+                    "authorship": true,
+                    "name": "xirdneh",
+                    "order": 4
+                },
+                {
+                    "authorship": false,
+                    "name": "sal",
+                    "order": 5
+                },
+                {
+                    "name": "guestJayJ0",
+                    "email": "jjjetplane@gmail.com",
+                    "lname": "Jetplane",
+                    "inst": "inst",
+                    "fname": "Jay",
+                    "authorship": true,
+                    "order": 6,
+                    "guest": true
+                }
+            ],
+            "guestDataCollectors": [],
+            "location": "Space",
+            "latitude": "space",
+            "longitude": "space",
+            "elevation": "space",
+            "instruments": [
+                {
+                    "model": "Space Station",
+                    "name": "Total Station"
+                }
+            ],
+            "referencedDatas": [],
+            "description": "Description",
+            "project": [
+                "4453958809521426921-242ac119-0001-012"
+            ],
+            "missions": [
+                "5701721986276397546-242ac11a-0001-012",
+                "5820565516074020375-242ac11a-0001-012"
+            ],
+            "files": [],
+            "fileTags": []
+        },
+        "_ui": {
+            "uuid": "8222223543933997546-242ac11a-0001-012",
+            "orders": []
+        },
+        "_relatedFields": [
+            "project",
+            "missions",
+            "files"
+        ]
+    }
+]

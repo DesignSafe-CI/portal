@@ -1,0 +1,98 @@
+{
+    "uuid": "4453958809521426921-242ac119-0001-012",
+    "schemaId": null,
+    "internalUsername": null,
+    "associationIds": [],
+    "lastUpdated": "2021-09-29T15:21:50.006000-05:00",
+    "created": "2019-05-03T11:19:35.471000-05:00",
+    "owner": "ds_admin",
+    "name": "designsafe.project",
+    "_links": {
+        "self": {
+            "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012"
+        },
+        "permissions": {
+            "href": "https://agave.designsafe-ci.org/meta/v2/data/4453958809521426921-242ac119-0001-012/pems"
+        },
+        "owner": {
+            "href": "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+        },
+        "associationIds": []
+    },
+    "value": {
+        "teamMembers": [
+            "thbrown",
+            "xirdneh",
+            "sgray",
+            "fnetsch"
+        ],
+        "coPis": [
+            "ojamil",
+            "sterry1",
+            "jarosenb",
+            "jmeiring"
+        ],
+        "guestMembers": [
+            {
+                "lname": "Jetplane",
+                "inst": "inst",
+                "email": "jjjetplane@gmail.com",
+                "fname": "Jay",
+                "user": "guestJayJ0"
+            }
+        ],
+        "projectType": "field_recon",
+        "projectId": "PRJ-2313",
+        "description": "This is a test to figure out if things are going to work correctly.",
+        "title": "Walk Field Research Demo",
+        "pi": "keiths",
+        "awardNumber": [
+            {
+                "order": 0,
+                "name": "Awards for Recon Greatness",
+                "number": "1234567890"
+            }
+        ],
+        "awardNumbers": [],
+        "associatedProjects": [
+            {
+                "href": "https://www.google.com/",
+                "order": 0,
+                "title": "Google"
+            },
+            {
+                "title": "Wiki",
+                "href": "https://www.wikipedia.org/",
+                "order": 2
+            }
+        ],
+        "keywords": "Hurricane, Tacos, Pizza, Cats, Bikes, Update",
+        "nhEvent": "Category 5 Tornado",
+        "nhEventStart": "2020-02-01T06:00:00.000Z",
+        "nhEventEnd": "2021-09-28T05:00:00.000Z",
+        "nhLocation": "Prague",
+        "nhLatitude": "50.0754",
+        "nhLongitude": "14.4366",
+        "nhTypes": [
+            "Hurricane",
+            "Tornado"
+        ],
+        "frTypes": [
+            "Field Experiment"
+        ],
+        "dois": []
+    },
+    "_ui": {
+        "uuid": "4453958809521426921-242ac119-0001-012",
+        "orders": []
+    },
+    "_related": {
+        "filemodel_set": "designsafe.file",
+        "mission_set": "designsafe.project.field_recon.mission",
+        "collection_set": "designsafe.project.field_recon.collection",
+        "socialscience_set": "designsafe.project.field_recon.social_science",
+        "planning_set": "designsafe.project.field_recon.planning",
+        "geoscience_set": "designsafe.project.field_recon.geoscience",
+        "report_set": "designsafe.project.field_recon.report"
+    }
+}
