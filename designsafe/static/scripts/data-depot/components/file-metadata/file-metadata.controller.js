@@ -2,7 +2,9 @@
 
 class FileMetadataComponentCtrl {
 
-    constructor() {}
+    constructor() {
+
+    }
 
     $onInit() {
         this.show = false;

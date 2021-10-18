@@ -86,7 +86,7 @@ def scrape_meta(file):
     file_ext = os.path.splitext(file.name)[1].lower().strip('.')
 
     if file_ext in ALLOWED_RAW_TYPES:
-        tags = exifread.process_file(file, details=False) #details=False to remove thumbnail...
+        tags = exifread.process_file(file, details=False)
         for key, value in tags.items():
             metadata[key] = str(value)
     elif file_ext in ALLOWED_IMAGE_TYPES:
