@@ -66,8 +66,7 @@ class DataFilesView(BaseApiView):
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
 
-    def put(self, request, api, operation=None, scheme='private',
-            handler=None, system=None, path='/'):
+    def put(self, request, api, operation=None, scheme='private', system=None, path='/'):
 
         body = json.loads(request.body)
 
@@ -98,15 +97,15 @@ class DataFilesView(BaseApiView):
 
         return JsonResponse(response)
 
-    def post(self, request, api, operation=None, scheme='private',
-             handler=None, system=None, path='/'):
+    # uploads come through here...
+    def post(self, request, api, operation=None, scheme='private', system=None, path='/'):
         post_files = request.FILES.dict()
         post_body = request.POST.dict()
         metrics.info('Data Depot',
                      extra={
                          'user': request.user.username,
                          'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
+                         'operation': operation, # modify this here? Upload Files, Upload Dir
                          'info': {
                              'api': api,
                              'scheme': scheme,
@@ -124,31 +123,6 @@ class DataFilesView(BaseApiView):
         response = datafiles_post_handler(api, request.user.username, client, scheme, system, path, operation, body={**post_files, **post_body})
 
         return JsonResponse(response)
-
-class FileMetaView(BaseApiView):
-    def get(self, request, api='agave', system=None, path=''):
-        """
-        This is just for testing...
-        We need to check for metadata when doing a listing on files or when retrieving file information.
-        We should also check with Steve to see if this is something we can fix with TAPIS v2 meta/files changes.
-        Ideally it would be nice to be able to get the meta object along with a file object.
-        """
-        logger.info("====================== FILE META GET =================================")
-        logger.info(api)
-        logger.info(request.user)
-        logger.info(system)
-        logger.info(path)
-
-        client = service_account()
-        query = { "name":"designsafe.file", "value.system": system, "value.path": '/'+path}
-
-        try:
-            meta = client.meta.listMetadata(q=json.dumps(query))[0]
-            logger.info(meta)
-            # maybe permissions needed to be set when the metadata object was last updated...
-            return JsonResponse({"api": api, "system": system, "path": path, "user": request.user.username, "meta": meta})
-        except:
-            return JsonResponse({"api": api, "system": system, "path": path, "user": request.user.username})
 
 
 class TransferFilesView(BaseApiView):

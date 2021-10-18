@@ -1,12 +1,24 @@
 import json
+import logging
 import os
 import re
+import exifread
 from designsafe.apps.api.agave import service_account
+from PIL import Image
 
+logger = logging.getLogger(__name__)
+
+ALLOWED_IMAGE_TYPES = ['png', 'gif', 'jpg', 'jpeg', 'webp']
+ALLOWED_RAW_TYPES = ['tiff', 'raw', 'arw', 'cr2', 'crw', 'nef', 'orw', 'dng']
+# ALLOWED_AUDIO_TYPES = ['mp3', 'mp4', 'm4a', 'wav']
+# ALLOWED_VIDEO_TYPES = ['webm', 'ogg', 'mp4', 'wav', 'webm']
+# ALLOWED_GEO_TYPES = ['gml', 'gfs', 'kml', 'geojson']
 
 def file_meta_obj(path, system, meta):
     """
-    Base object for file metadata creation
+    Default object for file metadata creation
+    ** We need to take in meta through the "meta" param as kwargs
+    could have key overlap
     """
     defaults = {
         'associationIds': [],
@@ -66,31 +78,27 @@ def query_file_meta(system, path):
     return all_results
 
 
-def create_test_meta(file_listing):
+def scrape_meta(file):
     """
-    Create test metadata for files in a listing...
-
-
-    listing = client.files.list(filePath='/data/static1', systemId='Aloe-storage-testuser5')
-    /home/testuser5/data/static1
-    /home/testuser5/data/static1/static1.txt
-    /home/testuser5/data/static1/static2.txt
-
-    import json
-    import logging
-    import urllib.parse
-    from designsafe.apps.api.agave import test_account_client
-    from designsafe.apps.api.datafiles.operations.agave_utils import create_test_meta, file_meta_obj
+    Get standard metadata from a file to display to user...
     """
-    # path = '/data/static1'
-    # system = 'Aloe-storage-testuser5'
-    # client = test_account_client()
-    client = service_account()
+    metadata = {}
+    file_ext = os.path.splitext(file.name)[1].lower().strip('.')
 
-    create_list = []
-    for file in file_listing:
-        if file.type != 'dir':
-            create_list.append(file_meta_obj(system=file.system, path=file.path, **{'test': True}))
-    
-    res = client.meta.bulkCreate(body=json.dumps(create_list))
-    return res
+    if file_ext in ALLOWED_RAW_TYPES:
+        tags = exifread.process_file(file, details=False) #details=False to remove thumbnail...
+        for key, value in tags.items():
+            metadata[key] = str(value)
+    elif file_ext in ALLOWED_IMAGE_TYPES:
+        img = Image.open(file.file)
+        metadata = {
+            "format": img.format,
+            "mode": img.mode,
+            "width": img.width,
+            "height": img.height,
+            "info": img.info # can contain non-human-readable data
+        }
+    else:
+        return None
+
+    return metadata

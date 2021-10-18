@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class="caption">
-        <file-metadata file="$ctrl.resolve.file"></file-metadata>
+        <file-metadata file="$ctrl.resolve.file" metadata="$ctrl.fileMeta"></file-metadata>
     </div>
     <div ng-if="!$ctrl.isHazmapper()" class="table-preview actions text-center">
         <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.rename" ng-click="$ctrl.rename()">

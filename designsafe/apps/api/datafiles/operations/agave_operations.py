@@ -1,12 +1,10 @@
-import datetime
 import io
 import json
 import logging
-import magic
 import os
 import urllib
 from designsafe.apps.api.agave import service_account
-from designsafe.apps.api.datafiles.operations.agave_utils import file_meta_obj, increment_file_name, query_file_meta
+from designsafe.apps.api.datafiles.utils import file_meta_obj, increment_file_name, query_file_meta, scrape_meta
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.data.tasks import agave_indexer
 from django.conf import settings
@@ -526,13 +524,13 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
     -------
     dict
     """
+    # BOOKMARK:
+    # Try to make two new upload endpoints for File Uploads and Directory Uploads... (read below)
+    # NOTE:
+    # Directory and file uploads are not compared against the upload path for an existing listing.
+    # This could provide a bad user experience when their files are just uploaded and overwrite
+    # existing data.
 
-    # TODO: accept meta payload from kwargs... consider magic package for file type/info?
-    # try:
-    #    listing(client, system=system, path=path)
-    # except HTTPError as err:
-    #    if err.response.status_code != 404:
-    #        raise
     if webkit_relative_path:
         rel_path = os.path.dirname(webkit_relative_path).strip('/')
         mkdir(client, system, path, rel_path)
@@ -551,7 +549,20 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
                               queue='indexing'
                               )
 
-    return dict(resp)
+    # attempt to gather standardized metadata from upload
+    try:
+        metadata = scrape_meta(uploaded_file)
+        if metadata:
+            sa_client = service_account()
+            meta_body = file_meta_obj(
+                path=os.path.join('/', path, upload_name),
+                system=system,
+                meta=metadata
+            )
+            sa_client.meta.addMetadata(body=json.dumps(meta_body))
+        return dict(resp)
+    except:
+        return dict(resp)
 
 
 def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwargs):
@@ -580,6 +591,11 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
     file_ext = os.path.splitext(file_name)[1].lower()
     href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
 
+    sa_client = service_account()
+    query = { "name":"designsafe.file", "value.system": system, "value.path": os.path.join('/', path)}
+    meta_result = sa_client.meta.listMetadata(q=json.dumps(query))
+    meta = meta_result[0] if len(meta_result) else {}
+
     args = {
         'url': urllib.parse.unquote(href),
         'maxUses': max_uses,
@@ -588,8 +604,8 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
         'noauth': False
     }
 
-    result = client.postits.create(body=args)
-    url = result['_links']['self']['href']
+    postit_result = client.postits.create(body=args)
+    url = postit_result['_links']['self']['href']
 
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
@@ -611,7 +627,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
     else:
         file_type = 'other'
 
-    return {'href': url, 'fileType': file_type}
+    return {'href': url, 'fileType': file_type, 'fileMeta': meta}
 
 
 def download_bytes(client, system, path):

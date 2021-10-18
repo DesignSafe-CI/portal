@@ -35,6 +35,7 @@ class DataBrowserServicePreviewCtrl {
         }).then(
             (resp) => {
                 this.fileType = resp.data.fileType;
+                this.fileMeta = resp.data.fileMeta;
                 this.href = this.$sce.trustAs('resourceUrl', resp.data.href);
                 if (this.fileType === 'other') {
                     // Unsupported file, hide spinner and display warning.
