@@ -507,7 +507,7 @@ def trash(client, system, path, trash_path):
     return resp
 
 
-def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args, **kwargs,):
+def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args, **kwargs):
     """Upload a file.
     Params
     ------
@@ -519,13 +519,13 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
         Path to upload the file to.
     uploaded_file: file
         File object to upload.
+    webkit_relative_path: string
+        path for file structure of uploaded directory.
 
     Returns
     -------
     dict
     """
-    # BOOKMARK:
-    # Try to make two new upload endpoints for File Uploads and Directory Uploads... (read below)
     # NOTE:
     # Directory and file uploads are not compared against the upload path for an existing listing.
     # This could provide a bad user experience when their files are just uploaded and overwrite

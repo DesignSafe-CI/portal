@@ -1,21 +1,17 @@
-from designsafe.apps.api.views import BaseApiView
-from django.core.urlresolvers import reverse
-from django.http import JsonResponse, HttpResponseForbidden, FileResponse
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from requests.exceptions import HTTPError
-from boxsdk.exception import BoxOAuthException
-from dropbox.exceptions import AuthError as DropboxAuthError
-from google.auth.exceptions import GoogleAuthError
 import json
 import logging
-from designsafe.apps.api.agave import service_account
-from designsafe.apps.api.exceptions import ApiException
+from boxsdk.exception import BoxOAuthException
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 from designsafe.apps.api.datafiles.handlers import datafiles_get_handler, datafiles_post_handler, datafiles_put_handler, resource_unconnected_handler, resource_expired_handler
 from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
 from designsafe.apps.api.datafiles.notifications import notify
 from designsafe.apps.api.datafiles.models import DataFilesSurveyResult, DataFilesSurveyCounter
-# Create your views here.
+from designsafe.apps.api.views import BaseApiView
+from dropbox.exceptions import AuthError as DropboxAuthError
+from google.auth.exceptions import GoogleAuthError
+from requests.exceptions import HTTPError
+
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
