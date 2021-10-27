@@ -510,8 +510,6 @@ def archive(project_id, revision=None):
     for a project, and it will also include a formatted json document of the published metadata.
     Note: This metadata file is will only be used until the Fedora system is set up again.
     """
-
-    # TODO: Add revision number argument and format archive name if exists
     es_client = new_es_client()
     pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     if revision:
@@ -530,7 +528,7 @@ def archive(project_id, revision=None):
             os.chmod(dir, octal)
             if subdir:
                 if not os.path.isdir(subdir):
-                    raise Exception('subdirectory does not exist!')
+                    raise Exception('Subdirectory does not exist: {}'.format(subdir))
                 for root, dirs, files in os.walk(subdir):
                     os.chmod(root, octal)
                     for d in dirs:
@@ -556,10 +554,22 @@ def archive(project_id, revision=None):
             zf.write(metadata_path, metadata_name)
             zf.close()
         except Exception as e:
-            logger.exception("Archive creation failed for {}".format(arc_source))
+            logger.exception("File compression failed: {}".format(arc_source))
         finally:
             set_perms(pub_dir, 0o555, arc_source)
             set_perms(arc_dir, 0o555)
+    
+    def large_publication():
+        # check if the publication is too large to archive
+        arc_source = os.path.join(pub_dir, archive_prefix)
+        size = 0
+        for dirs, _, files in os.walk(arc_source):
+            for file in files:
+                file_size = os.path.getsize(os.path.join(dirs, file))
+                size += file_size
+                if size > 5000000000: #(5GB)
+                    return True
+        return False
 
     # create formatted metadata for user download
     def create_metadata():
@@ -576,7 +586,7 @@ def archive(project_id, revision=None):
 
         project_uuid = pub_dict['project']['uuid']
         try:
-            logger.debug("Creating metadata for {}".format(archive_prefix))
+            logger.debug("Creating metadata: {}".format(archive_prefix))
             if pub_dict['project']['value']['projectType'] in entity_type_map:
                 ent_type = entity_type_map[pub_dict['project']['value']['projectType']]
                 entity_uuids = []
@@ -603,15 +613,21 @@ def archive(project_id, revision=None):
             with open(metadata_path, 'w') as meta_file:
                 json.dump(meta_dict, meta_file)
         except:
-            logger.exception("Failed to create metadata!")
+            logger.exception("Metadata creation failed: {}".format(archive_prefix))
 
     try:
         set_perms(pub_dir, 0o755, os.path.join(pub_dir, archive_prefix))
         set_perms(arc_dir, 0o755)
-        create_metadata()
-        create_archive()
+        if large_publication():
+            logger.exception('Dataset is too large to archive: {}'.format(archive_prefix))
+            create_metadata()
+            set_perms(pub_dir, 0o555, os.path.join(pub_dir, archive_prefix))
+            set_perms(arc_dir, 0o555)
+        else:
+            create_metadata()
+            create_archive()
     except Exception as e:
-        logger.exception('Failed to archive publication!')
+        logger.exception('Archive failed: {}'.format(archive_prefix))
 
 
 def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=None, revised_authors=None):
