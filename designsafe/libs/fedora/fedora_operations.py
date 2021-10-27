@@ -4,6 +4,7 @@ from django.conf import settings
 import json
 import magic
 import os
+import hashlib
 from urllib import parse
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -122,7 +123,7 @@ def fedora_get(project_id, relative_to_root=True):
     return request.json()
 
 
-def fedora_post(container_path, data_container=True):
+def fedora_post(container_path):
     """"
     Create a Fedora container for a project if none exists; otherwise, return
     existing metadata for that project.
@@ -145,12 +146,6 @@ def fedora_post(container_path, data_container=True):
                                auth=(settings.FEDORA_USERNAME,
                                      settings.FEDORA_PASSWORD))
         request.raise_for_status()
-
-        if data_container:
-            dc_request = requests.put(fc_url + "/data",
-                                      auth=(settings.FEDORA_USERNAME,
-                                            settings.FEDORA_PASSWORD))
-            dc_request.raise_for_status()
 
     except HTTPError as error:
         if error.response.status_code == 409:
@@ -211,7 +206,8 @@ def format_metadata_for_fedora(project_id, version=None):
     identifiers = [pub_meta.projectId,
                    'https://www.designsafe-ci.org/'
                    'data/browser/public/designsafe.storage.published/{}'
-                   .format(pub_meta.projectId)]
+                   .format(pub_meta.projectId),
+                   doc.project.uuid]
     identifiers += getattr(pub_meta, 'dois', [])
     identifiers += [getattr(doc.project, 'doi', None)]
 
@@ -226,9 +222,7 @@ def format_metadata_for_fedora(project_id, version=None):
         'identifier': identifiers,
         'subject': pub_meta.keywords.split(', '),
         'creator': author_list,
-        'wasAttributedTo': author_list,
         'issued': doc.project.created.isoformat(),
-        'generatedAtTime': doc.project.created.isoformat(),
         'contributor': contributors,
         'type': project_type,
         'publisher': 'Designsafe',
@@ -310,7 +304,7 @@ def ingest_files_other(project_id, version=None):
                     logger.error('Fedora ingest failed: {}'.format(fc_put_url))
 
 
-def ingest_project(project_id, upload_files=True, version=None):
+def ingest_project(project_id, upload_files=False, version=None):
     """
     Ingest a project into Fedora by creating a record in the repo, updating it
     with the published metadata, and uploading its files.
@@ -359,70 +353,65 @@ def walk_experimental(project_id):
     doc = IndexedPublication.from_id(project_id)
     relation_map = {doc.project.uuid: {'parent': None, 'children': []}}
     relation_map[doc.project.uuid]['container_path'] = project_id
-    relation_map[doc.project.uuid]['fedora_mapping'] = format_metadata_for_fedora(project_id)
+    project_meta = format_metadata_for_fedora(project_id)
+    license = project_meta.get('license', None)
+    relation_map[doc.project.uuid]['fedora_mapping'] = {**project_meta, 'generated': [], 'license': None}
     relation_map[doc.project.uuid]['fileObjs'] = []
     full_author_list = []
 
     experiments_list = doc.experimentsList
     for expt in experiments_list:
         # Do stuff with experiment.
-        expt_container_path = "{}/{}".format(project_id, expt.uuid)
+        expt_container_path = "{}/{}".format(project_id, parse.quote(expt.value.title))
         print('experiment ' + expt.value.title)
-        relation_map[expt.uuid] = {'children': []}
-        relation_map[expt.uuid]['parent'] = doc.project.value.title
-        relation_map[doc.project.uuid]['children'].append(expt.value.title)
+        exp_doi = expt.doi
+        relation_map[doc.project.uuid]['fedora_mapping']['generated'].append('Experiment: {}'.format(exp_doi))
 
+        relation_map[expt.uuid] = {}
         relation_map[expt.uuid]['container_path'] = expt_container_path
-        relation_map[expt.uuid]['fedora_mapping'] = {**format_experiment(expt), 'wasGeneratedBy': project_id, 'generated': []}
+        relation_map[expt.uuid]['fedora_mapping'] = {**format_experiment(expt), 'license': license, 'wasGeneratedBy': project_id, 'generated': []}
         relation_map[expt.uuid]['fileObjs'] = expt.fileObjs
 
         full_author_list += relation_map[expt.uuid]['fedora_mapping']['creator']
-        exp_doi = relation_map[expt.uuid]['fedora_mapping']['identifier']
 
         reports = filter(
             lambda report: expt.uuid in report.value.experiments,
             getattr(doc, 'reportsList', []))
         for report in reports:
             # Do stuff with report.
-            container_path = "{}/{}".format(expt_container_path, report.uuid)
+            report_container_path = "{}/{}".format(expt_container_path, parse.quote(report.value.title))
             print('\treport ' + report.value.title)
-            relation_map[report.uuid] = {'children': []}
-            relation_map[report.uuid]['parent'] = expt.value.title
-            relation_map[expt.uuid]['children'].append(report.value.title)
-            relation_map[expt.uuid]['fedora_mapping']['generated'].append(report.value.title)
+            relation_map[expt.uuid]['fedora_mapping']['generated'].append('Report: {}'.format(report.value.title))
 
+            relation_map[report.uuid] = {}
             relation_map[report.uuid]['fileObjs'] = report.fileObjs
-            relation_map[report.uuid]['container_path'] = container_path
-            relation_map[report.uuid]['fedora_mapping'] = {**format_report(report), 'wasGeneratedBy': exp_doi}
+            relation_map[report.uuid]['container_path'] = report_container_path
+            relation_map[report.uuid]['fedora_mapping'] = {**format_report(report), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
 
         analysis_list = filter(
             lambda analysis: expt.uuid in analysis.value.experiments,
             getattr(doc, 'analysisList', []))
         for analysis in analysis_list:
             # Do stuff with analysis.
-            container_path = "{}/{}".format(expt_container_path, analysis.uuid)
+            analysis_container_path = "{}/{}".format(expt_container_path, parse.quote(analysis.value.title))
             print('\tanalysis ' + analysis.value.title)
-            relation_map[analysis.uuid] = {'children': []}
-            relation_map[analysis.uuid]['parent'] = expt.value.title
-            relation_map[expt.uuid]['children'].append(analysis.value.title)
-            relation_map[expt.uuid]['fedora_mapping']['generated'].append(analysis.value.title)
+            relation_map[expt.uuid]['fedora_mapping']['generated'].append('Analysis: {}'.format(analysis.value.title))
 
+            relation_map[analysis.uuid] = {}
             relation_map[analysis.uuid]['fileObjs'] = analysis.fileObjs
-            relation_map[analysis.uuid]['container_path'] = container_path
-            relation_map[analysis.uuid]['fedora_mapping'] = {**format_analysis(analysis), 'wasGeneratedBy': exp_doi}
+            relation_map[analysis.uuid]['container_path'] = analysis_container_path
+            relation_map[analysis.uuid]['fedora_mapping'] = {**format_analysis(analysis), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
 
         model_configs = filter(
             lambda model_config: expt.uuid in model_config.value.experiments,
             getattr(doc, 'modelConfigs', []))
         for mc in model_configs:
             # Do stuff with model config.
-            configs_container_path = "{}/{}".format(expt_container_path, mc.uuid)
+            configs_container_path = "{}/{}".format(expt_container_path, parse.quote(mc.value.title))
             print('\tmodel config ' + mc.value.title)
-            relation_map[mc.uuid] = {'children': []}
-            relation_map[mc.uuid]['parent'] = expt.value.title
-            relation_map[expt.uuid]['children'].append(mc.value.title)
-            relation_map[expt.uuid]['fedora_mapping']['generated'].append(mc.value.title)
+            relation_map[expt.uuid]['fedora_mapping']['generated'].append('Model Configuration: {}'.format(mc.value.title))
 
+            relation_map[mc.uuid] = {}
             relation_map[mc.uuid]['fileObjs'] = mc.fileObjs
             relation_map[mc.uuid]['container_path'] = configs_container_path
             relation_map[mc.uuid]['fedora_mapping'] = {**format_model_config(mc), 'wasGeneratedBy': exp_doi}
@@ -432,39 +421,37 @@ def walk_experimental(project_id):
                 getattr(doc, 'sensorLists', []))
             for sl in sensor_lists:
                 # Do stuff with sensor list.
-                sl_container_path = "{}/{}".format(configs_container_path, sl.uuid)
+                sl_container_path = "{}/{}".format(configs_container_path, parse.quote(sl.value.title))
                 print('\t\tsensor list ' + sl.value.title)
-                relation_map[sl.uuid] = {'children': []}
-                relation_map[sl.uuid]['parent'] = mc.value.title
-                relation_map[mc.uuid]['children'].append(sl.value.title)
-                relation_map[expt.uuid]['fedora_mapping']['generated'].append(sl.value.title)
+                relation_map[expt.uuid]['fedora_mapping']['generated'].append('Sensor: {}'.format(sl.value.title))
 
+                relation_map[sl.uuid] = {}
                 relation_map[sl.uuid]['fileObjs'] = sl.fileObjs
                 relation_map[sl.uuid]['container_path'] = sl_container_path
-                relation_map[sl.uuid]['fedora_mapping'] = {**format_sensor_info(sl), 'wasGeneratedBy': exp_doi, 'wasDerivedFrom': mc.value.title, 'influenced': []}
+                relation_map[sl.uuid]['fedora_mapping'] = {**format_sensor_info(sl),
+                                                           'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
+                                                           'wasDerivedFrom': 'Model Configuration: {}'.format(mc.value.title),
+                                                           'influenced': []}
 
                 events = filter(
                     lambda event: sl.uuid in event.value.sensorLists,
                     getattr(doc, 'eventsList', []))
                 for event in events:
                     # Do stuff with events.
-                    evt_container_path = "{}/{}".format(sl_container_path, event.uuid)
+                    evt_container_path = "{}/{}".format(sl_container_path, parse.quote(event.value.title))
                     print('\t\t\tevent ' + event.value.title)
-                    relation_map[event.uuid] = {'children': []}
-                    relation_map[event.uuid]['parent'] = mc.value.title
-                    relation_map[sl.uuid]['children'].append(event.value.title)
-                    relation_map[sl.uuid]['fedora_mapping']['influenced'].append(event.value.title)
-                    relation_map[expt.uuid]['fedora_mapping']['generated'].append(event.value.title)
+                    relation_map[sl.uuid]['fedora_mapping']['influenced'].append('Event: {}'.format(event.value.title))
+                    relation_map[expt.uuid]['fedora_mapping']['generated'].append('Event: {}'.format(event.value.title))
 
+                    relation_map[event.uuid] = {}
                     relation_map[event.uuid]['fileObjs'] = event.fileObjs
                     relation_map[event.uuid]['container_path'] = evt_container_path
-                    relation_map[event.uuid]['fedora_mapping'] = {**format_event(event), 'wasGeneratedBy': exp_doi, 'wasDerivedFrom': mc.value.title, 'wasInfluencedBy': sl.value.title}
+                    relation_map[event.uuid]['fedora_mapping'] = {**format_event(event),
+                                                                  'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
+                                                                  'wasDerivedFrom': 'Model Configuration: {}'.format(mc.value.title),
+                                                                  'wasInfluencedBy': 'Sensor: {}'.format(sl.value.title)}
 
     relation_map[doc.project.uuid]['fedora_mapping']['creator'] = list(set(full_author_list))
-    # for key in relation_map.keys():
-    #     relation_map[key]['fedora_mapping']['isPartOf'] = relation_map[key]['parent']
-    #     relation_map[key]['fedora_mapping']['hasPart'] = relation_map[key]['children']
-
     return relation_map
 
 
@@ -503,7 +490,7 @@ def format_experiment(expt):
 
     return {
         'type': experiment_type,
-        'identifier': dois,
+        'identifier': dois + [expt.uuid],
         'contributor': experimental_facility,
         'creator': creator,
         'title': meta.title,
@@ -519,6 +506,7 @@ def format_report(report):
     return {
         'type': 'report',
         'title': report.value.title,
+        'identifier': report.uuid,
         'description': report.value.description,
     }
 
@@ -527,6 +515,7 @@ def format_model_config(mc):
     return {
         'type': 'model configuration',
         'title': mc.value.title,
+        'identifier': mc.uuid,
         'description': mc.value.description
     }
 
@@ -535,6 +524,7 @@ def format_sensor_info(si):
     return {
         'type': 'sensor information',
         'title': si.value.title,
+        'identifier': si.uuid,
         'description': si.value.description
     }
 
@@ -543,6 +533,7 @@ def format_event(event):
     return {
         'type': 'event',
         'title': event.value.title,
+        'identifier': event.uuid,
         'description': event.value.description
     }
 
@@ -551,6 +542,7 @@ def format_analysis(analysis):
     return {
         'type': 'analysis',
         'title': analysis.value.title,
+        'identifier': analysis.uuid,
         'description': analysis.value.description
     }
 
@@ -563,81 +555,59 @@ def ingest_project_experimental(project_id, upload_files=False, version=None):
     container_path = project_id
 
     walk_result = walk_experimental(project_id)
-    for entity in walk_result.values():
+    # Sort by length of container path to prevent children from being ingested before their parents
+    sorted_keys = sorted(walk_result.keys(), key=lambda x: len(walk_result[x]['container_path'].split('/')))
+    for key in sorted_keys:
+        entity = walk_result[key]
         container_path = entity['container_path']
         fedora_post(container_path)
         res = fedora_update(container_path, entity['fedora_mapping'])
         # ingest_entity_files(project_id, container_path, entity['fileObjs'])
 
 
-def ingest_entity_files(project_id='PRJ-2652', container_path='PRJ-2652/1304309068217773590-242ac116-0001-012/8847849164301659670-242ac116-0001-012', fileObjs=[{'type': 'file', 'path': '/MC monitoring data_Bridge Clark Mill Pond.xlsx'}]):
-    """
-    Ingest an Other type publication's files into fedora. All files are ingested
-    as children of the base project, with a slug that indicates the path in the
-    directory hierarchy.
-    """
+def get_sha1_hash(file_path):
+    hash = hashlib.sha1()
+    with open(file_path, 'rb') as f:
+        while True:
+            data = f.read(2**20)
+            if not data:
+                break
+            hash.update(data)
+    return hash.hexdigest()
 
-    retry_strategy = Retry(
-        total=3,
-        backoff_factor=5
-    )
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
-    http.mount("http://", adapter)
 
-    archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
-    fedora_root = parse.urljoin(settings.FEDORA_URL, PUBLICATIONS_CONTAINER)
-
-    for fileObj in fileObjs:
-        if fileObj['type'] == 'file':
-            file_path = os.path.join(archive_path, fileObj['path'].strip('/'))
-            headers = {'Content-Type': 'text/plain'}
-            mime = magic.Magic(mime=True)
-            headers['Content-Type'] = mime.from_file(file_path)
-            # project_archive_path will be something like /corral-repl/tacc/NHERI/published/PRJ-1234
-            project_archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
-            # fc_relative_path is of form /PRJ-1234/data/path/to/folder/file
-            fc_relative_path = os.path.join(container_path, 'data', file_path.replace(project_archive_path, '', 1).strip('/'))
-            fc_put_url = os.path.join(fedora_root, parse.quote(fc_relative_path))
-            with open(file_path, 'rb') as _file:
-                print(_file)
-                try:
-                    print(fc_put_url)
-                    request = http.put(fc_put_url,
-                                       auth=(settings.FEDORA_USERNAME,
-                                             settings.FEDORA_PASSWORD),
-                                       headers=headers,
-                                       data=_file)
-                    request.raise_for_status()
-                except HTTPError:
-                    logger.error('Fedora ingest failed: {}'.format(fc_put_url))
-        else:
-            return
-
-    return
-    for root, _, files in os.walk(archive_path):
-
+def get_child_paths(dir_path):
+    for root, _, files in os.walk(dir_path):
         for file in files:
-            headers = {'Content-Type': 'text/plain'}
-            mime = magic.Magic(mime=True)
-            headers['Content-Type'] = mime.from_file(os.path.join(root, file))
-            # project_archive_path will be something like /corral-repl/tacc/NHERI/published/PRJ-1234
-            project_archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
-            # fc_relative_path is of form /PRJ-1234/data/path/to/folder/file
-            fc_relative_path = os.path.join(project_id, 'data', root.replace(project_archive_path, '', 1).strip('/'), file)
-            fc_put_url = os.path.join(fedora_root, parse.quote(fc_relative_path))
-            with open(os.path.join(root, file), 'rb') as _file:
-                try:
-                    pass
-                    request = http.put(fc_put_url,
-                                       auth=(settings.FEDORA_USERNAME,
-                                             settings.FEDORA_PASSWORD),
-                                       headers=headers,
-                                       data=_file)
-                    request.raise_for_status()
-                except HTTPError:
-                    logger.error('Fedora ingest failed: {}'.format(fc_put_url))
+            yield os.path.join(root, file)
+
+
+def generate_manifest(project_id):
+    walk_result = walk_experimental(project_id)
+    manifest = []
+    archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
+    for (uuid, entity) in walk_result.items():
+        fileObjs = entity['fileObjs']
+        for file in fileObjs:
+
+            file_path = os.path.join(archive_path, file['path'].strip('/'))
+
+            if file['type'] == 'dir':
+                for path in get_child_paths(file_path):
+                    manifest.append({
+                        'parent_entity': uuid,
+                        'path': path,
+                        'checksum': get_sha1_hash(path)
+                    })
+
+            else:
+                manifest.append({
+                    'parent_entity': uuid,
+                    'path': file_path,
+                    'checksum': get_sha1_hash(file_path)
+                })
+
+    print(json.dumps(manifest))
 
 
 def generate_report_experimental(project_id):
@@ -647,12 +617,14 @@ def generate_report_experimental(project_id):
     project_root = fedora_get(project_id)
     entity_queue = deque([project_root['@id']])
 
-    # Breadth-first search on the entity tree
+    # Depth-first search on the entity tree
     while len(entity_queue) > 0:
-        entity = entity_queue.popleft()
+        entity = entity_queue.pop()
+        print(entity)
         entity_json = fedora_get(entity, relative_to_root=False)
         # remove fedora-specicic meta- bypassAdmin etc
-        del entity_json['@context']
+        for key in ['@context', 'created', 'createdBy', 'lastModified', 'lastModifiedBy']:
+            del entity_json[key]
         report_json.append(entity_json)
 
         children = entity_json.get('contains', [])
