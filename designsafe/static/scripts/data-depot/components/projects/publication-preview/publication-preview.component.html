@@ -73,7 +73,7 @@
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
-            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
+            <tr class= "prj-row" ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
                 ng-if="!$ctrl.readOnly">
                 <td ng-if="$first">Awards</td>
                 <td ng-if="!$first"></td>
