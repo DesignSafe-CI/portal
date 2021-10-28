@@ -123,12 +123,24 @@
         <a href="/rw/user-guides/curating-publishing-projects/policies/publication/" target="_blank">Data Usage Agreement</a>
     </p>
     <br>
-    <div class="text-right" ng-if="!$ctrl.error || !$ctrl.archive">
-        <button class="btn btn-add" ng-click="$ctrl.download()" ng-disabled="!$ctrl.loaded || $ctrl.retrievingPostit">
+    <div class="text-right" ng-if="!$ctrl.error">
+        <button class="btn btn-add" ng-if="$ctrl.archive" ng-click="$ctrl.download($ctrl.archive)" ng-disabled="!$ctrl.loaded || $ctrl.retrievingPostit">
             <div class="btn-container" ng-if="!$ctrl.retrievingPostit">
                 <span class="curation-download"></span>
                 &ensp;
                 <strong>Download</strong>
+            </div>
+            <div class="btn-container" ng-if="$ctrl.retrievingPostit">
+                <span ng-if="$ctrl.retrievingPostit" style="font-size:18px">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
+            </div>
+        </button>
+        <button class="btn btn-add" ng-if="!$ctrl.archive" ng-click="$ctrl.download($ctrl.metadata)" ng-disabled="!$ctrl.loaded || $ctrl.retrievingPostit">
+            <div class="btn-container" ng-if="!$ctrl.retrievingPostit">
+                <span class="curation-download"></span>
+                &ensp;
+                <strong>Download Metadata</strong>
             </div>
             <div class="btn-container" ng-if="$ctrl.retrievingPostit">
                 <span ng-if="$ctrl.retrievingPostit" style="font-size:18px">

@@ -59,9 +59,9 @@ class PublicationDownloadModalCtrl {
         });
     }
 
-    download() {
+    download(fileObj) {
         this.retrievingPostit = true;
-        const files = [this.archive]
+        const files = [fileObj]
         this.FileOperationService.download({ api: 'agave', scheme: 'public', files }).then(
             (_) => (this.retrievingPostit = false)
         );
