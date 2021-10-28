@@ -51,6 +51,29 @@ def nh_event_query(nh_event):
 
 
 def other_type_query(data_type):
+    data_types = [
+            'Check Sheet',
+            'Code',
+            'Database',
+            'Dataset',
+            'Image',
+            'Jupyter Notebook',
+            'Learning Object',
+            'Model',
+            'Paper',
+            'Proceeding',
+            'Poster',
+            'Presentation',
+            'Report',
+            'REU',
+            'Social Sciences',
+            'Software',
+            'Survey',
+            'Video',
+            'White Paper',
+    ]
+    if data_type == 'Other':
+        return ~Q({'terms': {'project.value.dataType.keyword': data_types}}) # | ~Q({'exists', {'field': 'project.value.dataType.keyword'}})
     return Q({'term': {'project.value.dataType.keyword': data_type}})
 
 

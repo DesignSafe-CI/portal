@@ -13,11 +13,15 @@
       <div class="prj-head-buttons">
       <a class="prj-head-download" ng-click="$ctrl.download()">
         <span class="curation-download"></span>
-        <strong>&nbsp;Download Dataset</strong>
+        <strong>&nbsp;Download Project</strong>
       </a>
       <a class="prj-head-download" ng-click="$ctrl.metrics()">
         <img src='/static/images/ds-icons/icon-metrics.svg' style="width: 20px;">
         <strong>&nbsp;View Data Metrics</strong>
+    </a>
+    <a class="prj-head-download" ng-click="$ctrl.leaveFeedback()">
+      <img src='/static/images/ds-icons/icon-feedback.svg' style="width: 20px;">
+      <strong>Leave Feedback</strong>
     </a>
   </div>
     </div>
@@ -140,9 +144,9 @@
   <hr>
 
   <dd-altmetrics publication="$ctrl.browser.publication"></dd-altmetrics>
-  <a style="cursor: pointer;" ng-click="$ctrl.leaveFeedback()">
+  <!-- <a style="cursor: pointer;" ng-click="$ctrl.leaveFeedback()">
     <strong>Leave Feedback</strong>
-  </a>
+  </a> -->
   <breadcrumb
             path="$ctrl.breadcrumbParams.path"
             system="$ctrl.FileListingService.listings.main.params.path"

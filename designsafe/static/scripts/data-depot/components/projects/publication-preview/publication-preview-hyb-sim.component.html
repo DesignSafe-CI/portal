@@ -7,14 +7,10 @@
                 <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
             </span>
             <div class="prj-head-buttons">
-                <a class="prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
+                <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
                     <span class="curation-download"></span>
-                    <strong>&nbsp;Download Dataset</strong>
-                </a>
-                <a class="prj-head-download" ng-click="$ctrl.metrics()" ng-if="$ctrl.readOnly">
-                    <img src='/static/images/ds-icons/icon-metrics.svg' style="width: 20px;">
-                    <strong>&nbsp;View Data Metrics</strong>
-                </a>
+                    &nbsp;&nbsp;Download Dataset
+                </button>
             </div>
         </div>
         <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
@@ -29,7 +25,7 @@
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
-                <td>CoPIs</td>
+                <td>Co-PIs</td>
                 <td class="prj-data">
                     <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
@@ -75,7 +71,7 @@
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
             <tr ng-repeat="doi in $ctrl.hsDOIList">
-                <td ng-if="$first">DOI(s) in Dataset</td>
+                <td ng-if="$first">DOI(s) in Project</td>
                 <td ng-if="!$first"></td>
                 <td>
                     <strong>
@@ -99,8 +95,29 @@
                 <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
             </tr>
         </table>
+        <div class="prj-center-bar">
+            <a ng-click="$ctrl.treeDiagram()">
+                <strong>View Data Diagram</strong>
+            </a>
+            <span ng-if="$ctrl.readOnly">
+                |<a ng-click="$ctrl.metrics()">
+                    &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+                    <strong>&nbsp;View Data Metrics</strong>
+                </a>
+                |<a ng-click="$ctrl.leaveFeedback()">
+                    &nbsp;<img src='/static/images/ds-icons/icon-feedback.svg' style="width: 12px;">
+                    <strong>&nbsp;Leave Feedback</strong>
+                </a>
+            </span>
+        </div>
         <div ng-if="$ctrl.browser.project.value.description">
-            <p>{{ $ctrl.browser.project.value.description }}</p>
+            <p>
+                <show-more
+                    label="'Description'"
+                    content="$ctrl.browser.project.value.description"
+                >
+                </show-more>
+            </p>
         </div>
     </div>
     <!-- Project Header End -->
@@ -142,13 +159,6 @@
     </table>
     <br>
     <div style="margin-bottom: 2px;" ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading">
-        <a style="cursor: pointer;" data-ng-click="$ctrl.treeDiagram()">
-            <strong>View Data Diagram</strong>
-        </a>
-        <span> | </span>
-        <a style="cursor: pointer;" ng-if="$ctrl.readOnly" ng-click="$ctrl.leaveFeedback()">
-            <strong>Leave Feedback</strong>
-        </a>
         <breadcrumb
         path="$ctrl.breadcrumbParams.path"
         system="$ctrl.FileListingService.listings.main.params.path"
@@ -186,9 +196,6 @@
         </div>
     </div>
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
-        <a style="cursor: pointer;" ng-if="$ctrl.readOnly" ng-click="$ctrl.leaveFeedback()">
-            <strong>Leave Feedback</strong>
-        </a>
         <breadcrumb
         path="$ctrl.breadcrumbParams.path"
         system="$ctrl.FileListingService.listings.main.params.path"
