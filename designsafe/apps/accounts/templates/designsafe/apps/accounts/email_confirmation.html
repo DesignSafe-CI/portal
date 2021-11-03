@@ -9,9 +9,27 @@
     <h1>Account Activation</h1>
 
     <p class="lead">
-      Almost finished! Enter the activation code that you received via email
-      and the username and password you registered with to activate your account.
+      If you are here with your first verification code, this will verify your email but
+      this will NOT give you access to the portal at this time.  You will receive a second
+      email with a second verification code after your account has been accepted
+      that will finalize your account.
     </p>
+
+    <p class="lead">
+      If you are here with your second verification code, this will finalize your account
+      and you will receive access to the portal after this step.
+    </p>
+
+    <p class="lead">
+      If you don't know if this is your first or second verification code, or you have
+      any trouble with your account, please
+      <a href="{% url 'djangoRT:ticketcreate' %}">submit a Help Desk ticket</a>.
+    </p>
+
+    <div class="alert alert-warning">
+      <strong>Do not attempt to change/reset your password prior to activating your account!</strong>
+      This will result in your account being locked and will require an administrator to intervene and unlock the account.
+    </div>
 
     <form method="post" action="">
       {% csrf_token %}
