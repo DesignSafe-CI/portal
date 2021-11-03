@@ -3,8 +3,7 @@ import json
 import logging
 import os
 import urllib
-from designsafe.apps.api.agave import service_account
-from designsafe.apps.api.datafiles.utils import file_meta_obj, increment_file_name, query_file_meta, scrape_meta
+from designsafe.apps.api.datafiles.utils import *
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.data.tasks import agave_indexer
 from django.conf import settings
@@ -243,8 +242,8 @@ def move(client, src_system, src_path, dest_system, dest_path):
 
     src_file_name = os.path.basename(src_path)
     try:
-        listing = client.files.list(systemId=dest_system, filePath=dest_path)
-        dst_file_name = increment_file_name(listing, src_file_name)
+        client.files.list(systemId=dest_system, filePath=os.path.join(dest_path, src_file_name))
+        dst_file_name = rename_duplicate_path(src_file_name)
         full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
     except:
         dst_file_name = src_file_name
@@ -256,31 +255,12 @@ def move(client, src_system, src_path, dest_system, dest_path):
         filePath=urllib.parse.quote(src_path),
         body=body
     )
-
-    sa_client = service_account()
-    if move_result['nativeFormat'] == 'dir':
-        meta_listing = query_file_meta(system=src_system, path=src_path)
-        if meta_listing:
-            updates = []
-            for meta in meta_listing:
-                meta.value['path'] = meta.value['path'].replace(src_path, full_dest_path)
-                meta.value['system'] = dest_system
-                updates.append({"uuid": meta.uuid, "update": meta})
-
-            sa_client.meta.bulkUpdate(body=json.dumps(updates))
-
-        agave_indexer.apply_async(kwargs={
-            'systemId': dest_system,
-            'filePath': full_dest_path,
-            'recurse': True
-        }, queue='indexing')
-    else:
-        meta_listing = query_file_meta(system=src_system, path=src_path)
-        if meta_listing:
-            src_meta = meta_listing[0]
-            src_meta['value']['path'] = os.path.join('/', full_dest_path)
-            src_meta['value']['system'] = dest_system
-            sa_client.meta.updateMetadata(body=src_meta, uuid=src_meta['uuid'])
+    update_meta(
+        src_system=src_system,
+        src_path=src_path,
+        dest_system=dest_system,
+        dest_path=full_dest_path
+    )
 
     if os.path.dirname(src_path) != full_dest_path or src_path != full_dest_path:
         agave_indexer.apply_async(kwargs={
@@ -293,7 +273,7 @@ def move(client, src_system, src_path, dest_system, dest_path):
         'systemId': dest_system,
         'filePath': dest_path,
         'recurse': False
-    }, routing_key='indexing')
+    }, queue='indexing')
     
     if move_result['nativeFormat'] == 'dir':
         agave_indexer.apply_async(kwargs={
@@ -329,8 +309,8 @@ def copy(client, src_system, src_path, dest_system, dest_path):
     """
     src_file_name = os.path.basename(src_path)
     try:
-        listing = client.files.list(systemId=dest_system, filePath=dest_path)
-        dst_file_name = increment_file_name(listing, src_file_name)
+        client.files.list(systemId=dest_system, filePath=os.path.join(dest_path, src_file_name))
+        dst_file_name = rename_duplicate_path(src_file_name)
         full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
     except:
         dst_file_name = src_file_name
@@ -352,37 +332,20 @@ def copy(client, src_system, src_path, dest_system, dest_path):
             urlToIngest=src_url
         )
     
-    sa_client = service_account()
+    copy_meta(
+        src_system=src_system,
+        src_path=src_path,
+        dest_system=dest_system,
+        dest_path=full_dest_path
+    )
+
     if copy_result['nativeFormat'] == 'dir':
-        meta_listing = query_file_meta(system=src_system, path=src_path)
-        if meta_listing:
-            copies = []
-            for src_meta in meta_listing:
-                meta_copy = file_meta_obj(
-                    path=src_meta.value['path'].replace(src_path, full_dest_path),
-                    system=dest_system,
-                    meta=src_meta['value']
-                )
-                copies.append(meta_copy)
-            sa_client.meta.bulkCreate(body=json.dumps(copies))
-    
         agave_indexer.apply_async(kwargs={
             'systemId': dest_system,
             'filePath': full_dest_path,
             'recurse': True
         }, queue='indexing')
     else:
-        meta_listing = query_file_meta(system=src_system, path=src_path)
-        if meta_listing:
-            src_meta = meta_listing[0]
-            src_meta
-            dst_meta = file_meta_obj(
-                path=os.path.join('/', full_dest_path),
-                system=dest_system,
-                meta=src_meta['value']
-            )
-            sa_client.meta.addMetadata(body=json.dumps(dst_meta))
-
         agave_indexer.apply_async(kwargs={
             'username': 'ds_admin',
             'systemId': dest_system,
@@ -423,27 +386,23 @@ def rename(client, system, path, new_name):
     # listing[0].type == 'file'
     # listing[0].type == 'dir'
     listing = client.files.list(systemId=system, filePath=path)
-
-    sa_client = service_account()
     path = path.strip('/')
     body = {'action': 'rename', 'path': new_name}
+
     rename_result = client.files.manage(
         systemId=system,
         filePath=urllib.parse.quote(os.path.join('/', path)),
         body=body
     )
+    update_meta(
+        src_system=system,
+        src_path=path,
+        dest_system=system,
+        dest_path=os.path.join(os.path.dirname(path), new_name)
+    )
 
     # if rename_result['nativeFormat'] == 'dir':
     if listing[0].type == 'dir':
-        meta_listing = query_file_meta(system=system, path=path)
-        if meta_listing:
-            updates = []
-            for meta in meta_listing:
-                new_path = os.path.join(os.path.dirname(path), new_name)
-                meta.value['path'] = meta.value['path'].replace(path, new_path)
-                updates.append({"uuid": meta.uuid, "update": meta})
-            sa_client.meta.bulkUpdate(body=json.dumps(updates))
-
         agave_indexer.apply_async(
             kwargs={
                 'systemId': system,
@@ -456,12 +415,6 @@ def rename(client, system, path, new_name):
                 'recurse': True
         }, queue='indexing')
     else:
-        meta_listing = query_file_meta(system=system, path=path)
-        if meta_listing:
-            meta = meta_listing[0]
-            meta['value']['path'] = os.path.join('/', os.path.dirname(path), new_name)
-            sa_client.meta.updateMetadata(body=meta, uuid=meta['uuid'])
-
         agave_indexer.apply_async(
             kwargs={
                 'systemId': system,
@@ -529,7 +482,7 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
     # NOTE:
     # Directory and file uploads are not compared against the upload path for an existing listing.
     # This could provide a bad user experience when their files are just uploaded and overwrite
-    # existing data.
+    # existing data. We will need to be able to handle directory/folder uploads as a single operation.
 
     if webkit_relative_path:
         rel_path = os.path.dirname(webkit_relative_path).strip('/')
@@ -551,15 +504,13 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
 
     # attempt to gather standardized metadata from upload
     try:
-        metadata = scrape_meta(uploaded_file)
+        metadata = scrape_metadata_from_file(uploaded_file)
         if metadata:
-            sa_client = service_account()
-            meta_body = file_meta_obj(
+            create_meta(
                 path=os.path.join('/', path, upload_name),
                 system=system,
                 meta=metadata
             )
-            sa_client.meta.addMetadata(body=json.dumps(meta_body))
         return dict(resp)
     except:
         return dict(resp)
@@ -591,9 +542,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
     file_ext = os.path.splitext(file_name)[1].lower()
     href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
 
-    sa_client = service_account()
-    query = { "name":"designsafe.file", "value.system": system, "value.path": os.path.join('/', path)}
-    meta_result = sa_client.meta.listMetadata(q=json.dumps(query))
+    meta_result = query_file_meta(system, os.path.join('/', path))
     meta = meta_result[0] if len(meta_result) else {}
 
     args = {
