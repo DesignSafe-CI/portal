@@ -316,7 +316,7 @@ def register(request):
 
 
 def registration_successful(request):
-    return render_to_response('designsafe/apps/accounts/registration_successful.html')
+    return render(request, 'designsafe/apps/accounts/registration_successful.html')
 
 
 @login_required

@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
-RUN pip3 install --upgrade pip setuptools wheel && pip3 install uwsgi uwsgitop pip-tools
+RUN pip3 install --upgrade pip wheel && pip3 install uwsgi uwsgitop pip-tools setuptools==57
 
 RUN mkdir -p /opt/uwsgi && \
     curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
