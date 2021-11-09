@@ -271,7 +271,13 @@ class IndexedPublication(Document):
             'keywords': Text(analyzer='english'),
             'projectId': Text(fields={'_exact': Keyword()}),
             'projectType': Text(fields={'_exact': Keyword()}),
-            'dois': Text(fields={'_exact': Keyword()}, multi=True)
+            'dois': Text(fields={'_exact': Keyword()}, multi=True),
+            'hazmapperMaps': Nested(properties={
+                'name': Text(fields={'_exact':Keyword()}),
+                'path': Text(fields={'_exact':Keyword()}),
+                'uuid': Text(fields={'_exact':Keyword()}),
+                'deployment': Text(fields={'_exact':Keyword()})
+            }),
         })
     })
     projectId = Text(fields={'_exact': Keyword()})

@@ -94,6 +94,17 @@
                 <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
             </tr>
+            <tr ng-repeat="map in $ctrl.filteredHazmapperMaps($ctrl.browser.project.value.hazmapperMaps)">
+                <td ng-if="$first">Hazmapper Maps</td>
+                <td ng-if="!$first"></td>
+                <td id="test-prj-related">
+                    <span><b>{{ map.name }}</b></span>
+                    <i class="fa fa-folder" ng-click="$ctrl.onBrowse({path: map.path, type: 'dir'})" uib-tooltip="Open Linked Path"></i>
+                    <a href="{{ map.href }}" rel="noopener noreferrer" target="_blank" uib-tooltip="Open in Hazmapper">
+                        <i class="fa fa-external-link"></i>
+                    </a>
+                </td>
+            </tr>
         </table>
         <div class="prj-center-bar">
             <a ng-click="$ctrl.treeDiagram()">

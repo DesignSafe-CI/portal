@@ -24,6 +24,7 @@ class SimulationProject(Project):
     keywords = fields.CharField('Keywords', default='')
     nh_types = fields.ListField('Natural Hazard Type')
     dois = fields.ListField('Dois')
+    hazmapper_maps = fields.ListField('Hazmapper Maps')
 
 class FileModel(MetadataModel):
     model_name = 'designsafe.file'
