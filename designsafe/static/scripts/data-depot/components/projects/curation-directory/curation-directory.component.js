@@ -216,6 +216,8 @@ class CurationDirectoryCtrl {
     }
 
     filteredHazmapperMaps(maps) {
+        maps = maps ? maps : [];
+
         maps.forEach(map => {
             switch(map.deployment) {
                 case 'production':
