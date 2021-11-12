@@ -97,7 +97,7 @@
           <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
           <td class="prj-data" id="test-prj-keywords">{{ $ctrl.browser.project.value.keywords }}</td>
         </tr>
-        <tr>
+        <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
           <td>Hazmapper Maps</td>
           <td>
             <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
