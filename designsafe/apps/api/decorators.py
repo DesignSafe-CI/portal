@@ -30,7 +30,7 @@ def _decode_jwt(jwt):
     key_der = b64decode(pubkey)
     key = load_der_public_key(key_der, backend=default_backend())
     return pyjwt.decode(jwt, key, issuer=settings.AGAVE_JWT_ISSUER)
-    #return pyjwt.decode(jwt, key, verify=False)
+
 
 def _get_jwt_payload(request):
     """Return JWT payload as a string
