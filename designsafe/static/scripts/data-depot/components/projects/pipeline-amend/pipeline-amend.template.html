@@ -142,6 +142,13 @@
                     <td ng-if="$ctrl.project.value.keywords">Keywords</td>
                     <td class="prj-data">{{ $ctrl.project.value.keywords }}</td>
                 </tr>
+                <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
+                    <td>Hazmapper Maps</td>
+                    <td>
+                        <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps">
+                        </hazmapper-maps>
+                    </td>
+                </tr>
             </table>
             <div ng-if="$ctrl.project.value.description">
                 <p>{{ $ctrl.project.value.description }}</p>

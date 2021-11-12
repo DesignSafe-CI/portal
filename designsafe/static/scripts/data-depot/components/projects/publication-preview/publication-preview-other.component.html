@@ -76,6 +76,13 @@
                 <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
             </tr>
+            <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
+                <td>Hazmapper Maps</td>
+                <td>
+                    <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
+                    </hazmapper-maps>
+                </td>
+            </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly">
                 <td ng-if="$ctrl.browser.project.value.keywords">Date of Publication</td>
                 <td class="prj-data">{{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}</td>

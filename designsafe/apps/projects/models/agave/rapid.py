@@ -43,6 +43,7 @@ class FieldReconProject(Project):
     nh_types = fields.ListField('Natural Hazard Type')
     fr_types = fields.ListField('Field Research Type')
     dois = fields.ListField('Dois')
+    hazmapper_maps = fields.ListField('Hazmapper Maps')
 
 
 class FileModel(MetadataModel):

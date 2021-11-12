@@ -206,14 +206,15 @@ class CurationDirectoryCtrl {
         });
     }
 
-  onBrowse(file) {
-    if (file.type === 'dir') {
-        this.$state.go(this.$state.current.name, {filePath: file.path.replace(/^\/+/, ''), query_string: null})
+    onBrowse(file) {
+        if (file.type === 'dir') {
+            this.$state.go(this.$state.current.name, {filePath: file.path.replace(/^\/+/, ''), query_string: null})
+        }
+        else {
+            this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
+        }
     }
-    else {
-        this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
-    }
-  }
+
 }
 
 export const CurationDirectoryComponent = {
