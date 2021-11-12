@@ -1,0 +1,7 @@
+<div ng-repeat="map in $ctrl.filteredHazmapperMaps()">
+  <span><b>{{ map.name }}</b></span>
+  <i ng-if="$ctrl.onBrowse" class="fa fa-folder" data-ng-click="$ctrl.browse($event, map.path)" uib-tooltip="Open Linked Path"></i>
+  <a href="{{ map.href }}" rel="noopener noreferrer" target="_blank" uib-tooltip="Open in Hazmapper">
+    <i class="fa fa-external-link"></i>
+  </a>
+</div>
