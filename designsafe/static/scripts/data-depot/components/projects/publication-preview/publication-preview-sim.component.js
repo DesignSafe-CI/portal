@@ -159,6 +159,7 @@ class PublicationPreviewSimCtrl {
             this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
         }
     }
+
 }
 
 export const PublicationPreviewSimComponent = {

@@ -123,6 +123,7 @@ class PipelineProjectCtrl {
             size: 'lg',
         });
     }
+
 }
 
 PipelineProjectCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];

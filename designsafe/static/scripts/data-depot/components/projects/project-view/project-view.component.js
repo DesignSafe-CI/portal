@@ -137,6 +137,7 @@ class ProjectViewCtrl {
       this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
     }
   }
+
 }
 
 export const ProjectViewComponent = {

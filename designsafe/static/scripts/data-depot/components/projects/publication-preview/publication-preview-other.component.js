@@ -90,6 +90,7 @@ class PublicationPreviewOtherCtrl {
             this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
         }
     }
+
 }
 
 
