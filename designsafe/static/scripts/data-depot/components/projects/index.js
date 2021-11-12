@@ -43,6 +43,7 @@ import {
     PipelinePublishComponent,
     PipelinePrivacyPublishComponent
 } from './pipeline-publish/pipeline-publish.component';
+import { HazmapperMapsComponent } from './_common/hazmapper-maps.component'
 import { 
     ManageProjectComponent,
     AmendProjectComponent
@@ -101,6 +102,7 @@ ddProjectsComponents.component('pipelineTeam', PipelineTeamComponent);
 ddProjectsComponents.component('pipelineLicenses', PipelineLicensesComponent);
 ddProjectsComponents.component('pipelinePublishModal', PipelinePublishComponent);
 ddProjectsComponents.component('pipelinePrivacyPublishModal', PipelinePrivacyPublishComponent);
+ddProjectsComponents.component('hazmapperMaps', HazmapperMapsComponent);
 ddProjectsComponents.component('manageProject', ManageProjectComponent);
 ddProjectsComponents.component('amendProject', AmendProjectComponent);
 ddProjectsComponents.component('manageAuthors', ManageAuthorsComponent);

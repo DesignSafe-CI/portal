@@ -123,29 +123,6 @@ class PipelineProjectCtrl {
             size: 'lg',
         });
     }
-
-    filteredHazmapperMaps(maps) {
-        maps = maps ? maps : [];
-
-        maps.forEach(map => {
-            switch(map.deployment) {
-                case 'production':
-                    map.href = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${map.uuid}`;
-                    break;
-                case 'staging':
-                    map.href = `https://hazmapper.tacc.utexas.edu/staging/project/${map.uuid}`;
-                    break;
-                default:
-                    map.href = `http://localhost:4200/project/${map.uuid}`;
-              }
-          });
-
-        if (window.location.origin.includes('designsafe-ci.org')) {
-            return maps.filter(map => map.deployment === 'production');
-          }
-
-        return maps;
-      }
 }
 
 PipelineProjectCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];
