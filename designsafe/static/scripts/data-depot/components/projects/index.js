@@ -12,14 +12,14 @@ import { PipelineStartComponent } from './pipeline-start/pipeline-start.componen
 import {
     PipelineVersionComponent,
     PipelineVersionProjectComponent,
-    PipelineVersionChangesComponent
+    PipelineVersionChangesComponent,
 } from './pipeline-version/pipeline-version.component';
 import { PipelineAmendComponent } from './pipeline-amend/pipeline-amend.component';
 import {
     PipelineSelectionExpComponent,
     PipelineSelectionSimComponent,
     PipelineSelectionHybSimComponent,
-    PipelineSelectionFieldComponent
+    PipelineSelectionFieldComponent,
 } from './pipeline-selection/pipeline-selection.component';
 import { PipelineSelectionOtherComponent } from './pipeline-selection/pipeline-selection-other.component';
 import { PipelineProjectComponent } from './pipeline-project/pipeline-project.component';
@@ -34,18 +34,19 @@ import {
     PipelineSubEntityExpComponent,
     PipelineSubEntitySimComponent,
     PipelineSubEntityHybSimComponent,
-    PipelineSubEntityFieldComponent
+    PipelineSubEntityFieldComponent,
 } from './pipeline-sub-entity/pipeline-sub-entity.component';
 import { PipelineAuthorsComponent } from './pipeline-authors/pipeline-authors.component';
 import { PipelineTeamComponent } from './pipeline-team/pipeline-team.component';
 import { PipelineLicensesComponent } from './pipeline-licenses/pipeline-licenses.component';
 import {
     PipelinePublishComponent,
-    PipelinePrivacyPublishComponent
+    PipelinePrivacyPublishComponent,
 } from './pipeline-publish/pipeline-publish.component';
-import { 
+import { HazmapperMapsComponent } from './_common/hazmapper-maps/hazmapper-maps.component';
+import {
     ManageProjectComponent,
-    AmendProjectComponent
+    AmendProjectComponent,
 } from '../../../projects/components/manage-project/manage-project.component';
 import { ManageAuthorsComponent } from '../../../projects/components/manage-authors/manage-authors.component.js';
 import { ManageProjectTypeComponent } from '../../../projects/components/manage-project-type/manage-project-type.component.js';
@@ -66,7 +67,7 @@ import { FileCategoriesComponent } from '../../../projects/components/file-categ
 import { PublicationMetricsComponent } from '../../../projects/components/publication-metrics/publication-metrics.component.js';
 import LeaveFeedbackModalComponent from '../../../projects/components/leave-feedback-modal/leave-feedback-modal.component';
 
-let ddProjectsComponents = angular.module('dd.components.projects', []);
+const ddProjectsComponents = angular.module('dd.components.projects', []);
 
 ddProjectsComponents.component('projectListing', ProjectListingComponent);
 ddProjectsComponents.component('projectView', ProjectViewComponent);
@@ -101,6 +102,7 @@ ddProjectsComponents.component('pipelineTeam', PipelineTeamComponent);
 ddProjectsComponents.component('pipelineLicenses', PipelineLicensesComponent);
 ddProjectsComponents.component('pipelinePublishModal', PipelinePublishComponent);
 ddProjectsComponents.component('pipelinePrivacyPublishModal', PipelinePrivacyPublishComponent);
+ddProjectsComponents.component('hazmapperMaps', HazmapperMapsComponent);
 ddProjectsComponents.component('manageProject', ManageProjectComponent);
 ddProjectsComponents.component('amendProject', AmendProjectComponent);
 ddProjectsComponents.component('manageAuthors', ManageAuthorsComponent);

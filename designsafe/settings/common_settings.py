@@ -62,6 +62,7 @@ INSTALLED_APPS = (
     'djangocms_picture',
     'djangocms_video',
     'djangocms_forms',
+    'djangocms_snippet',
     'snowpenguin.django.recaptcha2',
     'filer',
     'easy_thumbnails',

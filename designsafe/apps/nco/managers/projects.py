@@ -74,9 +74,11 @@ class NcoProjectsManager(object):
             "Event Started Last 7 Days": last_n_days(7),
             "Event Started Last 14 Days": last_n_days(14),
             "Event Started Last 30 Days": last_n_days(30),
+            "Event Started Last 90 Days": last_n_days(90),
             "Event Will Start in 7 Days": in_n_days(7),
             "Event Will Start in 14 Days": in_n_days(14),
             "Event Will Start in 30 Days": in_n_days(30),
+            "Event Will Start in 90 Days": in_n_days(90),
         }
         return range_switch[value]()
 
