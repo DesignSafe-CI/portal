@@ -22,6 +22,9 @@ PUBLICATIONS_CONTAINER = settings.FEDORA_CONTAINER
 PUBLICATIONS_MOUNT_ROOT = '/corral-repl/tacc/NHERI/published/'
 
 FEDORA_CONTEXT = {
+    "available": {
+        "@id": "http://purl.org/dc/elements/1.1/available"
+    },
     "description": {
         "@id": "http://purl.org/dc/elements/1.1/description"
     },
@@ -93,6 +96,9 @@ FEDORA_CONTEXT = {
     },
     "wasInfluencedBy": {
         "@id": "https://www.w3.org/TR/2013/REC-prov-o-20130430/#wasInfluencedBy"
+    },
+    "influenced": {
+        "@id": "https://www.w3.org/TR/2013/REC-prov-o-20130430/#influenced"
     }
 }
 
@@ -217,7 +223,7 @@ def format_metadata_for_fedora(project_id, version=None):
 
     fc_meta = {
         'title': pub_meta.title,
-        'entity': pub_meta.title,
+        'entity': 'Project',
         'description': pub_meta.description,
         'identifier': identifiers,
         'subject': pub_meta.keywords.split(', '),
@@ -351,13 +357,17 @@ def walk_experimental(project_id):
     """
     from urllib import parse
     doc = IndexedPublication.from_id(project_id)
-    relation_map = {doc.project.uuid: {'parent': None, 'children': []}}
-    relation_map[doc.project.uuid]['container_path'] = project_id
+    relation_map = []
+
     project_meta = format_metadata_for_fedora(project_id)
     license = project_meta.get('license', None)
-    relation_map[doc.project.uuid]['fedora_mapping'] = {**project_meta, 'generated': [], 'license': None}
-    relation_map[doc.project.uuid]['fileObjs'] = []
     full_author_list = []
+    project_map = {
+        'uuid': doc.project.uuid,
+        'container_path': project_id,
+        'fedora_mapping': {**project_meta, 'generated': [], 'license': None},
+        'fileObjs': []
+    }
 
     experiments_list = doc.experimentsList
     for expt in experiments_list:
@@ -365,14 +375,16 @@ def walk_experimental(project_id):
         expt_container_path = "{}/{}".format(project_id, parse.quote(expt.value.title))
         print('experiment ' + expt.value.title)
         exp_doi = expt.doi
-        relation_map[doc.project.uuid]['fedora_mapping']['generated'].append('Experiment: {}'.format(exp_doi))
+        project_map['fedora_mapping']['generated'].append('Experiment: {}'.format(exp_doi))
 
-        relation_map[expt.uuid] = {}
-        relation_map[expt.uuid]['container_path'] = expt_container_path
-        relation_map[expt.uuid]['fedora_mapping'] = {**format_experiment(expt), 'license': license, 'wasGeneratedBy': project_id, 'generated': []}
-        relation_map[expt.uuid]['fileObjs'] = expt.fileObjs
+        experiment_map = {
+            'uuid': expt.uuid,
+            'container_path': expt_container_path,
+            'fedora_mapping': {**format_experiment(expt), 'license': license, 'wasGeneratedBy': project_id, 'generated': []},
+            'fileObjs': expt.fileObjs
+        }
 
-        full_author_list += relation_map[expt.uuid]['fedora_mapping']['creator']
+        full_author_list += experiment_map['fedora_mapping']['creator']
 
         reports = filter(
             lambda report: expt.uuid in report.value.experiments,
@@ -381,12 +393,15 @@ def walk_experimental(project_id):
             # Do stuff with report.
             report_container_path = "{}/{}".format(expt_container_path, parse.quote(report.value.title))
             print('\treport ' + report.value.title)
-            relation_map[expt.uuid]['fedora_mapping']['generated'].append('Report: {}'.format(report.value.title))
+            experiment_map['fedora_mapping']['generated'].append('Report: {}'.format(report.value.title))
 
-            relation_map[report.uuid] = {}
-            relation_map[report.uuid]['fileObjs'] = report.fileObjs
-            relation_map[report.uuid]['container_path'] = report_container_path
-            relation_map[report.uuid]['fedora_mapping'] = {**format_report(report), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
+            report_map = {
+                'uuid': report.uuid,
+                'fileObjs': report.fileObjs,
+                'container_path': report_container_path,
+                'fedora_mapping': {**format_report(report), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
+            }
+            relation_map.append(report_map)
 
         analysis_list = filter(
             lambda analysis: expt.uuid in analysis.value.experiments,
@@ -395,12 +410,16 @@ def walk_experimental(project_id):
             # Do stuff with analysis.
             analysis_container_path = "{}/{}".format(expt_container_path, parse.quote(analysis.value.title))
             print('\tanalysis ' + analysis.value.title)
-            relation_map[expt.uuid]['fedora_mapping']['generated'].append('Analysis: {}'.format(analysis.value.title))
+            experiment_map['fedora_mapping']['generated'].append('Analysis: {}'.format(analysis.value.title))
 
-            relation_map[analysis.uuid] = {}
-            relation_map[analysis.uuid]['fileObjs'] = analysis.fileObjs
-            relation_map[analysis.uuid]['container_path'] = analysis_container_path
-            relation_map[analysis.uuid]['fedora_mapping'] = {**format_analysis(analysis), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
+            analysis_map = {
+                'uuid': analysis.uuid,
+                'fileObjs': analysis.fileObjs,
+                'container_path': analysis_container_path,
+                'fedora_mapping': {**format_analysis(analysis), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
+
+            }
+            relation_map.append(analysis_map)
 
         model_configs = filter(
             lambda model_config: expt.uuid in model_config.value.experiments,
@@ -409,50 +428,61 @@ def walk_experimental(project_id):
             # Do stuff with model config.
             configs_container_path = "{}/{}".format(expt_container_path, parse.quote(mc.value.title))
             print('\tmodel config ' + mc.value.title)
-            relation_map[expt.uuid]['fedora_mapping']['generated'].append('Model Configuration: {}'.format(mc.value.title))
+            experiment_map['fedora_mapping']['generated'].append('Model Configuration: {}'.format(mc.value.title))
 
-            relation_map[mc.uuid] = {}
-            relation_map[mc.uuid]['fileObjs'] = mc.fileObjs
-            relation_map[mc.uuid]['container_path'] = configs_container_path
-            relation_map[mc.uuid]['fedora_mapping'] = {**format_model_config(mc), 'wasGeneratedBy': exp_doi}
+            mc_map = {
+                'uuid': mc.uuid,
+                'fileObjs': mc.fileObjs,
+                'container_path': configs_container_path,
+                'fedora_mapping': {**format_model_config(mc), 'wasGeneratedBy': exp_doi}
+            }
 
             sensor_lists = filter(
-                lambda sensor_list: mc.uuid in sensor_list.value.modelConfigs,
+                lambda sensor_list: mc.uuid in sensor_list.value.modelConfigs and expt.uuid in sensor_list.associationIds,
                 getattr(doc, 'sensorLists', []))
             for sl in sensor_lists:
                 # Do stuff with sensor list.
                 sl_container_path = "{}/{}".format(configs_container_path, parse.quote(sl.value.title))
                 print('\t\tsensor list ' + sl.value.title)
-                relation_map[expt.uuid]['fedora_mapping']['generated'].append('Sensor: {}'.format(sl.value.title))
+                experiment_map['fedora_mapping']['generated'].append('Sensor: {}'.format(sl.value.title))
 
-                relation_map[sl.uuid] = {}
-                relation_map[sl.uuid]['fileObjs'] = sl.fileObjs
-                relation_map[sl.uuid]['container_path'] = sl_container_path
-                relation_map[sl.uuid]['fedora_mapping'] = {**format_sensor_info(sl),
-                                                           'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
-                                                           'wasDerivedFrom': 'Model Configuration: {}'.format(mc.value.title),
-                                                           'influenced': []}
+                sl_map = {
+                    'uuid': sl.uuid,
+                    'fileObjs': sl.fileObjs,
+                    'container_path': sl_container_path,
+                    'fedora_mapping': {**format_sensor_info(sl),
+                                       'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
+                                       'wasDerivedFrom': 'Model Configuration: {}'.format(mc.value.title),
+                                       'influenced': []}
+                }
 
                 events = filter(
-                    lambda event: sl.uuid in event.value.sensorLists,
+                    lambda event: sl.uuid in event.value.sensorLists and expt.uuid in event.associationIds and mc.uuid in event.associationIds,
                     getattr(doc, 'eventsList', []))
                 for event in events:
                     # Do stuff with events.
                     evt_container_path = "{}/{}".format(sl_container_path, parse.quote(event.value.title))
                     print('\t\t\tevent ' + event.value.title)
-                    relation_map[sl.uuid]['fedora_mapping']['influenced'].append('Event: {}'.format(event.value.title))
-                    relation_map[expt.uuid]['fedora_mapping']['generated'].append('Event: {}'.format(event.value.title))
+                    sl_map['fedora_mapping']['influenced'].append('Event: {}'.format(event.value.title))
+                    experiment_map['fedora_mapping']['generated'].append('Event: {}'.format(event.value.title))
 
-                    relation_map[event.uuid] = {}
-                    relation_map[event.uuid]['fileObjs'] = event.fileObjs
-                    relation_map[event.uuid]['container_path'] = evt_container_path
-                    relation_map[event.uuid]['fedora_mapping'] = {**format_event(event),
-                                                                  'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
-                                                                  'wasDerivedFrom': 'Model Configuration: {}'.format(mc.value.title),
-                                                                  'wasInfluencedBy': 'Sensor: {}'.format(sl.value.title)}
+                    event_map = {
+                        'uuid': event.uuid,
+                        'fileObjs': event.fileObjs,
+                        'container_path': evt_container_path,
+                        'fedora_mapping': {**format_event(event),
+                                           'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
+                                           'wasDerivedFrom': 'Model Configuration: {}'.format(mc.value.title),
+                                           'wasInfluencedBy': 'Sensor: {}'.format(sl.value.title)}
+                    }
+                    relation_map.append(event_map)
+                relation_map.append(sl_map)
+            relation_map.append(mc_map)
+        relation_map.append(experiment_map)
+    project_map['fedora_mapping']['creator'] = list(set(full_author_list))
+    relation_map.append(project_map)
 
-    relation_map[doc.project.uuid]['fedora_mapping']['creator'] = list(set(full_author_list))
-    return relation_map
+    return relation_map[::-1]
 
 
 def format_experiment(expt):
@@ -497,7 +527,7 @@ def format_experiment(expt):
         'description': meta.description,
         'subject': equipment_type,
         '_created': start_date,
-        'date': publication_date,
+        'available': publication_date,
         'publisher': 'Designsafe',
     }
 
@@ -556,12 +586,11 @@ def ingest_project_experimental(project_id, upload_files=False, version=None):
 
     walk_result = walk_experimental(project_id)
     # Sort by length of container path to prevent children from being ingested before their parents
-    sorted_keys = sorted(walk_result.keys(), key=lambda x: len(walk_result[x]['container_path'].split('/')))
-    for key in sorted_keys:
-        entity = walk_result[key]
-        container_path = entity['container_path']
-        fedora_post(container_path)
-        res = fedora_update(container_path, entity['fedora_mapping'])
+    # sorted_keys = sorted(walk_result.keys(), key=lambda x: len(walk_result[x]['container_path'][0].split('/')))
+    for entity in walk_result:
+        fedora_post(entity['container_path'])
+        print(entity['fedora_mapping'])
+        res = fedora_update(entity['container_path'], entity['fedora_mapping'])
         # ingest_entity_files(project_id, container_path, entity['fileObjs'])
 
 
@@ -586,28 +615,47 @@ def generate_manifest(project_id):
     walk_result = walk_experimental(project_id)
     manifest = []
     archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
-    for (uuid, entity) in walk_result.items():
+    for entity in walk_result:
         fileObjs = entity['fileObjs']
         for file in fileObjs:
 
             file_path = os.path.join(archive_path, file['path'].strip('/'))
+            rel_path = os.path.join(parse.unquote(entity['container_path']), file['path'].strip('/'))
 
             if file['type'] == 'dir':
                 for path in get_child_paths(file_path):
                     manifest.append({
-                        'parent_entity': uuid,
-                        'path': path,
+                        'parent_entity': entity['uuid'],
+                        'corral_path': path,
+                        'rel_path': path.replace(file_path, rel_path, 1),
                         'checksum': get_sha1_hash(path)
                     })
 
             else:
                 manifest.append({
-                    'parent_entity': uuid,
-                    'path': file_path,
+                    'parent_entity': entity['uuid'],
+                    'corral_path': file_path,
+                    'rel_path': rel_path,
                     'checksum': get_sha1_hash(file_path)
                 })
 
-    print(json.dumps(manifest))
+    return manifest
+
+def generate_package(project_id):
+    from zipfile import ZipFile
+    archive_path = '/corral-repl/tacc/NHERI/published/archives/{}.zip'.format(project_id)
+    manifest = generate_manifest(project_id)
+    manifest_json = json.dumps(manifest, indent=4)
+
+    report = generate_report_experimental(project_id)
+    report_json = json.dumps(report, indent=4)
+
+    with ZipFile(archive_path, 'w') as zf:
+        for file in manifest:
+            print(file['rel_path'])
+            zf.write(file['corral_path'], file['rel_path'])
+        zf.writestr('{}/manifest.json'.format(project_id), manifest_json)
+        zf.writestr('{}/metadata.json'.format(project_id), report_json)
 
 
 def generate_report_experimental(project_id):
