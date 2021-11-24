@@ -21,7 +21,7 @@ def is_jwt(request):
     if val:
         return True
 
-    return Fal
+    return False
 
 
 def get_client_ip(request):
