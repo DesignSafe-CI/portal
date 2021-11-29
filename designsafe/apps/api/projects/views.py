@@ -381,11 +381,6 @@ class ProjectInstanceView(BaseApiView):
         project = cls(**meta_obj)
         project_dict = project.to_body_dict()
 
-        # serialization can change the PI order
-        try:
-            project_dict['value']['coPis'] = meta_obj['value']['coPis']
-        except KeyError:
-            pass
         return JsonResponse(project_dict)
 
     def post(self, request, project_id):
