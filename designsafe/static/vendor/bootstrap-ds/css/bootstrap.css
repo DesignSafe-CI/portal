@@ -2889,6 +2889,7 @@ input[type="search"] {
   width:100%;
 }
 .tag-preview {
+  display: inline;
   font-weight: bold;
   font-style: italic;
 }
