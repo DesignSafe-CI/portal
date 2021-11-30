@@ -9,6 +9,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from requests import HTTPError
+from designsafe.apps.api.utils import get_client_ip
 import json
 import logging
 
@@ -60,6 +61,8 @@ def call_api(request, service):
                     if appId:
                         if pems:
                             metrics.info('agave.apps.listPermissions', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.apps.listPermissions',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -70,6 +73,8 @@ def call_api(request, service):
                             data = agave.apps.listPermissions(appId=appId)
                         else:
                             metrics.info('agave.apps.get', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.apps.get',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -89,6 +94,8 @@ def call_api(request, service):
                                 data['license']['enabled'] = lic is not None
                     else:
                         metrics.info('agave.apps.list', extra={
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'operation': 'agave.apps.list',
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'user': request.user.username,
@@ -102,6 +109,8 @@ def call_api(request, service):
                             username = request.GET.get('username')
                             metrics.info('agave.apps.updatePermissionsForUser', extra={
                                 'operation': 'agave.apps.updatePermissionsForUser',
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
                                 'info': {
@@ -111,6 +120,8 @@ def call_api(request, service):
                             data = agave.apps.updatePermissionsForUser(appId=appId, username=username, body=body)
                         else:
                             metrics.info('agave.apps.manage', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.apps.manage',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -122,6 +133,8 @@ def call_api(request, service):
                             data = agave.apps.manage(appId=appId, body=body)
                     else:
                         metrics.info('agave.apps.add', extra={
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'operation': 'agave.apps.add',
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'user': request.user.username,
@@ -136,6 +149,8 @@ def call_api(request, service):
                         if pems:
                             username = request.GET.get('username')
                             metrics.info('agave.apps.deletePermissionsForUser', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.apps.deletePermissionsForUser',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -146,6 +161,8 @@ def call_api(request, service):
                             data = agave.apps.deletePermissionsForUser(appId=appId, username=username)
                         else:
                             metrics.info('agave.apps.delete', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.apps.delete',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -159,6 +176,8 @@ def call_api(request, service):
                 system_id = request.GET.get('system_id')
                 path = request.GET.get('path')
                 metrics.info('agave.files.list', extra={
+                    'agent': request.META.get('HTTP_USER_AGENT'),
+                    'ip': get_client_ip(request),
                     'operation': 'agave.files.list',
                     'sessionId': getattr(request.session, 'session_key', ''),
                     'user': request.user.username,
@@ -182,6 +201,8 @@ def call_api(request, service):
                     if system_id:
                         if roles:
                             metrics.info('agave.systems.listRoles', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.systems.listRoles',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -192,6 +213,8 @@ def call_api(request, service):
                             data = agave.systems.listRoles(systemId=system_id)
                         elif user_role:
                             metrics.info('agave.systems.getRoleForUser', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.systems.getRoleForUser',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -202,6 +225,8 @@ def call_api(request, service):
                             data = agave.systems.getRoleForUser(systemId=system_id, username=request.user.username)
                         else:
                             metrics.info('agave.systems.get', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.systems.get',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -216,6 +241,8 @@ def call_api(request, service):
                                 logger.debug('SHOULD BE HERE')
 
                                 metrics.info('agave.systems.list', extra={
+                                    'agent': request.META.get('HTTP_USER_AGENT'),
+                                    'ip': get_client_ip(request),
                                     'operation': 'agave.systems.list public',
                                     'sessionId': getattr(request.session, 'session_key', ''),
                                     'user': request.user.username,
@@ -228,6 +255,8 @@ def call_api(request, service):
                                 data = agave.systems.list(public=public, type=type)
                             else:
                                 metrics.info('agave.systems.list', extra={
+                                    'agent': request.META.get('HTTP_USER_AGENT'),
+                                    'ip': get_client_ip(request),
                                     'operation': 'agave.systems.list public',
                                     'sessionId': getattr(request.session, 'session_key', ''),
                                     'user': request.user.username,
@@ -240,6 +269,8 @@ def call_api(request, service):
                         else:
                             if (type):
                                 metrics.info('agave.systems.list', extra={
+                                    'agent': request.META.get('HTTP_USER_AGENT'),
+                                    'ip': get_client_ip(request),
                                     'operation': 'agave.systems.list',
                                     'sessionId': getattr(request.session, 'session_key', ''),
                                     'user': request.user.username,
@@ -250,6 +281,8 @@ def call_api(request, service):
                                 data = agave.systems.list(type=type)
                             else:
                                 metrics.info('agave.systems.list', extra={
+                                    'agent': request.META.get('HTTP_USER_AGENT'),
+                                    'ip': get_client_ip(request),
                                     'operation': 'agave.systems.list',
                                     'sessionId': getattr(request.session, 'session_key', ''),
                                     'user': request.user.username,
@@ -265,6 +298,8 @@ def call_api(request, service):
                     if pems:
                         if uuid:
                             metrics.info('agave.meta.listMetadataPermissions', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'user': request.user.username,
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'operation': 'agave.meta.listMetadataPermissions',
@@ -276,6 +311,8 @@ def call_api(request, service):
                     else:
                         if uuid:
                             metrics.info('agave.meta.getMetadata', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.meta.getMetadata',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -286,6 +323,8 @@ def call_api(request, service):
                             data = agave.meta.getMetadata(uuid=uuid)
                         elif query:
                             metrics.info('agave.meta.listMetadata', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.meta.listMetadata',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -295,11 +334,16 @@ def call_api(request, service):
                             })
                             data = agave.meta.listMetadata(q=query, limit=0)
                         else:
-                            metrics.info('agave.meta.listMetadata')
+                            metrics.info('agave.meta.listMetadata', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
+                            })
                             data = agave.meta.listMetadata()
                 elif request.method == 'POST':
                     body = json.loads(request.body)
                     metrics.info('meta POST body', extra={
+                        'agent': request.META.get('HTTP_USER_AGENT'),
+                        'ip': get_client_ip(request),
                         'operation': 'agave.meta.listMetadata',
                         'sessionId': getattr(request.session, 'session_key', ''),
                         'user': request.user.username,
@@ -311,6 +355,8 @@ def call_api(request, service):
                         username = request.GET.get('username')
                         if username:
                             metrics.info('agave.meta.updateMetadataPermissionsForUser', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.meta.listMetadata',
                                 'user': request.user.username,
                                 'sessionId': getattr(request.session, 'session_key', ''),
@@ -322,6 +368,8 @@ def call_api(request, service):
                             data = agave.meta.updateMetadataPermissionsForUser(body=body, uuid=uuid, username=username)
                         else:
                             metrics.info('agave.meta.updateMetadata', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.meta.listMetadata',
                                 'user': request.user.username,
                                 'sessionId': getattr(request.session, 'session_key', ''),
@@ -334,6 +382,8 @@ def call_api(request, service):
                     else:
                         if uuid:
                             metrics.info('agave.meta.updateMetadata uuid', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.meta.listMetadata',
                                 'user': request.user.username,
                                 'sessionId': getattr(request.session, 'session_key', ''),
@@ -345,6 +395,8 @@ def call_api(request, service):
                             index_or_update_project.apply_async(args=[uuid], queue='api')
                         else:
                             metrics.info('agave.meta.addMetadata', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.meta.listMetadata',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -359,6 +411,8 @@ def call_api(request, service):
                         if pems:
                             username = request.GET.get('username')
                             metrics.info('agave.meta.deleteMetadataPermissionsForUser', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.meta.listMetadata',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -369,6 +423,8 @@ def call_api(request, service):
                             data = agave.meta.deleteMetadataPermissionsForUser(uuid=uuid, username=username)
                         else:
                             metrics.info('agave.meta.deleteMetadata', extra={
+                                'agent': request.META.get('HTTP_USER_AGENT'),
+                                'ip': get_client_ip(request),
                                 'operation': 'agave.meta.listMetadata',
                                 'sessionId': getattr(request.session, 'session_key', ''),
                                 'user': request.user.username,
@@ -388,6 +444,8 @@ def call_api(request, service):
                 if request.method == 'GET':
                     if appId and pems:
                         metrics.info('ds_admin_client.apps.listPermissions', extra={
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'operation': 'ds_admin_client.apps.listPermissions',
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'user': 'ds_admin',
@@ -398,6 +456,8 @@ def call_api(request, service):
                         data = ds_admin_client.apps.listPermissions(appId=appId)
                     else:
                         metrics.info('ds_admin_client.meta.listMetadata', extra={
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'operation': 'ds_admin_client.meta.listMetadata',
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'user': 'ds_admin',
@@ -412,6 +472,8 @@ def call_api(request, service):
                     username = request.GET.get('username')
                     if pems and username:
                         metrics.info('ds_admin_client.meta.updateMetadataPermissionsForUser', extra={
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'operation': 'agave.meta.listMetadata',
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'user': 'ds_admin',
@@ -435,6 +497,8 @@ def call_api(request, service):
                 json_response = e.response.json()
                 metrics.info('Failed to execute {0} API call due to HTTPError={1}'.format(
                 service, json_response.get('message')), extra={
+                    'agent': request.META.get('HTTP_USER_AGENT'),
+                    'ip': get_client_ip(request),
                     'operation': 'agave.meta.listMetadata',
                     'sessionId': getattr(request.session, 'session_key', ''),
                     'user': request.user.username,
@@ -453,6 +517,8 @@ def call_api(request, service):
         except Exception as e:
             metrics.info('Failed to execute {0} API call due to Exception={1}'.format(
                 service, e), extra={
+                    'agent': request.META.get('HTTP_USER_AGENT'),
+                    'ip': get_client_ip(request),
                     'operation': 'agave.meta.listMetadata',
                     'sessionId': getattr(request.session, 'session_key', ''),
                     'user': request.user.username,
@@ -460,6 +526,8 @@ def call_api(request, service):
                 })
             logger.error('Failed to execute {0} API call due to Exception={1}'.format(
                 service, e), extra={
+                    'agent': request.META.get('HTTP_USER_AGENT'),
+                    'ip': get_client_ip(request),
                     'user': request.user.username
                 })
             return HttpResponse(

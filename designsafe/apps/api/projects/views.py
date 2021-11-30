@@ -32,6 +32,7 @@ from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
 from django.views.decorators.csrf import csrf_exempt
 from elasticsearch_dsl import Q
+from designsafe.apps.api.utils import get_client_ip
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
 
@@ -272,6 +273,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                      extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'project_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'info': {'postData': post_data}})
         prj_model = project_lookup_model({'name': 'designsafe.project', 'value': post_data})
         prj = prj_model(value=post_data)
@@ -284,6 +287,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                      extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'base_directory_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'info': {
                                 'systemId': Project.STORAGE_SYSTEM_ID,
                                 'uuid': prj.uuid
@@ -299,6 +304,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                      extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'private_system_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'info': {
                                 'id': project_system_tmpl.get('id'),
                                 'site': project_system_tmpl.get('site'),
@@ -322,6 +329,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                      extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'initial_pems_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'info': {'collab': request.user.username, 'pi': prj.pi}})
 
         if getattr(prj, 'copi', None):
