@@ -36,11 +36,11 @@
                     <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
             </tr>
-            <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
+            <tr class="prj-row" ng-hide="$ctrl.browser.project.value.dataType">
                 <td>Project Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</td>
             </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
+            <tr class="prj-row" ng-if="$ctrl.browser.project.value.dataType">
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
@@ -128,12 +128,9 @@
                 </td>
             </tr>
         </table>
-        <div class="prj-center-bar">
-            <a ng-click="$ctrl.treeDiagram()">
-                <strong>View Data Diagram</strong>
-            </a>
-            <span ng-if="$ctrl.readOnly">
-                |<a ng-click="$ctrl.metrics()">
+        <div class="pad-content" ng-if="$ctrl.readOnly">
+            <span>
+                <a ng-click="$ctrl.metrics()">
                     &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
                     <strong>&nbsp;View Data Metrics</strong>
                 </a>

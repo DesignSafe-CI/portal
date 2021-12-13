@@ -1332,9 +1332,6 @@ mark,
 .prj-dropdown {
   width: 16%;
 }
-.prj-agree-body {
-  padding-bottom: 10px;
-}
 .prj-agree-select {
   display: flex;
   flex-direction: row;
@@ -2754,7 +2751,7 @@ input[type="search"] {
   justify-content: space-between;
   padding-bottom: 6px;
 }
-.prj-center-bar {
+.pad-content {
   padding-bottom: 10px;
 }
 .show-less {
@@ -2770,9 +2767,6 @@ input[type="search"] {
 }
 .project-form-name {
   width:49%;
-}
-.pub-info-modal-field {
-  padding-bottom: 10px;
 }
 .pub-info-modal-label {
   display: inline-block;
