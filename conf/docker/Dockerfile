@@ -31,14 +31,14 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
-RUN pip3 install --upgrade pip setuptools wheel && pip3 install uwsgi uwsgitop pip-tools
+# RUN pip3 install --upgrade pip setuptools wheel && pip3 install uwsgi uwsgitop pip-tools
 
-RUN mkdir -p /opt/uwsgi && \
-    curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
-    tar -xvzf /opt/uwsgi/uwsgi-2.0.15.tar.gz -C /opt/uwsgi && \
-    uwsgi --build-plugin /opt/uwsgi/uwsgi-2.0.15/plugins/zabbix && \
-    mkdir -p /usr/lib/uwsgi/plugins && \
-    mv zabbix_plugin.so /usr/lib/uwsgi/plugins/.
+#RUN mkdir -p /opt/uwsgi && \
+#    curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
+#    tar -xvzf /opt/uwsgi/uwsgi-2.0.15.tar.gz -C /opt/uwsgi && \
+#    uwsgi --build-plugin /opt/uwsgi/uwsgi-2.0.15/plugins/zabbix && \
+#    mkdir -p /usr/lib/uwsgi/plugins && \
+#    mv zabbix_plugin.so /usr/lib/uwsgi/plugins/.
 
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
