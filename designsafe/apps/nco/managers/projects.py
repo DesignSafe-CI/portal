@@ -68,7 +68,13 @@ class NcoProjectsManager(object):
                 return {"dateStart": {"$gt": start, "$lt": end}}
             return in_range
 
+        def no_history():
+            """Hide already completed events."""
+            yesterday = date - timedelta(days=1)
+            return {"dateEnd": {"$gt": yesterday}}
+
         range_switch = {
+            "No History": no_history,
             "Happening This Week": this_week,
             "Happening This Month": this_month,
             "Event Started Last 7 Days": last_n_days(7),
