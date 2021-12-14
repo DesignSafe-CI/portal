@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.2.11
+* Log IP address and user agent in metrics by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/924
+* Task/DES-2117: Log abstract publication listings in metrics by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/928
+* Task/DES-2094: hide last-updated time for metrics that don't exist by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/927
+* bug/DES-2128: Project serializers are non-deterministic by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/925
+
+## v5.2.10
+DES-2082: Account Creation text update by @SilversunKSauri in #918
+Updated NCO app slightly based on feedback from NSF and test users. by @thompscs in #921
+task/DES-2113: Add djangocms-snippet plugin by @rstijerina in #922
+Task/DES-2062 - Remove CSRF requirement on project endpoints for Hazmapper by @Strmiska in #911
+Task/DES-1988: Add hazmapperMaps field to project metadata and display in project preview views. by @duckonomy in #923
 
 ## v5.2.7
 Fixes:

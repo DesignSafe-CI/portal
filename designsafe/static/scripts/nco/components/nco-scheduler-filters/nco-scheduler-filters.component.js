@@ -24,9 +24,11 @@ class NcoSchedulerFiltersCtrl {
             'Event Started Last 7 Days',
             'Event Started Last 14 Days',
             'Event Started Last 30 Days',
+            'Event Started Last 90 Days',
             'Event Will Start in 7 Days',
             'Event Will Start in 14 Days',
             'Event Will Start in 30 Days',
+            'Event Will Start in 90 Days',
             'Happening This Week',
             'Happening This Month',
         ];

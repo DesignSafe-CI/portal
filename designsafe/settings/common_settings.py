@@ -62,6 +62,7 @@ INSTALLED_APPS = (
     'djangocms_picture',
     'djangocms_video',
     'djangocms_forms',
+    'djangocms_snippet',
     'snowpenguin.django.recaptcha2',
     'filer',
     'easy_thumbnails',
@@ -382,7 +383,7 @@ LOGGING = {
         },
         'metrics': {
             'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
-                      ' %(message)s user=%(user)s sessionId=%(sessionId)s op=%(operation)s'
+                      ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
                       ' info=%(info)s'
         },
     },

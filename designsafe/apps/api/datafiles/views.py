@@ -12,6 +12,8 @@ from dropbox.exceptions import AuthError as DropboxAuthError
 from google.auth.exceptions import GoogleAuthError
 from requests.exceptions import HTTPError
 
+from designsafe.apps.api.utils import get_client_ip
+# Create your views here.
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
@@ -36,6 +38,8 @@ class DataFilesView(BaseApiView):
                          'user': request.user.username,
                          'sessionId': getattr(request.session, 'session_key', ''),
                          'operation': operation,
+                         'agent': request.META.get('HTTP_USER_AGENT'),
+                         'ip': get_client_ip(request),
                          'info': {
                              'api': api,
                              'systemId': system,
@@ -71,6 +75,8 @@ class DataFilesView(BaseApiView):
                          'user': request.user.username,
                          'sessionId': getattr(request.session, 'session_key', ''),
                          'operation': operation,
+                         'agent': request.META.get('HTTP_USER_AGENT'),
+                         'ip': get_client_ip(request),
                          'info': {
                              'api': api,
                              'scheme': scheme,
@@ -101,7 +107,9 @@ class DataFilesView(BaseApiView):
                      extra={
                          'user': request.user.username,
                          'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation, # modify this here? Upload Files, Upload Dir
+                         'operation': operation,
+                         'agent': request.META.get('HTTP_USER_AGENT'),
+                         'ip': get_client_ip(request),
                          'info': {
                              'api': api,
                              'scheme': scheme,
@@ -130,6 +138,8 @@ class TransferFilesView(BaseApiView):
                          'user': request.user.username,
                          'sessionId': getattr(request.session, 'session_key', ''),
                          'operation': 'transfer',
+                         'agent': request.META.get('HTTP_USER_AGENT'),
+                         'ip': get_client_ip(request),
                          'info': {
                              'body': body
                          }

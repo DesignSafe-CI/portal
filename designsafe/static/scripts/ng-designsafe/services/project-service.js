@@ -29,11 +29,8 @@ export class ProjectService {
         this.experimentTypes = experimentalData.experimentTypes;
 
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
-        this.collabResource = this.httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
         this.dataResource = this.httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
         this.notificationResource = httpi.resource('/api/projects/:uuid/notification/').setKeepTrailingSlash(true);
-        //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
-        //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
 
         this.data = {
             navItems: [],
@@ -191,45 +188,6 @@ export class ProjectService {
         return this.projectResource.post({ data: options }).then((resp) => {
             return new this.ProjectModel(resp.data);
         });
-    }
-
-    /**
-     * Get a list of usernames for users that are collaborators on the Project
-     * @param {Object} options
-     * @param {string} options.uuid The Project uuid
-     * @returns {Promise}
-     */
-    getCollaborators(options) {
-        return this.collabResource.get({ params: options }).then((resp) => {
-            if (typeof resp.data.teamMembers !== 'undefined') {
-                resp.data.teamMembers = resp.data.teamMembers.filter(
-                    (member) => !['ds_admin', 'prjadmin'].includes(member)
-                );
-            }
-            return resp;
-        });
-    }
-
-    /**
-     *
-     * @param options
-     * @param {string} options.uuid The Project uuid
-     * @param {string} options.username The username of the collaborator to add
-     * @returns {Promise}
-     */
-    addCollaborator(options) {
-        return this.collabResource.post({ data: options });
-    }
-
-    /**
-     *
-     * @param options
-     * @param {string} options.uuid The Project uuid
-     * @param {string} options.username The username of the collaborator to add
-     * @returns {Promise}
-     */
-    removeCollaborator(options) {
-        return this.collabResource.delete({ data: options });
     }
 
     /**

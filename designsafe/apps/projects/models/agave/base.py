@@ -93,6 +93,7 @@ class Project(MetadataModel):
     file_tags = fields.ListField('File Tags')
     nh_types = fields.ListField('Natural Hazard Type')
     dois = fields.ListField('Dois')
+    hazmapper_maps = fields.ListField('Hazmapper Maps')
 
     @property
     def system(self):

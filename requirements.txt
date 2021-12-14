@@ -52,6 +52,7 @@ djangocms-file==2.4.0
 djangocms-forms==0.2.5
 djangocms-googlemap==1.4.0
 djangocms-picture==2.4.0
+djangocms-snippet==2.3.0
 djangocms-style==2.3.0
 djangocms-text-ckeditor==3.5.0
 djangocms-video==2.3.0
@@ -82,6 +83,7 @@ idna==2.5
 imagesize==0.7.1
 importlib-metadata==2.0.0
 ipaddress==1.0.18
+# ipdb==0.9.4
 ipython==5.4.1
 ipython-genutils==0.2.0
 isort==4.3.4
