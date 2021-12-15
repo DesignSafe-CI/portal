@@ -31,32 +31,24 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
-RUN pip3 install --upgrade pip setuptools wheel && pip3 install uwsgi uwsgitop pip-tools
+# RUN pip install --upgrade uwsgi uwsgitop
+COPY requirements.txt /tmp/
+RUN pip install -r /tmp/requirements.txt
 
-RUN mkdir -p /opt/uwsgi && \
-    curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
-    tar -xvzf /opt/uwsgi/uwsgi-2.0.15.tar.gz -C /opt/uwsgi && \
-    uwsgi --build-plugin /opt/uwsgi/uwsgi-2.0.15/plugins/zabbix && \
-    mkdir -p /usr/lib/uwsgi/plugins && \
-    mv zabbix_plugin.so /usr/lib/uwsgi/plugins/.
 
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
 
-COPY . /srv/www/designsafe
-
-RUN chown -R tg458981:G-816877 /srv/www/designsafe
-RUN mkdir /src
-RUN chown -R tg458981:G-816877 /src
+# RUN mkdir /src
+# RUN chown -R tg458981:G-816877 /src
 
 USER tg458981
-
+COPY . /srv/www/designsafe
 COPY requirements.txt /tmp/
 
-ENV PATH="/home/tg458981/.local/bin:${PATH}"
-RUN pip3 install -r /tmp/requirements.txt
+# ENV PATH="/home/tg458981/.local/bin:${PATH}"
 
-RUN chmod u+x /srv/www/designsafe/bin/build_client.sh && /srv/www/designsafe/bin/build_client.sh $DJANGO_DEBUG
+# RUN chmod u+x /srv/www/designsafe/bin/build_client.sh && /srv/www/designsafe/bin/build_client.sh $DJANGO_DEBUG
 
 RUN echo "prefix=~/.npm-global" >> ~/.npmrc
 
