@@ -2,6 +2,7 @@
 name = "designsafe"
 version = "5.2.12"
 description = ""
+authors = ["DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"]
 
 [tool.poetry.dependencies]
 python = "^3.6.8"
@@ -51,9 +52,6 @@ jsonpickle = "^0.9.6"
 stone = "^3.2.1"
 python-memcached = "^1.59"
 django-ipware = "^1.1.6"
-pytas = {git = "https://bitbucket.org/taccaci/pytas.git", rev = "1e6e488716fd42437c568acad161ae54d0077446"}
-
-[tool.poetry.dev-dependencies]
 pytest = "^5.4.3"
 pytest-django = "^3.7.0"
 pytest-asyncio = "^0.14.0"

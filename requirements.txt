@@ -1,4 +1,3 @@
-Warning: The lock file is not up to date with the latest changes in pyproject.toml. You may be getting outdated dependencies. Run update to update them.
 agavepy==0.9.5 \
     --hash=sha256:6d80f5cd8601ece9ca8c9eb6cbce58b7f28a1dbfc4037c59c87137aa18928cb4 \
     --hash=sha256:a0e62e6aacbf95618da4c5574a2cd3ee14545435331aee000162b4882085eec4
