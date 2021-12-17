@@ -79,16 +79,16 @@
         </tr>
         <!-- FR -->
         <!-- older projects will have awards listed as strings -->
-        <tr class="prj-row" ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
+        <tr ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
           <td>Awards</td>
           <td class="test-prj-award"><strong>{{ $ctrl.browser.project.value.awardNumber.join("") }}</strong></td>
         </tr>
-        <tr class="prj-row" ng-if="!$ctrl.isSingle($ctrl.browser.project.value.awardNumber)" ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index">
+        <tr ng-if="!$ctrl.isSingle($ctrl.browser.project.value.awardNumber)" ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index">
           <td ng-if="$first">Awards</td>
           <td ng-if="!$first"></td>
           <td class="test-prj-award"><strong>{{ award.name }} - {{ award.number }}</strong></td>
         </tr>
-        <tr class="prj-row" ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
+        <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
           <td ng-if="$first">Related Work</td>
           <td ng-if="!$first"></td>
           <td id="test-prj-related"><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
