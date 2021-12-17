@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.2.11
+* Log IP address and user agent in metrics by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/924
+* Task/DES-2117: Log abstract publication listings in metrics by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/928
+* Task/DES-2094: hide last-updated time for metrics that don't exist by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/927
+* bug/DES-2128: Project serializers are non-deterministic by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/925
+
 ## v5.2.10
 DES-2082: Account Creation text update by @SilversunKSauri in #918
 Updated NCO app slightly based on feedback from NSF and test users. by @thompscs in #921

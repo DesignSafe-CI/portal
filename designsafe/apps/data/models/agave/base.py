@@ -63,7 +63,9 @@ class RelatedQuery(object):
         return self._query
 
     def to_python(self, value):
-        return list(set(self.uuids))
+        deduped_list = []
+        [deduped_list.append(v) for v in value if v not in deduped_list]
+        return deduped_list
 
     def serialize(self, value):
         return self.to_python(value)
@@ -409,7 +411,9 @@ class Model(object, metaclass=BaseModel):
                 value = getattr(self, attrname, None)
                 if not inspect.isclass(value):
                     dict_obj[spinal_to_camelcase(attrname)] = value
-            dict_obj['associationIds'] = list(set(self.association_ids))
+            deduped_list = []
+            [deduped_list.append(v) for v in self.association_ids if v not in deduped_list]
+            dict_obj['associationIds'] = deduped_list
 
             dict_obj['_links'] = {}
             for attrname, value in six.iteritems(self._links.__dict__):
@@ -471,7 +475,9 @@ class Model(object, metaclass=BaseModel):
         else:
             _aids += value
 
-        self.association_ids = list(set(_aids))
+        deduped_list = []
+        [deduped_list.append(v) for v in _aids if v not in deduped_list]
+        self.association_ids = deduped_list
         return self.association_ids
 
     @classmethod

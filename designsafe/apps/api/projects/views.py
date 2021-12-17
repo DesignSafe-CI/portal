@@ -32,6 +32,7 @@ from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
 from django.views.decorators.csrf import csrf_exempt
 from elasticsearch_dsl import Q
+from designsafe.apps.api.utils import get_client_ip
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
 
@@ -65,6 +66,22 @@ class PublicationView(BaseApiView):
 
         if pub is not None and hasattr(pub, 'project'):
             pub_dict = pub.to_dict()
+
+            if pub_dict['project']['value']['projectType'] != 'other':
+                metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': 'listing',
+                         'agent': request.META.get('HTTP_USER_AGENT'),
+                         'ip': get_client_ip(request),
+                         'info': {
+                             'api': 'agave',
+                             'systemId': 'designsafe.storage.published',
+                             'filePath': project_id,
+                             'query': {} }
+                     })
+
             if latest_pub_dict:
                 pub_dict['latestRevision'] = latest_pub_dict
             return JsonResponse(pub_dict)
@@ -272,6 +289,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                      extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'project_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'info': {'postData': post_data}})
         prj_model = project_lookup_model({'name': 'designsafe.project', 'value': post_data})
         prj = prj_model(value=post_data)
@@ -284,6 +303,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                      extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'base_directory_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'info': {
                                 'systemId': Project.STORAGE_SYSTEM_ID,
                                 'uuid': prj.uuid
@@ -299,6 +320,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                      extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'private_system_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'info': {
                                 'id': project_system_tmpl.get('id'),
                                 'site': project_system_tmpl.get('site'),
@@ -322,6 +345,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                      extra={'user': request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'initial_pems_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
                             'info': {'collab': request.user.username, 'pi': prj.pi}})
 
         if getattr(prj, 'copi', None):
@@ -381,11 +406,6 @@ class ProjectInstanceView(BaseApiView):
         project = cls(**meta_obj)
         project_dict = project.to_body_dict()
 
-        # serialization can change the PI order
-        try:
-            project_dict['value']['coPis'] = meta_obj['value']['coPis']
-        except KeyError:
-            pass
         return JsonResponse(project_dict)
 
     def post(self, request, project_id):
