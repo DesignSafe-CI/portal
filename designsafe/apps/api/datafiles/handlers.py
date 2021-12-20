@@ -1,14 +1,13 @@
-from designsafe.apps.api.datafiles.operations import agave_operations
-from designsafe.apps.api.datafiles.notifications import notify
-from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
 import logging
-from designsafe.apps.api.exceptions import ApiException
+from designsafe.apps.api.datafiles.notifications import notify
 from designsafe.apps.api.datafiles.operations import agave_operations
 from designsafe.apps.api.datafiles.operations import googledrive_operations
 from designsafe.apps.api.datafiles.operations import dropbox_operations
 from designsafe.apps.api.datafiles.operations import box_operations
 from designsafe.apps.api.datafiles.operations import shared_operations
+from designsafe.apps.api.exceptions import ApiException
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 
 logger = logging.getLogger(__name__)
 

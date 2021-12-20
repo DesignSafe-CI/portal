@@ -5,6 +5,7 @@ export const FileMetadataComponent = {
     controller: FileMetadataComponentCtrl,
     template: template,
     bindings: {
-        file: '<'
+        file: '<',
+        metadata: '<'
     }
 };
