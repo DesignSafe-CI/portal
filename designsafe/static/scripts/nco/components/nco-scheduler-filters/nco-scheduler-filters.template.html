@@ -12,14 +12,15 @@
         </select>
     </div>
     <div class="filter form-group">
-        <select name="time"
-                id="filter-time"
-                data-ng-model="$ctrl.filterSel.time"
-                data-ng-options="name for name in $ctrl._ui.timeFilters"
-                data-ng-change="$ctrl.applyFilterAndSort()"
-                class="form-control">
-            <option value="">-- Filter by Start Date --</option>
-        </select>
+        <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="$ctrl.historyEnabled" data-ng-click="$ctrl.toggleHistory()">
+            <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
+            <i class="fa fa-check-square fa-stack-1x" style="color: #1CB500;"></i>
+        </span>
+        <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="!$ctrl.historyEnabled" data-ng-click="$ctrl.toggleHistory()">
+            <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
+            <i class="fa fa-square-o fa-stack-1x" style="color: lightgray;"></i>
+        </span>
+        <label date-ng-click="$ctrl.toggleHistory()">Show Past Events</label>
     </div>
     <span style="width: 75px; display: inline-block;">&nbsp;</span>
     <h3 class="sort-title">Sort by:</h3>
