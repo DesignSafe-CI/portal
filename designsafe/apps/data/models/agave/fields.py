@@ -153,7 +153,9 @@ class ListField(BaseField):
             return val
 
         try:
-            return list(set(val))
+            deduped_list = []
+            [deduped_list.append(v) for v in val if v not in deduped_list]
+            return deduped_list
         except TypeError:
             #We cannot create a set out of this list.
             pass

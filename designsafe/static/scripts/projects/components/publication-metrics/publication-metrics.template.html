@@ -1,7 +1,7 @@
 <div class="modal-header" style="background: #e6e6e6">
     <h4 class="modal-title" style="border: none">
         Project Data Metrics
-        <span ng-if="!$ctrl.loading">(since {{$ctrl.lastUpdated | date:'MMMM dd, yyyy'}}, updated every month)</span>
+        <span ng-if="!$ctrl.loading">(<span ng-if="$ctrl.lastUpdated">since {{$ctrl.lastUpdated | date:'MMMM dd, yyyy'}}, </span>updated every month)</span>
         <a uib-tooltip="Metrics collected using Make Data Count standards." tooltip-placement="right"
             ><i class="fa fa-info-circle"></i
         ></a>
