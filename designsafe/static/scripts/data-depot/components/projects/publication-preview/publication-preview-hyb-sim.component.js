@@ -81,6 +81,13 @@ class PublicationPreviewHybSimCtrl {
             return false;
         }
     }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
     
     goWork() {
         this.$state.go('projects.view', {projectId: this.browser.project.uuid});

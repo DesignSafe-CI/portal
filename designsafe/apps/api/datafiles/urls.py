@@ -1,6 +1,5 @@
 from django.conf.urls import url
 from designsafe.apps.api.datafiles.views import DataFilesView, TransferFilesView, MicrosurveyView
-from django.http import JsonResponse
 
 urlpatterns = [
     url(r'^transfer/(?P<format>[\w.-]+)/$', TransferFilesView.as_view(), name='file_transfer'),

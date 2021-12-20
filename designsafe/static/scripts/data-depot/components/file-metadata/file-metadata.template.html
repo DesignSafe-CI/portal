@@ -16,12 +16,20 @@
                 </tr>
                 <tr>
                     <th>File size</th>
-                    <td ng-if='$ctrl.file.length'>{{ $ctrl.file.length|bytes }}</td>
-                    <td ng-if='$ctrl.file.size'>{{ $ctrl.file.size|bytes }}</td>
+                    <td ng-if="$ctrl.file.length">{{ $ctrl.file.length|bytes }}</td>
+                    <td ng-if="$ctrl.file.size">{{ $ctrl.file.size|bytes }}</td>
                 </tr>
                 <tr>
                     <th>Last modified</th>
                     <td>{{ $ctrl.file.lastModified|date:"short" }}</td>
+                </tr>
+                <tr ng-if="$ctrl.metadata.uuid">
+                    <th>Metadata UUID</th>
+                    <td>{{ $ctrl.metadata.uuid }}</td>
+                </tr>
+                <tr ng-if="$ctrl.metadata.uuid" ng-repeat="(k, v) in $ctrl.metadata.value">
+                    <th ng-if="k!='system' && k!='path'">{{ k }}</th>
+                    <td ng-if="k!='system' && k!='path'">{{ v }}</td>
                 </tr>
             </tbody>
         </table>
