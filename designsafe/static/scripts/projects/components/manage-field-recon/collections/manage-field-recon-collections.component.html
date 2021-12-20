@@ -580,7 +580,7 @@
         <!-- Social Science -->
         <div ng-repeat="collection in $ctrl.data.socialScienceCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -720,7 +720,7 @@
         <!-- GeoscienceEngineering -->
         <div ng-repeat="collection in $ctrl.data.geoscienceCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -893,10 +893,10 @@
         <!-- Reports -->
         <div ng-repeat="collection in $ctrl.data.reportCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
-                        <span class="collapse-tab-content-left">Documents Collection | <strong>{{collection.value.title}}</strong></span>
+                        <span class="collapse-tab-content-left"> Documents | <strong>{{collection.value.title}}</strong></span>
                         <span class="collapse-tab-content-right curation-chevron"></span>
                     </div>
                 </button>
