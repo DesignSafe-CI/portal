@@ -66,6 +66,22 @@ class PublicationView(BaseApiView):
 
         if pub is not None and hasattr(pub, 'project'):
             pub_dict = pub.to_dict()
+
+            if pub_dict['project']['value']['projectType'] != 'other':
+                metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': 'listing',
+                         'agent': request.META.get('HTTP_USER_AGENT'),
+                         'ip': get_client_ip(request),
+                         'info': {
+                             'api': 'agave',
+                             'systemId': 'designsafe.storage.published',
+                             'filePath': project_id,
+                             'query': {} }
+                     })
+
             if latest_pub_dict:
                 pub_dict['latestRevision'] = latest_pub_dict
             return JsonResponse(pub_dict)
@@ -390,11 +406,6 @@ class ProjectInstanceView(BaseApiView):
         project = cls(**meta_obj)
         project_dict = project.to_body_dict()
 
-        # serialization can change the PI order
-        try:
-            project_dict['value']['coPis'] = meta_obj['value']['coPis']
-        except KeyError:
-            pass
         return JsonResponse(project_dict)
 
     def post(self, request, project_id):
