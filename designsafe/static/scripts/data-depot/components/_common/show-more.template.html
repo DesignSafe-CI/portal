@@ -1,0 +1,18 @@
+<div ng-if="$ctrl.bypass">
+    <div id="show-more">
+        <strong ng-if="$ctrl.label">{{$ctrl.label}} | </strong>
+        {{$ctrl.content}}
+    </div>
+</div>
+<div ng-if="!$ctrl.bypass">
+    <div ng-class="{true: 'show-less', false: ''}[!$ctrl.expanded]">
+        <strong ng-if="$ctrl.label">{{$ctrl.label}} | </strong>
+        {{$ctrl.content}}
+        <span ng-if="$ctrl.expanded == False">...</span>
+    </div>
+    <a ng-click="$ctrl.expanded = !$ctrl.expanded">
+      <strong>
+        {{!$ctrl.expanded && 'show more' || 'show less'}}
+      </strong>
+    </a>
+</div>

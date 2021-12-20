@@ -19,7 +19,7 @@
                 </td>
               </tr>
               <tr ng-if="$ctrl.browser.project.value.coPis.length">
-                <td>CoPIs</td>
+                <td>Co-PIs</td>
                 <td class="prj-data">
                   <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
@@ -96,6 +96,13 @@
             <tr class="prj-row">
                 <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
+            </tr>
+            <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
+                <td>Hazmapper Maps</td>
+                <td>
+                    <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
+                    </hazmapper-maps>
+                </td>
             </tr>
         </table>
         <div ng-if="$ctrl.browser.project.value.description">

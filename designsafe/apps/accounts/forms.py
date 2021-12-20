@@ -353,6 +353,10 @@ class ProfessionalProfileForm(forms.ModelForm):
 
 class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
     #overriding form fields
+    email = forms.EmailField(
+        help_text='Please use your Institution/Business/School email when registering (not a gmail account). '
+                    'This will expedite the process of approving your account.'
+    )
     institution = forms.CharField(
         label='Institution name',
         help_text='If your institution is not listed, please provide the name of the '

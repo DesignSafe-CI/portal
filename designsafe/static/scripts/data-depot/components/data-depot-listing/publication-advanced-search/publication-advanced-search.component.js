@@ -28,7 +28,7 @@ class PublicationAdvancedSearchCtrl {
         this.rapidEventTypes = [{ name: '', label: 'All Types' }, ...this.rapidEventTypes];
 
         this.otherTypes = [
-            'Custom',
+            'Check Sheet',
             'Code',
             'Database',
             'Dataset',
@@ -47,6 +47,7 @@ class PublicationAdvancedSearchCtrl {
             'Survey',
             'Video',
             'White Paper',
+            'Other',
         ].map((type) => ({ name: type, label: type }));
         this.otherTypes = [{ name: '', label: 'All Types' }, ...this.otherTypes];
 

@@ -7,14 +7,10 @@
                 <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
             </span>
             <div class="prj-head-buttons">
-                <a class="prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
+                <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
                     <span class="curation-download"></span>
-                    <strong>&nbsp;Download Dataset</strong>
-                </a>
-                <a class="prj-head-download" ng-click="$ctrl.metrics()" ng-if="$ctrl.readOnly">
-                    <img src='/static/images/ds-icons/icon-metrics.svg' style="width: 20px;">
-                    <strong>&nbsp;View Data Metrics</strong>
-                </a>
+                    &nbsp;&nbsp;Download Dataset
+                </button>
             </div>
         </div>
         <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
@@ -35,7 +31,7 @@
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length && !$ctrl.readOnly">
-                <td>CoPIs</td>
+                <td>Co-PIs</td>
                 <td class="prj-data">
                     <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
                 </td>
@@ -79,6 +75,13 @@
             <tr class="prj-row">
                 <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
+            </tr>
+            <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
+                <td>Hazmapper Maps</td>
+                <td>
+                    <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
+                    </hazmapper-maps>
+                </td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly">
                 <td ng-if="$ctrl.browser.project.value.keywords">Date of Publication</td>
@@ -125,18 +128,30 @@
                 </td>
             </tr>
         </table>
-        <div ng-if="$ctrl.browser.project.value.description">
-            <p>{{ $ctrl.browser.project.value.description }}</p>
+        <div class="prj-center-bar">
+            <a ng-click="$ctrl.treeDiagram()">
+                <strong>View Data Diagram</strong>
+            </a>
+            <span ng-if="$ctrl.readOnly">
+                |<a ng-click="$ctrl.metrics()">
+                    &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+                    <strong>&nbsp;View Data Metrics</strong>
+                </a>
+                |<a ng-click="$ctrl.leaveFeedback()">
+                    &nbsp;<img src='/static/images/ds-icons/icon-feedback.svg' style="width: 12px;">
+                    <strong>&nbsp;Leave Feedback</strong>
+                </a>
+            </span>
         </div>
-        <!-- <div ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
-            <span>Version</span>&nbsp;
-            <select class="prj-dropdown"
-                    ng-options="version for version in $ctrl.versions"
-                    ng-change="$ctrl.getVersion()"
-                    ng-model="$ctrl.selectedVersion">
-            </select>
-            &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != 'Original'"><strong>Version Changes</strong></a>
-        </div> -->
+        <div ng-if="$ctrl.browser.project.value.description">
+            <p>
+                <show-more
+                    label="'Description'"
+                    content="$ctrl.browser.project.value.description"
+                >
+                </show-more>
+            </p>
+        </div>
     </div>
     <!-- Project Header End -->
     <table class="tg" style="table-layout: fixed; width: 100%;"
@@ -192,9 +207,6 @@
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
-        <a style="cursor: pointer;" ng-click="$ctrl.leaveFeedback()">
-            <strong>Leave Feedback</strong>
-        </a>
         <div ng-if="$ctrl.ui.fileNav">
             <breadcrumb
             path="$ctrl.breadcrumbParams.path"

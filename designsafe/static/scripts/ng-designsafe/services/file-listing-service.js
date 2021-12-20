@@ -662,7 +662,7 @@ export class FileListingService {
             api: 'agave',
             scheme: 'public',
             system: 'designsafe.storage.published',
-            path: '',
+            path: publication.projectId,
         };
         this.listings.main.params = { section: 'main', ...publicationListingParams };
         const entityFiles = entity.fileObjs.map((f) => ({
