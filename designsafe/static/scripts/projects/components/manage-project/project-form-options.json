@@ -2,11 +2,17 @@
     "nhTypes": [
         "Other",
         "Earthquake",
+        "Extreme Temperatures",
+        "Fire",
         "Flood",
-        "Hurricane",
+        "Hurricane/Tropical Storm",
         "Landslide",
         "Tornado",
-        "Tsunami"
+        "Tsunami",
+        "Thunderstorm",
+        "Storm Surge",
+        "Pandemic",
+        "Wind"
     ],
     "frTypes": [
         "Engineering",
