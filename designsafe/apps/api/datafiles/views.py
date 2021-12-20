@@ -1,19 +1,17 @@
-from designsafe.apps.api.views import BaseApiView
-from django.core.urlresolvers import reverse
-from django.http import JsonResponse, HttpResponseForbidden, FileResponse
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from requests.exceptions import HTTPError
-from boxsdk.exception import BoxOAuthException
-from dropbox.exceptions import AuthError as DropboxAuthError
-from google.auth.exceptions import GoogleAuthError
 import json
 import logging
-from designsafe.apps.api.exceptions import ApiException
+from boxsdk.exception import BoxOAuthException
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 from designsafe.apps.api.datafiles.handlers import datafiles_get_handler, datafiles_post_handler, datafiles_put_handler, resource_unconnected_handler, resource_expired_handler
 from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
 from designsafe.apps.api.datafiles.notifications import notify
 from designsafe.apps.api.datafiles.models import DataFilesSurveyResult, DataFilesSurveyCounter
+from designsafe.apps.api.views import BaseApiView
+from dropbox.exceptions import AuthError as DropboxAuthError
+from google.auth.exceptions import GoogleAuthError
+from requests.exceptions import HTTPError
+
 from designsafe.apps.api.utils import get_client_ip
 # Create your views here.
 
@@ -68,8 +66,7 @@ class DataFilesView(BaseApiView):
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
 
-    def put(self, request, api, operation=None, scheme='private',
-            handler=None, system=None, path='/'):
+    def put(self, request, api, operation=None, scheme='private', system=None, path='/'):
 
         body = json.loads(request.body)
 
@@ -102,8 +99,8 @@ class DataFilesView(BaseApiView):
 
         return JsonResponse(response)
 
-    def post(self, request, api, operation=None, scheme='private',
-             handler=None, system=None, path='/'):
+    # uploads come through here...
+    def post(self, request, api, operation=None, scheme='private', system=None, path='/'):
         post_files = request.FILES.dict()
         post_body = request.POST.dict()
         metrics.info('Data Depot',
@@ -118,6 +115,7 @@ class DataFilesView(BaseApiView):
                              'scheme': scheme,
                              'system': system,
                              'path': path,
+                             'body': post_body
                          }})
 
         if request.user.is_authenticated:
