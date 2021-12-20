@@ -8,7 +8,7 @@
 </div>
 <div class="modal-body">
     <div ng-repeat="field in $ctrl.data track by $index">
-        <div class="pub-info-modal-field" ng-if="field.label">
+        <div class="pad-content" ng-if="field.label">
             <div class="pub-info-modal-label">
                 {{field.label}}
             </div>
@@ -16,7 +16,7 @@
                 {{field.data}}
             </div>
         </div>
-        <div class="pub-info-modal-field" ng-if="!field.label">
+        <div class="pad-content" ng-if="!field.label">
             {{field.data}}
         </div>
     </div>
