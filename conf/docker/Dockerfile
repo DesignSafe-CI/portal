@@ -31,24 +31,15 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
-# RUN pip install --upgrade uwsgi uwsgitop
 COPY requirements.txt /tmp/
-RUN pip install -r /tmp/requirements.txt
-
+RUN pip install -r /tmp/requirements.txt && \
+    pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
 
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
-
-# RUN mkdir /src
-# RUN chown -R tg458981:G-816877 /src
-
 USER tg458981
 COPY . /srv/www/designsafe
 COPY requirements.txt /tmp/
-
-# ENV PATH="/home/tg458981/.local/bin:${PATH}"
-
-# RUN chmod u+x /srv/www/designsafe/bin/build_client.sh && /srv/www/designsafe/bin/build_client.sh $DJANGO_DEBUG
 
 RUN echo "prefix=~/.npm-global" >> ~/.npmrc
 
