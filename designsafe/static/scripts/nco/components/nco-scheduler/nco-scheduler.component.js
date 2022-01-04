@@ -10,7 +10,11 @@ class NcoSchedulerCtrl {
         this._ui = { loading: true };
         this.filters = [];
         this.sorts = [];
-        this.loadProjects()
+
+        this.filters.push( { name: "time", value: "No History" } );
+        this.sorts.push( "Start Date - oldest first" );
+
+        this.loadProjects({ filters: this.filters, sorts: this.sorts })
             .then((resp) => {
                 return resp;
             }, (err) => {

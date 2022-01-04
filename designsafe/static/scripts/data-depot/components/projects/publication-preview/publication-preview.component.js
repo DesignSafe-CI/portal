@@ -16,7 +16,7 @@ class PublicationPreviewCtrl {
         this.$state = $state;
         this.$q = $q;
     }
-    
+
     $onInit() {
         this.readOnly = this.$state.current.name.indexOf('publishedData') === 0;
         this.projectId = this.ProjectService.resolveParams.projectId;
@@ -66,7 +66,6 @@ class PublicationPreviewCtrl {
                     this.ui.loading = false;
                 });
             });
-
     }
 
     matchingGroup(exp, model) {
@@ -84,6 +83,13 @@ class PublicationPreviewCtrl {
             }
             return false;
         }
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
     }
 
     getEF(str) {
@@ -109,7 +115,7 @@ class PublicationPreviewCtrl {
         });
         return eqt.label;
     }
-    
+
     goWork() {
         this.$state.go('projects.view', {projectId: this.browser.project.uuid, data: this.browser});
     }

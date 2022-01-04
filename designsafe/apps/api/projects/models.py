@@ -5,9 +5,7 @@ import xml.etree.ElementTree as ET
 
 from designsafe.apps.data.models.agave.metadata import (BaseMetadataResource,
                                                        BaseMetadataPermissionResource)
-from designsafe.apps.data.models.agave.files import (BaseFileResource,
-                                                    BaseFilePermissionResource,
-                                                    BaseFileMetadata)
+from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.systems import BaseSystemResource
 from designsafe.apps.data.models.agave.systems import roles as system_roles
 from designsafe.apps.api.agave import to_camel_case

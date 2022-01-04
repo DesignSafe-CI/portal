@@ -1,15 +1,14 @@
-import urllib
-import os
-import datetime
 import io
-from django.conf import settings
-from requests.exceptions import HTTPError
-import logging
 import json
-from elasticsearch_dsl import Q
-import magic
+import logging
+import os
+import urllib
+from designsafe.apps.api.datafiles.utils import *
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.data.tasks import agave_indexer
+from django.conf import settings
+from elasticsearch_dsl import Q
+from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
 
@@ -211,8 +210,9 @@ def mkdir(client, system, path, dir_name):
     return dict(result)
 
 
-def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
-    """Move a current file to the given destination.
+def move(client, src_system, src_path, dest_system, dest_path):
+    """
+    Move files and related file metadata
 
     Params
     ------
@@ -226,81 +226,70 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         System ID for the destination.
     dest_path: str
         Path under which the file should be moved.
-    file_name: str
-        New name for the file if desired.
 
     Returns
     -------
     dict
 
     """
+    # do not allow moves to the same location or across systems
+    if (os.path.dirname(src_path) == dest_path.strip('/') or src_system != dest_system):
+        return {
+            'system': src_system,
+            'path': urllib.parse.quote(src_path),
+            'name': os.path.basename(src_path)
+        }
 
-    if file_name is None:
-        file_name = src_path.strip('/').split('/')[-1]
-
-    dest_path_full = os.path.join(dest_path.strip('/'), file_name)
-    src_path_full = urllib.parse.quote(src_path)
-
-    # Handle attempt to move a file into its current path.
-    if src_system == dest_system and src_path_full == dest_path_full:
-        return {'system': src_system, 'path': src_path_full, 'name': file_name}
-
+    src_file_name = os.path.basename(src_path)
     try:
-        client.files.list(systemId=dest_system,
-                          filePath="{}/{}".format(dest_path, file_name))
+        client.files.list(systemId=dest_system, filePath=os.path.join(dest_path, src_file_name))
+        dst_file_name = rename_duplicate_path(src_file_name)
+        full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
+    except:
+        dst_file_name = src_file_name
+        full_dest_path = os.path.join(dest_path.strip('/'), src_file_name)
 
-        # Destination path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        file_name = '{}_{}{}'.format(_name, now, _ext)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
+    body = {'action': 'move', 'path': full_dest_path}
+    move_result = client.files.manage(
+        systemId=src_system,
+        filePath=urllib.parse.quote(src_path),
+        body=body
+    )
+    update_meta(
+        src_system=src_system,
+        src_path=src_path,
+        dest_system=dest_system,
+        dest_path=full_dest_path
+    )
 
-    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
+    if os.path.dirname(src_path) != full_dest_path or src_path != full_dest_path:
+        agave_indexer.apply_async(kwargs={
+            'systemId': src_system,
+            'filePath': os.path.dirname(src_path),
+            'recurse': False
+        }, queue='indexing')
 
-    if src_system == dest_system:
-        body = {'action': 'move',
-                'path': full_dest_path}
-        move_result = client.files.manage(systemId=src_system,
-                                          filePath=urllib.parse.quote(
-                                              src_path),
-                                          body=body)
-    else:
-        src_url = 'agave://{}/{}'.format(
-            src_system,
-            urllib.parse.quote(src_path)
-        )
-        move_result = client.files.importData(
-            systemId=dest_system,
-            filePath=urllib.parse.quote(dest_path),
-            fileName=str(file_name),
-            urlToIngest=src_url
-        )
-        client.files.delete(systemId=src_system,
-                            filePath=urllib.parse.quote(src_path))
-
-    if os.path.dirname(src_path) != dest_path or src_path != dest_path:
-        agave_indexer.apply_async(kwargs={'systemId': src_system,
-                                          'filePath': os.path.dirname(src_path),
-                                          'recurse': False},
-                                  queue='indexing')
-    agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                      'filePath': os.path.dirname(full_dest_path),
-                                      'recurse': False}, routing_key='indexing')
+    agave_indexer.apply_async(kwargs={
+        'systemId': dest_system,
+        'filePath': dest_path,
+        'recurse': False
+    }, queue='indexing')
+    
     if move_result['nativeFormat'] == 'dir':
-        agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                          'filePath': full_dest_path, 'recurse': True},
-                                  queue='indexing')
+        agave_indexer.apply_async(kwargs={
+            'systemId': dest_system,
+            'filePath': full_dest_path,
+            'recurse': True
+        }, queue='indexing')
 
     return move_result
 
 
-def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, *args, **kwargs):
-    """Copies the current file to the provided destination path.
+def copy(client, src_system, src_path, dest_system, dest_path):
+    """
+    Copy files and related file metadata
 
-     Params
+    Params
     ------
     client: agavepy.agave.Agave
         Tapis client to use for the listing.
@@ -311,56 +300,58 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, *
     dest_system: str
         System ID for the destination.
     dest_path: str
-        Path under which the file should be copied.
-    file_name: str
-        New name for the file if desired.
+        Path under which the file should be Copied.
 
     Returns
     -------
     dict
+
     """
-    if file_name is None:
-        file_name = src_path.strip('/').split('/')[-1]
-
+    src_file_name = os.path.basename(src_path)
     try:
-        client.files.list(systemId=dest_system,
-                          filePath="{}/{}".format(dest_path, file_name))
+        client.files.list(systemId=dest_system, filePath=os.path.join(dest_path, src_file_name))
+        dst_file_name = rename_duplicate_path(src_file_name)
+        full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
+    except:
+        dst_file_name = src_file_name
+        full_dest_path = os.path.join(dest_path.strip('/'), src_file_name)
 
-        # Destination path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        file_name = '{}_{}{}'.format(_name, now, _ext)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
-
-    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
     if src_system == dest_system:
-        body = {'action': 'copy',
-                'path': full_dest_path}
-
-
-        copy_result = client.files.manage(systemId=src_system,
-                                        filePath=urllib.parse.quote(
-                                            src_path.strip('/')),
-                                        body=body)
-
-    else:
-        src_url = 'agave://{}/{}'.format(
-            src_system,
-            urllib.parse.quote(src_path)
+        body = {'action': 'copy', 'path': full_dest_path}
+        copy_result = client.files.manage(
+            systemId=src_system,
+            filePath=urllib.parse.quote(src_path.strip('/')), # don't think we need to strip '/' here...
+            body=body
         )
+    else:
+        src_url = 'agave://{}/{}'.format(src_system, urllib.parse.quote(src_path))
         copy_result = client.files.importData(
             systemId=dest_system,
             filePath=urllib.parse.quote(dest_path),
-            fileName=str(file_name),
+            fileName=dst_file_name,
             urlToIngest=src_url
         )
+    
+    copy_meta(
+        src_system=src_system,
+        src_path=src_path,
+        dest_system=dest_system,
+        dest_path=full_dest_path
+    )
 
-    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': dest_system, 'filePath': os.path.dirname(full_dest_path), 'recurse': False}, queue='indexing')
     if copy_result['nativeFormat'] == 'dir':
-        agave_indexer.apply_async(kwargs={'systemId': dest_system, 'filePath': full_dest_path, 'recurse': True}, queue='indexing')
+        agave_indexer.apply_async(kwargs={
+            'systemId': dest_system,
+            'filePath': full_dest_path,
+            'recurse': True
+        }, queue='indexing')
+    else:
+        agave_indexer.apply_async(kwargs={
+            'username': 'ds_admin',
+            'systemId': dest_system,
+            'filePath': dest_path,
+            'recurse': False
+        }, queue='indexing')
 
     return dict(copy_result)
 
@@ -368,7 +359,6 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, *
 def delete(client, system, path):
     return client.files.delete(systemId=system,
                                filePath=urllib.parse.quote(path))
-
 
 def rename(client, system, path, new_name):
     """Renames a file. This is performed under the hood by moving the file to
@@ -389,20 +379,48 @@ def rename(client, system, path, new_name):
     -------
     dict
     """
-
+    # NOTE: There seems to be inconsistant values in file operation response
+    # objects returned by tapis. The "nativeFormat" field has returned
+    # values representing a file, when the operation was carried out on
+    # a directory...
+    # listing[0].type == 'file'
+    # listing[0].type == 'dir'
+    listing = client.files.list(systemId=system, filePath=path)
+    path = path.strip('/')
     body = {'action': 'rename', 'path': new_name}
-    rename_result = client.files.manage(systemId=system, filePath=path, body=body)
 
-    agave_indexer.apply_async(kwargs={'systemId': system,
-                                      'filePath': os.path.dirname(path),
-                                      'recurse': False},
-                              queue='indexing'
-                              )
-    rename_result['nativeFormat'] == 'dir' and agave_indexer.apply_async(kwargs={'systemId': system,
-                                                                              'filePath': rename_result['path'],
-                                                                              'recurse': True},
-                                                                      queue='indexing'
-                                                                      )
+    rename_result = client.files.manage(
+        systemId=system,
+        filePath=urllib.parse.quote(os.path.join('/', path)),
+        body=body
+    )
+    update_meta(
+        src_system=system,
+        src_path=path,
+        dest_system=system,
+        dest_path=os.path.join(os.path.dirname(path), new_name)
+    )
+
+    # if rename_result['nativeFormat'] == 'dir':
+    if listing[0].type == 'dir':
+        agave_indexer.apply_async(
+            kwargs={
+                'systemId': system,
+                'filePath': os.path.dirname(path),
+                'recurse': False
+            }, queue='indexing')
+        agave_indexer.apply_async(kwargs={
+                'systemId': system,
+                'filePath': rename_result['path'],
+                'recurse': True
+        }, queue='indexing')
+    else:
+        agave_indexer.apply_async(
+            kwargs={
+                'systemId': system,
+                'filePath': os.path.dirname(path),
+                'recurse': False
+            }, queue='indexing')
 
     return dict(rename_result)
 
@@ -424,10 +442,6 @@ def trash(client, system, path, trash_path):
     -------
     dict
     """
-
-    file_name = os.path.basename(path)
-    trash_name = file_name
-
     trash_root = os.path.dirname(trash_path)
     trash_foldername = os.path.basename(trash_path)
 
@@ -441,25 +455,12 @@ def trash(client, system, path, trash_path):
             raise
         mkdir(client, system, trash_root, trash_foldername)
 
-    try:
-        client.files.list(systemId=system,
-                          filePath=os.path.join(trash_path, file_name))
-        # Trash path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        trash_name = '{}_{}{}'.format(_name, now, _ext)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            logger.error("Unexpected exception listing path {} under .trash in system {}".format(file_name, system))
-            raise
-
-    resp = move(client, system, path, system, trash_path, trash_name)
+    resp = move(client, system, path, system, trash_path)
 
     return resp
 
 
-def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args, **kwargs,):
+def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args, **kwargs):
     """Upload a file.
     Params
     ------
@@ -471,17 +472,18 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
         Path to upload the file to.
     uploaded_file: file
         File object to upload.
+    webkit_relative_path: string
+        path for file structure of uploaded directory.
 
     Returns
     -------
     dict
     """
+    # NOTE:
+    # Directory and file uploads are not compared against the upload path for an existing listing.
+    # This could provide a bad user experience when their files are just uploaded and overwrite
+    # existing data. We will need to be able to handle directory/folder uploads as a single operation.
 
-    # try:
-    #    listing(client, system=system, path=path)
-    # except HTTPError as err:
-    #    if err.response.status_code != 404:
-    #        raise
     if webkit_relative_path:
         rel_path = os.path.dirname(webkit_relative_path).strip('/')
         mkdir(client, system, path, rel_path)
@@ -500,7 +502,18 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
                               queue='indexing'
                               )
 
-    return dict(resp)
+    # attempt to gather standardized metadata from upload
+    try:
+        metadata = scrape_metadata_from_file(uploaded_file)
+        if metadata:
+            create_meta(
+                path=os.path.join('/', path, upload_name),
+                system=system,
+                meta=metadata
+            )
+        return dict(resp)
+    except:
+        return dict(resp)
 
 
 def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwargs):
@@ -529,6 +542,9 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
     file_ext = os.path.splitext(file_name)[1].lower()
     href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
 
+    meta_result = query_file_meta(system, os.path.join('/', path))
+    meta = meta_result[0] if len(meta_result) else {}
+
     args = {
         'url': urllib.parse.unquote(href),
         'maxUses': max_uses,
@@ -537,8 +553,8 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
         'noauth': False
     }
 
-    result = client.postits.create(body=args)
-    url = result['_links']['self']['href']
+    postit_result = client.postits.create(body=args)
+    url = postit_result['_links']['self']['href']
 
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
@@ -560,7 +576,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, *args, **kwarg
     else:
         file_type = 'other'
 
-    return {'href': url, 'fileType': file_type}
+    return {'href': url, 'fileType': file_type, 'fileMeta': meta}
 
 
 def download_bytes(client, system, path):

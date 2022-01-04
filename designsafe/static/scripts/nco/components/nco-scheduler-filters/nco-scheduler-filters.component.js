@@ -18,7 +18,7 @@ class NcoSchedulerFiltersCtrl {
             'Start Date - oldest first',
             'Award Number',
             'Facility',
-	    'PI Name'
+            'PI Name'
         ];
         this._ui.timeFilters = [
             'Event Started Last 7 Days',
@@ -32,7 +32,8 @@ class NcoSchedulerFiltersCtrl {
             'Happening This Week',
             'Happening This Month',
         ];
-        this.sortby = 'Start Date - newest first';
+        this.sortby = 'Start Date - oldest first';
+        this.historyEnabled = false;
     }
 
     applyFilterAndSort(){
@@ -45,10 +46,18 @@ class NcoSchedulerFiltersCtrl {
                 });
             }
         }
+        if (! this.historyEnabled) {
+            this.filters.push({ name: "time", value: "No History" });
+        }
         if (this.sortby){
             this.sort.push(this.sortby);
         }
         this.filterAndSort({ filters: this.filters, sort:this.sort });
+    }
+
+    toggleHistory() {
+        this.historyEnabled = !this.historyEnabled;
+        this.applyFilterAndSort();
     }
 }
 
