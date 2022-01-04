@@ -39,7 +39,7 @@ RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
 USER tg458981
 COPY . /srv/www/designsafe
-COPY requirements.txt /tmp/
+RUN chown tg458981:G-816877 /srv/www/designsafe
 
 RUN echo "prefix=~/.npm-global" >> ~/.npmrc
 
