@@ -93,13 +93,6 @@ class ManageSimulationCtrl {
         this.data.busy = true;
         this.form.addSimulation[0].authors = this.data.users;
         var simulation = this.form.addSimulation[0];
-        if (_.isEmpty(simulation.title) || typeof simulation.title === 'undefined' ||
-            _.isEmpty(simulation.simulationType) || typeof simulation.simulationType === 'undefined') {
-            this.data.error = 'Title and Type are required.';
-            this.data.busy = false;
-            return;
-        }
-        simulation.description = simulation.description || '';
         this.ProjectEntitiesService.create({
             data: {
                 uuid: this.data.project.uuid,
@@ -260,6 +253,10 @@ class ManageSimulationCtrl {
         sim.value.description = this.editSimForm.description;
         sim.value.authors = this.editSimForm.authors;
         sim.value.guests = this.editSimForm.guests;
+        sim.value.simulationType = this.editSimForm.simulationType;
+        sim.value.simulationTypeOther = (this.editSimForm.simulationType === 'Other' ?
+            this.editSimForm.simulationTypeOther : ''
+        )
         this.ui.savingEditSim = true;
         this.ProjectEntitiesService.update({
             data: {
