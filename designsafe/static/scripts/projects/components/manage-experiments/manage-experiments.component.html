@@ -23,7 +23,7 @@
         </div>
       </div>
       <!-- Experiment Date -->
-      <div class="expDate form-group">
+      <div class="form-group">
         <label>
           <span class="pull-left" style="margin-right: 5px">Dates of Experiment</span>
           <span class="label label-danger">Required</span>
@@ -31,46 +31,16 @@
         <p>
           If you only want to enter a single date, fill in the first field.
         </p>
-        <div style="display:flex;">
-          <span class="input-group" style="width:25%;">
-            <input  type="text" 
-                    uib-datepicker-popup="MM-dd-yyyy"
-                    ng-model="$ctrl.form.addExperiments[0].procedureStart"
-                    is-open="isStartOpen"
-                    placeholder="mm-dd-yyyy"
-                    autocomplete="chrome-off"
-                    datepicker-options="dateOptions"
-                    date-disabled="disabled(date, mode)"
-                    ng-required="true"
-                    close-text="Close"
-                    class="form-control">
-            <span class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
-                <i class="glyphicon glyphicon-calendar"></i>
-              </button>
-            </span>
-          </span>
-          <span style="padding:6px;">
-            &#8213;
-          </span>
-          <span class="input-group" style="width:25%;">
-            <input  type="text"
-                    uib-datepicker-popup="MM-dd-yyyy"
-                    ng-model="$ctrl.form.addExperiments[0].procedureEnd"
-                    is-open="isEndOpen"
-                    placeholder="mm-dd-yyyy"
-                    autocomplete="chrome-off"
-                    datepicker-options="dateOptions"
-                    date-disabled="disabled(date, mode)"
-                    ng-required="false"
-                    close-text="Close"
-                    class="form-control">
-            <span class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
-                <i class="glyphicon glyphicon-calendar"></i>
-              </button>
-            </span>
-          </span>
+        <div class="form-group" style="display:flex; width:50%;">
+          <input  class="form-control"
+                  type="date" 
+                  ng-model="$ctrl.form.addExperiments[0].procedureStart"
+                  ng-required="true">
+          <span style="padding:6px;">&#8213;</span>
+          <input  class="form-control"
+                  type="date"
+                  ng-model="$ctrl.form.addExperiments[0].procedureEnd"
+                  ng-required="false">
         </div>
       </div>
       <!-- Experimental Facility -->
@@ -197,7 +167,7 @@
           </div>
         </div>
         <!-- Edit Experiment Date -->
-        <div class="expDate form-group">
+        <div class="form-group">
           <label>
             <span class="pull-left" style="margin-right: 5px">Dates of Experiment</span>
             <span class="label label-danger">Required</span>
@@ -205,46 +175,16 @@
           <p>
             Please confirm your experiment dates for each update. If you only want to enter a single date, fill in the first field.
           </p>
-          <div style="display:flex;">
-            <span class="input-group" style="width:25%;">
-              <input  type="text"
-                      uib-datepicker-popup="MM-dd-yyyy"
-                      ng-model="$ctrl.editExpForm.start"
-                      is-open="isStartOpen"
-                      placeholder="{{$ctrl.editExpForm.start | date:'MM-dd-yyyy'}}"
-                      autocomplete="chrome-off"
-                      datepicker-options="dateOptions"
-                      date-disabled="disabled(date, mode)"
-                      ng-required="true"
-                      close-text="Close"
-                      class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
-                  <i class="glyphicon glyphicon-calendar"></i>
-                </button>
-              </span>
-            </span>
-            <span style="padding:6px;">
-              &#8213;
-            </span>
-            <span class="input-group" style="width:25%;">
-              <input  type="text"
-                      uib-datepicker-popup="MM-dd-yyyy"
-                      ng-model="$ctrl.editExpForm.end"
-                      is-open="isEndOpen"
-                      placeholder="{{$ctrl.editExpForm.end ? ($ctrl.editExpForm.end | date:'MM-dd-yyyy') : 'mm-dd-yyyy'}}"
-                      autocomplete="chrome-off"
-                      datepicker-options="dateOptions"
-                      date-disabled="disabled(date, mode)"
-                      ng-required="false"
-                      close-text="Close"
-                      class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
-                  <i class="glyphicon glyphicon-calendar"></i>
-                </button>
-              </span>
-            </span>
+          <div class="form-group" style="display:flex; width:50%;">
+            <input  class="form-control"
+                    type="date" 
+                    ng-model="$ctrl.editExpForm.start"
+                    ng-required="true">
+            <span style="padding:6px;">&#8213;</span>
+            <input  class="form-control"
+                    type="date"
+                    ng-model="$ctrl.editExpForm.end"
+                    ng-required="false">
           </div>
         </div>
         <!-- Edit Experimental Facility -->
