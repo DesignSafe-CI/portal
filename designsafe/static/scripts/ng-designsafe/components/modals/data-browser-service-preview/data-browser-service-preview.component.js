@@ -22,7 +22,6 @@ class DataBrowserServicePreviewCtrl {
         //TODO DES-1689: working metadata table and operation buttons
         this.textContent = '';
         this.videoHref = '';
-        this.hazmapperHref = '';
         this.loading = true;
         this.error = false;
 
@@ -58,13 +57,18 @@ class DataBrowserServicePreviewCtrl {
                                 if (isGeoJson) this.renderGeoJson(body);
                             } else if (extension.endsWith('hazmapper')) {
                                 const body = JSON.parse(text);
-                                let uuid = body['uuid'];
-                                if (window.location.origin.includes('designsafeci-dev.tacc.utexas.edu')) {
-                                  this.hazmapperHref = `https://hazmapper.tacc.utexas.edu/staging/project/${uuid}`
-                                } else {
-                                  this.hazmapperHref = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${uuid}`
+                                let hazmapperHref = '';
+                                switch (body.deployment) {
+                                    case 'production':
+                                        hazmapperHref = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${body.uuid}`;
+                                        break;
+                                    case 'staging':
+                                        hazmapperHref = `https://hazmapper.tacc.utexas.edu/staging/project/${body.uuid}`;
+                                        break;
+                                    default:
+                                        hazmapperHref = `http://hazmapper.local:4200/project/${body.uuid}`;
                                 }
-                                window.open(this.hazmapperHref);
+                                window.open(hazmapperHref);
                                 this.close();
                             }
 
