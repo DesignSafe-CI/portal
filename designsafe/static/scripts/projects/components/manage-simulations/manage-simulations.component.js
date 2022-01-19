@@ -26,7 +26,7 @@ class ManageSimulationCtrl {
             if (typeof m == 'string') {
                 // if user is guest append their data
                 if(m.slice(0,5) === 'guest') {
-                    var guestData = this.project.value.guestMembers.find(x => x.user === m);
+                    let guestData = this.project.value.guestMembers.find(x => x.user === m);
                     members[i] = {
                         name: m,
                         order: i,
@@ -92,7 +92,7 @@ class ManageSimulationCtrl {
         $event.preventDefault();
         this.data.busy = true;
         this.form.addSimulation[0].authors = this.data.users;
-        var simulation = this.form.addSimulation[0];
+        let simulation = this.form.addSimulation[0];
         this.ProjectEntitiesService.create({
             data: {
                 uuid: this.data.project.uuid,
@@ -112,11 +112,11 @@ class ManageSimulationCtrl {
         });
     }
 
-    configureAuthors(exp) {
-        // combine project and experiment users then check if any authors need to be built into objects
-        var usersToClean = [...new Set([...this.data.users, ...exp.value.authors.slice()])];
-        var modAuths = false;
-        var auths = [];
+    configureAuthors(sim) {
+        // combine project and simulation users then check if any authors need to be built into objects
+        let usersToClean = [...new Set([...this.data.users, ...sim.value.authors.slice()])];
+        let modAuths = false;
+        let auths = [];
 
         usersToClean.forEach((a) => {
             if (typeof a == 'string') {
@@ -132,7 +132,7 @@ class ManageSimulationCtrl {
                 if (typeof auth == 'string') {
                     // if user is guest append their data
                     if(auth.slice(0,5) === 'guest') {
-                        var guestData = this.project.value.guestMembers.find(x => x.user === auth);
+                        let guestData = this.project.value.guestMembers.find(x => x.user === auth);
                         usersToClean[i] = {
                             name: auth,
                             order: i,
@@ -150,49 +150,35 @@ class ManageSimulationCtrl {
                     auth.order = i;
                 }
             });
-            usersToClean = _.uniq(usersToClean, 'name');
-        } else {
-            usersToClean = _.uniq(usersToClean, 'name');
         }
+        usersToClean = _.uniq(usersToClean, 'name');
+
         /*
-        Restore previous authorship status if any
+        It is possible that a user added to a simulation may no longer be on a project
+        Remove any users on the simulation that are not on the project
         */
-        if (auths.length) {
-            auths.forEach((a) => {
-                usersToClean.forEach((u, i) => {
-                    if (a.name === u.name) {
-                        usersToClean[i] = a;
-                    }
-                });
-            });
-        }
+        usersToClean = usersToClean.filter((m) => this.data.users.find((u) => u.name === m.name));
+
         /*
-        It is possible that a user added to an experiment may no longer be on a project
-        Remove any users on the experiment that are not on the project
+        Restore previous authorship status and order if any
         */
-        var rmList = [];
-        usersToClean.forEach((m) => {
-          var person = this.data.users.find(u => u.name === m.name);
-          if (!person) {
-            rmList.push(m);
-          }
-        });
-        rmList.forEach((m) => {
-          var index = usersToClean.indexOf(m);
-          if (index > -1) {
-            usersToClean.splice(index, 1);
-          }
-        });
+        usersToClean = usersToClean.map((u) => auths.find((a) => u.name == a.name) || u);
+
+        /*
+        Reorder to accomodate blank spots in order and give order to users with no order
+        */
+        usersToClean = usersToClean.sort((a, b) => a.order - b.order);
         usersToClean.forEach((u, i) => {
             u.order = i;
         });
+
         return usersToClean;
     }
 
     editSim(simulation) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
-        var sim = jQuery.extend(true, {}, simulation);
-        var auths = this.configureAuthors(sim);
+        let sim = jQuery.extend(true, {}, simulation);
+        let auths = this.configureAuthors(sim);
         this.editSimForm = {
             sim: sim,
             authors: auths,
@@ -222,8 +208,11 @@ class ManageSimulationCtrl {
     }
 
     orderAuthors(up) {
-        var a;
-        var b;
+        if (!this.editSimForm.selectedAuthor) {
+            return;
+        }
+        let a,
+            b;
         if (up) {
             if (this.editSimForm.selectedAuthor.order <= 0) {
                 return;
@@ -248,7 +237,7 @@ class ManageSimulationCtrl {
     }
 
     saveEditSimulation() {
-        var sim = this.editSimForm.sim;
+        let sim = this.editSimForm.sim;
         sim.value.title = this.editSimForm.title;
         sim.value.description = this.editSimForm.description;
         sim.value.authors = this.editSimForm.authors;
@@ -264,7 +253,7 @@ class ManageSimulationCtrl {
                 entity: sim
             }
         }).then((e) => {
-            var ent = this.data.project.getRelatedByUuid(e.uuid);
+            let ent = this.data.project.getRelatedByUuid(e.uuid);
             ent.update(e);
             this.ui.savingEditSim = false;
             this.data.simulations = this.data.project.simulation_set;

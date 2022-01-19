@@ -340,7 +340,7 @@ class ManageExperimentsCtrl {
         // This modal needs some tidying up.
         // we will never be adding more than one experiment at a time.
         this.form.addExperiments[0].authors = this.data.users;
-        var experiment = this.form.addExperiments[0];
+        let experiment = this.form.addExperiments[0];
         this.ProjectEntitiesService.create({
             data: {
                 uuid: this.data.project.uuid,

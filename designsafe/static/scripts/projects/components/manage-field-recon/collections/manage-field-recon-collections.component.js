@@ -29,7 +29,7 @@ class ManageFieldReconCollectionsCtrl {
             if (typeof m == 'string') {
                 // if user is guest append their data
                 if(m.slice(0,5) === 'guest') {
-                    var guestData = this.project.value.guestMembers.find(
+                    let guestData = this.project.value.guestMembers.find(
                         (x) => x.user === m
                     );
                     members[i] = {
@@ -276,42 +276,28 @@ class ManageFieldReconCollectionsCtrl {
                     auth.order = i;
                 }
             });
-            usersToClean = _.uniq(usersToClean, 'name');
-        } else {
-            usersToClean = _.uniq(usersToClean, 'name');
         }
+        usersToClean = _.uniq(usersToClean, 'name');
+
         /*
-        Restore previous authorship status if any
+        It is possible that a user added to a collection may no longer be on a project
+        Remove any users on the collection that are not on the project
         */
-        if (auths.length) {
-            auths.forEach((a) => {
-                usersToClean.forEach((u, i) => {
-                    if (a.name === u.name) {
-                        usersToClean[i] = a;
-                    }
-                });
-            });
-        }
+        usersToClean = usersToClean.filter((m) => this.data.users.find((u) => u.name === m.name));
+
         /*
-        It is possible that a user added to an experiment may no longer be on a project
-        Remove any users on the experiment that are not on the project
+        Restore previous authorship status and order if any
         */
-        let rmList = [];
-        usersToClean.forEach((m) => {
-            let person = this.data.users.find((u) => u.name === m.name);
-            if (!person) {
-                rmList.push(m);
-            }
-        });
-        rmList.forEach((m) => {
-            let index = usersToClean.indexOf(m);
-            if (index > -1) {
-                usersToClean.splice(index, 1);
-            }
-        });
+        usersToClean = usersToClean.map((u) => auths.find((a) => u.name == a.name) || u);
+
+        /*
+        Reorder to accomodate blank spots in order and give order to users with no order
+        */
+        usersToClean = usersToClean.sort((a, b) => a.order - b.order);
         usersToClean.forEach((u, i) => {
             u.order = i;
         });
+
         return usersToClean;
     }
 
