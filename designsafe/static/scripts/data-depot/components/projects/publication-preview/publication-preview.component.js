@@ -124,17 +124,6 @@ class PublicationPreviewCtrl {
         this.$state.go('projects.curation', {projectId: this.browser.project.uuid});
     }
 
-    manageProject() {
-            return this.$uibModal.open({
-            component: 'manageProject',
-            resolve: {
-                project: () => this.browser.project,
-            },
-            backdrop: 'static',
-            size: 'lg',
-        });
-    }
-
     prepareModal() {
         this.$uibModal.open({
             template: PublicationPopupTemplate,

@@ -15,7 +15,7 @@ class PublicationPreviewOtherCtrl {
         this.$state = $state;
         this.$q = $q;
     }
-    
+
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
@@ -37,24 +37,13 @@ class PublicationPreviewOtherCtrl {
             this.ui.loading = false;
         }
     }
-    
+
     goWork() {
         this.$state.go('projects.view', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
     }
 
     goCuration() {
         this.$state.go('projects.curation', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
-    }
-
-    manageProject() {
-        return this.$uibModal.open({
-            component: 'manageProject',
-            resolve: {
-                project: () => this.browser.project,
-            },
-            backdrop: 'static',
-            size: 'lg',
-        });
     }
 
     prepareModal() {
