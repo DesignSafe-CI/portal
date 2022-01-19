@@ -43,6 +43,9 @@ class ManageProjectCtrl {
                     : this.form[field] = this.project.value[field])
                 }
             }
+            if (Date.parse(this.form.nhEventStart) == Date.parse(this.form.nhEventEnd)) {
+                this.form.nhEventEnd = null;
+            }
             const usernames = new Set([
                 ...[this.project.value.pi],
                 ...this.project.value.coPis,
@@ -175,6 +178,9 @@ class ManageProjectCtrl {
             projectData.nhTypes = this.form.nhTypes.filter(type => typeof type === 'string' && type.length);
             if (projectData.projectType === 'field_recon') {
                 projectData.frTypes = this.form.frTypes.filter(type => typeof type === 'string' && type.length);
+                if (isNaN(Date.parse(projectData.nhEventEnd))) {
+                    projectData.nhEventEnd = new Date(projectData.nhEventStart);
+                }
             }
         }
         return projectData;

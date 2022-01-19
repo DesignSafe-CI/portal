@@ -223,13 +223,17 @@ class ManageFieldReconMissionsCtrl {
             title: this.form.title,
             event: this.form.event,
             dateStart: this.form.dateStart,
-            dateEnd: (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart),
+            dateEnd: this.form.dateEnd,
             authors: this.form.authors,
             location: this.form.location,
             longitude: this.form.longitude,
             latitude: this.form.latitude,
             description: this.form.description
         };
+
+        if (isNaN(Date.parse(mission.dateEnd))) {
+            mission.dateEnd = new Date(mission.dateStart);
+        }
 
         this.ProjectEntitiesService.create({
             data: {
@@ -251,12 +255,9 @@ class ManageFieldReconMissionsCtrl {
     editMission(mission) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.data.editMission = Object.assign({}, mission);
-        if (this.data.editMission.value.dateEnd && this.data.editMission.value.dateEnd !== 'None') {
-            if (this.data.editMission.value.dateEnd === this.data.editMission.value.dateStart) {
-                this.data.editMission.value.dateEnd = '';
-            } else {
+        if (this.data.editMission.value.dateEnd &&
+            this.data.editMission.value.dateEnd !== this.data.editMission.value.dateStart) {
                 this.data.editMission.value.dateEnd = new Date(this.data.editMission.value.dateEnd);
-            }
         } else {
             this.data.editMission.value.dateEnd = '';
         }
@@ -285,11 +286,16 @@ class ManageFieldReconMissionsCtrl {
         this.data.editMission.value.title = this.form.title;
         this.data.editMission.value.event = (this.form.event ? this.form.event : '');
         this.data.editMission.value.dateStart = this.form.dateStart;
-        this.data.editMission.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart);
+        this.data.editMission.value.dateEnd = this.form.dateEnd;
         this.data.editMission.value.location = this.form.location;
         this.data.editMission.value.longitude = this.form.longitude;
         this.data.editMission.value.latitude = this.form.latitude;
         this.data.editMission.value.description = this.form.description;
+
+        if (isNaN(Date.parse(this.data.editMission.value.dateEnd))) {
+            this.data.editMission.value.dateEnd = new Date(this.data.editMission.value.dateStart);
+        }
+
         this.ProjectEntitiesService.update({
             data: {
                 uuid: this.data.editMission.uuid,
