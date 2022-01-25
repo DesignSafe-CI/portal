@@ -79,7 +79,7 @@
             <!-- Reports -->
             <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(primEnt, report) && $ctrl.browser.listings[report.uuid]">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                    <button class="btn tab-report" data-toggle="collapse"
+                    <button class="btn tab-dark-gray" data-toggle="collapse"
                             data-target="#files-{{report.uuid}}" style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
@@ -102,7 +102,7 @@
             <!-- Model Configs -->
             <div ng-repeat="modelConfig in $ctrl.browser.project.modelconfig_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(primEnt, modelConfig)">
                     <div class="dropdown dropdown-spacer-sm" id="details-{{modelConfig.uuid}}">
-                        <button class="btn tab-model-conf" data-toggle="collapse"
+                        <button class="btn tab-blue" data-toggle="collapse"
                                 data-target="#files-{{modelConfig.uuid}}" style="width:100%;">
                             <div class="collapse-tab">
                                 <span class="collapse-tab-content-left">Model Configuration | <strong>{{modelConfig.value.title}}</strong></span>
@@ -136,7 +136,7 @@
                                         </span>
                                     </td>
                                     <td style="width: 100%;">
-                                        <button class="btn tab-sensor-info dropdown-spacer-sm" data-toggle="collapse"
+                                        <button class="btn tab-teal dropdown-spacer-sm" data-toggle="collapse"
                                                 data-target="#files-{{sensorList.uuid}}{{modelConfig.uuid}}" style="width:100%;">
                                         <div class="collapse-tab">
                                             <span class="collapse-tab-content-left">Sensor Information | <strong>{{sensorList.value.title}}</strong></span>
@@ -168,7 +168,7 @@
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
-                                                <button class="btn tab-event" data-toggle="collapse"
+                                                <button class="btn tab-yellow" data-toggle="collapse"
                                                         data-target="#files-{{event.uuid}}{{modelConfig.uuid}}" style="width:100%;">
                                                     <div class="collapse-tab">
                                                         <span class="collapse-tab-content-left">Event | <strong>{{event.value.title}}</strong></span>
@@ -200,7 +200,7 @@
                 <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'"
                      ng-if="$ctrl.matchingGroup(primEnt, analysis) && $ctrl.browser.listings[analysis.uuid]">
                     <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                        <button class="btn tab-analysis" data-toggle="collapse"
+                        <button class="btn tab-light-blue" data-toggle="collapse"
                                 data-target="#files-{{analysis.uuid}}" style="width:100%;">
                             <div class="collapse-tab">
                                 <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>

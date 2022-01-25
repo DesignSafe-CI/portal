@@ -182,7 +182,7 @@
     <!-- Project Reports -->
     <div ng-if="$ctrl.matchingGroup(hybsim, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-            <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+            <button class="btn collapsed tab-dark-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                 <div class="collapse-tab">
                     <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                     <span class="collapse-tab-content-right curation-chevron"></span>
@@ -217,7 +217,7 @@
     </div>
     <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
-            <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}" style="width:100%;">
+            <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}" style="width:100%;">
                 <div class="collapse-tab">
                     <span class="collapse-tab-content-left">Hybrid Simulation | <strong>{{hybsim.value.title}}</strong></span>
                     <span class="collapse-tab-content-right curation-chevron"></span>
@@ -314,7 +314,7 @@
                             ng-if="$ctrl.matchingGroup(hybsim, report)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{hybsim.uuid}}" style="width:100%;">
+                                <button class="btn collapsed tab-dark-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{hybsim.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>
@@ -338,7 +338,7 @@
                             ng-if="$ctrl.matchingGroup(hybsim, model)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
-                                <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}-{{hybsim.uuid}}"
+                                <button class="btn collapsed tab-blue" data-toggle="collapse" data-target="#files-{{model.uuid}}-{{hybsim.uuid}}"
                                     style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Global Model | <strong>{{model.value.title}}</strong></span>
@@ -373,7 +373,7 @@
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
-                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
+                                                <button class="btn collapsed tab-teal dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                 style="width:100%;">
                                                 <div class="collapse-tab">
                                                     <span class="collapse-tab-content-left">Coordinator | <strong>{{coordinator.value.title}}</strong></span>
@@ -410,7 +410,7 @@
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{cout.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}" style="width:100%;">
+                                                        <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{cout.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}" style="width:100%;">
                                                             <div class="collapse-tab">
                                                                 <span class="collapse-tab-content-left">Coordinator Output | <strong>{{cout.value.title}}</strong></span>
                                                                 <span class="collapse-tab-content-right curation-chevron"></span>
@@ -449,7 +449,7 @@
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-sim-subst dropdown-spacer-sm"
+                                                        <button class="btn collapsed tab-orange dropdown-spacer-sm"
                                                                 data-toggle="collapse"
                                                                 data-target="#files-{{simsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                                 style="width:100%;"
@@ -492,7 +492,7 @@
                                                                 </span>
                                                             </td>
                                                             <td style="width: 100%;">
-                                                                <button class="btn collapsed tab-event dropdown-spacer-sm"
+                                                                <button class="btn collapsed tab-yellow dropdown-spacer-sm"
                                                                         data-toggle="collapse"
                                                                         data-target="#files-{{sout.uuid}}-{{simsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                                         style="width:100%;"
@@ -538,7 +538,7 @@
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-exp-subst dropdown-spacer-sm"
+                                                        <button class="btn collapsed tab-purple dropdown-spacer-sm"
                                                                 data-toggle="collapse"
                                                                 data-target="#files-{{expsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                                 style="width:100%;"
@@ -581,7 +581,7 @@
                                                                 </span>
                                                             </td>
                                                             <td style="width: 100%;">
-                                                                <button class="btn collapsed tab-event"
+                                                                <button class="btn collapsed tab-yellow"
                                                                         data-toggle="collapse"
                                                                         data-target="#files-{{eout.uuid}}-{{expsub.uuid}}-{{coordinator.uuid}}-{{model.uuid}}-{{hybsim.uuid}}"
                                                                         style="width:100%;"
@@ -621,7 +621,7 @@
                             ng-if="$ctrl.matchingGroup(hybsim, analysis)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{hybsim.uuid}}"
+                                <button class="btn collapsed tab-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{hybsim.uuid}}"
                                     style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>

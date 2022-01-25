@@ -93,7 +93,7 @@
              ng-if="$ctrl.matchingGroup(simulation, report)"
         >
             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                <button class="btn collapsed tab-dark-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
@@ -115,7 +115,7 @@
             <div class="dropdown dropdown-spacer-lg" id="details-{{simulation.uuid}}" style="margin-top: 15px">
                 <a ng-click="$ctrl.selectEntity(simulation)">Select this Simulation and all of its files</a>
                 <span ng-if="$ctrl.selectedEnts.includes(simulation)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
-                <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
+                <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Simulation | <strong>{{simulation.value.title}}</strong></span>
@@ -170,7 +170,7 @@
                              ng-if="$ctrl.matchingGroup(simulation, report)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                                <button class="btn collapsed tab-dark-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                                     style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
@@ -193,7 +193,7 @@
                              ng-if="$ctrl.matchingGroup(simulation, model)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
-                                <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
+                                <button class="btn collapsed tab-blue" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                                     style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Model | <strong>{{model.value.title}}</strong></span>
@@ -226,7 +226,7 @@
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
-                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{input.uuid}}{{model.uuid}}"
+                                                <button class="btn collapsed tab-teal dropdown-spacer-sm" data-toggle="collapse" data-target="#files-{{input.uuid}}{{model.uuid}}"
                                                 style="width:100%;">
                                                 <div class="collapse-tab">
                                                     <span class="collapse-tab-content-left">Input | <strong>{{input.value.title}}</strong></span>
@@ -261,7 +261,7 @@
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{output.uuid}}{{model.uuid}}" style="width:100%;">
+                                                        <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{output.uuid}}{{model.uuid}}" style="width:100%;">
                                                             <div class="collapse-tab">
                                                                 <span class="collapse-tab-content-left">Output | <strong>{{output.value.title}}</strong></span>
                                                                 <span class="collapse-tab-content-right curation-chevron"></span>
@@ -292,7 +292,7 @@
                              ng-if="$ctrl.matchingGroup(simulation, analysis)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+                                <button class="btn collapsed tab-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                                     style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>

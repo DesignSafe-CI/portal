@@ -80,7 +80,7 @@
         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
             ng-if="$ctrl.matchingGroup(primEnt, report) && $ctrl.browser.listings[report.uuid]">
             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+                <button class="btn tab-dark-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                         <span class="collapse-tab-content-right curation-chevron"></span>
@@ -105,7 +105,7 @@
         <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'"
             ng-if="$ctrl.matchingGroup(primEnt, model)">
             <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
-                <button class="btn tab-model-conf" data-toggle="collapse"
+                <button class="btn tab-blue" data-toggle="collapse"
                         data-target="#files-{{model.uuid}}" style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Model | <strong>{{model.value.title}}</strong></span>
@@ -136,7 +136,7 @@
                                 </span>
                             </td>
                             <td style="width: 100%;">
-                                <button class="btn tab-sensor-info dropdown-spacer-sm" data-toggle="collapse"
+                                <button class="btn tab-teal dropdown-spacer-sm" data-toggle="collapse"
                                     data-target="#files-{{input.uuid}}{{model.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Input | <strong>{{input.value.title}}</strong></span>
@@ -169,7 +169,7 @@
                                         </span>
                                     </td>
                                     <td style="width: 100%;">
-                                        <button class="btn tab-outpt" data-toggle="collapse"
+                                        <button class="btn tab-yellow" data-toggle="collapse"
                                             data-target="#files-{{output.uuid}}{{model.uuid}}" style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Output | <strong>{{output.value.title}}</strong></span>
@@ -199,7 +199,7 @@
         <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'"
             ng-if="$ctrl.matchingGroup(primEnt, analysis) && $ctrl.browser.listings[analysis.uuid]">
             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                <button class="btn tab-analysis" data-toggle="collapse"
+                <button class="btn tab-light-blue" data-toggle="collapse"
                         data-target="#files-{{analysis.uuid}}" style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>

@@ -216,7 +216,7 @@
             <!-- Reports -->
             <div ng-if="mission.name == 'designsafe.project.field_recon.report' && !$ctrl.ui.loading">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
-                    <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
+                    <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
                         style="width:100%;">
                         <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
@@ -326,7 +326,7 @@
             <!-- Missions -->
             <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading && mission.name == 'designsafe.project.field_recon.mission'">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
-                    <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
+                    <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
                         <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
                                 <td class="tab-cell">
@@ -432,7 +432,7 @@
                             <!-- Old Collections -->
                             <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
                                 <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                    <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                    <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                         style="width:100%;">
                                         <div class="collapse-tab">
                                             <span class="collapse-tab-content-left">Collection | <strong>{{collection.value.title}}</strong></span>
@@ -508,7 +508,7 @@
                                 <!-- Social Science -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                        <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                             style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -626,7 +626,7 @@
                                 <!-- GeoscienceEngineering -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.geoscience'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                        <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                             style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -715,7 +715,7 @@
                                 <!-- Research Planning Collection -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.planning'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                        <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                             style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
