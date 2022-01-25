@@ -29,15 +29,16 @@
           <span class="label label-danger">Required</span>
         </label>
         <div>
-          <select ng-options="type.name as type.label for type in $ctrl.ui.simulationTypes"
-                  style="background:white; width:100%"
-                  ng-model="$ctrl.form.addSimulation[0].simulationType"
+          <select class="form-control"
                   id="add-sim-type"
+                  ng-options="type.name as type.label for type in $ctrl.ui.simulationTypes"
+                  ng-model="$ctrl.form.addSimulation[0].simulationType"
                   ng-required="true">
+                  <option value="">-- Select Simulation Type --</option>
           </select>
-          <input  type="text"
-                  style="background:white; width:100%"
+          <input  class="form-control"
                   id="add-sim-type-other"
+                  type="text"
                   placeholder="Custom Simulation Type"
                   ng-model="$ctrl.form.addSimulation[0].simulationTypeOther"
                   ng-if="$ctrl.form.addSimulation[0].simulationType == 'Other'"
@@ -104,11 +105,20 @@
             <span class="label label-danger">Required</span>
           </label>
           <div>
-            <select style="background:white; width:100%"
-                    id="edit-sim-type"
-                    readonly>
-              <option value="$ctrl.editSimForm.simulationType">{{ $ctrl.editSimForm.simulationType }}</option>
+            <select class="form-control"
+                    id="id-simulation-type"
+                    ng-options="type.name as type.label for type in $ctrl.ui.simulationTypes"
+                    ng-model="$ctrl.editSimForm.simulationType"
+            >
             </select>
+            <input class="form-control"
+                   type="text"
+                   id="id-equipment-type-other"
+                   placeholder="{{$ctrl.editSimForm.simulationTypeOther || 'Custom Simulation Type'}}"
+                   ng-model="$ctrl.editSimForm.simulationTypeOther"
+                   ng-if="$ctrl.editSimForm.simulationType == 'Other'"
+                   ng-required="true"
+            >
           </div>
         </div>
         <!-- Edit Simulation Description -->

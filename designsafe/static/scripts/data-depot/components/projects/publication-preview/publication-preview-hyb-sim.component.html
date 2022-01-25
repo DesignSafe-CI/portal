@@ -228,10 +228,10 @@
                 <div class="well">
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Simulation Type</div>
-                        <span ng-if="!$ctrl.isValid(hybsim.value.experimentalFacilityOther)" class="entity-meta-data-cap">
+                        <span ng-if="!$ctrl.isValid(hybsim.value.simulationTypeOther)" class="entity-meta-data-cap">
                             {{ hybsim.value.simulationType.replace('_', ' ') }}
                         </span>
-                        <span ng-if="$ctrl.isValid(hybsim.value.experimentalFacilityOther)" class="entity-meta-data-cap">
+                        <span ng-if="$ctrl.isValid(hybsim.value.simulationTypeOther)" class="entity-meta-data-cap">
                             {{ hybsim.value.simulationTypeOther }}
                         </span>
                     </div>
