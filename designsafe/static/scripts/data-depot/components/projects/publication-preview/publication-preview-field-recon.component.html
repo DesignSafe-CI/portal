@@ -432,7 +432,7 @@
                             <!-- Old Collections -->
                             <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
                                 <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                    <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                    <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                         style="width:100%;">
                                         <div class="collapse-tab">
                                             <span class="collapse-tab-content-left">Collection | <strong>{{collection.value.title}}</strong></span>
@@ -508,7 +508,7 @@
                                 <!-- Social Science -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                             style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -626,7 +626,7 @@
                                 <!-- GeoscienceEngineering -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.geoscience'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                             style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
