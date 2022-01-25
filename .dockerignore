@@ -1,2 +1,10 @@
 node_modules
 static
+.venv
+env
+.vscode
+coverage
+.git
+.docs
+.github
+.pytest_cache

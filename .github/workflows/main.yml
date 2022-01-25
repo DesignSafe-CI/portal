@@ -32,7 +32,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - run: pip install -r requirements.txt
+    - run: pip install -r requirements.txt && pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
     - name: Run Server-side unit tests and generate coverage report
       run: |
         pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe

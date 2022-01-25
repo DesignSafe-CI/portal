@@ -173,6 +173,14 @@ the Django `settings.py` with `designsafe.apps.{app_name}`.
 
 See the [DesignSafe Styles Reference][7] for style reference and custom CSS documentation.
 
+### Updating Python dependencies
+
+For simplicity the Dockerfile uses a `requirements.txt` exported from Poetry. To add a new dependency:
+
+1. Run `poetry add $NEW_DEPENDENCY`.
+2. Run `poetry export > requirements.txt --dev --without-hashes` in the repository root.
+3. Rebuild the dev image with `docker-compose -f conf/docker/docker-compose.yml build`
+
 ## Testing
 
 The easiest way to run the tests is from inside a running Docker container. While you can
