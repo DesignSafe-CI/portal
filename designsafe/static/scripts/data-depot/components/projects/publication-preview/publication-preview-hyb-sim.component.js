@@ -16,7 +16,7 @@ class PublicationPreviewHybSimCtrl {
         this.$q = $q;
         this.FileOperationService = FileOperationService;
     }
-    
+
     $onInit() {
         this.readOnly = this.$state.current.name.indexOf('publishedData') === 0;
         this.projectId = this.ProjectService.resolveParams.projectId;
@@ -88,24 +88,13 @@ class PublicationPreviewHybSimCtrl {
         }
         return false;
     }
-    
+
     goWork() {
         this.$state.go('projects.view', {projectId: this.browser.project.uuid});
     }
 
     goCuration() {
         this.$state.go('projects.curation', {projectId: this.browser.project.uuid});
-    }
-
-    manageProject() {
-        return this.$uibModal.open({
-            component: 'manageProject',
-            resolve: {
-                project: () => this.browser.project,
-            },
-            backdrop: 'static',
-            size: 'lg',
-        });
     }
 
     prepareModal() {

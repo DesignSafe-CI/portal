@@ -115,42 +115,28 @@ class ManageFieldReconMissionsCtrl {
                     auth.order = i;
                 }
             });
-            usersToClean = _.uniq(usersToClean, 'name');
-        } else {
-            usersToClean = _.uniq(usersToClean, 'name');
         }
+        usersToClean = _.uniq(usersToClean, 'name');
+
         /*
-        Restore previous authorship status if any
+        It is possible that a user added to a mission may no longer be on a project
+        Remove any users on the mission that are not on the project
         */
-        if (auths.length) {
-            auths.forEach((a) => {
-                usersToClean.forEach((u, i) => {
-                    if (a.name === u.name) {
-                        usersToClean[i] = a;
-                    }
-                });
-            });
-        }
+        usersToClean = usersToClean.filter((m) => this.data.users.find((u) => u.name === m.name));
+
         /*
-        It is possible that a user added to an experiment may no longer be on a project
-        Remove any users on the experiment that are not on the project
+        Restore previous authorship status and order if any
         */
-        let rmList = [];
-        usersToClean.forEach((m) => {
-            let person = this.data.users.find((u) => u.name === m.name);
-            if (!person) {
-                rmList.push(m);
-            }
-        });
-        rmList.forEach((m) => {
-            let index = usersToClean.indexOf(m);
-            if (index > -1) {
-                usersToClean.splice(index, 1);
-            }
-        });
+        usersToClean = usersToClean.map((u) => auths.find((a) => u.name == a.name) || u);
+
+        /*
+        Reorder to accomodate blank spots in order and give order to users with no order
+        */
+        usersToClean = usersToClean.sort((a, b) => a.order - b.order);
         usersToClean.forEach((u, i) => {
             u.order = i;
         });
+
         return usersToClean;
     }
 
@@ -171,49 +157,6 @@ class ManageFieldReconMissionsCtrl {
         return true;
     }
 
-    orderAuthors(up) {
-        let a;
-        let b;
-        if (up) {
-            if (this.form.selectedAuthor.order <= 0) {
-                return;
-            }
-            // move up
-            a = this.form.authors.find(
-                (x) => {
-                    x.order === this.form.selectedAuthor.order - 1;
-                }
-            );
-            b = this.form.authors.find(
-                (x) => {
-                    x.order === this.form.selectedAuthor.order;
-                }
-            );
-            a.order = a.order + b.order;
-            b.order = a.order - b.order;
-            a.order = a.order - b.order;
-        } else {
-            if (this.form.selectedAuthor.order >=
-                this.form.authors.length - 1) {
-                return;
-            }
-            // move down
-            a = this.form.authors.find(
-                (x) => {
-                    x.order === this.form.selectedAuthor.order + 1;
-                }
-            );
-            b = this.form.authors.find(
-                (x) => {
-                    x.order === this.form.selectedAuthor.order;
-                }
-            );
-            a.order = a.order + b.order;
-            b.order = a.order - b.order;
-            a.order = a.order - b.order;
-        }
-    }
-
     saveMission($event) {
         if ($event) {
             $event.preventDefault();
@@ -223,13 +166,17 @@ class ManageFieldReconMissionsCtrl {
             title: this.form.title,
             event: this.form.event,
             dateStart: this.form.dateStart,
-            dateEnd: (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart),
+            dateEnd: this.form.dateEnd,
             authors: this.form.authors,
             location: this.form.location,
             longitude: this.form.longitude,
             latitude: this.form.latitude,
             description: this.form.description
         };
+
+        if (isNaN(Date.parse(mission.dateEnd))) {
+            mission.dateEnd = new Date(mission.dateStart);
+        }
 
         this.ProjectEntitiesService.create({
             data: {
@@ -251,12 +198,9 @@ class ManageFieldReconMissionsCtrl {
     editMission(mission) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.data.editMission = Object.assign({}, mission);
-        if (this.data.editMission.value.dateEnd && this.data.editMission.value.dateEnd !== 'None') {
-            if (this.data.editMission.value.dateEnd === this.data.editMission.value.dateStart) {
-                this.data.editMission.value.dateEnd = '';
-            } else {
+        if (this.data.editMission.value.dateEnd &&
+            this.data.editMission.value.dateEnd !== this.data.editMission.value.dateStart) {
                 this.data.editMission.value.dateEnd = new Date(this.data.editMission.value.dateEnd);
-            }
         } else {
             this.data.editMission.value.dateEnd = '';
         }
@@ -285,11 +229,16 @@ class ManageFieldReconMissionsCtrl {
         this.data.editMission.value.title = this.form.title;
         this.data.editMission.value.event = (this.form.event ? this.form.event : '');
         this.data.editMission.value.dateStart = this.form.dateStart;
-        this.data.editMission.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart);
+        this.data.editMission.value.dateEnd = this.form.dateEnd;
         this.data.editMission.value.location = this.form.location;
         this.data.editMission.value.longitude = this.form.longitude;
         this.data.editMission.value.latitude = this.form.latitude;
         this.data.editMission.value.description = this.form.description;
+
+        if (isNaN(Date.parse(this.data.editMission.value.dateEnd))) {
+            this.data.editMission.value.dateEnd = new Date(this.data.editMission.value.dateStart);
+        }
+
         this.ProjectEntitiesService.update({
             data: {
                 uuid: this.data.editMission.uuid,

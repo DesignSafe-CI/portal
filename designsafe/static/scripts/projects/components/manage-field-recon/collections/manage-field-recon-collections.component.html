@@ -8,7 +8,7 @@
 </div>
 <div class="modal-body">
     <div class="well">
-        <ng-form name="addForm" data-ng-hide="$ctrl.ui.showEditCollectionForm" autocomplete="off">
+        <form name="addForm" data-ng-hide="$ctrl.ui.showEditCollectionForm" autocomplete="off">
             <div class="collection-type form-group">
                 <div style="padding-bottom: 10px;">
                     <label for="id-type">
@@ -195,50 +195,16 @@
                             </span>
                         </div>
                     </label>
-                    <div style="display: flex;">
-                        <input type="text"
-                            id="id-date-start"
-                            data-uib-datepicker-popup="MM-dd-yyyy"
-                            data-ng-model="$ctrl.form.dateStart"
-                            data-is-open="isStartOpen"
-                            placeholder="mm-dd-yyyy"
-                            autocomplete="chrome-off"
-                            data-date-picker-options="dateOptions"
-                            data-date-disabled="disabled(date, mode)"
-                            data-ng-required="true"
-                            data-close-text="Close"
-                            class="form-control"
-                            style="width: 25%; display:inline-block;" />
-                        <span class="input-group-btn">
-                            <button type="button"
-                                    class="btn btn-default"
-                                    data-ng-click="isStartOpen = !isStartOpen">
-                                <i class="glyphicon glyphicon-calendar"></i>
-                            </button>
-                        </span>
-                        <span style="padding:6px; margin-left:30px;">
-                            &#8213;
-                        </span>
-                        <input type="text"
-                            id="id-date-end"
-                            data-uib-datepicker-popup="MM-dd-yyyy"
-                            data-ng-model="$ctrl.form.dateEnd"
-                            data-is-open="isEndOpen"
-                            placeholder="mm-dd-yyyy"
-                            autocomplete="chrome-off"
-                            data-date-picker-options="dateOptions"
-                            data-date-disabled="disabled(date, mode)"
-                            data-ng-required="false"
-                            data-close-text="Close"
-                            class="form-control"
-                            style="width: 25%; display:inline-block;" />
-                        <span class="input-group-btn">
-                            <button type="button"
-                                    class="btn btn-default"
-                                    data-ng-click="isEndOpen = !isEndOpen">
-                                <i class="glyphicon glyphicon-calendar"></i>
-                            </button>
-                        </span>
+                    <div style="display:flex; width:50%;">
+                        <input  class="form-control"
+                                type="date"
+                                ng-model="$ctrl.form.dateStart"
+                                ng-required="true">
+                        <span style="padding:6px;">&#8213;</span>
+                        <input  class="form-control"
+                                type="date"
+                                ng-model="$ctrl.form.dateEnd"
+                                ng-required="false">
                     </div>
                 </div>
                 <div class="data-collectors form-group">
@@ -580,7 +546,7 @@
         <!-- Social Science -->
         <div ng-repeat="collection in $ctrl.data.socialScienceCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -720,7 +686,7 @@
         <!-- GeoscienceEngineering -->
         <div ng-repeat="collection in $ctrl.data.geoscienceCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -893,10 +859,10 @@
         <!-- Reports -->
         <div ng-repeat="collection in $ctrl.data.reportCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
-                        <span class="collapse-tab-content-left">Documents Collection | <strong>{{collection.value.title}}</strong></span>
+                        <span class="collapse-tab-content-left"> Documents | <strong>{{collection.value.title}}</strong></span>
                         <span class="collapse-tab-content-right curation-chevron"></span>
                     </div>
                 </button>
