@@ -196,9 +196,7 @@ class ManageExperimentsCtrl {
         let auths = this.configureAuthors(exp);
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
 
-        if (exp.value.procedureEnd &&
-            exp.value.procedureEnd !== 'None' &&
-            exp.value.procedureEnd !== exp.value.procedureStart) {
+        if (exp.value.procedureEnd && exp.value.procedureEnd !== exp.value.procedureStart) {
                 exp.value.procedureEnd = new Date(exp.value.procedureEnd);
         } else {
             exp.value.procedureEnd = '';

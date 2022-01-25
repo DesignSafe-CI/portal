@@ -16,7 +16,7 @@ class HazmapperMapsCtrl {
                     map.href = `https://hazmapper.tacc.utexas.edu/staging/project/${map.uuid}`;
                     break;
                 default:
-                    map.href = `http://localhost:4200/project/${map.uuid}`;
+                    map.href = `http://hazmapper.local:4200/project/${map.uuid}`;
             }
         });
 
