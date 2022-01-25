@@ -184,7 +184,7 @@
          ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-            <button class="btn collapsed tab-dark-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+            <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                 <div class="collapse-tab">
                     <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                     <span class="collapse-tab-content-right curation-chevron"></span>
@@ -321,7 +321,7 @@
                             ng-if="$ctrl.matchingGroup(simulation, report)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-dark-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{simulation.uuid}}" style="width:100%;">
+                                <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{simulation.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>

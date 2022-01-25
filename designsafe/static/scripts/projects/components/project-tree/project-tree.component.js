@@ -559,7 +559,7 @@ class ProjectTreeCtrl {
                 uuid: report.uuid,
                 type: report.name,
                 parent: projectNode.name,
-                rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
+                rectStyle: 'stroke: #cccccc; fill: #f5f5f5;',
                 display: 'Documents',
                 primary: true,
                 order: this.orderOf(report, projectNode.uuid).value,
@@ -703,7 +703,7 @@ class ProjectTreeCtrl {
                     type: rep.name,
                     uuid: rep.uuid,
                     parent: node.name,
-                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
+                    rectStyle: 'stroke: #cccccc; fill: #f5f5f5;',
                     display: 'Report',
                     order: this.orderOf(rep, node.uuid).value,
                 };
@@ -1049,7 +1049,7 @@ class ProjectTreeCtrl {
                     type: rep.name,
                     uuid: rep.uuid,
                     parent: node.name,
-                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
+                    rectStyle: 'stroke: #cccccc; fill: #f5f5f5;',
                     display: 'Report',
                     order: this.orderOf(rep, node.uuid).value,
                 };
@@ -1263,7 +1263,7 @@ class ProjectTreeCtrl {
                     type: rep.name,
                     uuid: rep.uuid,
                     parent: node.name,
-                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;',
+                    rectStyle: 'stroke: #cccccc; fill: #f5f5f5;',
                     display: 'Report',
                     order: this.orderOf(rep, node.uuid).value,
                 };
