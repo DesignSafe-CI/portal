@@ -6,7 +6,7 @@ authors = ["DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"]
 
 [tool.poetry.dependencies]
 python = "^3.6.8"
-agavepy = "^0.9.5"
+agavepy = "1.0.0a12"
 Django = "^1.11"
 cryptography = "^2.3.1"
 django-cms = "3.4.7"
