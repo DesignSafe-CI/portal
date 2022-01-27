@@ -117,17 +117,6 @@ class PublicationPreviewFieldReconCtrl {
         this.$state.go('projects.curation', {projectId: this.browser.project.uuid});
     }
 
-    manageProject() {
-        return this.$uibModal.open({
-            component: 'manageProject',
-            resolve: {
-                project: () => this.browser.project,
-            },
-            backdrop: 'static',
-            size: 'lg',
-        });
-    }
-
     ordered(parent, entities) {
         let order = (ent) => {
             if (ent._ui && ent._ui.orders && ent._ui.orders.length) {

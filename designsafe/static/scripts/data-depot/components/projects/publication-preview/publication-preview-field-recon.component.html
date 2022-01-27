@@ -4,7 +4,6 @@
         <div class="prj-head-container">
             <span class="prj-head-title">
                 {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
-                <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
             </span>
             <div class="prj-head-buttons">
                 <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
@@ -217,7 +216,7 @@
             <!-- Reports -->
             <div ng-if="mission.name == 'designsafe.project.field_recon.report' && !$ctrl.ui.loading">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
-                    <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
+                    <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
                         style="width:100%;">
                         <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
@@ -290,14 +289,26 @@
                                     <span>(Appears when published)</span>
                                 </div>
                                 <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                                    <div data-ng-if="$ctrl.browser.publication.licenses.datasets">
-                                        {{ $ctrl.browser.publication.licenses.datasets }}
+                                    <div data-ng-if="$ctrl.browser.publication.licenses.datasets" class="license-element">
+                                        <span class="curation-odc" style="font-size:32px;"></span>&nbsp;
+                                        <span>{{ $ctrl.browser.publication.licenses.datasets }}</span>
                                     </div>
-                                    <div data-ng-if="$ctrl.browser.publication.licenses.works">
-                                        {{ $ctrl.browser.publication.licenses.works }}
+                                    <div data-ng-if="$ctrl.browser.publication.licenses.works" class="license-element">
+                                        <span
+                                            class="curation-cc-share"
+                                            style="font-size:32px;"
+                                            ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+                                        </span>
+                                        <span
+                                            class="curation-cc-zero"
+                                            style="font-size:32px;"
+                                            ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
+                                        </span>&nbsp;
+                                        <span>{{ $ctrl.browser.publication.licenses.works }}</span>
                                     </div>
-                                    <div data-ng-if="$ctrl.browser.publication.licenses.software">
-                                        {{ $ctrl.browser.publication.licenses.software }}
+                                    <div data-ng-if="$ctrl.browser.publication.licenses.software" class="license-element">
+                                        <span class="curation-gpl" style="font-size:32px;"></span>&nbsp;
+                                        <span>{{ $ctrl.browser.publication.licenses.software }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -421,7 +432,7 @@
                             <!-- Old Collections -->
                             <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
                                 <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                    <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                    <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                         style="width:100%;">
                                         <div class="collapse-tab">
                                             <span class="collapse-tab-content-left">Collection | <strong>{{collection.value.title}}</strong></span>
@@ -497,7 +508,7 @@
                                 <!-- Social Science -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                        <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                             style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -615,7 +626,7 @@
                                 <!-- GeoscienceEngineering -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.geoscience'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-collection-conf" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
+                                        <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                             style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
