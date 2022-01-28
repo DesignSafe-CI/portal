@@ -154,7 +154,9 @@ def download(client, system, path=None, paths=None, *args, **kwargs):
     """
     # pylint: disable=protected-access
 
-    token = client.token.token_info['access_token']
+    token = None
+    if client is not None:
+        token = client.token.token_info['access_token']
     zip_endpoint = "https://designsafe-download01.tacc.utexas.edu/check"
     data = json.dumps({'system': system, 'paths': paths})
     # data = json.dumps({'system': 'designsafe.storage.published', 'paths': ['PRJ-2889']})
