@@ -10,9 +10,11 @@ import { PublicationPreviewOtherComponent } from './publication-preview/publicat
 import { PublicationPreviewFieldReconComponent } from './publication-preview/publication-preview-field-recon.component';
 import { PipelineStartComponent } from './pipeline-start/pipeline-start.component';
 import {
-    PipelineVersionComponent,
-    PipelineVersionProjectComponent,
-    PipelineVersionChangesComponent,
+    VersionOtherSelectionComponent,
+    VersionOtherCitationComponent,
+    VersionExperimentalSelectionComponent,
+    VersionExperimentalCitationComponent,
+    VersionChangesComponent,
 } from './pipeline-version/pipeline-version.component';
 import { PipelineAmendComponent } from './pipeline-amend/pipeline-amend.component';
 import {
@@ -79,9 +81,11 @@ ddProjectsComponents.component('publicationPreviewOther', PublicationPreviewOthe
 ddProjectsComponents.component('publicationPreviewFieldRecon', PublicationPreviewFieldReconComponent);
 ddProjectsComponents.component('pipelineStart', PipelineStartComponent);
 ddProjectsComponents.component('pipelineAmend', PipelineAmendComponent);
-ddProjectsComponents.component('pipelineVersion', PipelineVersionComponent);
-ddProjectsComponents.component('pipelineVersionProject', PipelineVersionProjectComponent);
-ddProjectsComponents.component('pipelineVersionChanges', PipelineVersionChangesComponent);
+ddProjectsComponents.component('versionOtherSelection', VersionOtherSelectionComponent);
+ddProjectsComponents.component('versionOtherCitation', VersionOtherCitationComponent);
+ddProjectsComponents.component('versionExperimentalSelection', VersionExperimentalSelectionComponent);
+ddProjectsComponents.component('versionExperimentalCitation', VersionExperimentalCitationComponent);
+ddProjectsComponents.component('versionChanges', VersionChangesComponent);
 ddProjectsComponents.component('pipelineSelectExp', PipelineSelectionExpComponent);
 ddProjectsComponents.component('pipelineSelectSim', PipelineSelectionSimComponent);
 ddProjectsComponents.component('pipelineSelectHybSim', PipelineSelectionHybSimComponent);
