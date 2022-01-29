@@ -323,9 +323,9 @@ function config(
                 }]
             }
         })
-        .state('projects.pipelineVersion', {
+        .state('projects.versionOtherSelection', {
             url: '/projects/{projectId}/curation/version/{filePath:any}',
-            component: 'pipelineVersion',
+            component: 'versionOtherSelection',
             params: {
                 filePath: '',
                 publication: null,
@@ -340,9 +340,9 @@ function config(
                 }]
             }
         })
-        .state('projects.pipelineVersionProject', {
+        .state('projects.versionOtherCitation', {
             url: '/projects/{projectId}/curation/versionProject',
-            component: 'pipelineVersionProject',
+            component: 'versionOtherCitation',
             params: {
                 publication: null,
                 selectedListing: null,
@@ -355,9 +355,41 @@ function config(
                 }]
             }
         })
-        .state('projects.pipelineVersionChanges', {
+        .state('projects.versionExperimentalSelection', {
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            component: 'versionExperimentalSelection',
+            params: {
+                filePath: '',
+                publication: null,
+                selectedListing: null,
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing || null;
+                }]
+            }
+        })
+        .state('projects.versionExperimentalCitation', {
+            url: '/projects/{projectId}/curation/versionProject',
+            component: 'versionExperimentalCitation',
+            params: {
+                publication: null,
+                selectedListing: null,
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                }]
+            }
+        })
+        .state('projects.versionChanges', {
             url: '/projects/{projectId}/curation/versionChanges',
-            component: 'pipelineVersionChanges',
+            component: 'versionChanges',
             params: {
                 publication: null,
                 selectedListing: null,
