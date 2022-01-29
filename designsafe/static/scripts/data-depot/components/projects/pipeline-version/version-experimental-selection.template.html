@@ -1,0 +1,29 @@
+<div class="pipeline-nav">
+    <a ng-click="$ctrl.goStart()">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+    <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goCitation()">
+        Continue
+    </button>
+</div>
+<div class="pipeline-page">
+    <div class="pipeline-header">
+        <h3>Version Selection</h3>
+        If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">curation office hours</a>.
+        <div ng-if="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+    </div>
+    <div ng-if="!$ctrl.ui.loading">
+        Experimental Selection Template
+        <ul>
+            <li>Display all of the available experiments in the project here similar to how it exists in the selection step of the publication pipeline.</li>
+            <li>The UI needs to show the difference between published and not published Experiments</li>
+            <li>Experiments which have been published will have a DOI. These will always be selected as we can't unpublish something with a DOI</li>
+            <li>A single array of currently published experiments and any addional selected experiments should be created and passed through each step of this process</li>
+        </ul>
+    </div>
+</div>

@@ -18,8 +18,10 @@ class PipelineStartCtrl {
             showAmendVersion: false,
             isPublished: false,
             isProcessing: false,
-            directSelect: '',
-            directPreview: ''
+            publicationComp: '',
+            amendComp: '',
+            versionComp: '',
+            previewComp: ''
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.ProjectService.get({ uuid: this.projectId }).then((project) => {
@@ -36,34 +38,49 @@ class PipelineStartCtrl {
                         this.ui.isProcessing = true;
                     }
                 }
+                /*
+                    BYPASS FOR TESTING!!!
+                        If you're going to work on something in the amends/versioning pipeline, there
+                        needs to be a publication object for reference. This bypass simply ignores the
+                        'status' of the publication.
+                */
+                this.ui.isProcessing = false;
+                /*
+                    BYPASS FOR TESTING!!!
+                */
                 this.ui.loading = false;
             }, (error) => {
                 this.ui.loading = false;
             });
             switch(this.project.value.projectType) {
                 case 'experimental': {
-                    this.ui.directSelect = 'projects.pipelineSelectExp'
-                    this.ui.directPreview = 'projects.preview'
+                    this.ui.publicationComp = 'projects.pipelineSelectExp'
+                    this.ui.amendComp = 'projects.pipelineAmend'
+                    this.ui.versionComp = 'projects.versionExperimentalSelection'
+                    this.ui.previewComp = 'projects.preview'
+                    this.ui.showAmendVersion = true;
                     break;
                 }
                 case 'simulation': {
-                    this.ui.directSelect = 'projects.pipelineSelectSim'
-                    this.ui.directPreview = 'projects.previewSim'
+                    this.ui.publicationComp = 'projects.pipelineSelectSim'
+                    this.ui.previewComp = 'projects.previewSim'
                     break;
                 }
                 case 'hybrid_simulation': {
-                    this.ui.directSelect = 'projects.pipelineSelectHybSim'
-                    this.ui.directPreview = 'projects.previewHybSim'
+                    this.ui.publicationComp = 'projects.pipelineSelectHybSim'
+                    this.ui.previewComp = 'projects.previewHybSim'
                     break;
                 }
                 case 'field_recon': {
-                    this.ui.directSelect = 'projects.pipelineSelectField'
-                    this.ui.directPreview = 'projects.previewFieldRecon'
+                    this.ui.publicationComp = 'projects.pipelineSelectField'
+                    this.ui.previewComp = 'projects.previewFieldRecon'
                     break;
                 }
                 case 'other': {
-                    this.ui.directSelect = 'projects.pipelineSelectOther'
-                    this.ui.directPreview = 'projects.previewOther'
+                    this.ui.publicationComp = 'projects.pipelineSelectOther'
+                    this.ui.amendComp = 'projects.pipelineAmend'
+                    this.ui.versionComp = 'projects.versionOtherSelection'
+                    this.ui.previewComp = 'projects.previewOther'
                     this.ui.showAmendVersion = true;
                 }
             }
@@ -71,11 +88,11 @@ class PipelineStartCtrl {
     }
 
     goBack() {
-        this.$state.go(this.ui.directPreview, { projectId: this.projectId }, { reload: true });
+        this.$state.go(this.ui.previewComp, { projectId: this.projectId }, { reload: true });
     }
 
     goAmend() {
-        this.$state.go('projects.pipelineAmend', {
+        this.$state.go(this.ui.amendComp, {
             projectId: this.projectId,
             project: this.project,
             publication: this.publication
@@ -83,13 +100,13 @@ class PipelineStartCtrl {
     }
 
     goPublish() {
-        // drop into pipeline based on project type
-        this.$state.go(this.ui.directSelect, { projectId: this.projectId }, { reload: true });
+        this.$state.go(this.ui.publicationComp, {
+            projectId: this.projectId
+        }, { reload: true });
     }
 
     goVersion() {
-        // version selection for other will allow users to select the files they want to publish
-        this.$state.go('projects.pipelineVersion', {
+        this.$state.go(this.ui.versionComp, {
             projectId: this.projectId,
             publication: this.publication
         }, { reload: true });

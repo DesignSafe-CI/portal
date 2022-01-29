@@ -1,6 +1,8 @@
-import PipelineVersionTemplate from './pipeline-version.template.html';
-import PipelineVersionProjectTemplate from './pipeline-version-project.template.html';
-import PipelineVersionChangesTemplate from './pipeline-version-changes.template.html';
+import VersionOtherSelection from './version-other-selection.template.html';
+import VersionOtherCitation from './version-other-citation.template.html';
+import VersionExperimentalSelection from './version-experimental-selection.template.html';
+import VersionExperimentalCitation from './version-experimental-citation.template.html';
+import VersionChanges from './version-changes.template.html';
 
 class PipelineVersionCtrl {
     constructor(
@@ -31,7 +33,9 @@ class PipelineVersionCtrl {
             warning: false,
             error: false,
             submitted: false,
-            confirmed: false
+            confirmed: false,
+            selectionComp: '',
+            citationComp: ''
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
@@ -58,6 +62,17 @@ class PipelineVersionCtrl {
                     project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
                     license: this.publication.licenses
                 };
+                switch(this.project.value.projectType) {
+                    case 'experimental': {
+                        this.ui.selectionComp = 'projects.versionExperimentalSelection'
+                        this.ui.citationComp = 'projects.versionExperimentalCitation'
+                        break;
+                    }
+                    case 'other': {
+                        this.ui.selectionComp = 'projects.versionOtherSelection'
+                        this.ui.citationComp = 'projects.versionOtherCitation'
+                    }
+                }
                 this.ui.loading = false;
             });
         }
@@ -120,40 +135,34 @@ class PipelineVersionCtrl {
         this.selectedListing = null;
     }
 
-    returnToProject() {
-        this.$state.go('projects.view', { projectId: this.project.uuid }, { reload: true });
+    navigate(destCompName) {
+        let params = {
+            projectId: this.projectId,
+            publication: this.publication,
+            selectedListing: this.selectedListing
+        }
+        this.$state.go(destCompName, params, { reload: true });
     }
 
     goStart() {
-        this.$state.go('projects.pipelineStart', { projectId: this.projectId }, { reload: true });
+        this.navigate('projects.pipelineStart');
+    }
+    
+    goSelection() {
+        this.navigate(this.ui.selectionComp);
     }
 
-    goVersion() {
-        this.$state.go('projects.pipelineVersion', {
-            projectId: this.projectId,
-            publication: this.publication
-        }, { reload: true });
+    goCitation() {
+        this.navigate(this.ui.citationComp);
     }
 
-    goVersionProject() {
-        this.$state.go('projects.pipelineVersionProject', {
-            projectId: this.projectId,
-            publication: this.publication,
-            selectedListing: this.selectedListing
-        }, { reload: true });
-    }
-
-    goVersionChanges() {
-        this.$state.go('projects.pipelineVersionChanges', {
-            projectId: this.projectId,
-            publication: this.publication,
-            selectedListing: this.selectedListing
-        }, { reload: true });
+    goChanges() {
+        this.navigate('projects.versionChanges');
     }
 }
 
-export const PipelineVersionComponent = {
-    template: PipelineVersionTemplate,
+export const VersionOtherSelectionComponent = {
+    template: VersionOtherSelection,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
@@ -163,8 +172,8 @@ export const PipelineVersionComponent = {
     },
 };
 
-export const PipelineVersionProjectComponent = {
-    template: PipelineVersionProjectTemplate,
+export const VersionOtherCitationComponent = {
+    template: VersionOtherCitation,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
@@ -174,8 +183,30 @@ export const PipelineVersionProjectComponent = {
     },
 };
 
-export const PipelineVersionChangesComponent = {
-    template: PipelineVersionChangesTemplate,
+export const VersionExperimentalSelectionComponent = {
+    template: VersionExperimentalSelection,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionExperimentalCitationComponent = {
+    template: VersionExperimentalCitation,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionChangesComponent = {
+    template: VersionChanges,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
