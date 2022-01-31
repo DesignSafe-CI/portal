@@ -117,7 +117,8 @@ def draft_publication(
             if ent_uuid:
                 entity = mgr.get_entity_by_uuid(ent_uuid)
 
-            if entity:
+            if entity: #need to add the version number here...
+                # '{}v{}'.format(project_id, revision) if revision else project_id
                 entity_url = ENTITY_TARGET_BASE.format(
                     project_id=project_id,
                     entity_uuid=ent_uuid
@@ -152,11 +153,10 @@ def draft_publication(
         upsert_project_doi = True
 
     ### Draft Project DOI ###
-    prj_url = TARGET_BASE.format(project_id=project_id)
-
     if revision:
         # Versions should not update certain fields per Maria Esteva
         # Add version number to DataCite info
+        prj_url = TARGET_BASE.format(project_id='{}v{}'.format(project_id, revision))
         pub = BaseESPublication(project_id=project_id, revision=revision)
         prj.title = pub.project.value.title
         prj.team_order = pub.project.value.teamOrder
@@ -166,6 +166,7 @@ def draft_publication(
         prj_datacite_json['url'] = prj_url
         prj_datacite_json['version'] = str(revision)
     else:
+        prj_url = TARGET_BASE.format(project_id=project_id)
         prj_datacite_json = prj.to_datacite_json()
         prj_datacite_json['url'] = prj_url
 

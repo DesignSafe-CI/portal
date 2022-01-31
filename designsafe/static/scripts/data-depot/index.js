@@ -308,9 +308,24 @@ function config(
                 }]
             }
         })
-        .state('projects.pipelineAmend', {
+        .state('projects.amendOther', {
             url: '/projects/{projectId}/curation/amend',
-            component: 'pipelineAmend',
+            component: 'amendOther',
+            params: {
+                project: null,
+                publication: null,
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                }]
+            }
+        })
+        .state('projects.amendExperimental', {
+            url: '/projects/{projectId}/curation/amend',
+            component: 'amendExperimental',
             params: {
                 project: null,
                 publication: null,
@@ -341,7 +356,7 @@ function config(
             }
         })
         .state('projects.versionOtherCitation', {
-            url: '/projects/{projectId}/curation/versionProject',
+            url: '/projects/{projectId}/curation/citation',
             component: 'versionOtherCitation',
             params: {
                 publication: null,
@@ -373,7 +388,7 @@ function config(
             }
         })
         .state('projects.versionExperimentalCitation', {
-            url: '/projects/{projectId}/curation/versionProject',
+            url: '/projects/{projectId}/curation/citation',
             component: 'versionExperimentalCitation',
             params: {
                 publication: null,
@@ -388,7 +403,7 @@ function config(
             }
         })
         .state('projects.versionChanges', {
-            url: '/projects/{projectId}/curation/versionChanges',
+            url: '/projects/{projectId}/curation/changes',
             component: 'versionChanges',
             params: {
                 publication: null,
