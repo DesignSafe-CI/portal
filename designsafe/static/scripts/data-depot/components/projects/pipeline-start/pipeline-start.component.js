@@ -55,7 +55,7 @@ class PipelineStartCtrl {
             switch(this.project.value.projectType) {
                 case 'experimental': {
                     this.ui.publicationComp = 'projects.pipelineSelectExp'
-                    this.ui.amendComp = 'projects.pipelineAmend'
+                    this.ui.amendComp = 'projects.amendExperimental'
                     this.ui.versionComp = 'projects.versionExperimentalSelection'
                     this.ui.previewComp = 'projects.preview'
                     this.ui.showAmendVersion = true;
@@ -78,7 +78,7 @@ class PipelineStartCtrl {
                 }
                 case 'other': {
                     this.ui.publicationComp = 'projects.pipelineSelectOther'
-                    this.ui.amendComp = 'projects.pipelineAmend'
+                    this.ui.amendComp = 'projects.amendOther'
                     this.ui.versionComp = 'projects.versionOtherSelection'
                     this.ui.previewComp = 'projects.previewOther'
                     this.ui.showAmendVersion = true;
@@ -91,6 +91,18 @@ class PipelineStartCtrl {
         this.$state.go(this.ui.previewComp, { projectId: this.projectId }, { reload: true });
     }
 
+    /*
+    BOOKMARK
+    Clean up the Amend pipeline componen and update the names to match what is in the
+    updated version pipeline. Leave some notes there and push that up. Create a
+    publication with the same additional entries that Other has for a version 2.
+    Share that with OWAIS and SARAH once finished, and get them started on this.
+
+    Owais can finish the reusable authorship component and the published template changes for V2
+    Experimental Projects.
+
+    Sarah can work on putting together the UI component in the pipelines.
+    */
     goAmend() {
         this.$state.go(this.ui.amendComp, {
             projectId: this.projectId,

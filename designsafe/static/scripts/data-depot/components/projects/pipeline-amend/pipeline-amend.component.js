@@ -1,4 +1,5 @@
-import PipelineAmendTemplate from './pipeline-amend.template.html';
+import AmendOther from './amend-other.template.html';
+import AmendExperimental from './amend-experimental.template.html';
 
 class PipelineAmendCtrl {
     constructor(
@@ -69,31 +70,28 @@ class PipelineAmendCtrl {
         });
     }
 
-    returnToProject() {
+    goProject() {
         this.$state.go('projects.view', { projectId: this.project.uuid }, { reload: true });
     }
 
     goStart() {
         this.$state.go('projects.pipelineStart', { projectId: this.projectId }, { reload: true });
     }
-
-    goAmend() {
-        this.$state.go('projects.pipelineAmend', { projectId: this.projectId }, { reload: true });
-    }
-
-    goPublish() {
-        // should drop into regular pipeline...
-        this.$state.go('projects.pipelineSelect', { projectId: this.projectId }, { reload: true });
-    }
-
-    goVersion() {
-        // version selection for other will allow users to select the files they want to publish
-        this.$state.go('projects.pipelineVersionSelection', { projectId: this.projectId }, { reload: true });
-    }
 }
 
-export const PipelineAmendComponent = {
-    template: PipelineAmendTemplate,
+export const AmendOtherComponent = {
+    template: AmendOther,
+    controller: PipelineAmendCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const AmendExperimentalComponent = {
+    template: AmendExperimental,
     controller: PipelineAmendCtrl,
     controllerAs: '$ctrl',
     bindings: {
