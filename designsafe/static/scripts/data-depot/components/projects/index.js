@@ -16,7 +16,10 @@ import {
     VersionExperimentalCitationComponent,
     VersionChangesComponent,
 } from './pipeline-version/pipeline-version.component';
-import { PipelineAmendComponent } from './pipeline-amend/pipeline-amend.component';
+import {
+    AmendOtherComponent,
+    AmendExperimentalComponent
+} from './pipeline-amend/pipeline-amend.component';
 import {
     PipelineSelectionExpComponent,
     PipelineSelectionSimComponent,
@@ -81,7 +84,8 @@ ddProjectsComponents.component('publicationPreviewHybSim', PublicationPreviewHyb
 ddProjectsComponents.component('publicationPreviewOther', PublicationPreviewOtherComponent);
 ddProjectsComponents.component('publicationPreviewFieldRecon', PublicationPreviewFieldReconComponent);
 ddProjectsComponents.component('pipelineStart', PipelineStartComponent);
-ddProjectsComponents.component('pipelineAmend', PipelineAmendComponent);
+ddProjectsComponents.component('amendOther', AmendOtherComponent);
+ddProjectsComponents.component('amendExperimental', AmendExperimentalComponent);
 ddProjectsComponents.component('versionOtherSelection', VersionOtherSelectionComponent);
 ddProjectsComponents.component('versionOtherCitation', VersionOtherCitationComponent);
 ddProjectsComponents.component('versionExperimentalSelection', VersionExperimentalSelectionComponent);

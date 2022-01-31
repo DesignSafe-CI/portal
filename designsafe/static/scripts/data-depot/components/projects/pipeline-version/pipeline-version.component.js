@@ -159,6 +159,10 @@ class PipelineVersionCtrl {
     goChanges() {
         this.navigate('projects.versionChanges');
     }
+
+    goProject() {
+        this.navigate('projects.view');
+    }
 }
 
 export const VersionOtherSelectionComponent = {
