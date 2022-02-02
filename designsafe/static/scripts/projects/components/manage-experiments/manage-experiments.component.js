@@ -1,6 +1,5 @@
 import _ from 'underscore';
-// import ManageExperimentsTemplate from './manage-experiments.component.html';
-import ManageExperimentsTemplate from './manage-experiments-test.component.html';
+import ManageExperimentsTemplate from './manage-experiments.template.html';
 import ExperimentalFacilities from './experimental-facilities.json';
 
 class ManageExperimentsCtrl {
