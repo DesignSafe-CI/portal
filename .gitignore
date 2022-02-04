@@ -20,6 +20,7 @@ mysql.env
 rabbitmq.env
 rabbitmq.conf
 mysql.cnf
+conf/deploy/.env
 
 # ignore templated html files
 designsafe/templates/base.html

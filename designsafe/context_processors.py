@@ -46,6 +46,14 @@ def debug(request):
         }
     return context
 
+def noindex(request):
+    context = {}
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') in ['dev', 'staging']:
+        context = {
+            'noindex': True
+        }
+    return context
+
 def site_verification(request):
     context = {}
     google_verification_id = getattr(settings, 'GOOGLE_SITE_VERIFICATION_ID', False)

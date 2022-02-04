@@ -170,6 +170,7 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
+                'designsafe.context_processors.noindex',
                 'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
@@ -248,7 +249,7 @@ STATICFILES_DIRS = [
     ('vendor/font-awesome', os.path.join(BASE_DIR, 'node_modules', 'font-awesome')),
     ('vendor/angular-toastr', os.path.join(BASE_DIR, 'node_modules', 'angular-toastr')),
     ('vendor/slick-carousel', os.path.join(BASE_DIR, 'node_modules', 'slick-carousel')),
-    ('vendor/angular-drag-and-drop-lists', os.path.join(BASE_DIR, 'node_modules', 'angular-drag-and-drop-lists')),
+    #('vendor/angular-drag-and-drop-lists', os.path.join(BASE_DIR, 'node_modules', 'angular-drag-and-drop-lists')),
     ('vendor/angular-xeditable', os.path.join(BASE_DIR, 'node_modules', 'angular-xeditable')),
     ('vendor/leaflet-measure', os.path.join(BASE_DIR, 'node_modules', 'leaflet-measure')),
     ('vendor/exif-js', os.path.join(BASE_DIR, 'node_modules', 'exif-js')),
@@ -546,7 +547,6 @@ try:
     from designsafe.settings.external_resource_settings import *
     from designsafe.settings.elasticsearch_settings import *
     from designsafe.settings.rt_settings import *
-    from designsafe.settings.external_resource_secrets import *
     from designsafe.settings.nco_mongo import *
 except ImportError:
     pass
@@ -628,3 +628,7 @@ FEDORA_URL = os.environ.get('FEDORA_URL')
 FEDORA_USERNAME = os.environ.get('FEDORA_USERNAME')
 FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
 FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'publications-test')
+
+GOOGLE_OAUTH2_CLIENT_SECRET = os.environ.get('GOOGLE_OAUTH2_CLIENT_SECRET')
+GOOGLE_OAUTH2_CLIENT_ID = os.environ.get('GOOGLE_OAUTH2_CLIENT_ID')
+WEBHOOK_POST_URL = os.environ.get('WEBHOOK_POST_URL')

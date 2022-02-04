@@ -3,6 +3,9 @@
 <html>
   <head>
       <meta charset="utf-8">
+      {% if noindex %}
+      <meta name="robots" content="noindex">
+      {% endif %}
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="google-site-verification" content="GIow5qfMulVcOVKJqGss0mSkxwycFBzgCk2aouypsfo" />
       <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} | DesignSafe-CI</title>

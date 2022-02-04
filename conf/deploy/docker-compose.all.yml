@@ -1,0 +1,101 @@
+version: "3"
+services:
+
+  nginx:
+    image: nginx:${NGINX_TAG}
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ${NGINX_CERT_PATH}:/etc/ssl/designsafe.crt
+      - ${NGINX_KEY_PATH}:/etc/ssl/designsafe.key
+      - /etc/ssl/dhparam.pem:/etc/ssl/dhparam.pem
+      - /srv/www/designsafe/static:/srv/www/designsafe/static
+      - /srv/www/designsafe/media:/srv/www/designsafe/media
+    ports:
+      - 80:80
+      - 443:443
+    container_name: designsafe_nginx
+    logging:
+      driver: syslog
+      options:
+        tag: designsafe_nginx
+    restart: always
+
+  websocket:
+      image: designsafeci/portal:${PORTAL_TAG}
+      env_file: designsafe.env
+      logging:
+          driver: syslog
+          options:
+              tag: designsafe_websocket
+      ports:
+          - 9000:9000
+      volumes:
+          - /srv/www/designsafe/static:/srv/www/designsafe/static
+          - /srv/www/designsafe/media:/srv/www/designsafe/media
+          - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+      command: uwsgi --ini /srv/www/designsafe/conf/uwsgi/uwsgi_websocket.ini
+      restart: always
+
+  django:
+      image: designsafeci/portal:${PORTAL_TAG}
+      container_name: designsafe_django
+      env_file: designsafe.env
+      logging:
+          driver: syslog
+          options:
+              tag: designsafe_main
+      ports:
+      - 8000:8000
+      volumes:
+          - /srv/www/designsafe/static:/srv/www/designsafe/static
+          - /srv/www/designsafe/media:/srv/www/designsafe/media
+          - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+      command: gunicorn designsafe.wsgi --workers 4 --bind 0.0.0.0:8000 --forwarded-allow-ips="*"
+      restart: always
+
+  redis:
+    image: redis:${REDIS_TAG}
+    volumes:
+      - designsafe_redis_data:/data
+    container_name: designsafe_redis
+    ports:
+      - 6379:6379
+    logging:
+      driver: syslog
+      options:
+        tag: designsafe_redis
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:${RABBITMQ_TAG}
+    volumes:
+      - designsafe_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@designsafe_rabbitmq
+    env_file: rabbitmq.env
+    container_name: designsafe_rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    logging:
+      driver: syslog
+      options:
+        tag: designsafe_rabbitmq
+    restart: always
+
+  worker:
+      image: designsafeci/portal:${PORTAL_TAG}
+      container_name: designsafe_worker
+      env_file: designsafe.env
+      logging:
+          driver: syslog
+          options:
+              tag: designsafe_workers
+      volumes:
+          - /srv/www/designsafe/static:/var/www/designsafe/static
+          - /srv/www/designsafe/media:/var/www/designsafe/media
+          - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+      command: /srv/www/designsafe/bin/run-celery.sh
+      restart: always
+
+volumes:
+  designsafe_redis_data:
+  designsafe_rabbitmq_data:

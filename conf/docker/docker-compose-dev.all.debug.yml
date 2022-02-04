@@ -63,13 +63,13 @@ services:
     volumes:
       - ../nginx/nginx.debug.conf:/etc/nginx/nginx.conf
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
-      - ../nginx/certificates/designsafe.dev.crt:/etc/ssl/designsafe.dev.crt
-      - ../nginx/certificates/designsafe.dev.key:/etc/ssl/designsafe.dev.key
+      - ../nginx/certificates/designsafe.dev.crt:/etc/ssl/designsafe.crt
+      - ../nginx/certificates/designsafe.dev.key:/etc/ssl/designsafe.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/var/www/designsafe-ci.org/media
+      - ../../data/static:/srv/www/designsafe/static
+      - ../../data/media:/srv/www/designsafe/media
     links:
       - django:django
     ports:
@@ -90,8 +90,8 @@ services:
     volumes:
       - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/var/www/designsafe-ci.org/media
+      - ../../data/static:/srv/www/designsafe/static
+      - ../../data/media:/srv/www/designsafe/media
     ports:
       - 8000:8000
       - 5555:5555
@@ -115,8 +115,8 @@ services:
     volumes:
       - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/var/www/designsafe-ci.org/media
+      - ../../data/static:/srv/www/designsafe/static
+      - ../../data/media:/srv/www/designsafe/media
     dns:
       - 8.8.8.8
       - 8.8.4.4
