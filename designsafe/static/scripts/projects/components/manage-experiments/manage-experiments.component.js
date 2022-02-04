@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import ManageExperimentsTemplate from './manage-experiments.template.html';
-import ExperimentalFacilities from './experimental-facilities.json';
+import experimentalData from './experimental-data.json';
 
 class ManageExperimentsCtrl {
 
@@ -13,9 +13,12 @@ class ManageExperimentsCtrl {
     }
 
     $onInit() {
+        this.ui = {
+            loading: true,
+            error: '',
+        };
         this.project = this.resolve.project;
         this.edit = this.resolve.edit;
-        this.facilities = ExperimentalFacilities;
         var members = [this.project.value.pi].concat(
             this.project.value.coPis,
             this.project.value.teamMembers,
@@ -44,16 +47,14 @@ class ManageExperimentsCtrl {
                 }
             }
         });
-        
-        this.ui = {
-            loading: false,
-        }
 
         this.data = {
-            busy: false,
             experiments: this.project.experiment_set,
             project: this.project,
             users: [...new Set(members)],
+            experimentalFacilities: experimentalData.experimentalFacility.experimental,
+            equipmentTypes: experimentalData.equipmentTypes,
+            experimentTypes: experimentalData.experimentTypes,
             form: {},
         };
 
@@ -61,6 +62,7 @@ class ManageExperimentsCtrl {
         if (this.edit) {
             this.editExperiment(this.edit);
         }
+        this.ui.loading = false;
     }
 
     cleanForm() {
@@ -162,11 +164,35 @@ class ManageExperimentsCtrl {
         return false;
     }
 
+    getEF(str) {
+        let efs = this.data.experimentalFacilities;
+        let ef = efs.find((ef) => {
+            return ef.name === str;
+        });
+        return ef.label;
+    }
+
+    getET(exp) {
+        let ets = this.data.experimentTypes[exp.value.experimentalFacility];
+        let et = ets.find((x) => {
+            return x.name === exp.value.experimentType;
+        });
+        return et.label;
+    }
+
+    getEQ(exp) {
+        let eqts = this.data.equipmentTypes[exp.value.experimentalFacility];
+        let eqt = eqts.find((x) => {
+            return x.name === exp.value.equipmentType;
+        });
+        return eqt.label;
+    }
+
     saveExperiment($event) {
         if ($event) {
             $event.preventDefault();
         }
-        this.data.busy = true;
+        this.ui.loading = true;
         let experiment = {
             title: this.form.title,
             experimentalFacility: this.form.experimentalFacility,
@@ -196,9 +222,9 @@ class ManageExperimentsCtrl {
             this.data.experiments = this.project.experiment_set;
             this.cleanForm();
         }, (err) => {
-            this.data.error = err;
+            this.ui.error = err;
         }).finally( () => {
-            this.data.busy = false;
+            this.ui.loading = false;
         });
     }
 
@@ -233,7 +259,7 @@ class ManageExperimentsCtrl {
 
     updateExperiment($event) {
         $event.preventDefault();
-        this.ui.busy = true;
+        this.ui.loading = true;
         this.data.editExperiment.value.authors = this.form.authors;
         this.data.editExperiment.value.title = this.form.title;
         this.data.editExperiment.value.procedureStart = this.form.procedureStart;
@@ -266,7 +292,7 @@ class ManageExperimentsCtrl {
             this.cleanForm();
             return res;
         }).finally(()=>{
-            this.ui.busy = false;
+            this.ui.loading = false;
         });
     }
 

@@ -7,8 +7,8 @@
     </h4>
 </div>
 <div class="modal-body">
-    <div class="error" data-ng-if="$ctrl.data.error">
-        {{$ctrl.data.error}}
+    <div class="error" data-ng-if="$ctrl.ui.error">
+        {{$ctrl.ui.error}}
     </div>
     <div class="well">
         <form name="addForm">
@@ -64,7 +64,7 @@
                     </div>
                 </label>
                 <select class="form-control"
-                        ng-options="key as key for (key,val) in $ctrl.facilities"
+                        ng-options="ef.name as ef.label for ef in $ctrl.data.experimentalFacilities"
                         ng-model="$ctrl.form.experimentalFacility"
                         ng-required="true">
                 <option value="">-- Select an Experimental Facility --</option>
@@ -86,7 +86,7 @@
                     </div>
                 </label>
                 <select class="form-control"
-                        ng-options="type for type in $ctrl.facilities[$ctrl.form.experimentalFacility].type"
+                        ng-options="type.name as type.label for type in $ctrl.data.experimentTypes[$ctrl.form.experimentalFacility]"
                         ng-model="$ctrl.form.experimentType"
                         ng-required="true">
                 <option value="">-- Select an Experiment Type --</option>
@@ -108,7 +108,7 @@
                     </div>
                 </label>
                 <select class="form-control"
-                        ng-options="type for type in $ctrl.facilities[$ctrl.form.experimentalFacility].equipment"
+                        ng-options="et.name as et.label for et in $ctrl.data.equipmentTypes[$ctrl.form.experimentalFacility]"
                         ng-model="$ctrl.form.equipmentType"
                         ng-required="true">
                 <option value="">-- Select an Equipment Type --</option>
@@ -192,7 +192,12 @@
         <div>
             <label>Experiment Inventory</label>
         </div>
-        <div class="dropdown">
+        <div ng-if="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+        <div class="dropdown" ng-if="!$ctrl.ui.loading">
             <div ng-repeat="experiment in $ctrl.data.experiments">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{experiment.uuid}}" style="width:100%;">
@@ -206,7 +211,7 @@
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Experiment Type</div>
                                 <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)"
-                                        class="entity-meta-data-cap">{{ experiment.value.experimentType }}</span>
+                                        class="entity-meta-data-cap">{{ $ctrl.getET(experiment) }}</span>
                                 <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)"
                                         class="entity-meta-data-cap">{{ experiment.value.experimentTypeOther }}</span>
                             </div>
@@ -219,14 +224,14 @@
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Experimental Facility</div>
                                 <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)"
-                                        class="entity-meta-data-cap">{{ experiment.value.experimentalFacility }}</span>
+                                        class="entity-meta-data-cap">{{ $ctrl.getEF(experiment.value.experimentalFacility) }}</span>
                                 <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)"
                                         class="entity-meta-data-cap">{{ experiment.value.experimentalFacilityOther }}</span>
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Equipment Type</div>
                                 <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)"
-                                        class="entity-meta-data-cap">{{ experiment.value.equipmentType }}</span>
+                                        class="entity-meta-data-cap">{{ $ctrl.getEQ(experiment) }}</span>
                                 <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)"
                                         class="entity-meta-data-cap">{{ experiment.value.equipmentTypeOther }}</span>  
                             </div>
