@@ -1,6 +1,11 @@
 version: "3"
 services:
 
+  memcached:
+    image: memcached
+    container_name: designsafe_memcached
+    restart: always
+
   nginx:
     image: nginx:${NGINX_TAG}
     volumes:
@@ -29,6 +34,7 @@ services:
               tag: designsafe_websocket
       ports:
           - 9000:9000
+      container_name: designsafe_websocket
       volumes:
           - /srv/www/designsafe/static:/srv/www/designsafe/static
           - /srv/www/designsafe/media:/srv/www/designsafe/media

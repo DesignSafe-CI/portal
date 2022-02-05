@@ -1,4 +1,4 @@
-FROM python:3.6-buster
+FROM python:3.6-buster as dev
 
 LABEL MAINTAINER="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
 
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y \
     vim
 
 # install node 12.x
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
 COPY requirements.txt /tmp/
@@ -43,6 +43,10 @@ RUN chown -R tg458981:G-816877 /srv/www/designsafe
 
 USER tg458981
 
-RUN echo "prefix=~/.npm-global" >> ~/.npmrc
+# RUN echo "prefix=~/.npm-global" >> ~/.npmrc
 
 WORKDIR /srv/www/designsafe
+
+FROM dev as prod
+RUN npm ci
+RUN npm run build
