@@ -10,6 +10,7 @@ services:
       - /etc/ssl/dhparam.pem:/etc/ssl/dhparam.pem
       - /srv/www/designsafe/static:/srv/www/designsafe/static
       - /srv/www/designsafe/media:/srv/www/designsafe/media
+      - uwsgi_params:/etc/nginx/uwsgi_params
     ports:
       - 80:80
       - 443:443
@@ -50,7 +51,8 @@ services:
           - /srv/www/designsafe/static:/srv/www/designsafe/static
           - /srv/www/designsafe/media:/srv/www/designsafe/media
           - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      command: gunicorn designsafe.wsgi --workers 4 --bind 0.0.0.0:8000 --forwarded-allow-ips="*"
+          - /srv/www/designsafe/conf/uwsgi/uwsgi.ini:/srv/www/designsafe/conf/uwsgi/uwsgi.ini
+      command: uwsgi --ini /srv/www/designsafe/conf/uwsgi/uwsgi.ini
       restart: always
 
   redis:
