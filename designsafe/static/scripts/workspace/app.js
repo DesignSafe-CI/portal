@@ -6,6 +6,7 @@ import _ from 'underscore';
 import { agaveFilePicker } from '../workspace/directives/agave-file-picker';
 import { translateProvider } from '../workspace/providers/translations';
 
+import dndLists from 'angular-drag-and-drop-lists';
 import './directives';
 import './services';
 import './components';

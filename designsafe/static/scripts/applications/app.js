@@ -17,6 +17,7 @@ import { appsPemsService } from './services/apps-pems-service';
 import { Apps } from './services/apps-service';
 import { appsMultipleListService } from './services/multiple-list-service';
 import { SimpleList } from './services/simple-list-service';
+import dndLists from 'angular-drag-and-drop-lists';
 
 applicationAddCtrl(window, angular, $, _);
 applicationEditCtrl(window, angular, $, _);
