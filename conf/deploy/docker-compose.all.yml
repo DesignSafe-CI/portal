@@ -23,6 +23,8 @@ services:
       driver: syslog
       options:
         tag: designsafe_nginx
+    labels:
+      com.centurylinklabs.watchtower.depends-on: "django,designsafe_django"
     restart: always
 
   websocket:
@@ -60,8 +62,8 @@ services:
         - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     command: gunicorn designsafe.wsgi --workers 4 --bind 0.0.0.0:8000 --forwarded-allow-ips="*"
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
-      - "com.centurylinklabs.watchtower.lifecycle.post-update=/srv/www/designsafe/conf/deploy/post-deploy.sh"
+      com.centurylinklabs.watchtower.enable: true
+      com.centurylinklabs.watchtower.lifecycle.post-check: "/srv/www/designsafe/conf/deploy/post-deploy.sh"
     restart: always
 
   redis:

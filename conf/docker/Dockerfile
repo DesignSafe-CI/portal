@@ -48,5 +48,6 @@ USER tg458981
 WORKDIR /srv/www/designsafe
 
 FROM dev as prod
+RUN chmod +x /srv/www/designsafe/conf/deploy/post-deploy.sh
 RUN npm ci
 RUN npm run build
