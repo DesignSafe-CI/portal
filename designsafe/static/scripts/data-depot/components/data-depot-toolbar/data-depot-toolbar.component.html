@@ -8,7 +8,7 @@
         <div class="btn-toolbar btn-toolbar-left" role="toolbar" aria-label="Data Browser Toolbar">
             <form class="navbar-form navbar-left" ng-submit="$ctrl.ddSearch()" style="display:flex"
             ng-hide="['Dropbox', 'Box', 'Google Drive', 'NEES Published'].includes($ctrl.placeholder())">
-            <input class="form-control" style="width:240px;" placeholder="Find in {{ $ctrl.placeholder() }}" ng-model="$ctrl.search.queryString">
+            <input class="form-control" style="width:240px;" placeholder="Find in {{ $ctrl.placeholder() }} (hook-test)" ng-model="$ctrl.search.queryString">
                 <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
             </form>
             <div class="btn-toolbar-right">
