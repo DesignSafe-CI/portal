@@ -26,38 +26,43 @@ services:
     restart: always
 
   websocket:
-      image: designsafeci/portal:${PORTAL_TAG}
-      env_file: designsafe.env
-      logging:
-          driver: syslog
-          options:
-              tag: designsafe_websocket
-      ports:
-          - 9000:9000
-      container_name: designsafe_websocket
-      volumes:
-          - /srv/www/designsafe/static:/srv/www/designsafe/static
-          - /srv/www/designsafe/media:/srv/www/designsafe/media
-          - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      command: uwsgi --ini /srv/www/designsafe/conf/uwsgi/uwsgi_websocket.ini
-      restart: always
+    image: designsafeci/portal:${PORTAL_TAG}
+    env_file: designsafe.env
+    logging:
+        driver: syslog
+        options:
+            tag: designsafe_websocket
+    ports:
+        - 9000:9000
+    container_name: designsafe_websocket
+    volumes:
+        - /srv/www/designsafe/static:/srv/www/designsafe/static
+        - /srv/www/designsafe/media:/srv/www/designsafe/media
+        - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+    command: uwsgi --ini /srv/www/designsafe/conf/uwsgi/uwsgi_websocket.ini
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: always
 
   django:
-      image: designsafeci/portal:${PORTAL_TAG}
-      container_name: designsafe_django
-      env_file: designsafe.env
-      logging:
-          driver: syslog
-          options:
-              tag: designsafe_main
-      ports:
-      - 8000:8000
-      volumes:
-          - /srv/www/designsafe/static:/srv/www/designsafe/static
-          - /srv/www/designsafe/media:/srv/www/designsafe/media
-          - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      command: gunicorn designsafe.wsgi --workers 4 --bind 0.0.0.0:8000 --forwarded-allow-ips="*"
-      restart: always
+    image: designsafeci/portal:${PORTAL_TAG}
+    container_name: designsafe_django
+    env_file: designsafe.env
+    logging:
+        driver: syslog
+        options:
+            tag: designsafe_main
+    ports:
+    - 8000:8000
+    volumes:
+        - /srv/www/designsafe/static:/srv/www/designsafe/static
+        - /srv/www/designsafe/media:/srv/www/designsafe/media
+        - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+    command: gunicorn designsafe.wsgi --workers 4 --bind 0.0.0.0:8000 --forwarded-allow-ips="*"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.lifecycle.post-update=/srv/www/designsafe/conf/deploy/post-deploy.sh"
+    restart: always
 
   redis:
     image: redis:${REDIS_TAG}
@@ -88,19 +93,32 @@ services:
     restart: always
 
   worker:
-      image: designsafeci/portal:${PORTAL_TAG}
-      container_name: designsafe_worker
-      env_file: designsafe.env
-      logging:
-          driver: syslog
-          options:
-              tag: designsafe_workers
-      volumes:
-          - /srv/www/designsafe/static:/var/www/designsafe/static
-          - /srv/www/designsafe/media:/var/www/designsafe/media
-          - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      command: /srv/www/designsafe/bin/run-celery.sh
-      restart: always
+    image: designsafeci/portal:${PORTAL_TAG}
+    container_name: designsafe_worker
+    env_file: designsafe.env
+    logging:
+        driver: syslog
+        options:
+            tag: designsafe_workers
+    volumes:
+        - /srv/www/designsafe/static:/var/www/designsafe/static
+        - /srv/www/designsafe/media:/var/www/designsafe/media
+        - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+    command: /srv/www/designsafe/bin/run-celery.sh
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: always
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30 --label-enable --cleanup --enable-lifecycle-hooks
+    logging:
+      driver: syslog
+      options:
+        tag: designsafe_watchtower
+    restart: always
 
 volumes:
   designsafe_redis_data:
