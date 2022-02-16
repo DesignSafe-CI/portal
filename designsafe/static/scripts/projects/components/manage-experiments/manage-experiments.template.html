@@ -203,7 +203,13 @@
                     <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{experiment.uuid}}" style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Experiment | <strong>{{experiment.value.title}}</strong></span>
-                            <span class="collapse-tab-content-right curation-chevron"></span>
+                            <span class="collapse-tab collapse-tab-content-right" ng-if="!experiment.value.dois[0]">
+                                <span class="curation-chevron"></span>
+                            </span>
+                            <span class="collapse-tab collapse-tab-content-right" ng-if="experiment.value.dois[0]">
+                                <span class="label label-success">Published</span>&nbsp;
+                                <span class="curation-chevron"></span>
+                            </span>
                         </div>
                     </button>
                     <div id="files-{{experiment.uuid}}" class="collapse dropdown-spacer-lg">
@@ -246,12 +252,18 @@
                                     </span>
                                 </div>
                             </div>
+                            <div class="entity-meta-field" ng-if="experiment.value.dois[0]">
+                                <div class="entity-meta-label">DOI</div>
+                                <span class="entity-meta-data-cap">
+                                    {{ experiment.value.dois[0] }}
+                                </span>
+                            </div>
                             <div>
                                 <br>{{ experiment.value.description }}
                             </div>
                             <div><br>
-                                <span ng-click="$ctrl.editExperiment(experiment)"><a>Edit</a></span> | 
-                                <span ng-click="$ctrl.deleteExperiment(experiment)"><a>Delete </a></span>
+                                <span ng-click="$ctrl.editExperiment(experiment)"><a>Edit</a></span>
+                                <span ng-if="!experiment.value.dois[0]" ng-click="$ctrl.deleteExperiment(experiment)"> | <a>Delete </a></span>
                             </div>
                         </div>
                     </div>
