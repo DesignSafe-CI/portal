@@ -20,22 +20,22 @@
                         </div>
                     </label>
                     <div>
-                        <span class="category-sensor-info">Research Planning Collection</span>
+                        <span class="category-teal">Research Planning Collection</span>
                         Groups files related to planning and logistics, permits, administration,
                         design, gathering, institutional review board (IRB), and processing,
                         of the data obtained in a particular mission.
                         These files help others understand the context of your data.
                     </div>
                     <div>
-                        <span class="category-event">Engineering/Geosciences Collection</span>
+                        <span class="category-yellow">Engineering/Geosciences Collection</span>
                         Groups related data from the engineering/geosciences domain.
                     </div>
                     <div>
-                        <span class="category-event">Social Sciences Collection</span>
+                        <span class="category-yellow">Social Sciences Collection</span>
                         Groups related data from the social sciences domain.
                     </div>
                     <div>
-                        <span class="category-report">Documents Collection</span>
+                        <span class="category-gray">Documents Collection</span>
                         Can include instruments, protocols, and different reports (Virtual Recon, Field Assessment, Preliminary Virtual Assessment, etc).
                         These documents are published separately with their own DOI.
                     </div>
@@ -440,7 +440,7 @@
         <!-- Old Collections -->
         <div ng-repeat="collection in $ctrl.data.collections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-old-collection" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-deprecated" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Collection | <strong>{{collection.value.title}} (COLLECTION TYPE NO LONGER SUPPORTED)</strong></span>
@@ -546,7 +546,7 @@
         <!-- Social Science -->
         <div ng-repeat="collection in $ctrl.data.socialScienceCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -686,7 +686,7 @@
         <!-- GeoscienceEngineering -->
         <div ng-repeat="collection in $ctrl.data.geoscienceCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -797,7 +797,7 @@
         <!-- Research Planning -->
         <div ng-repeat="collection in $ctrl.data.planningCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
@@ -859,7 +859,7 @@
         <!-- Reports -->
         <div ng-repeat="collection in $ctrl.data.reportCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left"> Documents | <strong>{{collection.value.title}}</strong></span>
