@@ -131,7 +131,8 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
                                         'created',
                                         'projectId',
                                         'users',
-                                        'system'])
+                                        'system',
+                                        'revision'])
 
     search = search.sort(
         {'created': {'order': 'desc'}})
