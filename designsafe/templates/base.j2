@@ -75,8 +75,9 @@
         {% block breadcrumb %}{% endblock %}
         {% block content %}{% endblock %}
     </div>
-    {% include 'includes/footer.html' %}
 
+    {% block footer %}{% endblock %}
+    <div id="toast-container"></div>
     <!-- scripts -->
     <script src="https://www.google.com/recaptcha/api.js"></script>
 
