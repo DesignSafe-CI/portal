@@ -50,9 +50,7 @@ export class FileOperationService {
     getTests(files) {
         const externalDataStates = ['boxData', 'dropboxData', 'googledriveData'];
         const agaveDataStates = ['myData', 'projects.view', 'projects.curation'];
-        let isHazmapper = files.length > 0
-            ? files.some(e => e.name.endsWith('hazmapper'))
-            : false;
+        let isHazmapper = files.length > 0 ? files.some((e) => e.name.endsWith('hazmapper')) : false;
         const tests = {
             copy: this.Django.context.authenticated && !isHazmapper && files.length > 0,
             move:
@@ -80,7 +78,6 @@ export class FileOperationService {
             download:
                 files.length > 0 &&
                 !isHazmapper &&
-                !files.some((f) => f.format === 'folder') &&
                 !externalDataStates.includes(this.$state.current.name),
             trash:
                 this.Django.context.authenticated &&
@@ -200,7 +197,7 @@ export class FileOperationService {
                 );
                 copyRequest = this.$http.put(copyUrl, {
                     dest_system: destSystem,
-                    dest_path: destPath
+                    dest_path: destPath,
                 });
             } else {
                 const copyUrl = this.removeDuplicateSlashes(`/api/datafiles/transfer/${f.format}/`);
@@ -682,6 +679,13 @@ export class FileOperationService {
         }
     }
 
+    handleLargeDownload() {
+        var modal = this.$uibModal.open({
+          component: 'downloadLarge',
+          size: 'md'
+        })
+      }
+
     /**
      * Download a file.
      * @param {Object} params Destructured parameters.
@@ -692,6 +696,27 @@ export class FileOperationService {
     download({ api, scheme, files }) {
         if (!Array.isArray(files)) {
             files = [files];
+        }
+        if (api === 'agave') {
+            const system = files[0].system;
+            const zipUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/download/${system}/`);
+            const request = this.$http
+                .put(zipUrl, { paths: files.map((f) => f.path) })
+                .then((resp) => {
+                    var link = document.createElement('a');
+                    link.style.display = 'none';
+                    link.setAttribute('href', resp.data.href);
+                    link.setAttribute('download', 'null');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                })
+                .catch((e) => {
+                    if (e.status === 413) {
+                        this.handleLargeDownload();
+                    }
+                });
+            return request;
         }
         const downloads = files.map((file) => {
             return this.getDownloadUrl({ api, scheme, file }).then(function (resp) {

@@ -86,6 +86,7 @@ class DataFilesView(BaseApiView):
                          }
                      })
 
+        client = None
         if request.user.is_authenticated:
             try:
                 client = get_client(request.user, api)
