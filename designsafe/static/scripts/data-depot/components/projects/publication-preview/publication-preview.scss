@@ -7,18 +7,23 @@
     }
 }
 
-.tab-experiment {
+.category-gray {
+  font-weight: bold;
+  color: #3E3E3E;
+}
+
+.tab-gray {
   background-color: #f5f5f5;
   border-color: #cccccc;
   white-space: normal;
 }
 
-.category-model-conf {
+.category-blue {
   font-weight: bold;
   color: #1568C9;
 }
 
-.tab-model-conf {
+.tab-blue {
   background-color: #C4D9F2;
   border-color: #1568C9;
   white-space: normal;
@@ -29,90 +34,62 @@
   text-align: left;
 }
 
-.category-sensor-info {
+.category-teal {
   font-weight: bold;
   color: #43A59D;
 }
 
-.tab-sensor-info {
+.tab-teal {
   background-color: #CAE9E6;
   border-color: #43A59D;
   white-space: normal;
 }
 
-.category-event {
+.category-yellow {
   font-weight: bold;
   color: #B59300;
 }
 
-.tab-event {
+.tab-yellow {
   background-color: #ECE4BF;
   border-color: #B59300;
   white-space: normal;
 }
 
-.category-sim-subst {
+.category-orange {
   font-weight: bold;
   color: #BD5717;
 }
 
-.tab-sim-subst {
+.tab-orange {
   background-color: #EBCCB9;
   border-color: #BD5717;
   white-space: normal;
 }
 
-.category-exp-subst {
+.category-purple {
   font-weight: bold;
   color: #4B3181;
 }
 
-.tab-exp-subst {
+.tab-purple {
   background-color: #C8C0D9;
   border-color: #4B3181;
   white-space: normal;
 }
 
-.category-outpt {
-  font-weight: bold;
-  color: #D04348;
-}
-
-.tab-outpt {
-  background-color: #ECE4BF;
-  border-color: #B59300;
-  white-space: normal;
-}
-
-.category-analysis {
+.category-light-blue {
   font-weight: bold;
   color: #56C0E0;
 }
 
-.tab-analysis {
+.tab-light-blue {
   background-color: #CCECF6;
   border-color: #56C0E0;
   white-space: normal;
 }
 
-.category-report {
-  font-weight: bold;
-  color: #3E3E3E;
-}
-
-.tab-report {
-  background-color: #C4C4C4;
-  border-color: #3E3E3E;
-  white-space: normal;
-}
-
-.tab-collection-conf {
-  background-color: #ECE4BF;
-  border-color: #B59300;
-  white-space: normal;
-}
-
-.tab-old-collection {
+.tab-deprecated {
   background-color: #f2dede;
   border-color: #ebccd1;
   color: #a94442;
