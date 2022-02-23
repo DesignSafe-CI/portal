@@ -4,7 +4,7 @@ import experimentalData from '../../../../projects/components/manage-experiments
 
 class PublicationPreviewCtrl {
 
-    constructor( $stateParams, ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
+    constructor( $stateParams, ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q, UserService) {
         'ngInject';
         this.$stateParams = $stateParams;
         this.ProjectEntitiesService = ProjectEntitiesService;
@@ -15,6 +15,15 @@ class PublicationPreviewCtrl {
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;
+        this.UserService = UserService;
+        this.loadingUserData = {
+            pi: true,
+            coPis: true,
+        };
+        this.authorData = {
+            pi: {},
+            coPis: null,
+        };
     }
 
     $onInit() {
@@ -65,6 +74,32 @@ class PublicationPreviewCtrl {
                 this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
                     this.ui.loading = false;
                 });
+                const { pi } = this.browser.project.value;
+                this.UserService.get(pi).then((res) => {
+                    this.authorData.pi = {
+                        fname: res.first_name,
+                        lname: res.last_name,
+                        email: res.email,
+                        name: res.username,
+                        inst: res.profile.institution,
+                    };
+                    this.loadingUserData.pi = false;
+                });
+                if (this.browser.project.value.coPis) {
+                    this.authorData.coPis = new Array(this.browser.project.value.coPis.length);
+                    this.browser.project.value.coPis.forEach((coPi, idx) => {
+                        this.UserService.get(coPi).then((res) => {
+                            this.authorData.coPis[idx] = {
+                                fname: res.first_name,
+                                lname: res.last_name,
+                                email: res.email,
+                                name: res.username,
+                                inst: res.profile.institution,
+                            };
+                            if (idx === this.browser.project.value.coPis.length - 1) this.loadingUserData.coPis = false;
+                        });
+                    });
+                }
             });
     }
 
