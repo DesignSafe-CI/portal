@@ -8,6 +8,7 @@ from django.utils.six import text_type
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
+from django.core.exceptions import ObjectDoesNotExist
 import jwt as pyjwt
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -48,7 +49,7 @@ def _get_jwt_payload(request):
 
 def agave_jwt_login(func):
     """Decorator to login user with a jwt
-    
+
     ..note::
         It will sliently fail and continue executing the wrapped function
         if the JWT payload header IS NOT present in the request. If the JWT payload
@@ -70,10 +71,26 @@ def agave_jwt_login(func):
             return func(request, *args, **kwargs)
 
         jwt_payload = _decode_jwt(payload)
-        username = jwt_payload.get(settings.AGAVE_JWT_USER_CLAIM_FIELD, '')
-        user = get_user_model().objects.get(username=username)
-        user.backend = 'django.contrib.auth.backends.ModelBackend',
-        login(request, user)
+        jwt_username = jwt_payload.get(settings.AGAVE_JWT_USER_CLAIM_FIELD, '')
+        if jwt_username == settings.AGAVE_JWT_SERVICE_ACCOUNT:
+            username = request.GET.get('user', None)
+        else:
+            username = jwt_username
+
+        try:
+            user = get_user_model().objects.get(username=username)
+        except ObjectDoesNotExist:
+            logger.exception('Could not find JWT user: %s', username)
+            user = None
+
+        if user is not None:
+            user.backend = 'django.contrib.auth.backends.ModelBackend',
+            login(request, user)
+
+            # Refresh agave oauth token
+            if user.agave_oauth.expired:
+                user.agave_oauth.client.token.refresh()
+
         return func(request, *args, **kwargs)
 
     return decorated_function
