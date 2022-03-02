@@ -26,10 +26,7 @@ services:
         tag: designsafe_nginx
     labels:
       com.centurylinklabs.watchtower.enable: true
-      com.centurylinklabs.watchtower.depends-on: "designsafe_django, designsafe_use_case"
-    links:
-      - "django"
-      - "websocket"
+      com.centurylinklabs.watchtower.depends-on: "designsafe_django,designsafe_websocket,designsafe_use_case"
     restart: always
 
   websocket:
