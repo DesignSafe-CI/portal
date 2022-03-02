@@ -15,6 +15,9 @@ services:
       - /etc/ssl/dhparam.pem:/etc/ssl/dhparam.pem
       - /srv/www/designsafe/static:/srv/www/designsafe/static
       - /srv/www/designsafe/media:/srv/www/designsafe/media
+      - /srv/www/designsafe/cms/static:/var/www/portal/cms/static
+      - /var/www/portal/cms/media:/var/www/portal/cms/media
+      - /srv/www/designsafe/ds-use-case:/srv/www/designsafe/ds-use-case
     ports:
       - 80:80
       - 443:443
@@ -25,7 +28,7 @@ services:
         tag: designsafe_nginx
     labels:
       com.centurylinklabs.watchtower.enable: true
-      com.centurylinklabs.watchtower.depends-on: "designsafe_django"
+      com.centurylinklabs.watchtower.depends-on: "designsafe_django, designsafe_docs"
     links:
       - "django"
       - "websocket"
@@ -115,8 +118,24 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
     restart: always
 
+  docs:
+    image: designsafeci/ds-use-case-template:latest
+    volumes:
+      - /srv/www/designsafe/ds-use-case:/docs/site
+    command: ["mkdocs", "build"]
+    container_name: designsafe_use_case
+    logging:
+      driver: syslog
+      options:
+        tag: designsafe_use_case
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
   watchtower:
     image: containrrr/watchtower
+    environment:
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_REVIVE_STOPPED=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 30 --label-enable --cleanup --enable-lifecycle-hooks
