@@ -15,8 +15,6 @@ services:
       - /etc/ssl/dhparam.pem:/etc/ssl/dhparam.pem
       - /srv/www/designsafe/static:/srv/www/designsafe/static
       - /srv/www/designsafe/media:/srv/www/designsafe/media
-      - /srv/www/designsafe/cms/static:/var/www/portal/cms/static
-      - /var/www/portal/cms/media:/var/www/portal/cms/media
       - /srv/www/designsafe/ds-use-case:/srv/www/designsafe/ds-use-case
     ports:
       - 80:80
