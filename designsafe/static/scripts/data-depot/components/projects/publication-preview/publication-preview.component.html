@@ -40,6 +40,19 @@
                     <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
                 </td>
             </tr>
+            <!-- <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+                <td>
+                    <span>Version</span>
+                </td>
+                <td>
+                    <select class="prj-dropdown"
+                            ng-options="version for version in $ctrl.versions"
+                            ng-change="$ctrl.getVersion()"
+                            ng-model="$ctrl.selectedVersion">
+                    </select>
+                    &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != 'Original'"><strong>Version Changes</strong></a>
+                </td>
+            </tr> -->
             <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
                 <td>Project Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</td>

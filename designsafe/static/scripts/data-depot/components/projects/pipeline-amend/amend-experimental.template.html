@@ -183,6 +183,19 @@
                 </li>
             </ul>
         </div>
+        <div class="pipeline-header">
+            <h3>Confirm Author Order</h3>
+            <strong>You must confirm the order of authors.</strong>
+            Your citation will be updated to match what is shown in the preview.
+        </div>
+        <div class="pipeline-section">
+            <manage-authors
+                title="$ctrl.project.value.title"
+                label="'Confirm Authors'"
+                authors="$ctrl.authors"
+                submit="$ctrl.saveAuthors()">
+            </manage-authors>
+        </div>
     </div>
     <!-- Project Header End -->
 </div>
