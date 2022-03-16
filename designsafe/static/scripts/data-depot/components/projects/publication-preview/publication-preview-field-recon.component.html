@@ -315,7 +315,16 @@
                             <div class="entity-meta-field" ng-if="mission.value.description">
                                 <p>{{ mission.value.description }}</p>
                             </div>
-                        </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">Data Reuse</div>
+                                    <span ng-if="$ctrl.readOnly">
+                                        <a ng-click="$ctrl.entityMetrics(mission.doi, 'Mission')">
+                                        &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+                                        <strong>&nbsp;View Mission Metrics</strong>
+                                        </a>
+                                    </span>
+                                </div>
+                            </div>
                         <files-listing show-select="true" show-tags="true"
                         on-scroll="$ctrl.scrollToBottom()"
                         listing="$ctrl.FileListingService.listings[mission.uuid]"
@@ -425,6 +434,15 @@
                                         {{ $ctrl.browser.publication.licenses.software }}
                                     </div>
                                 </div>
+                            </div>
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">Data Reuse</div>
+                                    <span ng-if="$ctrl.readOnly">
+                                        <a ng-click="$ctrl.entityMetrics(mission.doi, 'Mission')">
+                                            &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+                                            <strong>&nbsp;View Mission Metrics</strong>
+                                        </a>
+                                </span>
                             </div>
                             <p>
                                 <br>{{ mission.value.description }}
@@ -611,6 +629,15 @@
                                                         </ul>
                                                     </div>
                                                 </div>
+                                                <div class="entity-meta-field">
+                                                    <div class="entity-meta-label">Data Reuse</div>
+                                                        <span ng-if="$ctrl.readOnly">
+                                                            <a ng-click="$ctrl.entityMetrics(collection.doi, 'Collection')">
+                                                                &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+                                                                <strong>&nbsp;View Collection Metrics</strong>
+                                                            </a>
+                                                        </span>
+                                                    </div>
                                                 <div class="entity-meta-field" ng-if="collection.value.description">
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>

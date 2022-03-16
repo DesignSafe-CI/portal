@@ -312,6 +312,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Data Reuse</div>
+                        <span ng-if="$ctrl.readOnly">
+                        <a ng-click="$ctrl.entityMetrics(simulation.doi, 'Simulation')">
+                            &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+                            <strong>&nbsp;View Simulation Metrics</strong>
+                        </a>
+                        </span>
+                    </div>
                     <p>
                         <br>{{ simulation.value.description }}
                     </p>

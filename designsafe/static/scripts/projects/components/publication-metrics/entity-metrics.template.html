@@ -1,6 +1,6 @@
 <div class="modal-header" style="background: #e6e6e6">
     <h4 class="modal-title" style="border: none">
-        Project Data Metrics
+        {{$ctrl.resolve.type}} Data Metrics
         <span ng-if="!$ctrl.loading">(<span ng-if="$ctrl.lastUpdated">since {{$ctrl.lastUpdated | date:'MMMM dd, yyyy'}}, </span>updated every month)</span>
         <a uib-tooltip="Metrics collected using Make Data Count standards." tooltip-placement="right"
             ><i class="fa fa-info-circle"></i
@@ -38,17 +38,6 @@
                             ></a>
                         </td>
                         <td>{{$ctrl.cumMetrics.fileViews}}</td>
-                    </tr>
-                    <tr style="border-top:hidden">
-                        <td>
-                            &nbsp;&nbsp;&nbsp;&nbsp;Project Downloads
-                            <a
-                                uib-tooltip="Total downloads of a compressed entire project to a user’s machine"
-                                tooltip-placement="right"
-                                ><i class="fa fa-info-circle"></i
-                            ></a>
-                        </td>
-                        <td>{{$ctrl.cumMetrics.projectDownloads}}</td>
                     </tr>
                     <tr style="border-top: hidden">
                         <td>
