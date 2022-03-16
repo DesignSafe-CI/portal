@@ -345,6 +345,9 @@
                             <strong>&nbsp;View Experiment Metrics</strong>
                         </a>
                         </span>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                            <span>(Appears when published)</span>
+                        </div>
                     </div>
                     <p>
                         <br>{{ experiment.value.description }}

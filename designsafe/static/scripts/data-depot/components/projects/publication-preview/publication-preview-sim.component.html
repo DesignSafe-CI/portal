@@ -320,6 +320,9 @@
                             <strong>&nbsp;View Simulation Metrics</strong>
                         </a>
                         </span>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                            <span>(Appears when published)</span>
+                        </div>
                     </div>
                     <p>
                         <br>{{ simulation.value.description }}
