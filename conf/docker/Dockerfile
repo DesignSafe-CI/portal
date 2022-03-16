@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y \
     git \
     vim
 
-# install node 12.x
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+# install node 16.x
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
 RUN pip3 install --upgrade pip setuptools wheel
