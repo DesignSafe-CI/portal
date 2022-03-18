@@ -5,6 +5,7 @@
         Visit: https://support.datacite.org/docs/api for more info.
 """
 
+from html.entities import entitydefs
 import os
 import json
 import zipfile
@@ -18,7 +19,7 @@ from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from designsafe.apps.projects.managers.base import ProjectsManager
-from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
+from designsafe.apps.projects.models.utils import lookup_model
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
 
@@ -55,6 +56,28 @@ FIELD_MAP = {
     "designsafe.project.field_recon.planning": "planning",
     "designsafe.project.field_recon.geoscience": "geoscience",
     "designsafe.project.field_recon.report": "reports",
+}
+
+UNAMENDABLE_FIELDS = {
+    'project': [
+        'pi',
+        'coPis',
+        'teamMembers',
+        'guestMembers',
+        'projectId',
+        'projectType',
+        'title',
+        'teamOrder',
+        'fileTags',
+        'dois'
+    ],
+    'entity': [
+        'title',
+        'dois',
+        'authors',
+        'fileTags',
+        'files'
+    ]
 }
 
 
@@ -223,13 +246,27 @@ def amend_publication(project_id, authors=None, revision=None):
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
-    if prj.project_type != 'other':
-        return
 
     prj_dict = prj.to_body_dict()
     pub_dict = pub.to_dict()
     _delete_unused_fields(prj_dict)
 
+    if pub.project.value.projectType != 'other':
+        pub_entity_uuids = pub.entities()
+        for uuid in pub_entity_uuids:
+            entity = mgr.get_entity_by_uuid(uuid)
+            entity = entity.to_body_dict()
+            _delete_unused_fields(entity)
+
+            for pub_ent in pub_dict[FIELD_MAP[entity['name']]]:
+                if pub_ent['uuid'] == entity['uuid']:
+                    for key in entity['value']:
+                        if key not in UNAMENDABLE_FIELDS['entity']:
+                            pub_ent['value'][key] = entity['value'][key]
+                    if 'authors' in entity['value']:
+                        pub_ent['value']['authors'] = authors[entity['uuid']]
+                        _set_authors(pub_ent, pub_dict)
+            
     # weird key swap for old issues with awardnumber(s)
     award_number = prj.award_number or []
     if not isinstance(award_number, list):
@@ -237,23 +274,16 @@ def amend_publication(project_id, authors=None, revision=None):
     prj_dict['value']['awardNumbers'] = award_number
     prj_dict['value'].pop('awardNumber', None)
 
-    amends_dict = {
-        'nhTypes': [],
-        'dataType': '',
-        'awardNumbers': [],
-        'associatedProjects': [],
-        'keywords': '',
-        'description': '',
-    }
-    for key in amends_dict:
-        amends_dict[key] = prj_dict['value'][key]
-    if authors:
-        amends_dict['teamOrder'] = authors
+    for key in prj_dict['value']:
+        if key not in UNAMENDABLE_FIELDS['project']:
+            pub_dict['project']['value'][key] = prj_dict['value'][key]
+    if authors and prj_dict['value']['projectType'] == 'other':
+        pub_dict['project']['value']['teamOrder'] = authors
 
-    pub_dict['project']['value'].update(amends_dict)
     pub.update(**pub_dict)
     IndexedPublication._index.refresh(using=es_client)
     return pub
+
 
 def amend_datacite_doi(publication):
     """Amend a citation on DataCite
@@ -270,16 +300,23 @@ def amend_datacite_doi(publication):
         return
 
     pub_dict = publication.to_dict()
-    prj_class = project_lookup_model(pub_dict['project'])
-    project = prj_class(value=pub_dict['project']['value'], uuid=pub_dict['project']['uuid'])
-    prj_datacite_json = project.to_datacite_json()
-    prj_doi = project.dois[0]
+    project_type = pub_dict['project']['value']['projectType']
 
-    response = DataciteManager.create_or_update_doi(
-        prj_datacite_json,
-        prj_doi
-    )
-    return response
+    if project_type == 'other':
+        prj_class = lookup_model(pub_dict['project'])
+        project = prj_class(value=pub_dict['project']['value'], uuid=pub_dict['project']['uuid'])
+        prj_datacite_json = project.to_datacite_json()
+        prj_doi = project.dois[0]
+        DataciteManager.create_or_update_doi(prj_datacite_json, prj_doi)
+    else:
+        for field in publication.entity_keys(publishable=True):
+            for ent in pub_dict[field]:
+                ent_class = lookup_model(ent)
+                entity = ent_class(value=ent['value'], uuid=ent['uuid'])
+                entity.authors = ent['authors'] # swap author formats before creating json
+                ent_datacite_json = entity.to_datacite_json()
+                ent_doi = entity.dois[0]
+                DataciteManager.create_or_update_doi(ent_datacite_json, ent_doi)
 
 
 def publish_resource(project_id, entity_uuids=None, publish_dois=False, revision=None):
@@ -598,7 +635,7 @@ def archive(project_id, revision=None):
             'experimental': 'experimentsList',
             'simulation': 'simulations',
             'hybrid_simulation': 'hybrid_simulations',
-            'field_recon': 'missions',
+            'field_recon': 'missions', # TODO: this should support 'reports' as well (aka Documents)
         }
 
         project_uuid = pub_dict['project']['uuid']
