@@ -423,7 +423,10 @@ class ManageFieldReconCollectionsCtrl {
         }
         let auths = this.configureAuthors(collection);
         if (!this.data.editCollection.value.referencedData || !this.data.editCollection.value.referencedData.length) {
-            this.data.editCollection.value.referencedData = new Array (1);
+            this.data.editCollection.value.referencedData = [{
+                title: '',
+                url: ''
+            }];
         }
 
         let formEquipment = [];
