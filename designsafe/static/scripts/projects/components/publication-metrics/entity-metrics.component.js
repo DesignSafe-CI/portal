@@ -10,6 +10,10 @@ class EntityMetricsCtrl {
         this.selectedYear = '';
         this.loading = true;
         this.error = false;
+        this.initialDate = Date.parse(this.resolve.publication.created);
+        if (this.initialDate < Date.parse("2021-01-01")) {
+            this.initialDate = "2021-01-01"
+        }
         this.PublicationService.getMetrics(this.resolve.publication.projectId)
             .then((resp) => {
                 this.data = resp.data;
