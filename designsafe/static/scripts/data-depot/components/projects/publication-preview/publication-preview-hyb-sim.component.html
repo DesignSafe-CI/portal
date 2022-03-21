@@ -217,7 +217,7 @@
     </div>
     <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
-            <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}" style="width:100%;">
+            <button ng-click="$ctrl.logEntity(hybsim, 'hybridSimulationList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}" style="width:100%;">
                 <div class="collapse-tab">
                     <span class="collapse-tab-content-left">Hybrid Simulation | <strong>{{hybsim.value.title}}</strong></span>
                     <span class="collapse-tab-content-right curation-chevron"></span>
@@ -314,7 +314,7 @@
                             ng-if="$ctrl.matchingGroup(hybsim, report)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{hybsim.uuid}}" style="width:100%;">
+                                <button ng-click="$ctrl.logEntity(report, 'reportsList')" class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{hybsim.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>

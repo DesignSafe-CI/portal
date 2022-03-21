@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 
 allowed_actions = {
     'private': ['listing', 'detail', 'search', 'copy', 'download', 'mkdir',
-                'move', 'rename', 'trash', 'preview', 'upload'],
-    'public': ['listing', 'detail', 'search', 'copy', 'download', 'preview'],
-    'community': ['listing', 'detail', 'search', 'copy', 'download', 'preview'],
+                'move', 'rename', 'trash', 'preview', 'upload', 'logentity'],
+    'public': ['listing', 'detail', 'search', 'copy', 'download', 'preview', 'logentity'],
+    'community': ['listing', 'detail', 'search', 'copy', 'download', 'preview', 'logentity'],
 }
 notify_actions = ['move', 'copy', 'rename', 'trash', 'mkdir', 'upload']
 
