@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/DesignSafe-CI/portal.svg?branch=master)](https://travis-ci.org/DesignSafe-CI/portal)
 [![codecov](https://codecov.io/gh/DesignSafe-CI/portal/branch/master/graph/badge.svg)](https://codecov.io/gh/DesignSafe-CI/portal)
-[![Maintainability](https://api.codeclimate.com/v1/badges/8399b864b0d115d86450/maintainability)](https://codeclimate.com/github/DesignSafe-CI/portal/maintainability)
 
 # DesignSafe-CI Portal
 
