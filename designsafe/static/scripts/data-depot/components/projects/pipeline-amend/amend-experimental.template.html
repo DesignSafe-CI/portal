@@ -142,10 +142,10 @@
                     <td ng-if="$ctrl.project.value.keywords">Keywords</td>
                     <td class="prj-data">{{ $ctrl.project.value.keywords }}</td>
                 </tr>
-                <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
+                <tr ng-if="$ctrl.publication.project.value.hazmapperMaps.length">
                     <td>Hazmapper Maps</td>
                     <td>
-                        <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps">
+                        <hazmapper-maps maps="$ctrl.publication.project.value.hazmapperMaps">
                         </hazmapper-maps>
                     </td>
                 </tr>
@@ -183,8 +183,7 @@
                 </li>
             </ul> -->
             <!-- Project Reports -->
-            <!-- <div ng-if="$ctrl.matchingGroup(experiment, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"> -->
-            <div ng-if="!$crtl.ui.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
+            <div ng-if="$ctrl.matchingGroup(experiment, report) && !$crtl.ui.loading" ng-repeat="report in $ctrl.publication.reportsList | orderBy: 'value.title'">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                     <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                         <div class="collapse-tab">
@@ -198,10 +197,13 @@
                         </div>
                     </div>
                 </div>
+                <!-- TODO: Update this button with the correct modal -->
+                <div>
+                    <a class="prj-ent-amend" ng-click="$ctrl.amendProject($event)"><strong>Edit Report Metadata</strong></a>
+                </div>
             </div>
             <!-- Experiments -->
-            <!-- <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set"> -->
-            <div>
+            <div ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.publication.experimentsList">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
                     <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                         <table style="width:100%" id="anchor-{{ experiment.uuid }}">
@@ -229,13 +231,10 @@
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi">Author(s)</div>
                                 <div class="entity-meta-data">
-                                    <span ng-if="$ctrl.readOnly">
+                                    <span>
                                         <span ng-repeat="author in $ctrl.sortAuthors(experiment.authors) | filter: { authorship: true }">
                                             <a href="javascript:;" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
                                         </span>
-                                    </span>
-                                    <span ng-if="!$ctrl.readOnly">
-                                        <ds-author-list authors="experiment.value.authors"></ds-author-list>
                                     </span>
                                 </div>
                             </div>
@@ -268,13 +267,8 @@
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Date of Publication</div>
-                                <span class="entity-meta-data"
-                                        data-ng-if="!$ctrl.readOnly">
-                                    (Appears when published)
-                                </span>
-                                <span class="entity-meta-data"
-                                        data-ng-if="$ctrl.readOnly">
-                                    {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
+                                <span class="entity-meta-data">
+                                    {{ $ctrl.publication.created | date:'MM-dd-yyyy' }}
                                 </span>
                             </div>
                             <div class="entity-meta-field">
@@ -286,50 +280,46 @@
                                         Citation
                                     </button>
                                 </div>
-                                <span class="entity-meta-data"
-                                        data-ng-if="!$ctrl.readOnly">
-                                    (Appears when published)
-                                </span>
-                                <span class="entity-meta-data"
-                                        data-ng-if="$ctrl.readOnly">
+                                <span class="entity-meta-data">
                                     {{ experiment.doi }}
                                 </span>
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi">License(s)</div>
-                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
-                                    <span>(Appears when published)</span>
-                                </div>
-                                <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                                    <div data-ng-if="$ctrl.browser.publication.licenses.datasets" class="license-element">
+                                <div class="entity-meta-data">
+                                    <div data-ng-if="$ctrl.publication.licenses.datasets" class="license-element">
                                         <span class="curation-odc" style="font-size:32px;"></span>&nbsp;
-                                        <span>{{ $ctrl.browser.publication.licenses.datasets }}</span>
+                                        <span>{{ $ctrl.publication.licenses.datasets }}</span>
                                     </div>
-                                    <div data-ng-if="$ctrl.browser.publication.licenses.works" class="license-element">
+                                    <div data-ng-if="$ctrl.publication.licenses.works" class="license-element">
                                         <span
                                             class="curation-cc-share"
                                             style="font-size:32px;"
-                                            ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+                                            ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
                                         </span>
                                         <span
                                             class="curation-cc-zero"
                                             style="font-size:32px;"
-                                            ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
+                                            ng-if="$ctrl.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
                                         </span>&nbsp;
-                                        <span>{{ $ctrl.browser.publication.licenses.works }}</span>
+                                        <span>{{ $ctrl.publication.licenses.works }}</span>
                                     </div>
-                                    <div data-ng-if="$ctrl.browser.publication.licenses.software" class="license-element">
+                                    <div data-ng-if="$ctrl.publication.licenses.software" class="license-element">
                                         <span class="curation-gpl" style="font-size:32px;"></span>&nbsp;
-                                        <span>{{ $ctrl.browser.publication.licenses.software }}</span>
+                                        <span>{{ $ctrl.publication.licenses.software }}</span>
                                     </div>
                                 </div>
                             </div>
                             <p>
                                 <br>{{ experiment.value.description }}
                             </p>
+                            <!-- TODO: Update this button with the correct modal -->
+                            <div>
+                                <a class="prj-ent-amend" ng-click="$ctrl.amendProject($event)"><strong>Edit Experiment Metadata</strong></a>
+                            </div>
                             <div>
                                 <!-- Experiment Reports -->
-                                <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
+                                <div ng-repeat="report in $ctrl.publication.reportsList | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                                         <button
                                             class="btn collapsed tab-report"
@@ -350,7 +340,7 @@
                                     </div>
                                 </div>
                                 <!-- Model Configs -->
-                                <div ng-repeat="modelConfig in $ctrl.browser.project.modelconfig_set | orderBy: 'value.title'"
+                                <div ng-repeat="modelConfig in $ctrl.publication.modelConfigs | orderBy: 'value.title'"
                                     ng-if="$ctrl.matchingGroup(experiment, modelConfig)"
                                 >
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{modelConfig.uuid}}">
@@ -370,7 +360,7 @@
                                         </div>
                                     </div>
                                     <!-- Sensors -->
-                                    <div ng-repeat="sensorList in $ctrl.browser.project.sensorlist_set | orderBy: 'value.title'"
+                                    <div ng-repeat="sensorList in $ctrl.publication.sensorsLists | orderBy: 'value.title'"
                                         ng-if="$ctrl.matchingGroup(experiment, sensorList) && $ctrl.matchingGroup(modelConfig, sensorList)"
                                     >
                                         <div class="dropdown dropdown-spacer-sm"
@@ -404,7 +394,7 @@
                                                 </tr>
                                             </table>
                                             <!-- Events -->
-                                            <div ng-repeat="event in $ctrl.browser.project.event_set | orderBy: 'value.title'"
+                                            <div ng-repeat="event in $ctrl.publication.eventsList | orderBy: 'value.title'"
                                                 ng-if="$ctrl.matchingGroup(experiment, event) && $ctrl.matchingGroup(modelConfig, event) && $ctrl.matchingGroup(sensorList, event)"
                                             >
                                                 <div class="dropdown dropdown-spacer-sm"
@@ -445,7 +435,7 @@
                                 </div>
                                 <!-- Model Configs -->
                                 <!-- Analysis -->
-                                <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, analysis)">
+                                <div ng-repeat="analysis in $ctrl.publication.analysisList | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, analysis)">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
                                         <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{experiment.uuid}}" style="width:100%;">
                                             <div class="collapse-tab">

@@ -1,5 +1,7 @@
 import AmendOther from './amend-other.template.html';
 import AmendExperimental from './amend-experimental.template.html';
+import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
+import { has } from 'underscore';
 
 class PipelineAmendCtrl {
     constructor(
@@ -23,7 +25,10 @@ class PipelineAmendCtrl {
             success: false,
             error: false,
             submitted: false,
-            confirmed: false
+            confirmed: false,
+            efs: experimentalData.experimentalFacility,
+            equipmentTypes: experimentalData.equipmentTypes,
+            experimentTypes: experimentalData.experimentTypes,
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.publication = this.ProjectService.resolveParams.publication;
@@ -76,6 +81,53 @@ class PipelineAmendCtrl {
 
     goStart() {
         this.$state.go('projects.pipelineStart', { projectId: this.projectId }, { reload: true });
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+
+    getEF(str) {
+        let efs = this.ui.efs[this.publication.project.value.projectType];
+        let ef = efs.find((ef) => {
+            return ef.name === str;
+        });
+        return ef.label;
+    }
+
+    getET(exp) {
+        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+        let et = ets.find((x) => {
+            return x.name === exp.value.experimentType;
+        });
+        return et.label;
+    }
+
+    getEQ(exp) {
+        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+        let eqt = eqts.find((x) => {
+            return x.name === exp.value.equipmentType;
+        });
+        return eqt.label;
+    }
+
+    sortAuthors(authors) {
+        if (!has(authors[0], 'order')) return authors;
+        const sortedAuthors = authors.sort((a, b) => a.order - b.order);
+        return sortedAuthors;
+    }
+
+    showAuthor(author) {
+        this.$uibModal.open({
+            component: 'authorInformationModal',
+            resolve: {
+                author,
+            },
+            size: 'author',
+        });
     }
 }
 
