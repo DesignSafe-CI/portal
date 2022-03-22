@@ -38,6 +38,10 @@
                 <li>Publish a new project.</li>
                 <li>The project will recieve a new citation and DOI to include any new authors.</li>
                 <li>The updated project will display as a new version.</li>
+                <li ng-if="!$ctrl.ui.showAmendVersion">
+                    If you already published and would like to publish additional data in this same project,
+                    submit a ticket with the project ID, project title, what you want to publish, and the order of the authors.
+                </li>
             </ul>
             <button class="btn btn-small btn-add"
                     ng-click="$ctrl.goPublish()"
