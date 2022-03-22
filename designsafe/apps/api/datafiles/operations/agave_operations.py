@@ -8,6 +8,7 @@ from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.data.tasks import agave_indexer
 from django.conf import settings
 from elasticsearch_dsl import Q
+import requests
 from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
@@ -51,6 +52,13 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     # agave_listing_indexer.delay(listing)
 
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
+
+
+def logentity(client, system, path, *args, **kwargs):
+    """
+    No-op function to allow primary entity views to be logged as listings.
+    """
+    return {}
 
 
 def detail(client, system, path, *args, **kwargs):
@@ -134,7 +142,7 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     return {'listing': hits, 'reachedEnd': len(hits) < int(limit)}
 
 
-def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *args, **kwargs):
+def download(client, system, path=None, paths=None, *args, **kwargs):
     """Creates a postit pointing to this file.
 
     Params
@@ -143,14 +151,8 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
         Tapis client to use.
     system: NoneType
     path: NoneType
-    href: str
-        Tapis href to use for generating the postit.
-    force: bool
-        Wether to force preview by adding ``inline``
-    max_uses: int
-         Maximum amount the postit link can be used.
-    lifetime: int
-        Life time of the postit link in seconds.
+    paths: List[str]
+        List of paths to include in the ZIP archive.
 
     Returns
     -------
@@ -159,22 +161,16 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
     """
     # pylint: disable=protected-access
 
-    href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
-
-    args = {
-        'url': urllib.parse.unquote(href),
-        'maxUses': max_uses,
-        'method': 'GET',
-        'lifetime': lifetime,
-        'noauth': False
-    }
-    # pylint: enable=protected-access
-    if force:
-        args['url'] += '?force=True'
-
-    result = client.postits.create(body=args)
-
-    return {'href': result['_links']['self']['href']}
+    token = None
+    if client is not None:
+        token = client.token.token_info['access_token']
+    zip_endpoint = "https://designsafe-download01.tacc.utexas.edu/check"
+    data = json.dumps({'system': system, 'paths': paths})
+    # data = json.dumps({'system': 'designsafe.storage.published', 'paths': ['PRJ-2889']})
+    resp = requests.put(zip_endpoint, headers={"Authorization": f"Bearer {token}"}, data=data)
+    resp.raise_for_status()
+    download_key = resp.json()["key"]
+    return {"href": f"https://designsafe-download01.tacc.utexas.edu/download/{download_key}"}
 
 
 def mkdir(client, system, path, dir_name):
@@ -331,7 +327,7 @@ def copy(client, src_system, src_path, dest_system, dest_path):
             fileName=dst_file_name,
             urlToIngest=src_url
         )
-    
+
     copy_meta(
         src_system=src_system,
         src_path=src_path,

@@ -61,7 +61,11 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         plugins = CMSPlugin.objects.filter(placeholder__in=obj.page.placeholders.all())
         text = ''
         for base_plugin in plugins:
-            instance, plugin_type = base_plugin.get_plugin_instance()
+            try:
+                instance, plugin_type = base_plugin.get_plugin_instance()
+            except Exception as e:
+                logger.debug(f"{type(e)}: {e}")
+                continue
             if instance is None:
                 # this is an empty plugin
                 continue
