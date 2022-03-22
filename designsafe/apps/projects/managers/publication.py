@@ -5,6 +5,7 @@
         Visit: https://support.datacite.org/docs/api for more info.
 """
 
+from html.entities import entitydefs
 import os
 import json
 import zipfile
@@ -18,7 +19,7 @@ from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from designsafe.apps.projects.managers.base import ProjectsManager
-from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
+from designsafe.apps.projects.models.utils import lookup_model
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
 
@@ -55,6 +56,28 @@ FIELD_MAP = {
     "designsafe.project.field_recon.planning": "planning",
     "designsafe.project.field_recon.geoscience": "geoscience",
     "designsafe.project.field_recon.report": "reports",
+}
+
+UNAMENDABLE_FIELDS = {
+    'project': [
+        'pi',
+        'coPis',
+        'teamMembers',
+        'guestMembers',
+        'projectId',
+        'projectType',
+        'title',
+        'teamOrder',
+        'fileTags',
+        'dois'
+    ],
+    'entity': [
+        'title',
+        'dois',
+        'authors',
+        'fileTags',
+        'files'
+    ]
 }
 
 
@@ -110,65 +133,75 @@ def draft_publication(
     prj = mgr.get_project_by_id(project_id)
     responses = []
 
-    ### Draft Entity DOI(s) ###
     if main_entity_uuids:
+        ### Draft Entity DOI(s) ###
+        pub = BaseESPublication(project_id=project_id, revision=revision)
         for ent_uuid in main_entity_uuids:
-            entity = None
-            if ent_uuid:
-                entity = mgr.get_entity_by_uuid(ent_uuid)
+            entity = mgr.get_entity_by_uuid(ent_uuid)
+            if entity:
+                if revision:
+                    entity_url = ENTITY_TARGET_BASE.format(
+                        project_id='{}v{}'.format(project_id, revision),
+                        entity_uuid=ent_uuid
+                    )
+                    original_entities = getattr(pub, FIELD_MAP[entity.name])
+                    pub_ent = next(ent for ent in original_entities if ent.uuid == ent_uuid)
 
-            if entity: #need to add the version number here...
-                # '{}v{}'.format(project_id, revision) if revision else project_id
-                entity_url = ENTITY_TARGET_BASE.format(
-                    project_id=project_id,
-                    entity_uuid=ent_uuid
-                )
+                    entity.title = pub_ent.value.title
+                    entity.authors = revised_authors[ent_uuid]
+                else:
+                    entity_url = ENTITY_TARGET_BASE.format(
+                        project_id=project_id,
+                        entity_uuid=ent_uuid
+                    )
                 ent_datacite_json = entity.to_datacite_json()
                 ent_datacite_json['url'] = entity_url
-            
-            if entity and upsert_main_entity_doi and main_entity_doi:
-                me_res = DataciteManager.create_or_update_doi(
-                    ent_datacite_json,
-                    main_entity_doi
-                )
-                entity.dois += [main_entity_doi]
-                entity.dois = list(set(entity.dois))
-                entity.save(service_account())
-                responses.append(me_res)
-            elif entity and upsert_main_entity_doi and entity.dois:
-                for doi in entity.dois:
+                # ent_datacite_json['version'] = str(revision) # omitting version number per Maria
+
+                if upsert_main_entity_doi and main_entity_doi:
                     me_res = DataciteManager.create_or_update_doi(
                         ent_datacite_json,
-                        doi
+                        main_entity_doi
                     )
+                    entity.dois += [main_entity_doi]
+                    entity.dois = list(set(entity.dois))
+                    entity.save(service_account())
                     responses.append(me_res)
-            elif entity and upsert_main_entity_doi and not entity.dois:
-                me_res = DataciteManager.create_or_update_doi(
-                    ent_datacite_json
-                )
-                entity.dois += [me_res['data']['id']]
-                entity.save(service_account())
-                responses.append(me_res)
+                elif upsert_main_entity_doi and entity.dois:
+                    for doi in entity.dois:
+                        me_res = DataciteManager.create_or_update_doi(
+                            ent_datacite_json,
+                            doi
+                        )
+                        responses.append(me_res)
+                elif upsert_main_entity_doi and not entity.dois:
+                    me_res = DataciteManager.create_or_update_doi(
+                        ent_datacite_json
+                    )
+                    entity.dois += [me_res['data']['id']]
+                    entity.save(service_account())
+                    responses.append(me_res)
     else:
+        ### Draft Project DOI ###
         upsert_project_doi = True
+        if revision:
+            # Versions should not update certain fields
+            # Add version number to DataCite info
+            prj_url = TARGET_BASE.format(project_id='{}v{}'.format(project_id, revision))
+            pub = BaseESPublication(project_id=project_id, revision=revision)
+            prj.title = pub.project.value.title
+            prj.team_order = pub.project.value.teamOrder
+            if revised_authors:
+                prj.team_order = revised_authors
+            prj_datacite_json = prj.to_datacite_json()
+            prj_datacite_json['url'] = prj_url
+            prj_datacite_json['version'] = str(revision)
+        else:
+            # format project for publication
+            prj_url = TARGET_BASE.format(project_id=project_id)
+            prj_datacite_json = prj.to_datacite_json()
+            prj_datacite_json['url'] = prj_url
 
-    ### Draft Project DOI ###
-    if revision:
-        # Versions should not update certain fields per Maria Esteva
-        # Add version number to DataCite info
-        prj_url = TARGET_BASE.format(project_id='{}v{}'.format(project_id, revision))
-        pub = BaseESPublication(project_id=project_id, revision=revision)
-        prj.title = pub.project.value.title
-        prj.team_order = pub.project.value.teamOrder
-        if revised_authors:
-            prj.team_order = revised_authors
-        prj_datacite_json = prj.to_datacite_json()
-        prj_datacite_json['url'] = prj_url
-        prj_datacite_json['version'] = str(revision)
-    else:
-        prj_url = TARGET_BASE.format(project_id=project_id)
-        prj_datacite_json = prj.to_datacite_json()
-        prj_datacite_json['url'] = prj_url
 
     if upsert_project_doi and project_doi:
         prj_res = DataciteManager.create_or_update_doi(
@@ -214,13 +247,27 @@ def amend_publication(project_id, authors=None, revision=None):
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
-    if prj.project_type != 'other':
-        return
 
     prj_dict = prj.to_body_dict()
     pub_dict = pub.to_dict()
     _delete_unused_fields(prj_dict)
 
+    if pub.project.value.projectType != 'other':
+        pub_entity_uuids = pub.entities()
+        for uuid in pub_entity_uuids:
+            entity = mgr.get_entity_by_uuid(uuid)
+            entity = entity.to_body_dict()
+            _delete_unused_fields(entity)
+
+            for pub_ent in pub_dict[FIELD_MAP[entity['name']]]:
+                if pub_ent['uuid'] == entity['uuid']:
+                    for key in entity['value']:
+                        if key not in UNAMENDABLE_FIELDS['entity']:
+                            pub_ent['value'][key] = entity['value'][key]
+                    if 'authors' in entity['value']:
+                        pub_ent['value']['authors'] = authors[entity['uuid']]
+                        _set_authors(pub_ent, pub_dict)
+            
     # weird key swap for old issues with awardnumber(s)
     award_number = prj.award_number or []
     if not isinstance(award_number, list):
@@ -228,23 +275,16 @@ def amend_publication(project_id, authors=None, revision=None):
     prj_dict['value']['awardNumbers'] = award_number
     prj_dict['value'].pop('awardNumber', None)
 
-    amends_dict = {
-        'nhTypes': [],
-        'dataType': '',
-        'awardNumbers': [],
-        'associatedProjects': [],
-        'keywords': '',
-        'description': '',
-    }
-    for key in amends_dict:
-        amends_dict[key] = prj_dict['value'][key]
-    if authors:
-        amends_dict['teamOrder'] = authors
+    for key in prj_dict['value']:
+        if key not in UNAMENDABLE_FIELDS['project']:
+            pub_dict['project']['value'][key] = prj_dict['value'][key]
+    if authors and prj_dict['value']['projectType'] == 'other':
+        pub_dict['project']['value']['teamOrder'] = authors
 
-    pub_dict['project']['value'].update(amends_dict)
     pub.update(**pub_dict)
     IndexedPublication._index.refresh(using=es_client)
     return pub
+
 
 def amend_datacite_doi(publication):
     """Amend a citation on DataCite
@@ -261,16 +301,23 @@ def amend_datacite_doi(publication):
         return
 
     pub_dict = publication.to_dict()
-    prj_class = project_lookup_model(pub_dict['project'])
-    project = prj_class(value=pub_dict['project']['value'], uuid=pub_dict['project']['uuid'])
-    prj_datacite_json = project.to_datacite_json()
-    prj_doi = project.dois[0]
+    project_type = pub_dict['project']['value']['projectType']
 
-    response = DataciteManager.create_or_update_doi(
-        prj_datacite_json,
-        prj_doi
-    )
-    return response
+    if project_type == 'other':
+        prj_class = lookup_model(pub_dict['project'])
+        project = prj_class(value=pub_dict['project']['value'], uuid=pub_dict['project']['uuid'])
+        prj_datacite_json = project.to_datacite_json()
+        prj_doi = project.dois[0]
+        DataciteManager.create_or_update_doi(prj_datacite_json, prj_doi)
+    else:
+        for field in publication.entity_keys(publishable=True):
+            for ent in pub_dict[field]:
+                ent_class = lookup_model(ent)
+                entity = ent_class(value=ent['value'], uuid=ent['uuid'])
+                entity.authors = ent['authors'] # swap author formats before creating json
+                ent_datacite_json = entity.to_datacite_json()
+                ent_doi = entity.dois[0]
+                DataciteManager.create_or_update_doi(ent_datacite_json, ent_doi)
 
 
 def publish_resource(project_id, entity_uuids=None, publish_dois=False, revision=None):
@@ -333,8 +380,8 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False, revision
     return responses
 
 
-def _populate_entities_in_publication(entity, publication):
-    """Populate entities in publication dict.
+def _set_related_entities(entity, publication):
+    """Populate sub entities in publication dict
 
     :param entity: Entity resource instance.
     :param dict publication: Publication dict.
@@ -361,7 +408,7 @@ def _populate_entities_in_publication(entity, publication):
             pent.update(ent_dict)
 
 
-def _transform_authors(entity, publication):
+def _set_authors(entity, publication):
     """Transform authors.
 
     :param dict entity: Entity dictionary.
@@ -370,7 +417,9 @@ def _transform_authors(entity, publication):
     Sets authors on the entity to a list of user objects
     Sets authors on the publication
     """
+    publication['authors'] = list(entity['value']['authors'])
     entity['value']['authors'] = []
+    entity['authors'] = []
     for author in publication['authors']:
         if author.get('guest', False):
             continue
@@ -412,23 +461,37 @@ def _delete_unused_fields(dict_obj):
     for key in keys_to_delete:
         dict_obj.pop(key, '')
 
-def _preserve_version_values(prj_obj, revised_authors):
+
+
+def _preserve_project_values(original_pub, updated_entity, revised_authors):
     """Preserve Values for new Version
     Some metadata values are not meant to be modified
     when publishing a new version of a project. To prevent
     changes when publishing new versions, we'll copy those
     values from the original publication.
-    """
-    original_pub = BaseESPublication(project_id=prj_obj['value']['projectId'])
-    original_prj = original_pub.project.to_dict()
-    preservables = ['title', 'pi', 'coPis', 'guestMembers']
-
-    for field in preservables:
-        if field in original_prj['value']:
-            prj_obj['value'][field] = original_prj['value'][field]
-        elif field in prj_obj['value']:
-            del prj_obj['value'][field]
-    prj_obj['value']['teamOrder'] = revised_authors
+    """    
+    preservables = ['title', 'pi', 'coPis', 'teamMembers', 'guestMembers']
+    if updated_entity['name'] == 'designsafe.project':
+        original_prj = original_pub.project.to_dict()
+        for field in preservables:
+            if field in original_prj['value']:
+                updated_entity['value'][field] = original_prj['value'][field]
+            elif field in updated_entity['value']:
+                del updated_entity['value'][field]
+    else:
+        original_entities = getattr(original_pub, FIELD_MAP[updated_entity['name']])
+        for orig_ent in original_entities:
+            orig_ent = orig_ent.to_dict()
+            if orig_ent['uuid'] == updated_entity['uuid']:
+                for field in preservables:
+                    if field in orig_ent['value']:
+                        updated_entity['value'][field] = orig_ent['value'][field]
+                    elif field in updated_entity['value']:
+                        del updated_entity['value'][field]
+    if original_pub.project.value.projectType == 'other':
+        updated_entity['value']['teamOrder'] = revised_authors
+    elif updated_entity['name'] != 'designsafe.project':
+        updated_entity['value']['authors'] = revised_authors[updated_entity['uuid']]
 
 
 def fix_file_tags(project_id, revision=None):
@@ -477,7 +540,8 @@ def fix_file_tags(project_id, revision=None):
         else:
             for fobj in entity['fileObjs']:
                 try:
-                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(project_id, fobj['path']))
+                    pub_base = "{}v{}".format(project_id, revision) if revision else project_id
+                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(pub_base, fobj['path']))
                     proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path=fobj['path'])
                     for tag in entity['value']['fileTags']:
                         if tag['fileUuid'] == proj_file.uuid:
@@ -572,7 +636,7 @@ def archive(project_id, revision=None):
             'experimental': 'experimentsList',
             'simulation': 'simulations',
             'hybrid_simulation': 'hybrid_simulations',
-            'field_recon': 'missions',
+            'field_recon': 'missions', # TODO: this should support 'reports' as well (aka Documents)
         }
 
         project_uuid = pub_dict['project']['uuid']
@@ -634,6 +698,7 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=N
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     pub_doc = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
+    original_pub = BaseESPublication(project_id=project_id) if revised_authors else None
     publication = pub_doc.to_dict()
 
     if entity_uuids:
@@ -657,41 +722,39 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=N
             entity = mgr.get_entity_by_uuid(ent_uuid)
 
             if entity:
-                entity_json = entity.to_body_dict()
+                entity_dict = entity.to_body_dict()
                 pub_entities_field_name = FIELD_MAP[entity.name]
 
                 for e in entities_with_files:
-                    if e['uuid'] == entity_json['uuid']:
-                        entity_json['fileObjs'] = e['fileObjs']
+                    if e['uuid'] == entity_dict['uuid']:
+                        entity_dict['fileObjs'] = e['fileObjs']
 
-                publication['authors'] = list(entity_json['value']['authors'])
-                entity_json['authors'] = []
+                _set_related_entities(entity, publication)
+                _delete_unused_fields(entity_dict)
 
-                _populate_entities_in_publication(entity, publication)
-                _transform_authors(entity_json, publication)
-
-                if entity_json['value']['dois']:
-                    entity_json['doi'] = entity_json['value']['dois'][-1]
-
-                _delete_unused_fields(entity_json)
-                publication[pub_entities_field_name].append(entity_json)
-
-    prj_json = prj.to_body_dict()
-    _delete_unused_fields(prj_json)
+                if entity_dict['value']['dois']:
+                    entity_dict['doi'] = entity_dict['value']['dois'][-1]
+                if revision:
+                    _preserve_project_values(original_pub, entity_dict, revised_authors)
+                _set_authors(entity_dict, publication)
+                publication[pub_entities_field_name].append(entity_dict)
+    
+    prj_dict = prj.to_body_dict()
+    _delete_unused_fields(prj_dict)
     if revision:
-        _preserve_version_values(prj_json, revised_authors)
+        _preserve_project_values(original_pub, prj_dict, revised_authors)
 
     award_number = prj.award_number or []
 
     if not isinstance(award_number, list):
         award_number = []
 
-    prj_json['value']['awardNumbers'] = award_number
-    prj_json['value'].pop('awardNumber', None)
+    prj_dict['value']['awardNumbers'] = award_number
+    prj_dict['value'].pop('awardNumber', None)
     if publication.get('project'):
-        publication['project'].update(prj_json)
+        publication['project'].update(prj_dict)
     else:
-        publication['project'] = prj_json
+        publication['project'] = prj_dict
 
     pub_doc.update(using=es_client, **publication)
     IndexedPublication._index.refresh(using=es_client)

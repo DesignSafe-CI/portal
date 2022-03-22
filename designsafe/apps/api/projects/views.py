@@ -171,7 +171,7 @@ class AmendPublicationView(BaseApiView):
             data = request.POST
         
         project_id = data['projectId']
-        authors = data['authors'] if 'authors' in data else None
+        authors = data.get('authors', None)
         current_revision = IndexedPublication.max_revision(project_id=project_id)
 
         (

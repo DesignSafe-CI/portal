@@ -18,6 +18,14 @@
         </div>
     </div>
     <div ng-if="!$ctrl.ui.loading">
+        <ul>
+            <li ng-repeat="experiment in $ctrl.project.experiment_set">
+                <strong>{{experiment.value.title}}</strong>
+                <div ng-repeat="author in $ctrl.authors[experiment.uuid]">
+                    <span ng-if="author.authorship">{{author.name}}</span>
+                </div>
+            </li>
+        </ul>
         Experimental Selection Template
         <ul>
             <li>Display all of the available experiments in the project here similar to how it exists in the selection step of the publication pipeline.</li>

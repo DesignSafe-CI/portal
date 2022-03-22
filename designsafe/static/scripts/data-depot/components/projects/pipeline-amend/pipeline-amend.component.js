@@ -35,8 +35,30 @@ class PipelineAmendCtrl {
         this.project = this.ProjectService.resolveParams.project;
         if (!this.publication || !this.project) {
             this.goStart();
-        } else {
+        }
+        this.authors = {};
+        this.mainEntities = [];
+        let prj_type = this.publication.project.value.projectType;
+        if (prj_type == 'other') {
             this.authors = this.publication.project.value.teamOrder;
+            this.ui.loading = false;
+        } else {
+            let attrnames = [];
+            if (prj_type == 'experimental') {
+                attrnames = ['experimentsList'];
+            } else if (prj_type == 'simulation') {
+                attrnames = ['simulations'];
+            } else if (prj_type == 'hybrid_simulation') {
+                attrnames = ['hybrid_simulations'];
+            } else if (prj_type == 'field_recon') {
+                attrnames = ['missions', 'reports'];
+            }
+            attrnames.forEach((name) => {
+                this.publication[name].forEach((entity) => {
+                    this.authors[entity.uuid] = entity.authors;
+                    this.mainEntities.push(entity.uuid);
+                });
+            });
             this.ui.loading = false;
         }
     }

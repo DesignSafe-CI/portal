@@ -6,6 +6,7 @@ import VersionChanges from './version-changes.template.html';
 
 class PipelineVersionCtrl {
     constructor(
+        ProjectEntitiesService,
         FileOperationService,
         FileListingService,
         PublicationService,
@@ -16,6 +17,7 @@ class PipelineVersionCtrl {
         $q
     ) {
         'ngInject';
+        this.ProjectEntitiesService = ProjectEntitiesService;
         this.FileOperationService = FileOperationService;
         this.FileListingService = FileListingService;
         this.PublicationService = PublicationService;
@@ -47,6 +49,7 @@ class PipelineVersionCtrl {
         } else {
             this.$q.all([
                 this.ProjectService.get({ uuid: this.projectId }),
+                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }),
                 this.FileListingService.browse({
                     section: 'main',
                     api: 'agave',
@@ -54,21 +57,26 @@ class PipelineVersionCtrl {
                     system: 'project-' + this.projectId,
                     path: this.filePath,
                 }),
-            ]).then(([project, listing]) => {
+            ]).then(([project, entities, listing]) => {
                 this.project = project;
+                this.project.appendEntitiesRel(entities);
                 this.listing = listing;
-                this.authors = this.publication.project.value.teamOrder;
                 this.pubData = {
                     project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
                     license: this.publication.licenses
                 };
                 switch(this.project.value.projectType) {
                     case 'experimental': {
+                        this.authors = {}
+                        this.project.experiment_set.forEach((exp) => {
+                            this.authors[exp.uuid] = exp.value.authors
+                        });
                         this.ui.selectionComp = 'projects.versionExperimentalSelection'
                         this.ui.citationComp = 'projects.versionExperimentalCitation'
                         break;
                     }
                     case 'other': {
+                        this.authors = this.publication.project.value.teamOrder
                         this.ui.selectionComp = 'projects.versionOtherSelection'
                         this.ui.citationComp = 'projects.versionOtherCitation'
                     }
@@ -93,16 +101,19 @@ class PipelineVersionCtrl {
             return this.ui.warning = true;
         }
         this.ui.loading = true;
-        let filePaths = this.selectedListing.listing.map( file => file.path);
+        let filePaths = (this.selectedListing
+            ? this.selectedListing.listing.map((file) => file.path)
+            : null);
         this.$http.post(
             '/api/projects/publication/',
             {
                 publication: this.pubData,
-                status: 'publishing',
+                mainEntityUuids: this.mainEntityUuids,
+                selectedFiles: filePaths,
                 revision: true,
                 revisionText: this.revisionText,
                 revisionAuthors: this.authors,
-                selectedFiles: filePaths
+                status: 'publishing'
             }
         ).then((resp) => {
             this.ui.success = true;

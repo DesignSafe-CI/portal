@@ -91,18 +91,6 @@ class PipelineStartCtrl {
         this.$state.go(this.ui.previewComp, { projectId: this.projectId }, { reload: true });
     }
 
-    /*
-    BOOKMARK
-    Clean up the Amend pipeline componen and update the names to match what is in the
-    updated version pipeline. Leave some notes there and push that up. Create a
-    publication with the same additional entries that Other has for a version 2.
-    Share that with OWAIS and SARAH once finished, and get them started on this.
-
-    Owais can finish the reusable authorship component and the published template changes for V2
-    Experimental Projects.
-
-    Sarah can work on putting together the UI component in the pipelines.
-    */
     goAmend() {
         this.$state.go(this.ui.amendComp, {
             projectId: this.projectId,
