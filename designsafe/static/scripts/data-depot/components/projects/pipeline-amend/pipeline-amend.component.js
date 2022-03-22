@@ -120,6 +120,34 @@ class PipelineAmendCtrl {
         return sortedAuthors;
     }
 
+    matchingGroup(exp, model) {
+        if (!exp) {
+            // if the category is related to the project level
+            if (model.associationIds.indexOf(this.projectId) > -1 && !model.value.experiments.length) {
+                return true;
+            }
+            return false;
+        } else {
+            // if the category is related to the experiment level
+            // match appropriate data to corresponding experiment
+            if(model.associationIds.indexOf(exp.uuid) > -1) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    showCitation(entity) {
+        this.$uibModal.open({
+            component: 'publishedCitationModal',
+            resolve: {
+                publication: () => { return this.publication; },
+                entity: () => { return entity; },
+            },
+            size: 'citation'
+        });
+    }
+
     showAuthor(author) {
         this.$uibModal.open({
             component: 'authorInformationModal',
