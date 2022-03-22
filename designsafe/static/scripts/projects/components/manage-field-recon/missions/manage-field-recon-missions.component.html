@@ -11,7 +11,7 @@
         {{$ctrl.data.error}}
     </div>
     <div class="well">
-        <form name="addForm" data-ng-hide="$ctrl.ui.showEditMissionForm">
+        <form name="addForm">
             <div class="expTitle form-group">
                 <label for="id-title">
                     <div style="display: flex; flex-direction: column">
@@ -97,7 +97,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mission-site-location form-group">
+            <div class="form-group">
                 <label for="id-location">
                     <div style="display: flex; flex-direction: column">
                         <div>
@@ -139,7 +139,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mission-description form-group">
+            <div class="form-group">
                 <label for="id-description">
                     <div style="display: flex; flex-direction: column">
                         <div>
@@ -181,14 +181,14 @@
             </div>
         </form>
     </div>
-    <div class="mission-list">
-        <div class="mission-list-title">
+    <div>
+        <div>
             <label>Mission Inventory</label>
         </div>
         <div class="dropdown">
             <div data-ng-repeat="mission in $ctrl.data.missions">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-experiment" data-toggle="collapse"
+                    <button class="btn collapsed tab-gray" data-toggle="collapse"
                             data-target="#files-{{mission.uuid}}" style="width: 100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Mission | <strong>{{mission.value.title}}</strong></span>
