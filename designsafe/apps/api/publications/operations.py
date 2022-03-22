@@ -227,13 +227,6 @@ def initilize_publication(publication, status='publishing', revision=None, revis
             publication['revisionText'] = revision_text
         else:
             publication['created'] = datetime.datetime.now().isoformat()
-            # try to keep the original creation date if exists (for manual republication/amends)
-            # this failes if project is published for the first time
-            # base_pub = IndexedPublication.from_id(publication['projectId'], revision=None, using=es_client)
-            # if 'created' in base_pub and base_pub['created']:
-            #     publication['created'] = base_pub['created']
-            # else:
-            #     publication['created'] = datetime.datetime.now().isoformat()
         try:
             pub = IndexedPublication.from_id(publication['projectId'], revision=revision, using=es_client)
             pub.update(using=es_client, **publication)
