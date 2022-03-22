@@ -156,6 +156,7 @@ def draft_publication(
                     )
                 ent_datacite_json = entity.to_datacite_json()
                 ent_datacite_json['url'] = entity_url
+                # ent_datacite_json['version'] = str(revision) # omitting version number per Maria
 
                 if upsert_main_entity_doi and main_entity_doi:
                     me_res = DataciteManager.create_or_update_doi(
