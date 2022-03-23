@@ -4,7 +4,6 @@
         <div class="prj-head-container">
             <span class="prj-head-title">
                 {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
-                <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)" ng-if="!$ctrl.readOnly"><strong>Edit Project</strong></a>
             </span>
             <div class="prj-head-buttons">
                 <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
@@ -184,7 +183,7 @@
     <!-- Project Reports -->
     <div ng-if="$ctrl.matchingGroup(experiment, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-            <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+            <button class="btn tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                 <div class="collapse-tab">
                     <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                     <span class="collapse-tab-content-right curation-chevron"></span>
@@ -217,7 +216,7 @@
     <!-- Experiments -->
     <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
-            <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
+            <button ng-click="$ctrl.logEntity(experiment, 'experimentsList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                 <table style="width:100%" id="anchor-{{ experiment.uuid }}">
                     <tr>
                         <td class="tab-cell">
@@ -346,7 +345,8 @@
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                                 <button
-                                    class="btn collapsed tab-report"
+                                    ng-click="$ctrl.logEntity(report, 'reportsList')"
+                                    class="btn collapsed tab-gray"
                                     data-toggle="collapse"
                                     data-target="#files-{{report.uuid}}-{{experiment.uuid}}"
                                     style="width:100%;"
@@ -372,7 +372,7 @@
                             ng-if="$ctrl.matchingGroup(experiment, modelConfig)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{modelConfig.uuid}}">
-                                <button class="btn collapsed tab-model-conf"
+                                <button class="btn collapsed tab-blue"
                                         data-toggle="collapse"
                                         data-target="#files-{{modelConfig.uuid}}-{{experiment.uuid}}"
                                         style="width:100%;">
@@ -407,7 +407,7 @@
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
-                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm"
+                                                <button class="btn collapsed tab-teal dropdown-spacer-sm"
                                                         data-toggle="collapse"
                                                         data-target="#files-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}"
                                                         style="width:100%;"
@@ -445,7 +445,7 @@
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-event"
+                                                        <button class="btn collapsed tab-yellow"
                                                                 data-toggle="collapse"
                                                                 data-target="#files-{{event.uuid}}-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}"
                                                                 style="width:100%;">
@@ -477,7 +477,7 @@
                         <!-- Analysis -->
                         <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, analysis)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{experiment.uuid}}" style="width:100%;">
+                                <button class="btn collapsed tab-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{experiment.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>

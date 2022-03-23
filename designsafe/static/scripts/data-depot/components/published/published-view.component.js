@@ -8,7 +8,7 @@ import { isEqual, has } from 'underscore';
 import { publish } from 'rxjs/operators';
 
 class PublishedViewCtrl {
-    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, FileListingService, FileOperationService, PublicationService, UserService){
+    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, $http, FileListingService, FileOperationService, PublicationService, UserService){
         'ngInject';
         this.$anchorScroll = $anchorScroll;
         this.$state = $state;
@@ -19,6 +19,7 @@ class PublishedViewCtrl {
         this.FileOperationService = FileOperationService;
         this.PublicationService= PublicationService;
         this.UserService = UserService;
+        this.$http = $http;
     }
 
     $onInit() {
@@ -42,7 +43,7 @@ class PublishedViewCtrl {
             ? this.publication.projectId + 'r' + this.publication.revision
             : this.publication.projectId
         );
-
+        this.openEntities = {}
         this.breadcrumbParams = {
             root: {label: this.prjBasePath, path: this.prjBasePath},
             path: this.prjBasePath,
@@ -419,6 +420,18 @@ class PublishedViewCtrl {
         }
         else {
             this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
+        }
+    }
+
+    logEntity(entity, listName) {
+        // Keep track of whether an entity is being opened (so we need to log metrics)
+        // or being closed (no action needed)
+        this.openEntities[entity.uuid] = !(this.openEntities[entity.uuid] ?? false)
+        if (this.openEntities[entity.uuid]) {
+            const projectId = this.publication.projectId;
+            const identifier = entity.doi || entity.uuid;
+            const path = `${projectId}/${listName}/${identifier}`;
+            this.$http.get(`/api/datafiles/agave/public/logentity/designsafe.storage.published/${path}`);
         }
     }
 }

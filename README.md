@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/DesignSafe-CI/portal.svg?branch=master)](https://travis-ci.org/DesignSafe-CI/portal)
 [![codecov](https://codecov.io/gh/DesignSafe-CI/portal/branch/master/graph/badge.svg)](https://codecov.io/gh/DesignSafe-CI/portal)
-[![Maintainability](https://api.codeclimate.com/v1/badges/8399b864b0d115d86450/maintainability)](https://codeclimate.com/github/DesignSafe-CI/portal/maintainability)
 
 # DesignSafe-CI Portal
 
@@ -172,6 +171,14 @@ the Django `settings.py` with `designsafe.apps.{app_name}`.
 ### CSS/Styling
 
 See the [DesignSafe Styles Reference][7] for style reference and custom CSS documentation.
+
+### Updating Python dependencies
+
+For simplicity the Dockerfile uses a `requirements.txt` exported from Poetry. To add a new dependency:
+
+1. Run `poetry add $NEW_DEPENDENCY`.
+2. Run `poetry export > requirements.txt --dev --without-hashes` in the repository root.
+3. Rebuild the dev image with `docker-compose -f conf/docker/docker-compose.yml build`
 
 ## Testing
 

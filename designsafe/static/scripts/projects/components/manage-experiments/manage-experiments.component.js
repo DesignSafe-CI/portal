@@ -104,7 +104,7 @@ class ManageExperimentsCtrl {
         this.close();
     }
 
-    getEF(str) {
+    getExpFacility(str) {
         let efs = this.ui.efs[this.data.project.value.projectType];
         let ef = _.find(efs, function(ef) {
             return ef.name === str;
@@ -112,7 +112,7 @@ class ManageExperimentsCtrl {
         return ef.label;
     }
 
-    getET(exp) {
+    getExpType(exp) {
         let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
         let et = _.find(ets, (x) => {
             return x.name === exp.value.experimentType;
@@ -120,7 +120,7 @@ class ManageExperimentsCtrl {
         return et.label;
     }
 
-    getEQ(exp) {
+    getEquipment(exp) {
         let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
         let eqt = _.find(eqts, (x) => {
             return x.name === exp.value.equipmentType;
@@ -196,9 +196,7 @@ class ManageExperimentsCtrl {
         let auths = this.configureAuthors(exp);
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
 
-        if (exp.value.procedureEnd &&
-            exp.value.procedureEnd !== 'None' &&
-            exp.value.procedureEnd !== exp.value.procedureStart) {
+        if (exp.value.procedureEnd && exp.value.procedureEnd !== exp.value.procedureStart) {
                 exp.value.procedureEnd = new Date(exp.value.procedureEnd);
         } else {
             exp.value.procedureEnd = '';
@@ -212,8 +210,10 @@ class ManageExperimentsCtrl {
             start: exp.value.procedureStart,
             end: exp.value.procedureEnd,
             title: exp.value.title,
-            facility: exp.getEF(this.data.project.value.projectType, exp.value.experimentalFacility).label,
-            type: this.getET(experiment),
+            facility: (exp.value.experimentalFacility === 'other' ?
+                exp.value.experimentalFacilityOther : this.getExpFacility(exp.value.experimentalFacility)),
+            type: (exp.value.experimentType === 'other' ?
+                exp.value.experimentTypeOther : this.getExpType(exp)),
             equipment: exp.value.equipmentType,
             equipmentOther: exp.value.equipmentTypeOther,
             equipmentList: this.equipmentTypes[exp.value.experimentalFacility],
@@ -280,7 +280,9 @@ class ManageExperimentsCtrl {
         exp.value.authors = this.editExpForm.authors;
         exp.value.guests = this.editExpForm.guests;
         exp.value.equipmentType = this.editExpForm.equipment;
-        exp.value.equipmentTypeOther = this.editExpForm.equipmentOther;
+        exp.value.equipmentTypeOther = (this.editExpForm.equipment === 'other' ?
+            this.editExpForm.equipmentOther : ''
+        )
         this.ui.savingEditExp = true;
         this.ProjectEntitiesService.update({
             data: {
@@ -333,39 +335,26 @@ class ManageExperimentsCtrl {
     saveExperiment($event) {
         $event.preventDefault();
         this.data.busy = true;
-        // This modal needs to be refactored.
+        // This modal needs some tidying up.
         // we will never be adding more than one experiment at a time.
-        // there is also no need for entity management within this modal.
         this.form.addExperiments[0].authors = this.data.users;
-        if (this.form.addExperiments[0].procedureStart && !this.form.addExperiments[0].procedureEnd) {
-            this.form.addExperiments[0].procedureEnd = this.form.addExperiments[0].procedureStart;
-        }
-        let addActions = this.form.addExperiments.filter((exp) => (exp.title && exp.experimentalFacility && exp.experimentType)).map((exp) => {
-            exp.description = exp.description || '';
-            return this.ProjectEntitiesService.create({
-                data: {
-                    uuid: this.data.project.uuid,
-                    name: 'designsafe.project.experiment',
-                    entity: exp,
-                },
-            }).then((res) => {
-                this.data.project.addEntity(res);
-                this.data.experiments = this.data.project.experiment_set;
-                this.data.users.forEach((user) => {
-                    user.authorship = false;
-                });
+        let experiment = this.form.addExperiments[0];
+        this.ProjectEntitiesService.create({
+            data: {
+                uuid: this.data.project.uuid,
+                name: 'designsafe.project.experiment',
+                entity: experiment
+            }
+        }).then((res) => {
+            this.data.project.addEntity(res);
+            this.data.experiments = this.data.project.experiment_set;
+        }).then(() => {
+            this.data.busy = false;
+            this.form.addExperiments = [{}];
+            this.data.users.forEach((user) => {
+                user.authorship = false;
             });
         });
-
-        this.$q.all(addActions).then(
-            (results) => { /* eslint-disable-line */
-                this.data.busy = false;
-                this.form.addExperiments = [{}];
-            },
-            (error) => {
-                this.data.error = error;
-            }
-        );
     }
 }
 

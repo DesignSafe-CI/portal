@@ -29,7 +29,7 @@ class ManageFieldReconCollectionsCtrl {
             if (typeof m == 'string') {
                 // if user is guest append their data
                 if(m.slice(0,5) === 'guest') {
-                    var guestData = this.project.value.guestMembers.find(
+                    let guestData = this.project.value.guestMembers.find(
                         (x) => x.user === m
                     );
                     members[i] = {
@@ -276,42 +276,28 @@ class ManageFieldReconCollectionsCtrl {
                     auth.order = i;
                 }
             });
-            usersToClean = _.uniq(usersToClean, 'name');
-        } else {
-            usersToClean = _.uniq(usersToClean, 'name');
         }
+        usersToClean = _.uniq(usersToClean, 'name');
+
         /*
-        Restore previous authorship status if any
+        It is possible that a user added to a collection may no longer be on a project
+        Remove any users on the collection that are not on the project
         */
-        if (auths.length) {
-            auths.forEach((a) => {
-                usersToClean.forEach((u, i) => {
-                    if (a.name === u.name) {
-                        usersToClean[i] = a;
-                    }
-                });
-            });
-        }
+        usersToClean = usersToClean.filter((m) => this.data.users.find((u) => u.name === m.name));
+
         /*
-        It is possible that a user added to an experiment may no longer be on a project
-        Remove any users on the experiment that are not on the project
+        Restore previous authorship status and order if any
         */
-        let rmList = [];
-        usersToClean.forEach((m) => {
-            let person = this.data.users.find((u) => u.name === m.name);
-            if (!person) {
-                rmList.push(m);
-            }
-        });
-        rmList.forEach((m) => {
-            let index = usersToClean.indexOf(m);
-            if (index > -1) {
-                usersToClean.splice(index, 1);
-            }
-        });
+        usersToClean = usersToClean.map((u) => auths.find((a) => u.name == a.name) || u);
+
+        /*
+        Reorder to accomodate blank spots in order and give order to users with no order
+        */
+        usersToClean = usersToClean.sort((a, b) => a.order - b.order);
         usersToClean.forEach((u, i) => {
             u.order = i;
         });
+
         return usersToClean;
     }
 
@@ -324,8 +310,7 @@ class ManageFieldReconCollectionsCtrl {
                 sampleApproach: this.form.sampleApproach.filter(sample => sample != null),
                 sampleSize: this.form.sampleSize || '',
                 dateStart: this.form.dateStart,
-                // dateEnd: this.form.dateEnd,
-                dateEnd: (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart),
+                dateEnd: this.form.dateEnd,
                 dataCollectors: this.form.dataCollectors,
                 location: this.form.location,
                 latitude: this.form.latitude,
@@ -359,8 +344,7 @@ class ManageFieldReconCollectionsCtrl {
                     })
                     .filter(input => input),
                 dateStart: this.form.dateStart,
-                // dateEnd: this.form.dateEnd,
-                dateEnd: (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart),
+                dateEnd: this.form.dateEnd,
                 dataCollectors: this.form.dataCollectors,
                 location: this.form.location,
                 latitude: this.form.latitude,
@@ -383,6 +367,11 @@ class ManageFieldReconCollectionsCtrl {
                 description: this.form.description,
             },
         }
+        if ('dateEnd' in collection[type]) {
+            if (isNaN(Date.parse(collection[type].dateEnd))) {
+                collection[type].dateEnd = new Date(collection[type].dateStart);
+            }
+        }
         return collection[type];
     }
 
@@ -401,7 +390,7 @@ class ManageFieldReconCollectionsCtrl {
             }
         }).then( (res) => {
             this.data.project.addEntity(res);
-            // this.data.collections = this.project.collection_set;
+            // this.data.collections = this.project.collection_set; // unsupported collection
             this.data.socialScienceCollections = this.project.socialscience_set;
             this.data.planningCollections = this.project.planning_set;
             this.data.geoscienceCollections = this.project.geoscience_set;
@@ -417,13 +406,9 @@ class ManageFieldReconCollectionsCtrl {
     editCollection(collection) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.data.editCollection = Object.assign({}, collection);
-
-        if (this.data.editCollection.value.dateEnd && this.data.editCollection.value.dateEnd !== 'None') {
-            if (this.data.editCollection.value.dateEnd === this.data.editCollection.value.dateStart) {
-                this.data.editCollection.value.dateEnd = '';
-            } else {
+        if (this.data.editCollection.value.dateEnd &&
+            this.data.editCollection.value.dateEnd !== this.data.editCollection.value.dateStart) {
                 this.data.editCollection.value.dateEnd = new Date(this.data.editCollection.value.dateEnd);
-            }
         } else {
             this.data.editCollection.value.dateEnd = '';
         }
@@ -438,7 +423,10 @@ class ManageFieldReconCollectionsCtrl {
         }
         let auths = this.configureAuthors(collection);
         if (!this.data.editCollection.value.referencedData || !this.data.editCollection.value.referencedData.length) {
-            this.data.editCollection.value.referencedData = new Array (1);
+            this.data.editCollection.value.referencedData = [{
+                title: '',
+                url: ''
+            }];
         }
 
         let formEquipment = [];
@@ -515,7 +503,7 @@ class ManageFieldReconCollectionsCtrl {
         }
         if (['designsafe.project.field_recon.social_science', 'designsafe.project.field_recon.geoscience'].includes(this.form.collectionType)) {
             this.data.editCollection.value.dateStart = this.form.dateStart;
-            this.data.editCollection.value.dateEnd = (this.form.dateEnd ? this.form.dateEnd : this.form.dateStart);
+            this.data.editCollection.value.dateEnd = this.form.dateEnd;
             this.data.editCollection.value.location = this.form.location;
             this.data.editCollection.value.longitude = this.form.longitude;
             this.data.editCollection.value.latitude = this.form.latitude;
@@ -527,6 +515,9 @@ class ManageFieldReconCollectionsCtrl {
                 return type;
             })
             .filter(input => input);
+            if (isNaN(Date.parse(this.data.editCollection.value.dateEnd))) {
+                this.data.editCollection.value.dateEnd = new Date(this.data.editCollection.value.dateStart);
+            }
         }
         if (['designsafe.project.field_recon.report'].includes(this.form.collectionType)) {
             this.data.editCollection.value.authors = this.form.dataCollectors;

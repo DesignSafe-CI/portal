@@ -59,12 +59,10 @@ def query_file_meta(system, path):
     offset = 0
 
     while True:
-        # Need to find out what the hard limit is on this... Steve T mentioned it might
-        # be related to the byte size of the response object.
-        result = sa_client.meta.listMetadata(q=json.dumps(query), limit=500, offset=offset)
+        result = sa_client.meta.listMetadata(q=json.dumps(query), limit=300, offset=offset)
         all_results = all_results + result
-        offset += 500
-        if len(result) != 500:
+        offset += 300
+        if len(result) != 300:
             break
     
     return all_results

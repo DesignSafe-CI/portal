@@ -46,7 +46,7 @@
                        data-ng-model="$ctrl.form.event"
                        class="form-control"/>
             </div>
-            <div class="expDate form-group">
+            <div class="form-group">
                 <label for="id-date-start">
                     <div style="display: flex; flex-direction: column">
                         <div>
@@ -59,47 +59,16 @@
                         </span>
                     </div>
                 </label>
-                <div style="display: flex;">
-                    <input type="text"
-                           id="id-date-start"
-                           data-uib-datepicker-popup="MM-dd-yyyy"
-                           data-ng-model="$ctrl.form.dateStart"
-                           data-is-open="isStartOpen"
-                           placeholder="mm-dd-yyyy"
-                           data-date-picker-options="dateOptions"
-                           data-date-disabled="disabled(date, mode)"
-                           data-ng-required="true"
-                           data-close-text="Close"
-                           class="form-control"
-                           style="width: 25%; display:inline-block;" />
-                    <span class="input-group-btn">
-                        <button type="button"
-                                class="btn btn-default"
-                                data-ng-click="isStartOpen = !isStartOpen">
-                            <i class="glyphicon glyphicon-calendar"></i>
-                        </button>
-                    </span>
-                    <span style="padding:6px; margin-left:30px;">
-                        &#8213;
-                    </span>
-                    <input type="text"
-                           id="id-date-end"
-                           data-uib-datepicker-popup="MM-dd-yyyy"
-                           data-ng-model="$ctrl.form.dateEnd"
-                           data-is-open="isEndOpen"
-                           placeholder="mm-dd-yyyy"
-                           data-date-picker-options="dateOptions"
-                           data-date-disabled="disabled(date, mode)"
-                           data-close-text="Close"
-                           class="form-control"
-                           style="width: 25%; display:inline-block;" />
-                    <span class="input-group-btn">
-                        <button type="button"
-                                class="btn btn-default"
-                                data-ng-click="isEndOpen = !isEndOpen">
-                            <i class="glyphicon glyphicon-calendar"></i>
-                        </button>
-                    </span>
+                <div style="display:flex; width:50%;">
+                    <input  class="form-control"
+                            type="date"
+                            ng-model="$ctrl.form.dateStart"
+                            ng-required="true">
+                    <span style="padding:6px;">&#8213;</span>
+                    <input  class="form-control"
+                            type="date"
+                            ng-model="$ctrl.form.dateEnd"
+                            ng-required="false">
                 </div>
             </div>
             <div class="expAuthors form-group">
@@ -219,7 +188,7 @@
         <div class="dropdown">
             <div data-ng-repeat="mission in $ctrl.data.missions">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-experiment" data-toggle="collapse"
+                    <button class="btn collapsed tab-gray" data-toggle="collapse"
                             data-target="#files-{{mission.uuid}}" style="width: 100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Mission | <strong>{{mission.value.title}}</strong></span>
@@ -258,7 +227,7 @@
                                 <div class="entity-meta-label">Date of Mission</div>
                                 <div class="entity-meta-data">
                                     <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                    <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.calue.dateStart">
+                                    <span ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.value.dateStart">
                                         &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
                                 </div>

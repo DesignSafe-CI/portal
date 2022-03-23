@@ -238,46 +238,15 @@
                             </span>
                         </label>
                         <div style="display:flex;">
-                            <span class="input-group" style="width:45%;">
-                            <input  class="project-form-input"
-                                    type="text" 
-                                    uib-datepicker-popup="MM-dd-yyyy"
+                            <input  class="form-control"
+                                    type="date"
                                     ng-model="$ctrl.form.nhEventStart"
-                                    is-open="isStartOpen"
-                                    placeholder="mm-dd-yyyy"
-                                    autocomplete="chrome-off"
-                                    datepicker-options="dateOptions"
-                                    date-disabled="disabled(date, mode)"
-                                    ng-required="true"
-                                    close-text="Close"
-                                    class="form-control">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
-                                <i class="glyphicon glyphicon-calendar"></i>
-                                </button>
-                            </span>
-                            </span>
-                            <span style="padding:6px;">
-                            &#8213;
-                            </span>
-                            <span class="input-group" style="width:45%;">
-                            <input  type="text"
-                                    uib-datepicker-popup="MM-dd-yyyy"
+                                    ng-required="true">
+                            <span style="padding:6px;">&#8213;</span>
+                            <input  class="form-control"
+                                    type="date"
                                     ng-model="$ctrl.form.nhEventEnd"
-                                    is-open="isEndOpen"
-                                    placeholder="mm-dd-yyyy"
-                                    autocomplete="chrome-off"
-                                    datepicker-options="dateOptions"
-                                    date-disabled="disabled(date, mode)"
-                                    ng-required="false"
-                                    close-text="Close"
-                                    class="form-control">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
-                                <i class="glyphicon glyphicon-calendar"></i>
-                                </button>
-                            </span>
-                            </span>
+                                    ng-required="false">
                         </div>
                     </div>
                 </div>

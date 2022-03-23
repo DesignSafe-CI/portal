@@ -23,7 +23,7 @@
         </div>
       </div>
       <!-- Experiment Date -->
-      <div class="expDate form-group">
+      <div class="form-group">
         <label>
           <span class="pull-left" style="margin-right: 5px">Dates of Experiment</span>
           <span class="label label-danger">Required</span>
@@ -31,46 +31,16 @@
         <p>
           If you only want to enter a single date, fill in the first field.
         </p>
-        <div style="display:flex;">
-          <span class="input-group" style="width:25%;">
-            <input  type="text" 
-                    uib-datepicker-popup="MM-dd-yyyy"
-                    ng-model="$ctrl.form.addExperiments[0].procedureStart"
-                    is-open="isStartOpen"
-                    placeholder="mm-dd-yyyy"
-                    autocomplete="chrome-off"
-                    datepicker-options="dateOptions"
-                    date-disabled="disabled(date, mode)"
-                    ng-required="true"
-                    close-text="Close"
-                    class="form-control">
-            <span class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
-                <i class="glyphicon glyphicon-calendar"></i>
-              </button>
-            </span>
-          </span>
-          <span style="padding:6px;">
-            &#8213;
-          </span>
-          <span class="input-group" style="width:25%;">
-            <input  type="text"
-                    uib-datepicker-popup="MM-dd-yyyy"
-                    ng-model="$ctrl.form.addExperiments[0].procedureEnd"
-                    is-open="isEndOpen"
-                    placeholder="mm-dd-yyyy"
-                    autocomplete="chrome-off"
-                    datepicker-options="dateOptions"
-                    date-disabled="disabled(date, mode)"
-                    ng-required="false"
-                    close-text="Close"
-                    class="form-control">
-            <span class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
-                <i class="glyphicon glyphicon-calendar"></i>
-              </button>
-            </span>
-          </span>
+        <div class="form-group" style="display:flex; width:50%;">
+          <input  class="form-control"
+                  type="date" 
+                  ng-model="$ctrl.form.addExperiments[0].procedureStart"
+                  ng-required="true">
+          <span style="padding:6px;">&#8213;</span>
+          <input  class="form-control"
+                  type="date"
+                  ng-model="$ctrl.form.addExperiments[0].procedureEnd"
+                  ng-required="false">
         </div>
       </div>
       <!-- Experimental Facility -->
@@ -80,16 +50,15 @@
           <span class="label label-danger">Required</span>
         </label>
         <div>
-          <select ng-options="ef.name as ef.label for ef in $ctrl.ui.efs[$ctrl.data.project.value.projectType]"
-                  style="background:white; width:100%"
-                  ng-model="$ctrl.form.addExperiments[0].experimentalFacility"
+          <select class="form-control"
                   id="add-exp-facility"
-                  ng-required="true"
-                  class="form-control">
+                  ng-options="ef.name as ef.label for ef in $ctrl.ui.efs[$ctrl.data.project.value.projectType]"
+                  ng-model="$ctrl.form.addExperiments[0].experimentalFacility"
+                  ng-required="true">
               <option value="">-- Select an Experimental Facility --</option>
           </select>
-          <input  type="text"
-                  style="background:white; width:100%"
+          <input  class="form-control"
+                  type="text"
                   id="add-exp-facility-other"
                   placeholder="Custom Experimental Facility"
                   ng-model="$ctrl.form.addExperiments[0].experimentalFacilityOther"
@@ -104,16 +73,15 @@
             <span class="label label-danger">Required</span>
           </label>
         <div>
-          <select ng-options="type.name as type.label for type in $ctrl.ui.experimentTypes[$ctrl.form.addExperiments[0].experimentalFacility]"
-                  style="background:white; width:100%"
-                  ng-model="$ctrl.form.addExperiments[0].experimentType"
+          <select class="form-control"
                   id="add-exp-type"
-                  ng-required="true"
-                  class="form-control">
+                  ng-options="type.name as type.label for type in $ctrl.ui.experimentTypes[$ctrl.form.addExperiments[0].experimentalFacility]"
+                  ng-model="$ctrl.form.addExperiments[0].experimentType"
+                  ng-required="true">
               <option value="">-- Select an Experiment Type --</option>
           </select>
-          <input  type="text"
-                  style="background:white; width:100%"
+          <input  class="form-control"
+                  type="text"
                   id="add-exp-facility-other"
                   placeholder="Custom Experiment Type"
                   ng-model="$ctrl.form.addExperiments[0].experimentTypeOther"
@@ -128,16 +96,15 @@
             <span class="label label-danger">Required</span>
           </label>
         <div>
-          <select ng-options="et.name as et.label for et in $ctrl.ui.equipmentTypes[$ctrl.form.addExperiments[0].experimentalFacility]"
-                  style="background:white; width:100%"
-                  ng-model="$ctrl.form.addExperiments[0].equipmentType"
+          <select class="form-control"
                   id="id-equipment-type"
-                  ng-required="true"
-                  class="form-control">
+                  ng-options="et.name as et.label for et in $ctrl.ui.equipmentTypes[$ctrl.form.addExperiments[0].experimentalFacility]"
+                  ng-model="$ctrl.form.addExperiments[0].equipmentType"
+                  ng-required="true">
               <option value="">-- Select an Equipment Type --</option>
           </select>
-          <input  type="text"
-                  style="background:white; width:100%"
+          <input  class="form-control"
+                  type="text"
                   id="add-exp-facility-other"
                   placeholder="Custom Equipment Type"
                   ng-model="$ctrl.form.addExperiments[0].equipmentTypeOther"
@@ -197,7 +164,7 @@
           </div>
         </div>
         <!-- Edit Experiment Date -->
-        <div class="expDate form-group">
+        <div class="form-group">
           <label>
             <span class="pull-left" style="margin-right: 5px">Dates of Experiment</span>
             <span class="label label-danger">Required</span>
@@ -205,46 +172,16 @@
           <p>
             Please confirm your experiment dates for each update. If you only want to enter a single date, fill in the first field.
           </p>
-          <div style="display:flex;">
-            <span class="input-group" style="width:25%;">
-              <input  type="text"
-                      uib-datepicker-popup="MM-dd-yyyy"
-                      ng-model="$ctrl.editExpForm.start"
-                      is-open="isStartOpen"
-                      placeholder="{{$ctrl.editExpForm.start | date:'MM-dd-yyyy'}}"
-                      autocomplete="chrome-off"
-                      datepicker-options="dateOptions"
-                      date-disabled="disabled(date, mode)"
-                      ng-required="true"
-                      close-text="Close"
-                      class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
-                  <i class="glyphicon glyphicon-calendar"></i>
-                </button>
-              </span>
-            </span>
-            <span style="padding:6px;">
-              &#8213;
-            </span>
-            <span class="input-group" style="width:25%;">
-              <input  type="text"
-                      uib-datepicker-popup="MM-dd-yyyy"
-                      ng-model="$ctrl.editExpForm.end"
-                      is-open="isEndOpen"
-                      placeholder="{{$ctrl.editExpForm.end ? ($ctrl.editExpForm.end | date:'MM-dd-yyyy') : 'mm-dd-yyyy'}}"
-                      autocomplete="chrome-off"
-                      datepicker-options="dateOptions"
-                      date-disabled="disabled(date, mode)"
-                      ng-required="false"
-                      close-text="Close"
-                      class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
-                  <i class="glyphicon glyphicon-calendar"></i>
-                </button>
-              </span>
-            </span>
+          <div class="form-group" style="display:flex; width:50%;">
+            <input  class="form-control"
+                    type="date" 
+                    ng-model="$ctrl.editExpForm.start"
+                    ng-required="true">
+            <span style="padding:6px;">&#8213;</span>
+            <input  class="form-control"
+                    type="date"
+                    ng-model="$ctrl.editExpForm.end"
+                    ng-required="false">
           </div>
         </div>
         <!-- Edit Experimental Facility -->
@@ -254,11 +191,7 @@
             <span class="label label-danger">Required</span>
           </label>
           <div>
-            <select style="width:100%"
-                    class="grayed-out"
-                    id="edit-exp-facility"
-                    disabled
-                    class="form-control">
+            <select class="form-control grayed-out" id="edit-exp-facility" disabled>
               <option value="$ctrl.editExpForm.facility">{{ $ctrl.editExpForm.facility }}</option>
             </select>
           </div>
@@ -270,11 +203,7 @@
               <span class="label label-danger">Required</span>
             </label>
           <div>
-            <select style=" width:100%"
-                    class="grayed-out"
-                    id="edit-exp-type"
-                    disabled
-                    class="form-control">
+            <select class="form-control grayed-out" id="edit-exp-type" disabled>
               <option value="$ctrl.editExpForm.type">{{ $ctrl.editExpForm.type }}</option>
             </select>
           </div>
@@ -286,17 +215,17 @@
               <span class="label label-danger">Required</span>
             </label>
           <div>
-            <select ng-options="equip.name as equip.label for equip in $ctrl.editExpForm.equipmentList"
-                    ng-model="$ctrl.editExpForm.equipment"
-                    style="background:white; width:100%"
+            <select class="form-control"
                     id="id-equipment-type"
+                    ng-options="equip.name as equip.label for equip in $ctrl.editExpForm.equipmentList"
+                    ng-model="$ctrl.editExpForm.equipment"
                     class="form-control"
             >
             </select>
-            <input type="text"
-                   style="background:white; width:100%"
+            <input class="form-control"
+                   type="text"
                    id="id-equipment-type-other"
-                   placeholder="$ctrl.editExpForm.equipmentOther"
+                   placeholder="{{$ctrl.editExpForm.equipmentOther || 'Custom Equipment Type'}}"
                    ng-model="$ctrl.editExpForm.equipmentOther"
                    ng-if="$ctrl.editExpForm.equipment == 'other'"
                    ng-required="true"
@@ -393,7 +322,7 @@
     <div class="dropdown">
       <div ng-repeat="experiment in $ctrl.data.experiments">
         <div class="dropdown dropdown-spacer-sm">
-          <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{experiment.uuid}}" style="width:100%;">
+          <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{experiment.uuid}}" style="width:100%;">
             <div class="collapse-tab">
               <span class="collapse-tab-content-left">Experiment | <strong>{{experiment.value.title}}</strong></span>
               <span class="collapse-tab-content-right curation-chevron"></span>
@@ -404,7 +333,7 @@
               <div class="entity-meta-field">
                 <div class="entity-meta-label">Experiment Type</div>
                 <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)"
-                        class="entity-meta-data-cap">{{ $ctrl.getET(experiment) }}</span>
+                        class="entity-meta-data-cap">{{ $ctrl.getExpType(experiment) }}</span>
                 <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)"
                         class="entity-meta-data-cap">{{ experiment.value.experimentTypeOther }}</span>
               </div>
@@ -417,14 +346,14 @@
               <div class="entity-meta-field">
                 <div class="entity-meta-label">Experimental Facility</div>
                 <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)"
-                        class="entity-meta-data-cap">{{ $ctrl.getEF(experiment.value.experimentalFacility) }}</span>
+                        class="entity-meta-data-cap">{{ $ctrl.getExpFacility(experiment.value.experimentalFacility) }}</span>
                 <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)"
                         class="entity-meta-data-cap">{{ experiment.value.experimentalFacilityOther }}</span>
               </div>
               <div class="entity-meta-field">
                 <div class="entity-meta-label">Equipment Type</div>
                 <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)"
-                        class="entity-meta-data-cap">{{ $ctrl.getEQ(experiment) }}</span>
+                        class="entity-meta-data-cap">{{ $ctrl.getEquipment(experiment) }}</span>
                 <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)"
                         class="entity-meta-data-cap">{{ experiment.value.equipmentTypeOther }}</span>  
               </div>
