@@ -222,7 +222,7 @@
             <!-- Reports -->
             <div ng-if="mission.name == 'designsafe.project.field_recon.report' && !$ctrl.ui.loading">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
-                    <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
+                    <button ng-click="$ctrl.logEntity(mission, 'reportsList')" class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
                         style="width:100%;">
                         <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
@@ -332,7 +332,7 @@
             <!-- Missions -->
             <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading && mission.name == 'designsafe.project.field_recon.mission'">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
-                    <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
+                    <button ng-click="$ctrl.logEntity(mission, 'missionsList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
                         <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
                                 <td class="tab-cell">

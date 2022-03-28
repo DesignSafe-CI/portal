@@ -222,7 +222,7 @@
     <!-- Experiments -->
     <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
-            <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
+            <button ng-click="$ctrl.logEntity(experiment, 'experimentsList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                 <table style="width:100%" id="anchor-{{ experiment.uuid }}">
                     <tr>
                         <td class="tab-cell">
@@ -351,6 +351,7 @@
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                                 <button
+                                    ng-click="$ctrl.logEntity(report, 'reportsList')"
                                     class="btn collapsed tab-gray"
                                     data-toggle="collapse"
                                     data-target="#files-{{report.uuid}}-{{experiment.uuid}}"

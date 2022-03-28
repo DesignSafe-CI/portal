@@ -450,6 +450,13 @@ def generate_licenses(pub):
             "description": pub.project.value.description,
             "license": pub.licenses.works
         })
+    if pub.licenses.works == "Creative Commons Attribution":
+        license_details.append({
+            "@type": "CreativeWork",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "description": pub.project.value.description,
+            "license": pub.licenses.works
+        })
     if pub.licenses.works == "Creative Commons Public Domain Dedication":
         license_details.append({
             "@type": "CreativeWork",
