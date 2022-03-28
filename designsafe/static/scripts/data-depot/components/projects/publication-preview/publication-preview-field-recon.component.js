@@ -3,7 +3,7 @@ import PublicationPopupTemplate from './publication-popup.html';
 
 class PublicationPreviewFieldReconCtrl {
 
-    constructor($scope, $stateParams, ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
+    constructor($scope, $stateParams, ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q, UserService) {
         'ngInject';
         this.$scope = $scope;
         this.ProjectEntitiesService = ProjectEntitiesService;
@@ -15,6 +15,15 @@ class PublicationPreviewFieldReconCtrl {
         this.$state = $state;
         this.$stateParams = $stateParams
         this.$q = $q;
+        this.UserService = UserService;
+        this.loadingUserData = {
+            pi: true,
+            coPis: true,
+        };
+        this.authorData = {
+            pi: {},
+            coPis: null,
+        };
     }
 
     $onInit() {
@@ -74,6 +83,32 @@ class PublicationPreviewFieldReconCtrl {
                 }
             });
 
+            const { pi } = this.browser.project.value;
+            this.UserService.get(pi).then((res) => {
+                this.authorData.pi = {
+                    fname: res.first_name,
+                    lname: res.last_name,
+                    email: res.email,
+                    name: res.username,
+                    inst: res.profile.institution,
+                };
+                this.loadingUserData.pi = false;
+            });
+            if (this.browser.project.value.coPis) {
+                this.authorData.coPis = new Array(this.browser.project.value.coPis.length);
+                this.browser.project.value.coPis.forEach((coPi, idx) => {
+                    this.UserService.get(coPi).then((res) => {
+                        this.authorData.coPis[idx] = {
+                            fname: res.first_name,
+                            lname: res.last_name,
+                            email: res.email,
+                            name: res.username,
+                            inst: res.profile.institution,
+                        };
+                        if (idx === this.browser.project.value.coPis.length - 1) this.loadingUserData.coPis = false;
+                    });
+                });
+            }
 
             this.browser.listing = this.FileListingService.listings.main.listing;
             this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
