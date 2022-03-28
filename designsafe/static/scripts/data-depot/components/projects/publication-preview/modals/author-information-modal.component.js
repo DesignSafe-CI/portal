@@ -8,6 +8,7 @@ class AuthorInformationModalCtrl {
 
     $onInit() {
         this.author = this.resolve.author;
+        console.log(this.author)
         this.first = this.author.fname;
         this.last = this.author.lname;
         this.email = this.author.email;
@@ -22,6 +23,12 @@ class AuthorInformationModalCtrl {
             .then((res) => {
                 if (res.orcid_id) {
                     this.orcid = res.orcid_id;
+                }
+                if (!this.email) {
+                    this.email = res.email;
+                }
+                if (!this.institution) {
+                    this.institution = res.profile.institution;
                 }
             })
             .finally(() => {

@@ -19,6 +19,14 @@ class PublishedViewCtrl {
         this.FileOperationService = FileOperationService;
         this.PublicationService= PublicationService;
         this.UserService = UserService;
+        this.loadingUserData = {
+            pi: true,
+            coPis: true,
+        };
+        this.authorData = {
+            pi: {},
+            coPis: null,
+        };
         this.$http = $http;
     }
 
@@ -36,6 +44,33 @@ class PublishedViewCtrl {
         this.browser.publication = this.publication;
         this.browser.project = this.publication.project;
         this.project = this.publication.project;
+        const { pi } = this.project.value;
+        this.UserService.get(pi).then((res) => {
+            this.authorData.pi = {
+                fname: res.first_name,
+                lname: res.last_name,
+                email: res.email,
+                name: res.username,
+                inst: res.profile.institution,
+            };
+            this.loadingUserData.pi = false;
+        });
+        if (this.project.value.coPis) {
+            this.authorData.coPis = new Array(this.project.value.coPis.length);
+            this.project.value.coPis.forEach((coPi, idx) => {
+                this.UserService.get(coPi).then((res) => {
+                    this.authorData.coPis[idx] = {
+                        fname: res.first_name,
+                        lname: res.last_name,
+                        email: res.email,
+                        name: res.username,
+                        inst: res.profile.institution,
+                    };
+                    if (idx === this.project.value.coPis.length - 1) this.loadingUserData.coPis = false;
+                });
+            });
+        }
+
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.versions = this.prepVersions(this.publication);
         this.selectedVersion = this.publication.revision || 'Original';
