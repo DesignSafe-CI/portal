@@ -20,13 +20,19 @@
             <tr class="prj-row">
                 <td>PI</td>
                 <td class="prj-data">
-                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
+                    <span ng-if="!$ctrl.loadingUserData.pi">
+                        <a href="javascript:;" ng-click="$ctrl.showAuthor($ctrl.authorData.pi)">
+                            {{ $ctrl.authorData.pi.lname }}, {{ $ctrl.authorData.pi.fname }}
+                        </a>
+                    </span>
                 </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.coPis.length">
                 <td>Co-PIs</td>
                 <td class="prj-data">
-                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
+                    <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
+                        <a href="javascript:;" ng-click="$ctrl.showAuthor(coPi)">{{ coPi.lname }}, {{ coPi.fname }}</a><span ng-if="!$last">, </span>
+                    </span>
                 </td>
             </tr>
             <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.project.value.dois.length">
@@ -218,7 +224,7 @@
     </div>
     <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="simulation in $ctrl.browser.project.simulation_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{simulation.uuid}}">
-            <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
+            <button ng-click="$ctrl.logEntity(simulation, 'simulationList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
                 <table style="width:100%" id="anchor-{{ simulation.uuid }}">
                     <tr>
                         <td class="tab-cell">
@@ -321,7 +327,7 @@
                             ng-if="$ctrl.matchingGroup(simulation, report)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{simulation.uuid}}" style="width:100%;">
+                                <button ng-click="$ctrl.logEntity(report, 'reportsList')" class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{simulation.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>
