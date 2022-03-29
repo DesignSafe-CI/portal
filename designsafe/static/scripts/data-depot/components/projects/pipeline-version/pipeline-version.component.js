@@ -1,5 +1,5 @@
-import VersionExperimentSelectionTemplate from './version-experimental-selection.template.html';
-import VersionExperimentCitationTemplate from './version-experimental-citation.template.html';
+import VersionExperimentSelectionTemplate from './version-experiment-selection.template.html';
+import VersionExperimentCitationTemplate from './version-experiment-citation.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineVersionCtrl {
@@ -7,22 +7,16 @@ class PipelineVersionCtrl {
         ProjectEntitiesService,
         FileOperationService,
         FileListingService,
-        PublicationService,
         ProjectService,
-        $uibModal,
         $state,
-        $http,
         $q
     ) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.FileOperationService = FileOperationService;
         this.FileListingService = FileListingService;
-        this.PublicationService = PublicationService;
         this.ProjectService = ProjectService;
-        this.$uibModal = $uibModal
         this.$state = $state;
-        this.$http = $http;
         this.$q = $q;
     }
 
@@ -45,6 +39,7 @@ class PipelineVersionCtrl {
         this.publication = this.ProjectService.resolveParams.publication;
         this.selectedListing = this.ProjectService.resolveParams.selectedListing;
         this.revisionText = '';
+        this.selectedEnts = [];
         if (!this.publication) {
             this.goStart();
         } else {
@@ -60,12 +55,19 @@ class PipelineVersionCtrl {
                     this.ui.selectionComp = 'projects.versionSelection'
                     this.ui.citationComp = 'projects.versionCitation'
                     this.matchingGroupKey = 'experiments'
+                    this.subEntities = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
                 } else {
                     this.goStart();
                 }
-                return this.FileListingService.abstractListing(entities, project.uuid);
-            }).then((_) => {
-                this.ui.loading = false;
+                this.FileListingService.abstractListing(entities, project.uuid).then((_) => {
+                    // autoselect the published entities from the project
+                    entities.forEach((ent) => {
+                        if ('dois' in ent.value && ent.value.dois.length) {
+                            this.selectEntity(ent);
+                        }
+                    })
+                    this.ui.loading = false;
+                })
             });
         }
     }
@@ -124,29 +126,54 @@ class PipelineVersionCtrl {
         return false;
     }
 
-    // saveAuthors() {
-    //     this.ui.confirmed = true;
-    // }
+    gatherSelections() {
+        this.selectedListings = {};
+        Object.keys(this.FileListingService.listings).forEach((key) => {
+            if (this.FileListingService.listings[key].selectedForPublication) {
+                this.selectedListings[key] = { ...this.FileListingService.listings[key] };
+            } else {
+                delete this.selectedListings[key];
+            }
+        });
+    }
 
-    // saveSelections() {
-    //     let selectedFiles = this.FileListingService.getSelectedFiles('main')
-    //     if (!selectedFiles.length) {
-    //         return;
-    //     }
-    //     this.selectedListing = {
-    //         ...this.FileListingService.listings.main,
-    //         listing: selectedFiles,
-    //     };
-    //     this.FileListingService.selectedListing = this.selectedListing;
-    // }
+    selectEntity(ent) {
+        let uuidsToSelect = [];
+        if (this.selectedEnts.find((selEnt) => selEnt.uuid === ent.uuid)) {
+            this.selectedEnts = this.selectedEnts.filter((selEnt) => selEnt.uuid !== ent.uuid);
+        } else {
+            this.selectedEnts.push(ent);
+        }
+        this.selectedEnts.forEach((sEnt) => {
+            uuidsToSelect.push(sEnt.uuid);
+        });
 
-    // undoSelections() {
-    //     this.selectedListing = null;
-    // }
+        // iterate over subEntities and select files related to primary entity...
+        if (ent.name.endsWith('field_recon.report')) {
+            if (uuidsToSelect.includes(ent.uuid)) {
+                this.FileListingService.setPublicationSelection(ent.uuid, true);
+            } else {
+                this.FileListingService.setPublicationSelection(ent.uuid, false);
+            }
+        } else {
+            this.subEntities.forEach((subEntSet) => {
+                if (this.project[subEntSet]) {
+                    this.project[subEntSet].forEach((subEnt) => {
+                        if (subEnt.associationIds.some((uuid) => uuidsToSelect.includes(uuid))) {
+                            this.FileListingService.setPublicationSelection(subEnt.uuid, true);
+                        } else {
+                            this.FileListingService.setPublicationSelection(subEnt.uuid, false);
+                        }
+                    });
+                }
+            });
+        }
+    }
 
     navigate(destCompName) {
         let params = {
             projectId: this.projectId,
+            project: this.project,
             publication: this.publication,
             selectedListing: this.selectedListing
         }
@@ -158,15 +185,21 @@ class PipelineVersionCtrl {
     }
     
     goSelection() {
-        this.navigate(this.ui.selectionComp);
-    }
-
-    goCitation() {
         this.navigate('projects.versionExperimentSelection');
     }
 
+    goCitation() {
+        this.gatherSelections();
+        this.missing = this.ProjectService.checkSelectedFiles(
+            this.project,
+            this.selectedEnts,
+            this.selectedListings
+        );
+        this.navigate('projects.versionExperimentCitation');
+    }
+
     goChanges() {
-        this.navigate('projects.versionExperimentChanges');
+        this.navigate('projects.versionChanges');
     }
 
     goProject() {

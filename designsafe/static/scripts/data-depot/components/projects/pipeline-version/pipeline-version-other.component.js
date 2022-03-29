@@ -6,18 +6,14 @@ class PipelineVersionOtherCtrl {
         FileOperationService,
         FileListingService,
         ProjectService,
-        $uibModal,
         $state,
-        $http,
         $q
     ) {
         'ngInject';
         this.FileOperationService = FileOperationService;
         this.FileListingService = FileListingService;
         this.ProjectService = ProjectService;
-        this.$uibModal = $uibModal
         this.$state = $state;
-        this.$http = $http;
         this.$q = $q;
     }
 

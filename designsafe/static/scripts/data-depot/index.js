@@ -339,7 +339,7 @@ function config(
             }
         })
         .state('projects.versionOtherSelection', {
-            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            url: '/projects/{projectId}/curation/version-other/{filePath:any}',
             component: 'versionOtherSelection',
             params: {
                 filePath: '',
@@ -356,7 +356,7 @@ function config(
             }
         })
         .state('projects.versionOtherCitation', {
-            url: '/projects/{projectId}/curation/citation',
+            url: '/projects/{projectId}/curation/citation-other',
             component: 'versionOtherCitation',
             params: {
                 publication: null,
