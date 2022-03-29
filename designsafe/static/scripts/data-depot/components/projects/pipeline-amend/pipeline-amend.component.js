@@ -1,7 +1,6 @@
-import AmendOther from './amend-other.template.html';
-import AmendExperimental from './amend-experimental.template.html';
+import AmendOtherTemplate from './amend-other.template.html';
+import AmendExperimentTemplate from './amend-experimental.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
-import { has } from 'underscore';
 
 class PipelineAmendCtrl {
     constructor(
@@ -137,7 +136,7 @@ class PipelineAmendCtrl {
     }
 
     sortAuthors(authors) {
-        if (!has(authors[0], 'order')) return authors;
+        if (authors.length && 'order' in authors[0]) return authors;
         const sortedAuthors = authors.sort((a, b) => a.order - b.order);
         return sortedAuthors;
     }
@@ -182,7 +181,7 @@ class PipelineAmendCtrl {
 }
 
 export const AmendOtherComponent = {
-    template: AmendOther,
+    template: AmendOtherTemplate,
     controller: PipelineAmendCtrl,
     controllerAs: '$ctrl',
     bindings: {
@@ -192,8 +191,8 @@ export const AmendOtherComponent = {
     },
 };
 
-export const AmendExperimentalComponent = {
-    template: AmendExperimental,
+export const AmendExperimentComponent = {
+    template: AmendExperimentTemplate,
     controller: PipelineAmendCtrl,
     controllerAs: '$ctrl',
     bindings: {

@@ -1,8 +1,6 @@
-import VersionOtherSelection from './version-other-selection.template.html';
-import VersionOtherCitation from './version-other-citation.template.html';
-import VersionExperimentalSelection from './version-experimental-selection.template.html';
-import VersionExperimentalCitation from './version-experimental-citation.template.html';
-import VersionChanges from './version-changes.template.html';
+import VersionExperimentSelectionTemplate from './version-experimental-selection.template.html';
+import VersionExperimentCitationTemplate from './version-experimental-citation.template.html';
+import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineVersionCtrl {
     constructor(
@@ -37,7 +35,10 @@ class PipelineVersionCtrl {
             submitted: false,
             confirmed: false,
             selectionComp: '',
-            citationComp: ''
+            citationComp: '',
+            efs: experimentalData.experimentalFacility,
+            equipmentTypes: experimentalData.equipmentTypes,
+            experimentTypes: experimentalData.experimentTypes
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
@@ -50,37 +51,20 @@ class PipelineVersionCtrl {
             this.$q.all([
                 this.ProjectService.get({ uuid: this.projectId }),
                 this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }),
-                this.FileListingService.browse({
-                    section: 'main',
-                    api: 'agave',
-                    scheme: 'private',
-                    system: 'project-' + this.projectId,
-                    path: this.filePath,
-                }),
-            ]).then(([project, entities, listing]) => {
+            ])
+            .then(([project, entities]) => {
                 this.project = project;
                 this.project.appendEntitiesRel(entities);
-                this.listing = listing;
-                this.pubData = {
-                    project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
-                    license: this.publication.licenses
-                };
-                switch(this.project.value.projectType) {
-                    case 'experimental': {
-                        this.authors = {}
-                        this.project.experiment_set.forEach((exp) => {
-                            this.authors[exp.uuid] = exp.value.authors
-                        });
-                        this.ui.selectionComp = 'projects.versionExperimentalSelection'
-                        this.ui.citationComp = 'projects.versionExperimentalCitation'
-                        break;
-                    }
-                    case 'other': {
-                        this.authors = this.publication.project.value.teamOrder
-                        this.ui.selectionComp = 'projects.versionOtherSelection'
-                        this.ui.citationComp = 'projects.versionOtherCitation'
-                    }
+                const prjType = this.project.value.projectType;
+                if (prjType === 'experimental') {
+                    this.ui.selectionComp = 'projects.versionSelection'
+                    this.ui.citationComp = 'projects.versionCitation'
+                    this.matchingGroupKey = 'experiments'
+                } else {
+                    this.goStart();
                 }
+                return this.FileListingService.abstractListing(entities, project.uuid);
+            }).then((_) => {
                 this.ui.loading = false;
             });
         }
@@ -95,56 +79,70 @@ class PipelineVersionCtrl {
         }
     }
 
-    submitVersion() {
-        this.ui.warning = false;
-        if (this.revisionText.length < 10) {
-            return this.ui.warning = true;
-        }
-        this.ui.loading = true;
-        let filePaths = (this.selectedListing
-            ? this.selectedListing.listing.map((file) => file.path)
-            : null);
-        this.$http.post(
-            '/api/projects/publication/',
-            {
-                publication: this.pubData,
-                mainEntityUuids: this.mainEntityUuids,
-                selectedFiles: filePaths,
-                revision: true,
-                revisionText: this.revisionText,
-                revisionAuthors: this.authors,
-                status: 'publishing'
-            }
-        ).then((resp) => {
-            this.ui.success = true;
-            this.ui.submitted = true;
-            this.ui.loading = false;
-        }, (error) => {
-            this.ui.error = true;
-            this.ui.submitted = true;
-            this.ui.loading = false;
+    getEF(str) {
+        let efs = this.ui.efs[this.project.value.projectType];
+        let ef = efs.find((ef) => {
+            return ef.name === str;
         });
+        return ef.label;
     }
 
-    saveAuthors() {
-        this.ui.confirmed = true;
+    getET(exp) {
+        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+        let et = ets.find((x) => {
+            return x.name === exp.value.experimentType;
+        });
+        return et.label;
     }
 
-    saveSelections() {
-        let selectedFiles = this.FileListingService.getSelectedFiles('main')
-        if (!selectedFiles.length) {
-            return;
+    getEQ(exp) {
+        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+        let eqt = eqts.find((x) => {
+            return x.name === exp.value.equipmentType;
+        });
+        return eqt.label;
+    }
+
+    matchingGroup(primaryEnt, subEnt) {
+        if (!primaryEnt) {
+            // if the sub entity is related to the project and not a primary entity
+            if (!subEnt.value[this.matchingGroupKey]) {
+                return;
+            } else if (
+                subEnt.associationIds.indexOf(this.projectId) > -1 &&
+                !subEnt.value[this.matchingGroupKey].length
+            ) {
+                return true;
+            }
+            return false;
         }
-        this.selectedListing = {
-            ...this.FileListingService.listings.main,
-            listing: selectedFiles,
-        };
-        this.FileListingService.selectedListing = this.selectedListing;
+        // if the sub entity is related to the primary entity
+        // match appropriate data to corresponding primary entity
+        if (subEnt.associationIds.indexOf(primaryEnt.uuid) > -1) {
+            return true;
+        }
+        return false;
     }
 
-    undoSelections() {
-        this.selectedListing = null;
-    }
+    // saveAuthors() {
+    //     this.ui.confirmed = true;
+    // }
+
+    // saveSelections() {
+    //     let selectedFiles = this.FileListingService.getSelectedFiles('main')
+    //     if (!selectedFiles.length) {
+    //         return;
+    //     }
+    //     this.selectedListing = {
+    //         ...this.FileListingService.listings.main,
+    //         listing: selectedFiles,
+    //     };
+    //     this.FileListingService.selectedListing = this.selectedListing;
+    // }
+
+    // undoSelections() {
+    //     this.selectedListing = null;
+    // }
 
     navigate(destCompName) {
         let params = {
@@ -164,11 +162,11 @@ class PipelineVersionCtrl {
     }
 
     goCitation() {
-        this.navigate(this.ui.citationComp);
+        this.navigate('projects.versionExperimentSelection');
     }
 
     goChanges() {
-        this.navigate('projects.versionChanges');
+        this.navigate('projects.versionExperimentChanges');
     }
 
     goProject() {
@@ -176,8 +174,9 @@ class PipelineVersionCtrl {
     }
 }
 
-export const VersionOtherSelectionComponent = {
-    template: VersionOtherSelection,
+
+export const VersionExperimentSelectionComponent = {
+    template: VersionExperimentSelectionTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
@@ -187,41 +186,8 @@ export const VersionOtherSelectionComponent = {
     },
 };
 
-export const VersionOtherCitationComponent = {
-    template: VersionOtherCitation,
-    controller: PipelineVersionCtrl,
-    controllerAs: '$ctrl',
-    bindings: {
-        resolve: '<',
-        close: '&',
-        dismiss: '&'
-    },
-};
-
-export const VersionExperimentalSelectionComponent = {
-    template: VersionExperimentalSelection,
-    controller: PipelineVersionCtrl,
-    controllerAs: '$ctrl',
-    bindings: {
-        resolve: '<',
-        close: '&',
-        dismiss: '&'
-    },
-};
-
-export const VersionExperimentalCitationComponent = {
-    template: VersionExperimentalCitation,
-    controller: PipelineVersionCtrl,
-    controllerAs: '$ctrl',
-    bindings: {
-        resolve: '<',
-        close: '&',
-        dismiss: '&'
-    },
-};
-
-export const VersionChangesComponent = {
-    template: VersionChanges,
+export const VersionExperimentCitationComponent = {
+    template: VersionExperimentCitationTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {

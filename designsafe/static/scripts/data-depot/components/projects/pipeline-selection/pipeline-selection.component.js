@@ -165,6 +165,9 @@ class PipelineSelectionCtrl {
     }
 
     goProject() {
+        /* TODO:
+        We should refactor this publication pre-check.
+        */
         this.gatherSelections();
         this.missing = this.ProjectService.checkSelectedFiles(
             this.browser.project,

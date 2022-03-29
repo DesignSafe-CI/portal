@@ -2831,6 +2831,9 @@ input[type="search"] {
   margin-top: 20px;
   resize: vertical;
 }
+.pipeline-selection {
+  margin-top: 10px;
+}
 .author-table {
   width:100%;
 }

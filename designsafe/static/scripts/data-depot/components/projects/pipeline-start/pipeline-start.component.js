@@ -55,8 +55,8 @@ class PipelineStartCtrl {
             switch(this.project.value.projectType) {
                 case 'experimental': {
                     this.ui.publicationComp = 'projects.pipelineSelectExp'
-                    this.ui.amendComp = 'projects.amendExperimental'
-                    this.ui.versionComp = 'projects.versionExperimentalSelection'
+                    this.ui.amendComp = 'projects.amendExperiment'
+                    this.ui.versionComp = 'projects.versionExperimentSelection'
                     this.ui.previewComp = 'projects.preview'
                     this.ui.showAmendVersion = true;
                     break;

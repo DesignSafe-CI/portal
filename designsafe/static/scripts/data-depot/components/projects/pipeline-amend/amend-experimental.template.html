@@ -110,24 +110,6 @@
                         </span>
                     </td>
                 </tr>
-                <!-- FR -->
-                <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhEvent">
-                    <td>Event</td>
-                    <td class="prj-data">
-                        {{ $ctrl.project.value.nhEvent }} |
-                        <span ng-if="$ctrl.project.value.nhLocation">{{ $ctrl.project.value.nhLocation }} |</span>
-                        {{$ctrl.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                        <span ng-if="$ctrl.project.value.nhEventEnd && $ctrl.project.value.nhEventStart !== $ctrl.project.value.nhEventEnd">
-                            ― {{$ctrl.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
-                        </span>
-                        <span ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">|</span>
-                        <a href="http://www.google.com/maps/place/{{ $ctrl.project.value.nhLatitude }},{{ $ctrl.project.value.nhLongitude }}"
-                            rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">
-                            Lat {{ $ctrl.project.value.nhLatitude }} Long {{ $ctrl.project.value.nhLongitude }}
-                        </a>
-                    </td>
-                </tr>
-                <!-- FR -->
                 <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
                     <td ng-if="$first">Awards</td>
                     <td ng-if="!$first"></td>
@@ -159,18 +141,10 @@
         </div>
         <hr>
         <div>
-            <!-- experimental-amend-revise TODO:
-                -- Bring in the entity manager modals
-                -- Consider how we display Experiments and other Entities... We should probably display
-                    the entities from TAPIS metadata (project) instead so it's not confusing to edit in the modals.
-                    For example. User sees published metadata here, but goes to edit an entity. (the edit modal will only
-                    update the non published entities...) 
-                -- Allow users to sort their authors and preview an updated citation format.
-            -->
             <!-- Project Reports -->
             <div ng-if="$ctrl.matchingGroup(experiment, report) && !$ctrl.ui.loading" ng-repeat="report in $ctrl.publication.reportsList | orderBy: 'value.title'">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                    <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+                    <button class="btn tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                             <span class="collapse-tab-content-right curation-chevron"></span>
@@ -189,7 +163,7 @@
             <!-- Experiments -->
             <div ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.publication.experimentsList">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
-                    <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
+                    <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                         <table style="width:100%" id="anchor-{{ experiment.uuid }}">
                             <tr>
                                 <td class="tab-cell">
@@ -305,7 +279,7 @@
                                 <div ng-repeat="report in $ctrl.publication.reportsList | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                                         <button
-                                            class="btn collapsed tab-report"
+                                            class="btn collapsed tab-gray"
                                             data-toggle="collapse"
                                             data-target="#files-{{report.uuid}}-{{experiment.uuid}}"
                                             style="width:100%;"
@@ -328,7 +302,7 @@
                                     ng-if="$ctrl.matchingGroup(experiment, modelConfig)"
                                 >
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{modelConfig.uuid}}">
-                                        <button class="btn collapsed tab-model-conf"
+                                        <button class="btn collapsed tab-blue"
                                                 data-toggle="collapse"
                                                 data-target="#files-{{modelConfig.uuid}}-{{experiment.uuid}}"
                                                 style="width:100%;">
@@ -360,7 +334,7 @@
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-sensor-info dropdown-spacer-sm"
+                                                        <button class="btn collapsed tab-teal dropdown-spacer-sm"
                                                                 data-toggle="collapse"
                                                                 data-target="#files-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}"
                                                                 style="width:100%;"
@@ -395,7 +369,7 @@
                                                                 </span>
                                                             </td>
                                                             <td style="width: 100%;">
-                                                                <button class="btn collapsed tab-event"
+                                                                <button class="btn collapsed tab-yellow"
                                                                         data-toggle="collapse"
                                                                         data-target="#files-{{event.uuid}}-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}"
                                                                         style="width:100%;">
@@ -424,7 +398,7 @@
                                 <!-- Analysis -->
                                 <div ng-repeat="analysis in $ctrl.publication.analysisList | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, analysis)">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                                        <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{experiment.uuid}}" style="width:100%;">
+                                        <button class="btn collapsed tab-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{experiment.uuid}}" style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
                                                 <span class="collapse-tab-content-right curation-chevron"></span>

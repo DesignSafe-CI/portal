@@ -323,9 +323,9 @@ function config(
                 }]
             }
         })
-        .state('projects.amendExperimental', {
+        .state('projects.amendExperiment', {
             url: '/projects/{projectId}/curation/amend',
-            component: 'amendExperimental',
+            component: 'amendExperiment',
             params: {
                 project: null,
                 publication: null,
@@ -370,9 +370,9 @@ function config(
                 }]
             }
         })
-        .state('projects.versionExperimentalSelection', {
+        .state('projects.versionExperimentSelection', {
             url: '/projects/{projectId}/curation/version/{filePath:any}',
-            component: 'versionExperimentalSelection',
+            component: 'versionExperimentSelection',
             params: {
                 filePath: '',
                 publication: null,
@@ -387,9 +387,9 @@ function config(
                 }]
             }
         })
-        .state('projects.versionExperimentalCitation', {
+        .state('projects.versionExperimentCitation', {
             url: '/projects/{projectId}/curation/citation',
-            component: 'versionExperimentalCitation',
+            component: 'versionExperimentCitation',
             params: {
                 publication: null,
                 selectedListing: null,
@@ -406,12 +406,14 @@ function config(
             url: '/projects/{projectId}/curation/changes',
             component: 'versionChanges',
             params: {
+                project: null,
                 publication: null,
                 selectedListing: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
                     ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
                 }]
