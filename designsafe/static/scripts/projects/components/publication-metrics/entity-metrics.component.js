@@ -1,5 +1,5 @@
-import PublicationMetricsTemplate from './publication-metrics.template.html';
-class PublicationMetricsCtrl {
+import EntityMetricsTemplate from './entity-metrics.template.html';
+class EntityMetricsCtrl {
     constructor(PublicationService) {
         'ngInject';
         this.PublicationService = PublicationService;
@@ -47,14 +47,11 @@ class PublicationMetricsCtrl {
     }
 
     cumulativeMetrics(meta) {
-        let projectDownloads = 0;
-        const archiveMetrics = meta.value.find((v) => v.doi === 'archive') || { metrics: [] };
-        archiveMetrics.metrics.forEach((m) => (projectDownloads += m.Downloads));
         let fileDownloads = 0;
         let filePreviews = 0;
         let uniqueRequests = 0;
         meta.value
-            .filter((v) => v.doi !== 'archive')
+            .filter((v) => v.doi === this.resolve.doi)
             .forEach((v) => {
                 v.metrics.forEach((m) => {
                     fileDownloads += m.Downloads || 0;
@@ -63,18 +60,17 @@ class PublicationMetricsCtrl {
                 });
             });
         return {
-            projectDownloads,
             fileDownloads,
             filePreviews,
             uniqueRequests,
             fileViews: fileDownloads + filePreviews,
-            total: projectDownloads + fileDownloads + filePreviews,
+            total: fileDownloads + filePreviews,
         };
     }
 
     quarterlyMetrics(meta, year) {
         let qMetrics = [0, 0, 0, 0];
-        meta.value.forEach((val) => {
+        meta.value.filter(v => v.doi === this.resolve.doi).forEach((val) => {
             val.metrics
                 .filter((m) => m.Year === year)
                 .forEach((m) => {
@@ -108,9 +104,9 @@ class PublicationMetricsCtrl {
     }
 }
 
-export const PublicationMetricsComponent = {
-    template: PublicationMetricsTemplate,
-    controller: PublicationMetricsCtrl,
+export const EntityMetricsComponent = {
+    template: EntityMetricsTemplate,
+    controller: EntityMetricsCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',

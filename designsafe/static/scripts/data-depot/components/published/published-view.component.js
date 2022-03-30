@@ -348,6 +348,18 @@ class PublishedViewCtrl {
         });
     }
 
+    entityMetrics(doi, type) {
+        this.$uibModal.open({
+            component: 'entityMetricsModal',
+            resolve: {
+                publication: () => {return this.browser.publication;},
+                doi: () => doi,
+                type: () => type
+            },
+            size: 'md'
+        });
+    }
+
     matchingGroup(exp, model) {
         if (!exp) {
             // if the category is related to the project level
