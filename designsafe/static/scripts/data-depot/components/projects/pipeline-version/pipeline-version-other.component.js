@@ -26,11 +26,10 @@ class PipelineVersionOtherCtrl {
             submitted: false,
             confirmed: false
         };
-        console.log('Hello PipelineVersionOtherCtrl');
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.publication = this.ProjectService.resolveParams.publication;
-        this.selectedListing = this.ProjectService.resolveParams.selectedListing;
+        this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.revisionText = '';
         if (!this.publication) {
             this.goStart();
@@ -75,15 +74,15 @@ class PipelineVersionOtherCtrl {
         if (!selectedFiles.length) {
             return;
         }
-        this.selectedListing = {
+        this.selectedListings = {
             ...this.FileListingService.listings.main,
             listing: selectedFiles,
         };
-        this.FileListingService.selectedListing = this.selectedListing;
+        this.FileListingService.selectedListing = this.selectedListings;
     }
 
     undoSelections() {
-        this.selectedListing = null;
+        this.selectedListings = null;
     }
 
     navigate(destCompName) {
@@ -91,7 +90,7 @@ class PipelineVersionOtherCtrl {
             projectId: this.projectId,
             project: this.project,
             publication: this.publication,
-            selectedListing: this.selectedListing
+            selectedListings: this.selectedListings
         }
         this.$state.go(destCompName, params, { reload: true });
     }

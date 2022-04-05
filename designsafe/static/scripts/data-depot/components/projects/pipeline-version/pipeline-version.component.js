@@ -23,13 +23,11 @@ class PipelineVersionCtrl {
     $onInit() {
         this.ui = {
             loading: true,
-            success: false,
-            warning: false,
-            error: false,
-            submitted: false,
             confirmed: false,
             selectionComp: '',
             citationComp: '',
+            placeholder: '',
+            savedStatus: {},
             efs: experimentalData.experimentalFacility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes
@@ -37,9 +35,10 @@ class PipelineVersionCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.publication = this.ProjectService.resolveParams.publication;
-        this.selectedListing = this.ProjectService.resolveParams.selectedListing;
-        this.revisionText = '';
-        this.selectedEnts = [];
+        this.selectedListings = this.ProjectService.resolveParams.selectedListings;
+        this.selectedEnts = this.ProjectService.resolveParams.selectedEnts;
+        this.revisionAuthors = []
+        this.selectedAuthor = '';
         if (!this.publication) {
             this.goStart();
         } else {
@@ -54,21 +53,79 @@ class PipelineVersionCtrl {
                 if (prjType === 'experimental') {
                     this.ui.selectionComp = 'projects.versionSelection'
                     this.ui.citationComp = 'projects.versionCitation'
+                    this.ui.placeholder = 'Experiment'
                     this.matchingGroupKey = 'experiments'
+                    this.publishedKeyNames = ['experimentsList']
                     this.subEntities = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
                 } else {
                     this.goStart();
                 }
                 this.FileListingService.abstractListing(entities, project.uuid).then((_) => {
                     // autoselect the published entities from the project
-                    entities.forEach((ent) => {
-                        if ('dois' in ent.value && ent.value.dois.length) {
-                            this.selectEntity(ent);
-                        }
-                    })
+                    if (!this.selectedEnts.length) {
+                        entities.forEach((ent) => {
+                            if ('dois' in ent.value && ent.value.dois.length) {
+                                this.selectEntity(ent);
+                            }
+                        })
+                    } else {
+                        this.configureCitations();
+                    }
                     this.ui.loading = false;
                 })
             });
+        }
+    }
+
+    configureCitations() {
+        this.selectedEnts.forEach((ent) => {
+            this.revisionAuthors[ent.uuid] = ent.value.authors;
+            this.ui.savedStatus[ent.uuid] = false;
+        })
+
+        this.publishedKeyNames.forEach((key) => {
+            this.publication[key].forEach((pubEnt) => {
+                if (pubEnt.uuid in this.revisionAuthors) {
+                    this.revisionAuthors[pubEnt.uuid] = pubEnt.authors;
+                }
+            });
+        });
+    }
+
+    saveAuthors(entity, status) {
+        this.ui.savedStatus[entity.uuid] = status;
+        let statuses = Object.values(this.ui.savedStatus);
+        if (statuses.every(value => value === true)) {
+            this.ui.confirmed = true;
+        } else {
+            this.ui.confirmed = false;
+        }
+    }
+
+    orderAuthors(up, entity) {
+        var a;
+        var b;
+        this.saveAuthors(entity, false)
+        if (up) {
+            if (this.selectedAuthor.order <= 0) {
+                return;
+            }
+            // move up
+            a = this.revisionAuthors[entity.uuid].find(x => x.order === this.selectedAuthor.order - 1);
+            b = this.revisionAuthors[entity.uuid].find(x => x.order === this.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
+        } else {
+            if (this.selectedAuthor.order >= this.revisionAuthors[entity.uuid].length - 1) {
+                return;
+            }
+            // move down
+            a = this.revisionAuthors[entity.uuid].find(x => x.order === this.selectedAuthor.order + 1);
+            b = this.revisionAuthors[entity.uuid].find(x => x.order === this.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
         }
     }
 
@@ -127,14 +184,15 @@ class PipelineVersionCtrl {
     }
 
     gatherSelections() {
-        this.selectedListings = {};
+        let listing = {};
         Object.keys(this.FileListingService.listings).forEach((key) => {
             if (this.FileListingService.listings[key].selectedForPublication) {
-                this.selectedListings[key] = { ...this.FileListingService.listings[key] };
+                listing[key] = { ...this.FileListingService.listings[key] };
             } else {
-                delete this.selectedListings[key];
+                delete listing[key];
             }
         });
+        return listing;
     }
 
     selectEntity(ent) {
@@ -175,7 +233,9 @@ class PipelineVersionCtrl {
             projectId: this.projectId,
             project: this.project,
             publication: this.publication,
-            selectedListing: this.selectedListing
+            selectedEnts: this.selectedEnts,
+            selectedListings: this.selectedListings,
+            revisionAuthors: this.revisionAuthors
         }
         this.$state.go(destCompName, params, { reload: true });
     }
@@ -189,12 +249,13 @@ class PipelineVersionCtrl {
     }
 
     goCitation() {
-        this.gatherSelections();
+        this.selectedListings = this.gatherSelections();
         this.missing = this.ProjectService.checkSelectedFiles(
             this.project,
             this.selectedEnts,
             this.selectedListings
         );
+        if (this.missing.length) { return };
         this.navigate('projects.versionExperimentCitation');
     }
 

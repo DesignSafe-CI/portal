@@ -3,11 +3,26 @@
         <i class="fa fa-arrow-left"></i> Back
     </a>
     <button class="btn btn-small btn-add"
-            ng-click="$ctrl.goCitation()">
+            ng-click="$ctrl.goCitation()"
+            ng-disabled="$ctrl.ui.loading">
         Continue
     </button>
 </div>
 <div class="pipeline-page">
+    <!-- Error Messages -->
+    <div class="alert alert-danger" ng-if="$ctrl.missing.length">
+        <p class="lead" style="text-align:center;">Your Selection is Incomplete!</p>
+        <p>
+            Your selection has missing data or incomplete requirements.
+            Please review the following fields:
+        </p>
+        <div ng-repeat="entity in $ctrl.missing">
+            <div ng-if="entity.missing.length">
+                In the {{entity.type}} <strong>{{entity.title}}</strong>, the following requirements are missing or incomplete:
+                <li ng-if="entity.missing.length" ng-repeat="err in entity.missing">{{ err }}</li>
+            </div>
+        </div>
+    </div>
     <div class="pipeline-header">
         <h3>Version Selection</h3>
         <ul>
@@ -105,7 +120,7 @@
             </div>
         </div>
         <!-- Project Reports -->
-        <div ng-if="$ctrl.matchingGroup(experiment, report) && !$ctrl.ui.loading" ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'">
+        <!-- <div ng-if="$ctrl.matchingGroup(experiment, report) && !$ctrl.ui.loading" ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                 <div class="pipeline-selection">
                     <a ng-click="$ctrl.selectEntity(report)">Select this Report and all of its files</a>
@@ -129,7 +144,7 @@
                     </files-listing> 
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Published Experiments -->
         <div ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.project.experiment_set">
             <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">

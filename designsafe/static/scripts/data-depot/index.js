@@ -343,15 +343,17 @@ function config(
             component: 'versionOtherSelection',
             params: {
                 filePath: '',
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedListings: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing || null;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings || null;
                 }]
             }
         })
@@ -359,14 +361,16 @@ function config(
             url: '/projects/{projectId}/curation/citation-other',
             component: 'versionOtherCitation',
             params: {
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedListings: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                 }]
             }
         })
@@ -374,16 +378,18 @@ function config(
             url: '/projects/{projectId}/curation/version/{filePath:any}',
             component: 'versionExperimentSelection',
             params: {
-                filePath: '',
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedEnts: [],
+                selectedListings: null
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
-                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing || null;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                 }]
             }
         })
@@ -391,14 +397,18 @@ function config(
             url: '/projects/{projectId}/curation/citation',
             component: 'versionExperimentCitation',
             params: {
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedEnts: [],
+                selectedListings: null
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                 }]
             }
         })
@@ -408,14 +418,18 @@ function config(
             params: {
                 project: null,
                 publication: null,
-                selectedListing: null,
+                selectedEnts: [],
+                selectedListings: null,
+                revisionAuthors: [],
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
                     ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    ProjectService.resolveParams.revisionAuthors = $stateParams.revisionAuthors;
                 }]
             }
         })

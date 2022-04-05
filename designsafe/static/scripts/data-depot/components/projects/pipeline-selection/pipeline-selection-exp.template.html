@@ -57,7 +57,7 @@
     <div>
         <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
             Preview</a>
-        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedEnts.length">Continue</button>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="$ctrl.ui.loading || !$ctrl.selectedEnts.length">Continue</button>
     </div>
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
