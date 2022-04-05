@@ -734,8 +734,8 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=N
 
                 if entity_dict['value']['dois']:
                     entity_dict['doi'] = entity_dict['value']['dois'][-1]
-                if revision:
-                    _preserve_project_values(original_pub, entity_dict, revised_authors)
+                    if revision:
+                        _preserve_project_values(original_pub, entity_dict, revised_authors)
                 _set_authors(entity_dict, publication)
                 publication[pub_entities_field_name].append(entity_dict)
     

@@ -420,7 +420,7 @@ function config(
                 publication: null,
                 selectedEnts: [],
                 selectedListings: null,
-                revisionAuthors: [],
+                revisionAuthors: {},
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {

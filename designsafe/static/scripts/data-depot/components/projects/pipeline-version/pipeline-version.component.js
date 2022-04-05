@@ -37,7 +37,7 @@ class PipelineVersionCtrl {
         this.publication = this.ProjectService.resolveParams.publication;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.selectedEnts = this.ProjectService.resolveParams.selectedEnts;
-        this.revisionAuthors = []
+        this.revisionAuthors = {}
         this.selectedAuthor = '';
         if (!this.publication) {
             this.goStart();
