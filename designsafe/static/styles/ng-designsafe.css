@@ -860,7 +860,7 @@ a[ng-click]:hover {
 
 @font-face {
 font-family: 'DesignSafe-Apps';
-    src: url('/static/fonts/Tools-Applications-Icons_3_28.ttf') format('truetype');
+    src: url('/static/fonts/Tools-and-Applications-Icons.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -942,7 +942,7 @@ i[class^="icon-ls-pre/post"]:before,
     content: "\e958";
 }
 .icon-extract:before {
-    content: "\e90c";
+    content: "\e959";
 }
 
 @font-face {
