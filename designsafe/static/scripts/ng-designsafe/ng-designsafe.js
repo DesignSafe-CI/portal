@@ -78,6 +78,7 @@ export const ngDesignsafe = angular.module('designsafe',
     .constant('appCategories', ['Simulation', 'SimCenter Tools', 'Visualization', 'Analysis', 'Hazard Apps', 'Utilities'])
     // Current list of icons for apps
     .constant('appIcons', [
+        'rWHALE',
         'Hazmapper',
         'Compress',
         'STKO',

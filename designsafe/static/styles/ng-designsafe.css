@@ -899,6 +899,9 @@ font-family: 'DesignSafe-Apps';
 .icon-hazmapper:before {
     content: "\e904";
 }
+.icon-rwhale:before {
+    content: "\e905";
+}
 .icon-paraview:before {
     content: "\e911";
 }
