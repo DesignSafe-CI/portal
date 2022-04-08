@@ -96,6 +96,7 @@ class PipelineVersionCtrl {
         this.ui.savedStatus[entity.uuid] = status;
         let statuses = Object.values(this.ui.savedStatus);
         if (statuses.every(value => value === true)) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             this.ui.confirmed = true;
         } else {
             this.ui.confirmed = false;

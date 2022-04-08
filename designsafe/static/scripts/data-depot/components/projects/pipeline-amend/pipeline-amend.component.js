@@ -73,6 +73,21 @@ class PipelineAmendCtrl {
         });
     }
 
+    amendSubEntity(selection) {
+        // we can't use the original manager for these entities.
+        // we will have to come up with another way to make amends.
+
+        // this.$uibModal.open({
+        //     component: 'manageCategories',
+        //     resolve: {
+        //         project: () => this.project,
+        //         edit: () => selection,
+        //     },
+        //     backdrop: 'static',
+        //     size: 'lg',
+        // });
+    }
+
     saveAuthors() {
         this.ui.confirmed = true;
     }

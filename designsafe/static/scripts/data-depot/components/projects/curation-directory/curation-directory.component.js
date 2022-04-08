@@ -38,7 +38,7 @@ class CurationDirectoryCtrl {
         };
         
 
-        if ( !(this.ProjectService.current && this.ProjectService.current.uuid === this.projectId )){//&& this.FileListingService.listings.main.params.path === this.filePath) {
+        if ( !(this.ProjectService.current && this.ProjectService.current.uuid === this.projectId )){
         this.loading = true;
         promisesToResolve.project = this.ProjectService.get({ uuid: this.projectId })
         promisesToResolve.entities = this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }) 
@@ -166,7 +166,7 @@ class CurationDirectoryCtrl {
         this.$uibModal.open({
             component: 'manageCategories',
             resolve: {
-                browser: () => this.browser,
+                project: () => this.browser.project,
             },
             backdrop: 'static',
             size: 'lg',

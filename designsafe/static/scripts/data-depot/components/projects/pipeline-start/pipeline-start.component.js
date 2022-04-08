@@ -4,12 +4,16 @@ class PipelineStartCtrl {
     constructor(
         PublicationService,
         ProjectService,
-        $state
+        ProjectEntitiesService,
+        $state,
+        $q
     ) {
         'ngInject';
         this.PublicationService = PublicationService;
         this.ProjectService = ProjectService;
+        this.ProjectEntitiesService = ProjectEntitiesService;
         this.$state = $state;
+        this.$q = $q;
     }
 
     $onInit() {
@@ -24,10 +28,13 @@ class PipelineStartCtrl {
             previewComp: ''
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
-        this.ProjectService.get({ uuid: this.projectId }).then((project) => {
+        this.$q.all([
+            this.ProjectService.get({ uuid: this.projectId }),
+            this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
+        ]).then(([project, entities]) => {
             this.project = project;
-            this.PublicationService.getPublished(this.project.value.projectId)
-            .then((resp) => {
+            this.project.appendEntitiesRel(entities);
+            this.PublicationService.getPublished(this.project.value.projectId).then((resp) => {
                 this.publication = (resp.data.latestRevision
                     ? resp.data.latestRevision
                     : resp.data
@@ -38,52 +45,40 @@ class PipelineStartCtrl {
                         this.ui.isProcessing = true;
                     }
                 }
-                /*
-                    BYPASS FOR TESTING!!!
-                        If you're going to work on something in the amends/versioning pipeline, there
-                        needs to be a publication object for reference. This bypass simply ignores the
-                        'status' of the publication.
-                */
-                this.ui.isProcessing = false;
-                /*
-                    BYPASS FOR TESTING!!!
-                */
+                switch(this.project.value.projectType) {
+                    case 'experimental': {
+                        this.ui.publicationComp = 'projects.pipelineSelectExp'
+                        this.ui.amendComp = 'projects.amendExperiment'
+                        this.ui.versionComp = 'projects.versionExperimentSelection'
+                        this.ui.previewComp = 'projects.preview'
+                        this.ui.showAmendVersion = true;
+                        break;
+                    }
+                    case 'simulation': {
+                        this.ui.publicationComp = 'projects.pipelineSelectSim'
+                        this.ui.previewComp = 'projects.previewSim'
+                        break;
+                    }
+                    case 'hybrid_simulation': {
+                        this.ui.publicationComp = 'projects.pipelineSelectHybSim'
+                        this.ui.previewComp = 'projects.previewHybSim'
+                        break;
+                    }
+                    case 'field_recon': {
+                        this.ui.publicationComp = 'projects.pipelineSelectField'
+                        this.ui.previewComp = 'projects.previewFieldRecon'
+                        break;
+                    }
+                    case 'other': {
+                        this.ui.publicationComp = 'projects.pipelineSelectOther'
+                        this.ui.amendComp = 'projects.amendOther'
+                        this.ui.versionComp = 'projects.versionOtherSelection'
+                        this.ui.previewComp = 'projects.previewOther'
+                        this.ui.showAmendVersion = true;
+                    }
+                }
                 this.ui.loading = false;
-            }, (error) => {
-                this.ui.loading = false;
-            });
-            switch(this.project.value.projectType) {
-                case 'experimental': {
-                    this.ui.publicationComp = 'projects.pipelineSelectExp'
-                    this.ui.amendComp = 'projects.amendExperiment'
-                    this.ui.versionComp = 'projects.versionExperimentSelection'
-                    this.ui.previewComp = 'projects.preview'
-                    this.ui.showAmendVersion = true;
-                    break;
-                }
-                case 'simulation': {
-                    this.ui.publicationComp = 'projects.pipelineSelectSim'
-                    this.ui.previewComp = 'projects.previewSim'
-                    break;
-                }
-                case 'hybrid_simulation': {
-                    this.ui.publicationComp = 'projects.pipelineSelectHybSim'
-                    this.ui.previewComp = 'projects.previewHybSim'
-                    break;
-                }
-                case 'field_recon': {
-                    this.ui.publicationComp = 'projects.pipelineSelectField'
-                    this.ui.previewComp = 'projects.previewFieldRecon'
-                    break;
-                }
-                case 'other': {
-                    this.ui.publicationComp = 'projects.pipelineSelectOther'
-                    this.ui.amendComp = 'projects.amendOther'
-                    this.ui.versionComp = 'projects.versionOtherSelection'
-                    this.ui.previewComp = 'projects.previewOther'
-                    this.ui.showAmendVersion = true;
-                }
-            }
+            })
         });
     }
 

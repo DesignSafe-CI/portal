@@ -376,7 +376,7 @@
         </div>
         <div class="dropdown">
             <!-- Model Config -->
-            <div ng-repeat="modelConf in $ctrl.browser.project.modelconfig_set | orderBy: ['value.title']">
+            <div ng-repeat="modelConf in $ctrl.project.modelconfig_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-blue" data-toggle="collapse" data-target="#files-{{modelConf.uuid}}"
                         style="width:100%;">
@@ -404,7 +404,7 @@
                 </div>
             </div>
             <!-- Sensor Info -->
-            <div ng-repeat="sensorInfo in $ctrl.browser.project.sensorlist_set | orderBy: ['value.title']">
+            <div ng-repeat="sensorInfo in $ctrl.project.sensorlist_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{sensorInfo.uuid}}"
                         style="width:100%;">
@@ -432,7 +432,7 @@
                 </div>
             </div>
             <!-- Events -->
-            <div ng-repeat="event in $ctrl.browser.project.event_set | orderBy: ['value.title']">
+            <div ng-repeat="event in $ctrl.project.event_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{event.uuid}}"
                         style="width:100%;">
@@ -461,7 +461,7 @@
                 </div>
             </div>
             <!-- Simulation Model -->
-            <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: ['value.title']">
+            <div ng-repeat="model in $ctrl.project.model_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-blue" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                         style="width:100%;">
@@ -490,7 +490,7 @@
                 </div>
             </div>
             <!-- Simulation Input -->
-            <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: ['value.title']">
+            <div ng-repeat="input in $ctrl.project.input_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{input.uuid}}"
                         style="width:100%;">
@@ -519,7 +519,7 @@
                 </div>
             </div>
             <!-- Simulation Output -->
-            <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: ['value.title']">
+            <div ng-repeat="output in $ctrl.project.output_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{output.uuid}}"
                         style="width:100%;">
@@ -548,7 +548,7 @@
                 </div>
             </div>
             <!-- Global Model -->
-            <div ng-repeat="gm in $ctrl.browser.project.globalmodel_set | orderBy: ['value.title']">
+            <div ng-repeat="gm in $ctrl.project.globalmodel_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-blue" data-toggle="collapse" data-target="#files-{{gm.uuid}}"
                         style="width:100%;">
@@ -577,7 +577,7 @@
                 </div>
             </div>
             <!-- Coordinator -->
-            <div ng-repeat="coordinator in $ctrl.browser.project.coordinator_set | orderBy: ['value.title']">
+            <div ng-repeat="coordinator in $ctrl.project.coordinator_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}"
                         style="width:100%;">
@@ -606,7 +606,7 @@
                 </div>
             </div>
             <!-- Simulation Substructure -->
-            <div ng-repeat="simsub in $ctrl.browser.project.simsubstructure_set | orderBy: ['value.title']">
+            <div ng-repeat="simsub in $ctrl.project.simsubstructure_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-orange" data-toggle="collapse" data-target="#files-{{simsub.uuid}}"
                         style="width:100%;">
@@ -635,7 +635,7 @@
                 </div>
             </div>
             <!-- Experimental Substructure -->
-            <div ng-repeat="expsub in $ctrl.browser.project.expsubstructure_set | orderBy: ['value.title']">
+            <div ng-repeat="expsub in $ctrl.project.expsubstructure_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-purple" data-toggle="collapse" data-target="#files-{{expsub.uuid}}"
                         style="width:100%;">
@@ -664,7 +664,7 @@
                 </div>
             </div>
             <!-- Coordinator Output -->
-            <div ng-repeat="cout in $ctrl.browser.project.coordinatoroutput_set | orderBy: ['value.title']">
+            <div ng-repeat="cout in $ctrl.project.coordinatoroutput_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{cout.uuid}}"
                         style="width:100%;">
@@ -693,7 +693,7 @@
                 </div>
             </div>
             <!-- Experiment Output -->
-            <div ng-repeat="eout in $ctrl.browser.project.expoutput_set | orderBy: ['value.title']">
+            <div ng-repeat="eout in $ctrl.project.expoutput_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{eout.uuid}}"
                         style="width:100%;">
@@ -722,7 +722,7 @@
                 </div>
             </div>
             <!-- Simulation Output -->
-            <div ng-repeat="sout in $ctrl.browser.project.simoutput_set | orderBy: ['value.title']">
+            <div ng-repeat="sout in $ctrl.project.simoutput_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{sout.uuid}}"
                         style="width:100%;">
@@ -751,7 +751,7 @@
                 </div>
             </div>
             <!-- Analysis -->
-            <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: ['value.title']">
+            <div ng-repeat="analysis in $ctrl.project.analysis_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                         style="width:100%;">
@@ -791,7 +791,7 @@
                 </div>
             </div>
             <!-- Reports -->
-            <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: ['value.title']">
+            <div ng-repeat="report in $ctrl.project.report_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                         style="width:100%;">
