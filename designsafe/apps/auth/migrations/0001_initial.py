@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('refresh_token', models.CharField(max_length=255)),
                 ('expires_in', models.BigIntegerField()),
                 ('created', models.BigIntegerField()),
-                ('user', models.OneToOneField(related_name='agave_oauth', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='tapis_oauth', to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

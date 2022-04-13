@@ -30,9 +30,9 @@ def on_user_logged_out(sender, request, user, **kwargs):
         login_provider = 'your authentication provider'
 
     logger = logging.getLogger(__name__)
-    logger.debug("attempting call to revoke agave token function: %s", user.agave_oauth.token)
+    logger.debug("attempting call to revoke agave token function: %s", user.tapis_oauth.token)
     a = AgaveOAuthBackend()
-    AgaveOAuthBackend.revoke(a,user.agave_oauth)
+    AgaveOAuthBackend.revoke(a,user.tapis_oauth)
 
     logout_message = '<h4>You are Logged Out!</h4>' \
                      'You are now logged out of DesignSafe! However, you may still ' \

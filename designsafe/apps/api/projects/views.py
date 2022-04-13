@@ -153,7 +153,7 @@ class PublicationView(BaseApiView):
                 tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
                 tasks.email_user_publication_request_confirmation.si(request.user.username)
             ).apply_async()
-        
+
         return JsonResponse({
             'success': 'Project is publishing.'
         }, status=200)
@@ -169,7 +169,7 @@ class AmendPublicationView(BaseApiView):
             data = json.loads(request.body)
         else:
             data = request.POST
-        
+
         project_id = data['projectId']
         authors = data['authors'] if 'authors' in data else None
         current_revision = IndexedPublication.max_revision(project_id=project_id)
@@ -185,7 +185,7 @@ class AmendPublicationView(BaseApiView):
                 current_revision
             ).set(queue='files')
         ).apply_async()
-        
+
         return JsonResponse({
             'success': 'Publication is being amended.'
         }, status=200)
@@ -217,7 +217,7 @@ class ProjectListingView(SecureMixin, BaseApiView):
             return HttpResponseForbidden()
 
         user = get_user_model().objects.get(username=username)
-        client = user.agave_oauth.client
+        client = user.tapis_oauth.client
         q = request.GET.get('q', None)
         if not q:
             projects = Project.list_projects(agave_client=client)
@@ -236,7 +236,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         :rtype: JsonResponse
         """
         #raise HTTPError('Custom Error')
-        client = request.user.agave_oauth.client
+        client = request.user.tapis_oauth.client
         query_string = request.GET.get('query_string', None)
         offset = request.GET.get('offset', 0)
         limit = request.GET.get('limit', 100)
@@ -400,7 +400,7 @@ class ProjectInstanceView(BaseApiView):
         :return:
         :rtype: JsonResponse
         """
-        client = request.user.agave_oauth.client
+        client = request.user.tapis_oauth.client
         meta_obj = client.meta.getMetadata(uuid=project_id)
         cls = project_lookup_model(meta_obj)
         project = cls(**meta_obj)
@@ -423,7 +423,7 @@ class ProjectInstanceView(BaseApiView):
         6. Set ACLs on the project
         7. Email users who have been added to the project
 
-        :param request: 
+        :param request:
         :return:
         """
         if request.is_ajax():
@@ -431,7 +431,7 @@ class ProjectInstanceView(BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        client = request.user.agave_oauth.client
+        client = request.user.tapis_oauth.client
         sa_client = get_service_account_client() # service account for updating user permissions
 
         meta_obj = client.meta.getMetadata(uuid=project_id)
@@ -507,7 +507,7 @@ class ProjectDataView(SecureMixin, BaseApiView):
         :return: The root directory for the Project's data
         :rtype: JsonResponse
         """
-        client = request.user.agave_oauth.client
+        client = request.user.tapis_oauth.client
         if project_system_id is None:
             p = Project(client, uuid=project_id)
             project_system_id = p.project_system_id
@@ -528,7 +528,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         :return:
         :rtype: JsonResponse
         """
-        client = request.user.agave_oauth.client
+        client = request.user.tapis_oauth.client
         try:
             if name is not None and name != 'all':
                 model = project_lookup_model(name=name)
@@ -561,7 +561,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         :rtype: JsonResponse
         """
         try:
-            client = request.user.agave_oauth.client
+            client = request.user.tapis_oauth.client
             meta_obj = client.meta.getMetadata(uuid=uuid)
             model = project_lookup_model(meta_obj)
             meta = model(**meta_obj)
@@ -595,7 +595,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
             if 'filePaths' in entity:
                 file_paths = entity.get('filePaths', [])
                 project_system = ''.join(['project-', project_id])
-                client = request.user.agave_oauth.client
+                client = request.user.tapis_oauth.client
                 for file_path in file_paths:
                     file_obj = BaseFileResource.listing(client,
                                                         project_system,
@@ -633,7 +633,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         :param request:
         :return:
         """
-        client = request.user.agave_oauth.client
+        client = request.user.tapis_oauth.client
 
         if request.is_ajax():
             post_data = json.loads(request.body)

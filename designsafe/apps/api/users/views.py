@@ -40,9 +40,9 @@ class AuthenticatedView(View):
                 "last_name": u.last_name,
                 "email": u.email,
                 "oauth": {
-                    "access_token": u.agave_oauth.access_token,
-                    "expires_in": u.agave_oauth.expires_in,
-                    "scope": u.agave_oauth.scope,
+                    "access_token": u.tapis_oauth.access_token,
+                    "expires_in": u.tapis_oauth.expires_in,
+                    "scope": u.tapis_oauth.scope,
                 }
             }
 

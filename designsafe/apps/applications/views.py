@@ -49,7 +49,7 @@ def call_api(request, service):
     """
     if request.user.is_authenticated():
         try:
-            token = request.user.agave_oauth
+            token = request.user.tapis_oauth
             agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                           token=token.access_token,
                           resources=AGAVE_RESOURCES)

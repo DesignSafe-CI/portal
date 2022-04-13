@@ -40,7 +40,7 @@ def _app_license_type(app_id):
 @login_required
 def call_api(request, service):
     try:
-        agave = request.user.agave_oauth.client
+        agave = request.user.tapis_oauth.client
         if service == 'apps':
             app_id = request.GET.get('app_id')
             if app_id:

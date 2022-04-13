@@ -11,10 +11,10 @@ class AgaveTokenRefreshMiddleware(object):
     def process_request(self, request):
         if request.path != '/logout/' and request.user.is_authenticated:
             try:
-                agave_oauth = request.user.agave_oauth
-                if agave_oauth.expired:
+                tapis_oauth = request.user.tapis_oauth
+                if tapis_oauth.expired:
                     try:
-                        agave_oauth.client.token.refresh()
+                        tapis_oauth.client.token.refresh()
                     except HTTPError:
                         logger.exception('Agave Token refresh failed; Forcing logout',
                                          extra={'user': request.user.username})
@@ -31,5 +31,5 @@ class AgaveTokenRefreshMiddleware(object):
     def process_response(self, request, response):
         if hasattr(request, 'user'):
             if request.user.is_authenticated:
-                response['Authorization'] = 'Bearer ' + request.user.agave_oauth.access_token
+                response['Authorization'] = 'Bearer ' + request.user.tapis_oauth.access_token
         return response

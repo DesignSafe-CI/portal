@@ -53,7 +53,7 @@ def submit_job(request, username, job_post):
             agave = impersonate_service_account(username)
         else:
             user = get_user_model().objects.get(username=username)
-            agave = user.agave_oauth.client
+            agave = user.tapis_oauth.client
         response = agave.jobs.submit(body=job_post)
         logger.debug('Job Submission Response: {}'.format(response))
 
@@ -107,7 +107,7 @@ def handle_webhook_request(job):
         job_id = job['id']
 
         user = get_user_model().objects.get(username=username)
-        ag = user.agave_oauth.client
+        ag = user.tapis_oauth.client
         # ag_job = ag.jobs.get(jobId=job_id)
 
         try:

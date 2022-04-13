@@ -28,7 +28,7 @@ class NcoProjectsManager(object):
         """
         self.user = user
         if user.is_authenticated:
-            self._ac = user.agave_oauth.client
+            self._ac = user.tapis_oauth.client
         else:
             self._ac = service_account()
 

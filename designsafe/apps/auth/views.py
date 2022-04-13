@@ -9,6 +9,7 @@ import secrets
 
 from .models import AgaveOAuthToken, AgaveServiceStatus
 from agavepy.agave import Agave
+from tapipy.tapis import Tapis
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir, new_user_alert
 import logging
 import os
@@ -60,7 +61,7 @@ def login_options(request):
         designsafe_status = None
 
     if not message:
-        return agave_oauth(request)
+        return tapis_oauth(request)
     else:
         context = {
             'message': message,
@@ -70,7 +71,7 @@ def login_options(request):
         return render(request, 'designsafe/apps/auth/login.html', context)
 
 
-def agave_oauth(request):
+def tapis_oauth(request):
     tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
     client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
 
@@ -88,7 +89,7 @@ def agave_oauth(request):
     redirect_uri = '{}://{}{}'.format(
         protocol,
         request.get_host(),
-        reverse('designsafe_auth:agave_oauth_callback')
+        reverse('designsafe_auth:tapis_oauth_callback')
     )
     authorization_url = (
         '%s/authorize?'
@@ -105,12 +106,12 @@ def agave_oauth(request):
     return HttpResponseRedirect(authorization_url)
 
 
-def agave_oauth_callback(request):
+def tapis_oauth_callback(request):
     """
     http://agaveapi.co/documentation/authorization-guide/#authorization_code_flow
     """
     state = request.GET.get('state')
-    
+
     if request.session['auth_state'] != state:
         msg = (
             'OAuth Authorization State mismatch!? auth_state=%s '
@@ -133,7 +134,7 @@ def agave_oauth_callback(request):
         redirect_uri = '{}://{}{}'.format(
             protocol,
             request.get_host(),
-            reverse('designsafe_auth:agave_oauth_callback')
+            reverse('designsafe_auth:tapis_oauth_callback')
         )
         code = request.GET['code']
         tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
@@ -152,10 +153,10 @@ def agave_oauth_callback(request):
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
-        
+
         if user:
             try:
-                token = user.agave_oauth
+                token = user.tapis_oauth
                 token.update(**token_data)
             except ObjectDoesNotExist:
                 token = AgaveOAuthToken(**token_data)
@@ -173,7 +174,7 @@ def agave_oauth_callback(request):
             except HTTPError as e:
                 if e.response.status_code == 404:
                     check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')
-                    
+
         else:
             messages.error(
                 request,

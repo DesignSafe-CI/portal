@@ -21,8 +21,8 @@ metrics = logging.getLogger('metrics')
 
 def get_client(user, api):
     client_mappings = {
-        'agave': 'agave_oauth',
-        'shared': 'agave_oauth',
+        'agave': 'tapis_oauth',
+        'shared': 'tapis_oauth',
         'googledrive': 'googledrive_user_token',
         'box': 'box_user_token',
         'dropbox': 'dropbox_user_token'
@@ -32,7 +32,7 @@ def get_client(user, api):
 
 class DataFilesView(BaseApiView):
     def get(self, request, api, operation=None, scheme='private', system=None, path=''):
-        
+
         metrics.info('Data Depot',
                      extra={
                          'user': request.user.username,
@@ -53,7 +53,7 @@ class DataFilesView(BaseApiView):
             except AttributeError:
                 raise resource_unconnected_handler(api)
         elif api == 'agave':
-            client = get_user_model().objects.get(username='envision').agave_oauth.client
+            client = get_user_model().objects.get(username='envision').tapis_oauth.client
         else:
             return JsonResponse({'message': 'Please log in to access this feature.'}, status=403)
 

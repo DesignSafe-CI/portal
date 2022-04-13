@@ -18,7 +18,7 @@ TOKEN_EXPIRY_THRESHOLD = 600
 AGAVE_RESOURCES = agave.load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
 class AgaveOAuthToken(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agave_oauth')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tapis_oauth')
     token_type = models.CharField(max_length=255)
     scope = models.CharField(max_length=255)
     access_token = models.CharField(max_length=255)
@@ -124,3 +124,30 @@ class AgaveServiceStatus(object):
                 raise Exception(data)
         except HTTPError:
             logger.warning('Agave Service Status update failed')
+
+
+class TapisOAuthToken(models.Model):
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tapis_oauth')
+    access_token = models.CharField(max_length=255)
+    access_token_expires_at = models.BigIntegerField()
+    refresh_token = models.CharField(max_length=255)
+    refresh_token_expires_at = models.BigIntegerField()
+
+    @property
+    def token(self):
+        return {
+            'access_token': {
+                'access_token': self.access_token,
+                'expires_at': self.access_token_expires_at,
+                'exipres_in': self.expires_in
+            },
+            'refresh_token': {
+                'refresh_token': self.refresh_token,
+                'expires_at': self.refresh_token_expires_at,
+                'exipres_in': self.expires_in
+            }
+        }
+
+class TapisToken(models.Model):
+

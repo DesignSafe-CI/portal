@@ -31,7 +31,7 @@ class ProjectsManager(object):
         self.user = user
         self._ac = agave_client
         if not self._ac and self.user:
-            self._ac = self.user.agave_oauth.client
+            self._ac = self.user.tapis_oauth.client
 
     def get_project_by_id(self, project_id):
         """Get project by ID.

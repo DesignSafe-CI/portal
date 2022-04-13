@@ -84,7 +84,7 @@ def generic_webhook_handler(request):
     # confirm that there is a corresponding running agave job before sending notification
     try:
         user = get_user_model().objects.get(username=job_owner)
-        agave = user.agave_oauth.client
+        agave = user.tapis_oauth.client
         job_data = agave.jobs.get(jobId=job_uuid)
         if job_data['owner'] != job_owner or job_data["status"] in ['FINISHED', 'FAILED', 'STOPPED']:
             LOGGER.error(
@@ -109,7 +109,7 @@ def generic_webhook_handler(request):
             'associationIds': [job_uuid],
         }
         user = get_user_model().objects.get(username=job_owner)
-        agave = user.agave_oauth.client
+        agave = user.tapis_oauth.client
         agave.meta.addMetadata(body=json.dumps(agave_job_meta))
 
     except (HTTPError, AgaveException) as e:
