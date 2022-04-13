@@ -8,7 +8,7 @@ authors = ["DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"]
 python = "^3.6.8"
 agavepy = "1.0.0a12"
 Django = "^1.11"
-cryptography = "^2.3.1"
+cryptography = "^3.3"
 django-cms = "3.4.7"
 importlib-resources = "^5.4.0"
 django-filer = "^1.7.1"
@@ -62,6 +62,7 @@ requests-mock = "^1.9.3"
 pytest-mock = "^3.6.1"
 pytest-cov = "^2.10.0"
 ExifRead = "^2.3.2"
+tapipy = "^1.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
