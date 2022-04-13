@@ -438,7 +438,6 @@ RAMP_VERIFICATION_ID = os.environ.get('RAMP_VERIFICATION_ID', False)
 # Agave Integration
 #
 # Agave Tenant Configuration
-AGAVE_TENANT_ID = os.environ.get('AGAVE_TENANT_ID')
 AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL', 'https://api.example.com')
 #
 # Agave Client Configuration
@@ -535,7 +534,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '.media')
 
 # Agave
-AGAVE_TENANT_ID = 'example.com'
 AGAVE_TENANT_BASEURL = 'https://api.example.com'
 AGAVE_CLIENT_KEY = 'example_com_client_key'
 AGAVE_CLIENT_SECRET = 'example_com_client_secret'

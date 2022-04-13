@@ -109,7 +109,7 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'designsafe.apps.auth.backends.AgaveOAuthBackend',
+    'designsafe.apps.auth.backends.TapisOAuthBackend',
     'designsafe.apps.auth.backends.TASBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -462,19 +462,15 @@ GOOGLE_SITE_VERIFICATION_ID = os.environ.get('GOOGLE_SITE_VERIFICATION_ID', Fals
 RAMP_VERIFICATION_ID = os.environ.get('RAMP_VERIFICATION_ID', False)
 
 ###
-# Agave Integration
+# Tapis Integration
 #
-# Agave Tenant Configuration
-AGAVE_TENANT_ID = os.environ.get('AGAVE_TENANT_ID')
-AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL', 'https://api.example.com')
-#
-# # TEST Agave Tenant Configuration
-# TEST_AGAVE_SUPER_TOKEN = os.environ.get('TEST_AGAVE_SUPER_TOKEN')
-# TEST_AGAVE_TENANT_BASEURL = os.environ.get('TEST_AGAVE_TENANT_BASEURL', 'https://api.example.com')
-# #
-# Agave Client Configuration
-AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')
-AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
+# Tapis Tenant Configuration
+TAPIS_TENANT_BASE_URL = os.environ.get('AGAVE_TENANT_BASEURL', 'https://api.example.com')
+
+# Tapis Client Configuration
+TAPIS_CLIENT_ID = os.environ.get('TAPIS_CLIENT_ID')
+TAPIS_CLIENT_KEY = os.environ.get('TAPIS_CLIENT_KEY')
+
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 
 AGAVE_SANDBOX_CLIENT_KEY = os.environ.get('AGAVE_SANDBOX_CLIENT_KEY', '')

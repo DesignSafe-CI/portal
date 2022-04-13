@@ -6,7 +6,6 @@ from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from designsafe.apps.accounts.models import DesignSafeProfile, NotificationPreferences
-from designsafe.apps.api.agave import get_service_account_client
 from pytas.http import TASClient
 import logging
 import re
@@ -19,20 +18,20 @@ def on_user_logged_out(sender, request, user, **kwargs):
     backend = request.session.get('_auth_user_backend', None)
     tas_backend_name = '%s.%s' % (TASBackend.__module__,
                                   TASBackend.__name__)
-    agave_backend_name = '%s.%s' % (AgaveOAuthBackend.__module__,
-                                    AgaveOAuthBackend.__name__)
+    tapis_backend_name = '%s.%s' % (TapisOAuthBackend.__module__,
+                                    TapisOAuthBackend.__name__)
 
     if backend == tas_backend_name:
         login_provider = 'TACC'
-    elif backend == agave_backend_name:
+    elif backend == tapis_backend_name:
         login_provider = 'TACC'
     else:
         login_provider = 'your authentication provider'
 
     logger = logging.getLogger(__name__)
-    logger.debug("attempting call to revoke agave token function: %s", user.tapis_oauth.token)
-    a = AgaveOAuthBackend()
-    AgaveOAuthBackend.revoke(a,user.tapis_oauth)
+    logger.debug("attempting call to revoke Tapis token function: %s", user.tapis_oauth.token)
+    a = TapisOAuthBackend()
+    TapisOAuthBackend.revoke(a, user.tapis_oauth)
 
     logout_message = '<h4>You are Logged Out!</h4>' \
                      'You are now logged out of DesignSafe! However, you may still ' \
@@ -112,42 +111,39 @@ class TASBackend(ModelBackend):
 #         return None
 
 
-class AgaveOAuthBackend(ModelBackend):
+class TapisOAuthBackend(ModelBackend):
 
     logger = logging.getLogger(__name__)
 
     def authenticate(self, *args, **kwargs):
         user = None
 
-        if 'backend' in kwargs and kwargs['backend'] == 'agave':
+        if 'backend' in kwargs and kwargs['backend'] == 'tapis':
             token = kwargs['token']
-            base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
 
-            self.logger.info('Attempting login via Agave with token "%s"' %
+            self.logger.info('Attempting login via Tapis with token "%s"' %
                              token[:8].ljust(len(token), '-'))
 
-            # TODO make this into an AgavePy call
-            response = requests.get('%s/profiles/v2/me' % base_url,
-                                    headers={'Authorization': 'Bearer %s' % token})
+            response = requests.get(f"{settings.TAPIS_TENANT_BASE_URL}/v3/oauth2/userinfo", headers={"X-Tapis-Token": token})
             if response.status_code >= 200 and response.status_code <= 299:
                 json_result = response.json()
-                agave_user = json_result['result']
-                username = agave_user['username']
+                tapis_user = json_result['result']
+                username = tapis_user['username']
                 UserModel = get_user_model()
                 try:
                     user = UserModel.objects.get(username=username)
-                    user.first_name = agave_user['first_name']
-                    user.last_name = agave_user['last_name']
-                    user.email = agave_user['email']
+                    user.first_name = tapis_user['given_name']
+                    user.last_name = tapis_user['last_name']
+                    user.email = tapis_user['email']
                     user.save()
                 except UserModel.DoesNotExist:
                     self.logger.info('Creating local user record for "%s" '
-                                     'from Agave Profile' % username)
+                                     'from Tapis Profile' % username)
                     user = UserModel.objects.create_user(
                         username=username,
-                        first_name=agave_user['first_name'],
-                        last_name=agave_user['last_name'],
-                        email=agave_user['email']
+                        first_name=tapis_user['first_name'],
+                        last_name=tapis_user['last_name'],
+                        email=tapis_user['email']
                         )
 
                 try:
@@ -164,7 +160,7 @@ class AgaveOAuthBackend(ModelBackend):
 
                 self.logger.error('Login successful for user "%s"' % username)
             else:
-                self.logger.error('Agave Authentication failed: %s' % response.text)
+                self.logger.error('Tapis Authentication failed: %s' % response.text)
         return user
 
     def revoke(self, user):

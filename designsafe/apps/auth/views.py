@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 import secrets
 
-from .models import AgaveOAuthToken, AgaveServiceStatus
+from .models import TapisOAuthToken, AgaveServiceStatus
 from agavepy.agave import Agave
 from tapipy.tapis import Tapis
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir, new_user_alert
@@ -72,44 +72,34 @@ def login_options(request):
 
 
 def tapis_oauth(request):
-    tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-    client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
-
     session = request.session
     session['auth_state'] = secrets.token_hex(24)
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page
-    # Check for HTTP_X_DJANGO_PROXY custom header
-    django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
-    if django_proxy or request.is_secure():
+
+    if request.is_secure():
         protocol = 'https'
     else:
         protocol = 'http'
-    redirect_uri = '{}://{}{}'.format(
-        protocol,
-        request.get_host(),
-        reverse('designsafe_auth:tapis_oauth_callback')
-    )
+    redirect_uri = f"{protocol}://{request.get_host()}{reverse('designsafe_auth:oauth_callback')}"
+
+    tenant_base_url = getattr(settings, 'TAPIS_TENANT_BASE_URL')
+    client_id = getattr(settings, 'TAPIS_CLIENT_ID')
+
+    # Authorization code request
     authorization_url = (
-        '%s/authorize?'
-        'client_id=%s&'
-        'response_type=code&'
-        'redirect_uri=%s&'
-        'state=%s' % (
-            tenant_base_url,
-            client_key,
-            redirect_uri,
-            session['auth_state'],
-        )
+        f"{tenant_base_url}/v3/oauth2/authorize?"
+        f"client_id={client_id}&"
+        f"client_redirect_uri={redirect_uri}&"
+        "response_type=code"
+        f"state={session['auth_state']}"
     )
+
     return HttpResponseRedirect(authorization_url)
 
 
 def tapis_oauth_callback(request):
-    """
-    http://agaveapi.co/documentation/authorization-guide/#authorization_code_flow
-    """
     state = request.GET.get('state')
 
     if request.session['auth_state'] != state:
@@ -124,56 +114,50 @@ def tapis_oauth_callback(request):
 
     if 'code' in request.GET:
         # obtain a token for the user
-        # Check for HTTP_X_DJANGO_PROXY custom header
-        request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
-        django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false')
-        if django_proxy or request.is_secure():
+        if request.is_secure():
             protocol = 'https'
         else:
             protocol = 'http'
-        redirect_uri = '{}://{}{}'.format(
-            protocol,
-            request.get_host(),
-            reverse('designsafe_auth:tapis_oauth_callback')
-        )
+        redirect_uri = f"{protocol}://{request.get_host()}{reverse('designsafe_auth:oauth_callback')}"
         code = request.GET['code']
-        tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
-        client_sec = getattr(settings, 'AGAVE_CLIENT_SECRET')
+
         body = {
             'grant_type': 'authorization_code',
             'code': code,
             'redirect_uri': redirect_uri,
         }
-        # TODO update to token call in agavepy
-        response = requests.post('%s/token' % tenant_base_url,
-                                 data=body,
-                                 auth=(client_key, client_sec))
-        token_data = response.json()
-        token_data['created'] = int(time.time())
+        response = requests.post(f"{settings.TAPIS_TENANT_BASE_URL}/v3/oauth2/tokens", data=body, auth=(settings.TAPIS_CLIENT_ID, settings.TAPIS_CLIENT_KEY))
+        response_json = response.json()
+        token_data = {
+            'created': int(time.time()),
+            'access_token': response_json['result']['access_token']['access_token'],
+            'refresh_token': response_json['result']['refresh_token']['refresh_token'],
+            'expires_in': response_json['result']['access_token']['expires_in']
+        }
+
         # log user in
-        user = authenticate(backend='agave', token=token_data['access_token'])
+        user = authenticate(backend='tapis', token=token_data['access_token'])
 
         if user:
             try:
                 token = user.tapis_oauth
                 token.update(**token_data)
             except ObjectDoesNotExist:
-                token = AgaveOAuthToken(**token_data)
+                token = TapisOAuthToken(**token_data)
                 token.user = user
                 new_user_alert.apply_async(args=(user.username,))
             token.save()
 
             login(request, user)
 
-            ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                       token=settings.AGAVE_SUPER_TOKEN)
-            try:
-                ag.files.list(systemId=settings.AGAVE_STORAGE_SYSTEM,
-                              filePath=user.username)
-            except HTTPError as e:
-                if e.response.status_code == 404:
-                    check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')
+            # ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+            #            token=settings.AGAVE_SUPER_TOKEN)
+            # try:
+            #     ag.files.list(systemId=settings.AGAVE_STORAGE_SYSTEM,
+            #                   filePath=user.username)
+            # except HTTPError as e:
+            #     if e.response.status_code == 404:
+            #         check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')
 
         else:
             messages.error(

@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from agavepy.agave import Agave
 from agavepy import agave
+from tapipy.tapis import Tapis
 import logging
 import six
 import time
@@ -15,12 +16,9 @@ logger = logging.getLogger(__name__)
 
 TOKEN_EXPIRY_THRESHOLD = 600
 
-AGAVE_RESOURCES = agave.load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
-class AgaveOAuthToken(models.Model):
+class TapisOAuthToken(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tapis_oauth')
-    token_type = models.CharField(max_length=255)
-    scope = models.CharField(max_length=255)
     access_token = models.CharField(max_length=255)
     refresh_token = models.CharField(max_length=255)
     expires_in = models.BigIntegerField()
@@ -56,47 +54,17 @@ class AgaveOAuthToken(models.Model):
         return {
             'access_token': self.access_token,
             'refresh_token': self.refresh_token,
-            'token_type': self.token_type,
-            'scope': self.scope,
             'created': self.created,
             'expires_in': self.expires_in
         }
 
     @property
     def client(self):
-        return Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
-                     api_key=getattr(settings, 'AGAVE_CLIENT_KEY'),
-                     api_secret=getattr(settings, 'AGAVE_CLIENT_SECRET'),
-                     token=self.access_token,
-                     resources=AGAVE_RESOURCES,
-                     refresh_token=self.refresh_token,
-                     token_callback=self.update)
-
-    def update(self, **kwargs):
-        for k, v in six.iteritems(kwargs):
-            setattr(self, k, v)
-        self.save()
-
-    @deprecated
-    def refresh(self):
-        """
-        DEPRECATED
-        :return:
-        """
-        logger.debug('Refreshing Agave OAuth token for user=%s' % self.user.username)
-        ag = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
-                   api_key=getattr(settings, 'AGAVE_CLIENT_KEY'),
-                   api_secret=getattr(settings, 'AGAVE_CLIENT_SECRET'),
-                   resources=AGAVE_RESOURCES,
-                   token=self.access_token,
-                   refresh_token=self.refresh_token)
-        current_time = time.time()
-        ag.token.refresh()
-        self.created = int(current_time)
-        self.update(**ag.token.token_info)
-        logger.debug('Agave OAuth token for user=%s refreshed: %s' % (self.user.username,
-                                                                      self.masked_token))
-
+        return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASE_URL'),
+                     client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
+                     client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
+                     access_token=self.access_token,
+                     refresh_token=self.refresh_token)
 
 class AgaveServiceStatus(object):
     page_id = getattr(settings, 'AGAVE_STATUSIO_PAGE_ID', '53a1e022814a437c5a000781')
@@ -124,30 +92,3 @@ class AgaveServiceStatus(object):
                 raise Exception(data)
         except HTTPError:
             logger.warning('Agave Service Status update failed')
-
-
-class TapisOAuthToken(models.Model):
-
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tapis_oauth')
-    access_token = models.CharField(max_length=255)
-    access_token_expires_at = models.BigIntegerField()
-    refresh_token = models.CharField(max_length=255)
-    refresh_token_expires_at = models.BigIntegerField()
-
-    @property
-    def token(self):
-        return {
-            'access_token': {
-                'access_token': self.access_token,
-                'expires_at': self.access_token_expires_at,
-                'exipres_in': self.expires_in
-            },
-            'refresh_token': {
-                'refresh_token': self.refresh_token,
-                'expires_at': self.refresh_token_expires_at,
-                'exipres_in': self.expires_in
-            }
-        }
-
-class TapisToken(models.Model):
-
