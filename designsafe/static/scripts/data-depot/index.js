@@ -309,7 +309,7 @@ function config(
             }
         })
         .state('projects.amendOther', {
-            url: '/projects/{projectId}/curation/amend',
+            url: '/projects/{projectId}/curation/amend/other',
             component: 'amendOther',
             params: {
                 project: null,
@@ -324,17 +324,36 @@ function config(
             }
         })
         .state('projects.amendExperiment', {
-            url: '/projects/{projectId}/curation/amend',
+            url: '/projects/{projectId}/curation/amend/exp',
             component: 'amendExperiment',
             params: {
                 project: null,
                 publication: null,
+                amendment: null
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
                     ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
+        .state('projects.amendCitation', {
+            url: '/projects/{projectId}/curation/amend/citation',
+            component: 'amendCitation',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
                 }]
             }
         })

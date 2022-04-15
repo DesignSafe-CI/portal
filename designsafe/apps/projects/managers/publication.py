@@ -76,8 +76,10 @@ UNAMENDABLE_FIELDS = {
         'dois',
         'authors',
         'fileTags',
-        'files'
-    ]
+        'files',
+        'project'
+    ],
+    'subent': [] #TODO...
 }
 
 
