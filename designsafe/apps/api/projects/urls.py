@@ -22,8 +22,6 @@ from designsafe.apps.api.projects.views import (ProjectListingView,
                                                 NeesPublicationView)
 
 urlpatterns = [
-    url(r'^/?$', ProjectCollectionView.as_view(), name='index'),
-
     url(r'^publication/(?P<project_id>[A-Z\-]+-[0-9]+)?(v(?P<revision>[0-9]+))?/?', PublicationView.as_view(), name='publication'),
 
     url(r'^amend-publication/((?P<project_id>[a-zA-Z0-9\-\_\.]+)/?)?', AmendPublicationView.as_view(), name='amend-publication'),
@@ -63,4 +61,6 @@ urlpatterns = [
 
     url(r'^(?P<project_uuid>[a-z0-9\-]+)/notification/$',
         ProjectNotificationView.as_view(), name='project_notification'),
+
+    url(r'^/?', ProjectCollectionView.as_view(), name='index'),
 ]
