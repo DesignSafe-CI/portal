@@ -102,6 +102,19 @@
                 <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
             </tr>
+            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+                <td>
+                    <span>Version</span>
+                </td>
+                <td>
+                    <select class="prj-dropdown"
+                            ng-options="version for version in $ctrl.versions"
+                            ng-change="$ctrl.getVersion()"
+                            ng-model="$ctrl.selectedVersion">
+                    </select>
+                    &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != '1'"><strong>Version Changes</strong></a>
+                </td>
+            </tr>
             <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
                 <td>Hazmapper Maps</td>
                 <td>

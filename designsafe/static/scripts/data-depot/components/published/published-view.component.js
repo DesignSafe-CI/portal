@@ -73,7 +73,7 @@ class PublishedViewCtrl {
 
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.versions = this.prepVersions(this.publication);
-        this.selectedVersion = this.publication.revision || 'Original';
+        this.selectedVersion = this.publication.revision || '1';
         this.prjBasePath = (this.publication.revision && this.publication.revision < 0
             ? this.publication.projectId + 'r' + this.publication.revision
             : this.publication.projectId
@@ -265,7 +265,7 @@ class PublishedViewCtrl {
     prepVersions(publication) {
         // returns a list of publication versions
         if (publication.latestRevision) {
-            let vers = ['Original'];
+            let vers = ['1'];
             let max = (publication.latestRevision.status === 'published'
                 ? publication.latestRevision.revision
                 : publication.latestRevision.revision - 1
@@ -432,7 +432,7 @@ class PublishedViewCtrl {
         let date = new Date(this.browser.publication.revisionDate);
         let modalData = [
             {label: 'Version', data: this.browser.publication.revision},
-            {label: 'Date of Publication', data: `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`},
+            {label: 'Date of Versioning', data: `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`},
             {label: null, data: this.browser.publication.revisionText}
         ]
         this.$uibModal.open({

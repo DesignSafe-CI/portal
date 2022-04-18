@@ -30,26 +30,62 @@ class PipelineAmendCitationCtrl {
             success: false,
             error: false,
             submitted: false,
-            placeholder: 'Experiment',
-            savedStatus: {}
+            placeholder: '',
+            savedStatus: {},
+            confirmed: false
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.publication = this.ProjectService.resolveParams.publication;
         this.project = this.ProjectService.resolveParams.project;
         this.amendment = this.ProjectService.resolveParams.amendment;
-        this.authors = this.ProjectService.resolveParams.authors;
-        this.publishedEntities = this.ProjectService.resolveParams.publishedEntities;
+
+        if (!this.publication || !this.project) {
+            this.goStart();
+        }
+        const prj_type = this.publication.project.value.projectType;
+        this.publishedDate = new Date(this.amendment.created).getFullYear();
+        this.publishedEntities = [];
+        this.amendFields = [];
+        this.authors = {};
+        if (prj_type == 'experimental') {
+            this.ui.placeholder = 'Experiment'
+            this.amendFields = [
+                'modelConfigs',
+                'sensorLists',
+                'eventsList',
+                'analysisList',
+                'reportsList'
+            ]
+            this.amendment.experimentsList.forEach((experiment) => {
+                if (experiment.value.dois.length) {
+                    this.publishedEntities.push(experiment);
+                    this.authors[experiment.uuid] = experiment.authors;
+                    this.ui.savedStatus[experiment.uuid] = false;
+                }
+            });
+        } else {
+            this.goStart();
+        }
+
+        
 
         this.ui.loading = false;
     }
 
     submitAmend() {
         this.ui.loading = true;
+        let amendments = [];
+        this.amendFields.forEach((field) => {
+            this.amendment[field].forEach((entity) => {
+                amendments.push(entity);
+            });
+        });
         this.$http.post(
             '/api/projects/amend-publication/',
             {
                 projectId: this.project.value.projectId,
-                authors: this.authors || undefined
+                authors: this.authors || undefined,
+                amendments: amendments,
             }
         ).then((resp) => {
             this.ui.success = true;
@@ -62,22 +98,7 @@ class PipelineAmendCitationCtrl {
         });
     }
 
-    configureCitations() {
-        this.publishedEntities.forEach((ent) => {
-            this.authors[ent.uuid] = ent.value.authors;
-            this.ui.savedStatus[ent.uuid] = false;
-        })
-
-        this.publishedKeyNames.forEach((key) => {
-            this.publication[key].forEach((pubEnt) => {
-                if (pubEnt.uuid in this.authors) {
-                    this.authors[pubEnt.uuid] = pubEnt.authors;
-                }
-            });
-        });
-    }
-
-    saveEntAuthors(entity, status) {
+    saveAuthors(entity, status) {
         this.ui.savedStatus[entity.uuid] = status;
         let statuses = Object.values(this.ui.savedStatus);
         if (statuses.every(value => value === true)) {
@@ -88,10 +109,31 @@ class PipelineAmendCitationCtrl {
         }
     }
 
-    sortAuthors(authors) {
-        if (authors.length && 'order' in authors[0]) return authors;
-        const sortedAuthors = authors.sort((a, b) => a.order - b.order);
-        return sortedAuthors;
+    orderAuthors(up, entity) {
+        var a;
+        var b;
+        this.saveAuthors(entity, false)
+        if (up) {
+            if (this.selectedAuthor.order <= 0) {
+                return;
+            }
+            // move up
+            a = this.authors[entity.uuid].find(x => x.order === this.selectedAuthor.order - 1);
+            b = this.authors[entity.uuid].find(x => x.order === this.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
+        } else {
+            if (this.selectedAuthor.order >= this.authors[entity.uuid].length - 1) {
+                return;
+            }
+            // move down
+            a = this.authors[entity.uuid].find(x => x.order === this.selectedAuthor.order + 1);
+            b = this.authors[entity.uuid].find(x => x.order === this.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
+        }
     }
 
     goAmend() {
@@ -107,6 +149,10 @@ class PipelineAmendCitationCtrl {
 
     goProject() {
         this.$state.go('projects.view', { projectId: this.project.uuid }, { reload: true });
+    }
+
+    goStart() {
+        this.$state.go('projects.pipelineStart', { projectId: this.projectId }, { reload: true });
     }
 }
 

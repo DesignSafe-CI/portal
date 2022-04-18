@@ -4,7 +4,7 @@
     </a>
     <button class="btn btn-small btn-add"
             ng-click="$ctrl.submitAmend()"
-            ng-disabled="$ctrl.ui.loading || $ctrl.ui.submitted">
+            ng-disabled="$ctrl.ui.loading || $ctrl.ui.submitted || !$ctrl.ui.confirmed">
         Amend Publication
     </button>
 </div>
@@ -29,8 +29,22 @@
             area before changing anything in the project. This process can take
             up to an hour or more for large datasets.
         </div>
+        <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goProject()"
+            ng-if="!$ctrl.ui.loading && $ctrl.ui.success"
+        >
+            Return to Project
+        </button>
+        <div class="alert alert-danger" ng-if="$ctrl.ui.error">
+            <i class="fa fa-times"></i>
+            There was an issue when attempting to submit your project
+            for revision.
+            <strong>Do not attempt to update your publication again.</strong> Please
+            <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+new+version+of+existing+publication:+{{$ctrl.project.value.projectId}}"
+            target="_blank">submit a ticket</a> and we will assist you with this issue.
+        </div>
     </div>
-    <div ng-if="!$ctrl.ui.loading">
+    <div ng-if="!$ctrl.ui.loading && !$ctrl.ui.submitted">
         <div ng-repeat="pubEnt in $ctrl.publishedEntities | orderBy: pubEnt.value.title" style="margin-bottom: 40px;">
             <!-- Order Authors -->
             <div class="well">
@@ -84,7 +98,7 @@
                         <td>
                             <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, pubEnt)"></i>
                             <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, pubEnt)"></i>
-                            <a class="sort-arrows" ng-click="$ctrl.saveEntAuthors(pubEnt, true)">Save</a>
+                            <a class="sort-arrows" ng-click="$ctrl.saveAuthors(pubEnt, true)">Save</a>
                         </td>
                     </tr>
                 </table>

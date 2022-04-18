@@ -172,11 +172,13 @@ class AmendPublicationView(BaseApiView):
         
         project_id = data['projectId']
         authors = data.get('authors', None)
+        amendments = data.get('amendments', None)
         current_revision = IndexedPublication.max_revision(project_id=project_id)
 
         (
             tasks.amend_publication_data.s(
                 project_id,
+                amendments,
                 authors,
                 current_revision
             ).set(queue='api') |
