@@ -1,7 +1,7 @@
 <div class="modal-header" style="background: #e6e6e6">
     <h4 class="modal-title" style="border: none">
         {{$ctrl.resolve.type}} Data Metrics
-        <span ng-if="!$ctrl.loading && !$ctrl.error">(<span ng-if="$ctrl.lastUpdated">{{$ctrl.initialDate | date:'MMMM yyyy'}} - {{$ctrl.lastUpdated | date:'MMMM yyyy'}}, </span>updated every month)</span>
+        <span ng-if="!$ctrl.loading && !$ctrl.error">(<span ng-if="$ctrl.lastUpdated">Starting {{$ctrl.initialDate | date:'MMMM yyyy'}}, </span>updated every month)</span>
         <span ng-if="!$ctrl.loading && $ctrl.error">(Newly published project - initial metric report will be posted after the end of the month)</span>
         <span class="pull-right" ng-click="$ctrl.close()">
             <i class="fa fa-times"></i>
@@ -102,7 +102,7 @@
     </p>
     <p></p>
     <p style="font-size:16px; width:100%">
-        <span style="padding-right:15%">Unique Requests</span> <b>{{$ctrl.cumMetrics.uniqueRequests}}</b>
+        <span style="padding-right:15%">Unique Requests (Since January 2022)</span> <b>{{$ctrl.cumMetrics.uniqueRequests || "(not applicable)"}}</b>
     </p>
     </div>
 </div>
