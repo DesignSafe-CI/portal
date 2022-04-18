@@ -97,7 +97,7 @@ export const ngDesignsafe = angular.module('designsafe',
         'Dakota',
         'Clawpack',
         'Ansys',
-        'SWBatch',
+        'swbatch',
         'Extract'
     ]);
 
