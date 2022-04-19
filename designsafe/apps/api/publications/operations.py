@@ -225,7 +225,7 @@ def initilize_publication(publication, status='publishing', revision=None, revis
             publication['revision'] = revision
             publication['revisionDate'] = datetime.datetime.now().isoformat()
             publication['revisionText'] = revision_text
-        else:
+        elif 'created' not in publication:
             publication['created'] = datetime.datetime.now().isoformat()
         try:
             pub = IndexedPublication.from_id(publication['projectId'], revision=revision, using=es_client)

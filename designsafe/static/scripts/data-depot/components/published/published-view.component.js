@@ -8,13 +8,15 @@ import { isEqual, has } from 'underscore';
 import { publish } from 'rxjs/operators';
 
 class PublishedViewCtrl {
-    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, $http, FileListingService, FileOperationService, PublicationService, UserService){
+    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, $http, $q, FileListingService, FileOperationService, PublicationService, UserService){
         'ngInject';
         this.$anchorScroll = $anchorScroll;
         this.$state = $state;
         this.$location = $location;
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
+        this.$http = $http;
+        this.$q = $q;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
         this.PublicationService= PublicationService;
@@ -27,7 +29,6 @@ class PublishedViewCtrl {
             pi: {},
             coPis: null,
         };
-        this.$http = $http;
     }
 
     $onInit() {
@@ -178,6 +179,7 @@ class PublishedViewCtrl {
     }
 
     prepProject() {
+        this.doiList = {}
         if (this.project.value.projectType === 'experimental'){
             this.browser.project.analysis_set = this.browser.publication.analysisList;
             this.browser.project.modelconfig_set = this.browser.publication.modelConfigs;
@@ -185,10 +187,9 @@ class PublishedViewCtrl {
             this.browser.project.event_set = this.browser.publication.eventsList;
             this.browser.project.report_set = this.browser.publication.reportsList;
             this.browser.project.experiment_set = this.browser.publication.experimentsList;
-            this.expDOIList = this.browser.project.experiment_set.map(({ doi, uuid }) => {
-                return { value: doi, uuid, hash: `anchor-${uuid}` };
+            this.browser.publication.experimentsList.forEach((ent) => {
+                this.doiList[ent.uuid] = { doi: ent.doi, hash: `anchor-${ent.uuid}` }
             });
-
         }
         if (this.project.value.projectType === 'simulation'){
             this.browser.project.simulation_set = this.browser.publication.simulations;
@@ -197,8 +198,8 @@ class PublishedViewCtrl {
             this.browser.project.output_set = this.browser.publication.outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
-            this.simDOIList = this.browser.project.simulation_set.map(({ doi, uuid }) => {
-                return { value: doi, uuid, hash: `anchor-${uuid}` };
+            this.browser.publication.simulations.forEach((ent) => {
+                this.doiList[ent.uuid] = { doi: ent.doi, hash: `anchor-${ent.uuid}` }
             });
         }
         if (this.project.value.projectType === 'hybrid_simulation'){
@@ -212,11 +213,9 @@ class PublishedViewCtrl {
             this.browser.project.expoutput_set = this.browser.publication.exp_outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
-            this.hsDOIList = this.browser.project.hybridsimulation_set.map(({ doi, uuid }) => ({
-                value: doi,
-                uuid,
-                hash: `details-${uuid}`,
-            }));
+            this.browser.publication.hybrid_simulations.forEach((ent) => {
+                this.doiList[ent.uuid] = { doi: ent.doi, hash: `details-${ent.uuid}` }
+            });
         }
         if (this.project.value.projectType === 'field_recon'){
             this.browser.project.mission_set = this.browser.publication.missions;
@@ -243,12 +242,29 @@ class PublishedViewCtrl {
                     this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
                 }
             });
-            this.frDOIList = this.orderedPrimary.map(({ doi, uuid, name }) => ({
-                type: name.split('.').pop(),
-                value: doi,
-                uuid,
-                hash: `anchor-${uuid}`
-            }));
+            this.orderedPrimary.forEach((ent) => {
+                this.doiList[ent.uuid] = {
+                    doi: ent.doi,
+                    type: ent.name.split('.').pop(),
+                    hash: `details-${ent.uuid}`
+                }
+            });
+        }
+        if (this.doiList) {
+            let dataciteRequests = Object.values(this.doiList).map(({doi}) => {
+                return this.$http.get(`/api/publications/data-cite/${doi}`);
+            });
+            this.$q.all(dataciteRequests).then((responses) => {
+                let citations = responses.map((resp) => {
+                    if (resp.status == 200) {
+                        return resp.data.data.attributes
+                    }
+                });
+                citations.forEach((cite) => {
+                    let doiObj = Object.values(this.doiList).find(x => x.doi === cite.doi);
+                    doiObj['created'] = cite.created;
+                })
+            });
         }
     }
 

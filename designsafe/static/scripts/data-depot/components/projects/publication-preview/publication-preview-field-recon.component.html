@@ -106,17 +106,17 @@
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
-            <tr ng-repeat="doi in $ctrl.frDOIList">
+            <tr ng-repeat="(uuid, citation) in $ctrl.doiList">
                 <td ng-if="$first">DOI(s) in Project</td>
                 <td ng-if="!$first"></td>
                 <td>
                     <strong>
                         <a
-                            ng-click="$ctrl.goToHash(doi.hash)"
+                            ng-click="$ctrl.goToHash(citation.hash)"
                             data-toggle="collapse"
-                            data-target="{{ doi.type === 'mission' ? '#data-' : '#files-' }}{{doi.uuid}}"
+                            data-target="{{ citation.type === 'mission' ? '#data-' : '#files-' }}{{uuid}}"
                         >
-                            {{ doi.value }}
+                            {{ citation.doi }}
                         </a>
                     </strong>
                 </td>
@@ -408,7 +408,9 @@
                                     <span>(Appears when published)</span>
                                 </div>
                                 <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                                    <span>{{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}</span>
+                                    <span>
+                                        {{ $ctrl.doiList[mission.uuid].created | date:'MM-dd-yyyy' }}
+                                    </span>
                                 </div>
                             </div>
                             <div class="entity-meta-field">

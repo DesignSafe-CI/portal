@@ -75,17 +75,17 @@
                 <td ng-if="!$first"></td>
                 <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
-            <tr ng-repeat="doi in $ctrl.hsDOIList">
+            <tr ng-repeat="(uuid, citation) in $ctrl.doiList">
                 <td ng-if="$first">DOI(s) in Project</td>
                 <td ng-if="!$first"></td>
                 <td>
                     <strong>
                         <a
-                            ng-click="$ctrl.goToHash(doi.hash)"
+                            ng-click="$ctrl.goToHash(citation.hash)"
                             data-toggle="collapse"
-                            data-target="#data-{{ uuid }}"
+                            data-target="#data-{{uuid}}"
                         >
-                            {{ doi.value }}
+                            {{ citation.doi }}
                         </a>
                     </strong>
                 </td>
@@ -261,7 +261,7 @@
                         </span>
                         <span class="entity-meta-data"
                                 data-ng-if="$ctrl.readOnly">
-                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
+                            {{ $ctrl.doiList[hybsim.uuid].created | date:'MM-dd-yyyy' }}
                         </span>
                     </div>
                     <div class="entity-meta-field">
