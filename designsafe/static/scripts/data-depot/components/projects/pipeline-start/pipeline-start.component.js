@@ -34,7 +34,39 @@ class PipelineStartCtrl {
         ]).then(([project, entities]) => {
             this.project = project;
             this.project.appendEntitiesRel(entities);
-            this.PublicationService.getPublished(this.project.value.projectId).then((resp) => {
+            switch(this.project.value.projectType) {
+                case 'experimental': {
+                    this.ui.publicationComp = 'projects.pipelineSelectExp'
+                    this.ui.amendComp = 'projects.amendExperiment'
+                    this.ui.versionComp = 'projects.versionExperimentSelection'
+                    this.ui.previewComp = 'projects.preview'
+                    this.ui.showAmendVersion = true;
+                    break;
+                }
+                case 'simulation': {
+                    this.ui.publicationComp = 'projects.pipelineSelectSim'
+                    this.ui.previewComp = 'projects.previewSim'
+                    break;
+                }
+                case 'hybrid_simulation': {
+                    this.ui.publicationComp = 'projects.pipelineSelectHybSim'
+                    this.ui.previewComp = 'projects.previewHybSim'
+                    break;
+                }
+                case 'field_recon': {
+                    this.ui.publicationComp = 'projects.pipelineSelectField'
+                    this.ui.previewComp = 'projects.previewFieldRecon'
+                    break;
+                }
+                case 'other': {
+                    this.ui.publicationComp = 'projects.pipelineSelectOther'
+                    this.ui.amendComp = 'projects.amendOther'
+                    this.ui.versionComp = 'projects.versionOtherSelection'
+                    this.ui.previewComp = 'projects.previewOther'
+                    this.ui.showAmendVersion = true;
+                }
+            }
+            this.PublicationService.getPublished('this.project.value.projectId').then((resp) => {
                 this.publication = (resp.data.latestRevision
                     ? resp.data.latestRevision
                     : resp.data
@@ -43,38 +75,6 @@ class PipelineStartCtrl {
                     this.ui.isPublished = true;
                     if (this.publication.status != 'published') {
                         this.ui.isProcessing = true;
-                    }
-                }
-                switch(this.project.value.projectType) {
-                    case 'experimental': {
-                        this.ui.publicationComp = 'projects.pipelineSelectExp'
-                        this.ui.amendComp = 'projects.amendExperiment'
-                        this.ui.versionComp = 'projects.versionExperimentSelection'
-                        this.ui.previewComp = 'projects.preview'
-                        this.ui.showAmendVersion = true;
-                        break;
-                    }
-                    case 'simulation': {
-                        this.ui.publicationComp = 'projects.pipelineSelectSim'
-                        this.ui.previewComp = 'projects.previewSim'
-                        break;
-                    }
-                    case 'hybrid_simulation': {
-                        this.ui.publicationComp = 'projects.pipelineSelectHybSim'
-                        this.ui.previewComp = 'projects.previewHybSim'
-                        break;
-                    }
-                    case 'field_recon': {
-                        this.ui.publicationComp = 'projects.pipelineSelectField'
-                        this.ui.previewComp = 'projects.previewFieldRecon'
-                        break;
-                    }
-                    case 'other': {
-                        this.ui.publicationComp = 'projects.pipelineSelectOther'
-                        this.ui.amendComp = 'projects.amendOther'
-                        this.ui.versionComp = 'projects.versionOtherSelection'
-                        this.ui.previewComp = 'projects.previewOther'
-                        this.ui.showAmendVersion = true;
                     }
                 }
                 this.ui.loading = false;
