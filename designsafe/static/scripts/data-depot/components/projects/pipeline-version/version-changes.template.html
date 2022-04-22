@@ -53,8 +53,10 @@
     <div ng-if="!$ctrl.ui.loading && !$ctrl.ui.submitted">
         <div class="pipeline-section">
             <label>Version Changes</label>&nbsp;<span class="label label-danger">Required</span>
+            <!-- Render a list of published entities under bullets so users can quickly reference for copy/paste in the description -->
             <div>
-                Specify what files you are adding, removing, or replacing, and why these changes are needed. This will be displayed to those viewing your publication, so be detailed and formal in your explanation.
+                Specify what files you are adding, removing, or replacing, and why these changes are needed.
+                This will be displayed to those viewing your publication, so be detailed and formal in your explanation.
             </div>
             <textarea ng-model="$ctrl.revisionText"></textarea>
         </div>

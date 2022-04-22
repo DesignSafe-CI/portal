@@ -309,7 +309,7 @@ function config(
             }
         })
         .state('projects.amendOther', {
-            url: '/projects/{projectId}/curation/amend',
+            url: '/projects/{projectId}/curation/amend/other',
             component: 'amendOther',
             params: {
                 project: null,
@@ -323,82 +323,111 @@ function config(
                 }]
             }
         })
-        .state('projects.amendExperimental', {
-            url: '/projects/{projectId}/curation/amend',
-            component: 'amendExperimental',
+        .state('projects.amendExperiment', {
+            url: '/projects/{projectId}/curation/amend/exp',
+            component: 'amendExperiment',
             params: {
                 project: null,
                 publication: null,
+                amendment: null
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
                     ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
+        .state('projects.amendCitation', {
+            url: '/projects/{projectId}/curation/amend/citation',
+            component: 'amendCitation',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
                 }]
             }
         })
         .state('projects.versionOtherSelection', {
-            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            url: '/projects/{projectId}/curation/version-other/{filePath:any}',
             component: 'versionOtherSelection',
             params: {
                 filePath: '',
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedListings: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing || null;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings || null;
                 }]
             }
         })
         .state('projects.versionOtherCitation', {
-            url: '/projects/{projectId}/curation/citation',
+            url: '/projects/{projectId}/curation/citation-other',
             component: 'versionOtherCitation',
             params: {
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedListings: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                 }]
             }
         })
-        .state('projects.versionExperimentalSelection', {
+        .state('projects.versionExperimentSelection', {
             url: '/projects/{projectId}/curation/version/{filePath:any}',
-            component: 'versionExperimentalSelection',
+            component: 'versionExperimentSelection',
             params: {
-                filePath: '',
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedEnts: [],
+                selectedListings: null
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
-                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing || null;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                 }]
             }
         })
-        .state('projects.versionExperimentalCitation', {
+        .state('projects.versionExperimentCitation', {
             url: '/projects/{projectId}/curation/citation',
-            component: 'versionExperimentalCitation',
+            component: 'versionExperimentCitation',
             params: {
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedEnts: [],
+                selectedListings: null
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                 }]
             }
         })
@@ -406,14 +435,20 @@ function config(
             url: '/projects/{projectId}/curation/changes',
             component: 'versionChanges',
             params: {
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedEnts: [],
+                selectedListings: null,
+                revisionAuthors: {},
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    ProjectService.resolveParams.revisionAuthors = $stateParams.revisionAuthors;
                 }]
             }
         })

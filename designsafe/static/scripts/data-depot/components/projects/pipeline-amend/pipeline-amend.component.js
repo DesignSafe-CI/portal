@@ -1,7 +1,5 @@
-import AmendOther from './amend-other.template.html';
-import AmendExperimental from './amend-experimental.template.html';
+import AmendExperimentTemplate from './amend-experimental.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
-import { has } from 'underscore';
 
 class PipelineAmendCtrl {
     constructor(
@@ -22,10 +20,7 @@ class PipelineAmendCtrl {
     $onInit() {
         this.ui = {
             loading: true,
-            success: false,
-            error: false,
-            submitted: false,
-            confirmed: false,
+            missing: {},
             efs: experimentalData.experimentalFacility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
@@ -33,72 +28,76 @@ class PipelineAmendCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.publication = this.ProjectService.resolveParams.publication;
         this.project = this.ProjectService.resolveParams.project;
+        this.amendment = this.ProjectService.resolveParams.amendment;
+
         if (!this.publication || !this.project) {
             this.goStart();
         }
-        this.authors = {};
-        this.mainEntities = [];
-        let prj_type = this.publication.project.value.projectType;
-        if (prj_type == 'other') {
-            this.authors = this.publication.project.value.teamOrder;
-            this.ui.loading = false;
-        } else {
-            let attrnames = [];
-            if (prj_type == 'experimental') {
-                attrnames = ['experimentsList'];
-            } else if (prj_type == 'simulation') {
-                attrnames = ['simulations'];
-            } else if (prj_type == 'hybrid_simulation') {
-                attrnames = ['hybrid_simulations'];
-            } else if (prj_type == 'field_recon') {
-                attrnames = ['missions', 'reports'];
+        if (!this.amendment) {
+            this.amendment = JSON.parse(JSON.stringify(this.publication));
+            const prj_type = this.publication.project.value.projectType;
+            const unamendableFields = {
+                'project': ['pi', 'coPis', 'teamMembers', 'guestMembers', 'projectId', 'projectType', 'title', 'teamOrder', 'fileTags', 'dois'],
+                'entity': ['title', 'dois', 'authors', 'fileTags', 'files', 'project'],
+                'experimentEntity': ['project', 'experiments', 'modelConfigs', 'sensorLists', 'files']
             }
-            attrnames.forEach((name) => {
-                this.publication[name].forEach((entity) => {
-                    this.authors[entity.uuid] = entity.authors;
-                    this.mainEntities.push(entity.uuid);
+            let prjEnts = this.project.getAllRelatedObjects();
+            let mapping = []
+            if (prj_type == 'experimental') {
+                mapping = [
+                    'experimentsList',
+                    'modelConfigs',
+                    'sensorLists',
+                    'eventsList',
+                    'analysisList',
+                    'reportsList'
+                ]
+            } // else if (prj_type == 'simulation') ...
+            mapping.forEach((fieldName) => {
+                this.amendment[fieldName].forEach((amendEntity) => {
+                    let prjEntity = prjEnts.find(ent => ent.uuid == amendEntity.uuid);
+                    if (!prjEntity) {
+                        this.ui.missing[amendEntity.uuid] = { 'title': amendEntity.value.title };
+                    } else {
+                        if ('dois' in amendEntity.value) {
+                            Object.keys(amendEntity.value).forEach((entKey) => {
+                                if (!unamendableFields.entity.includes(entKey)) {
+                                    amendEntity.value[entKey] = prjEntity.value[entKey];
+                                }
+                            });
+                        } else {
+                            Object.keys(amendEntity.value).forEach((entKey) => {
+                                if (!unamendableFields.experimentEntity.includes(entKey)) {
+                                    amendEntity.value[entKey] = prjEntity.value[entKey];
+                                }
+                            });
+                        }
+                    }
                 });
             });
-            this.ui.loading = false;
         }
+        this.ui.loading = false;
     }
 
-    amendProject() {
-        return this.$uibModal.open({
-            component: 'amendProject',
+    amendSubEntity(entity) {
+        this.$uibModal.open({
+            component: 'amendEntityModal',
             resolve: {
-                project: () => this.project,
+                entity: () => entity,
+                missing: () => this.ui.missing,
             },
             backdrop: 'static',
             size: 'lg',
         });
     }
 
-    saveAuthors() {
-        this.ui.confirmed = true;
-    }
-
-    submitAmend() {
-        this.ui.loading = true;
-        this.$http.post(
-            '/api/projects/amend-publication/',
-            {
-                projectId: this.project.value.projectId,
-                authors: this.authors || undefined
-            }
-        ).then((resp) => {
-            this.ui.success = true;
-            this.ui.submitted = true;
-            this.ui.loading = false;
-        }, (error) => {
-            this.ui.error = true;
-            this.ui.submitted = true;
-            this.ui.loading = false;
-        });
-    }
-
-    goProject() {
-        this.$state.go('projects.view', { projectId: this.project.uuid }, { reload: true });
+    goCitation() {
+        this.$state.go('projects.amendCitation', {
+            projectId: this.project.uuid,
+            project: this.project,
+            publication: this.publication,
+            amendment: this.amendment
+        }, { reload: true });
     }
 
     goStart() {
@@ -110,6 +109,10 @@ class PipelineAmendCtrl {
             return true;
         }
         return false;
+    }
+
+    isEmpty(obj) {
+        return Object.keys(obj).length === 0;
     }
 
     getEF(str) {
@@ -137,7 +140,7 @@ class PipelineAmendCtrl {
     }
 
     sortAuthors(authors) {
-        if (!has(authors[0], 'order')) return authors;
+        if (authors.length && 'order' in authors[0]) return authors;
         const sortedAuthors = authors.sort((a, b) => a.order - b.order);
         return sortedAuthors;
     }
@@ -163,7 +166,7 @@ class PipelineAmendCtrl {
         this.$uibModal.open({
             component: 'publishedCitationModal',
             resolve: {
-                publication: () => { return this.publication; },
+                publication: () => { return this.amendment; },
                 entity: () => { return entity; },
             },
             size: 'citation'
@@ -181,19 +184,8 @@ class PipelineAmendCtrl {
     }
 }
 
-export const AmendOtherComponent = {
-    template: AmendOther,
-    controller: PipelineAmendCtrl,
-    controllerAs: '$ctrl',
-    bindings: {
-        resolve: '<',
-        close: '&',
-        dismiss: '&'
-    },
-};
-
-export const AmendExperimentalComponent = {
-    template: AmendExperimental,
+export const AmendExperimentComponent = {
+    template: AmendExperimentTemplate,
     controller: PipelineAmendCtrl,
     controllerAs: '$ctrl',
     bindings: {

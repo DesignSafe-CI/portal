@@ -1,0 +1,108 @@
+<div class="pipeline-nav">
+    <a ng-click="$ctrl.goAmend()">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+    <button class="btn btn-small btn-add"
+            ng-click="$ctrl.submitAmend()"
+            ng-disabled="$ctrl.ui.loading || $ctrl.ui.submitted || !$ctrl.ui.confirmed">
+        Amend Publication
+    </button>
+</div>
+<div class="pipeline-page">
+    <div class="pipeline-header">
+        <h3>Confirm Author Order</h3>
+        <strong>You are required to confirm the list of Authors on your Citation(s) before continuing.</strong>
+        Your citation(s) will be updated to match what is shown in the preview.
+        <div ng-if="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+    </div>
+    <!-- Notifications -->
+    <div class="pipeline-notification">
+        <div class="alert alert-success" ng-if="$ctrl.ui.success">
+            <i class="fa fa-check"></i>
+            Your publication amendment has been submitted.
+            <strong>Do not attempt to amend your publication again.</strong>
+            Please wait until the publication has reappeared in the publications
+            area before changing anything in the project. This process can take
+            up to an hour or more for large datasets.
+        </div>
+        <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goProject()"
+            ng-if="!$ctrl.ui.loading && $ctrl.ui.success"
+        >
+            Return to Project
+        </button>
+        <div class="alert alert-danger" ng-if="$ctrl.ui.error">
+            <i class="fa fa-times"></i>
+            There was an issue when attempting to submit your project
+            for revision.
+            <strong>Do not attempt to update your publication again.</strong> Please
+            <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+new+version+of+existing+publication:+{{$ctrl.project.value.projectId}}"
+            target="_blank">submit a ticket</a> and we will assist you with this issue.
+        </div>
+    </div>
+    <div ng-if="!$ctrl.ui.loading && !$ctrl.ui.submitted">
+        <div ng-repeat="pubEnt in $ctrl.publishedEntities | orderBy: pubEnt.value.title" style="margin-bottom: 40px;">
+            <!-- Order Authors -->
+            <div class="well">
+                <div class="prj-head-title" style="padding-bottom:20px">
+                    {{$ctrl.ui.placeholder}} | <strong>{{ pubEnt.value.title }}</strong>
+                </div>
+                <!-- Success Alert -->
+                <div class="alert alert-success text-center" ng-if="$ctrl.ui.savedStatus[pubEnt.uuid]">
+                    <h4>Success</h4>
+                    The author order for this {{$ctrl.ui.placeholder}} has been saved.
+                </div>
+                <div ng-show="$ctrl.ui.loading">
+                    <h3 class="text-center">
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                    </h3>
+                </div>
+                <!-- Citation Preview -->
+                <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
+                <div class="well" style="margin-bottom:20px; background-color: white;">
+                    <div>
+                        <ds-author-list format="hname" authors="$ctrl.authors[pubEnt.uuid]"></ds-author-list>
+                        <span>
+                            ({{ $ctrl.publishedDate }}) “{{ pubEnt.value.title }}”, in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                            <a href="{{'https://doi.org/' + $ctrl.pubEnt.value.dois[0]}}">{{'https://doi.org/' + $ctrl.pubEnt.value.dois[0]}}</a>.
+                        </span>
+                    </div>
+                </div>
+                <table class="tg" style="table-layout: fixed; width: 100%;" ng-show="!$ctrl.ui.loading">
+                    <tr>
+                        <td>
+                            <div ng-repeat="author in $ctrl.authors[pubEnt.uuid] | orderBy: 'order'">
+                                <input type="radio" name="author" format="lname" ng-model="$ctrl.selectedAuthor" ng-value="author"
+                                    ng-if="author.authorship">
+                                <span ng-if="!author.guest">
+                                    <ds-user    username="author.name"
+                                                format="lname"
+                                                ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                                    >
+                                        {{ author.name }}
+                                    </ds-user>
+                                </span>
+                                <span   ng-if="author.guest"
+                                        ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                                >
+                                    {{ author.lname }}, {{ author.fname }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, pubEnt)"></i>
+                            <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, pubEnt)"></i>
+                            <a class="sort-arrows" ng-click="$ctrl.saveAuthors(pubEnt, true)">Save</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

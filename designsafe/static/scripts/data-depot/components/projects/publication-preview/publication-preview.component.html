@@ -59,17 +59,17 @@
                     </span>
                 </td>
             </tr>
-            <tr ng-repeat="doi in $ctrl.expDOIList">
+            <tr ng-repeat="(uuid, citation) in $ctrl.doiList">
                 <td ng-if="$first">DOI(s) in Project</td>
                 <td ng-if="!$first"></td>
                 <td>
                     <strong>
                         <a
-                            ng-click="$ctrl.goToHash(doi.hash)"
+                            ng-click="$ctrl.goToHash(citation.hash)"
                             data-toggle="collapse"
-                            data-target="#data-{{doi.uuid}}"
+                            data-target="#data-{{uuid}}"
                         >
-                            {{ doi.value }}
+                            {{ citation.doi }}
                         </a>
                     </strong>
                 </td>
@@ -101,6 +101,19 @@
             <tr class="prj-row">
                 <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
+            </tr>
+            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+                <td>
+                    <span>Version</span>
+                </td>
+                <td>
+                    <select class="prj-dropdown"
+                            ng-options="version for version in $ctrl.versions"
+                            ng-change="$ctrl.getVersion()"
+                            ng-model="$ctrl.selectedVersion">
+                    </select>
+                    &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != '1'"><strong>Version Changes</strong></a>
+                </td>
             </tr>
             <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
                 <td>Hazmapper Maps</td>
@@ -165,7 +178,7 @@
             <td class="tg-0lax">
                 <div class="btn-group pull-right" role="group" aria-label="Publish buttons">
                     <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-disabled="$ctrl.ui.loading">
-                        Prepare to Publish <i class="fa fa-arrow-right"></i>
+                        Publish / Version / Amend
                     </button>
                 </div>
             </td>
@@ -293,7 +306,7 @@
                         </span>
                         <span class="entity-meta-data"
                                 data-ng-if="$ctrl.readOnly">
-                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
+                            {{ $ctrl.doiList[experiment.uuid].created | date:'MM-dd-yyyy' }}
                         </span>
                     </div>
                     <div class="entity-meta-field">

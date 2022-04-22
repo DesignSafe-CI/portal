@@ -76,6 +76,14 @@ UNAMENDABLE_FIELDS = {
         'dois',
         'authors',
         'fileTags',
+        'files',
+        'project'
+    ],
+    'subentity': [
+        'project',
+        'experiments',
+        'modelConfigs',
+        'sensorLists',
         'files'
     ]
 }
@@ -126,9 +134,6 @@ def draft_publication(
     :param bool upsert_project_doi: Update or insert project doi.
     :param bool upsert_main_entity_doi: Update or insert main entity doi.
     """
-    # TODO: We need to consider how we will prepare DataCite JSON data:
-    # 1) How do we manage conditional changes for versioning?
-    # 2) How do we cite related/unrelated entities for the DOI?
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     responses = []
@@ -232,7 +237,7 @@ def draft_publication(
         )
     return responses
 
-def amend_publication(project_id, authors=None, revision=None):
+def amend_publication(project_id, amendments=None, authors=None, revision=None):
     """Amend a Publication
     
     Update Amendable fields on a publication and the corrosponding DataCite
@@ -255,14 +260,18 @@ def amend_publication(project_id, authors=None, revision=None):
     if pub.project.value.projectType != 'other':
         pub_entity_uuids = pub.entities()
         for uuid in pub_entity_uuids:
-            entity = mgr.get_entity_by_uuid(uuid)
-            entity = entity.to_body_dict()
+            if uuid in amendments:
+                entity = amendments[uuid]
+            else:
+                entity = mgr.get_entity_by_uuid(uuid)
+                entity = entity.to_body_dict()
             _delete_unused_fields(entity)
 
             for pub_ent in pub_dict[FIELD_MAP[entity['name']]]:
                 if pub_ent['uuid'] == entity['uuid']:
                     for key in entity['value']:
-                        if key not in UNAMENDABLE_FIELDS['entity']:
+                        ent_type = 'entity' if 'dois' in entity['value'] else 'subentity'
+                        if key not in UNAMENDABLE_FIELDS[ent_type]:
                             pub_ent['value'][key] = entity['value'][key]
                     if 'authors' in entity['value']:
                         pub_ent['value']['authors'] = authors[entity['uuid']]
@@ -576,7 +585,6 @@ def archive(project_id, revision=None):
     Note: This metadata file is will only be used until the Fedora system is set up again.
     """
 
-    # TODO: Add revision number argument and format archive name if exists
     es_client = new_es_client()
     pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     if revision:
@@ -734,8 +742,8 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=N
 
                 if entity_dict['value']['dois']:
                     entity_dict['doi'] = entity_dict['value']['dois'][-1]
-                if revision:
-                    _preserve_project_values(original_pub, entity_dict, revised_authors)
+                    if revision:
+                        _preserve_project_values(original_pub, entity_dict, revised_authors)
                 _set_authors(entity_dict, publication)
                 publication[pub_entities_field_name].append(entity_dict)
     

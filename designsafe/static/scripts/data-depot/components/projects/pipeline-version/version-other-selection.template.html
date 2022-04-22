@@ -4,7 +4,7 @@
     </a>
     <button class="btn btn-small btn-add"
             ng-click="$ctrl.goCitation()"
-            ng-disabled="!$ctrl.selectedListing"
+            ng-disabled="!$ctrl.selectedListings"
     >
         Continue
     </button>
@@ -27,14 +27,14 @@
                 the new version.
             </div>
         </div>
-        <div ng-if="$ctrl.selectedListing">
+        <div ng-if="$ctrl.selectedListings">
             <div class="pipeline-nav">
                 <h3>These files will be published</h3>
                 <button class="btn btn-danger" ng-click="$ctrl.undoSelections()">Undo Selections</button>
             </div>
-            <files-listing listing=$ctrl.selectedListing show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
+            <files-listing listing=$ctrl.selectedListings show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
         </div>
-        <div ng-if="!$ctrl.selectedListing">
+        <div ng-if="!$ctrl.selectedListings">
             <div class="pipeline-nav">
                 <h3>Select files</h3>
                 <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
