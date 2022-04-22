@@ -78,6 +78,9 @@ class PipelineStartCtrl {
                     }
                 }
                 this.ui.loading = false;
+            }).catch((error) => {
+                console.log('could not retrieve publication.');
+                this.ui.loading = false;
             })
         });
     }
