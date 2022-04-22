@@ -134,9 +134,6 @@ def draft_publication(
     :param bool upsert_project_doi: Update or insert project doi.
     :param bool upsert_main_entity_doi: Update or insert main entity doi.
     """
-    # TODO: We need to consider how we will prepare DataCite JSON data:
-    # 1) How do we manage conditional changes for versioning?
-    # 2) How do we cite related/unrelated entities for the DOI?
     mgr = ProjectsManager(service_account())
     prj = mgr.get_project_by_id(project_id)
     responses = []
@@ -588,7 +585,6 @@ def archive(project_id, revision=None):
     Note: This metadata file is will only be used until the Fedora system is set up again.
     """
 
-    # TODO: Add revision number argument and format archive name if exists
     es_client = new_es_client()
     pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     if revision:

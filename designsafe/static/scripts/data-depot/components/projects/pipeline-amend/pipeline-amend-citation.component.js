@@ -17,14 +17,6 @@ class PipelineAmendCitationCtrl {
     }
 
     $onInit() {
-        /*BOOKMARK:
-        - Get this citation page working, need to sort authors and send back
-        the amended data.
-        - Get the publication preview working
-        - Sort out the date issue
-        - Check back for things marked "TODO"
-        - Any spare time can be used to clean up
-        */
         this.ui = {
             loading: true,
             success: false,

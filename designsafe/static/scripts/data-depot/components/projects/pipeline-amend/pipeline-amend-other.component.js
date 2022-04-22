@@ -15,7 +15,6 @@ class PipelineAmendOtherCtrl {
     }
 
     $onInit() {
-        // TODO: Scroll up after confirming Authors...
         this.ui = {
             loading: true,
             success: false,
@@ -47,6 +46,7 @@ class PipelineAmendOtherCtrl {
 
     saveAuthors() {
         this.ui.confirmed = true;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     submitAmend() {

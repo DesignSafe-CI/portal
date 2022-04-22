@@ -43,7 +43,6 @@ class PipelineAmendCtrl {
             }
             let prjEnts = this.project.getAllRelatedObjects();
             let mapping = []
-            // TODO: Generate "Amended Preview" for Project meta for Other and Experimental
             if (prj_type == 'experimental') {
                 mapping = [
                     'experimentsList',
@@ -54,12 +53,6 @@ class PipelineAmendCtrl {
                     'reportsList'
                 ]
             } // else if (prj_type == 'simulation') ...
-
-            // TEST code for missing entities...
-            // let index = prjEnts.findIndex(ent => ent.uuid == '7920466498774307306-242ac116-0001-012');
-            // prjEnts.splice(index,2)
-            // prjEnts = [];
-            // TEST code for missing entities...
             mapping.forEach((fieldName) => {
                 this.amendment[fieldName].forEach((amendEntity) => {
                     let prjEntity = prjEnts.find(ent => ent.uuid == amendEntity.uuid);
