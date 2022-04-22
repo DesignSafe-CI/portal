@@ -173,7 +173,7 @@ class PipelineAmendCtrl {
         this.$uibModal.open({
             component: 'publishedCitationModal',
             resolve: {
-                publication: () => { return this.publication; },
+                publication: () => { return this.amendment; },
                 entity: () => { return entity; },
             },
             size: 'citation'

@@ -439,6 +439,9 @@ class PublishedViewCtrl {
             resolve: {
                 publication: () => { return this.browser.publication; },
                 entity: () => { return entity; },
+                created: () => {
+                    return entity ? this.doiList[entity.uuid].created : undefined;
+                },
             },
             size: 'citation'
         });
