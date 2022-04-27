@@ -2806,6 +2806,13 @@ input[type="search"] {
   display: flex;
   align-items: center;
 }
+.flex-container {
+  display: flex;
+  align-items: center;
+}
+.notification-icon {
+  width:2em;
+}
 .pipeline-header {
   text-align: center;
   margin-bottom: 40px;

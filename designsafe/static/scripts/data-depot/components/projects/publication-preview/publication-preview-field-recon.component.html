@@ -333,7 +333,17 @@
                             <div class="entity-meta-field" ng-if="mission.value.description">
                                 <p>{{ mission.value.description }}</p>
                             </div>
+                            <!-- Tombstone Banner -->
+                            <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.tombstone">
+                                <i class="fa fa-warning notification-icon"></i>
+                                <div>
+                                    <strong>The following Dataset does not exist anymore</strong><br>
+                                    The Dataset with DOI:
+                                    <a href="https://doi.org/{{mission.value.dois[0]}}">{{mission.value.dois[0]}}</a>
+                                    was incomplete and removed. The metadata is still available.
+                                </div>
                             </div>
+                        </div>
                         <files-listing show-select="true" show-tags="true"
                         on-scroll="$ctrl.scrollToBottom()"
                         listing="$ctrl.FileListingService.listings[mission.uuid]"
@@ -461,6 +471,16 @@
                             <p>
                                 <br>{{ mission.value.description }}
                             </p>
+                            <!-- Tombstone Banner -->
+                            <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.tombstone">
+                                <i class="fa fa-warning notification-icon"></i>
+                                <div>
+                                    <strong>The following Dataset does not exist anymore</strong><br>
+                                    The Dataset with DOI:
+                                    <a href="https://doi.org/{{mission.value.dois[0]}}">{{mission.value.dois[0]}}</a>
+                                    was incomplete and removed. The metadata is still available.
+                                </div>
+                            </div>
                             <!-- Old Collections -->
                             <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
                                 <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
