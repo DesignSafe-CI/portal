@@ -75,6 +75,19 @@ class PipelineAmendCtrl {
                     }
                 });
             });
+            Object.keys(this.amendment.licenses).forEach((key) => {
+                if (this.amendment.licenses[key]) {
+                    this.ui.license = this.amendment.licenses[key];
+                    if (key === 'datasets') {
+                        this.ui.licenseType = 'curation-odc';
+                    } else if (key === 'software') {
+                        this.ui.licenseType = 'curation-gpl';
+                    } else if (key === 'works') {
+                        let subtype = (this.ui.license.includes('Attribution') ? 'share' : 'zero');
+                        this.ui.licenseType = `curation-cc-${subtype}`;
+                    }
+                }
+            });
         }
         this.ui.loading = false;
     }
