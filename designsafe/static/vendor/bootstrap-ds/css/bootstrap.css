@@ -2811,7 +2811,7 @@ input[type="search"] {
   align-items: center;
 }
 .notification-icon {
-  width:2em;
+  padding-right: 15px;
 }
 .pipeline-header {
   text-align: center;

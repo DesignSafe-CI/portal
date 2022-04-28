@@ -15,17 +15,15 @@
     </div>
     <!-- Notifications -->
     <div class="pipeline-notification">
-        <div class="alert alert-warning" ng-if="$ctrl.ui.isProcessing">
-            <span>
-                <i class="fa fa-exclamation-triangle"></i>
-            </span>
-            <span>
+        <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.isProcessing">
+            <i class="fa fa-exclamation-triangle notification-icon"></i>
+            <div>
                 Your publication request is processing. Please allow 24 hours for this process to complete.
                 If your publication does not appear in the "Published" section of the Data Depot or if you
                 are still seeing this message after 24 hours, please
                 <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Publication+submission+has+not+resolved:+{{$ctrl.project.value.projectId}}"
                 target="_blank">submit a ticket</a>.
-            </span>
+            </div>
         </div>
     </div>
     <div ng-if="!$ctrl.ui.loading">

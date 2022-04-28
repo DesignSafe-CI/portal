@@ -22,9 +22,11 @@
     </div>
     <!-- Notifications -->
     <div class="pipeline-notification">
-        <div class="alert alert-success" ng-if="$ctrl.ui.confirmed">
-            <i class="fa fa-check"></i>
-            Your authors have been saved. Click the "Continue" button to proceed to the next step.
+        <div class="alert alert-success flex-container" ng-if="$ctrl.ui.confirmed">
+            <i class="fa fa-check notification-icon"></i>
+            <div>
+                Your authors have been saved. Click the "Continue" button to proceed to the next step.
+            </div>
         </div>
         <button class="btn btn-small btn-add"
             ng-click="$ctrl.goProject()"

@@ -21,13 +21,15 @@
     </div>
     <!-- Notifications -->
     <div class="pipeline-notification">
-        <div class="alert alert-success" ng-if="$ctrl.ui.success">
-            <i class="fa fa-check"></i>
-            Your publication amendment has been submitted.
-            <strong>Do not attempt to amend your publication again.</strong>
-            Please wait until the publication has reappeared in the publications
-            area before changing anything in the project. This process can take
-            up to an hour or more for large datasets.
+        <div class="alert alert-success flex-container" ng-if="$ctrl.ui.success">
+            <i class="fa fa-check notification-icon"></i>
+            <div>
+                Your publication amendment has been submitted.
+                <strong>Do not attempt to amend your publication again.</strong>
+                Please wait until the publication has reappeared in the publications
+                area before changing anything in the project. This process can take
+                up to an hour or more for large datasets.
+            </div>
         </div>
         <button class="btn btn-small btn-add"
             ng-click="$ctrl.goProject()"
@@ -35,13 +37,15 @@
         >
             Return to Project
         </button>
-        <div class="alert alert-danger" ng-if="$ctrl.ui.error">
-            <i class="fa fa-times"></i>
-            There was an issue when attempting to submit your project
-            for revision.
-            <strong>Do not attempt to update your publication again.</strong> Please
-            <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+new+version+of+existing+publication:+{{$ctrl.project.value.projectId}}"
-            target="_blank">submit a ticket</a> and we will assist you with this issue.
+        <div class="alert alert-danger flex-container" ng-if="$ctrl.ui.error">
+            <i class="fa fa-times notification-icon"></i>
+            <div>
+                There was an issue when attempting to submit your project
+                for revision.
+                <strong>Do not attempt to update your publication again.</strong> Please
+                <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+new+version+of+existing+publication:+{{$ctrl.project.value.projectId}}"
+                target="_blank">submit a ticket</a> and we will assist you with this issue.
+            </div>
         </div>
     </div>
     <div ng-if="!$ctrl.ui.loading && !$ctrl.ui.submitted">
