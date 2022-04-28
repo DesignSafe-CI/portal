@@ -39,6 +39,7 @@ class PublishedViewCtrl {
             experimentTypes: experimentalData.experimentTypes,
             fileNav: true,
             loading: true,
+            tombstone: false,
         };
         this.browser = {}
         this.browser.listings = {};
@@ -112,6 +113,7 @@ class PublishedViewCtrl {
         //add metadata to header
         this.type = this.browser.publication.project.value.projectType;
         this.prepProject();
+        this.ui.tombstone = this.publication.status === 'tombstone';
         this.ui.loading = false;
     }
 
