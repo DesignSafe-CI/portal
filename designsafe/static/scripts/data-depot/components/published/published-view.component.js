@@ -37,6 +37,8 @@ class PublishedViewCtrl {
             efs: experimentalData.experimentalFacility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
+            license: '',
+            licenseType: '',
             fileNav: true,
             loading: true,
             tombstone: false,
@@ -109,6 +111,20 @@ class PublishedViewCtrl {
         else {
             this.getProjectListings();
         }
+
+        Object.keys(this.publication.licenses).forEach((key) => {
+            if (this.publication.licenses[key]) {
+                this.ui.license = this.publication.licenses[key];
+                if (key === 'datasets') {
+                    this.ui.licenseType = 'curation-odc';
+                } else if (key === 'software') {
+                    this.ui.licenseType = 'curation-gpl';
+                } else if (key === 'works') {
+                    let subtype = (this.ui.license.includes('Attribution') ? 'share' : 'zero');
+                    this.ui.licenseType = `curation-cc-${subtype}`;
+                }
+            }
+        });
 
         //add metadata to header
         this.type = this.browser.publication.project.value.projectType;

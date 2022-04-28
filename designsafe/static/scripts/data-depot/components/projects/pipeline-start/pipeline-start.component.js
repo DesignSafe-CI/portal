@@ -66,7 +66,7 @@ class PipelineStartCtrl {
                     this.ui.showAmendVersion = true;
                 }
             }
-            this.PublicationService.getPublished('this.project.value.projectId').then((resp) => {
+            this.PublicationService.getPublished(this.project.value.projectId).then((resp) => {
                 this.publication = (resp.data.latestRevision
                     ? resp.data.latestRevision
                     : resp.data

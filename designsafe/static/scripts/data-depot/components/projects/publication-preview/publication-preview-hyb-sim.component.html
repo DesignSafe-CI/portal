@@ -288,27 +288,12 @@
                             <span>(Appears when published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets" class="license-element">
-                                <span class="curation-odc" style="font-size:32px;"></span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.datasets }}</span>
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.works" class="license-element">
-                                <span
-                                    class="curation-cc-share"
-                                    style="font-size:32px;"
-                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
-                                </span>
-                                <span
-                                    class="curation-cc-zero"
-                                    style="font-size:32px;"
-                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
-                                </span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.works }}</span>
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.software" class="license-element">
-                                <span class="curation-gpl" style="font-size:32px;"></span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.software }}</span>
-                            </div>
+                            <strong>
+                                <div class="license-element">
+                                    <span ng-class="$ctrl.ui.licenseType"></span>
+                                    &nbsp;{{$ctrl.ui.license}}
+                                </div>
+                            </strong>
                         </div>
                         <div class="entity-meta-field">
                             <div class="entity-meta-label">Data Reuse</div>
