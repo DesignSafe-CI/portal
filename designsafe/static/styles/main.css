@@ -947,6 +947,10 @@ li .popover.right {
   margin: 0 30px;
 }
 
+.o-site__footer {
+  margin-top: 20px;
+}
+
 .bg-image-5ysp {
   background-image: url(../images/muhry_northamerica-blue@2x.png);
 }

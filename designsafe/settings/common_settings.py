@@ -281,6 +281,7 @@ CMS_TEMPLATES = (
     ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
+    ('cms_page_no_footer.html', 'Footerless Page'),
 )
 CMSPLUGIN_CASCADE = {
     'alien_plugins': (
