@@ -76,19 +76,20 @@ class ManageExperimentsCtrl {
                 ...this.data.users,
                 ...exp.value.authors.slice()])
         ];
-        let modAuths = false;
+        let orders = usersToClean.map(({order}) => {return order});
+        let reorder = orders.length > [...new Set(orders)].length;
         let auths = [];
 
         usersToClean.forEach((a) => {
             if (typeof a == 'string') {
-                modAuths = true;
+                reorder = true;
             }
             if (a.authorship) {
                 auths.push(a);
             }
         });
         // create author objects for each user
-        if (modAuths) {
+        if (reorder) {
             usersToClean.forEach((auth, i) => {
                 if (typeof auth == 'string') {
                     // if user is guest append their data
