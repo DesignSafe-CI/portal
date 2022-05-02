@@ -101,10 +101,15 @@ class AppTrayCtrl {
                                         .parent($('#toast-container')));
                                 }
                             } else {
-                                this.$mdToast.show(this.$mdToast.simple()
-                                    .content(this.$translate.instant('error_app_run'))
-                                    .toastClass('warning')
-                                    .parent($('#toast-container')));
+                                // This app has no metadata, but should be able to be loaded if it exists
+                                this.launchApp({
+                                    value: {
+                                        type: "agave",
+                                        definition: {
+                                            id: appId
+                                        }
+                                    }
+                                })
                             }
                         },
                         (response) => {
