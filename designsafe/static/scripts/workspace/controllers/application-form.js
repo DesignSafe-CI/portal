@@ -92,6 +92,15 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                         .finally(() => {
                             $scope.resetForm();
                         });
+                }, (err) => {
+                    $scope.data.app = null;
+                    $mdToast.show(
+                        $mdToast
+                            .simple()
+                            .content($translate.instant('error_app_run'))
+                            .toastClass('warning')
+                            .parent($('#toast-container'))
+                    );
                 });
         } else if (app.value.type === 'html') {
             $scope.data.type = app.value.type;
