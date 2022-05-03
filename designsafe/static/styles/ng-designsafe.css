@@ -871,6 +871,12 @@ font-family: 'DesignSafe-Apps';
     line-height: 1.2;
 }
 
+@media (min-width: 1400px) {
+    .icon-letter {
+        font-size: 6em;
+    }
+}
+
 [class^="icon-"]:before,
 [class*=" icon-"]:before {
     font-family: 'DesignSafe-Apps';
