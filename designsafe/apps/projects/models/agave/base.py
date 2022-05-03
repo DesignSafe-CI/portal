@@ -263,7 +263,24 @@ class Project(MetadataModel):
                 "url": "https://designsafe-ci.org"
             },
         }
+
+        if getattr(self, 'team_order', False):
+            authors = sorted(self.team_order, key=lambda x: x['order'])
+        else:
+            authors = [{'name': username} for username in [self.pi] + self.co_pis]
+        dataset_json['creator'] = generate_creators(authors)
+        dataset_json['author'] = generate_creators(authors)
+        try:
+            pub = IndexedPublication.from_id(self.project_id)
+            license_info =  generate_licenses(pub)
+            dataset_json['license'] = license_info[0]["url"]
+        except (DocumentNotFound, AttributeError):
+            pass
+
         if self.dois:
+            dataset_json['@id'] = self.dois[0]
+            dataset_json['identifier'] = self.dois[0]
+
             dataset_json["distribution"] = {
                     "@context": "http://schema.org",
                     "@type": "Dataset",
@@ -312,28 +329,13 @@ class Project(MetadataModel):
                     },
             }
 
-        if getattr(self, 'team_order', False):
-            authors = sorted(self.team_order, key=lambda x: x['order'])
-        else:
-            authors = [{'name': username} for username in [self.pi] + self.co_pis]
-        dataset_json['creator'] = generate_creators(authors)
-        dataset_json['author'] = generate_creators(authors)
-        try:
-            pub = IndexedPublication.from_id(self.project_id)
-            license_info =  generate_licenses(pub)
-            dataset_json['license'] = license_info[0]["url"]
-        except (DocumentNotFound, AttributeError):
-            pass
-
-        if self.dois:
-            dataset_json['@id'] = self.dois[0]
-            dataset_json['identifier'] = self.dois[0]
+            
         else:
             doi_collection = []
             related_ents = self.related_entities()
 
             for i in range(len(related_ents)):
-                if hasattr(related_ents[i], 'dois'):
+                if hasattr(related_ents[i], 'dois') and related_ents[i].dois:
                     dataset_json['relatedIdentifier_' + str(i)] = {
                         "@context": "http://schema.org",
                         "@type": "Dataset",
@@ -379,6 +381,10 @@ class Project(MetadataModel):
                             "url": "https://designsafe-ci.org"
                         },    
                     }
+                    logger.debug('***'*100)
+                    logger.debug("related_ents" + str(i))
+                    logger.debug(related_ents[i].__dict__)
+                    logger.debug('***'*100)
                     dataset_json['relatedIdentifier_' + str(i)]['@id'] = related_ents[i].dois[0]
                     dataset_json['relatedIdentifier_' + str(i)]['identifier'] = related_ents[i].dois[0]
                     
