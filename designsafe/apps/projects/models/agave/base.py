@@ -331,7 +331,6 @@ class Project(MetadataModel):
 
             
         else:
-            doi_collection = []
             related_ents = self.related_entities()
 
             for i in range(len(related_ents)):
@@ -381,10 +380,6 @@ class Project(MetadataModel):
                             "url": "https://designsafe-ci.org"
                         },    
                     }
-                    logger.debug('***'*100)
-                    logger.debug("related_ents" + str(i))
-                    logger.debug(related_ents[i].__dict__)
-                    logger.debug('***'*100)
                     dataset_json['relatedIdentifier_' + str(i)]['@id'] = related_ents[i].dois[0]
                     dataset_json['relatedIdentifier_' + str(i)]['identifier'] = related_ents[i].dois[0]
                     
