@@ -77,7 +77,29 @@ export const ngDesignsafe = angular.module('designsafe',
     ])
     .constant('appCategories', ['Simulation', 'SimCenter Tools', 'Visualization', 'Analysis', 'Hazard Apps', 'Utilities'])
     // Current list of icons for apps
-    .constant('appIcons', ['Compress', 'Extract', 'MATLAB', 'Paraview', 'Hazmapper', 'Jupyter', 'ADCIRC', 'QGIS', 'LS-DYNA', 'LS-Pre/Post', 'VisIt', 'OpenFOAM', 'OpenSees', 'NGL']);
+    .constant('appIcons', [
+        'rWHALE',
+        'Hazmapper',
+        'Compress',
+        'STKO',
+        'OpenFOAM',
+        'Blender',
+        'MATLAB',
+        'NGL',
+        'Paraview',
+        'VisIt',
+        'Jupyter',
+        'QGIS',
+        'ADCIRC',
+        'OpenSees',
+        'LS-DYNA',
+        'LS-Pre/Post',
+        'Dakota',
+        'Clawpack',
+        'Ansys',
+        'swbatch',
+        'Extract'
+    ]);
 
 ngDesignsafe.requires.push('django.context',
     'httpi',
