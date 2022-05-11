@@ -613,7 +613,7 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
 
     index_path = '/' + project_id
     if revision:
-        index_path += 'r{}'.format(revision)
+        index_path += 'v{}'.format(revision)
     agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': index_path, 'recurse':True}, queue='indexing')
 
 

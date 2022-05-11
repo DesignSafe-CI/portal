@@ -209,10 +209,13 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 }
             });
 
-            /* To ensure that DCV server is alive, name of job
-            * needs to contain 'dcvserver' */
+            /* To ensure that DCV and VNC server is alive, name of job
+            needs to contain 'dcvserver' or 'vncserver' respectively */
             if ($scope.data.app.tags.includes('DCV')) {
                 jobData.name += '-dcvserver';
+            }
+            if ($scope.data.app.tags.includes('VNC')) {
+                jobData.name += '-vncserver';
             }
 
             // Calculate processorsPerNode if nodeCount parameter submitted
