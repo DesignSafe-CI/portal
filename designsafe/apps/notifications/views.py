@@ -54,12 +54,9 @@ def generic_webhook_handler(request):
         if host == 'designsafe-exec-01.tacc.utexas.edu':
             target_uri = 'https://' + address + '&autoconnect=true'
         else:
-            # target_uri = \
-            #     'https://vis.tacc.utexas.edu/no-vnc/vnc.html?' \
-            #     'hostname=%s&port=%s&autoconnect=true&password=%s' % (host, port, password)
             target_uri = \
-                'https://{host}/no-vnc/vnc.html?'\
-                'hostname={host}&port={port}&autoconnect=true&password={pw}' \
+                'https://tap.tacc.utexas.edu/noVNC/?'\
+                'host={host}&port={port}&autoconnect=true&encrypt=true&resize=scale&password={pw}' \
                 .format(host=host, port=port, pw=password)
         event_data = {
             Notification.EVENT_TYPE: event_type,
