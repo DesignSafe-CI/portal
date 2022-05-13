@@ -97,19 +97,21 @@ class PipelineAmendCtrl {
         }
         if (update === 'all' || update === 'secondary') { // update sub entity fields...
             secondaryEntNames.forEach((fieldName) => {
-                this.amendment[fieldName].forEach((amendEntity) => {
-                    // find project ent that matches amended uuid
-                    let prjEntity = prjEnts.find(ent => ent.uuid === amendEntity.uuid);
-                    if (!prjEntity && update === 'all') {
-                        this.ui.missing[amendEntity.uuid] = { 'title': amendEntity.value.title };
-                    } else {
-                        Object.keys(amendEntity.value).forEach((entKey) => {
-                            if (!unamendableFields.experimentEntity.includes(entKey)) {
-                                amendEntity.value[entKey] = prjEntity.value[entKey];
-                            }
-                        });
-                    }
-                });
+                if (fieldName in this.amendment) {
+                    this.amendment[fieldName].forEach((amendEntity) => {
+                        // find project ent that matches amended uuid
+                        let prjEntity = prjEnts.find(ent => ent.uuid === amendEntity.uuid);
+                        if (!prjEntity && update === 'all') {
+                            this.ui.missing[amendEntity.uuid] = { 'title': amendEntity.value.title };
+                        } else {
+                            Object.keys(amendEntity.value).forEach((entKey) => {
+                                if (!unamendableFields.experimentEntity.includes(entKey)) {
+                                    amendEntity.value[entKey] = prjEntity.value[entKey];
+                                }
+                            });
+                        }
+                    });
+                }
             });
         }
         Object.keys(this.amendment.licenses).forEach((key) => {
