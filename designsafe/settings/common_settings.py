@@ -431,6 +431,7 @@ MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe
 
 NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@designsafe-ci.org,')
 PROJECT_ADMINS_EMAIL = ['maria@tacc.utexas.edu', 'gendlerk@tacc.utexas.edu']
+DEV_PROJECT_ADMINS_EMAIL = ['tbrown@tacc.utexas,edu','sgray@tacc.utexas.edu','keiths@tacc.utexas.edu']
 
 ###
 # Terms and Conditions
