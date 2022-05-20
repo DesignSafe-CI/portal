@@ -211,7 +211,7 @@ def neesdescription(project_id, *args):
     return {'description': desc}
 
 
-def initilize_publication(publication, status='publishing', revision=None, revision_text=None):
+def initilize_publication(publication, status='publishing', revision=None, revision_text=None, revision_titles=None):
         """initilize publication."""
         publication['projectId'] = publication['project']['value']['projectId']
         publication['status'] = status
@@ -225,6 +225,8 @@ def initilize_publication(publication, status='publishing', revision=None, revis
             publication['revision'] = revision
             publication['revisionDate'] = datetime.datetime.now().isoformat()
             publication['revisionText'] = revision_text
+            if revision_titles:
+                publication['revisionTitles'] = revision_titles
         elif 'created' not in publication:
             publication['created'] = datetime.datetime.now().isoformat()
         try:

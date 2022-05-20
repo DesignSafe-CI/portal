@@ -33,6 +33,7 @@ class PipelineVersionChangesCtrl {
         this.selectedEnts = this.ProjectService.resolveParams.selectedEnts;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.revisionAuthors = this.ProjectService.resolveParams.revisionAuthors;
+        this.revisionSelections = [];
         this.revisionText = '';
 
         if (!this.publication || !this.project) {
@@ -42,7 +43,11 @@ class PipelineVersionChangesCtrl {
                 project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
                 license: this.publication.licenses
             };
-            if (this.project.value.projectType !== 'other') {
+            this.prjType = this.project.value.projectType;
+            if (this.prjType !== 'other') {
+                this.revisionSelections = this.selectedEnts.map((ent) => {
+                    return {title: ent.value.title, selected: false}
+                });
                 let uuids = Object.keys(this.selectedListings);
                 uuids.forEach((uuid) => {
                     let listing = this.selectedListings[uuid];
@@ -67,7 +72,7 @@ class PipelineVersionChangesCtrl {
     
                 let entityListName = '';
                 this.mainEntityUuids = [];
-                if (this.project.value.projectType === 'experimental') {
+                if (this.prjType === 'experimental') {
                     entityListName = 'experimentsList';
                     this.ui.selectionComp = 'projects.versionExperimentSelection'
                     this.ui.citationComp = 'projects.versionExperimentCitation'
@@ -91,6 +96,13 @@ class PipelineVersionChangesCtrl {
         if (this.revisionText.length < 10) {
             return this.ui.warning = true;
         }
+        this.revisionTitles = [];
+        if (this.prjType !== 'other') {
+            this.revisionTitles = this.revisionSelections
+                .filter((item) => item.selected)
+                .map((item) => item.title);
+            if (!this.revisionTitles.length) return this.ui.warning = true;
+        }
         this.ui.loading = true;
         let filePaths = (this.selectedListing
             ? this.selectedListing.listing.map((file) => file.path)
@@ -103,6 +115,7 @@ class PipelineVersionChangesCtrl {
                 selectedFiles: filePaths,
                 revision: true,
                 revisionText: this.revisionText,
+                revisionTitles: this.revisionTitles,
                 revisionAuthors: this.revisionAuthors,
                 status: 'publishing'
             }
@@ -114,6 +127,12 @@ class PipelineVersionChangesCtrl {
             this.ui.error = true;
             this.ui.submitted = true;
             this.ui.loading = false;
+        });
+    }
+
+    configureSelections(selections) {
+        selections.map((ent) => {
+            return {title: ent.value.title, selected: false}
         });
     }
 

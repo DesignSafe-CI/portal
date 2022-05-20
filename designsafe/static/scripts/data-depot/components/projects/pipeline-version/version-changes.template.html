@@ -32,11 +32,18 @@
                 up to an hour or more for large datasets.
             </div>
         </div>
-        <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.warning">
+        <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.warning && $ctrl.prjType === 'other'">
             <i class="fa fa-exclamation-triangle notification-icon"></i>
             <div>
                 You are required to provide a revision description. This
                 will be displayed in the publication.
+            </div>
+        </div>
+        <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.warning && $ctrl.prjType != 'other'">
+            <i class="fa fa-exclamation-triangle notification-icon"></i>
+            <div>
+                You are required to select the procedure that is
+                relevant to your versioning changes.
             </div>
         </div>
         <div class="alert alert-danger flex-container" ng-if="$ctrl.ui.error">
@@ -59,12 +66,18 @@
     <div ng-if="!$ctrl.ui.loading && !$ctrl.ui.submitted">
         <div class="pipeline-section">
             <label>Version Changes</label>&nbsp;<span class="label label-danger">Required</span>
-            <!-- Render a list of published entities under bullets so users can quickly reference for copy/paste in the description -->
             <div>
                 Specify what files you are adding, removing, or replacing, and why these changes are needed.
                 This will be displayed to those viewing your publication, so be detailed and formal in your explanation.
             </div>
             <textarea ng-model="$ctrl.revisionText"></textarea>
+        </div>
+        <div class="pipeline-section" ng-if="$ctrl.prjType != 'other'">
+            <label>Where are the changes you are referring to?</label>&nbsp;<span class="label label-danger">Required</span>
+            <div ng-repeat="ent in $ctrl.revisionSelections track by $index">
+                <input type="checkbox" ng-model="ent.selected">
+                {{ent.title}}
+            </div>
         </div>
     </div>
 </div>

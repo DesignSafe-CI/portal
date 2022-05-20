@@ -104,6 +104,7 @@ class PublicationView(BaseApiView):
         status = data.get('status', 'saved')
         revision = data.get('revision', None)
         revision_text = data.get('revisionText', None)
+        revision_titles = data.get('revisionTitles', None)
         revised_authors = data.get('revisionAuthors', None)
         selected_files = data.get('selectedFiles', None)
 
@@ -115,7 +116,13 @@ class PublicationView(BaseApiView):
             latest_revision = IndexedPublication.max_revision(project_id=project_id)
             current_revision = latest_revision + 1 if latest_revision >= 2 else 2
 
-        pub = initilize_publication(data['publication'], status, revision=current_revision, revision_text=revision_text)
+        pub = initilize_publication(
+                data['publication'],
+                status,
+                revision=current_revision,
+                revision_text=revision_text,
+                revision_titles=revision_titles
+            )
 
         if data.get('status', 'save').startswith('publish'):
             (

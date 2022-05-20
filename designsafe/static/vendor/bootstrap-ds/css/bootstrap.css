@@ -2768,14 +2768,27 @@ input[type="search"] {
 .project-form-name {
   width:49%;
 }
+.pub-info-item {
+  padding-bottom: 14px;
+}
 .pub-info-modal-label {
+  vertical-align: top;
   display: inline-block;
   width:30%;
+}
+.pub-info-modal-heading {
+  border-bottom: darkgrey;
+  border-bottom-style: solid;
+  border-bottom-width: thin;
+  margin-bottom: 6px;
 }
 .pub-info-modal-data {
   display: inline-block;
   width: 68%;
   font-weight:bold;
+}
+.pub-info-modal-body {
+  padding-bottom: 6px;
 }
 .pipeline-page {
   margin: 20px 0px 20px 0px;

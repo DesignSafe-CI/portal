@@ -249,6 +249,16 @@
             </button>
             <div id="data-{{experiment.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
+                    <!-- Tombstone Banner -->
+                    <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(experiment.uuid)">
+                        <i class="fa fa-warning notification-icon"></i>
+                        <div>
+                            <strong>The following Dataset does not exist anymore</strong><br>
+                            The Dataset with DOI:
+                            <a href="https://doi.org/{{experiment.value.dois[0]}}">https://doi.org/{{experiment.value.dois[0]}}</a>
+                            was incomplete and removed. The metadata is still available.
+                        </div>
+                    </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Experiment Type</div>
                         <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
@@ -356,16 +366,6 @@
                     <p>
                         <br>{{ experiment.value.description }}
                     </p>
-                    <!-- Tombstone Banner -->
-                    <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.tombstone">
-                        <i class="fa fa-warning notification-icon"></i>
-                        <div>
-                            <strong>The following Dataset does not exist anymore</strong><br>
-                            The Dataset with DOI:
-                            <a href="https://doi.org/{{experiment.value.dois[0]}}">https://doi.org/{{experiment.value.dois[0]}}</a>
-                            was incomplete and removed. The metadata is still available.
-                        </div>
-                    </div>
                     <div>
                         <!-- Experiment Reports -->
                         <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
@@ -386,11 +386,15 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                    on-scroll="$ctrl.scrollToBottom()"
-                                    listing="$ctrl.FileListingService.listings[report.uuid]"
-                                    on-browse="$ctrl.onBrowse(file)"
-                                >&nbsp;</files-listing>                               </div>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[report.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- Model Configs -->
@@ -411,11 +415,15 @@
                                     <div class="well" ng-if="modelConfig.value.description">
                                         <p>{{ modelConfig.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                    on-scroll="$ctrl.scrollToBottom()"
-                                    listing="$ctrl.FileListingService.listings[modelConfig.uuid]"
-                                    on-browse="$ctrl.onBrowse(file)"
-                                >&nbsp;</files-listing>                                </div>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[modelConfig.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Sensors -->
                             <div ng-repeat="sensorList in $ctrl.browser.project.sensorlist_set | orderBy: 'value.title'"
@@ -447,11 +455,15 @@
                                                 <div class="well" ng-if="sensorList.value.description">
                                                     <p>{{ sensorList.value.description }}</p>
                                                 </div>
-                                                <files-listing show-select="true" show-tags="true"
-                                                on-scroll="$ctrl.scrollToBottom()"
-                                                listing="$ctrl.FileListingService.listings[sensorList.uuid]"
-                                                on-browse="$ctrl.onBrowse(file)"
-                                            >&nbsp;</files-listing>                                            </div>
+                                                <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                                    <files-listing show-select="true"
+                                                                   show-tags="true"
+                                                                   on-scroll="$ctrl.scrollToBottom()"
+                                                                   listing="$ctrl.FileListingService.listings[sensorList.uuid]"
+                                                                   on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                    </files-listing>
+                                                </div>
+                                            </div>
                                             </td>
                                         </tr>
                                     </table>
@@ -484,11 +496,15 @@
                                                             <div class="well" ng-if="event.value.description">
                                                                 <p>{{ event.value.description }}</p>
                                                             </div>
-                                                            <files-listing show-select="true" show-tags="true"
-                                                            on-scroll="$ctrl.scrollToBottom()"
-                                                            listing="$ctrl.FileListingService.listings[event.uuid]"
-                                                            on-browse="$ctrl.onBrowse(file)"
-                                                        >&nbsp;</files-listing>                                                        </div>
+                                                            <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                                                <files-listing show-select="true"
+                                                                               show-tags="true"
+                                                                               on-scroll="$ctrl.scrollToBottom()"
+                                                                               listing="$ctrl.FileListingService.listings[event.uuid]"
+                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                </files-listing>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -524,11 +540,15 @@
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                    on-scroll="$ctrl.scrollToBottom()"
-                                    listing="$ctrl.FileListingService.listings[analysis.uuid]"
-                                    on-browse="$ctrl.onBrowse(file)"
-                                >&nbsp;</files-listing>                                </div>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

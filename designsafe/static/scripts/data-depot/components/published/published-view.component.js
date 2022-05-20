@@ -19,7 +19,7 @@ class PublishedViewCtrl {
         this.$q = $q;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
-        this.PublicationService= PublicationService;
+        this.PublicationService = PublicationService;
         this.UserService = UserService;
         this.loadingUserData = {
             pi: true,
@@ -40,8 +40,7 @@ class PublishedViewCtrl {
             license: '',
             licenseType: '',
             fileNav: true,
-            loading: true,
-            tombstone: false,
+            loading: true
         };
         this.browser = {}
         this.browser.listings = {};
@@ -77,7 +76,7 @@ class PublishedViewCtrl {
 
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.versions = this.prepVersions(this.publication);
-        this.selectedVersion = this.publication.revision || 'Original';
+        this.selectedVersion = this.publication.revision || 1;
         this.prjBasePath = (this.publication.revision && this.publication.revision > 0
             ? this.publication.projectId + 'v' + this.publication.revision
             : this.publication.projectId
@@ -129,7 +128,6 @@ class PublishedViewCtrl {
         //add metadata to header
         this.type = this.browser.publication.project.value.projectType;
         this.prepProject();
-        this.ui.tombstone = this.publication.status === 'tombstone';
         this.ui.loading = false;
     }
 
@@ -287,7 +285,7 @@ class PublishedViewCtrl {
     }
 
     getVersion() {
-        let path = (typeof this.selectedVersion === 'number'
+        let path = (this.selectedVersion > 1
             ? `${this.browser.publication.projectId}v${this.selectedVersion}`
             : this.browser.publication.projectId
         )
@@ -299,15 +297,13 @@ class PublishedViewCtrl {
     prepVersions(publication) {
         // returns a list of publication versions
         if (publication.latestRevision) {
-            let vers = ['1'];
+            let vers = [1];
             let max = (publication.latestRevision.status === 'published'
                 ? publication.latestRevision.revision
                 : publication.latestRevision.revision - 1
             )
-            if (typeof max == 'number') {
-                for (let i = 2; i <= max; i++) {
-                    vers.push(i);
-                }
+            for (let i = 2; i <= max; i++) {
+                vers.push(i);
             }
             return vers;
         }
@@ -466,16 +462,10 @@ class PublishedViewCtrl {
     }
 
     showVersionInfo() {
-        let date = new Date(this.browser.publication.revisionDate);
-        let modalData = [
-            {label: 'Version', data: this.browser.publication.revision},
-            {label: 'Date of Versioning', data: `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`},
-            {label: null, data: this.browser.publication.revisionText}
-        ]
         this.$uibModal.open({
             component: 'publishedDataModal',
             resolve: {
-                data: () => { return modalData },
+                publication: () => { return this.publication },
             },
             size: 'citation'
         });

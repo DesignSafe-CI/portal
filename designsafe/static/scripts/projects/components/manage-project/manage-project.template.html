@@ -142,6 +142,7 @@
                 </table>
                 <!-- check end of pipeline to disable anchor -->
                 <button class="btn-project-add-rm"
+                        ng-if="$ctrl.ui.editType"
                         ng-click="$ctrl.changeProjectType($ctrl.ui.hasType)"
                 >
                     Change Project Type

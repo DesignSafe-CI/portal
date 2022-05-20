@@ -231,6 +231,16 @@
             </button>
             <div id="data-{{hybsim.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
+                    <!-- Tombstone Banner -->
+                    <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                        <i class="fa fa-warning notification-icon"></i>
+                        <div>
+                            <strong>The following Dataset does not exist anymore</strong><br>
+                            The Dataset with DOI:
+                            <a href="https://doi.org/{{hybsim.value.dois[0]}}">https://doi.org/{{hybsim.value.dois[0]}}</a>
+                            was incomplete and removed. The metadata is still available.
+                        </div>
+                    </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Simulation Type</div>
                         <span ng-if="!$ctrl.isValid(hybsim.value.simulationTypeOther)" class="entity-meta-data-cap">
@@ -310,16 +320,6 @@
                         <p>
                             <br>{{ hybsim.value.description }}
                         </p>
-                        <!-- Tombstone Banner -->
-                        <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.tombstone">
-                            <i class="fa fa-warning notification-icon"></i>
-                            <div>
-                                <strong>The following Dataset does not exist anymore</strong><br>
-                                The Dataset with DOI:
-                                <a href="https://doi.org/{{hybsim.value.dois[0]}}">https://doi.org/{{hybsim.value.dois[0]}}</a>
-                                was incomplete and removed. The metadata is still available.
-                            </div>
-                        </div>
                     </div>
                     <div>
                         <!-- Hybrid Reports -->
@@ -337,12 +337,14 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                        on-scroll="$ctrl.scrollToBottom()"
-                                        listing="$ctrl.FileListingService.listings[report.uuid]"
-                                        on-browse="$ctrl.onBrowse(file)"
-                                    >&nbsp;</files-listing>
-
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[report.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -362,12 +364,14 @@
                                     <div class="well" ng-if="model.value.description">
                                         <p>{{ model.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                    on-scroll="$ctrl.scrollToBottom()"
-                                    listing="$ctrl.FileListingService.listings[model.uuid]"
-                                    on-browse="$ctrl.onBrowse(file)"
-                                    >&nbsp;</files-listing
-                                >
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[model.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Coordinator -->
@@ -397,12 +401,14 @@
                                                 <div class="well" ng-if="coordinator.value.description">
                                                     <p>{{ coordinator.value.description }}</p>
                                                 </div>
-                                                <files-listing show-select="true" show-tags="true"
-                                                on-scroll="$ctrl.scrollToBottom()"
-                                                listing="$ctrl.FileListingService.listings[coordinator.uuid]"
-                                                on-browse="$ctrl.onBrowse(file)"
-                                                >&nbsp;</files-listing
-                                            >
+                                                <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                                                    <files-listing show-select="true"
+                                                                   show-tags="true"
+                                                                   on-scroll="$ctrl.scrollToBottom()"
+                                                                   listing="$ctrl.FileListingService.listings[coordinator.uuid]"
+                                                                   on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                    </files-listing>
+                                                </div>
                                             </div>
                                             </td>
                                         </tr>
@@ -433,12 +439,14 @@
                                                             <div class="well" ng-if="cout.value.description">
                                                                 <p>{{ cout.value.description }}</p>
                                                             </div>
-                                                            <files-listing show-select="true" show-tags="true"
-                                                            on-scroll="$ctrl.scrollToBottom()"
-                                                            listing="$ctrl.FileListingService.listings[cout.uuid]"
-                                                            on-browse="$ctrl.onBrowse(file)"
-                                                            >&nbsp;</files-listing
-                                                        >
+                                                            <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                                                                <files-listing show-select="true"
+                                                                               show-tags="true"
+                                                                               on-scroll="$ctrl.scrollToBottom()"
+                                                                               listing="$ctrl.FileListingService.listings[cout.uuid]"
+                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                </files-listing>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -476,12 +484,14 @@
                                                             <div class="well" ng-if="simsub.value.description">
                                                                 <p>{{ simsub.value.description }}</p>
                                                             </div>
-                                                            <files-listing show-select="true" show-tags="true"
-                                                            on-scroll="$ctrl.scrollToBottom()"
-                                                            listing="$ctrl.FileListingService.listings[simsub.uuid]"
-                                                            on-browse="$ctrl.onBrowse(file)"
-                                                            >&nbsp;</files-listing
-                                                        >
+                                                            <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                                                                <files-listing show-select="true"
+                                                                               show-tags="true"
+                                                                               on-scroll="$ctrl.scrollToBottom()"
+                                                                               listing="$ctrl.FileListingService.listings[simsub.uuid]"
+                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                </files-listing>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -519,12 +529,14 @@
                                                                     <div class="well" ng-if="sout.value.description">
                                                                         <p>{{ sout.value.description }}</p>
                                                                     </div>
-                                                                    <files-listing show-select="true" show-tags="true"
-                                                                    on-scroll="$ctrl.scrollToBottom()"
-                                                                    listing="$ctrl.FileListingService.listings[sout.uuid]"
-                                                                    on-browse="$ctrl.onBrowse(file)"
-                                                                    >&nbsp;</files-listing
-                                                                >
+                                                                    <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                                                                        <files-listing show-select="true"
+                                                                                       show-tags="true"
+                                                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                                                       listing="$ctrl.FileListingService.listings[sout.uuid]"
+                                                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                        </files-listing>
+                                                                    </div>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -565,12 +577,14 @@
                                                             <div class="well" ng-if="expsub.value.description">
                                                                 <p>{{ expsub.value.description }}</p>
                                                             </div>
-                                                            <files-listing show-select="true" show-tags="true"
-                                                            on-scroll="$ctrl.scrollToBottom()"
-                                                            listing="$ctrl.FileListingService.listings[expsub.uuid]"
-                                                            on-browse="$ctrl.onBrowse(file)"
-                                                            >&nbsp;</files-listing
-                                                        >
+                                                            <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                                                                <files-listing show-select="true"
+                                                                               show-tags="true"
+                                                                               on-scroll="$ctrl.scrollToBottom()"
+                                                                               listing="$ctrl.FileListingService.listings[expsub.uuid]"
+                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                </files-listing>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -608,12 +622,14 @@
                                                                     <div class="well" ng-if="eout.value.description">
                                                                         <p>{{ eout.value.description }}</p>
                                                                     </div>
-                                                                    <files-listing show-select="true" show-tags="true"
-                                                                    on-scroll="$ctrl.scrollToBottom()"
-                                                                    listing="$ctrl.FileListingService.listings[eout.uuid]"
-                                                                    on-browse="$ctrl.onBrowse(file)"
-                                                                    >&nbsp;</files-listing
-                                                                >
+                                                                    <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                                                                        <files-listing show-select="true"
+                                                                                       show-tags="true"
+                                                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                                                       listing="$ctrl.FileListingService.listings[eout.uuid]"
+                                                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                        </files-listing>
+                                                                    </div>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -656,12 +672,14 @@
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                    on-scroll="$ctrl.scrollToBottom()"
-                                    listing="$ctrl.FileListingService.listings[analysis.uuid]"
-                                    on-browse="$ctrl.onBrowse(file)"
-                                    >&nbsp;</files-listing
-                                >
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
                                 </div>
                             </div>
                         </div>

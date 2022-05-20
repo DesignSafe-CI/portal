@@ -6,6 +6,7 @@
                 {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
             </span>
             <div class="prj-head-buttons">
+                <!-- ng-if="!$ctrl.ui.tombstone" -->
                 <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
                     <span class="curation-download"></span>
                     &nbsp;&nbsp;Download Dataset
@@ -148,12 +149,12 @@
             </p>
         </div>
         <!-- Tombstone Banner -->
-        <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.tombstone">
+        <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes($ctrl.browser.project.uuid)">
             <i class="fa fa-warning notification-icon"></i>
             <div>
                 <strong>The following Dataset does not exist anymore</strong><br>
                 The Dataset with DOI:
-                <a href="https://doi.org/{{$ctrl.publication.project.value.dois[0]}}">https://doi.org/{{$ctrl.publication.project.value.dois[0]}}</a>
+                <a href="https://doi.org/{{$ctrl.browser.project.value.dois[0]}}">https://doi.org/{{$ctrl.browser.project.value.dois[0]}}</a>
                 was incomplete and removed. The metadata is still available.
             </div>
         </div>
@@ -209,15 +210,19 @@
                 <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
-        <div ng-if="$ctrl.ui.fileNav">
+        <div ng-if="$ctrl.ui.fileNav && !$ctrl.publication.tombstone.includes($ctrl.browser.project.uuid)">
             <breadcrumb
-            path="$ctrl.breadcrumbParams.path"
-            system="$ctrl.FileListingService.listings.main.params.path"
-            on-browse="$ctrl.onBrowse(file)"
-            custom-root="$ctrl.breadcrumbParams.root"
-            skip-root="$ctrl.breadcrumbParams.skipRoot"
-        ></breadcrumb>
-            <files-listing listing="$ctrl.FileListingService.listings.main" on-browse="$ctrl.onBrowse(file)" show-tags="true" show-select="true"></files-listing>
+                path="$ctrl.breadcrumbParams.path"
+                system="$ctrl.FileListingService.listings.main.params.path"
+                on-browse="$ctrl.onBrowse(file)"
+                custom-root="$ctrl.breadcrumbParams.root"
+                skip-root="$ctrl.breadcrumbParams.skipRoot"
+            ></breadcrumb>
+            <files-listing listing="$ctrl.FileListingService.listings.main"
+                           on-browse="$ctrl.onBrowse(file)"
+                           show-tags="true"
+                           show-select="true">
+            </files-listing>
         </div>
     </div>
 </div>
