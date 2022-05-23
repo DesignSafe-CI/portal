@@ -186,6 +186,7 @@ export class ProjectService {
      */
     save(options) {
         return this.projectResource.post({ data: options }).then((resp) => {
+            this.current = null;
             return new this.ProjectModel(resp.data);
         });
     }
