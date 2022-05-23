@@ -944,7 +944,8 @@ i[class^="icon-ls-pre/post"]:before,
 .icon-swbatch:before {
     content: "\e91b";
 }
-.icon-stko:before {
+.icon-stko:before,
+.icon-opensees-stko:before {
     content: "\e91c";
 }
 .icon-compress:before {
