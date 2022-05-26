@@ -16,6 +16,7 @@ from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.projects.models.elasticsearch import IndexedProject
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
+from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
 from designsafe.apps.data.tasks import agave_indexer
 from elasticsearch_dsl.query import Q
@@ -538,13 +539,11 @@ def reindex_projects(self):
 def copy_publication_files_to_corral(self, project_id, revision=None, selected_files=None):
     """
     Takes a project ID and copies project files to a published directory.
-    
+
     :param str project_id: Project ID
     :param int revision: The revision number of the publication
     :param list of selected_files strings: Only provided if project type == other.
     """
-    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
-    import shutil
 
     es_client = new_es_client()
     publication = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
@@ -870,10 +869,10 @@ def email_user_publication_request_confirmation(self, username):
     email_subject = 'Your DesignSafe Publication Request Has Been Issued'
     email_body = """
     <p>Depending on the size of your data, the publication might take a few minutes or a couple of hours to appear in the <a href=\"{pub_url}\">Published Directory.</a></p>
-    <p>During this time, check-in to see if your publication appears. 
+    <p>During this time, check-in to see if your publication appears.
     If your publication does not appear, is incomplete, or does not have a DOI, <a href=\"{ticket_url}\">please submit a ticket.</a></p>
     <p><strong>Do not</strong> attempt to republish by clicking Request DOI & Publish again.</p>
-    <p>This is a programmatically generated message. <strong>Do NOT</strong> reply to this message. 
+    <p>This is a programmatically generated message. <strong>Do NOT</strong> reply to this message.
     If you have any feedback or questions, please feel free to <a href=\"{ticket_url}\">submit a ticket.</a></p>
     """.format(pub_url="https://www.designsafe-ci.org/data/browser/public/", ticket_url="https://www.designsafe-ci.org/help/new-ticket/")
     try:
@@ -887,3 +886,87 @@ def email_user_publication_request_confirmation(self, username):
             [user.email],
             html_message=email_body
         )
+
+@shared_task(bind=True, max_retries=1, default_retry_delay=60)
+def check_published_files(project_id, revision=None, selected_files=None):
+
+    #get list of files that should be in the publication
+    es_client = new_es_client()
+    publication = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
+    if selected_files:
+        #it's type other, use this for comparison
+        filepaths = selected_files
+    else:
+        filepaths = publication.related_file_paths()
+
+    #empty dirs
+    missing_files = []
+    existing_files = []
+    empty_folders = []
+
+    #strip leading forward slash from file paths
+    updated_filepaths = [
+            file_path.strip('/') for file_path in filepaths if (file_path != '.Trash')
+        ]
+
+    pub_directory = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
+    if revision:
+        pub_directory += 'v{}'.format(revision)
+
+    #navigate through publication files paths and
+    #compare to the previous list of files
+    for pub_file in updated_filepaths:
+        file_to_check = os.path.join(pub_directory, pub_file)
+        try:
+            if os.path.isfile(file_to_check):
+                existing_files.append(pub_file)
+            elif os.path.isdir(file_to_check):
+                #check directory for items in it
+                dir_list = os.listdir(file_to_check)
+                if dir_list != []:
+                    existing_files.append(pub_file)
+                else:
+                    empty_folders.append(pub_file)
+            else:
+                missing_files.append(pub_file)
+        except OSError as exc:
+            logger.info(exc)
+
+    #send email if there are files/folders missing/empty
+    if(missing_files or empty_folders):
+        #log for potential later queries
+        logger.info("check_published_files missing files: " + project_id + " " + str(missing_files))
+        logger.info("check_published_files empty folders: " + project_id + " " + str(empty_folders))
+
+        #send email to dev admins
+        service = get_service_account_client()
+        prj_admins = settings.DEV_PROJECT_ADMINS_EMAIL
+        for admin in prj_admins:
+            email_body = """
+                <p>Hello,</p>
+                <p>
+                    The following project has been published with either missing files/folders or empty folders:
+                    <br>
+                    <b>{prjID} - revision {revision}</b>
+                    <br>
+                    Path to publication files: {pubFiles}
+                </p>
+                <p>
+                    These are the missing files/folders for this publication:
+                    <br>
+                    {missingFiles}
+                </p>
+                <p>
+                    These are the empty folders for this publication:
+                    <br>
+                    {emptyFolders}
+                </p>
+                This is a programmatically generated message. Do NOT reply to this message.
+                """.format(pubFiles=pub_directory, prjID=project_id, missingFiles=missing_files, emptyFolders = empty_folders,revision=revision)
+
+            send_mail(
+                "DesignSafe Alert: Published Project has missing files/folders",
+                email_body,
+                settings.DEFAULT_FROM_EMAIL,
+                [admin],
+                html_message=email_body)
