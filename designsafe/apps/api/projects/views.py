@@ -151,9 +151,10 @@ class PublicationView(BaseApiView):
                     revision=current_revision
                 ) |
                 tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
-                tasks.email_user_publication_request_confirmation.si(request.user.username)
+                tasks.email_user_publication_request_confirmation.si(request.user.username) |
+                tasks.check_published_files(pub.projectId, revision=current_revision, selected_files=selected_files)
             ).apply_async()
-        
+
         return JsonResponse({
             'success': 'Project is publishing.'
         }, status=200)
@@ -169,7 +170,7 @@ class AmendPublicationView(BaseApiView):
             data = json.loads(request.body)
         else:
             data = request.POST
-        
+
         project_id = data['projectId']
         authors = data['authors'] if 'authors' in data else None
         current_revision = IndexedPublication.max_revision(project_id=project_id)
@@ -185,7 +186,7 @@ class AmendPublicationView(BaseApiView):
                 current_revision
             ).set(queue='files')
         ).apply_async()
-        
+
         return JsonResponse({
             'success': 'Publication is being amended.'
         }, status=200)
