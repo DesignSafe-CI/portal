@@ -81,6 +81,14 @@ class Mission(RelatedEntity):
         )
         return attributes
 
+    def to_dataset_json(self):
+        """Serialize object to dataset JSON."""
+        attributes = super(Mission, self).to_dataset_json()
+        attributes['types']['resourceType'] = "Mission/{location}".format(
+            location=self.location.title()
+        )
+        return attributes
+
 
 class Instrument(MetadataModel):
     _is_nested = True
@@ -188,3 +196,8 @@ class Report(RelatedEntity):
         attributes['types']['resourceType'] = "Project/Report"
         return attributes
 
+    def to_dataset_json(self):
+        """Serialize object to dataset JSON."""
+        attributes = super(Report, self).to_dataset_json()
+        attributes['types']['resourceType'] = "Project/Report"
+        return attributes
