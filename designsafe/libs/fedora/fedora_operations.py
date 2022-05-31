@@ -6,6 +6,7 @@ import magic
 import os
 import hashlib
 from urllib import parse
+from io import StringIO
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
@@ -339,7 +340,7 @@ def amend_project_fedora(project_id, version=None):
     return res
 
 
-def walk_experimental(project_id):
+def walk_experimental(project_id, version=None):
     """
     Walk an experimental project and reconstruct parent/child relationships
 
@@ -356,10 +357,12 @@ def walk_experimental(project_id):
                         'fedora_mapping': {}}}
     """
     from urllib import parse
-    doc = IndexedPublication.from_id(project_id)
+    doc = IndexedPublication.from_id(project_id, revision=version)
     relation_map = []
 
-    project_meta = format_metadata_for_fedora(project_id)
+    project_meta = format_metadata_for_fedora(project_id, version=version)
+    if version:
+        project_id = '{}v{}'.format(project_id, str(version))
     license = project_meta.get('license', None)
     full_author_list = []
     project_map = {
@@ -577,21 +580,25 @@ def format_analysis(analysis):
     }
 
 
-def ingest_project_experimental(project_id, upload_files=False, version=None):
+def ingest_project_experimental(project_id, version=None, amend=False):
     """
     Ingest a project into Fedora by creating a record in the repo, updating it
     with the published metadata, and uploading its files.
     """
     container_path = project_id
+    if version:
+        container_path = '{}v{}'.format(container_path, str(version))
 
-    walk_result = walk_experimental(project_id)
-    # Sort by length of container path to prevent children from being ingested before their parents
-    # sorted_keys = sorted(walk_result.keys(), key=lambda x: len(walk_result[x]['container_path'][0].split('/')))
+    walk_result = walk_experimental(project_id, version=version)
     for entity in walk_result:
+        if amend:
+            print(entity['container_path'])
+            create_fc_version(entity['container_path'])
         fedora_post(entity['container_path'])
-        print(entity['fedora_mapping'])
-        res = fedora_update(entity['container_path'], entity['fedora_mapping'])
-        # ingest_entity_files(project_id, container_path, entity['fileObjs'])
+        fedora_update(entity['container_path'], entity['fedora_mapping'])
+
+    if not amend:
+        upload_manifest(project_id, version=version)
 
 
 def get_sha1_hash(file_path):
@@ -611,8 +618,10 @@ def get_child_paths(dir_path):
             yield os.path.join(root, file)
 
 
-def generate_manifest(project_id):
-    walk_result = walk_experimental(project_id)
+def generate_manifest(project_id, version=None):
+    walk_result = walk_experimental(project_id, version=version)
+    if version:
+        project_id = '{}v{}'.format(project_id, str(version))
     manifest = []
     archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
     for entity in walk_result:
@@ -640,6 +649,28 @@ def generate_manifest(project_id):
                 })
 
     return manifest
+
+
+def upload_manifest(project_id, version=None):
+    manifest_dict = generate_manifest(project_id, version=version)
+
+    if version:
+        project_id = '{}v{}'.format(project_id, str(version))
+    fedora_root = parse.urljoin(settings.FEDORA_URL, PUBLICATIONS_CONTAINER)
+    project_root = os.path.join(fedora_root, project_id)
+    manifest_url = os.path.join(project_root, 'manifest.json')
+
+    with StringIO() as f:
+        json.dump(manifest_dict, f, ensure_ascii=False, indent=4)
+        f.seek(0)
+        headers = {'Content-Type': 'text/plain'}
+        request = requests.put(manifest_url,
+                                       auth=(settings.FEDORA_USERNAME,
+                                             settings.FEDORA_PASSWORD),
+                                       headers=headers,
+                                       data=f)
+        request.raise_for_status()
+
 
 def generate_package(project_id):
     from zipfile import ZipFile

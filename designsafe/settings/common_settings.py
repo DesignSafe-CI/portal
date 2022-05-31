@@ -432,6 +432,7 @@ MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe
 
 NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@designsafe-ci.org,')
 PROJECT_ADMINS_EMAIL = ['maria@tacc.utexas.edu', 'gendlerk@tacc.utexas.edu']
+DEV_PROJECT_ADMINS_EMAIL = ['tbrown@tacc.utexas,edu','sgray@tacc.utexas.edu','kstrmiska@tacc.utexas.edu']
 
 ###
 # Terms and Conditions
@@ -629,4 +630,4 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
 FEDORA_URL = os.environ.get('FEDORA_URL')
 FEDORA_USERNAME = os.environ.get('FEDORA_USERNAME')
 FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
-FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'publications-test')
+FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')

@@ -114,9 +114,8 @@ class TestWebhookViews(TestCase):
 
         self.vnc_event = {
             "event_type": "VNC",
-            "host": "vis.tacc.utexas.edu",
+            "host": "stampede2.tacc.utexas.edu",
             "port": "2234",
-            "address": "vis.tacc.utexas.edu:1234",
             "password": "3373312947011719656-242ac11b-0001-007",
             "owner": "ds_user"
         }
@@ -147,7 +146,7 @@ class TestWebhookViews(TestCase):
     def test_webhook_vnc_post(self):
         self.mock_agave.jobs.get.return_value = self.agave_job_running
 
-        link_from_event = "https://vis.tacc.utexas.edu/no-vnc/vnc.html?hostname=vis.tacc.utexas.edu&port=2234&autoconnect=true&password=3373312947011719656-242ac11b-0001-007"
+        link_from_event = "https://tap.tacc.utexas.edu/noVNC/?host=stampede2.tacc.utexas.edu&port=2234&autoconnect=true&encrypt=true&resize=scale&password=3373312947011719656-242ac11b-0001-007"
 
         response = self.client.post(reverse('interactive_wh_handler'), urlencode(self.vnc_event), content_type='application/x-www-form-urlencoded')
 

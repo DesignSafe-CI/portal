@@ -71,6 +71,23 @@ class Experiment(RelatedEntity):
         )
         return attributes
 
+    def to_dataset_json(self):
+        """Serialize object to dataset JSON."""
+        attributes = super(Experiment, self).to_dataset_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.experimental_facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.experimental_facility,
+            }
+        ]
+        attributes['types']['resourceType'] = "Experiment/{experiment_type}".format(
+            experiment_type=self.experiment_type.title()
+        )
+        return attributes
 
 class Analysis(RelatedEntity):
     model_name = 'designsafe.project.analysis'
