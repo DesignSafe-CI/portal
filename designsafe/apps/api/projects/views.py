@@ -159,7 +159,7 @@ class PublicationView(BaseApiView):
                 ) |
                 tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
                 tasks.email_user_publication_request_confirmation.si(request.user.username) |
-                tasks.check_published_files(pub.projectId, revision=current_revision, selected_files=selected_files)
+                tasks.check_published_files.si(pub.projectId, revision=current_revision, selected_files=selected_files)
             ).apply_async()
 
         return JsonResponse({
