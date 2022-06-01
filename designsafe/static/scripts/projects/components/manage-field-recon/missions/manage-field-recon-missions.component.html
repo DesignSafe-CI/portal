@@ -11,7 +11,7 @@
         {{$ctrl.data.error}}
     </div>
     <div class="well">
-        <form name="addForm" data-ng-hide="$ctrl.ui.showEditMissionForm">
+        <form name="addForm">
             <div class="expTitle form-group">
                 <label for="id-title">
                     <div style="display: flex; flex-direction: column">
@@ -37,7 +37,7 @@
                             <span class="pull-left" style="margin-right: 5px">Event</span>
                         </div>
                         <span style="display: block; font-weight:normal;">
-                            The event to which the mission is associated.
+                            The natural hazard event this mission is associated with.
                         </span>
                     </div>
                 </label>
@@ -97,7 +97,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mission-site-location form-group">
+            <div class="form-group">
                 <label for="id-location">
                     <div style="display: flex; flex-direction: column">
                         <div>
@@ -139,7 +139,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mission-description form-group">
+            <div class="form-group">
                 <label for="id-description">
                     <div style="display: flex; flex-direction: column">
                         <div>
@@ -152,7 +152,7 @@
                         </span>
                     </div>
                 </label>
-                <textarea style="width:100%; height:3em; resize: vertical;"
+                <textarea class="form-textbox"
                           id="id-description"
                           data-ng-model="$ctrl.form.description"
                           data-ng-required="true">
@@ -181,8 +181,8 @@
             </div>
         </form>
     </div>
-    <div class="mission-list">
-        <div class="mission-list-title">
+    <div>
+        <div>
             <label>Mission Inventory</label>
         </div>
         <div class="dropdown">

@@ -10,11 +10,17 @@ import { PublicationPreviewOtherComponent } from './publication-preview/publicat
 import { PublicationPreviewFieldReconComponent } from './publication-preview/publication-preview-field-recon.component';
 import { PipelineStartComponent } from './pipeline-start/pipeline-start.component';
 import {
-    PipelineVersionComponent,
-    PipelineVersionProjectComponent,
-    PipelineVersionChangesComponent,
+    VersionOtherSelectionComponent,
+    VersionOtherCitationComponent
+} from './pipeline-version/pipeline-version-other.component';
+import {
+    VersionExperimentSelectionComponent,
+    VersionExperimentCitationComponent
 } from './pipeline-version/pipeline-version.component';
-import { PipelineAmendComponent } from './pipeline-amend/pipeline-amend.component';
+import { VersionChangesComponent } from './pipeline-version/pipeline-version-changes.component';
+import { AmendExperimentComponent } from './pipeline-amend/pipeline-amend.component';
+import { AmendOtherComponent } from './pipeline-amend/pipeline-amend-other.component';
+import { AmendCitationComponent } from './pipeline-amend/pipeline-amend-citation.component';
 import {
     PipelineSelectionExpComponent,
     PipelineSelectionSimComponent,
@@ -56,6 +62,7 @@ import { ManageHybridSimComponent } from '../../../projects/components/manage-hy
 import { ManageSimulationComponent } from '../../../projects/components/manage-simulations/manage-simulations.component';
 import { ManageFieldReconMissionsComponent } from '../../../projects/components/manage-field-recon/missions/manage-field-recon-missions.component.js';
 import { ManageFieldReconCollectionsComponent } from '../../../projects/components/manage-field-recon/collections/manage-field-recon-collections.component.js';
+import { AmendEntityComponent } from '../../../projects/components/amend-entity-modal/amend-entity.component.js';
 import { ProjectTreeComponent } from '../../../projects/components/project-tree/project-tree.component';
 import { PublishedCitationComponent } from '../../../projects/components/publication-citation/publication-citation.component.js';
 import { AuthorInformationModalComponent } from './publication-preview/modals/author-information-modal.component';
@@ -79,10 +86,14 @@ ddProjectsComponents.component('publicationPreviewHybSim', PublicationPreviewHyb
 ddProjectsComponents.component('publicationPreviewOther', PublicationPreviewOtherComponent);
 ddProjectsComponents.component('publicationPreviewFieldRecon', PublicationPreviewFieldReconComponent);
 ddProjectsComponents.component('pipelineStart', PipelineStartComponent);
-ddProjectsComponents.component('pipelineAmend', PipelineAmendComponent);
-ddProjectsComponents.component('pipelineVersion', PipelineVersionComponent);
-ddProjectsComponents.component('pipelineVersionProject', PipelineVersionProjectComponent);
-ddProjectsComponents.component('pipelineVersionChanges', PipelineVersionChangesComponent);
+ddProjectsComponents.component('amendOther', AmendOtherComponent);
+ddProjectsComponents.component('amendExperiment', AmendExperimentComponent);
+ddProjectsComponents.component('amendCitation', AmendCitationComponent);
+ddProjectsComponents.component('versionOtherSelection', VersionOtherSelectionComponent);
+ddProjectsComponents.component('versionOtherCitation', VersionOtherCitationComponent);
+ddProjectsComponents.component('versionExperimentSelection', VersionExperimentSelectionComponent);
+ddProjectsComponents.component('versionExperimentCitation', VersionExperimentCitationComponent);
+ddProjectsComponents.component('versionChanges', VersionChangesComponent);
 ddProjectsComponents.component('pipelineSelectExp', PipelineSelectionExpComponent);
 ddProjectsComponents.component('pipelineSelectSim', PipelineSelectionSimComponent);
 ddProjectsComponents.component('pipelineSelectHybSim', PipelineSelectionHybSimComponent);
@@ -114,6 +125,7 @@ ddProjectsComponents.component('manageHybridSimulationsModal', ManageHybridSimCo
 ddProjectsComponents.component('manageSimulationsModal', ManageSimulationComponent);
 ddProjectsComponents.component('fieldReconMissionsModal', ManageFieldReconMissionsComponent);
 ddProjectsComponents.component('fieldReconCollectionsModal', ManageFieldReconCollectionsComponent);
+ddProjectsComponents.component('amendEntityModal', AmendEntityComponent);
 ddProjectsComponents.component('projectTree', ProjectTreeComponent);
 ddProjectsComponents.component('publishedCitationModal', PublishedCitationComponent);
 ddProjectsComponents.component('authorInformationModal', AuthorInformationModalComponent);

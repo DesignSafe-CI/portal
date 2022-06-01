@@ -17,11 +17,8 @@ class ProjectViewCtrl {
   }
 
   $onInit() {
-    this.val1 = 'hello'
     this.projectId = this.$stateParams.projectId
     this.filePath = this.$stateParams.filePath
-    
-    
     
     this.fl = {
       showSelect: true,
@@ -40,7 +37,7 @@ class ProjectViewCtrl {
             query_string: this.$stateParams.query_string
         }),
     };
-    
+
     if ( !(this.ProjectService.current && this.ProjectService.current.uuid === this.projectId )){
       this.loading = true;
       promisesToResolve.project = this.ProjectService.get({ uuid: this.projectId })
@@ -56,7 +53,6 @@ class ProjectViewCtrl {
       }
       const projectEntities = this.browser.project.getAllRelatedObjects();
       this.FileListingService.setEntities('main', projectEntities);
-
       this.loading = false;
       
     });

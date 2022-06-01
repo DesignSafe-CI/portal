@@ -63,17 +63,17 @@
                 <td>Data Type</td>
                 <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
             </tr>
-            <tr ng-repeat="doi in $ctrl.simDOIList">
+            <tr ng-repeat="(uuid, citation) in $ctrl.doiList">
                 <td ng-if="$first">DOI(s) in Project</td>
                 <td ng-if="!$first"></td>
                 <td>
                     <strong>
                         <a
-                            ng-click="$ctrl.goToHash(doi.hash)"
+                            ng-click="$ctrl.goToHash(citation.hash)"
                             data-toggle="collapse"
-                            data-target="#data-{{doi.uuid}}"
+                            data-target="#data-{{uuid}}"
                         >
-                            {{ doi.value }}
+                            {{ citation.doi }}
                         </a>
                     </strong>
                 </td>
@@ -114,7 +114,7 @@
             <span ng-if="$ctrl.readOnly">
                 |<a ng-click="$ctrl.metrics()">
                     &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
-                    <strong>&nbsp;View Data Metrics</strong>
+                    <strong>&nbsp;View Project Metrics</strong>
                 </a>
                 |<a ng-click="$ctrl.leaveFeedback()">
                     &nbsp;<img src='/static/images/ds-icons/icon-feedback.svg' style="width: 12px;">
@@ -238,6 +238,16 @@
             </button>
             <div id="data-{{simulation.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
+                    <!-- Tombstone Banner -->
+                    <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(simulation.uuid)">
+                        <i class="fa fa-warning notification-icon"></i>
+                        <div>
+                            <strong>The following Dataset does not exist anymore</strong><br>
+                            The Dataset with DOI:
+                            <a href="https://doi.org/{{simulation.value.dois[0]}}">https://doi.org/{{simulation.value.dois[0]}}</a>
+                            was incomplete and removed. The metadata is still available.
+                        </div>
+                    </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Simulation Type</div>
                         <span ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" class="entity-meta-data-cap">
@@ -268,7 +278,7 @@
                         </span>
                         <span class="entity-meta-data"
                                 data-ng-if="$ctrl.readOnly">
-                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
+                            {{ $ctrl.doiList[simulation.uuid].created | date:'MM-dd-yyyy' }}
                         </span>
                     </div>
                     <div class="entity-meta-field">
@@ -295,27 +305,12 @@
                             <span>(Appears when published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets" class="license-element">
-                                <span class="curation-odc" style="font-size:32px;"></span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.datasets }}</span>
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.works" class="license-element">
-                                <span
-                                    class="curation-cc-share"
-                                    style="font-size:32px;"
-                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
-                                </span>
-                                <span
-                                    class="curation-cc-zero"
-                                    style="font-size:32px;"
-                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
-                                </span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.works }}</span>
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.software" class="license-element">
-                                <span class="curation-gpl" style="font-size:32px;"></span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.software }}</span>
-                            </div>
+                            <strong>
+                                <div class="license-element">
+                                    <span ng-class="$ctrl.ui.licenseType"></span>
+                                    &nbsp;{{$ctrl.ui.license}}
+                                </div>
+                            </strong>
                         </div>
                     </div>
                     <div class="entity-meta-field">
@@ -349,11 +344,14 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                        on-scroll="$ctrl.scrollToBottom()"
-                                        listing="$ctrl.FileListingService.listings[report.uuid]"
-                                        on-browse="$ctrl.onBrowse(file)"
-                                    >&nbsp;</files-listing>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[report.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -373,11 +371,14 @@
                                     <div class="well" ng-if="model.value.description">
                                         <p>{{ model.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                        on-scroll="$ctrl.scrollToBottom()"
-                                        listing="$ctrl.FileListingService.listings[model.uuid]"
-                                        on-browse="$ctrl.onBrowse(file)"
-                                    >&nbsp;</files-listing>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[model.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Inputs -->
@@ -409,12 +410,15 @@
                                                 <div class="well" ng-if="input.value.description">
                                                     <p>{{ input.value.description }}</p>
                                                 </div>
-                                                    <files-listing show-select="true" show-tags="true"
-                                                        on-scroll="$ctrl.scrollToBottom()"
-                                                        listing="$ctrl.FileListingService.listings[input.uuid]"
-                                                        on-browse="$ctrl.onBrowse(file)"
-                                                    >&nbsp;</files-listing>
-                                                 </div>
+                                                <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                                    <files-listing show-select="true"
+                                                                   show-tags="true"
+                                                                   on-scroll="$ctrl.scrollToBottom()"
+                                                                   listing="$ctrl.FileListingService.listings[input.uuid]"
+                                                                   on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                    </files-listing>
+                                                </div>
+                                            </div>
                                             </td>
                                         </tr>
                                     </table>
@@ -447,11 +451,14 @@
                                                             <div class="well" ng-if="output.value.description">
                                                                 <p>{{ output.value.description }}</p>
                                                             </div>
-                                                            <files-listing show-select="true" show-tags="true"
-                                                                on-scroll="$ctrl.scrollToBottom()"
-                                                                listing="$ctrl.FileListingService.listings[output.uuid]"
-                                                                on-browse="$ctrl.onBrowse(file)"
-                                                             >&nbsp;</files-listing>
+                                                            <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                                                <files-listing show-select="true"
+                                                                               show-tags="true"
+                                                                               on-scroll="$ctrl.scrollToBottom()"
+                                                                               listing="$ctrl.FileListingService.listings[output.uuid]"
+                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                </files-listing>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -491,11 +498,14 @@
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                        on-scroll="$ctrl.scrollToBottom()"
-                                        listing="$ctrl.FileListingService.listings[analysis.uuid]"
-                                        on-browse="$ctrl.onBrowse(file)"
-                                    >&nbsp;</files-listing>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
                                   </div>
                             </div>
                         </div>

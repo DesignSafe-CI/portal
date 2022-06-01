@@ -36,26 +36,24 @@ class CurationDirectoryCtrl {
                 query_string: this.$stateParams.query_string
             })
         };
-        
 
-        if ( !(this.ProjectService.current && this.ProjectService.current.uuid === this.projectId )){//&& this.FileListingService.listings.main.params.path === this.filePath) {
-        this.loading = true;
-        promisesToResolve.project = this.ProjectService.get({ uuid: this.projectId })
-        promisesToResolve.entities = this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }) 
+
+        if ( !(this.ProjectService.current && this.ProjectService.current.uuid === this.projectId )){
+            this.loading = true;
+            promisesToResolve.project = this.ProjectService.get({ uuid: this.projectId })
+            promisesToResolve.entities = this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }) 
         } 
         else {
-        this.browser.project = this.ProjectService.current;
+            this.browser.project = this.ProjectService.current;
         }
         this.$q.all(promisesToResolve).then(({project, listing, entities}) => {
-        if (project) {
-            this.browser.project = project;
-            this.browser.project.appendEntitiesRel(entities);
-        }
-        const projectEntities = this.browser.project.getAllRelatedObjects();
-        this.FileListingService.setEntities('main', projectEntities);
-    
-        this.loading = false;
-        
+            if (project) {
+                this.browser.project = project;
+                this.browser.project.appendEntitiesRel(entities);
+            }
+            const projectEntities = this.browser.project.getAllRelatedObjects();
+            this.FileListingService.setEntities('main', projectEntities);
+            this.loading = false;
         });
     }
 
@@ -166,7 +164,7 @@ class CurationDirectoryCtrl {
         this.$uibModal.open({
             component: 'manageCategories',
             resolve: {
-                browser: () => this.browser,
+                project: () => this.browser.project,
             },
             backdrop: 'static',
             size: 'lg',

@@ -89,11 +89,18 @@
   white-space: normal;
 }
 
-.tab-deprecated {
+.tab-danger {
   background-color: #f2dede;
-  border-color: #ebccd1;
+  border-color: #a94442;
+  border-width: medium;
   color: #a94442;
   white-space: normal;
+}
+.tab-danger:hover {
+  color: #a94442;
+}
+.tab-danger:focus {
+  color: #a94442;
 }
 
 td {

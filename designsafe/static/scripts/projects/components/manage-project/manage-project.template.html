@@ -142,6 +142,7 @@
                 </table>
                 <!-- check end of pipeline to disable anchor -->
                 <button class="btn-project-add-rm"
+                        ng-if="$ctrl.ui.editType"
                         ng-click="$ctrl.changeProjectType($ctrl.ui.hasType)"
                 >
                     Change Project Type
@@ -528,7 +529,7 @@
                                 <span class="label label-danger" style="margin-left: 5px">Required</span>
                                 <br>
                                 <span style="font-weight:normal;">
-                                    Name given to the event (ex. Hurricane Katrina)
+                                    Name given to the natural hazard event (ex. Hurricane Katrina).
                                 </span>
                             </label>
                             <input class="project-form-input"
@@ -644,7 +645,7 @@
                     </label>
                     <div>
                         <textarea   type="text"
-                                    style="width:100%; height:3em; resize: vertical;"
+                                    class="form-textbox"
                                     id="id_description"
                                     ng-model="$ctrl.form.description"
                                     ng-required="$ctrl.project && $ctrl.ui.hasType"></textarea>
