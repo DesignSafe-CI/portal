@@ -492,8 +492,8 @@ DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
 DESIGNSAFE_PUBLISHED_PATH = '/corral-repl/tacc/NHERI/published/'
 DATACITE_USER = os.environ.get('DATACITE_USER')
 DATACITE_PASS = os.environ.get('DATACITE_PASS')
-DATACITE_SHOULDER = os.environ.get('DATACITE_SHOULDER')
-DATACITE_URL = os.environ.get('DATACITE_URL')
+DATACITE_SHOULDER = os.environ.get('DATACITE_SHOULDER', '')
+DATACITE_URL = os.environ.get('DATACITE_URL', '')
 
 DESIGNSAFE_ENVIRONMENT = os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower()
 if os.environ.get('PORTAL_PROFILE') == 'True':
