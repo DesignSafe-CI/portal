@@ -1,0 +1,104 @@
+<div class="modal-header" id="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        <span>Amend Metadata</span>
+        <span class="pull-right" data-ng-click="$ctrl.close()">
+            <i class="fa fa-times">&nbsp;</i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <div class="well">
+        <form name="amendForm">
+            <!-- Category Title -->
+            <div class="form-group">
+                <label for="id-title">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Title</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                    </div>
+                </label>
+                <input type="text"
+                       id="id-title"
+                       ng-model="$ctrl.form.title"
+                       ng-required="true"
+                       class="form-control"/>
+            </div>
+            <!-- REFERENCED WORK -->
+            <div class="form-group"
+                 style="width:100%; display:inline-block;"
+                 ng-if="$ctrl.ui.references">
+                <table class="tg" style="table-layout: fixed; width: 100%;">
+                    <colgroup>
+                        <col style="width: 48%">
+                        <col style="width: 50%">
+                    </colgroup>
+                    <tr>
+                        <td class="tg-0lax">
+                            <!-- <strong>Referenced Data Title</strong> -->
+                            <label for="ref-title">
+                                <div style="display: flex; flex-direction: column">
+                                    <div>
+                                        <span class="pull-left" style="margin-right: 5px">Referenced Data Title</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </td>
+                        <td class="tg-0lax" valign="top">
+                            <!-- <strong>Referenced Data DOI or URL</strong><br> -->
+                            <label for="ref-doi">
+                                <div style="display: flex; flex-direction: column">
+                                    <div>
+                                        <span class="pull-left" style="margin-right: 5px">Referenced Data DOI or URL</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="(i, work) in $ctrl.form.refs track by $index">
+                        <td class="tg-0lax">
+                            <input id="ref-title" type="text" style="width:94%;" ng-model="$ctrl.form.refs[i].reference">
+                        </td>
+                        <td class="tg-0lax">
+                            <input id="ref-doi" type="text" style="width:100%;" ng-model="$ctrl.form.refs[i].referencedoi">
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addEntity($ctrl.form.refs)">
+                            &#x2b; Add another Referenced Data
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropEntity($ctrl.form.refs)"
+                            ng-disabled="$ctrl.isEmpty($ctrl.form.refs)">
+                            &#x2212; Remove Referenced Data
+                    </button>
+                </div>
+            </div>
+            <!-- DESCRIPTION -->
+            <div class="form-group">
+                <label for="id-description">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Description</span>
+                        </div>
+                    </div>
+                </label>
+                <textarea class="form-textbox"
+                          id="id-description"
+                          ng-model="$ctrl.form.description"
+                          ng-required="false">
+                    &nbsp;
+                </textarea>
+            </div>
+            <div class="text-right">
+                <button class="btn btn-add"
+                        ng-click="amendForm.$valid && $ctrl.save()"
+                        type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>

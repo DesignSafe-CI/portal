@@ -1,0 +1,401 @@
+<div class="pipeline-nav">
+    <a ng-click="$ctrl.goStart()">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+    <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goCitation()"
+            ng-disabled="$ctrl.ui.loading">
+        Continue
+    </button>
+</div>
+<div class="pipeline-page">
+    <!-- Error Messages -->
+    <div class="alert alert-danger" ng-if="$ctrl.missing.length">
+        <p class="lead" style="text-align:center;">Your Selection is Incomplete!</p>
+        <p>
+            Your selection has missing data or incomplete requirements.
+            Please review the following fields:
+        </p>
+        <div ng-repeat="entity in $ctrl.missing">
+            <div ng-if="entity.missing.length">
+                In the {{entity.type}} <strong>{{entity.title}}</strong>, the following requirements are missing or incomplete:
+                <li ng-if="entity.missing.length" ng-repeat="err in entity.missing">{{ err }}</li>
+            </div>
+        </div>
+    </div>
+    <div class="pipeline-header">
+        <h3>Version Selection</h3>
+        <ul>
+            <li>A new version of your publication will be created with the information shown below.</li>
+            <li>The selected Experiments and Reports will be included the the new version.</li>
+            <li>You may select additional Experiments to publish with the new version.</li>
+            <li>Previously published Experiments can not be excluded.</li>
+            <li>Selected Reports will not recieve a DOI.</li>
+            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">curation office hours</a>.</li>
+        </ul>
+    </div>
+    <div ng-if="$ctrl.ui.loading">
+        <h3 class="text-center">
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+        </h3>
+    </div>
+    <div ng-if="!$ctrl.ui.loading">
+        <!-- Project Header Start -->
+        <div class="pipeline-section">
+            <div class="prj-head-container">
+                <span class="prj-head-title">
+                    {{$ctrl.project.value.projectId}} | <strong>{{ $ctrl.project.value.title }}</strong>
+                </span>
+            </div>
+            <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
+                <colgroup>
+                    <col style="width: 15%">
+                    <col style="width: 84%">
+                </colgroup>
+                <tr class="prj-row">
+                    <td>PI</td>
+                    <td class="prj-data">
+                        <ds-user-list usernames="[$ctrl.project.value.pi]"></ds-user-list>
+                    </td>
+                </tr>
+                <tr ng-if="$ctrl.project.value.coPis.length">
+                    <td>Co-PIs</td>
+                    <td class="prj-data">
+                        <ds-user-list usernames="$ctrl.project.value.coPis"></ds-user-list>
+                    </td>
+                </tr>
+                <tr class="prj-row" ng-hide="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
+                    <td>Project Type</td>
+                    <td class="prj-data" ng-if="$ctrl.project.value.projectType !== 'field_recon'">
+                        {{ $ctrl.project.value.projectType.replace('_', ' ') }}
+                    </td>
+                    <td class="prj-data" ng-if="$ctrl.project.value.projectType === 'field_recon'">
+                        Field Research
+                        <span ng-if="$ctrl.project.value.frTypes.length">
+                            |
+                            <span ng-repeat="frType in $ctrl.project.value.frTypes">
+                                <span ng-if="!$last">{{ frType }},</span>
+                                <span ng-if="$last">{{ frType }}</span>
+                            </span>
+                        </span>
+                    </td>
+                </tr>
+                <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
+                    <td>Data Type</td>
+                    <td class="prj-data">{{ $ctrl.project.value.dataType }}</td>
+                </tr>
+                <tr class="prj-row" ng-if="$ctrl.project.value.nhTypes.length">
+                    <td>Natural Hazard Type</td>
+                    <td class="prj-data">
+                        <span ng-repeat="nhtype in $ctrl.project.value.nhTypes">
+                            <span ng-if="!$last">{{ nhtype }},</span>
+                            <span ng-if="$last">{{ nhtype }}</span>
+                        </span>
+                    </td>
+                </tr>
+                <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
+                    <td ng-if="$first">Awards</td>
+                    <td ng-if="!$first"></td>
+                    <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+                </tr>
+                <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
+                    <td ng-if="$first">Related Work</td>
+                    <td ng-if="!$first"></td>
+                    <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
+                </tr>
+                <tr class="prj-row">
+                    <td ng-if="$ctrl.project.value.keywords">Keywords</td>
+                    <td class="prj-data">{{ $ctrl.project.value.keywords }}</td>
+                </tr>
+                <tr ng-if="$ctrl.project.value.hazmapperMaps.length">
+                    <td>Hazmapper Maps</td>
+                    <td>
+                        <hazmapper-maps maps="$ctrl.project.value.hazmapperMaps">
+                        </hazmapper-maps>
+                    </td>
+                </tr>
+            </table>
+            <div ng-if="$ctrl.project.value.description">
+                <p>{{ $ctrl.project.value.description }}</p>
+            </div>
+        </div>
+        <!-- Project Reports -->
+        <!-- <div ng-if="$ctrl.matchingGroup(experiment, report) && !$ctrl.ui.loading" ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'">
+            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                <div class="pipeline-selection">
+                    <a ng-click="$ctrl.selectEntity(report)">Select this Report and all of its files</a>
+                    <span ng-if="$ctrl.selectedEnts.includes(report)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                </div>
+                <button class="btn tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+                    <div class="collapse-tab">
+                        <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
+                        <span class="collapse-tab-content-right curation-chevron"></span>
+                    </div>
+                </button>
+                <div id="files-{{report.uuid}}" class="collapse">
+                    <div class="well" ng-if="report.value.description">
+                        <p>{{ report.value.description }}</p>
+                    </div>
+                    <files-listing show-tags="true"
+                                    on-scroll="$ctrl.scrollToBottom()"
+                                    listing="$ctrl.FileListingService.listings[report.uuid]"
+                                    on-browse="$ctrl.onBrowse(file)">
+                                    &nbsp;
+                    </files-listing> 
+                </div>
+            </div>
+        </div> -->
+        <!-- Published Experiments -->
+        <div ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.project.experiment_set">
+            <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
+                <div class="pipeline-selection">
+                    <div ng-if="!experiment.value.dois.length">
+                        <a ng-click="$ctrl.selectEntity(experiment)">Select this Experiment and all of its files</a>
+                        <span ng-if="$ctrl.selectedEnts.includes(experiment)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                    </div>
+                    <div ng-if="experiment.value.dois.length">
+                        <span>This Experiment is Required</span>
+                        <span><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                    </div>
+                </div>
+                <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
+                    <table style="width:100%" id="anchor-{{ experiment.uuid }}">
+                        <tr>
+                            <td class="tab-cell">
+                                <span>Experiment | <strong>{{experiment.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="data-{{experiment.uuid}}" class="collapse dropdown-spacer-lg">
+                    <div class="well">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Experiment Type</div>
+                            <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                                {{ $ctrl.getET(experiment) }}
+                            </span>
+                            <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                                {{ experiment.value.experimentTypeOther }}
+                            </span>
+                        </div>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi">Author(s)</div>
+                            <div class="entity-meta-data">
+                                <ds-author-list authors="experiment.value.authors"></ds-author-list>
+                            </div>
+                        </div>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Experimental Facility</div>
+                            <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                                {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
+                            </span>
+                            <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                                {{ experiment.value.experimentalFacilityOther }}
+                            </span>
+                        </div>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Equipment Type</div>
+                            <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                                {{ $ctrl.getEQ(experiment) }}
+                            </span>
+                            <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                                {{ experiment.value.equipmentTypeOther }}
+                            </span>
+                        </div>
+                        <div class="entity-meta-field" ng-show="experiment.value.procedureStart">
+                            <div class="entity-meta-label">Date of Experiment</div>
+                            <span class="entity-meta-data" ng-if="experiment.value.procedureEnd && experiment.value.procedureStart !== experiment.value.procedureEnd">
+                                {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
+                            </span>
+                            <span class="entity-meta-data" ng-if="!experiment.value.procedureEnd || experiment.value.procedureStart === experiment.value.procedureEnd">
+                                {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }}
+                            </span>
+                        </div>
+                        <p>
+                            <br>{{ experiment.value.description }}
+                        </p>
+                        <br>
+                        <div>
+                            <!-- Experiment Reports -->
+                            <div ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
+                                <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                                    <button
+                                        class="btn collapsed tab-gray"
+                                        data-toggle="collapse"
+                                        data-target="#files-{{report.uuid}}-{{experiment.uuid}}"
+                                        style="width:100%;"
+                                    >
+                                        <div class="collapse-tab">
+                                            <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
+                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                        </div>
+                                    </button>
+                                    <div id="files-{{report.uuid}}-{{experiment.uuid}}" class="collapse">
+                                        <div class="well" ng-if="report.value.description">
+                                            <p>{{ report.value.description }}</p>
+                                        </div>
+                                        <files-listing show-tags="true"
+                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                        listing="$ctrl.FileListingService.listings[report.uuid]"
+                                                        on-browse="$ctrl.onBrowse(file)">
+                                                        &nbsp;
+                                        </files-listing> 
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Model Configs -->
+                            <div ng-repeat="modelConfig in $ctrl.project.modelconfig_set | orderBy: 'value.title'"
+                                ng-if="$ctrl.matchingGroup(experiment, modelConfig)"
+                            >
+                                <div class="dropdown dropdown-spacer-sm" id="details-{{modelConfig.uuid}}">
+                                    <button class="btn collapsed tab-blue"
+                                            data-toggle="collapse"
+                                            data-target="#files-{{modelConfig.uuid}}-{{experiment.uuid}}"
+                                            style="width:100%;">
+                                        <div class="collapse-tab">
+                                            <span class="collapse-tab-content-left">Model Configuration | <strong>{{modelConfig.value.title}}</strong></span>
+                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                        </div>
+                                    </button>
+                                    <div id="files-{{modelConfig.uuid}}-{{experiment.uuid}}" class="collapse">
+                                        <div class="well" ng-if="modelConfig.value.description">
+                                            <p>{{ modelConfig.value.description }}</p>
+                                        </div>
+                                        <files-listing show-tags="true"
+                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                        listing="$ctrl.FileListingService.listings[modelConfig.uuid]"
+                                                        on-browse="$ctrl.onBrowse(file)">
+                                                        &nbsp;
+                                        </files-listing> 
+                                    </div>
+                                </div>
+                                <!-- Sensors -->
+                                <div ng-repeat="sensorList in $ctrl.project.sensorlist_set | orderBy: 'value.title'"
+                                    ng-if="$ctrl.matchingGroup(experiment, sensorList) && $ctrl.matchingGroup(modelConfig, sensorList)"
+                                >
+                                    <div class="dropdown dropdown-spacer-sm"
+                                        id="details-{{sensorList.uuid}}"
+                                        style="margin-left: 10px"
+                                    >
+                                        <table>
+                                            <tr>
+                                                <td style="padding-right: 10px;" valign="top">
+                                                    <span style="font-size: 20px; color: #1568C9">
+                                                        <i class="fa fa-level-up fa-rotate-90"></i>
+                                                    </span>
+                                                </td>
+                                                <td style="width: 100%;">
+                                                    <button class="btn collapsed tab-teal dropdown-spacer-sm"
+                                                            data-toggle="collapse"
+                                                            data-target="#files-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}"
+                                                            style="width:100%;"
+                                                    >
+                                                        <div class="collapse-tab">
+                                                            <span class="collapse-tab-content-left">Sensor Information | <strong>{{sensorList.value.title}}</strong></span>
+                                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                                        </div>
+                                                    </button>
+                                                    <div id="files-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}" class="collapse">
+                                                        <div class="well" ng-if="sensorList.value.description">
+                                                            <p>{{ sensorList.value.description }}</p>
+                                                        </div>
+                                                        <files-listing show-tags="true"
+                                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                                        listing="$ctrl.FileListingService.listings[sensorList.uuid]"
+                                                                        on-browse="$ctrl.onBrowse(file)">
+                                                                        &nbsp;
+                                                        </files-listing> 
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <!-- Events -->
+                                        <div ng-repeat="event in $ctrl.project.event_set | orderBy: 'value.title'"
+                                            ng-if="$ctrl.matchingGroup(experiment, event) && $ctrl.matchingGroup(modelConfig, event) && $ctrl.matchingGroup(sensorList, event)"
+                                        >
+                                            <div class="dropdown dropdown-spacer-sm"
+                                                id="details-{{event.uuid}}"
+                                                style="margin-left: 30px"
+                                            >
+                                                <table>
+                                                    <tr>
+                                                        <td style="padding-right: 10px" valign="top">
+                                                            <span style="font-size: 20px; color: #43A59D">
+                                                                <i class="fa fa-level-up fa-rotate-90"></i>
+                                                            </span>
+                                                        </td>
+                                                        <td style="width: 100%;">
+                                                            <button class="btn collapsed tab-yellow"
+                                                                    data-toggle="collapse"
+                                                                    data-target="#files-{{event.uuid}}-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}"
+                                                                    style="width:100%;">
+                                                                <div class="collapse-tab">
+                                                                    <span class="collapse-tab-content-left">Event | <strong>{{event.value.title}}</strong></span>
+                                                                    <span class="collapse-tab-content-right curation-chevron"></span>
+                                                                </div>
+                                                            </button>
+                                                            <div id="files-{{event.uuid}}-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}" class="collapse">
+                                                                <div class="well" ng-if="event.value.description">
+                                                                    <p>{{ event.value.description }}</p>
+                                                                </div>
+                                                                <files-listing show-tags="true"
+                                                                                on-scroll="$ctrl.scrollToBottom()"
+                                                                                listing="$ctrl.FileListingService.listings[event.uuid]"
+                                                                                on-browse="$ctrl.onBrowse(file)">
+                                                                                &nbsp;
+                                                                </files-listing> 
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <!-- Events End -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Sensors End -->
+                            </div>
+                            <!-- Model Configs -->
+                            <!-- Analysis -->
+                            <div ng-repeat="analysis in $ctrl.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, analysis)">
+                                <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
+                                    <button class="btn collapsed tab-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{experiment.uuid}}" style="width:100%;">
+                                        <div class="collapse-tab">
+                                            <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
+                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                        </div>
+                                    </button>
+                                    <div id="files-{{analysis.uuid}}-{{experiment.uuid}}" class="collapse">
+                                        <div class="well" ng-if="analysis.value.refs && analysis.value.description">
+                                            <table class="tg" style="table-layout: fixed; width: 100%;">
+                                                <colgroup>
+                                                    <col style="width: 15%">
+                                                    <col style="width: 84%">
+                                                </colgroup>
+                                                <tr ng-repeat="ref in analysis.value.refs">
+                                                    <td class="tg-0lax" ng-if="$first">Referenced Work</td>
+                                                    <td class="tg-0lax" ng-if="!$first"></td>
+                                                    <td class="tg-0lax"><strong><a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.reference }}</a></strong></td>
+                                                </tr>
+                                            </table>
+                                            <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
+                                            <files-listing show-tags="true"
+                                                            on-scroll="$ctrl.scrollToBottom()"
+                                                            listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                                                            on-browse="$ctrl.onBrowse(file)">
+                                                            &nbsp;
+                                            </files-listing> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

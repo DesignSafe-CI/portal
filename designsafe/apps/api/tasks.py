@@ -606,9 +606,7 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
     os.chmod(prefix_dest, 0o555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0o555)
 
-    # Only save to fedora while in prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') in ['default', 'staging']:
-        save_to_fedora.apply_async(args=[project_id, revision])
+    save_to_fedora.apply_async(args=[project_id, revision])
 
     index_path = '/' + project_id
     if revision:
@@ -637,7 +635,7 @@ def freeze_publication_meta(self, project_id, entity_uuids=None, revision=None, 
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def amend_publication_data(self, project_id, authors=None, revision=None):
+def amend_publication_data(self, project_id, amendments=None, authors=None, revision=None):
     """Amend publication.
 
     This task will update the published metadata in Elasticsearch and DataCite
@@ -646,11 +644,15 @@ def amend_publication_data(self, project_id, authors=None, revision=None):
     :param list of entity_uuid strings: Main entity uuid.
     """
     from designsafe.apps.projects.managers import publication as PublicationManager
-    from designsafe.libs.fedora.fedora_operations import amend_project_fedora
+    from designsafe.libs.fedora.fedora_operations import amend_project_fedora, ingest_project_experimental
     try:
-        amended_pub = PublicationManager.amend_publication(project_id, authors, revision)
+        amended_pub = PublicationManager.amend_publication(project_id, amendments, authors, revision)
         PublicationManager.amend_datacite_doi(amended_pub)
-        amend_project_fedora(project_id, version=revision)
+
+        if amended_pub.project.value.projectType == 'other':
+           amend_project_fedora(project_id, version=revision)
+        if amended_pub.project.value.projectType == 'experimental':
+            ingest_project_experimental(project_id, version=revision, amend=True)
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
@@ -743,6 +745,10 @@ def save_to_fedora(self, project_id, revision=None):
            from designsafe.libs.fedora.fedora_operations import ingest_project
            ingest_project(project_id, version=revision)
            return
+        if pub.project.value.projectType == 'experimental':
+            from designsafe.libs.fedora.fedora_operations import ingest_project_experimental
+            ingest_project_experimental(project_id, version=revision)
+            return
 
         _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
         fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'

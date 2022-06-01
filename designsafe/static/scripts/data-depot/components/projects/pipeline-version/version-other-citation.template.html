@@ -1,10 +1,10 @@
 <div class="pipeline-nav">
-    <a ng-click="$ctrl.goVersion()">
+    <a ng-click="$ctrl.goSelection()">
         <i class="fa fa-arrow-left"></i> Back
     </a>
     <button class="btn btn-small btn-add"
-            ng-click="$ctrl.goVersionChanges()"
-            ng-disabled="!$ctrl.selectedListing || !$ctrl.ui.confirmed"
+            ng-click="$ctrl.goChanges()"
+            ng-disabled="!$ctrl.selectedListings || !$ctrl.ui.confirmed"
     >
         Continue
     </button>
@@ -22,12 +22,14 @@
     </div>
     <!-- Notifications -->
     <div class="pipeline-notification">
-        <div class="alert alert-success" ng-if="$ctrl.ui.confirmed">
-            <i class="fa fa-check"></i>
-            Your authors have been saved. Click the "Continue" button to proceed to the next step.
+        <div class="alert alert-success flex-container" ng-if="$ctrl.ui.confirmed">
+            <i class="fa fa-check notification-icon"></i>
+            <div>
+                Your authors have been saved. Click the "Continue" button to proceed to the next step.
+            </div>
         </div>
         <button class="btn btn-small btn-add"
-            ng-click="$ctrl.returnToProject()"
+            ng-click="$ctrl.goProject()"
             ng-if="!$ctrl.ui.loading && $ctrl.ui.submitted"
         >
             Return to Project
