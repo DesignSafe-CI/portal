@@ -9,51 +9,25 @@
   <h1 class="headline headline-research">Register an Account</h1>
 
   <div class="row">
-    <div class="col-md-5 col-md-push-7">
-      <div class="callout callout-default">
+    <div class="callout callout-default">
         <p class="text-center">
-          <img style="max-width:300px" alt="TACC" src="{% static 'images/tacc-logo-outline.svg'%}">
+          <img style="max-width:200px" alt="TACC" src="{% static 'images/tacc-logo-outline.svg'%}">
         </p>
-        <h3>
-          Already have an Account? <a href="{% url 'designsafe_auth:login' %}">Log in.</a>
-        </h3>
-        <p>
+        <p class="text-center">
           If you already have a TACC account, simply
           <a href="{% url 'designsafe_auth:agave_oauth' %}">log in</a> with your TACC
           username and password to access DesignSafe.
         </p>
-        <p>
-          You may have a TACC account if you have used XSEDE or TeraGrid in the past and
-          had an allocation on a TACC resource.
-        </p>
-      </div>
-
-      <!-- {% include 'designsafe/apps/accounts/nees_migration_block.html' %} -->
     </div>
-    <div class="col-md-7 col-md-pull-5">
-
-      <p class="lead">
-        Users may register for only one account using the form below. DesignSafe
-        uses the TACC Identity Service, thus you will be registering for a TACC
-        account. Upon submitting this form check your email, possibly your Spam
-        folder, for <b>two</b> email messages with the <b>first</b> email containing a link
-        to confirm your email address and then a <b>second</b> email after we have
-        reviewed and accepted your request which will have a link to activate your new account.
-      </p>
-
-      <form method="post" action="">
-        {% csrf_token %}
-        {% bootstrap_form account_form %}
-        <button class="btn btn-primary" type="submit">Register Account</button>
-        <a class="btn btn-link" href="/">Cancel</a>
-        <a class="btn btn-link" href="{% url 'login' %}">Already have an account? Log in.</a>
-      </form>
-
+    <div>
+        <h3 class="text-center">
+            If you do not have an account, please use the
+            <a href="https://portal.tacc.utexas.edu/account-request">TACC User Registration form</a>
+            to request an account.
+            Once your account has been approved, you will then be able to log into Designsafe.
+          </h3>
     </div>
   </div>
 
 </div>
-{% addtoblock 'js' %}
-<script type="text/javascript" src="{% static 'designsafe/apps/accounts/js/new_institution.js' %}"></script>
-{% endaddtoblock %}
 {% endblock %}
