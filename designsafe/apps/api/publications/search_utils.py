@@ -66,6 +66,7 @@ def other_type_query(data_type):
             'Presentation',
             'Report',
             'REU',
+            'SimCenter Testbed',
             'Social Sciences',
             'Software',
             'Survey',

@@ -944,7 +944,8 @@ i[class^="icon-ls-pre/post"]:before,
 .icon-swbatch:before {
     content: "\e91b";
 }
-.icon-stko:before {
+.icon-stko:before,
+.icon-opensees-stko:before {
     content: "\e91c";
 }
 .icon-compress:before {
@@ -977,6 +978,7 @@ i[class^="icon-ls-pre/post"]:before,
     }
     .curation-cc-zero:before {
         content: "\e900";
+        font-size: 32px;
     }
     .dropdown button.collapsed .curation-chevron:before {
         content: "\e901";
@@ -989,6 +991,7 @@ i[class^="icon-ls-pre/post"]:before,
     }
     .curation-cc-share:before {
         content: "\e904";
+        font-size: 32px;
     }
     .curation-experiment:before {
         content: "\e905";
@@ -998,9 +1001,11 @@ i[class^="icon-ls-pre/post"]:before,
     }
     .curation-gpl:before {
         content: "\e906";
+        font-size: 32px;
     }
     .curation-odc:before {
         content: "\e90e";
+        font-size: 32px;
     }
     .curation-other:before {
         content: "\e90f";

@@ -7,17 +7,33 @@
     </h4>
 </div>
 <div class="modal-body">
-    <div ng-repeat="field in $ctrl.data track by $index">
-        <div class="pad-content" ng-if="field.label">
-            <div class="pub-info-modal-label">
-                {{field.label}}
-            </div>
-            <div class="pub-info-modal-data">
-                {{field.data}}
-            </div>
+    <div class="pub-info-item">
+        <div class="pub-info-modal-label">
+            Version
         </div>
-        <div class="pad-content" ng-if="!field.label">
-            {{field.data}}
+        <div class="pub-info-modal-data">
+            {{$ctrl.version}}
+        </div>
+    </div>
+    <div class="pub-info-item">
+        <div class="pub-info-modal-label">
+            Date of Versioning
+        </div>
+        <div class="pub-info-modal-data">
+            {{$ctrl.versionDate}}
+        </div>
+    </div>
+    <div class="pub-info-item" ng-if="$ctrl.entName">
+        <div class="pub-info-modal-heading">
+            {{$ctrl.entName}}(s) Versioned
+        </div>
+        <div class="pub-info-modal-body" ng-repeat="title in $ctrl.versionedTitles">
+            {{title}}
+        </div>
+    </div>
+    <div class="pub-info-item">
+        <div>
+            {{$ctrl.versionDescription}}
         </div>
     </div>
 </div>
