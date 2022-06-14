@@ -24,7 +24,7 @@
         "Social Sciences"
     ],
     "otherTypes": [
-        "Other",
+        "Check Sheet",
         "Code",
         "Database",
         "Dataset",
@@ -38,10 +38,12 @@
         "Presentation",
         "Report",
         "REU",
+        "SimCenter Testbed",
         "Social Sciences",
-        "Softwarem",
+        "Software",
         "Survey",
         "Video",
-        "White Paper"
+        "White Paper",
+        "Other"
     ]
 }

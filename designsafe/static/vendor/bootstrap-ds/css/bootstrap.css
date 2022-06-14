@@ -2768,14 +2768,27 @@ input[type="search"] {
 .project-form-name {
   width:49%;
 }
+.pub-info-item {
+  padding-bottom: 14px;
+}
 .pub-info-modal-label {
+  vertical-align: top;
   display: inline-block;
   width:30%;
+}
+.pub-info-modal-heading {
+  border-bottom: darkgrey;
+  border-bottom-style: solid;
+  border-bottom-width: thin;
+  margin-bottom: 6px;
 }
 .pub-info-modal-data {
   display: inline-block;
   width: 68%;
   font-weight:bold;
+}
+.pub-info-modal-body {
+  padding-bottom: 6px;
 }
 .pipeline-page {
   margin: 20px 0px 20px 0px;
@@ -2806,6 +2819,13 @@ input[type="search"] {
   display: flex;
   align-items: center;
 }
+.flex-container {
+  display: flex;
+  align-items: center;
+}
+.notification-icon {
+  padding-right: 15px;
+}
 .pipeline-header {
   text-align: center;
   margin-bottom: 40px;
@@ -2831,6 +2851,9 @@ input[type="search"] {
   margin-top: 20px;
   resize: vertical;
 }
+.pipeline-selection {
+  margin-top: 10px;
+}
 .author-table {
   width:100%;
 }
@@ -2850,6 +2873,13 @@ input[type="search"] {
 }
 .form-group {
   margin-bottom: 20px;
+}
+.form-textbox {
+  width: 100%;
+  height: 6em;
+  resize: vertical;
+  padding: 6px 12px;
+  color: #555555;
 }
 .curation-tools {
   vertical-align: middle;
@@ -4625,6 +4655,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .navbar {
   position: relative;
   min-height: 50px;
+  margin-bottom: 20px;
   border: 1px solid transparent;
 }
 @media (min-width: 768px) {

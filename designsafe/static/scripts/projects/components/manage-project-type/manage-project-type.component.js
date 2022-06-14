@@ -39,8 +39,8 @@ class ManageProjectTypeCtrl {
             if (this.prjType === 'field_recon' && this.protectedData > 0) {
                 this.sendNotificationEmail();
             }
-            this.$http.post(`/api/projects/${projectData.uuid}/`, projectData).then((resp) => {
-                this.project.value = resp.data.value;
+            this.ProjectService.save(projectData).then((resp) => {
+                this.project = resp;
                 this.loading = false;
                 this.close();
                 this.$state.go('projects.curation', { projectId: this.project.uuid }, { reload: true }).then(() => {

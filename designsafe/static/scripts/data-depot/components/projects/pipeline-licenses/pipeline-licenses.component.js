@@ -107,7 +107,7 @@ class PipelineLicensesCtrl {
         // Ugly fix to revert original license design without changing the schema
         this.license = {
             datasets: ['Open Data Commons Attribution', 'Open Data Commons Public Domain Dedication'],
-            works: ['Creative Commons Attribution Share Alike', 'Creative Commons Public Domain Dedication'],
+            works: ['Creative Commons Attribution', 'Creative Commons Public Domain Dedication'],
             software: ['GNU General Public License'],
         };
         Object.keys(this.license).forEach((key) => {

@@ -10,10 +10,23 @@ class PublishedDataModalCtrl {
 
     $onInit() {
         /*
-        Accepts a list of data objects to render in a template.
-        {'label': 'title', 'data': 'Title of Example'}
+        Display Version Details for Publications
         */
-        this.data = this.resolve.data;
+        this.publication = this.resolve.publication;
+        
+        let date = new Date(this.publication.revisionDate);
+        let type = this.publication.project.value.projectType;
+
+        this.entName = null
+        if (type === 'experimental') this.entName = 'Experiment';
+        if (type === 'simulation') this.entName = 'Simulation';
+        if (type === 'hybrid_simulation') this.entName = 'Hybrid Simulation';
+        if (type === 'field_recon') this.entName = 'Mission';
+
+        this.versionDate = `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`;
+        this.version = this.publication.revision;
+        this.versionedTitles = this.publication.revisionTitles;
+        this.versionDescription = this.publication.revisionText;
     }
 
     cancel() {

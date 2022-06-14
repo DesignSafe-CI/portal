@@ -1,32 +1,6 @@
 import AgreementTemplate from './pipeline-agreement.html';
 import PrivacyAgreementTemplate from './pipeline-privacy-agreement.html';
-
-const attributeMap = {
-    'designsafe.project.analysis': 'analysisList',
-    'designsafe.project.model_config': 'modelConfigs',
-    'designsafe.project.sensor_list': 'sensorLists',
-    'designsafe.project.event': 'eventsList',
-    'designsafe.project.report': 'reportsList',
-    'designsafe.project.simulation.model': 'models',
-    'designsafe.project.simulation.input': 'inputs',
-    'designsafe.project.simulation.output': 'outputs',
-    'designsafe.project.simulation.analysis': 'analysiss',
-    'designsafe.project.simulation.report': 'reports',
-    'designsafe.project.hybrid_simulation.global_model': 'global_models',
-    'designsafe.project.hybrid_simulation.coordinator': 'coordinators',
-    'designsafe.project.hybrid_simulation.sim_substructure': 'sim_substructures',
-    'designsafe.project.hybrid_simulation.exp_substructure': 'exp_substructures',
-    'designsafe.project.hybrid_simulation.coordinator_output': 'coordinator_outputs',
-    'designsafe.project.hybrid_simulation.sim_output': 'sim_outputs',
-    'designsafe.project.hybrid_simulation.exp_output': 'exp_outputs',
-    'designsafe.project.hybrid_simulation.analysis': 'analysiss',
-    'designsafe.project.hybrid_simulation.report': 'reports',
-    'designsafe.project.field_recon.collection': 'collections',
-    'designsafe.project.field_recon.social_science': 'socialscience',
-    'designsafe.project.field_recon.planning': 'planning',
-    'designsafe.project.field_recon.geoscience': 'geoscience',
-    'designsafe.project.field_recon.report': 'reports',
-};
+import PublicationMapping from '../mapping/publication-mapping.json'
 
 class PipelinePublishCtrl {
     constructor(ProjectService, PublicationService, $http, $state) {
@@ -56,7 +30,7 @@ class PipelinePublishCtrl {
             uuids.forEach((uuid) => {
                 let listing = this.selectedListings[uuid];
                 let entity = this.project.getRelatedByUuid(uuid);
-                let attr = attributeMap[entity.name];
+                let attr = PublicationMapping[entity.name];
                 let pubEntity = { name: entity.name, uuid: entity.uuid };
                 pubEntity.fileObjs = listing.listing.map((file) => {
                     return {

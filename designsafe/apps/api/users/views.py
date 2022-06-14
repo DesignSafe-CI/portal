@@ -50,7 +50,7 @@ class AuthenticatedView(View):
         return HttpResponse('Unauthorized', status=401)
 
 
-class SearchView(SecureMixin, View):
+class SearchView(View):
 
     def get(self, request):
         resp_fields = ['first_name', 'last_name', 'email', 'username']

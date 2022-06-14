@@ -860,7 +860,7 @@ a[ng-click]:hover {
 
 @font-face {
 font-family: 'DesignSafe-Apps';
-    src: url('/static/fonts/DesignSafe-App-Icons.ttf') format('truetype');        
+    src: url('/static/fonts/Tools-and-Applications-Icons.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -869,6 +869,12 @@ font-family: 'DesignSafe-Apps';
     font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 6vw;
     line-height: 1.2;
+}
+
+@media (min-width: 1400px) {
+    .icon-letter {
+        font-size: 6em;
+    }
 }
 
 [class^="icon-"]:before,
@@ -883,48 +889,70 @@ font-family: 'DesignSafe-Apps';
     text-rendering: optimizeLegibility;
 }
 
-.icon-ngl:before {
+.icon-openfoam:before {
     content: "\e900";
-    font-size: 4vw;
 }
-.icon-compress:before {
-    content: "\e909";
-}
-.icon-extract:before {
-    content: "\e90c";
+.icon-blender:before {
+    content: "\e901";
 }
 .icon-matlab:before {
-    content: "\e90b";
+    content: "\e902";
 }
-.icon-paraview:before {
-    content: "\e90a";
+.icon-ngl:before {
+    content: "\e903";
+    font-size: 4vw;
 }
 .icon-hazmapper:before {
     content: "\e904";
 }
-.icon-jupyter:before {
+.icon-rwhale:before {
     content: "\e905";
 }
-.icon-adcirc:before {
-    content: "\e906";
-    font-size: 4vw;
-}
-.icon-qgis:before {
-    content: "\e907";
-}
-i[class^="icon-ls"][class$="dyna"]:before, 
-i[class^="icon-ls-pre/post"]:before,
-.icon-ls-dyna:before {
-    content: "\e908";
+.icon-paraview:before {
+    content: "\e911";
 }
 .icon-visit:before {
-    content: "\e902";
+    content: "\e912";
 }
-.icon-openfoam:before {
-    content: "\e901";
+.icon-jupyter:before {
+    content: "\e913";
+}
+.icon-qgis:before {
+    content: "\e914";
+}
+.icon-adcirc:before {
+    content: "\e915";
+    font-size: 4vw;
 }
 .icon-opensees:before {
-    content: "\e903";
+    content: "\e916";
+}
+i[class^="icon-ls"][class$="dyna"]:before,
+i[class^="icon-ls-pre/post"]:before,
+.icon-ls-dyna:before {
+    content: "\e917";
+}
+.icon-dakota:before {
+    content: "\e918";
+}
+.icon-clawpack:before {
+    content: "\e919";
+}
+.icon-ansys:before {
+    content: "\e91a";
+}
+.icon-swbatch:before {
+    content: "\e91b";
+}
+.icon-stko:before,
+.icon-opensees-stko:before {
+    content: "\e91c";
+}
+.icon-compress:before {
+    content: "\e958";
+}
+.icon-extract:before {
+    content: "\e959";
 }
 
 @font-face {
@@ -950,6 +978,7 @@ i[class^="icon-ls-pre/post"]:before,
     }
     .curation-cc-zero:before {
         content: "\e900";
+        font-size: 32px;
     }
     .dropdown button.collapsed .curation-chevron:before {
         content: "\e901";
@@ -962,6 +991,7 @@ i[class^="icon-ls-pre/post"]:before,
     }
     .curation-cc-share:before {
         content: "\e904";
+        font-size: 32px;
     }
     .curation-experiment:before {
         content: "\e905";
@@ -971,9 +1001,11 @@ i[class^="icon-ls-pre/post"]:before,
     }
     .curation-gpl:before {
         content: "\e906";
+        font-size: 32px;
     }
     .curation-odc:before {
         content: "\e90e";
+        font-size: 32px;
     }
     .curation-other:before {
         content: "\e90f";

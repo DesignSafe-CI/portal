@@ -281,6 +281,7 @@ CMS_TEMPLATES = (
     ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
+    ('cms_page_no_footer.html', 'Footerless Page'),
 )
 CMSPLUGIN_CASCADE = {
     'alien_plugins': (
@@ -431,6 +432,7 @@ MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe
 
 NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@designsafe-ci.org,')
 PROJECT_ADMINS_EMAIL = ['maria@tacc.utexas.edu', 'gendlerk@tacc.utexas.edu']
+DEV_PROJECT_ADMINS_EMAIL = ['tbrown@tacc.utexas,edu','sgray@tacc.utexas.edu','kstrmiska@tacc.utexas.edu']
 
 ###
 # Terms and Conditions
@@ -484,6 +486,7 @@ AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
 AGAVE_JWT_HEADER = os.environ.get('AGAVE_JWT_HEADER')
 AGAVE_JWT_USER_CLAIM_FIELD = os.environ.get('AGAVE_JWT_USER_CLAIM_FIELD')
+AGAVE_JWT_SERVICE_ACCOUNT = os.environ.get('AGAVE_JWT_SERVICE_ACCOUNT')
 
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
 AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
@@ -623,4 +626,4 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
 FEDORA_URL = os.environ.get('FEDORA_URL')
 FEDORA_USERNAME = os.environ.get('FEDORA_USERNAME')
 FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
-FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'publications-test')
+FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')

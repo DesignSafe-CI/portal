@@ -8,7 +8,6 @@ class AuthorInformationModalCtrl {
 
     $onInit() {
         this.author = this.resolve.author;
-        console.log(this.author)
         this.first = this.author.fname;
         this.last = this.author.lname;
         this.email = this.author.email;

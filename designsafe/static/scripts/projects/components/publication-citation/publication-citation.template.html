@@ -8,24 +8,31 @@
 </div>
 <div class="modal-body">
     <p>
-        <div ng-if="$ctrl.version === 1">
-            {{$ctrl.authors}}.
+        <div ng-if="$ctrl.projectGen === 1">
+            <span ng-repeat="author in $ctrl.authors">
+                <span ng-if="!$last">
+                    {{author}};
+                </span>
+                <span ng-if="$last">
+                    {{author}}.
+                </span>
+            </span>
             <span>
                 ({{ $ctrl.citationDate }}) "{{ $ctrl.entity.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
                 <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.
             </span>
         </div>
-        <div ng-if="$ctrl.entity && $ctrl.version !== 1">
-            <ds-author-list format="hname" authors="$ctrl.auths"></ds-author-list>
+        <div ng-if="$ctrl.entity && $ctrl.projectGen > 1">
+            <ds-author-list format="hname" authors="$ctrl.authors"></ds-author-list>
             <span>
                 ({{ $ctrl.citationDate }}) "{{ $ctrl.entity.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
-                <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.
+                <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
             </span>
         </div>
         <div ng-if="!$ctrl.entity">
-            <ds-user-list usernames="$ctrl.auths" format="other"></ds-user-list>
+            <ds-user-list usernames="$ctrl.authors" format="other"></ds-user-list>
             <span>
-                ({{ $ctrl.citationDate }}) “{{ $ctrl.publication.project.value.title }}.” DesignSafe-CI. <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.
+                ({{ $ctrl.citationDate }}) “{{ $ctrl.publication.project.value.title }}.” DesignSafe-CI. <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
             </span>
         </div>
     </p>

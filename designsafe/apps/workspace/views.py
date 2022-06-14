@@ -129,10 +129,6 @@ def call_api(request, service):
                         else:
                             archive_path = parsed.path
 
-                        if not archive_path.startswith(request.user.username):
-                            archive_path = '{}/{}'.format(
-                                request.user.username, archive_path)
-
                         job_post['archivePath'] = archive_path
 
                         if parsed.netloc:

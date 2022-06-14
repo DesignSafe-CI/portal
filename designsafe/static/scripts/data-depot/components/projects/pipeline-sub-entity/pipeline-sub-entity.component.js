@@ -137,7 +137,6 @@ class PipelineSubEntityCtrl {
         this.$uibModal.open({
             component: this.modalName,
             resolve: {
-                browser: () => this.browser,
                 project: () => this.browser.project,
                 edit: () => selection,
             },
