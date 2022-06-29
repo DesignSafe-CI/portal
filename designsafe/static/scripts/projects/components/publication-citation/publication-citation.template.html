@@ -27,7 +27,7 @@
             <span>
                 ({{ $ctrl.citationDate }}) "{{ $ctrl.entity.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
                 <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
-                <span ng-if="$ctrl.version">V{{$ctrl.version}}</span>
+                v{{$ctrl.version}}
             </span>
         </div>
         <div ng-if="!$ctrl.entity">
@@ -35,7 +35,7 @@
             <span>
                 ({{ $ctrl.citationDate }}) “{{ $ctrl.publication.project.value.title }}.” DesignSafe-CI.
                 <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
-                <span ng-if="$ctrl.version">V{{$ctrl.version}}</span>
+                v{{$ctrl.version}}
             </span>
         </div>
     </p>

@@ -201,6 +201,19 @@ def draft_publication(
             prj_datacite_json = prj.to_datacite_json()
             prj_datacite_json['url'] = prj_url
             prj_datacite_json['version'] = str(revision)
+            # append links to previous versions in DOI...
+            relatedIdentifiers = []
+            for ver in range(1, revision):
+                id = '{}v{}'.format(project_id, ver) if ver!=1 else project_id
+                relatedIdentifiers.append(
+                    {
+                    'relatedIdentifierType': 'URL',
+                    'relationType': 'IsNewVersionOf',
+                    'relatedIdentifier': TARGET_BASE.format(project_id=id),
+                    }
+                )
+            prj_datacite_json['relatedIdentifiers'] = relatedIdentifiers
+            logger.info(prj_datacite_json)
         else:
             # format project for publication
             prj_url = TARGET_BASE.format(project_id=project_id)
@@ -376,9 +389,9 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False, revision
     IndexedPublication._index.refresh(using=es_client)
 
     if revision:
-        # Revising a publication sets the status of the previous document to 'archived'
+        # Revising a publication sets the status of the previous document to 'archived' BUGHHH
         last_revision = revision - 1 if revision > 2 else 0
-        archived_pub = pub = BaseESPublication(project_id=project_id, revision=last_revision)
+        archived_pub = BaseESPublication(project_id=project_id, revision=last_revision)
         archived_pub.update(status='archived')
 
     for res in responses:
