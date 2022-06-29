@@ -389,7 +389,7 @@ def publish_resource(project_id, entity_uuids=None, publish_dois=False, revision
     IndexedPublication._index.refresh(using=es_client)
 
     if revision:
-        # Revising a publication sets the status of the previous document to 'archived' BUGHHH
+        # Revising a publication sets the status of the previous document to 'archived'
         last_revision = revision - 1 if revision > 2 else 0
         archived_pub = BaseESPublication(project_id=project_id, revision=last_revision)
         archived_pub.update(status='archived')
