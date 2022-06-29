@@ -71,7 +71,6 @@ class ManageProjectCtrl {
         } else {
             this.UserService.authenticate().then((creator) => {
                 this.form = {...this.formDefaults.new};
-                console.log(this.form)
                 this.form.creator = creator
                 this.ui.loading = false;
             });
@@ -89,8 +88,6 @@ class ManageProjectCtrl {
                 }
                 this.$http.post(`/api/projects/`, data).then((resp) => {
                     let project = resp.data;
-                    this.form = {...this.formDefaults.new};
-                    console.log(this.form)
                     this.$state.go(
                         'projects.view',
                         {
@@ -107,8 +104,6 @@ class ManageProjectCtrl {
         } else {
             this.$http.post(`/api/projects/`, data).then((resp) => {
                 let project = resp.data;
-                this.form = {...this.formDefaults.new};
-                console.log(this.form)
                 this.$state.go(
                     'projects.view',
                     {
