@@ -50,7 +50,7 @@
                         </a> -->
                         <div class="project-categories">
                             <div class="file-categories"
-                                 data-ng-if="$ctrl.editTags || $ctrl.showTags">
+                                 data-ng-if="item.name != '.Trash' && $ctrl.editTags || $ctrl.showTags">
                                 <file-categories 
                                                  data-file="item"
                                                  data-show-tags="$ctrl.showTags"
@@ -60,7 +60,7 @@
                                 </file-categories>
                             </div>
                             <div class="file-categories-selector"
-                                 data-ng-if="$ctrl.editTags">
+                                 data-ng-if="item.name != '.Trash' && $ctrl.editTags">
                             
                                 <file-category-selector data-project="$ctrl.browser.project"
                                                         data-file="item"
