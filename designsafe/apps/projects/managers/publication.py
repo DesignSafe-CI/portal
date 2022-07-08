@@ -213,7 +213,6 @@ def draft_publication(
                     }
                 )
             prj_datacite_json['relatedIdentifiers'] = relatedIdentifiers
-            logger.info(prj_datacite_json)
         else:
             # format project for publication
             prj_url = TARGET_BASE.format(project_id=project_id)
