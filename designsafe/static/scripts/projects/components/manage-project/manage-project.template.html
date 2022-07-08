@@ -520,47 +520,49 @@
                     </div>
                 </div>
                 <!-- FR Fields -->
-                <div ng-if="$ctrl.form.projectType === 'field_recon'">
-                    <div style="width: 100%;">
-                        <!-- Event -->
-                        <div style="width:45%; display:inline-block;" class="pull-left form-group">
-                            <label for="id-nh-event">
-                                <span class="pull-left">Event</span>
+                <div class="form-group" style="width: 100%;">
+                    <!-- Event -->
+                    <div style="width:45%; display:inline-block;" class="pull-left form-group">
+                        <label for="id-nh-event">
+                            <span class="pull-left">Event</span>
+                            <div ng-if="$ctrl.form.projectType === 'field_recon'"> 
                                 <span class="label label-danger" style="margin-left: 5px">Required</span>
-                                <br>
-                                <span style="font-weight:normal;">
-                                    Name given to the natural hazard event (ex. Hurricane Katrina).
-                                </span>
-                            </label>
-                            <input class="project-form-input"
-                                    type="text"
-                                    id="id-nh-event"
-                                    name="nh-event"
-                                    style="width:100%"
-                                    ng-model="$ctrl.form.nhEvent"
-                                    ng-required="true"/>
-                        </div>
-                        <!-- Event Dates -->
-                        <div style="width:50%;" class="form-group">
-                            <label for="id-nh-event-date">
-                                <span class="pull-left">Event Date(s)</span>
-                                <span class="label label-danger" style="margin-left: 5px">Required</span>
-                                <br>
-                                <span style="font-weight:normal;">
-                                    If you only want to enter a single date, fill in the first field.
-                                </span>
-                            </label>
-                            <div style="display:flex;">
-                                <input  class="form-control"
-                                        type="date"
-                                        ng-model="$ctrl.form.nhEventStart"
-                                        ng-required="true">
-                                <span style="padding:6px;">&#8213;</span>
-                                <input  class="form-control"
-                                        type="date"
-                                        ng-model="$ctrl.form.nhEventEnd"
-                                        ng-required="false">
                             </div>
+                            <br>
+                            <span style="font-weight:normal;">
+                                Name given to the natural hazard event (ex. Hurricane Katrina).
+                            </span>
+                        </label>
+                        <input class="project-form-input"
+                                type="text"
+                                id="id-nh-event"
+                                name="nh-event"
+                                style="width:100%"
+                                ng-model="$ctrl.form.nhEvent"
+                                ng-required="true"/>
+                    </div>
+                    <!-- Event Dates -->
+                    <div style="width:50%;" class="form-group">
+                        <label for="id-nh-event-date">
+                            <span class="pull-left">Event Date(s)</span>
+                            <div ng-if="$ctrl.form.projectType === 'field_recon'">
+                                <span class="label label-danger" style="margin-left: 5px">Required</span>
+                            </div>
+                            <br>
+                            <span style="font-weight:normal;">
+                                If you only want to enter a single date, fill in the first field.
+                            </span>
+                        </label>
+                        <div style="display:flex;">
+                            <input  class="form-control"
+                                    type="date"
+                                    ng-model="$ctrl.form.nhEventStart"
+                                    ng-required="true">
+                            <span style="padding:6px;">&#8213;</span>
+                            <input  class="form-control"
+                                    type="date"
+                                    ng-model="$ctrl.form.nhEventEnd"
+                                    ng-required="false">
                         </div>
                     </div>
                     <!-- Event Location -->
@@ -569,7 +571,9 @@
                             <div class="label-form">
                                 <div>
                                     <span class="label-form-name pull-left">Event Location</span>
-                                    <span class="label label-danger">Required</span>
+                                    <div ng-if="$ctrl.form.projectType === 'field_recon'">
+                                        <span class="label label-danger">Required</span>
+                                    </div>
                                 </div>
                             </div>
                         </label>
