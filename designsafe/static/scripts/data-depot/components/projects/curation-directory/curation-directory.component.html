@@ -113,21 +113,19 @@
         </h3>
     </div>
     <div ng-if="!$ctrl.loading">
-        <breadcrumb
-        path="$ctrl.FileListingService.listings.main.params.path"
-        system="$ctrl.FileListingService.listings.main.params.path"
-        on-browse="$ctrl.onBrowse(file)"
-        custom-root="{label: $ctrl.project.value.projectId, path: ''}"
-    ></breadcrumb>
+        <breadcrumb path="$ctrl.FileListingService.listings.main.params.path"
+                    system="$ctrl.FileListingService.listings.main.params.path"
+                    on-browse="$ctrl.onBrowse(file)"
+                    custom-root="{label: $ctrl.project.value.projectId, path: ''}">
+        </breadcrumb>
         <div ng-if="!$ctrl.loading">
-            <files-listing
-            on-scroll="$ctrl.scrollToBottom()"
-            listing="$ctrl.FileListingService.listings.main"
-            on-browse="$ctrl.onBrowse(file)"
-            show-select="true"
-            show-tags="false"
-            edit-tags="true"
-            >&nbsp;</files-listing
-        >
+            <files-listing on-scroll="$ctrl.scrollToBottom()"
+                           listing="$ctrl.FileListingService.listings.main"
+                           on-browse="$ctrl.onBrowse(file)"
+                           show-select="true"
+                           show-tags="false"
+                           edit-tags="true">
+                &nbsp;
+            </files-listing>
     </div>
 </div>

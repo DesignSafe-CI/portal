@@ -5,8 +5,8 @@
         ( <span ng-bind-html="match.label.email | uibTypeaheadHighlight:query"></span> )
     </a>
 </script>
-<div class="modal-header" style="background: #e6e6e6;">
-    <h4 class="modal-title" style="border:none;">
+<div class="modal-header manage-prj-header">
+    <h4 class="modal-title">
         <span>Amend Project</span>
         <span class="pull-right" ng-click="$ctrl.close()">
             <i class="fa fa-times"></i>
@@ -62,7 +62,7 @@
                 </button>
             </div>
             <!-- Project Other Data Types -->
-            <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.form.projectType === 'other'">
+            <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
                 <label class="label-form">
                     <div>
                         <span class="label-form-name">Data Type</span>
@@ -89,11 +89,11 @@
                 </div>
             </div>
             <!-- Project Awards -->
-            <div class="form-group" style="width:100%; display:inline-block;">
-                <table class="tg" style="table-layout: fixed; width: 100%;">
+            <div class="form-group">
+                <table class="manage-prj-table">
                     <colgroup>
-                        <col style="width: 70%">
-                        <col style="width: 28%">
+                        <col style="width: 60%">
+                        <col style="width: 40%">
                     </colgroup>
                     <tr>
                         <label for="id-project-awards">
@@ -108,28 +108,26 @@
                         </label>
                     </tr>
                     <tr>
-                        <td class="tg-0lax">
+                        <td>
                             Award Name
                         </td>
-                        <td class="tg-0lax">
+                        <td>
                             Award Number
                         </td>
                     </tr>
                     <tr ng-repeat="award in $ctrl.form.awardNumber | orderBy:'order' track by $index">
-                        <td class="tg-0lax">
+                        <td class="manage-prj-td">
                             <input  class="project-form-input"
                                     type="text"
                                     id="id_awardName"
                                     name="awardName"
-                                    style="width:94%;"
                                     ng-model="award.name">
                         </td>
-                        <td class="tg-0lax">
+                        <td>
                             <input  class="project-form-input"
                                     type="text"
                                     id="id_awardNumber"
                                     name="awardNumber"
-                                    style="width:100%;"
                                     ng-model="award.number">
                         </td>
                     </tr>
@@ -148,11 +146,12 @@
                 </div>
             </div>
             <!-- Related Works -->
-            <div class="form-group" style="width:100%; display:inline-block;">
-                <table class="tg" style="table-layout: fixed; width: 100%;">
+            <div class="form-group">
+                <table class="manage-prj-table">
                     <colgroup>
-                        <col style="width: 48%">
-                        <col style="width: 50%">
+                        <col style="width: 20%">
+                        <col style="width: 40%">
+                        <col style="width: 40%">
                     </colgroup>
                     <tr>
                         <label for="id-project-works">
@@ -162,34 +161,56 @@
                                 </div>
                                 <span class="label-form-desc">
                                     Other projects, publications, or datasets related to this project.
+                                    Ensure that your link is formatted correctly when providing a DOI.
                                 </span>
                             </div>
                         </label>
                     </tr>
                     <tr>
-                        <td class="tg-0lax">
+                        <td>
+                            Type
+                        </td>
+                        <td>
                             Title
                         </td>
-                        <td class="tg-0lax" valign="top">
+                        <td valign="top">
                             Related Work DOI or URL
                         </td>
                     </tr>
                     <tr ng-repeat="work in $ctrl.form.associatedProjects | orderBy:'order' track by $index">
-                        <td class="tg-0lax">
+                        <td class="manage-prj-td">
+                            <select class="project-form-input"
+                                    id="id_workType"
+                                    name="workType"
+                                    ng-options="item for item in $ctrl.relatedWorkTypes"
+                                    ng-model="work.type">
+                            </select>
+                        </td>
+                        <td class="manage-prj-td">
                             <input  class="project-form-input"
                                     type="text"
                                     id="id_workTitle"
                                     name="workTitle"
-                                    style="width:94%;"
                                     ng-model="work.title">
                         </td>
-                        <td class="tg-0lax">
+                        <td class="manage-prj-td">
                             <input  class="project-form-input"
                                     type="text"
                                     id="id_workHref"
                                     name="workHref"
-                                    style="width:100%;"
                                     ng-model="work.href">
+                            <input type="radio"
+                                    id="work-href-type"
+                                    name="workHrefType{{$index}}"
+                                    ng-model="work.hrefType"
+                                    value="DOI">
+                            <label for="DOI">DOI</label>
+                            <input type="radio"
+                                    id="work-href-type"
+                                    name="workHrefType{{$index}}"
+                                    ng-model="work.hrefType"
+                                    value="URL">
+                            <label for="URL">URL</label>
                         </td>
                     </tr>
                 </table>
@@ -223,7 +244,6 @@
                                 type="text"
                                 id="id-nh-event"
                                 name="nh-event"
-                                style="width:100%"
                                 ng-model="$ctrl.form.nhEvent"
                                 ng-required="true"/>
                     </div>
@@ -310,14 +330,13 @@
                 <div>
                     <input  class="project-form-input"
                             type="text"
-                            style="width:100%;"
                             id="id_keywords"
                             ng-model="$ctrl.form.keywords"
                             ng-required="$ctrl.project && $ctrl.ui.hasType"><br>
                 </div>
             </div>
             <!-- Project Description -->
-            <div class="form-group" style="width:100%; display:inline-block;">
+            <div class="form-group">
                 <label for="id-project-description">
                     <div class="label-form">
                         <div>
@@ -342,15 +361,15 @@
         </div>
         <!-- update, save, and help buttons -->
         <div class="form-group">
-            <table class="tg" style="table-layout: fixed; width: 100%; margin-top:20px;">
+            <table class="manage-prj-table">
                 <colgroup>
-                    <col style="width: 48%">
+                    <col style="width: 50%">
                     <col style="width: 50%">
                 </colgroup>
                 <tr style="height: 40px;">
-                    <td class="tg-0lax" valign="center">
+                    <td valign="center">
                     </td>
-                    <td class="tg-0lax" valign="center" style="text-align: right;">
+                    <td valign="center" style="text-align: right;">
                         <div ng-if="!$ctrl.ui.loading">
                             <button class="btn btn-add"
                                     type="submit"

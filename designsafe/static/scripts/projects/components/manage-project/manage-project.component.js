@@ -24,53 +24,63 @@ class ManageProjectCtrl {
             error: null,
         };
         this.project = this.resolve.project;
-        this.naturalHazardTypes = FormOptions.nhTypes;
-        this.fieldResearchTypes = FormOptions.frTypes;
-        this.otherTypes = FormOptions.otherTypes;
-        this.formDefaults = FormDefaults;
 
         if (this.project) {
-            if (this.project.value.projectType in this.formDefaults) {
-                this.form = {...this.formDefaults[this.project.value.projectType]};
-            }
-            else {
-                this.form = {...this.formDefaults.new};
+            const projectCopy = JSON.parse(JSON.stringify(this.project.value));
+            this.naturalHazardTypes = FormOptions.nhTypes;
+            this.fieldResearchTypes = FormOptions.frTypes;
+            this.otherTypes = FormOptions.otherTypes;
+            this.relatedWorkTypes = FormOptions.rwTypes;
+
+            if (projectCopy.projectType in FormDefaults) {
+                this.form = {...FormDefaults[projectCopy.projectType]};
+            } else {
+                this.form = {... FormDefaults.new};
                 this.ui.hasType = false;
             }
-            this.form.uuid = this.project.uuid;
-            for (const field in this.project.value) {
-                if (this.project.value[field] && this.project.value[field].length) {
-                    (['nhEventStart', 'nhEventEnd'].includes(field)
-                    ? this.form[field] = new Date(this.project.value[field])
-                    : this.form[field] = this.project.value[field])
+            for (let key in this.form) {
+                if (projectCopy[key] instanceof Array && projectCopy[key].length){
+                    this.form[key] = projectCopy[key];
+                } else if (projectCopy[key] instanceof Object && Object.keys(projectCopy[key]).length){
+                    this.form[key] = projectCopy[key];
+                } else if (typeof projectCopy[key] === 'string' && projectCopy[key]) {
+                    this.form[key] = projectCopy[key];
+                    if (Date.parse(this.form[key])) {
+                        this.form[key] = new Date(this.form[key]);
+                    }
                 }
             }
+            this.form.uuid = this.project.uuid;
             if (Date.parse(this.form.nhEventStart) == Date.parse(this.form.nhEventEnd)) {
                 this.form.nhEventEnd = null;
             }
+            if (projectCopy.projectType != 'other') {
+                // Projects that do not have a DOI in the project metadata will not have 'Cited By'
+                this.relatedWorkTypes = FormOptions.rwTypes.filter((type) => {return type != 'Cited By'});
+            }
             const usernames = new Set([
-                ...[this.project.value.pi],
-                ...this.project.value.coPis,
-                ...this.project.value.teamMembers
+                ...[projectCopy.pi],
+                ...projectCopy.coPis,
+                ...projectCopy.teamMembers
             ]);
             const promisesToResolve = {
                 proj_users: this.UserService.getPublic([...usernames]),
                 creator: this.UserService.authenticate()
             };
-            this.PublicationService.getPublished(this.project.value.projectId)
+            this.PublicationService.getPublished(projectCopy.projectId)
                 .then((_) => { this.ui.editType = false; });
             this.$q.all(promisesToResolve).then(({proj_users, creator}) => {
                 this.form.creator = creator
-                this.form.pi = proj_users.userData.find(user => user.username == this.project.value.pi);
-                this.form.coPis = proj_users.userData.filter(user => this.project.value.coPis.includes(user.username));
-                if (this.project.value.teamMembers.length) {
-                    this.form.teamMembers = proj_users.userData.filter(user => this.project.value.teamMembers.includes(user.username));
-                }
+                this.form.pi = proj_users.userData.find(user => user.username == projectCopy.pi);
+                let copis = proj_users.userData.filter(user => projectCopy.coPis.includes(user.username));
+                let team = proj_users.userData.filter(user => projectCopy.teamMembers.includes(user.username));
+                if (copis.length) this.form.coPis = copis;
+                if (team.length) this.form.teamMembers = team;
                 this.ui.loading = false;
             });
         } else {
             this.UserService.authenticate().then((creator) => {
-                this.form = {...this.formDefaults.new};
+                this.form = FormDefaults.new;
                 this.form.creator = creator
                 this.ui.loading = false;
             });
@@ -261,8 +271,10 @@ class ManageProjectCtrl {
 
     addWorkField(group) {
         group.push({
+            "type": undefined,
             "title": undefined,
             "href": undefined,
+            "hrefType": undefined,
             "order": group.length + 1
         });
     }

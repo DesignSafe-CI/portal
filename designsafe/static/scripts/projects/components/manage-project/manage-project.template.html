@@ -5,8 +5,8 @@
         ( <span ng-bind-html="match.label.email | uibTypeaheadHighlight:query"></span> )
     </a>
 </script>
-<div class="modal-header" style="background: #e6e6e6;">
-    <h4 class="modal-title" style="border:none;">
+<div class="modal-header manage-prj-header">
+    <h4 class="modal-title">
         <span ng-if="!$ctrl.project">Add New Project</span>
         <span ng-if="$ctrl.project">Edit Project</span>
         <span class="pull-right" ng-click="$ctrl.close()">
@@ -40,7 +40,6 @@
                         type="text"
                         id="id_title"
                         name="title"
-                        style="width:100%;"
                         ng-model="$ctrl.form.title"
                         ng-required="true">
             </div>
@@ -54,18 +53,18 @@
                         </div>
                     </div>
                 </label>
-                <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
+                <table class="manage-prj-types">
                     <colgroup>
                         <col style="width: 16.5%">
                         <col style="width: 16.5%">
                     </colgroup>
                     <tr>
-                        <table style="width: 100%;" ng-if="$ctrl.form.projectType === 'experimental'">
+                        <table ng-if="$ctrl.form.projectType === 'experimental'">
                             <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-experiment" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                                <td class="manage-prj-td">
+                                    <span class="curation-experiment manage-prj-types-icon"></span>
                                 </td>
-                                <td style="width: 80%;">
+                                <td>
                                     <strong>Experimental Project</strong>
                                     <div>
                                         For physical work, typically done at an experimental facility or in the field.
@@ -73,12 +72,12 @@
                                 </td>
                             </tr>
                         </table>
-                        <table style="width: 100%;"  ng-if="$ctrl.form.projectType === 'simulation'">
+                        <table ng-if="$ctrl.form.projectType === 'simulation'">
                             <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-simulation" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                                <td class="manage-prj-td">
+                                    <span class="curation-simulation manage-prj-types-icon"></span>
                                 </td>
-                                <td style="width: 80%;">
+                                <td>
                                     <strong>Simulation Project</strong>
                                     <div>
                                         For numerical and/or analytical work, done with software.
@@ -86,12 +85,12 @@
                                 </td>
                             </tr>
                         </table>
-                        <table style="width: 100%;"  ng-if="$ctrl.form.projectType === 'hybrid_simulation'">
+                        <table ng-if="$ctrl.form.projectType === 'hybrid_simulation'">
                             <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-hybrid" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                                <td class="manage-prj-td">
+                                    <span class="curation-hybrid manage-prj-types-icon"></span>
                                 </td>
-                                <td style="width: 80%;">
+                                <td>
                                     <strong>Hybrid Simulation Project</strong>
                                     <div>
                                         For work using both physical and numerical components.
@@ -99,12 +98,12 @@
                                 </td>
                             </tr>
                         </table>
-                        <table style="width: 100%;" ng-if="$ctrl.form.projectType === 'field_recon'">
+                        <table ng-if="$ctrl.form.projectType === 'field_recon'">
                             <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-recon" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                                <td class="manage-prj-td">
+                                    <span class="curation-recon manage-prj-types-icon"></span>
                                 </td>
-                                <td style="width: 80%;">
+                                <td>
                                     <strong>Field Research Project</strong>
                                     <div>
                                         For work done in areas affected by natural hazards.
@@ -112,12 +111,12 @@
                                 </td>
                             </tr>
                         </table>
-                        <table style="width: 100%;" ng-if="$ctrl.form.projectType === 'other'">
+                        <table ng-if="$ctrl.form.projectType === 'other'">
                             <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-other" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                                <td class="manage-prj-td">
+                                    <span class="curation-other manage-prj-types-icon"></span>
                                 </td>
-                                <td style="width: 80%;">
+                                <td>
                                     <strong>Other Project</strong>
                                     <div>
                                         For work that is not an experiment, simulation, or observation.
@@ -125,12 +124,12 @@
                                 </td>
                             </tr>
                         </table>
-                        <table style="width: 100%;" ng-if="$ctrl.form.projectType === 'None'">
+                        <table ng-if="$ctrl.form.projectType === 'None'">
                             <tr>
-                                <td style="width: 9%;">
-                                    <span class="curation-close-window" style="font-size:32px; margin-right:10px; margin-left:10px;"></span>
+                                <td class="manage-prj-td">
+                                    <span class="curation-close-window manage-prj-types-icon"></span>
                                 </td>
-                                <td style="width: 80%;">
+                                <td>
                                     <strong>None</strong>
                                     <div>
                                         You have not selected a project type.
@@ -223,13 +222,13 @@
                 </button>
             </div>
             <!-- Add PI and PRJ Members -->
-            <div class="form-group" style="width:100%; display:inline-block;">
-                <table class="tg" style="table-layout: fixed; width: 100%;">
+            <div class="form-group">
+                <table class="manage-prj-table">
                     <colgroup>
                         <col style="width: 48%">
                         <col style="width: 50%">
                     </colgroup>
-                    <tr class="tg-0lax">
+                    <tr>
                         <label for="id-project-pis">
                             <div class="label-form">
                                 <div>
@@ -242,7 +241,7 @@
                             </div>
                         </label>
                     </tr> 
-                    <tr class="tg-0lax">
+                    <tr>
                         <div style="margin-bottom: 20px;">
                                 <input  class="project-form-input project-form-name"
                                         type="text"
@@ -287,13 +286,13 @@
                                 </div>
                         </div>
                     </tr>
-                    <tr class="tg-0lax" valign="top">
+                    <tr valign="top">
                         <div style="margin-bottom: 5px;">
                             <strong>Project Members</strong>
                             <div>These users can view, edit, curate, and publish.</div>
                         </div>
                     </tr>
-                    <tr class="tg-0lax">
+                    <tr>
                         <span ng-repeat="(i, usr) in $ctrl.form.teamMembers track by $index">
                             <input  class="project-form-input project-form-name"
                                     type="text"
@@ -336,9 +335,10 @@
                         </span>
                     </div>
                 </label>
-                <table style="table-layout: fixed; width: 100%;">
+                <table class="manage-prj-table">
                     <colgroup>
                         <col span="3" style="width: 20%">
+                        <col style="width: 40%">
                     </colgroup>
                     <tr>
                         <td>First Name</td>
@@ -347,17 +347,17 @@
                         <td>Institution</td>
                     </tr>
                     <tr ng-repeat="(i, usr) in $ctrl.form.guestMembers track by $index">
-                        <td>
-                            <input class="project-form-input" style="width: 95%" type="text" name="guestFName" id="id_guest_fname" ng-model="$ctrl.form.guestMembers[i].fname" autocomplete="additional-name">
+                        <td class="manage-prj-td">
+                            <input class="project-form-input" type="text" name="guestFName" id="id_guest_fname" ng-model="$ctrl.form.guestMembers[i].fname" autocomplete="additional-name">
+                        </td>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input" type="text" name="guestLName" id="id_guest_lname" ng-model="$ctrl.form.guestMembers[i].lname" autocomplete="additional-name">
+                        </td>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input" type="text" name="guestEmail" id="id_guest_email" ng-model="$ctrl.form.guestMembers[i].email" autocomplete="email">
                         </td>
                         <td>
-                            <input class="project-form-input" style="width: 95%" type="text" name="guestLName" id="id_guest_lname" ng-model="$ctrl.form.guestMembers[i].lname" autocomplete="additional-name">
-                        </td>
-                        <td>
-                            <input class="project-form-input" style="width: 95%" type="text" name="guestEmail" id="id_guest_email" ng-model="$ctrl.form.guestMembers[i].email" autocomplete="email">
-                        </td>
-                        <td>
-                            <input class="project-form-input" style="width: 100%" type="text" name="ExpAuthorInst" id="id_guest_inst" ng-model="$ctrl.form.guestMembers[i].inst" autocomplete="organization">
+                            <input class="project-form-input" type="text" name="ExpAuthorInst" id="id_guest_inst" ng-model="$ctrl.form.guestMembers[i].inst" autocomplete="organization">
                         </td>
                     </tr>
                 </table>
@@ -375,7 +375,7 @@
             <!-- Edit Project Section -->
             <div ng-if="$ctrl.project && $ctrl.ui.hasType">
                 <!-- Project Other Data Types -->
-                <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.form.projectType === 'other'">
+                <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
                     <label class="label-form">
                         <div>
                             <span class="label-form-name">Data Type</span>
@@ -402,11 +402,11 @@
                     </div>
                 </div>
                 <!-- Project Awards -->
-                <div class="form-group" style="width:100%; display:inline-block;">
-                    <table class="tg" style="table-layout: fixed; width: 100%;">
+                <div class="form-group">
+                    <table class="manage-prj-table">
                         <colgroup>
-                            <col style="width: 70%">
-                            <col style="width: 28%">
+                            <col style="width: 60%">
+                            <col style="width: 40%">
                         </colgroup>
                         <tr>
                             <label for="id-project-awards">
@@ -421,28 +421,26 @@
                             </label>
                         </tr>
                         <tr>
-                            <td class="tg-0lax">
+                            <td>
                                 Award Name
                             </td>
-                            <td class="tg-0lax">
+                            <td>
                                 Award Number
                             </td>
                         </tr>
                         <tr ng-repeat="award in $ctrl.form.awardNumber | orderBy:'order' track by $index">
-                            <td class="tg-0lax">
+                            <td class="manage-prj-td">
                                 <input  class="project-form-input"
                                         type="text"
                                         id="id_awardName"
                                         name="awardName"
-                                        style="width:94%;"
                                         ng-model="award.name">
                             </td>
-                            <td class="tg-0lax">
+                            <td>
                                 <input  class="project-form-input"
                                         type="text"
                                         id="id_awardNumber"
                                         name="awardNumber"
-                                        style="width:100%;"
                                         ng-model="award.number">
                             </td>
                         </tr>
@@ -461,11 +459,12 @@
                     </div>
                 </div>
                 <!-- Related Works -->
-                <div class="form-group" style="width:100%; display:inline-block;">
-                    <table class="tg" style="table-layout: fixed; width: 100%;">
+                <div class="form-group">
+                    <table class="manage-prj-table">
                         <colgroup>
-                            <col style="width: 48%">
-                            <col style="width: 50%">
+                            <col style="width: 20%">
+                            <col style="width: 40%">
+                            <col style="width: 40%">
                         </colgroup>
                         <tr>
                             <label for="id-project-works">
@@ -475,34 +474,56 @@
                                     </div>
                                     <span class="label-form-desc">
                                         Other projects, publications, or datasets related to this project.
+                                        Ensure that your link is formatted correctly when providing a DOI.
                                     </span>
                                 </div>
                             </label>
                         </tr>
                         <tr>
-                            <td class="tg-0lax">
+                            <td>
+                                Type
+                            </td>
+                            <td>
                                 Title
                             </td>
-                            <td class="tg-0lax" valign="top">
+                            <td valign="top">
                                 Related Work DOI or URL
                             </td>
                         </tr>
                         <tr ng-repeat="work in $ctrl.form.associatedProjects | orderBy:'order' track by $index">
-                            <td class="tg-0lax">
+                            <td class="manage-prj-td">
+                                <select class="project-form-input"
+                                        id="id_workType"
+                                        name="workType"
+                                        ng-options="item for item in $ctrl.relatedWorkTypes"
+                                        ng-model="work.type">
+                                </select>
+                            </td>
+                            <td class="manage-prj-td">
                                 <input  class="project-form-input"
                                         type="text"
                                         id="id_workTitle"
                                         name="workTitle"
-                                        style="width:94%;"
                                         ng-model="work.title">
                             </td>
-                            <td class="tg-0lax">
+                            <td class="manage-prj-td">
                                 <input  class="project-form-input"
                                         type="text"
                                         id="id_workHref"
                                         name="workHref"
-                                        style="width:100%;"
                                         ng-model="work.href">
+                                <input type="radio"
+                                        id="work-href-type"
+                                        name="workHrefType{{$index}}"
+                                        ng-model="work.hrefType"
+                                        value="DOI">
+                                <label for="DOI">DOI</label>
+                                <input type="radio"
+                                        id="work-href-type"
+                                        name="workHrefType{{$index}}"
+                                        ng-model="work.hrefType"
+                                        value="URL">
+                                <label for="URL">URL</label>
                             </td>
                         </tr>
                     </table>
@@ -536,7 +557,6 @@
                                     type="text"
                                     id="id-nh-event"
                                     name="nh-event"
-                                    style="width:100%"
                                     ng-model="$ctrl.form.nhEvent"
                                     ng-required="true"/>
                         </div>
@@ -608,7 +628,7 @@
                     </div>
                 </div>
                 <!-- Project Keywords -->
-                <div class="form-group" style="width:100%; display:inline-block;">
+                <div class="form-group">
                     <label for="id-project-keywords">
                         <div class="label-form">
                             <div>
@@ -623,14 +643,13 @@
                     <div>
                         <input  class="project-form-input"
                                 type="text"
-                                style="width:100%;"
                                 id="id_keywords"
                                 ng-model="$ctrl.form.keywords"
                                 ng-required="$ctrl.project && $ctrl.ui.hasType"><br>
                     </div>
                 </div>
                 <!-- Project Description -->
-                <div class="form-group" style="width:100%; display:inline-block;">
+                <div class="form-group">
                     <label for="id-project-description">
                         <div class="label-form">
                             <div>
@@ -654,15 +673,15 @@
             </div>
             <!-- update, save, and help buttons -->
             <div class="form-group">
-                <table class="tg" style="table-layout: fixed; width: 100%; margin-top:20px;">
+                <table class="manage-prj-table">
                     <colgroup>
-                        <col style="width: 48%">
+                        <col style="width: 50%">
                         <col style="width: 50%">
                     </colgroup>
                     <tr style="height: 40px;">
-                        <td class="tg-0lax" valign="center">
+                        <td valign="center">
                         </td>
-                        <td class="tg-0lax" valign="center" style="text-align: right;">
+                        <td valign="center" style="text-align: right;">
                             <button class="btn btn-add"
                                     type="submit"
                                     ng-click="projForm.$valid && $ctrl.create($event)"

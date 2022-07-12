@@ -3,13 +3,10 @@ import ManageFieldReconCollectionsTemplate from './manage-field-recon-collection
 import collectionEquipment from './equipment-list.json';
 
 class ManageFieldReconCollectionsCtrl {
-    constructor($q, $uibModal, $window, UserService, ProjectEntitiesService) {
+    constructor($uibModal, ProjectEntitiesService) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.UserService = UserService;
-        this.$q = $q;
         this.$uibModal = $uibModal;
-        this.$window = $window;
     }
 
     $onInit() {
@@ -25,15 +22,15 @@ class ManageFieldReconCollectionsCtrl {
                 )
         );
 
-        members.forEach((m, i) => {
-            if (typeof m == 'string') {
+        members.forEach((member, i) => {
+            if (typeof member == 'string') {
                 // if user is guest append their data
-                if(m.slice(0,5) === 'guest') {
+                if(member.slice(0,5) === 'guest') {
                     let guestData = this.project.value.guestMembers.find(
-                        (x) => x.user === m
+                        (x) => x.user === member
                     );
                     members[i] = {
-                        name: m,
+                        name: member,
                         order: i,
                         authorship: false,
                         guest: true,
@@ -43,7 +40,7 @@ class ManageFieldReconCollectionsCtrl {
                         inst: guestData.inst,
                     };
                 } else {
-                    members[i] = { name: m, order: i, authorship: false };
+                    members[i] = { name: member, order: i, authorship: false };
                 }
             }
         });
@@ -211,7 +208,7 @@ class ManageFieldReconCollectionsCtrl {
         group.pop();
     }
 
-    minimumInputs(group) {
+    checkEmpty(group) {
         if (group.length <= 1) {
             return true;
         }

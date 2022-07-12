@@ -1,4 +1,9 @@
 {
+    "rwTypes": [
+        "Context",
+        "Linked Project",
+        "Cited By"
+    ],
     "nhTypes": [
         "Other",
         "Earthquake",
