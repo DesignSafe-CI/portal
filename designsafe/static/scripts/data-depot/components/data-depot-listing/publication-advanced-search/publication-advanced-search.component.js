@@ -82,7 +82,7 @@ class PublicationAdvancedSearchCtrl {
         };
 
         this.validExperimentTypes = {};
-        this.getValidExperimentTypes();
+        this.getValidExperimentTypes(false);
         this.isCollapsed = true;
         Object.keys(this.params.advancedFilters).forEach((key) => {
             Object.values(this.params.advancedFilters[key]).forEach((value) => {
@@ -92,8 +92,8 @@ class PublicationAdvancedSearchCtrl {
             });
         });
     }
-    getValidExperimentTypes() {
-        this.params.advancedFilters.experimental.experimentType = '';
+    getValidExperimentTypes(reset) {
+        if (reset) this.params.advancedFilters.experimental.experimentType = '';
         const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
         const facilityName = (
             this.experimentOptions.experimentalFacility.experimental.filter((x) => x.label === facilityLabel)[0] || {}
