@@ -29,12 +29,12 @@ jobs:
       run: |
         cp --force designsafe/templates/base.j2 designsafe/templates/base.html
 
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+    #- uses: actions/cache@v2
+    #  with:
+    #    path: ~/.cache/pip
+    #    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+    #    restore-keys: |
+    #      ${{ runner.os }}-pip-
 
     - run: |
         poetry config virtualenvs.create false
