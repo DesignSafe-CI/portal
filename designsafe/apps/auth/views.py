@@ -145,11 +145,19 @@ def agave_oauth_callback(request):
             'redirect_uri': redirect_uri,
         }
         # TODO update to token call in agavepy
+        logger.info("------------------------------------------------------")
+        logger.info(tenant_base_url)
+        logger.info(body)
+        logger.info(client_key)
+        logger.info(client_sec)
+        
+
         response = requests.post('%s/token' % tenant_base_url,
                                  data=body,
                                  auth=(client_key, client_sec))
         token_data = response.json()
         token_data['created'] = int(time.time())
+        logger.info(token_data)
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
         

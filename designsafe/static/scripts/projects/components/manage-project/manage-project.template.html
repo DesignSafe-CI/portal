@@ -539,7 +539,7 @@
                                 name="nh-event"
                                 style="width:100%"
                                 ng-model="$ctrl.form.nhEvent"
-                                ng-required="true"/>
+                                ng-required="$ctrl.isRequiredEvent()"/>
                     </div>
                     <!-- Event Dates -->
                     <div style="width:50%;" class="form-group">
@@ -557,7 +557,7 @@
                             <input  class="form-control"
                                     type="date"
                                     ng-model="$ctrl.form.nhEventStart"
-                                    ng-required="true">
+                                    ng-required="false">
                             <span style="padding:6px;">&#8213;</span>
                             <input  class="form-control"
                                     type="date"
@@ -585,7 +585,7 @@
                                 <input type="text"
                                         id="id-location"
                                         ng-model="$ctrl.form.nhLocation"
-                                        ng-required="true"
+                                        ng-required="false"
                                         class="form-control"/>
                             </div>
                             <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -595,7 +595,7 @@
                                 <input type="text"
                                         id="id-latitude"
                                         ng-model="$ctrl.form.nhLatitude"
-                                        ng-required="true"
+                                        ng-required="false"
                                         class="form-control"/>
                             </div>
                             <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -605,8 +605,8 @@
                                 <input type="text"
                                         id="id-longitude"
                                         ng-model="$ctrl.form.nhLongitude"
-                                        ng-required="true"
-                                        class="form-control" />
+                                        ng-required="false"
+                                        class="form-control"/>
                             </div>
                         </div>
                     </div>
