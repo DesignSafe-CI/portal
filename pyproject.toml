@@ -5,7 +5,7 @@ description = ""
 authors = ["DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"]
 
 [tool.poetry.dependencies]
-python = "^3.6.8"
+python = "^3.6.15"
 agavepy = "1.0.0a12"
 Django = "^1.11"
 cryptography = "^2.3.1"
@@ -13,7 +13,6 @@ django-cms = "3.4.7"
 importlib-resources = "^5.4.0"
 django-filer = "^1.7.1"
 django-formtools = "2.2"
-django-haystack = "2.8.1"
 django-impersonate = "1.5.1"
 django-treebeard = "^4.3.1"
 django-sekizai = "^1.1.0"
@@ -62,6 +61,7 @@ requests-mock = "^1.9.3"
 pytest-mock = "^3.6.1"
 pytest-cov = "^2.10.0"
 ExifRead = "^2.3.2"
+django-haystack = "2.8.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
