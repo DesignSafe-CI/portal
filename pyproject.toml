@@ -5,7 +5,7 @@ description = ""
 authors = ["DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"]
 
 [tool.poetry.dependencies]
-python = "^3.6.15"
+python = "^3.6.8"
 agavepy = "1.0.0a12"
 Django = "^1.11"
 cryptography = "^2.3.1"

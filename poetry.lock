@@ -1982,8 +1982,8 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.6.15"
-content-hash = "031ea9c3d1523ec106c29d39698474d284becda72e8acab2ecdb789a5dc7ca1f"
+python-versions = "^3.6.8"
+content-hash = "457c36c6d43643e0bfe0d41a243d041ed286a81128cf033edfe5bd2d0407f88a"
 
 [metadata.files]
 agavepy = [
