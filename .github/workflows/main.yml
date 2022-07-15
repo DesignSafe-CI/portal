@@ -29,17 +29,17 @@ jobs:
       run: |
         cp --force designsafe/templates/base.j2 designsafe/templates/base.html
 
-    #- uses: actions/cache@v2
-    #  with:
-    #    path: ~/.cache/pip
-    #    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-    #    restore-keys: |
-    #      ${{ runner.os }}-pip-
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - run: |
-      poetry config virtualenvs.create false
-      poetry install
-      pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
+        poetry config virtualenvs.create false
+        poetry install
+        pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
 
     - name: Run Server-side unit tests and generate coverage report
       run: |
