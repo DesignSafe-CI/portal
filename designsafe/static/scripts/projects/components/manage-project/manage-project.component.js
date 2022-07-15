@@ -2,6 +2,7 @@ import ManageProjectTemplate from './manage-project.template.html';
 import AmendProjectTemplate from './amend-project.template.html';
 import FormOptions from './project-form-options.json';
 import FormDefaults from './project-form-defaults.json';
+import { object } from 'underscore';
 
 class ManageProjectCtrl {
     constructor(UserService, ProjectModel, PublicationService, $http, $q, $uibModal, $state) {
@@ -165,6 +166,29 @@ class ManageProjectCtrl {
         }).map((obj) => {
             return obj[objValue] || obj;
         });
+    }
+
+    isRequiredEvent(){
+        // console.log('Event ' + this.form.nhEvent)
+        // console.log('DtStart ' + this.form.nhEventStart)
+        // console.log('Location ' + this.form.nhLocation)
+        // console.log('Lat ' + this.form.nhLatitude)
+        // console.log('Long ' + this.form.nhLongitude)
+        if (this.projectType == 'field_recon'){
+            return [console.log('Is Req FR:' + true), true]
+            // return true
+        } else if ((typeof this.form.nhEvent !== 'undefined')
+        || (typeof this.form.nhEventStart !== 'undefined' && this.form.nhEventStart !== null)
+        || (typeof this.form.nhLocation !== 'undefined' && this.form.nhLocation !== '')
+        || (typeof this.form.nhLatitude !== 'undefined' && this.form.nhLatitude !== '')
+        || (typeof this.form.nhLongitude !== 'undefined' && this.form.nhLongitude !== '')
+        ){
+            return [console.log('Is Req Event:' + true), true]
+            // return true
+        } else {
+            return [ console.log('Is Req None:' + false), false]
+            // return false
+        }
     }
 
     prepareData(hasPrjType) {
