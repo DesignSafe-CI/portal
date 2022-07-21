@@ -198,7 +198,7 @@
                 <div class="well" ng-if="report.value.description">
                     <p>{{ report.value.description }}</p>
                 </div>
-                <files-listing show-select="true" show-tags="true"
+                <files-listing show-select="true" show-tags="true" published="true"
                 on-scroll="$ctrl.scrollToBottom()"
                 listing="$ctrl.FileListingService.listings[report.uuid]"
                 on-browse="$ctrl.onBrowse(file)"
@@ -215,7 +215,7 @@
         custom-root="$ctrl.breadcrumbParams.root"
         skip-root="$ctrl.breadcrumbParams.skipRoot"
     ></breadcrumb>
-        <files-listing show-select="true" show-tags="true"
+        <files-listing show-select="true" show-tags="true" published="true"
             on-scroll="$ctrl.scrollToBottom()"
             listing="$ctrl.FileListingService.listings.main"
             on-browse="$ctrl.onBrowse(file)"
@@ -340,6 +340,7 @@
                                     <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
                                         <files-listing show-select="true"
                                                        show-tags="true"
+                                                       published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[report.uuid]"
                                                        on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -367,6 +368,7 @@
                                     <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
                                         <files-listing show-select="true"
                                                        show-tags="true"
+                                                       published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[model.uuid]"
                                                        on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -404,6 +406,7 @@
                                                 <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
                                                     <files-listing show-select="true"
                                                                    show-tags="true"
+                                                                   published="true"
                                                                    on-scroll="$ctrl.scrollToBottom()"
                                                                    listing="$ctrl.FileListingService.listings[coordinator.uuid]"
                                                                    on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -442,6 +445,7 @@
                                                             <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
                                                                 <files-listing show-select="true"
                                                                                show-tags="true"
+                                                                               published="true"
                                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                                listing="$ctrl.FileListingService.listings[cout.uuid]"
                                                                                on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -487,6 +491,7 @@
                                                             <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
                                                                 <files-listing show-select="true"
                                                                                show-tags="true"
+                                                                               published="true"
                                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                                listing="$ctrl.FileListingService.listings[simsub.uuid]"
                                                                                on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -532,6 +537,7 @@
                                                                     <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
                                                                         <files-listing show-select="true"
                                                                                        show-tags="true"
+                                                                                       published="true"
                                                                                        on-scroll="$ctrl.scrollToBottom()"
                                                                                        listing="$ctrl.FileListingService.listings[sout.uuid]"
                                                                                        on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -580,6 +586,7 @@
                                                             <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
                                                                 <files-listing show-select="true"
                                                                                show-tags="true"
+                                                                               published="true"
                                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                                listing="$ctrl.FileListingService.listings[expsub.uuid]"
                                                                                on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -625,6 +632,7 @@
                                                                     <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
                                                                         <files-listing show-select="true"
                                                                                        show-tags="true"
+                                                                                       published="true"
                                                                                        on-scroll="$ctrl.scrollToBottom()"
                                                                                        listing="$ctrl.FileListingService.listings[eout.uuid]"
                                                                                        on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -675,6 +683,7 @@
                                     <div ng-if="!$ctrl.publication.tombstone.includes(hybsim.uuid)">
                                         <files-listing show-select="true"
                                                        show-tags="true"
+                                                       published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[analysis.uuid]"
                                                        on-browse="$ctrl.onBrowse(file)">&nbsp;

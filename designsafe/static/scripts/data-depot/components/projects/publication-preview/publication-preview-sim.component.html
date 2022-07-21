@@ -200,7 +200,7 @@
                 <div class="well" ng-if="report.value.description">
                     <p>{{ report.value.description }}</p>
                 </div>
-                <files-listing show-select="true" show-tags="true"
+                <files-listing show-select="true" show-tags="true" published="true"
                     on-scroll="$ctrl.scrollToBottom()"
                     listing="$ctrl.FileListingService.listings[report.uuid]"
                     on-browse="$ctrl.onBrowse(file)"
@@ -216,7 +216,7 @@
         custom-root="$ctrl.breadcrumbParams.root"
         skip-root="$ctrl.breadcrumbParams.skipRoot"
     ></breadcrumb>
-        <files-listing show-select="true" show-tags="true"
+        <files-listing show-select="true" show-tags="true" published="true"
             on-scroll="$ctrl.scrollToBottom()"
             listing="$ctrl.FileListingService.listings.main"
             on-browse="$ctrl.onBrowse(file)"
@@ -347,6 +347,7 @@
                                     <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
                                         <files-listing show-select="true"
                                                        show-tags="true"
+                                                       published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[report.uuid]"
                                                        on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -374,6 +375,7 @@
                                     <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
                                         <files-listing show-select="true"
                                                        show-tags="true"
+                                                       published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[model.uuid]"
                                                        on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -413,6 +415,7 @@
                                                 <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
                                                     <files-listing show-select="true"
                                                                    show-tags="true"
+                                                                   published="true"
                                                                    on-scroll="$ctrl.scrollToBottom()"
                                                                    listing="$ctrl.FileListingService.listings[input.uuid]"
                                                                    on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -454,6 +457,7 @@
                                                             <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
                                                                 <files-listing show-select="true"
                                                                                show-tags="true"
+                                                                               published="true"
                                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                                listing="$ctrl.FileListingService.listings[output.uuid]"
                                                                                on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -501,6 +505,7 @@
                                     <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
                                         <files-listing show-select="true"
                                                        show-tags="true"
+                                                       published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[analysis.uuid]"
                                                        on-browse="$ctrl.onBrowse(file)">&nbsp;
