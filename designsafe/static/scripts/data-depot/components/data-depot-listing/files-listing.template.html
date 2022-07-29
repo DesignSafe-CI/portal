@@ -132,7 +132,12 @@
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"
                 >
-                    <p class="lead" style="margin-top:20px" ng-if="!($ctrl.listing.params.system.includes('project-') && $ctrl.editTags)">
+                    <p class="lead" style="margin-top:20px" ng-if="($ctrl.listing.params.query_string != null)">
+                        No results found! <br />
+                    </p>
+                    <p class="lead" style="margin-top:20px" ng-if="(!$ctrl.listing.params.system.includes('project-') 
+                                                                  && !$ctrl.editTags 
+                                                                  && $ctrl.listing.params.query_string == null)">
                         This folder is empty! <br />
                         <i class="fa fa-folder-open-o">&nbsp;</i><br/>
                         <a data-ng-if="$ctrl.listing.params.system.includes('project-')"
