@@ -458,6 +458,11 @@ class Project(MetadataModel):
                 })
 
         attributes['relatedIdentifiers'] = []
+
+        for related_work in self.associated_projects:
+            logger.info(related_work)
+            # related works...
+        # checks related entities for DOIs
         for related_entity in self.related_entities():
             rel_ent_dict = related_entity.to_body_dict()
             if 'dois' in rel_ent_dict['value'] and len(rel_ent_dict['value']['dois']):
@@ -625,3 +630,13 @@ def _process_authors(authors):
                 institutions.append(author['inst'])
     institutions = set(institutions)
     return creators_details, institutions
+
+'''
+| 2022/07/14 19:18:19 [error] 29#29: *7 upstream timed out (110: Connection timed out) while reading response header from upstream, client: 172.20.0.1, server: designsafe.dev, request: "GET / HTTP/2.0", upstream: "http://172.20.0.7:8000/", host: "designsafe.dev"
+
+| 172.20.0.1 - - [14/Jul/2022:19:18:19 +0000] "GET / HTTP/2.0" 504 569 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" "-" [59.965]
+| 172.20.0.1 - - [14/Jul/2022:19:18:44 +0000] "GET / HTTP/2.0" 499 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" "-" [23.714]
+| 2022/07/14 19:18:44 [info] 29#29: *7 client canceled stream 11 while sending request to upstream, client: 172.20.0.1, server: designsafe.dev, request: "GET / HTTP/2.0", upstream: "http://172.20.0.7:8000/", host: "designsafe.dev"
+| 2022/07/14 19:19:13 [info] 29#29: *77 upstream timed out (110: Connection timed out) while proxying upgraded connection, client: 172.20.0.1, server: designsafe.dev, request: "GET /ws/websockets?subscribe-broadcast&subscribe-user HTTP/1.1", upstream: "http://172.20.0.7:8000/ws/websockets?subscribe-broadcast&subscribe-user", host: "designsafe.dev"
+| 172.20.0.1 - - [14/Jul/2022:19:19:13 +0000] "GET /ws/websockets?subscribe-broadcast&subscribe-user HTTP/1.1" 101 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" "-" [59.988]
+'''

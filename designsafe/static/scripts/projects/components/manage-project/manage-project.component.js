@@ -21,21 +21,31 @@ class ManageProjectCtrl {
             loading: true,
             editType: true,
             submitting: false,
-            error: null,
+            require: {
+                guestMembers: true,
+                awardNumber: true,
+                associatedProjects: true,
+                coPis: false,
+                teamMembers: false,
+            },
+            requireWorks: true,
+            invalidUserError: false,
+            invalidUser: ''
         };
         this.project = this.resolve.project;
+        this.FormDefaults = FormDefaults;
 
         if (this.project) {
-            const projectCopy = JSON.parse(JSON.stringify(this.project.value));
+            let projectCopy = structuredClone(this.project.value);
             this.naturalHazardTypes = FormOptions.nhTypes;
             this.fieldResearchTypes = FormOptions.frTypes;
             this.otherTypes = FormOptions.otherTypes;
-            this.relatedWorkTypes = FormOptions.rwTypes;
+            this.relatedWorkTypes = (projectCopy.projectType != 'other' ? FormOptions.rwTypes : FormOptions.rwTypesOther);
 
-            if (projectCopy.projectType in FormDefaults) {
-                this.form = {...FormDefaults[projectCopy.projectType]};
+            if (projectCopy.projectType in this.FormDefaults) {
+                this.form = structuredClone(this.FormDefaults[projectCopy.projectType]);
             } else {
-                this.form = {... FormDefaults.new};
+                this.form = structuredClone(this.FormDefaults.new);
                 this.ui.hasType = false;
             }
             for (let key in this.form) {
@@ -43,21 +53,17 @@ class ManageProjectCtrl {
                     this.form[key] = projectCopy[key];
                 } else if (projectCopy[key] instanceof Object && Object.keys(projectCopy[key]).length){
                     this.form[key] = projectCopy[key];
+                } else if (['nhEventStart', 'nhEventEnd'].includes(key)) {
+                    this.form[key] = new Date(projectCopy[key]);
                 } else if (typeof projectCopy[key] === 'string' && projectCopy[key]) {
                     this.form[key] = projectCopy[key];
-                    if (Date.parse(this.form[key])) {
-                        this.form[key] = new Date(this.form[key]);
-                    }
                 }
             }
-            this.form.uuid = this.project.uuid;
             if (Date.parse(this.form.nhEventStart) == Date.parse(this.form.nhEventEnd)) {
                 this.form.nhEventEnd = null;
             }
-            if (projectCopy.projectType != 'other') {
-                // Projects that do not have a DOI in the project metadata will not have 'Cited By'
-                this.relatedWorkTypes = FormOptions.rwTypes.filter((type) => {return type != 'Cited By'});
-            }
+            this.form.uuid = this.project.uuid;
+
             const usernames = new Set([
                 ...[projectCopy.pi],
                 ...projectCopy.coPis,
@@ -74,13 +80,24 @@ class ManageProjectCtrl {
                 this.form.pi = proj_users.userData.find(user => user.username == projectCopy.pi);
                 let copis = proj_users.userData.filter(user => projectCopy.coPis.includes(user.username));
                 let team = proj_users.userData.filter(user => projectCopy.teamMembers.includes(user.username));
-                if (copis.length) this.form.coPis = copis;
-                if (team.length) this.form.teamMembers = team;
+                if (copis.length) {
+                    this.form.coPis = copis;
+                    this.ui.require.coPis = true;
+                };
+                if (team.length) {
+                    this.form.teamMembers = team;
+                    this.ui.require.teamMembers = true;
+                };
+                if (this.form.projectType in this.FormDefaults) {
+                    this.ui.require.guestMembers = this.requireField(this.form.guestMembers);
+                    this.ui.require.awardNumber = this.requireField(this.form.awardNumber);
+                    this.ui.require.associatedProjects = this.requireField(this.form.associatedProjects);
+                }
                 this.ui.loading = false;
             });
         } else {
             this.UserService.authenticate().then((creator) => {
-                this.form = FormDefaults.new;
+                this.form = structuredClone(this.FormDefaults.new);
                 this.form.creator = creator
                 this.ui.loading = false;
             });
@@ -88,6 +105,10 @@ class ManageProjectCtrl {
     }
 
     create() {
+        let users = [this.form.pi].concat(this.form.coPis, this.form.teamMembers);
+        this.ui.invalidUser = users.find(usr => typeof usr != 'object');
+        if (this.ui.invalidUser) return this.ui.invalidUserError = true;
+
         this.ui.submitting = true;
         let data = this.prepareData(false);
         if (this.missingCreator(data)) {
@@ -127,6 +148,10 @@ class ManageProjectCtrl {
                 this.close({ $value: project });
             });
         }
+    }
+
+    warn(msg) {
+        console.log(msg);
     }
 
     update() {
@@ -261,22 +286,55 @@ class ManageProjectCtrl {
         }
     }
 
-    addAwardField(group) {
-        group.push({
-            "name": undefined,
-            "number": undefined,
-            "order": group.length + 1
-        });
+    /* TODO:
+    ------- Set up the related work stuff to be conditional if a new project or project none is opened.
+    ------- Configure this for "guestMembers" and "awardNumber"
+    ------- Remove "Order" fields
+    ------- Make sure you update the "Amend" Template as well
+    - Update ElasticSearch index with the new field values
+    - Add a new field for Related Work stuff to the entities that are publishable
+    - Send the new inputs data to DataCite
+    */
+    requireField(field) {
+        // Sets the field to disabled or enabled during init
+        if (field.length > 1) return true;
+        return (Object.keys(field[0]).every(input => !field[0][input]) ? false : true );
     }
 
-    addWorkField(group) {
-        group.push({
-            "type": undefined,
-            "title": undefined,
-            "href": undefined,
-            "hrefType": undefined,
-            "order": group.length + 1
-        });
+    addObjField(fieldName) {
+        if (this.form[fieldName].length === 1 && !this.ui.require[fieldName]) {
+            this.ui.require[fieldName] = true;
+        } else {
+            this.form[fieldName].push({...this.FormDefaults[this.form.projectType][fieldName][0]});
+        }
+    }
+
+    dropObjField(fieldName) {
+        if (this.form[fieldName].length === 1) {
+            this.form[fieldName].pop();
+            this.form[fieldName].push({...this.FormDefaults[this.form.projectType][fieldName][0]});
+            this.ui.require[fieldName] = false;
+        } else {
+            this.form[fieldName].pop();
+        }
+    }
+
+    addUserField(userType) {
+        if (this.form[userType].length === 1 && !this.ui.require[userType]) {
+            this.ui.require[userType] = true;
+        } else {
+            this.form[userType].push(null);
+        }
+    }
+
+    dropUserField(userType) {
+        if (this.form[userType].length === 1) {
+            this.form[userType].pop();
+            this.form[userType].push(null);
+            this.ui.require[userType] = false;
+        } else {
+            this.form[userType].pop();
+        }
     }
 
     dropField(group, ordered) {

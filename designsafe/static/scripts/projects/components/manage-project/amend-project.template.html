@@ -20,6 +20,7 @@
         </h3>
     </div>
     <form name="projForm" autocomplete="off" ng-if="!$ctrl.ui.loading">
+        <input autocomplete="false" name="hidden" type="text" style="display:none;">
         <!-- Amend Project Section -->
         <div>
             <!-- Natural Hazard Type -->
@@ -115,34 +116,40 @@
                             Award Number
                         </td>
                     </tr>
-                    <tr ng-repeat="award in $ctrl.form.awardNumber | orderBy:'order' track by $index">
+                    <tr ng-repeat="award in $ctrl.form.awardNumber track by $index">
                         <td class="manage-prj-td">
                             <input  class="project-form-input"
                                     type="text"
-                                    id="id_awardName"
-                                    name="awardName"
-                                    ng-model="award.name">
+                                    id="award-name{{$index}}"
+                                    name="award-name"
+                                    ng-model="award.name"
+                                    ng-disabled="!$ctrl.ui.require.awardNumber"
+                                    ng-required="$ctrl.ui.require.awardNumber"
+                                    required>
                         </td>
                         <td>
                             <input  class="project-form-input"
                                     type="text"
-                                    id="id_awardNumber"
-                                    name="awardNumber"
-                                    ng-model="award.number">
+                                    id="award-number{{$index}}"
+                                    name="award-number"
+                                    ng-model="award.number"
+                                    ng-disabled="!$ctrl.ui.require.awardNumber"
+                                    ng-required="$ctrl.ui.require.awardNumber"
+                                    required>
                         </td>
                     </tr>
                 </table>
                 <div>
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.addAwardField($ctrl.form.awardNumber)">
-                            &#x2b; Add another Award
-                    </button>
-                    |
-                    <button class="btn-project-add-rm"
-                            ng-click="$ctrl.dropField($ctrl.form.awardNumber, true)"
-                            ng-disabled="$ctrl.checkEmpty($ctrl.form.awardNumber)">
-                            &#x2212; Remove Award
-                    </button>
+                    ng-click="$ctrl.addObjField('awardNumber')">
+                    &#x2b; Add <span ng-if="$ctrl.ui.require.awardNumber">another</span> Award
+            </button>
+            |
+            <button class="btn-project-add-rm"
+                    ng-click="$ctrl.dropObjField('awardNumber')"
+                    ng-disabled="!$ctrl.ui.require.awardNumber">
+                    &#x2212; Remove Award
+            </button>
                 </div>
             </div>
             <!-- Related Works -->
@@ -160,8 +167,7 @@
                                     <span class="label-form-name">Related Work</span>
                                 </div>
                                 <span class="label-form-desc">
-                                    Other projects, publications, or datasets related to this project.
-                                    Ensure that your link is formatted correctly when providing a DOI.
+                                    Data from published projects or an external repository.
                                 </span>
                             </div>
                         </label>
@@ -174,55 +180,66 @@
                             Title
                         </td>
                         <td valign="top">
-                            Related Work DOI or URL
+                            URL or DOI for the reference data, in URL format
                         </td>
                     </tr>
-                    <tr ng-repeat="work in $ctrl.form.associatedProjects | orderBy:'order' track by $index">
+                    <tr ng-repeat="work in $ctrl.form.associatedProjects track by $index">
                         <td class="manage-prj-td">
                             <select class="project-form-input"
-                                    id="id_workType"
-                                    name="workType"
+                                    id="work-type{{$index}}"
+                                    name="related-work"
                                     ng-options="item for item in $ctrl.relatedWorkTypes"
-                                    ng-model="work.type">
+                                    ng-model="work.type"
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
+                                    <option value="">-- Type --</option>
                             </select>
                         </td>
                         <td class="manage-prj-td">
                             <input  class="project-form-input"
                                     type="text"
-                                    id="id_workTitle"
-                                    name="workTitle"
-                                    ng-model="work.title">
+                                    id="work-title{{$index}}"
+                                    name="related-work"
+                                    ng-model="work.title"
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
                         </td>
                         <td class="manage-prj-td">
                             <input  class="project-form-input"
                                     type="text"
-                                    id="id_workHref"
-                                    name="workHref"
-                                    ng-model="work.href">
+                                    id="work-href{{$index}}"
+                                    name="related-work"
+                                    ng-model="work.href"
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
                             <input type="radio"
-                                    id="work-href-type"
-                                    name="workHrefType{{$index}}"
+                                    id="work-href-type-doi{{$index}}"
+                                    name="related-work{{$index}}"
+                                    value="DOI"
                                     ng-model="work.hrefType"
-                                    value="DOI">
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
                             <label for="DOI">DOI</label>
                             <input type="radio"
-                                    id="work-href-type"
-                                    name="workHrefType{{$index}}"
+                                    id="work-href-type-url{{$index}}"
+                                    name="related-work{{$index}}"
+                                    value="URL"
                                     ng-model="work.hrefType"
-                                    value="URL">
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
                             <label for="URL">URL</label>
                         </td>
                     </tr>
                 </table>
                 <div>
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.addWorkField($ctrl.form.associatedProjects)">
-                            &#x2b; Add another Related Work
+                            ng-click="$ctrl.addObjField('associatedProjects')">
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.associatedProjects">another</span> Related Work
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.dropField($ctrl.form.associatedProjects, true)"
-                            ng-disabled="$ctrl.checkEmpty($ctrl.form.associatedProjects)">
+                            ng-click="$ctrl.dropObjField('associatedProjects')"
+                            ng-disabled="!$ctrl.ui.require.associatedProjects">
                             &#x2212; Remove Related Work
                     </button>
                 </div>

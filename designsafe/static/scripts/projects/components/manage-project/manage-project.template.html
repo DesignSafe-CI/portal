@@ -21,6 +21,7 @@
         </h3>
     </div>
     <form name="projForm" autocomplete="off" ng-if="!$ctrl.ui.loading">
+        <input autocomplete="false" name="hidden" type="text" style="display:none;">
         <fieldset ng-disabled="$ctrl.ui.submitting">
             <!-- Project Title -->
             <div class="form-group">
@@ -221,6 +222,17 @@
                         &#x2212; Remove Natural Hazard Type
                 </button>
             </div>
+            <!-- Add user Errors -->
+            <div class="form-group" ng-if="$ctrl.ui.invalidUserError">
+                <div class="alert alert-danger flex-container">
+                    <i class="fa fa-exclamation notification-icon"></i>
+                    <div>
+                        The name: <strong>{{$ctrl.ui.invalidUser}}</strong> could not be found.
+                        Please make sure that you select each user from the dropdown listing
+                        of your search results.
+                    </div>
+                </div>
+            </div>
             <!-- Add PI and PRJ Members -->
             <div class="form-group">
                 <table class="manage-prj-table">
@@ -247,7 +259,6 @@
                                         type="text"
                                         id="id_pi"
                                         name="pi"
-                                        autocomplete="chrome-off"
                                         ng-model="$ctrl.form.pi"
                                         placeholder="Lookup user by name or email address"
                                         uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
@@ -257,30 +268,32 @@
                                         typeahead-template-url="itemTmpl.html"
                                         ng-required="true"
                                 >
-                                <span ng-repeat="(i, usr) in $ctrl.form.coPis track by $index">
+                                <span ng-repeat="(i, coPi) in $ctrl.form.coPis track by $index">
                                     <input  class="project-form-input project-form-name"
                                             type="text"
-                                            id="id_copi"
+                                            id="copi{{$index}}"
                                             name="copi"
-                                            autocomplete="chrome-off"
                                             ng-model="$ctrl.form.coPis[i]"
                                             ng-style="{'float': $even ? 'right' : 'none'}"
                                             placeholder="Lookup user by name or email address"
                                             uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
                                             typeahead-loading="searching"
-                                            typeahead-input-formatter="$ctrl.formatSelection(usr)"
+                                            typeahead-input-formatter="$ctrl.formatSelection(coPi)"
                                             typeahead-template-url="itemTmpl.html"
+                                            ng-disabled="!$ctrl.ui.require.coPis"
+                                            ng-required="$ctrl.ui.require.coPis"
+                                            required
                                     >
                                 </span>
                                 <div>
                                     <button class="btn-project-add-rm"
-                                            ng-click="$ctrl.addField($ctrl.form.coPis)">
+                                            ng-click="$ctrl.addUserField('coPis')">
                                             &#x2b; Add another PI
                                     </button>
                                     |
                                     <button class="btn-project-add-rm"
-                                            ng-click="$ctrl.dropField($ctrl.form.coPis)"
-                                            ng-disabled="$ctrl.checkEmpty($ctrl.form.coPis)">
+                                            ng-click="$ctrl.dropUserField('coPis')"
+                                            ng-disabled="!$ctrl.ui.require.coPis">
                                             &#x2212; Remove PI
                                     </button>
                                 </div>
@@ -293,30 +306,33 @@
                         </div>
                     </tr>
                     <tr>
-                        <span ng-repeat="(i, usr) in $ctrl.form.teamMembers track by $index">
+                        <span ng-repeat="(i, member) in $ctrl.form.teamMembers track by $index">
                             <input  class="project-form-input project-form-name"
                                     type="text"
-                                    id="id_user"
-                                    name="user"
-                                    autocomplete="chrome-off"
+                                    id="member{{$index}}"
+                                    name="member"
                                     ng-style="{'float': $odd ? 'right' : 'none'}"
                                     ng-model="$ctrl.form.teamMembers[i]"
                                     placeholder="Lookup user by name or email address"
                                     uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
                                     typeahead-loading="searching"
-                                    typeahead-input-formatter="$ctrl.formatSelection(usr)"
+                                    typeahead-input-formatter="$ctrl.formatSelection(member)"
                                     typeahead-template-url="itemTmpl.html"
+                                    ng-disabled="!$ctrl.ui.require.teamMembers"
+                                    ng-required="$ctrl.ui.require.teamMembers"
+                                    required
                             >
                         </span>
                         <div>
                             <button class="btn-project-add-rm"
-                                    ng-click="$ctrl.addField($ctrl.form.teamMembers)">
-                                    &#x2b; Add another Project Member
+                                    ng-click="$ctrl.addUserField('teamMembers')">
+                                    &#x2b; Add <span ng-if="$ctrl.ui.require.teamMembers">another</span>
+                                    Project Member
                             </button>
                             |
                             <button class="btn-project-add-rm"
-                                    ng-click="$ctrl.dropField($ctrl.form.teamMembers)"
-                                    ng-disabled="$ctrl.checkEmpty($ctrl.form.teamMembers)">
+                                    ng-click="$ctrl.dropUserField('teamMembers')"
+                                    ng-disabled="!$ctrl.ui.require.teamMembers">
                                     &#x2212; Remove Project Member
                             </button>
                         </div>
@@ -346,29 +362,62 @@
                         <td>Email</td>
                         <td>Institution</td>
                     </tr>
-                    <tr ng-repeat="(i, usr) in $ctrl.form.guestMembers track by $index">
+                    <tr ng-repeat="usr in $ctrl.form.guestMembers track by $index">
                         <td class="manage-prj-td">
-                            <input class="project-form-input" type="text" name="guestFName" id="id_guest_fname" ng-model="$ctrl.form.guestMembers[i].fname" autocomplete="additional-name">
+                            <input class="project-form-input"
+                                    type="text"
+                                    id="guest-fname{{$index}}"
+                                    name="guest-fname"
+                                    ng-model="usr.fname"
+                                    autocomplete="additional-name"
+                                    ng-disabled="!$ctrl.ui.require.guestMembers"
+                                    ng-required="$ctrl.ui.require.guestMembers"
+                                    required>
                         </td>
                         <td class="manage-prj-td">
-                            <input class="project-form-input" type="text" name="guestLName" id="id_guest_lname" ng-model="$ctrl.form.guestMembers[i].lname" autocomplete="additional-name">
+                            <input class="project-form-input"
+                                    type="text"
+                                    id="guest-lname{{$index}}"
+                                    name="guest-lname"
+                                    ng-model="usr.lname"
+                                    autocomplete="additional-name"
+                                    ng-disabled="!$ctrl.ui.require.guestMembers"
+                                    ng-required="$ctrl.ui.require.guestMembers"
+                                    required>
                         </td>
                         <td class="manage-prj-td">
-                            <input class="project-form-input" type="text" name="guestEmail" id="id_guest_email" ng-model="$ctrl.form.guestMembers[i].email" autocomplete="email">
+                            <input class="project-form-input"
+                                    type="email"
+                                    id="guest-email{{$index}}"
+                                    name="guest-email"
+                                    ng-model="usr.email"
+                                    autocomplete="email"
+                                    ng-disabled="!$ctrl.ui.require.guestMembers"
+                                    ng-required="$ctrl.ui.require.guestMembers"
+                                    required>
                         </td>
                         <td>
-                            <input class="project-form-input" type="text" name="ExpAuthorInst" id="id_guest_inst" ng-model="$ctrl.form.guestMembers[i].inst" autocomplete="organization">
+                            <input class="project-form-input"
+                                    type="text"
+                                    id="guest-inst{{$index}}"
+                                    name="guest-inst"
+                                    ng-model="usr.inst"
+                                    autocomplete="organization"
+                                    ng-disabled="!$ctrl.ui.require.guestMembers"
+                                    ng-required="$ctrl.ui.require.guestMembers"
+                                    required>
                         </td>
                     </tr>
                 </table>
                 <button class="btn-project-add-rm"
-                        ng-click="$ctrl.addField($ctrl.form.guestMembers)">
-                        &#x2b; Add another Unregistered Project Member
+                        ng-click="$ctrl.addObjField('guestMembers')">
+                        &#x2b; Add <span ng-if="$ctrl.ui.require.guestMembers">another</span>
+                        Unregistered Project Member
                 </button>
                 |
                 <button class="btn-project-add-rm"
-                        ng-click="$ctrl.dropField($ctrl.form.guestMembers)"
-                        ng-disabled="$ctrl.checkEmpty($ctrl.form.guestMembers)">
+                        ng-click="$ctrl.dropObjField('guestMembers')"
+                        ng-disabled="!$ctrl.ui.require.guestMembers">
                         &#x2212; Remove Unregistered Project Member
                 </button>
             </div>
@@ -428,32 +477,38 @@
                                 Award Number
                             </td>
                         </tr>
-                        <tr ng-repeat="award in $ctrl.form.awardNumber | orderBy:'order' track by $index">
+                        <tr ng-repeat="award in $ctrl.form.awardNumber track by $index">
                             <td class="manage-prj-td">
                                 <input  class="project-form-input"
                                         type="text"
-                                        id="id_awardName"
-                                        name="awardName"
-                                        ng-model="award.name">
+                                        id="award-name{{$index}}"
+                                        name="award-name"
+                                        ng-model="award.name"
+                                        ng-disabled="!$ctrl.ui.require.awardNumber"
+                                        ng-required="$ctrl.ui.require.awardNumber"
+                                        required>
                             </td>
                             <td>
                                 <input  class="project-form-input"
                                         type="text"
-                                        id="id_awardNumber"
-                                        name="awardNumber"
-                                        ng-model="award.number">
+                                        id="award-number{{$index}}"
+                                        name="award-number"
+                                        ng-model="award.number"
+                                        ng-disabled="!$ctrl.ui.require.awardNumber"
+                                        ng-required="$ctrl.ui.require.awardNumber"
+                                        required>
                             </td>
                         </tr>
                     </table>
                     <div>
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.addAwardField($ctrl.form.awardNumber)">
-                                &#x2b; Add another Award
+                                ng-click="$ctrl.addObjField('awardNumber')">
+                                &#x2b; Add <span ng-if="$ctrl.ui.require.awardNumber">another</span> Award
                         </button>
                         |
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.dropField($ctrl.form.awardNumber, true)"
-                                ng-disabled="$ctrl.checkEmpty($ctrl.form.awardNumber)">
+                                ng-click="$ctrl.dropObjField('awardNumber')"
+                                ng-disabled="!$ctrl.ui.require.awardNumber">
                                 &#x2212; Remove Award
                         </button>
                     </div>
@@ -473,8 +528,7 @@
                                         <span class="label-form-name">Related Work</span>
                                     </div>
                                     <span class="label-form-desc">
-                                        Other projects, publications, or datasets related to this project.
-                                        Ensure that your link is formatted correctly when providing a DOI.
+                                        Data from published projects or an external repository.
                                     </span>
                                 </div>
                             </label>
@@ -487,55 +541,66 @@
                                 Title
                             </td>
                             <td valign="top">
-                                Related Work DOI or URL
+                                URL or DOI for the reference data, in URL format
                             </td>
                         </tr>
-                        <tr ng-repeat="work in $ctrl.form.associatedProjects | orderBy:'order' track by $index">
+                        <tr ng-repeat="work in $ctrl.form.associatedProjects track by $index">
                             <td class="manage-prj-td">
                                 <select class="project-form-input"
-                                        id="id_workType"
-                                        name="workType"
+                                        id="work-type{{$index}}"
+                                        name="related-work"
                                         ng-options="item for item in $ctrl.relatedWorkTypes"
-                                        ng-model="work.type">
+                                        ng-model="work.type"
+                                        ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                        ng-required="$ctrl.ui.require.associatedProjects">
+                                        <option value="">-- Type --</option>
                                 </select>
                             </td>
                             <td class="manage-prj-td">
                                 <input  class="project-form-input"
                                         type="text"
-                                        id="id_workTitle"
-                                        name="workTitle"
-                                        ng-model="work.title">
+                                        id="work-title{{$index}}"
+                                        name="related-work"
+                                        ng-model="work.title"
+                                        ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                        ng-required="$ctrl.ui.require.associatedProjects">
                             </td>
                             <td class="manage-prj-td">
                                 <input  class="project-form-input"
                                         type="text"
-                                        id="id_workHref"
-                                        name="workHref"
-                                        ng-model="work.href">
+                                        id="work-href{{$index}}"
+                                        name="related-work"
+                                        ng-model="work.href"
+                                        ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                        ng-required="$ctrl.ui.require.associatedProjects">
                                 <input type="radio"
-                                        id="work-href-type"
-                                        name="workHrefType{{$index}}"
+                                        id="work-href-type-doi{{$index}}"
+                                        name="related-work{{$index}}"
+                                        value="DOI"
                                         ng-model="work.hrefType"
-                                        value="DOI">
+                                        ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                        ng-required="$ctrl.ui.require.associatedProjects">
                                 <label for="DOI">DOI</label>
                                 <input type="radio"
-                                        id="work-href-type"
-                                        name="workHrefType{{$index}}"
+                                        id="work-href-type-url{{$index}}"
+                                        name="related-work{{$index}}"
+                                        value="URL"
                                         ng-model="work.hrefType"
-                                        value="URL">
+                                        ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                        ng-required="$ctrl.ui.require.associatedProjects">
                                 <label for="URL">URL</label>
                             </td>
                         </tr>
                     </table>
                     <div>
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.addWorkField($ctrl.form.associatedProjects)">
-                                &#x2b; Add another Related Work
+                                ng-click="$ctrl.addObjField('associatedProjects')">
+                                &#x2b; Add <span ng-if="$ctrl.ui.require.associatedProjects">another</span> Related Work
                         </button>
                         |
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.dropField($ctrl.form.associatedProjects, true)"
-                                ng-disabled="$ctrl.checkEmpty($ctrl.form.associatedProjects)">
+                                ng-click="$ctrl.dropObjField('associatedProjects')"
+                                ng-disabled="!$ctrl.ui.require.associatedProjects">
                                 &#x2212; Remove Related Work
                         </button>
                     </div>
@@ -707,6 +772,9 @@
                                 <span ng-if="!$ctrl.ui.submitting">
                                     Update Project
                                 </span>
+                            </button>
+                            <button ng-click="$ctrl.warn(projForm.$error)">
+                                TEST
                             </button>
                         </td>
                     </tr>

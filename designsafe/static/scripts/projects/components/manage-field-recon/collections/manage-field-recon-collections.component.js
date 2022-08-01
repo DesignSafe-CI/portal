@@ -176,7 +176,7 @@ class ManageFieldReconCollectionsCtrl {
 
     addEquipment() {
         let last = this.form.equipment.length - 1;
-        if (this.form.equipment[last].length && !this.form.equipment.includes('None')) {
+        if (this.form.equipment[last] && !this.form.equipment.includes('None')) {
             this.form.equipment.push(null);
             this.form.equipmentOther.push(null);
         }
@@ -202,10 +202,6 @@ class ManageFieldReconCollectionsCtrl {
             this.form.observationTypes.push(null);
             this.form.observationTypesOther.push(null);
         }
-    }
-
-    removeInput(group) {
-        group.pop();
     }
 
     checkEmpty(group) {

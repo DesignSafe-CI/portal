@@ -2789,6 +2789,15 @@ input[type="search"] {
 .manage-prj-td {
   padding-right:10px;
 }
+.manage-prj-alert {
+  border: solid;
+  border-color: #d9534f;
+  padding: 5px;
+}
+.manage-prj-alert-label {
+  background-color: #d9534f;
+  margin-top: 3px;
+}
 .pub-info-item {
   padding-bottom: 14px;
 }

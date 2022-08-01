@@ -103,7 +103,7 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.modes)"
+                            ng-click="$ctrl.form.modes.pop()"
                             ng-disabled="$ctrl.checkEmpty($ctrl.form.modes)">
                             &#x2212; Remove Mode of Collection
                     </button>
@@ -127,7 +127,7 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.sampleApproach)"
+                            ng-click="$ctrl.form.sampleApproach.pop()"
                             ng-disabled="$ctrl.checkEmpty($ctrl.form.sampleApproach)">
                             &#x2212; Remove Sampling Approach
                     </button>
@@ -177,7 +177,7 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.observationTypes); $ctrl.removeInput($ctrl.form.observationTypesOther)"
+                            ng-click="$ctrl.form.observationTypes.pop(); $ctrl.form.observationTypesOther.pop()"
                             ng-disabled="$ctrl.checkEmpty($ctrl.form.observationTypes)">
                             &#x2212; Remove Observation Type
                     </button>
@@ -329,7 +329,7 @@
                         </button>
                         |
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.removeInput($ctrl.form.equipment); $ctrl.removeInput($ctrl.form.equipmentOther)"
+                                ng-click="$ctrl.form.equipment.pop(); $ctrl.form.equipmentOther.pop()"
                                 ng-disabled="$ctrl.checkEmpty($ctrl.form.equipment)">
                                 &#x2212; Remove Equipment
                         </button>
@@ -382,7 +382,7 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.referencedData)"
+                            ng-click="$ctrl.form.referencedData.pop()"
                             ng-disabled="$ctrl.checkEmpty($ctrl.form.referencedData)">
                             &#x2212; Remove Referenced Data
                     </button>
