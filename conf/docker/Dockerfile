@@ -1,4 +1,4 @@
-FROM python:3.6-buster
+FROM python:3.7-buster
 
 LABEL MAINTAINER="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
 
@@ -31,8 +31,11 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
-COPY requirements.txt /tmp/
-RUN pip install -r /tmp/requirements.txt && \
+RUN pip install poetry
+COPY poetry.lock pyproject.toml /srv/www/
+WORKDIR /srv/www
+RUN poetry config virtualenvs.create false && \
+    poetry install && \
     pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
 
 RUN groupadd --gid 816877 G-816877 && \
