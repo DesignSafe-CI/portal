@@ -1,5 +1,38 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.6.1
+## What's Changed
+* DES-2255: add Last Status Message by @van-go in https://github.com/DesignSafe-CI/portal/pull/983
+* Bug/DES-2282 - Version and Licence Fixes for DataCite by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/982
+* DES-2258: Registration Page Updates by @SilversunKSauri in https://github.com/DesignSafe-CI/portal/pull/981
+* Task/DES-1275(2261) - Remove category selectors and fix form object reference by @van-go in https://github.com/DesignSafe-CI/portal/pull/985
+* task/DES-2035: Advanced Search bugs by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/988
+* Task/des 2139: Python version bump to 3.7 by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/987
+
+## New Contributors
+* @van-go made their first contribution in https://github.com/DesignSafe-CI/portal/pull/983
+
+**Full Changelog**: https://github.com/DesignSafe-CI/portal/compare/v5.6.0...v5.6.1
+
+## v5.6.0
+## What's Changed
+* task/DES-2241: Add footerless template; add back nav and footer padding by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/969
+* task/DES-2247: Fix large window app icons by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/970
+* task/DES-2248: Allow apps with no metadata record by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/971
+* task/DES-2133: Update link to data transfer guide and add to Help dropdown by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/968
+* task/bug-2249: remove SecureMixin from the user lookup view by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/973
+* Bug/DES-2250 - Fix bug with versioning iterator by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/974
+* task/DES-2253: Set up nightly crontab to clear expired sessions by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/976
+* task/DES-2251: Add `vncserver` to VNC app job names; remove username from user defined `archivePath` by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/975
+* task/DES-2116 - Added new metadata for Google Datasets by @fnets in https://github.com/DesignSafe-CI/portal/pull/972
+* DES-2242: Publication Pipeline File Check by @SilversunKSauri in https://github.com/DesignSafe-CI/portal/pull/978
+* fix/DES-2251: Change `vncserver` to `tap_` by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/977
+* Feature/DES-1831-1832 - Experimental Amend Revise by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/945
+* task/DES-2259: Add OpenSees STKO icon by @edmondsgarrett in https://github.com/DesignSafe-CI/portal/pull/979
+
+## New Contributors
+* @edmondsgarrett made their first contribution in https://github.com/DesignSafe-CI/portal/pull/979
+
 ## v5.5.0
 * Bug/DES-2205 - Fix limit and offset for file metadata query by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/952
 * task/DES-2206: Remove unnecessary margin/padding by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/954
