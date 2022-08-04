@@ -20,7 +20,8 @@ class PipelineAmendOtherCtrl {
             success: false,
             error: false,
             submitted: false,
-            confirmed: false
+            confirmed: false,
+            amending: true
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.publication = this.ProjectService.resolveParams.publication;

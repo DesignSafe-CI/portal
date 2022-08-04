@@ -1,0 +1,136 @@
+<!-- Project ID and Title -->
+<div class="prj-head-container">
+  <span class="prj-head-title" id="test-prj-title">
+      {{$ctrl.project.value.projectId}} | <strong>{{ $ctrl.project.value.title }}</strong>
+  </span>
+  <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)" ng-if="!$ctrl.ui.amending"><strong>Edit Project</strong></a>
+</div>
+<!-- end Project ID and Title -->
+
+<table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
+  <colgroup>
+    <col style="width: 15%">
+    <col style="width: 84%">
+  </colgroup>
+  <!-- PI -->
+  <tr class="prj-row">
+    <td>PI</td>
+    <td class="prj-data" id="test-prj-pi">
+      <ds-user-list usernames="[$ctrl.project.value.pi]"></ds-user-list>
+    </td>
+  </tr>
+  <!-- end PI -->
+
+  <!-- co-PIs -->
+  <tr ng-if="$ctrl.project.value.coPis.length">
+    <td>Co-PIs</td>
+    <td class="prj-data" id="test-prj-copi">
+      <ds-user-list usernames="$ctrl.project.value.coPis"></ds-user-list>
+    </td>
+  </tr>
+  <!-- end co-PIs -->
+
+  <!-- Project Type -->
+  <tr class="prj-row" ng-hide="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
+    <td>Project Type</td>
+    <!-- types other than FR and Other -->
+    <td class="prj-data" ng-if="$ctrl.project.value.projectType !== 'field_recon'" id="test-prj-type">
+      {{ $ctrl.project.value.projectType.replace('_', ' ') }} &nbsp;
+      <a ng-if="['experimental', 'simulation'].includes($ctrl.project.value.projectType)"
+          ng-click="$ctrl.overview()">
+          View Overview
+      </a>
+    </td>
+    <!-- type FR -->
+    <td class="prj-data" ng-if="$ctrl.project.value.projectType === 'field_recon'" id="test-prj-type">
+      Field Research
+      <span ng-if="!$ctrl.project.value.frTypes.length">&nbsp;</span>
+      <span ng-if="$ctrl.project.value.frTypes.length">
+        |
+        <span ng-repeat="frType in $ctrl.project.value.frTypes">
+          <span ng-if="!$last">{{ frType }},</span>
+          <span ng-if="$last">{{ frType }}</span>
+        </span>
+      </span>
+      <a ng-click="$ctrl.overview()">View Overview</a>
+    </td>
+  </tr>
+  <!-- type Other -->
+  <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
+    <td>Data Type</td>
+    <td class="prj-data">{{ $ctrl.project.value.dataType }}</td>
+  </tr>
+  <tr class="prj-row" ng-if="$ctrl.project.value.nhTypes.length">
+    <td>Natural Hazard Type</td>
+    <td class="prj-data">
+        <span ng-repeat="nhtype in $ctrl.project.value.nhTypes">
+            <span ng-if="!$last">{{ nhtype }},</span>
+            <span ng-if="$last">{{ nhtype }}</span>
+        </span>
+    </td>
+  </tr>
+  <!-- end Project Type -->
+
+  <!-- FR NH Event -->
+  <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhEvent">
+      <td>Event</td>
+      <td class="prj-data">
+          {{ $ctrl.project.value.nhEvent }} |
+          <span ng-if="$ctrl.project.value.nhLocation">{{ $ctrl.project.value.nhLocation }} |</span>
+          {{$ctrl.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+          <span ng-if="$ctrl.project.value.nhEventEnd && $ctrl.project.value.nhEventStart !== $ctrl.project.value.nhEventEnd">
+              ― {{$ctrl.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
+          </span>
+          <span ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">|</span>
+          <a href="http://www.google.com/maps/place/{{ $ctrl.project.value.nhLatitude }},{{ $ctrl.project.value.nhLongitude }}"
+              rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLongitude">
+              Lat {{ $ctrl.project.value.nhLatitude }} Long {{ $ctrl.project.value.nhLongitude }}
+          </a>
+      </td>
+  </tr>
+  <!-- end FR NH Event -->
+
+  <!-- Awards -->
+  <!--
+        older $ctrl.projects had awards listed as strings
+        this is not supported anymore
+        if user has issue, fix manually for them
+    -->
+  <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
+    <td ng-if="$first">Awards</td>
+    <td ng-if="!$first"></td>
+    <td class="test-prj-award"><strong>{{ award.name }} - {{ award.number }}</strong></td>
+  </tr>
+  <!-- end Awards -->
+
+  <!-- Related Work -->
+  <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
+    <td ng-if="$first">Related Work</td>
+    <td ng-if="!$first"></td>
+    <td id="test-prj-related"><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
+  </tr>
+  <!-- end Related Work -->
+
+  <!--  Keywords -->
+  <tr class="prj-row">
+    <td ng-if="$ctrl.project.value.keywords">Keywords</td>
+    <td class="prj-data" id="test-prj-keywords">{{ $ctrl.project.value.keywords }}</td>
+  </tr>
+  <!-- end Keywords -->
+
+  <!-- Hazmapper Maps start -->
+  <tr ng-if="$ctrl.project.value.hazmapperMaps.length">
+    <td>Hazmapper Maps</td>
+    <td>
+      <hazmapper-maps maps="$ctrl.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
+      </hazmapper-maps>
+    </td>
+  </tr>
+  <!-- Hazmapper Maps end -->
+</table>
+
+<!-- Description -->
+<div ng-if="$ctrl.project.value.description">
+  <p>{{ $ctrl.project.value.description }}</p>
+</div>
+<!-- end Description -->

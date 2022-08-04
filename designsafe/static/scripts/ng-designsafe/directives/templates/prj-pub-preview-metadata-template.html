@@ -1,0 +1,270 @@
+<!-- Header -->
+<div class="prj-head-container">
+    <span class="prj-head-title">
+        {{$ctrl.project.value.projectId}} | <strong>{{ $ctrl.project.value.title }}</strong>
+    </span>
+    <div class="prj-head-buttons">
+        <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
+            <span class="curation-download"></span>
+            &nbsp;&nbsp;Download Dataset
+        </button>
+    </div>
+</div>
+<!-- end Header -->
+
+<!-- Project Metadata -->
+<table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
+    <colgroup>
+        <col style="width: 15%">
+        <col style="width: 84%">
+    </colgroup>
+    <!-- PI listings -->
+    <!-- PI listing for type Other -->
+    <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'other'">
+        <td ng-if="!$ctrl.readOnly">PI</td>
+        <td class="prj-data" ng-if="!$ctrl.readOnly">
+            <ds-user-list usernames="[$ctrl.project.value.pi]"></ds-user-list>
+        </td>
+        <td ng-if="$ctrl.readOnly">Author(s)</td>
+        <td ng-if="$ctrl.readOnly">
+            <strong>
+                <span ng-repeat="author in $ctrl.publication.project.value.teamOrder track by $index">
+                    <a href="javascript:;" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">; </span>
+                </span>
+            </strong>
+        </td>
+    </tr>
+    <!-- PI listing for remaining project types -->
+    <tr class="prj-row" ng-if="$ctrl.project.value.projectType !== 'other'">
+        <td>PI</td>
+        <td class="prj-data">
+            <span ng-if="!$ctrl.loadingUserData.pi">
+                <a href="javascript:;" ng-click="$ctrl.showAuthor($ctrl.authorData.pi)">
+                    {{ $ctrl.authorData.pi.lname }}, {{ $ctrl.authorData.pi.fname }}
+                </a>
+            </span>
+        </td>
+    </tr>
+    <!-- end PI listings -->
+
+    <!-- Co-PI Listings -->
+    <!-- not Other -->
+    <tr ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType !== 'other'">
+        <td>Co-PIs</td>
+        <td class="prj-data">
+            <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
+                <a href="javascript:;" ng-click="$ctrl.showAuthor(coPi)">{{ coPi.lname }}, {{ coPi.fname }}</a><span ng-if="!$last">, </span>
+            </span>
+        </td>
+    </tr>
+    <!-- Other publication preview shows Co-PIs -->
+    <tr ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType === 'other' && !$ctrl.readOnly">
+        <td>Co-PIs</td>
+        <td class="prj-data">
+            <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
+                <a href="javascript:;" ng-click="$ctrl.showAuthor(coPi)">{{ coPi.lname }}, {{ coPi.fname }}</a><span ng-if="!$last">, </span>
+            </span>
+        </td>
+    </tr>
+    <!-- end Co-PI listings -->
+
+    <!-- Project Type -->
+    <!-- non-Other listing -->
+    <tr class="prj-row" ng-hide="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
+        <td>Project Type</td>
+        <td class="prj-data" ng-if="$ctrl.project.value.projectType !== 'field_recon'">
+            {{ $ctrl.project.value.projectType.replace('_', ' ') }}
+        </td>
+        <td class="prj-data" ng-if="$ctrl.project.value.projectType === 'field_recon'">
+            Field Research
+            <span ng-if="$ctrl.project.value.frTypes.length">
+                |
+                <span ng-repeat="frType in $ctrl.project.value.frTypes">
+                    <span ng-if="!$last">{{ frType }},</span>
+                    <span ng-if="$last">{{ frType }}</span>
+                </span>
+            </span>
+        </td>
+    </tr>
+    <!-- type Other -->
+    <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
+        <td>Data Type</td>
+        <td class="prj-data">{{ $ctrl.project.value.dataType }}</td>
+    </tr>
+    <!-- end Project Type -->
+
+    <!-- Natural Hazard Type -->
+    <tr class="prj-row" ng-if="$ctrl.project.value.nhTypes.length">
+        <td>Natural Hazard Type</td>
+        <td class="prj-data">
+            <span ng-repeat="nhtype in $ctrl.project.value.nhTypes">
+                <span ng-if="!$last">{{ nhtype }},</span>
+                <span ng-if="$last">{{ nhtype }}</span>
+            </span>
+        </td>
+    </tr>
+    <!-- end Natural Hazard Type -->
+
+    <!-- FR events -->
+    <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'field_recon' && $ctrl.project.value.nhEvent">
+        <td>Event</td>
+        <td class="prj-data">
+            {{ $ctrl.project.value.nhEvent }} |
+            <span ng-if="$ctrl.project.value.nhLocation">{{ $ctrl.project.value.nhLocation }} |</span>
+            {{$ctrl.project.value.nhEventStart | date:'MM-dd-yyyy'}}
+            <span ng-if="$ctrl.project.value.nhEventEnd && $ctrl.project.value.nhEventStart !== $ctrl.project.value.nhEventEnd">
+                ― {{$ctrl.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
+            </span>
+            <span ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">|</span>
+            <a href="http://www.google.com/maps/place/{{ $ctrl.project.value.nhLatitude }},{{ $ctrl.project.value.nhLongitude }}"
+                rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.project.value.nhLatitude && $ctrl.project.value.nhLatitude">
+                Lat {{ $ctrl.project.value.nhLatitude }} Long {{ $ctrl.project.value.nhLongitude }}
+            </a>
+        </td>
+    </tr>
+    <!-- end FR events -->
+
+    <!-- Date of Publication -->
+    <!-- type Other only -->
+    <!-- this is in other places in non-other projects -->
+    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.project.value.projectType === 'other'">
+        <td ng-if="$ctrl.project.value.keywords">Date of Publication</td>
+        <td class="prj-data">{{ $ctrl.publication.created | date:'MM-dd-yyyy' }}</td>
+    </tr>
+    <!-- end Date of Publication -->
+
+    <!-- DOI Listings -->
+    <!-- field recon specific doi listing -->
+    <tr ng-if="$ctrl.project.value.projectType === 'field_recon'" ng-repeat="(uuid, citation) in $ctrl.doiList">
+        <td ng-if="$first">DOI(s) in Project</td>
+        <td ng-if="!$first"></td>
+        <td>
+            <strong>
+                <a
+                    ng-click="$ctrl.goToHash(citation.hash)"
+                    data-toggle="collapse"
+                    data-target="{{ citation.type === 'mission' ? '#data-' : '#files-' }}{{uuid}}"
+                >
+                    {{ citation.doi }}
+                </a>
+            </strong>
+        </td>
+    </tr>
+    <!-- other project type doi listing -->
+    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.publication.project.value.dois.length && $ctrl.project.value.projectType !== 'field_recon'">
+        <td>
+            <span>DOI</span>
+            <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
+                Citation
+            </button>
+        </td>
+        <td>
+            <strong>{{ $ctrl.publication.project.value.dois[0] }}</strong>
+        </td>
+    </tr>
+    <!-- end DOI Listings -->
+
+    <!-- Awards -->
+    <!-- preview version-->
+    <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index"
+        ng-if="!$ctrl.readOnly">
+        <td ng-if="$first">Awards</td>
+        <td ng-if="!$first"></td>
+        <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+    </tr>
+    <!-- publication version -->
+    <tr ng-repeat="award in $ctrl.project.value.awardNumbers | orderBy:'order' track by $index"
+        ng-if="$ctrl.readOnly">
+        <td ng-if="$first">Awards</td>
+        <td ng-if="!$first"></td>
+        <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+    </tr>
+    <!-- end Awards-->
+
+    <!-- Related Work -->
+    <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
+        <td ng-if="$first">Related Work</td>
+        <td ng-if="!$first"></td>
+        <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
+    </tr>
+    <!-- end Related Work -->
+
+    <!-- Keywords -->
+    <tr class="prj-row">
+        <td ng-if="$ctrl.project.value.keywords">Keywords</td>
+        <td class="prj-data">{{ $ctrl.project.value.keywords }}</td>
+    </tr>
+    <!-- end Keywords -->
+
+    <!-- Hazmapper links -->
+    <tr ng-if="$ctrl.project.value.hazmapperMaps.length">
+        <td>Hazmapper Maps</td>
+        <td>
+            <hazmapper-maps maps="$ctrl.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
+            </hazmapper-maps>
+        </td>
+    </tr>
+    <!-- end Hazmapper links -->
+
+    <!-- Licenses -->
+    <!-- type Other only -->
+    <!-- this is in other places on non-other projects -->
+    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.project.value.projectType === 'other'">
+        <td ng-if="$ctrl.project.value.keywords">License(s)</td>
+        <td class="prj-data">
+            <strong>
+                <div class="license-element">
+                    <span ng-class="$ctrl.ui.licenseType"></span>
+                    &nbsp;{{$ctrl.ui.license}}
+                </div>
+            </strong>
+        </td>
+    </tr>
+    <!-- end Licenses-->
+</table>
+<!-- end Project Metadata -->
+
+<!-- Modal Links -->
+<div class="pad-content">
+    <a ng-click="$ctrl.treeDiagram()">
+        <strong>View Data Diagram</strong>
+    </a>
+    <span ng-if="$ctrl.readOnly">
+        |<a ng-click="$ctrl.metrics()">
+            &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+            <strong>&nbsp;View Project Metrics</strong>
+        </a>
+        |<a ng-click="$ctrl.leaveFeedback()">
+            &nbsp;<img src='/static/images/ds-icons/icon-feedback.svg' style="width: 12px;">
+            <strong>&nbsp;Leave Feedback</strong>
+        </a>
+    </span>
+</div>
+<!-- end Modal Links-->
+
+<!-- Description -->
+<div ng-if="$ctrl.project.value.description">
+    <p>
+        <show-more
+            label="'Description'"
+            content="$ctrl.project.value.description"
+        >
+        </show-more>
+    </p>
+</div>
+<!-- end Description -->
+
+<!-- Tombstone -->
+<!-- type Other only -->
+<!-- this is in other places on non-other projects -->
+<div class="alert alert-warning flex-container"
+        ng-if="$ctrl.publication.tombstone.includes($ctrl.project.uuid) && $ctrl.project.projectType === 'other'">
+    <i class="fa fa-warning notification-icon"></i>
+    <div>
+        <strong>The following Dataset does not exist anymore</strong><br>
+        The Dataset with DOI:
+        <a href="https://doi.org/{{$ctrl.project.value.dois[0]}}">https://doi.org/{{$ctrl.project.value.dois[0]}}</a>
+        was incomplete and removed. The metadata is still available.
+    </div>
+</div>
+<!-- end Tombstone -->

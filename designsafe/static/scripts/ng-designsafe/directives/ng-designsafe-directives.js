@@ -292,7 +292,7 @@ export function dsUserList(UserService) {
         }
         let userReq = [];
         let guests = [];
-        
+
         scope.usernames.forEach((user) => {
           if (typeof user === 'undefined') {
             return;

@@ -29,38 +29,38 @@ class PublicationPreviewOtherCtrl {
         if (!this.data) {
                 // we do not display a file listing in other's preview section
                 this.ProjectService.get({ uuid: this.projectId }).then((project) => {
-                this.browser.project = project;
+                this.project = project;
                 this.ui.loading = false;
             });
         } else {
-            this.browser = this.data;
+            this.project = this.data;
             this.ui.loading = false;
         }
     }
 
     goWork() {
-        this.$state.go('projects.view', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
+        this.$state.go('projects.view', {projectId: this.project.uuid, data: this.project}, {reload: true});
     }
 
     goCuration() {
-        this.$state.go('projects.curation', {projectId: this.browser.project.uuid, data: this.browser}, {reload: true});
+        this.$state.go('projects.curation', {projectId: this.project.uuid, data: this.project}, {reload: true});
     }
 
     prepareModal() {
         this.$uibModal.open({
             template: PublicationPopupTemplate,
             controllerAs: '$ctrl',
-            controller: ['$uibModalInstance', 'state', 'browser', function($uibModalInstance, state, browser) {
+            controller: ['$uibModalInstance', 'state', 'project', function($uibModalInstance, state, project) {
                 this.cancel = function () {
                     $uibModalInstance.close();
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineStart', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineStart', {projectId: project.uuid}, {reload: true});
                 };
             }],
             resolve: {
-                browser: this.browser,
+                project: this.project,
                 state: this.$state,
             },
             bindings: {
