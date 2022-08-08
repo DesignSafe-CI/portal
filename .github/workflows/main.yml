@@ -17,9 +17,13 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Setup Python
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
-        python-version: 3.6
+        python-version: 3.7
+
+    - name: Install Poetry
+      run: |
+        pip3 install poetry
 
     - name: Copy base.html for use in unit tests
       run: |
@@ -32,7 +36,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - run: pip install -r requirements.txt && pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
+    - run: |
+        poetry config virtualenvs.create false
+        poetry install
+        pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
+
     - name: Run Server-side unit tests and generate coverage report
       run: |
         pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe

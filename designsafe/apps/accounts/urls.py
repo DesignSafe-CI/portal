@@ -14,7 +14,6 @@ urlpatterns = [
     url(r'^notifications/settings/$', views.manage_notifications, name='manage_notifications'),
     url(r'^register/$', views.register, name='register'),
     url(r'^nees-account/(?:(?P<step>\d+)/)?$', views.nees_migration, name='nees_migration'),
-    url(r'^registration-successful/$', views.registration_successful, name='registration_successful'),
     url(r'^password-reset/(?:(?P<code>.+)/)?$', views.password_reset, name='password_reset'),
     url(r'^activate/(?:(?P<code>.+)/)?$', views.email_confirmation, name='email_confirmation'),
 
