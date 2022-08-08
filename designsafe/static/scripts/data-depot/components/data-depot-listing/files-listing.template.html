@@ -22,7 +22,7 @@
                     <th>Size</th>
                     <th>Last modified</th>
                     <th ng-if="$ctrl.operationLabel">Operation</th>
-                    <th ng-if="!$ctrl.FileListingService.listings.main.loading && $ctrl.hasNotebooks()">Open with</th>
+                    <!-- <th ng-if="!$ctrl.FileListingService.listings.main.loading && $ctrl.hasNotebooks()">Open with</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -82,10 +82,10 @@
                         <button class="btn btn-primary test-op-btn" ng-if="item.type==='dir'" ng-click="$ctrl.operation({file: item})">{{$ctrl.operationLabel}}
                         </button>
                     </td>
-                    <td data-ng-if="!$ctrl.FileListingService.listings.main.loading && $ctrl.hasNotebooks()">
+                    <!-- <td data-ng-if="!$ctrl.FileListingService.listings.main.loading && $ctrl.hasNotebooks()"> -->
                         <!-- <a href="{{$ctrl.openInApp(item)}}" target="_blank" rel="noopener" 
                         data-ng-if="$ctrl.isNotebook(item)">Jupyter</span> -->
-                    </td>
+                    <!-- </td> -->
                 </tr>
                 <tr >
                     <td ng-if="$ctrl.listing.loadingScroll" colspan="4" style="height: 37px;">
