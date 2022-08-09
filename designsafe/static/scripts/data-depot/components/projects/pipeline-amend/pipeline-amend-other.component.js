@@ -21,7 +21,8 @@ class PipelineAmendOtherCtrl {
             error: false,
             submitted: false,
             confirmed: false,
-            amending: true
+            showEdit: false,
+            showOverview: false,
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.publication = this.ProjectService.resolveParams.publication;

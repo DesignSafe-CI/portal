@@ -16,6 +16,10 @@ class ProjectViewCtrl {
   }
 
   $onInit() {
+    this.ui = {
+      showEdit: true,
+      showOverview: true,
+    };
     this.projectId = this.$stateParams.projectId
     this.filePath = this.$stateParams.filePath
 

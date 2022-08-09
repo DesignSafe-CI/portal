@@ -16,6 +16,10 @@ class CurationDirectoryCtrl {
     }
 
     $onInit() {
+        this.ui = {
+            showEdit: true,
+            showOverview: true,
+        };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.current;
         this.filePath = this.ProjectService.resolveParams.filePath;

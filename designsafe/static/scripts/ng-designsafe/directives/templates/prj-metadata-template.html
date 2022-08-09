@@ -3,7 +3,7 @@
   <span class="prj-head-title" id="test-prj-title">
       {{$ctrl.project.value.projectId}} | <strong>{{ $ctrl.project.value.title }}</strong>
   </span>
-  <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)" ng-if="!$ctrl.ui.amending"><strong>Edit Project</strong></a>
+  <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)" ng-if="$ctrl.ui.showEdit"><strong>Edit Project</strong></a>
 </div>
 <!-- end Project ID and Title -->
 
@@ -36,7 +36,7 @@
     <!-- types other than FR and Other -->
     <td class="prj-data" ng-if="$ctrl.project.value.projectType !== 'field_recon'" id="test-prj-type">
       {{ $ctrl.project.value.projectType.replace('_', ' ') }} &nbsp;
-      <a ng-if="['experimental', 'simulation'].includes($ctrl.project.value.projectType)"
+      <a ng-if="$ctrl.ui.showOverview"
           ng-click="$ctrl.overview()">
           View Overview
       </a>
@@ -52,7 +52,7 @@
           <span ng-if="$last">{{ frType }}</span>
         </span>
       </span>
-      <a ng-click="$ctrl.overview()">View Overview</a>
+      <a ng-if="$ctrl.ui.showOverview" ng-click="$ctrl.overview()">View Overview</a>
     </td>
   </tr>
   <!-- type Other -->

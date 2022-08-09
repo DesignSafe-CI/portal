@@ -126,16 +126,16 @@
 
     <!-- Date of Publication -->
     <!-- type Other only -->
-    <!-- this is in other places in non-other projects -->
+    <!-- this is in other places in non-Other type projects -->
     <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.project.value.projectType === 'other'">
-        <td ng-if="$ctrl.project.value.keywords">Date of Publication</td>
+        <td>Date of Publication</td>
         <td class="prj-data">{{ $ctrl.publication.created | date:'MM-dd-yyyy' }}</td>
     </tr>
     <!-- end Date of Publication -->
 
     <!-- DOI Listings -->
-    <!-- field recon specific doi listing -->
-    <tr ng-if="$ctrl.project.value.projectType === 'field_recon'" ng-repeat="(uuid, citation) in $ctrl.doiList">
+    <!-- non-other doi listing -->
+    <tr ng-if="$ctrl.project.value.projectType !== 'other'" ng-repeat="(uuid, citation) in $ctrl.doiList">
         <td ng-if="$first">DOI(s) in Project</td>
         <td ng-if="!$first"></td>
         <td>
@@ -151,7 +151,7 @@
         </td>
     </tr>
     <!-- other project type doi listing -->
-    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.publication.project.value.dois.length && $ctrl.project.value.projectType !== 'field_recon'">
+    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.publication.project.value.dois.length && $ctrl.project.value.projectType === 'other'">
         <td>
             <span>DOI</span>
             <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
@@ -210,7 +210,7 @@
     <!-- type Other only -->
     <!-- this is in other places on non-other projects -->
     <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.project.value.projectType === 'other'">
-        <td ng-if="$ctrl.project.value.keywords">License(s)</td>
+        <td>License(s)</td>
         <td class="prj-data">
             <strong>
                 <div class="license-element">

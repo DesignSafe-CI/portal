@@ -1,5 +1,3 @@
-import _ from 'underscore';
-import { $q } from '@uirouter/core';
 import prj_template_header from './templates/prj-metadata-template.html';
 import prj_pub_preview_header from './templates/prj-pub-preview-metadata-template.html';
 
