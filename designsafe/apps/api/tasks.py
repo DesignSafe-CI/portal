@@ -544,6 +544,8 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
     :param int revision: The revision number of the publication
     :param list of selected_files strings: Only provided if project type == other.
     """
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+        return
 
     es_client = new_es_client()
     publication = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
@@ -716,7 +718,7 @@ def swap_file_tag_uuids(self, project_id, revision=None):
 def set_publish_status(self, project_id, entity_uuids=None, publish_dois=False, revision=None):
     from designsafe.apps.projects.managers import publication as PublicationManager
     # Only publish DOIs created from prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
         publish_dois = True
 
     PublicationManager.publish_resource(
@@ -893,6 +895,9 @@ def email_user_publication_request_confirmation(self, username):
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
 def check_published_files(project_id, revision=None, selected_files=None):
+
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+        return
 
     #get list of files that should be in the publication
     es_client = new_es_client()
