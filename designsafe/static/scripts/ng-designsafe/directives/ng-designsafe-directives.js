@@ -218,7 +218,7 @@ export function dsInfiniteScroll(){
       var el = element[0];
       el.addEventListener('scroll', function(e){
         var pos = el.offsetHeight + el.scrollTop;
-        if (pos >= el.scrollHeight - scope.bottomHeight){
+        if ( (pos + 1) >= el.scrollHeight - scope.bottomHeight){
           scope.scrollBottom(el, pos);
           scope.$apply()
         }
