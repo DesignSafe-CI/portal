@@ -82,7 +82,7 @@
                                 ng-disabled="!$ctrl.params.typeFilters.experimental"
                                 id="exp-facility-select"
                                 ng-model="$ctrl.params.advancedFilters.experimental.experimentalFacility"
-                                ng-change="$ctrl.getValidExperimentTypes()"
+                                ng-change="$ctrl.getValidExperimentTypes(true)"
                                 ng-options="ef.name as ef.label for ef in $ctrl.experimentFacilityOptions"
                                 class="form-control"
                                 ></select

@@ -12,6 +12,7 @@ on.
 - [Install Docker][3]
 - [Install Docker Compose][4]
 - [Install Make][12]
+- Nodejs 12.x
 
 If you are on a Mac or a Windows machine, the recommended method is to install
 [Docker Desktop][5], which will install both Docker and Docker Compose, which is required to run Docker on Mac/Windows hosts.

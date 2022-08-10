@@ -70,6 +70,9 @@
             <dt>Finished</dt>
             <dd>{{job.ended | date:'medium'}}</dd>
 
+            <dt>Last Status Message</dt>
+            <dd>{{job.lastStatusMessage}}</dd>
+
             <dt ng-if="job.archiveSystem">Output</dt>
             <dd ng-if="jobFinished && job.archiveSystem">
                 <a href="{{job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View</a>

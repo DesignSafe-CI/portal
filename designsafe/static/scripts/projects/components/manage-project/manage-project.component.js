@@ -32,10 +32,10 @@ class ManageProjectCtrl {
 
         if (this.project) {
             if (this.project.value.projectType in this.formDefaults) {
-                this.form = this.formDefaults[this.project.value.projectType];
+                this.form = {...this.formDefaults[this.project.value.projectType]};
             }
             else {
-                this.form = this.formDefaults.new;
+                this.form = {...this.formDefaults.new};
                 this.ui.hasType = false;
             }
             this.form.uuid = this.project.uuid;
@@ -71,7 +71,7 @@ class ManageProjectCtrl {
             });
         } else {
             this.UserService.authenticate().then((creator) => {
-                this.form = this.formDefaults.new;
+                this.form = {...this.formDefaults.new};
                 this.form.creator = creator
                 this.ui.loading = false;
             });

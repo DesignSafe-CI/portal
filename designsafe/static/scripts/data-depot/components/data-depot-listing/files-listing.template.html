@@ -50,7 +50,7 @@
                         </a> -->
                         <div class="project-categories">
                             <div class="file-categories"
-                                 data-ng-if="$ctrl.editTags || $ctrl.showTags">
+                                 data-ng-if="item.name != '.Trash' && $ctrl.editTags || $ctrl.showTags">
                                 <file-categories 
                                                  data-file="item"
                                                  data-show-tags="$ctrl.showTags"
@@ -60,7 +60,7 @@
                                 </file-categories>
                             </div>
                             <div class="file-categories-selector"
-                                 data-ng-if="$ctrl.editTags">
+                                 data-ng-if="item.name != '.Trash' && $ctrl.editTags">
                             
                                 <file-category-selector data-project="$ctrl.browser.project"
                                                         data-file="item"
@@ -132,15 +132,26 @@
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"
                 >
-                    <p class="lead" style="margin-top:20px" ng-if="!($ctrl.listing.params.system.includes('project-') && $ctrl.editTags)">
+                    <p class="lead" style="margin-top:20px" ng-if="(!($ctrl.listing.params.system.includes('project-') && $ctrl.editTags)
+                                                                    && $ctrl.listing.params.query_string == null)">
                         This folder is empty! <br />
                         <i class="fa fa-folder-open-o">&nbsp;</i><br/>
                         <a data-ng-if="$ctrl.listing.params.system.includes('project-')"
-                           href="https://www.youtube.com/watch?v=ITf4hlBamGU&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
-                           target="_blank"
-                        >
+                        href="https://www.youtube.com/watch?v=ITf4hlBamGU&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
+                        target="_blank"
+                        > 
                             <i class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
                             Learn how to move files to a project
+                        </a>
+                    </p>
+                    <p class="lead" style="margin-top:20px" ng-if="($ctrl.listing.params.query_string != null)">
+                        No results found! <br />
+                        <a data-ng-if="$ctrl.listing.params.system.includes('project-')"
+                        href="https://www.youtube.com/watch?v=ITf4hlBamGU&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
+                        target="_blank"
+                        >
+                         <i class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
+                         Learn how to move files to a project
                         </a>
                     </p>
                     <p class="lead" style="margin-top:20px" ng-if="$ctrl.editTags">

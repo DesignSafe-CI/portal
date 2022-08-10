@@ -33,6 +33,7 @@ class PublicationCitationCtrl {
                 this.doi = this.publication.project.value.dois[0];
                 this.authors = this.publication.project.value.teamOrder;
             }
+            this.version = this.publication.revision || 1;
         }
         this.citationUrl = 'https://doi.org/' + this.doi;
     }
