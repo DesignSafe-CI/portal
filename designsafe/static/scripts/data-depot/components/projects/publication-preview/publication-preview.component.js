@@ -11,7 +11,6 @@ class PublicationPreviewCtrl {
         this.ProjectService = ProjectService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
-        //this = {};
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;

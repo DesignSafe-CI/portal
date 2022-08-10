@@ -10,7 +10,6 @@ class PublicationPreviewOtherCtrl {
         this.ProjectService = ProjectService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
-        this.browser = {}
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;

@@ -10,7 +10,6 @@ class PublicationPreviewSimCtrl {
         this.ProjectService = ProjectService;
         this.FileOperationService = FileOperationService;
         this.FileListingService = FileListingService;
-        //this = {}
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$stateParams = $stateParams;

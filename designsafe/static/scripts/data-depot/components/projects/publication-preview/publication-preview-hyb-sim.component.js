@@ -9,7 +9,6 @@ class PublicationPreviewHybSimCtrl {
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.FileListingService = FileListingService;
-        //this = {}
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$stateParams = $stateParams;
