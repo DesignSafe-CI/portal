@@ -19,7 +19,7 @@
             </span>
             <span>
                 ({{ $ctrl.citationDate }}) "{{ $ctrl.entity.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
-                <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>.
+                <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
             </span>
         </div>
         <div ng-if="$ctrl.entity && $ctrl.projectGen > 1">
@@ -27,12 +27,15 @@
             <span>
                 ({{ $ctrl.citationDate }}) "{{ $ctrl.entity.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
                 <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
+                v{{$ctrl.version}}
             </span>
         </div>
         <div ng-if="!$ctrl.entity">
             <ds-user-list usernames="$ctrl.authors" format="other"></ds-user-list>
             <span>
-                ({{ $ctrl.citationDate }}) “{{ $ctrl.publication.project.value.title }}.” DesignSafe-CI. <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
+                ({{ $ctrl.citationDate }}) “{{ $ctrl.publication.project.value.title }}.” DesignSafe-CI.
+                <a data-ng-href="{{$ctrl.citationUrl}}">{{$ctrl.citationUrl}}</a>
+                v{{$ctrl.version}}
             </span>
         </div>
     </p>

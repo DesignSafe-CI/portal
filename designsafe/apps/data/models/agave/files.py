@@ -10,7 +10,7 @@ from designsafe.apps.data.models.agave.base import BaseAgaveResource
 from designsafe.apps.data.models.agave.metadata import BaseMetadataResource, BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.systems import roles as system_roles_list
 from agavepy.agave import AgaveException
-from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
+#  from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)
@@ -286,7 +286,7 @@ class BaseFileResource(BaseAgaveResource):
 
         ser['trail'] = self.trail
         return ser
-
+    """
     def import_data(self, from_system, from_file_path):
         remote_url = 'agave://{}/{}'.format(from_system, urllib.parse.quote(from_file_path))
         file_name = os.path.split(from_file_path)[1]
@@ -303,7 +303,7 @@ class BaseFileResource(BaseAgaveResource):
             logger.error('Import Data failed; from: %s/%s' % (from_system, from_file_path))
 
         return BaseFileResource.listing(self._agave, self.system, result['path'])
-
+    """
     def copy(self, dest_path, file_name=None):
         """
         Copies the current file to the provided destination path. If new_name is provided
