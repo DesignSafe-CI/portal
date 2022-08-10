@@ -607,14 +607,27 @@
                         </div>
                     </div>
                 </div>
-                <div ng-if="$ctrl.form.projectType !== 'field_recon'">
-                    <div>
-                        <button class="btn-project-add-rm"
-                            ng-click="$ctrl.isRequiredEvent()">
-                            &#x2b; Add Natural Hazard Event
-                        </button>
+                <!-- NH Fields for non-FR -->
+                <div ng-if="$ctrl.form.projectType != 'field_recon'">
+                    <div style="width: 100%;">
+                        <!-- Event -->
+                        <div style="width:100%; display:inline-block;" class="pull-left form-group">
+                            <label for="id-nh-event">
+                                <span class="pull-left">Event</span>
+                                <br>
+                                <span style="font-weight:normal;">
+                                    Add Natural Hazard Event, Natural Hazard Date(s), Natural Hazard Location.
+                                </span>
+                            </label>
+                            <div>
+                                <button class="btn-project-add-rm"
+                                    ng-click="$ctrl.isRequiredEvent()">
+                                    &#x2b; Add Natural Hazard Event
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </div> 
                 <!-- Project Keywords -->
                 <div class="form-group" style="width:100%; display:inline-block;">
                     <label for="id-project-keywords">
