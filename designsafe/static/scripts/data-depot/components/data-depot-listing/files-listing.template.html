@@ -82,10 +82,6 @@
                         <button class="btn btn-primary test-op-btn" ng-if="item.type==='dir'" ng-click="$ctrl.operation({file: item})">{{$ctrl.operationLabel}}
                         </button>
                     </td>
-                    <!-- <td data-ng-if="!$ctrl.FileListingService.listings.main.loading && $ctrl.hasNotebooks()"> -->
-                        <!-- <a href="{{$ctrl.openInApp(item)}}" target="_blank" rel="noopener" 
-                        data-ng-if="$ctrl.isNotebook(item)">Jupyter</span> -->
-                    <!-- </td> -->
                 </tr>
                 <tr >
                     <td ng-if="$ctrl.listing.loadingScroll" colspan="4" style="height: 37px;">
