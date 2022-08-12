@@ -520,13 +520,15 @@
                     </div>
                 </div>
                 <!-- FR Fields -->
-                <div ng-if="$ctrl.form.projectType === 'field_recon'">
+                <div>
                     <div style="width: 100%;">
                         <!-- Event -->
                         <div style="width:45%; display:inline-block;" class="pull-left form-group">
                             <label for="id-nh-event">
                                 <span class="pull-left">Event</span>
-                                <span class="label label-danger" style="margin-left: 5px">Required</span>
+                                <div ng-if="$ctrl.form.projectType === 'field_recon'">
+                                    <span class="label label-danger" style="margin-left: 5px">Required</span>
+                                </div>
                                 <br>
                                 <span style="font-weight:normal;">
                                     Name given to the natural hazard event (ex. Hurricane Katrina).
@@ -538,13 +540,15 @@
                                     name="nh-event"
                                     style="width:100%"
                                     ng-model="$ctrl.form.nhEvent"
-                                    ng-required="true"/>
+                                    ng-required="$ctrl.form.projectType === 'field_recon'"/>
                         </div>
                         <!-- Event Dates -->
                         <div style="width:50%;" class="form-group">
                             <label for="id-nh-event-date">
                                 <span class="pull-left">Event Date(s)</span>
-                                <span class="label label-danger" style="margin-left: 5px">Required</span>
+                                <div ng-if="$ctrl.form.projectType === 'field_recon'">
+                                    <span class="label label-danger" style="margin-left: 5px">Required</span>
+                                </div>
                                 <br>
                                 <span style="font-weight:normal;">
                                     If you only want to enter a single date, fill in the first field.
@@ -554,7 +558,7 @@
                                 <input  class="form-control"
                                         type="date"
                                         ng-model="$ctrl.form.nhEventStart"
-                                        ng-required="true">
+                                        ng-required="$ctrl.form.projectType === 'field_recon'">
                                 <span style="padding:6px;">&#8213;</span>
                                 <input  class="form-control"
                                         type="date"
@@ -569,7 +573,9 @@
                             <div class="label-form">
                                 <div>
                                     <span class="label-form-name pull-left">Event Location</span>
-                                    <span class="label label-danger">Required</span>
+                                    <div ng-if="$ctrl.form.projectType === 'field_recon'">
+                                        <span class="label label-danger" style="margin-left: 5px">Required</span>
+                                    </div>
                                 </div>
                             </div>
                         </label>
@@ -581,7 +587,7 @@
                                 <input type="text"
                                         id="id-location"
                                         ng-model="$ctrl.form.nhLocation"
-                                        ng-required="true"
+                                        ng-required="$ctrl.form.projectType === 'field_recon'"
                                         class="form-control"/>
                             </div>
                             <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -591,7 +597,7 @@
                                 <input type="text"
                                         id="id-latitude"
                                         ng-model="$ctrl.form.nhLatitude"
-                                        ng-required="true"
+                                        ng-required="$ctrl.form.projectType === 'field_recon'"
                                         class="form-control"/>
                             </div>
                             <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -601,33 +607,12 @@
                                 <input type="text"
                                         id="id-longitude"
                                         ng-model="$ctrl.form.nhLongitude"
-                                        ng-required="true"
+                                        ng-required="$ctrl.form.projectType === 'field_recon'"
                                         class="form-control" />
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- NH Fields for non-FR -->
-                <div ng-if="$ctrl.form.projectType != 'field_recon'">
-                    <div style="width: 100%;">
-                        <!-- Event -->
-                        <div style="width:100%; display:inline-block;" class="pull-left form-group">
-                            <label for="id-nh-event">
-                                <span class="pull-left">Event</span>
-                                <br>
-                                <span style="font-weight:normal;">
-                                    Add Natural Hazard Event, Natural Hazard Date(s), Natural Hazard Location.
-                                </span>
-                            </label>
-                            <div>
-                                <button class="btn-project-add-rm"
-                                    ng-click="$ctrl.isRequiredEvent()">
-                                    &#x2b; Add Natural Hazard Event
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div> 
                 <!-- Project Keywords -->
                 <div class="form-group" style="width:100%; display:inline-block;">
                     <label for="id-project-keywords">
