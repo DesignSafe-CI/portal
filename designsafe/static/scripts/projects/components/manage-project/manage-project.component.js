@@ -169,30 +169,6 @@ class ManageProjectCtrl {
         });
     }
 
-    isRequiredEvent(){
-        this.ui.showFREvents = !this.ui.showFREvents
-        // // console.log('Event ' + this.form.nhEvent)
-        // // console.log('DtStart ' + this.form.nhEventStart)
-        // // console.log('Location ' + this.form.nhLocation)
-        // // console.log('Lat ' + this.form.nhLatitude)
-        // // console.log('Long ' + this.form.nhLongitude)
-        // if (this.projectType == 'field_recon'){
-        //     return [console.log('Is Req FR:' + true), true]
-        //     // return true
-        // } else if ((typeof this.form.nhEvent !== 'undefined')
-        // || (typeof this.form.nhEventStart !== 'undefined' && this.form.nhEventStart !== null)
-        // || (typeof this.form.nhLocation !== 'undefined' && this.form.nhLocation !== '')
-        // || (typeof this.form.nhLatitude !== 'undefined' && this.form.nhLatitude !== '')
-        // || (typeof this.form.nhLongitude !== 'undefined' && this.form.nhLongitude !== '')
-        // ){
-        //     return [console.log('Is Req Event:' + true), true]
-        //     // return true
-        // } else {
-        //     return [ console.log('Is Req None:' + false), false]
-        //     // return false
-        // }
-    }
-
     prepareData(hasPrjType) {
         let projectData = {...this.form};
         projectData.pi = this.form.pi.username;
@@ -206,13 +182,32 @@ class ManageProjectCtrl {
                 guest.user = "guest" + guest.fname + guest.lname.charAt(0) + i;
             });
             projectData.nhTypes = this.form.nhTypes.filter(type => typeof type === 'string' && type.length);
+            
             if (projectData.projectType === 'field_recon') {
                 projectData.frTypes = this.form.frTypes.filter(type => typeof type === 'string' && type.length);
                 if (isNaN(Date.parse(projectData.nhEventEnd))) {
                     projectData.nhEventEnd = new Date(projectData.nhEventStart);
                 }
             }
+            else {
+                let fields = ["nhEvent", "nhLocation", "nhLongitude", "nhLatitude"];
+                let result = fields.every((field) => {return typeof projectData[field] === 'string' && projectData[field].length})
+                let checkDate = isNaN(Date.parse(projectData.nhEventStart))
+                console.log(checkDate)
+                if (!result || checkDate) {
+                    fields.forEach((field) => projectData[field] = '')
+                    projectData.nhEventStart = ''
+                    projectData.nhEventEnd = ''
+                }
+                else {
+                    if (isNaN(Date.parse(projectData.nhEventEnd))) {
+                        projectData.nhEventEnd = new Date(projectData.nhEventStart);
+                    }
+                }
+            }
+            
         }
+        console.log(projectData)
         return projectData;
     }
 
@@ -302,10 +297,6 @@ class ManageProjectCtrl {
         }
     }
 
-    addNHEvent(group){
-        // ...
-    }
-
     isOther(input, optionsList) {
         // check form options
         if (input === null) {
@@ -313,6 +304,24 @@ class ManageProjectCtrl {
         }
         let options = optionsList.filter(type => type != 'Other')
         return !options.includes(input) && typeof input !== 'undefined'
+    }
+
+    nhRequired() {
+        if (this.project.value.projectType === 'field_recon'){
+            return true
+        } 
+        // else if (this.form.nhEvent.$dirty)
+        //     return [console.log('nhEvent:' + true), true]
+        // else if (this.form.$watch('nh-event', function(newVal, oldVal) {
+        //     if(newVal !== '') {
+        //         return [console.log('watch:' + true), true]
+        //     }
+        // })
+        // })
+        // else {
+        //     return false
+        // }
+        
     }
 }
 
