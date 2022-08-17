@@ -55,7 +55,10 @@ class PipelineStartCtrl {
                 }
                 case 'field_recon': {
                     this.ui.publicationComp = 'projects.pipelineSelectField'
+                    this.ui.amendComp = 'projects.amendFieldRecon'
                     this.ui.previewComp = 'projects.previewFieldRecon'
+                    this.ui.versionComp = ''
+                    this.ui.showAmendVersion = true;
                     break;
                 }
                 case 'other': {
