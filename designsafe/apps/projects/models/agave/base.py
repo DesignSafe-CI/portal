@@ -211,12 +211,11 @@ class Project(MetadataModel):
         ents = [lookup_model(rsp)(**rsp) for rsp in resp]
         return ents
 
-    def to_dataset_json(self):
+    def to_dataset_json(self, **kwargs):
         """
         Serialize project to json for google dataset search
         https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/BMNJPS
         """
-
         dataset_json = {
             "@context": "http://schema.org",
             "@type": "Dataset",
@@ -246,12 +245,13 @@ class Project(MetadataModel):
             "keywords": self.keywords.split(','),
             "license": {
                 "@type": "CreativeWork",
-                "license": ""
+                "license": "",
+                "url":""
             },
-            "hasPart":[],
             "publisher": {
                 "@type": "Organization",
-                "name": "Designsafe-CI"
+                "name": "Designsafe-CI",
+                "url": "https://designsafe-ci.org"
             },
             "provider": {
                 "@type": "Organization",
@@ -263,22 +263,7 @@ class Project(MetadataModel):
                 "url": "https://designsafe-ci.org"
             },
         }
-        if self.dois:
-            dataset_json["distribution"] = {
-                    "@type": "DataDownload",
-                    "name": self.to_body_dict()['value']['projectId'] + "_archive.zip",
-                    "fileFormat": "application/zip",
-                    "contentSize": "",
-                    "@id": "",
-                    "identifier": ""
-            }
 
-        if self.dois:
-            dataset_json['@id'] = self.dois[0]
-            dataset_json['identifier'] = self.dois[0]
-        else:
-            related_ents = self.related_entities()
-            logger.debug(related_ents)
         if getattr(self, 'team_order', False):
             authors = sorted(self.team_order, key=lambda x: x['order'])
         else:
@@ -286,19 +271,129 @@ class Project(MetadataModel):
         dataset_json['creator'] = generate_creators(authors)
         dataset_json['author'] = generate_creators(authors)
         try:
-            pub = IndexedPublication.from_id(self.project_id) 
-            dataset_json['hasPart'] = generate_licenses(pub)
-            dataset_json['license'] = dataset_json['hasPart'][0]["url"]
+            pub = IndexedPublication.from_id(self.project_id)
+            license_info =  generate_licenses(pub)
+            dataset_json['license'] = license_info[0]["url"]
         except (DocumentNotFound, AttributeError):
             pass
-        try:
-            pub = IndexedPublicationLegacy.from_id(self.project_id)
-            dataset_json['hasPart'] = generate_licenses(pub)
-            dataset_json['license'] = dataset_json['hasPart'][0]["url"]
 
-        except DocumentNotFound:
-            pass
+        if self.dois:
+            dataset_json['@id'] = self.dois[0]
+            dataset_json['identifier'] = self.dois[0]
 
+            dataset_json["distribution"] = {
+                    "@context": "http://schema.org",
+                    "@type": "Dataset",
+                    "@id": "",
+                    "identifier": "",
+                    "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
+                    "name": self.title,
+                    "creator": [
+                        {
+                            "name": "",
+                            "affiliation": "",
+                            "@id": "",
+                            "identifier": ""
+                        }
+                    ],
+                    "author": [
+                        {
+                            "name": "",
+                            "affiliation": "",
+                            "@id": "",
+                            "identifier": ""
+                        }
+                    ],
+                    "datePublished": self.created,
+                    "dateModified": self.to_body_dict()['lastUpdated'],
+                    "description": self.description,
+                    "keywords": self.keywords.split(','),
+                    "license": {
+                        "@type": "CreativeWork",
+                        "license": "",
+                        "url":""
+                    },
+                    "publisher": {
+                        "@type": "Organization",
+                        "name": "Designsafe-CI",
+                        "url": "https://designsafe-ci.org"
+                    },
+                    "provider": {
+                        "@type": "Organization",
+                        "name": "Designsafe-CI"
+                    },
+                    "includedInDataCatalog": {
+                        "@type": "DataCatalog",
+                        "name": "Designsafe-CI",
+                        "url": "https://designsafe-ci.org"
+                    },
+            }
+
+            
+        else:
+            related_ents = self.related_entities()
+
+            for i in range(len(related_ents)):
+                if hasattr(related_ents[i], 'dois') and related_ents[i].dois:
+                    dataset_json['relatedIdentifier_' + str(i)] = {
+                        "@context": "http://schema.org",
+                        "@type": "Dataset",
+                        "@id" : "",
+                        "identifier" : "",
+                        "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
+                        "name": related_ents[i].title,
+                        "creator": [
+                            {
+                                "name": "",
+                                "affiliation": "",
+                                "@id": "",
+                                "identifier": ""
+                            }
+                        ],
+                        "author": [
+                            {
+                                "name": "",
+                                "affiliation": "",
+                                "@id": "",
+                                "identifier": ""
+                            }
+                        ],
+                        "datePublished": related_ents[i].created,
+                        "dateModified": related_ents[i].to_body_dict()['lastUpdated'],
+                        "description": related_ents[i].description,
+                        "license": {
+                            "@type": "CreativeWork",
+                            "license": "",
+                            "url": ""
+                        },
+                        "publisher": {
+                            "@type": "Organization",
+                            "name": "Designsafe-CI"
+                        },
+                        "provider": {
+                            "@type": "Organization",
+                            "name": "Designsafe-CI"
+                        },
+                        "includedInDataCatalog": {
+                            "@type": "DataCatalog",
+                            "name": "Designsafe-CI",
+                            "url": "https://designsafe-ci.org"
+                        },    
+                    }
+                    dataset_json['relatedIdentifier_' + str(i)]['@id'] = related_ents[i].dois[0]
+                    dataset_json['relatedIdentifier_' + str(i)]['identifier'] = related_ents[i].dois[0]
+                    
+                    if getattr(related_ents[i], 'team_order', False):
+                        authors = sorted(related_ents[i].team_order, key=lambda x: x['order'])
+                    else:
+                        authors = [{'name': username} for username in [self.pi] + self.co_pis]
+                    dataset_json['relatedIdentifier_' + str(i)]['creator'] = generate_creators(authors)
+                    dataset_json['relatedIdentifier_' + str(i)]['author'] = generate_creators(authors)
+                    try:
+                        dataset_json['relatedIdentifier_' + str(i)]['license'] = dataset_json['license']
+                    except (DocumentNotFound, AttributeError):
+                        pass       
+         
         return dataset_json
 
     def to_datacite_json(self):
@@ -377,6 +472,7 @@ class Project(MetadataModel):
                     'relatedIdentifierType': 'URL',
                     'relationType': 'IsPartOf'
                 })
+
         return attributes
 
 
@@ -429,9 +525,11 @@ def generate_licenses(pub):
     license_details = []
     url = []
     license_type = []
+
     if pub.licenses.datasets == "Open Data Commons Attribution":
         license_details.append({
             "@type": "Dataset",
+            "name": pub.project.value.title,
             "url": "https://opendatacommons.org/licenses/by/1-0/",
             "description": pub.project.value.description,
             "license": pub.licenses.datasets
@@ -439,6 +537,7 @@ def generate_licenses(pub):
     if pub.licenses.datasets == "Open Data Commons Public Domain Dedication":
         license_details.append({
             "@type": "Dataset",
+            "name": pub.project.value.title,
             "url": "https://opendatacommons.org/licenses/pddl/1-0/",
             "description": pub.project.value.description,
             "license": pub.licenses.datasets
@@ -446,6 +545,15 @@ def generate_licenses(pub):
     if pub.licenses.works == "Creative Commons Attribution Share Alike":
         license_details.append({
             "@type": "CreativeWork",
+            "name": pub.project.value.title,
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "description": pub.project.value.description,
+            "license": pub.licenses.works
+        })
+    if pub.licenses.works == "Creative Commons Attribution":
+        license_details.append({
+            "@type": "CreativeWork",
+            "name": pub.project.value.title,
             "url": "https://creativecommons.org/licenses/by/4.0/",
             "description": pub.project.value.description,
             "license": pub.licenses.works
@@ -453,6 +561,7 @@ def generate_licenses(pub):
     if pub.licenses.works == "Creative Commons Public Domain Dedication":
         license_details.append({
             "@type": "CreativeWork",
+            "name": pub.project.value.title,
             "url": "https://creativecommons.org/publicdomain/zero/1.0/",
             "description": pub.project.value.description,
             "license": pub.licenses.works
@@ -460,6 +569,7 @@ def generate_licenses(pub):
     if pub.licenses.software == "GNU General Public License":
         license_details.append({
             "@type": "CreativeWork",
+            "name": pub.project.value.title,
             "url": "http://www.gnu.org/licenses/gpl.html",
             "description": pub.project.value.description,
             "license": pub.licenses.software

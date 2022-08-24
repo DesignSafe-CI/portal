@@ -146,8 +146,10 @@ class IndexedFileLegacy(Document):
 @python_2_unicode_compatible
 class IndexedPublication(Document):
     revision = Long()
-    revisionText = Text()
+    revisionText = Text(analyzer='english')
+    revisionTitles = Text(analyzer='english')
     revisionDate = Date()
+    tombstone = Text(multi=True, fields={'_exact':Keyword()})
     analysisList = Nested(properties={
         'associationIds' : Text(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
@@ -259,8 +261,8 @@ class IndexedPublication(Document):
             'awardNumber': Text(fields={'_exact': Keyword()}),
             'nhEventStart': Date(),
             'nhEventEnd': Date(),
-            'nhTypes': Text(fields={'_exact': Keyword()}),
-            'nhType': Text(fields={'_exact': Keyword()}),   
+            'nhTypes': Text(fields={'_exact': Keyword(), 'keyword': Keyword()}),
+            'nhType': Text(fields={'_exact': Keyword()}),
             'nhTypeOther': Text(fields={'_exact': Keyword()}),
             'nhEvent': Text(fields={'_exact': Keyword()}),
             'nhLocation': Text(fields={'_exact': Keyword()}),

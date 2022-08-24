@@ -43,6 +43,22 @@ def simulation_type_query(simulation_type):
 
 
 def nh_type_query(nh_type):
+    NON_OTHER_NH_TYPES = [
+        "Earthquake",
+        "Extreme Temperatures",
+        "Fire",
+        "Flood",
+        "Hurricane/Tropical Storm",
+        "Landslide",
+        "Tornado",
+        "Tsunami",
+        "Thunderstorm",
+        "Storm Surge",
+        "Pandemic",
+        "Wind"
+    ]
+    if nh_type == "Other":
+        return ~Q({'terms': {'project.value.nhTypes.keyword': NON_OTHER_NH_TYPES}})
     return Q({'term': {'project.value.nhTypes.keyword': nh_type}})
 
 
@@ -66,6 +82,7 @@ def other_type_query(data_type):
             'Presentation',
             'Report',
             'REU',
+            'SimCenter Testbed',
             'Social Sciences',
             'Software',
             'Survey',

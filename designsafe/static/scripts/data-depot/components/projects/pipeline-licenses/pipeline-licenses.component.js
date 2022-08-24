@@ -17,11 +17,7 @@ class PipelineLicensesCtrl {
         this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
         this.secondaryEntities = this.ProjectService.resolveParams.secondaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
-        this.license = {
-            datasets: '',
-            works: '',
-            software: '',
-        };
+        this.selectedLicense = '';
         this.ui = {
             loading: true
         };
@@ -64,31 +60,11 @@ class PipelineLicensesCtrl {
             if (typeof this.project.value.projectType === 'undefined') {
                 return false;
             }
-            if (this.license.datasets ||
-                this.license.works ||
-                this.license.software) {
+            if (this.selectedLicense) {
                 return true;
             }
             return false;
         }
-    }
-
-    reset() {
-        let ids = [
-            'odca',
-            'odcpdd',
-            'ccasa',
-            'ccpdd',
-            'gnu',
-        ];
-        ids.forEach((id) => {
-            document.getElementById(id).checked = false;
-        });
-        this.license = {
-            datasets: '',
-            works: '',
-            software: '',
-        };
     }
 
     goWork() {
@@ -128,6 +104,19 @@ class PipelineLicensesCtrl {
 
     // Modal for accept and publish...
     prepareModal() {
+        // Ugly fix to revert original license design without changing the schema
+        this.license = {
+            datasets: ['Open Data Commons Attribution', 'Open Data Commons Public Domain Dedication'],
+            works: ['Creative Commons Attribution', 'Creative Commons Public Domain Dedication'],
+            software: ['GNU General Public License'],
+        };
+        Object.keys(this.license).forEach((key) => {
+            this.license[key] = (this.license[key].includes(this.selectedLicense)
+                ? this.selectedLicense
+                : ''
+            )
+        });
+
         if (this.project.value.projectType === 'field_recon'){
             this.$uibModal.open({
                 component: 'pipelinePrivacyPublishModal',

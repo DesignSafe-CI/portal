@@ -54,6 +54,13 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
 
 
+def logentity(client, system, path, *args, **kwargs):
+    """
+    No-op function to allow primary entity views to be logged as listings.
+    """
+    return {}
+
+
 def detail(client, system, path, *args, **kwargs):
     """
     Retrieve the uuid for a file by parsing the query string in _links.metadata.href

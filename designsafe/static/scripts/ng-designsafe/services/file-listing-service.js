@@ -658,17 +658,20 @@ export class FileListingService {
      * @param {Object} entity Entity to perform the abstract listing for.
      */
     publishedListing(publication, entity) {
+        const basePath = (publication.revision
+            ? `${publication.projectId}v${publication.revision}`
+            : publication.projectId)
         const publicationListingParams = {
             api: 'agave',
             scheme: 'public',
             system: 'designsafe.storage.published',
-            path: publication.projectId,
+            path: basePath,
         };
         this.listings.main.params = { section: 'main', ...publicationListingParams };
         const entityFiles = entity.fileObjs.map((f) => ({
             ...f,
             system: 'designsafe.storage.published',
-            path: publication.projectId + f.path,
+            path: basePath + f.path,
             format: f.type === 'dir' ? 'folder' : 'raw',
             permissions: 'READ',
             _entities: [entity],

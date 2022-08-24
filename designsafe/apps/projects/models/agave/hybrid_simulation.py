@@ -76,6 +76,19 @@ class HybridSimulation(RelatedEntity):
                 simulation_type=self.simulation_type.title()
             )
         return attributes
+    
+    def to_dataset_json(self):
+        """Serialize object to dataset JSON."""
+        attributes = super(HybridSimulation, self).to_dataset_json()
+        if self.simulation_type_other:
+            attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
+                simulation_type=self.simulation_type_other.title()
+            )
+        else:
+            attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
+                simulation_type=self.simulation_type.title()
+            )
+        return attributes
 
 
 class GlobalModel(RelatedEntity):

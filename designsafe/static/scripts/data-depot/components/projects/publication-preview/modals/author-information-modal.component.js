@@ -23,6 +23,12 @@ class AuthorInformationModalCtrl {
                 if (res.orcid_id) {
                     this.orcid = res.orcid_id;
                 }
+                if (!this.email) {
+                    this.email = res.email;
+                }
+                if (!this.institution) {
+                    this.institution = res.profile.institution;
+                }
             })
             .finally(() => {
                 this.loading = false;

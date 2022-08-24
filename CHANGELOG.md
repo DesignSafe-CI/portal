@@ -1,5 +1,78 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.6.1
+## What's Changed
+* DES-2255: add Last Status Message by @van-go in https://github.com/DesignSafe-CI/portal/pull/983
+* Bug/DES-2282 - Version and Licence Fixes for DataCite by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/982
+* DES-2258: Registration Page Updates by @SilversunKSauri in https://github.com/DesignSafe-CI/portal/pull/981
+* Task/DES-1275(2261) - Remove category selectors and fix form object reference by @van-go in https://github.com/DesignSafe-CI/portal/pull/985
+* task/DES-2035: Advanced Search bugs by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/988
+* Task/des 2139: Python version bump to 3.7 by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/987
+
+## New Contributors
+* @van-go made their first contribution in https://github.com/DesignSafe-CI/portal/pull/983
+
+**Full Changelog**: https://github.com/DesignSafe-CI/portal/compare/v5.6.0...v5.6.1
+
+## v5.6.0
+## What's Changed
+* task/DES-2241: Add footerless template; add back nav and footer padding by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/969
+* task/DES-2247: Fix large window app icons by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/970
+* task/DES-2248: Allow apps with no metadata record by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/971
+* task/DES-2133: Update link to data transfer guide and add to Help dropdown by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/968
+* task/bug-2249: remove SecureMixin from the user lookup view by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/973
+* Bug/DES-2250 - Fix bug with versioning iterator by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/974
+* task/DES-2253: Set up nightly crontab to clear expired sessions by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/976
+* task/DES-2251: Add `vncserver` to VNC app job names; remove username from user defined `archivePath` by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/975
+* task/DES-2116 - Added new metadata for Google Datasets by @fnets in https://github.com/DesignSafe-CI/portal/pull/972
+* DES-2242: Publication Pipeline File Check by @SilversunKSauri in https://github.com/DesignSafe-CI/portal/pull/978
+* fix/DES-2251: Change `vncserver` to `tap_` by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/977
+* Feature/DES-1831-1832 - Experimental Amend Revise by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/945
+* task/DES-2259: Add OpenSees STKO icon by @edmondsgarrett in https://github.com/DesignSafe-CI/portal/pull/979
+
+## New Contributors
+* @edmondsgarrett made their first contribution in https://github.com/DesignSafe-CI/portal/pull/979
+
+## v5.5.0
+* Bug/DES-2205 - Fix limit and offset for file metadata query by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/952
+* task/DES-2206: Remove unnecessary margin/padding by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/954
+* Bug/DES-2068 & 2178: FR social sciences collection form bug & remove unsupported licenses by @owaisj in https://github.com/DesignSafe-CI/portal/pull/946
+* task/DES-207: Add logging when users expand primary entities by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/953
+* DES-1920: One License per DOI by @SilversunKSauri in https://github.com/DesignSafe-CI/portal/pull/959
+* Task/DES-1483: Display Author Modal for PIs and Co-PIs by @owaisj in https://github.com/DesignSafe-CI/portal/pull/934
+* (DES-2189 and DES-2078) Update Make your Data Count metrics/Add individual entity views by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/955
+* task/DES-2189--design-update: move MYDC metrics to bottom of modal by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/963
+* task/DES-2255: Update apps logos by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/962
+* task/DES-2200: Return user projects from Jupyterhub JWT service account by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/950
+
+## v5.4.0
+* Bug/DES-2080: Search Results Direct to First Publication Version by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/942
+* bug/DES-2188: handle plugin exceptions in the CMS indexer by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/947
+* Bug/DES-2038 - Rename and Colorized Tabs by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/940
+* Replace Tapis downloads with the streaming zip service. by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/941
+
+## v5.3.4
+* task/DES-2179, task/DES-2141: Remove data depot footer from workspace; Update NHERI logo by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/943
+
+## v5.3.2
+* Bump AgavePy version to support file metadata operations.
+
+## v5.3.1
+* Task/DES-2148 - Fix bugs for custom entity inputs by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/936
+* DES-2047 Fix: Edit Project url location fix by @SilversunKSauri in https://github.com/DesignSafe-CI/portal/pull/935
+* Task/DES-1501, 2038 & 2040 by @owaisj in https://github.com/DesignSafe-CI/portal/pull/926
+* Port dependencies to poetry by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/931
+
+## v5.3.0
+* Task/DES-2041(2049,2060,2138) - UI fixes and updates for projects and publications by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/929
+* Task/DES-1547 - File Metadata by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/919
+* Fedora/ingest experiment by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/933
+* DES-2047 and 2125 by @SilversunKSauri in https://github.com/DesignSafe-CI/portal/pull/932
+* Replace "start date" filters with simple show/hide history toggle. by @thompscs in https://github.com/DesignSafe-CI/portal/pull/930
+* Bug/DES-2149: Make HazMapper link location dynamic. by @duckonomy in https://github.com/DesignSafe-CI/portal/pull/937
+* Task/DES-2143 - Fix various bugs and formatting issues related to datepicker by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/938
+* task/DES-2126: Update youtube link by @rstijerina in https://github.com/DesignSafe-CI/portal/pull/939
+
 ## v5.2.11
 * Log IP address and user agent in metrics by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/924
 * Task/DES-2117: Log abstract publication listings in metrics by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/928

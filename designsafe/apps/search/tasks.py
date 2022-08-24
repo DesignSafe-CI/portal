@@ -13,6 +13,14 @@ def update_search_index():
     if not settings.DEBUG:
         call_command("rebuild_index", interactive=False)
 
+
+@shared_task()
+def clear_expired_sessions():
+    logger.info("Clearing expired sessions.")
+    if not settings.DEBUG:
+        call_command("clearsessions", interactive=False)
+
+
 @shared_task(bind=True)
 def index_community_data(self):
     agave_indexer.delay('designsafe.storage.community', paths_to_ignore=['Trash'])

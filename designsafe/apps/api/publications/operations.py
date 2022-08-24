@@ -94,7 +94,7 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     if facility['name']:
         query_filters.append(search_utils.experimental_facility_query(facility))
     if experiment_type:
-        query_filters.append(search_utils.experiment_type_query)
+        query_filters.append(search_utils.experiment_type_query(experiment_type))
 
     # Simulation advanced filters
     simulation_type = query_dict['advancedFilters']['simulation']['simulationType']
@@ -211,7 +211,7 @@ def neesdescription(project_id, *args):
     return {'description': desc}
 
 
-def initilize_publication(publication, status='publishing', revision=None, revision_text=None):
+def initilize_publication(publication, status='publishing', revision=None, revision_text=None, revision_titles=None):
         """initilize publication."""
         publication['projectId'] = publication['project']['value']['projectId']
         publication['status'] = status
@@ -225,7 +225,9 @@ def initilize_publication(publication, status='publishing', revision=None, revis
             publication['revision'] = revision
             publication['revisionDate'] = datetime.datetime.now().isoformat()
             publication['revisionText'] = revision_text
-        else:
+            if revision_titles:
+                publication['revisionTitles'] = revision_titles
+        elif 'created' not in publication:
             publication['created'] = datetime.datetime.now().isoformat()
         try:
             pub = IndexedPublication.from_id(publication['projectId'], revision=revision, using=es_client)

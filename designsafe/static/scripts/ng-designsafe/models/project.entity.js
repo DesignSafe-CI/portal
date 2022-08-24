@@ -263,7 +263,8 @@ export function ProjectEntityModel() {
             });
             self._displayName = displayName;
         }
-        if (self._displayName === 'SensorList') self._displayName = 'Sensor List';
+        if (self._displayName === 'SensorList') self._displayName = 'Sensor Information';
+        if (self._displayName === 'ModelConfig') self._displayName = 'Model Configuration';
 
         return self._displayName;
     };

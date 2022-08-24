@@ -4,17 +4,25 @@ import experimentalData from '../../../../projects/components/manage-experiments
 
 class PublicationPreviewCtrl {
 
-    constructor( $stateParams, ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
+    constructor( $stateParams, ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q, UserService) {
         'ngInject';
         this.$stateParams = $stateParams;
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
-        this.browser = {};
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;
+        this.UserService = UserService;
+        this.loadingUserData = {
+            pi: true,
+            coPis: true,
+        };
+        this.authorData = {
+            pi: {},
+            coPis: null,
+        };
     }
 
     $onInit() {
@@ -59,12 +67,38 @@ class PublicationPreviewCtrl {
                 };
 
                 this.breadcrumbParams.root.label = project.value.projectId
-                this.browser.project = project;
-                this.browser.project.appendEntitiesRel(ents);
-                this.browser.listing = this.FileListingService.listings.main.listing;
+                this.project = project;
+                this.project.appendEntitiesRel(ents);
+                this.listing = this.FileListingService.listings.main.listing;
                 this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
                     this.ui.loading = false;
                 });
+                const { pi } = this.project.value;
+                this.UserService.get(pi).then((res) => {
+                    this.authorData.pi = {
+                        fname: res.first_name,
+                        lname: res.last_name,
+                        email: res.email,
+                        name: res.username,
+                        inst: res.profile.institution,
+                    };
+                    this.loadingUserData.pi = false;
+                });
+                if (this.project.value.coPis) {
+                    this.authorData.coPis = new Array(this.project.value.coPis.length);
+                    this.project.value.coPis.forEach((coPi, idx) => {
+                        this.UserService.get(coPi).then((res) => {
+                            this.authorData.coPis[idx] = {
+                                fname: res.first_name,
+                                lname: res.last_name,
+                                email: res.email,
+                                name: res.username,
+                                inst: res.profile.institution,
+                            };
+                            if (idx === this.project.value.coPis.length - 1) this.loadingUserData.coPis = false;
+                        });
+                    });
+                }
             });
     }
 
@@ -93,7 +127,7 @@ class PublicationPreviewCtrl {
     }
 
     getEF(str) {
-        let efs = this.ui.efs[this.browser.project.value.projectType];
+        let efs = this.ui.efs[this.project.value.projectType];
         let ef = efs.find((ef) => {
             return ef.name === str;
         });
@@ -117,28 +151,28 @@ class PublicationPreviewCtrl {
     }
 
     goWork() {
-        this.$state.go('projects.view', {projectId: this.browser.project.uuid, data: this.browser});
+        this.$state.go('projects.view', {projectId: this.project.uuid, data: this.project});
     }
 
     goCuration() {
-        this.$state.go('projects.curation', {projectId: this.browser.project.uuid});
+        this.$state.go('projects.curation', {projectId: this.project.uuid});
     }
 
     prepareModal() {
         this.$uibModal.open({
             template: PublicationPopupTemplate,
             controllerAs: '$ctrl',
-            controller: ['$uibModalInstance', 'state', 'browser', function($uibModalInstance, state, browser) {
+            controller: ['$uibModalInstance', 'state', 'project', function($uibModalInstance, state, project) {
                 this.cancel = function () {
                     $uibModalInstance.close();
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineStart', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineStart', {projectId: project.uuid}, {reload: true});
                 };
             }],
             resolve: {
-                browser: this.browser,
+                project: this.project,
                 state: this.$state,
             },
             bindings: {
@@ -153,7 +187,7 @@ class PublicationPreviewCtrl {
         this.$uibModal.open({
             component: 'projectTree',
             resolve: {
-                project: () => {return this.browser.project; },
+                project: () => {return this.project; },
                 readOnly: () => {return true;},
             },
             backdrop: 'static',

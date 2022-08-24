@@ -1,10 +1,8 @@
 <div class="modal-header" style="background: #e6e6e6">
     <h4 class="modal-title" style="border: none">
         Project Data Metrics
-        <span ng-if="!$ctrl.loading">(<span ng-if="$ctrl.lastUpdated">since {{$ctrl.lastUpdated | date:'MMMM dd, yyyy'}}, </span>updated every month)</span>
-        <a uib-tooltip="Metrics collected using Make Data Count standards." tooltip-placement="right"
-            ><i class="fa fa-info-circle"></i
-        ></a>
+        <span ng-if="!$ctrl.loading && !$ctrl.error">(<span ng-if="$ctrl.lastUpdated">Starting {{$ctrl.initialDate | date:'MMMM yyyy'}}, </span>updated every month)</span>
+        <span ng-if="!$ctrl.loading && $ctrl.error">(Newly published project - initial metric report will be posted after the end of the month)</span>
         <span class="pull-right" ng-click="$ctrl.close()">
             <i class="fa fa-times"></i>
         </span>
@@ -19,8 +17,6 @@
         <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
     </div>
     <div ng-if="!$ctrl.loading">
-        These metrics are presented according to the <a target="_blank" href="https://makedatacount.org/">Make Your Data Count</a> standard.
-        <p></p>
         <div style="display: flex; flex-direction: row" >
             <div style="flex-grow: 1; margin-right: 100px">
                 <table class="table table-borderless">
@@ -30,7 +26,13 @@
                     </tr>
                     <tr>
                         <td>
-                            Project Downloads
+                            Total Requests
+                        </td>
+                        <td>{{$ctrl.cumMetrics.fileViews}}</td>
+                    </tr>
+                    <tr style="border-top:hidden">
+                        <td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;Project Downloads
                             <a
                                 uib-tooltip="Total downloads of a compressed entire project to a user’s machine"
                                 tooltip-placement="right"
@@ -38,17 +40,6 @@
                             ></a>
                         </td>
                         <td>{{$ctrl.cumMetrics.projectDownloads}}</td>
-                    </tr>
-                    <tr style="border-top: hidden">
-                        <td>
-                            File Requests
-                            <a
-                                uib-tooltip="Total file downloads + Total File Previews. Counted following the Make your Data Count standard"
-                                tooltip-placement="right"
-                                ><i class="fa fa-info-circle"></i
-                            ></a>
-                        </td>
-                        <td>{{$ctrl.cumMetrics.fileViews}}</td>
                     </tr>
                     <tr style="border-top: hidden">
                         <td>
@@ -112,5 +103,17 @@
                 </table>
             </div>
         </div>
+    <div style="width:100%; border-bottom:1px solid #e6e6e6; font-size:16px">
+    Make Your Data Count Statistics
+    </div>
+    These metrics are presented according to the <a target="_blank" href="https://makedatacount.org/">Make Your Data Count</a> standard.
+    <p></p>
+    <p>
+        <b>Unique Request:</b> Any downloads, previews, or copies of files by a user in a one-hour session counts as 1 Unique Request.
+    </p>
+    <p></p>
+    <p style="font-size:16px; width:100%">
+        <span style="padding-right:15%">Unique Requests (Since January 2022)</span> <b>{{$ctrl.cumMetrics.uniqueRequests || "(Not Applicable)"}}</b>
+    </p>
     </div>
 </div>

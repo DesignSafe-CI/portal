@@ -8,17 +8,27 @@ import { isEqual, has } from 'underscore';
 import { publish } from 'rxjs/operators';
 
 class PublishedViewCtrl {
-    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, FileListingService, FileOperationService, PublicationService, UserService){
+    constructor($anchorScroll, $state, $location, $stateParams, $uibModal, $http, $q, FileListingService, FileOperationService, PublicationService, UserService){
         'ngInject';
         this.$anchorScroll = $anchorScroll;
         this.$state = $state;
         this.$location = $location;
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
+        this.$http = $http;
+        this.$q = $q;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
-        this.PublicationService= PublicationService;
+        this.PublicationService = PublicationService;
         this.UserService = UserService;
+        this.loadingUserData = {
+            pi: true,
+            coPis: true,
+        };
+        this.authorData = {
+            pi: {},
+            coPis: null,
+        };
     }
 
     $onInit() {
@@ -27,22 +37,51 @@ class PublishedViewCtrl {
             efs: experimentalData.experimentalFacility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
+            license: '',
+            licenseType: '',
             fileNav: true,
-            loading: true,
+            loading: true
         };
         this.browser = {}
         this.browser.listings = {};
         this.browser.publication = this.publication;
         this.browser.project = this.publication.project;
         this.project = this.publication.project;
+        const { pi } = this.project.value;
+        this.UserService.get(pi).then((res) => {
+            this.authorData.pi = {
+                fname: res.first_name,
+                lname: res.last_name,
+                email: res.email,
+                name: res.username,
+                inst: res.profile.institution,
+            };
+            this.loadingUserData.pi = false;
+        });
+        if (this.project.value.coPis) {
+            this.authorData.coPis = new Array(this.project.value.coPis.length);
+            this.project.value.coPis.forEach((coPi, idx) => {
+                this.UserService.get(coPi).then((res) => {
+                    this.authorData.coPis[idx] = {
+                        fname: res.first_name,
+                        lname: res.last_name,
+                        email: res.email,
+                        name: res.username,
+                        inst: res.profile.institution,
+                    };
+                    if (idx === this.project.value.coPis.length - 1) this.loadingUserData.coPis = false;
+                });
+            });
+        }
+
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.versions = this.prepVersions(this.publication);
-        this.selectedVersion = this.publication.revision || 'Original';
-        this.prjBasePath = (this.publication.revision && this.publication.revision < 0
-            ? this.publication.projectId + 'r' + this.publication.revision
+        this.selectedVersion = this.publication.revision || 1;
+        this.prjBasePath = (this.publication.revision && this.publication.revision > 0
+            ? this.publication.projectId + 'v' + this.publication.revision
             : this.publication.projectId
         );
-
+        this.openEntities = {}
         this.breadcrumbParams = {
             root: {label: this.prjBasePath, path: this.prjBasePath},
             path: this.prjBasePath,
@@ -71,6 +110,20 @@ class PublishedViewCtrl {
         else {
             this.getProjectListings();
         }
+
+        Object.keys(this.publication.licenses).forEach((key) => {
+            if (this.publication.licenses[key]) {
+                this.ui.license = this.publication.licenses[key];
+                if (key === 'datasets') {
+                    this.ui.licenseType = 'curation-odc';
+                } else if (key === 'software') {
+                    this.ui.licenseType = 'curation-gpl';
+                } else if (key === 'works') {
+                    let subtype = (this.ui.license.includes('Attribution') ? 'share' : 'zero');
+                    this.ui.licenseType = `curation-cc-${subtype}`;
+                }
+            }
+        });
 
         //add metadata to header
         this.type = this.browser.publication.project.value.projectType;
@@ -142,6 +195,7 @@ class PublishedViewCtrl {
     }
 
     prepProject() {
+        this.doiList = {}
         if (this.project.value.projectType === 'experimental'){
             this.browser.project.analysis_set = this.browser.publication.analysisList;
             this.browser.project.modelconfig_set = this.browser.publication.modelConfigs;
@@ -149,10 +203,9 @@ class PublishedViewCtrl {
             this.browser.project.event_set = this.browser.publication.eventsList;
             this.browser.project.report_set = this.browser.publication.reportsList;
             this.browser.project.experiment_set = this.browser.publication.experimentsList;
-            this.expDOIList = this.browser.project.experiment_set.map(({ doi, uuid }) => {
-                return { value: doi, uuid, hash: `anchor-${uuid}` };
+            this.browser.publication.experimentsList.forEach((ent) => {
+                this.doiList[ent.uuid] = { doi: ent.doi, hash: `anchor-${ent.uuid}` }
             });
-
         }
         if (this.project.value.projectType === 'simulation'){
             this.browser.project.simulation_set = this.browser.publication.simulations;
@@ -161,8 +214,8 @@ class PublishedViewCtrl {
             this.browser.project.output_set = this.browser.publication.outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
-            this.simDOIList = this.browser.project.simulation_set.map(({ doi, uuid }) => {
-                return { value: doi, uuid, hash: `anchor-${uuid}` };
+            this.browser.publication.simulations.forEach((ent) => {
+                this.doiList[ent.uuid] = { doi: ent.doi, hash: `anchor-${ent.uuid}` }
             });
         }
         if (this.project.value.projectType === 'hybrid_simulation'){
@@ -176,11 +229,9 @@ class PublishedViewCtrl {
             this.browser.project.expoutput_set = this.browser.publication.exp_outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
             this.browser.project.report_set = this.browser.publication.reports;
-            this.hsDOIList = this.browser.project.hybridsimulation_set.map(({ doi, uuid }) => ({
-                value: doi,
-                uuid,
-                hash: `details-${uuid}`,
-            }));
+            this.browser.publication.hybrid_simulations.forEach((ent) => {
+                this.doiList[ent.uuid] = { doi: ent.doi, hash: `details-${ent.uuid}` }
+            });
         }
         if (this.project.value.projectType === 'field_recon'){
             this.browser.project.mission_set = this.browser.publication.missions;
@@ -207,17 +258,34 @@ class PublishedViewCtrl {
                     this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
                 }
             });
-            this.frDOIList = this.orderedPrimary.map(({ doi, uuid, name }) => ({
-                type: name.split('.').pop(),
-                value: doi,
-                uuid,
-                hash: `anchor-${uuid}`
-            }));
+            this.orderedPrimary.forEach((ent) => {
+                this.doiList[ent.uuid] = {
+                    doi: ent.doi,
+                    type: ent.name.split('.').pop(),
+                    hash: `details-${ent.uuid}`
+                }
+            });
+        }
+        if (this.doiList) {
+            let dataciteRequests = Object.values(this.doiList).map(({doi}) => {
+                return this.$http.get(`/api/publications/data-cite/${doi}`);
+            });
+            this.$q.all(dataciteRequests).then((responses) => {
+                let citations = responses.map((resp) => {
+                    if (resp.status == 200) {
+                        return resp.data.data.attributes
+                    }
+                });
+                citations.forEach((cite) => {
+                    let doiObj = Object.values(this.doiList).find(x => x.doi === cite.doi);
+                    doiObj['created'] = cite.created;
+                })
+            });
         }
     }
 
     getVersion() {
-        let path = (typeof this.selectedVersion === 'number'
+        let path = (this.selectedVersion > 1
             ? `${this.browser.publication.projectId}v${this.selectedVersion}`
             : this.browser.publication.projectId
         )
@@ -229,15 +297,13 @@ class PublishedViewCtrl {
     prepVersions(publication) {
         // returns a list of publication versions
         if (publication.latestRevision) {
-            let vers = ['Original'];
+            let vers = [1];
             let max = (publication.latestRevision.status === 'published'
                 ? publication.latestRevision.revision
                 : publication.latestRevision.revision - 1
             )
-            if (typeof max == 'number') {
-                for (let i = 2; i <= max; i++) {
-                    vers.push(i);
-                }
+            for (let i = 2; i <= max; i++) {
+                vers.push(i);
             }
             return vers;
         }
@@ -312,6 +378,18 @@ class PublishedViewCtrl {
         });
     }
 
+    entityMetrics(doi, type) {
+        this.$uibModal.open({
+            component: 'entityMetricsModal',
+            resolve: {
+                publication: () => {return this.browser.publication;},
+                doi: () => doi,
+                type: () => type
+            },
+            size: 'md'
+        });
+    }
+
     matchingGroup(exp, model) {
         if (!exp) {
             // if the category is related to the project level
@@ -375,22 +453,19 @@ class PublishedViewCtrl {
             resolve: {
                 publication: () => { return this.browser.publication; },
                 entity: () => { return entity; },
+                created: () => {
+                    return entity ? this.doiList[entity.uuid].created : undefined;
+                },
             },
             size: 'citation'
         });
     }
 
     showVersionInfo() {
-        let date = new Date(this.browser.publication.revisionDate);
-        let modalData = [
-            {label: 'Version', data: this.browser.publication.revision},
-            {label: 'Date of Publication', data: `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`},
-            {label: null, data: this.browser.publication.revisionText}
-        ]
         this.$uibModal.open({
             component: 'publishedDataModal',
             resolve: {
-                data: () => { return modalData },
+                publication: () => { return this.publication },
             },
             size: 'citation'
         });
@@ -419,6 +494,18 @@ class PublishedViewCtrl {
         }
         else {
             this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
+        }
+    }
+
+    logEntity(entity, listName) {
+        // Keep track of whether an entity is being opened (so we need to log metrics)
+        // or being closed (no action needed)
+        this.openEntities[entity.uuid] = !(this.openEntities[entity.uuid] ?? false)
+        if (this.openEntities[entity.uuid]) {
+            const projectId = this.publication.projectId;
+            const identifier = entity.doi || entity.uuid;
+            const path = `${projectId}/${listName}/${identifier}`;
+            this.$http.get(`/api/datafiles/agave/public/logentity/designsafe.storage.published/${path}`);
         }
     }
 }

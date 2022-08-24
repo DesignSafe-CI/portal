@@ -4,9 +4,10 @@ import FormOptions from './project-form-options.json';
 import FormDefaults from './project-form-defaults.json';
 
 class ManageProjectCtrl {
-    constructor(UserService, ProjectModel, $http, $q, $uibModal, $state) {
+    constructor(UserService, ProjectModel, PublicationService, $http, $q, $uibModal, $state) {
         'ngInject';
         this.UserService = UserService;
+        this.PublicationService = PublicationService;
         this.ProjectModel = ProjectModel;
         this.$http = $http;
         this.$q = $q;
@@ -18,6 +19,7 @@ class ManageProjectCtrl {
         this.ui = {
             hasType: true,
             loading: true,
+            editType: true,
             submitting: false,
             error: null,
         };
@@ -29,10 +31,10 @@ class ManageProjectCtrl {
 
         if (this.project) {
             if (this.project.value.projectType in this.formDefaults) {
-                this.form = this.formDefaults[this.project.value.projectType];
+                this.form = {...this.formDefaults[this.project.value.projectType]};
             }
             else {
-                this.form = this.formDefaults.new;
+                this.form = {...this.formDefaults.new};
                 this.ui.hasType = false;
             }
             this.form.uuid = this.project.uuid;
@@ -55,6 +57,8 @@ class ManageProjectCtrl {
                 proj_users: this.UserService.getPublic([...usernames]),
                 creator: this.UserService.authenticate()
             };
+            this.PublicationService.getPublished(this.project.value.projectId)
+                .then((_) => { this.ui.editType = false; });
             this.$q.all(promisesToResolve).then(({proj_users, creator}) => {
                 this.form.creator = creator
                 this.form.pi = proj_users.userData.find(user => user.username == this.project.value.pi);
@@ -66,7 +70,7 @@ class ManageProjectCtrl {
             });
         } else {
             this.UserService.authenticate().then((creator) => {
-                this.form = this.formDefaults.new;
+                this.form = {...this.formDefaults.new};
                 this.form.creator = creator
                 this.ui.loading = false;
             });

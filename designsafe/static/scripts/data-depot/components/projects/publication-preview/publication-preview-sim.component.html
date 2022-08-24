@@ -1,130 +1,8 @@
 <div style="background:white;">
     <!-- Project Header Start -->
     <div ng-if="!$ctrl.ui.loading">
-        <div class="prj-head-container">
-            <span class="prj-head-title">
-                {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
-            </span>
-            <div class="prj-head-buttons">
-                <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
-                    <span class="curation-download"></span>
-                    &nbsp;&nbsp;Download Dataset
-                </button>
-            </div>
-        </div>
-        <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
-            <colgroup>
-                <col style="width: 15%">
-                <col style="width: 84%">
-            </colgroup>
-            <tr class="prj-row">
-                <td>PI</td>
-                <td class="prj-data">
-                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
-                </td>
-            </tr>
-            <tr ng-if="$ctrl.browser.project.value.coPis.length">
-                <td>Co-PIs</td>
-                <td class="prj-data">
-                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.project.value.dois.length">
-                <td>
-                    <span>DOI</span>
-                    <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
-                        Citation
-                    </button>
-                </td>
-                <td>
-                    <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-                <td>Project Type</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.nhTypes.length">
-                <td>Natural Hazard Type</td>
-                <td class="prj-data">
-                    <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
-                        <span ng-if="!$last">{{ nhtype }},</span>
-                        <span ng-if="$last">{{ nhtype }}</span>
-                    </span>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-                <td>Data Type</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
-            </tr>
-            <tr ng-repeat="doi in $ctrl.simDOIList">
-                <td ng-if="$first">DOI(s) in Project</td>
-                <td ng-if="!$first"></td>
-                <td>
-                    <strong>
-                        <a
-                            ng-click="$ctrl.goToHash(doi.hash)"
-                            data-toggle="collapse"
-                            data-target="#data-{{doi.uuid}}"
-                        >
-                            {{ doi.value }}
-                        </a>
-                    </strong>
-                </td>
-            </tr>
-            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
-                ng-if="!$ctrl.readOnly">
-                <td ng-if="$first">Awards</td>
-                <td ng-if="!$first"></td>
-                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-            </tr>
-            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumbers | orderBy:'order' track by $index"
-                ng-if="$ctrl.readOnly">
-                <td ng-if="$first">Awards</td>
-                <td ng-if="!$first"></td>
-                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-            </tr>
-            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
-                <td ng-if="$first">Related Work</td>
-                <td ng-if="!$first"></td>
-                <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
-            </tr>
-            <tr class="prj-row">
-                <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
-            </tr>
-            <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
-                <td>Hazmapper Maps</td>
-                <td>
-                    <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
-                    </hazmapper-maps>
-                </td>
-            </tr>
-        </table>
-        <div class="pad-content">
-            <a ng-click="$ctrl.treeDiagram()">
-                <strong>View Data Diagram</strong>
-            </a>
-            <span ng-if="$ctrl.readOnly">
-                |<a ng-click="$ctrl.metrics()">
-                    &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
-                    <strong>&nbsp;View Data Metrics</strong>
-                </a>
-                |<a ng-click="$ctrl.leaveFeedback()">
-                    &nbsp;<img src='/static/images/ds-icons/icon-feedback.svg' style="width: 12px;">
-                    <strong>&nbsp;Leave Feedback</strong>
-                </a>
-            </span>
-        </div>
-        <div ng-if="$ctrl.browser.project.value.description">
-            <p>
-                <show-more
-                    label="'Description'"
-                    content="$ctrl.browser.project.value.description"
-                >
-                </show-more>
-            </p>
-        </div>
+        <!-- pub preview metadata -->
+        <prj-pub-preview-metadata></prj-pub-preview-metadata>
     </div>
     <!-- Project Header End -->
     <table class="tg" style="table-layout: fixed; width: 100%;"
@@ -181,7 +59,7 @@
     </div>
     <!-- Project Reports -->
     <div ng-if="$ctrl.matchingGroup(simulation, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading"
-         ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+         ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'"
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
             <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
@@ -194,7 +72,7 @@
                 <div class="well" ng-if="report.value.description">
                     <p>{{ report.value.description }}</p>
                 </div>
-                <files-listing show-select="true" show-tags="true"
+                <files-listing show-select="true" show-tags="true" published="true"
                     on-scroll="$ctrl.scrollToBottom()"
                     listing="$ctrl.FileListingService.listings[report.uuid]"
                     on-browse="$ctrl.onBrowse(file)"
@@ -210,15 +88,15 @@
         custom-root="$ctrl.breadcrumbParams.root"
         skip-root="$ctrl.breadcrumbParams.skipRoot"
     ></breadcrumb>
-        <files-listing show-select="true" show-tags="true"
+        <files-listing show-select="true" show-tags="true" published="true"
             on-scroll="$ctrl.scrollToBottom()"
             listing="$ctrl.FileListingService.listings.main"
             on-browse="$ctrl.onBrowse(file)"
         >&nbsp;</files-listing>
     </div>
-    <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="simulation in $ctrl.browser.project.simulation_set">
+    <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="simulation in $ctrl.project.simulation_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{simulation.uuid}}">
-            <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
+            <button ng-click="$ctrl.logEntity(simulation, 'simulationList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
                 <table style="width:100%" id="anchor-{{ simulation.uuid }}">
                     <tr>
                         <td class="tab-cell">
@@ -232,6 +110,16 @@
             </button>
             <div id="data-{{simulation.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
+                    <!-- Tombstone Banner -->
+                    <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(simulation.uuid)">
+                        <i class="fa fa-warning notification-icon"></i>
+                        <div>
+                            <strong>The following Dataset does not exist anymore</strong><br>
+                            The Dataset with DOI:
+                            <a href="https://doi.org/{{simulation.value.dois[0]}}">https://doi.org/{{simulation.value.dois[0]}}</a>
+                            was incomplete and removed. The metadata is still available.
+                        </div>
+                    </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Simulation Type</div>
                         <span ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" class="entity-meta-data-cap">
@@ -262,7 +150,7 @@
                         </span>
                         <span class="entity-meta-data"
                                 data-ng-if="$ctrl.readOnly">
-                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
+                            {{ $ctrl.doiList[simulation.uuid].created | date:'MM-dd-yyyy' }}
                         </span>
                     </div>
                     <div class="entity-meta-field">
@@ -289,27 +177,24 @@
                             <span>(Appears when published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets" class="license-element">
-                                <span class="curation-odc" style="font-size:32px;"></span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.datasets }}</span>
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.works" class="license-element">
-                                <span
-                                    class="curation-cc-share"
-                                    style="font-size:32px;"
-                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
-                                </span>
-                                <span
-                                    class="curation-cc-zero"
-                                    style="font-size:32px;"
-                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
-                                </span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.works }}</span>
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.software" class="license-element">
-                                <span class="curation-gpl" style="font-size:32px;"></span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.software }}</span>
-                            </div>
+                            <strong>
+                                <div class="license-element">
+                                    <span ng-class="$ctrl.ui.licenseType"></span>
+                                    &nbsp;{{$ctrl.ui.license}}
+                                </div>
+                            </strong>
+                        </div>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Data Reuse</div>
+                        <span ng-if="$ctrl.readOnly">
+                        <a ng-click="$ctrl.entityMetrics(simulation.doi, 'Simulation')">
+                            &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+                            <strong>&nbsp;View Simulation Metrics</strong>
+                        </a>
+                        </span>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                            <span>(Appears when published)</span>
                         </div>
                     </div>
                     <p>
@@ -317,11 +202,11 @@
                     </p>
                     <div>
                         <!-- Simulation Reports -->
-                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+                        <div ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'"
                             ng-if="$ctrl.matchingGroup(simulation, report)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{simulation.uuid}}" style="width:100%;">
+                                <button ng-click="$ctrl.logEntity(report, 'reportsList')" class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}-{{simulation.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>
@@ -331,16 +216,20 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                        on-scroll="$ctrl.scrollToBottom()"
-                                        listing="$ctrl.FileListingService.listings[report.uuid]"
-                                        on-browse="$ctrl.onBrowse(file)"
-                                    >&nbsp;</files-listing>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       published="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[report.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <!-- Models -->
-                        <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, model)">
+                        <div ng-repeat="model in $ctrl.project.model_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, model)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
                                 <button class="btn collapsed tab-blue"
                                         data-toggle="collapse"
@@ -355,15 +244,19 @@
                                     <div class="well" ng-if="model.value.description">
                                         <p>{{ model.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                        on-scroll="$ctrl.scrollToBottom()"
-                                        listing="$ctrl.FileListingService.listings[model.uuid]"
-                                        on-browse="$ctrl.onBrowse(file)"
-                                    >&nbsp;</files-listing>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       published="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[model.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Inputs -->
-                            <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: 'value.title'"
+                            <div ng-repeat="input in $ctrl.project.input_set | orderBy: 'value.title'"
                                 ng-if="$ctrl.matchingGroup(simulation, input) && $ctrl.matchingGroup(model, input)"
                             >
                                 <div class="dropdown dropdown-spacer-sm"
@@ -391,17 +284,21 @@
                                                 <div class="well" ng-if="input.value.description">
                                                     <p>{{ input.value.description }}</p>
                                                 </div>
-                                                    <files-listing show-select="true" show-tags="true"
-                                                        on-scroll="$ctrl.scrollToBottom()"
-                                                        listing="$ctrl.FileListingService.listings[input.uuid]"
-                                                        on-browse="$ctrl.onBrowse(file)"
-                                                    >&nbsp;</files-listing>
-                                                 </div>
+                                                <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                                    <files-listing show-select="true"
+                                                                   show-tags="true"
+                                                                   published="true"
+                                                                   on-scroll="$ctrl.scrollToBottom()"
+                                                                   listing="$ctrl.FileListingService.listings[input.uuid]"
+                                                                   on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                    </files-listing>
+                                                </div>
+                                            </div>
                                             </td>
                                         </tr>
                                     </table>
                                     <!-- Output -->
-                                    <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: 'value.title'"
+                                    <div ng-repeat="output in $ctrl.project.output_set | orderBy: 'value.title'"
                                         ng-if="$ctrl.matchingGroup(simulation, output) && $ctrl.matchingGroup(model, output) && $ctrl.matchingGroup(input, output)"
                                     >
                                         <div class="dropdown dropdown-spacer-sm"
@@ -429,11 +326,15 @@
                                                             <div class="well" ng-if="output.value.description">
                                                                 <p>{{ output.value.description }}</p>
                                                             </div>
-                                                            <files-listing show-select="true" show-tags="true"
-                                                                on-scroll="$ctrl.scrollToBottom()"
-                                                                listing="$ctrl.FileListingService.listings[output.uuid]"
-                                                                on-browse="$ctrl.onBrowse(file)"
-                                                             >&nbsp;</files-listing>
+                                                            <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                                                <files-listing show-select="true"
+                                                                               show-tags="true"
+                                                                               published="true"
+                                                                               on-scroll="$ctrl.scrollToBottom()"
+                                                                               listing="$ctrl.FileListingService.listings[output.uuid]"
+                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                </files-listing>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -447,7 +348,7 @@
                         </div>
                         <!-- Models -->
                         <!-- Analysis -->
-                        <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, analysis)">
+                        <div ng-repeat="analysis in $ctrl.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, analysis)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
                                 <button class="btn collapsed tab-light-blue"
                                         data-toggle="collapse"
@@ -473,11 +374,15 @@
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                        on-scroll="$ctrl.scrollToBottom()"
-                                        listing="$ctrl.FileListingService.listings[analysis.uuid]"
-                                        on-browse="$ctrl.onBrowse(file)"
-                                    >&nbsp;</files-listing>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(simulation.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       published="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
+                                    </div>
                                   </div>
                             </div>
                         </div>

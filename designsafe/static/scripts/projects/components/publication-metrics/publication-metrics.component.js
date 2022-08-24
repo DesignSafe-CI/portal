@@ -10,6 +10,10 @@ class PublicationMetricsCtrl {
         this.selectedYear = '';
         this.loading = true;
         this.error = false;
+        this.initialDate = Date.parse(this.resolve.publication.created);
+        if (this.initialDate < Date.parse("2021-01-01")) {
+            this.initialDate = "2021-01-01"
+        }
         this.PublicationService.getMetrics(this.resolve.publication.projectId)
             .then((resp) => {
                 this.data = resp.data;
@@ -32,7 +36,7 @@ class PublicationMetricsCtrl {
             .catch((e) => {
                 this.error = true;
                 this.loading = false;
-                this.cumMetrics = { projectDownloads: 0, fileDownloads: 0, filePreviews: 0, fileViews: 0, total: 0 };
+                this.cumMetrics = { projectDownloads: 0, fileDownloads: 0, filePreviews: 0, fileViews: 0, total: 0, uniqueRequests: 0 };
                 this.qMetrics = [0, 0, 0, 0];
             });
     }
@@ -48,18 +52,21 @@ class PublicationMetricsCtrl {
         archiveMetrics.metrics.forEach((m) => (projectDownloads += m.Downloads));
         let fileDownloads = 0;
         let filePreviews = 0;
+        let uniqueRequests = 0;
         meta.value
             .filter((v) => v.doi !== 'archive')
             .forEach((v) => {
                 v.metrics.forEach((m) => {
                     fileDownloads += m.Downloads || 0;
                     filePreviews += m.Previews || 0;
+                    uniqueRequests += m.UniqueRequests || 0;
                 });
             });
         return {
             projectDownloads,
             fileDownloads,
             filePreviews,
+            uniqueRequests,
             fileViews: fileDownloads + filePreviews,
             total: projectDownloads + fileDownloads + filePreviews,
         };

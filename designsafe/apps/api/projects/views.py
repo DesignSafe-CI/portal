@@ -104,6 +104,7 @@ class PublicationView(BaseApiView):
         status = data.get('status', 'saved')
         revision = data.get('revision', None)
         revision_text = data.get('revisionText', None)
+        revision_titles = data.get('revisionTitles', None)
         revised_authors = data.get('revisionAuthors', None)
         selected_files = data.get('selectedFiles', None)
 
@@ -115,7 +116,13 @@ class PublicationView(BaseApiView):
             latest_revision = IndexedPublication.max_revision(project_id=project_id)
             current_revision = latest_revision + 1 if latest_revision >= 2 else 2
 
-        pub = initilize_publication(data['publication'], status, revision=current_revision, revision_text=revision_text)
+        pub = initilize_publication(
+                data['publication'],
+                status,
+                revision=current_revision,
+                revision_text=revision_text,
+                revision_titles=revision_titles
+            )
 
         if data.get('status', 'save').startswith('publish'):
             (
@@ -151,9 +158,10 @@ class PublicationView(BaseApiView):
                     revision=current_revision
                 ) |
                 tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
-                tasks.email_user_publication_request_confirmation.si(request.user.username)
+                tasks.email_user_publication_request_confirmation.si(request.user.username) |
+                tasks.check_published_files.si(pub.projectId, revision=current_revision, selected_files=selected_files)
             ).apply_async()
-        
+
         return JsonResponse({
             'success': 'Project is publishing.'
         }, status=200)
@@ -169,14 +177,16 @@ class AmendPublicationView(BaseApiView):
             data = json.loads(request.body)
         else:
             data = request.POST
-        
+
         project_id = data['projectId']
-        authors = data['authors'] if 'authors' in data else None
+        authors = data.get('authors', None)
+        amendments = data.get('amendments', None)
         current_revision = IndexedPublication.max_revision(project_id=project_id)
 
         (
             tasks.amend_publication_data.s(
                 project_id,
+                amendments,
                 authors,
                 current_revision
             ).set(queue='api') |
@@ -185,7 +195,7 @@ class AmendPublicationView(BaseApiView):
                 current_revision
             ).set(queue='files')
         ).apply_async()
-        
+
         return JsonResponse({
             'success': 'Publication is being amended.'
         }, status=200)
