@@ -1,136 +1,8 @@
 <div style="background:white;">
     <!-- Project Header Start -->
     <div ng-if="!$ctrl.ui.loading">
-        <div class="prj-head-container">
-            <span class="prj-head-title">
-                {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
-            </span>
-            <div class="prj-head-buttons">
-                <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
-                    <span class="curation-download"></span>
-                    &nbsp;&nbsp;Download Dataset
-                </button>
-            </div>
-        </div>
-        <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
-            <colgroup>
-                <col style="width: 15%">
-                <col style="width: 84%">
-            </colgroup>
-            <tr class="prj-row">
-                <td>PI</td>
-                <td class="prj-data">
-                    <span ng-if="!$ctrl.loadingUserData.pi">
-                        <a href="javascript:;" ng-click="$ctrl.showAuthor($ctrl.authorData.pi)">
-                            {{ $ctrl.authorData.pi.lname }}, {{ $ctrl.authorData.pi.fname }}
-                        </a>
-                    </span>
-                </td>
-            </tr>
-            <tr ng-if="$ctrl.browser.project.value.coPis.length">
-                <td>Co-PIs</td>
-                <td class="prj-data">
-                    <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
-                        <a href="javascript:;" ng-click="$ctrl.showAuthor(coPi)">{{ coPi.lname }}, {{ coPi.fname }}</a><span ng-if="!$last">, </span>
-                    </span>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.project.value.dois.length">
-                <td>
-                    <span>DOI</span>
-                    <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
-                        Citation
-                    </button>
-                </td>
-                <td>
-                    <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-                <td>Project Type</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.nhTypes.length">
-                <td>Natural Hazard Type</td>
-                <td class="prj-data">
-                    <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
-                        <span ng-if="!$last">{{ nhtype }},</span>
-                        <span ng-if="$last">{{ nhtype }}</span>
-                    </span>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-                <td>Data Type</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
-            </tr>
-            <tr ng-repeat="(uuid, citation) in $ctrl.doiList">
-                <td ng-if="$first">DOI(s) in Project</td>
-                <td ng-if="!$first"></td>
-                <td>
-                    <strong>
-                        <a
-                            ng-click="$ctrl.goToHash(citation.hash)"
-                            data-toggle="collapse"
-                            data-target="#data-{{uuid}}"
-                        >
-                            {{ citation.doi }}
-                        </a>
-                    </strong>
-                </td>
-            </tr>
-            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
-                ng-if="!$ctrl.readOnly">
-                <td ng-if="$first">Awards</td>
-                <td ng-if="!$first"></td>
-                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-            </tr>
-            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumbers | orderBy:'order' track by $index"
-                ng-if="$ctrl.readOnly">
-                <td ng-if="$first">Awards</td>
-                <td ng-if="!$first"></td>
-                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-            </tr>
-            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
-                <td ng-if="$first">Related Work</td>
-                <td ng-if="!$first"></td>
-                <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
-            </tr>
-            <tr class="prj-row">
-                <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
-            </tr>
-            <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
-                <td>Hazmapper Maps</td>
-                <td>
-                    <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
-                    </hazmapper-maps>
-                </td>
-            </tr>
-        </table>
-        <div class="pad-content">
-            <a ng-click="$ctrl.treeDiagram()">
-                <strong>View Data Diagram</strong>
-            </a>
-            <span ng-if="$ctrl.readOnly">
-                |<a ng-click="$ctrl.metrics()">
-                    &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
-                    <strong>&nbsp;View Project Metrics</strong>
-                </a>
-                |<a ng-click="$ctrl.leaveFeedback()">
-                    &nbsp;<img src='/static/images/ds-icons/icon-feedback.svg' style="width: 12px;">
-                    <strong>&nbsp;Leave Feedback</strong>
-                </a>
-            </span>
-        </div>
-        <div ng-if="$ctrl.browser.project.value.description">
-            <p>
-                <show-more
-                    label="'Description'"
-                    content="$ctrl.browser.project.value.description"
-                >
-                </show-more>
-            </p>
-        </div>
+        <!-- pub preview metadata -->
+        <prj-pub-preview-metadata></prj-pub-preview-metadata>
     </div>
     <!-- Project Header End -->
     <table class="tg" style="table-layout: fixed; width: 100%;"
@@ -187,7 +59,7 @@
     </div>
     <!-- Project Reports -->
     <div ng-if="$ctrl.matchingGroup(simulation, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading"
-         ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+         ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'"
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
             <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
@@ -222,7 +94,7 @@
             on-browse="$ctrl.onBrowse(file)"
         >&nbsp;</files-listing>
     </div>
-    <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="simulation in $ctrl.browser.project.simulation_set">
+    <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="simulation in $ctrl.project.simulation_set">
         <div class="dropdown dropdown-spacer-sm" id="details-{{simulation.uuid}}">
             <button ng-click="$ctrl.logEntity(simulation, 'simulationList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
                 <table style="width:100%" id="anchor-{{ simulation.uuid }}">
@@ -330,7 +202,7 @@
                     </p>
                     <div>
                         <!-- Simulation Reports -->
-                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+                        <div ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'"
                             ng-if="$ctrl.matchingGroup(simulation, report)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
@@ -357,7 +229,7 @@
                             </div>
                         </div>
                         <!-- Models -->
-                        <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, model)">
+                        <div ng-repeat="model in $ctrl.project.model_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, model)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
                                 <button class="btn collapsed tab-blue"
                                         data-toggle="collapse"
@@ -384,7 +256,7 @@
                                 </div>
                             </div>
                             <!-- Inputs -->
-                            <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: 'value.title'"
+                            <div ng-repeat="input in $ctrl.project.input_set | orderBy: 'value.title'"
                                 ng-if="$ctrl.matchingGroup(simulation, input) && $ctrl.matchingGroup(model, input)"
                             >
                                 <div class="dropdown dropdown-spacer-sm"
@@ -426,7 +298,7 @@
                                         </tr>
                                     </table>
                                     <!-- Output -->
-                                    <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: 'value.title'"
+                                    <div ng-repeat="output in $ctrl.project.output_set | orderBy: 'value.title'"
                                         ng-if="$ctrl.matchingGroup(simulation, output) && $ctrl.matchingGroup(model, output) && $ctrl.matchingGroup(input, output)"
                                     >
                                         <div class="dropdown dropdown-spacer-sm"
@@ -476,7 +348,7 @@
                         </div>
                         <!-- Models -->
                         <!-- Analysis -->
-                        <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, analysis)">
+                        <div ng-repeat="analysis in $ctrl.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, analysis)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
                                 <button class="btn collapsed tab-light-blue"
                                         data-toggle="collapse"

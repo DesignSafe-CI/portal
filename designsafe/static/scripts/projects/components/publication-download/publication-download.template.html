@@ -69,7 +69,7 @@
             <div class="btn-container">
                 <span class="curation-cc-share"
                       style="font-size:32px;"
-                      ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+                      ng-if="$ctrl.publication.licenses.works.includes('Creative Commons Attribution')">
                 </span>
                 <span class="curation-cc-zero"
                       style="font-size:32px;"
@@ -78,14 +78,14 @@
                 &ensp;
                 <strong>{{$ctrl.publication.licenses.works}}</strong>
                 &ensp;
-                <span ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+                <span ng-if="$ctrl.publication.licenses.works.includes('Creative Commons Attribution')">
                     (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">License Website</a>)
                 </span>
                 <span ng-if="$ctrl.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
                     (<a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">License Website</a>)
                 </span>
             </div>
-            <ul ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+            <ul ng-if="$ctrl.publication.licenses.works.includes('Creative Commons Attribution')">
                 <li>You may freely share, reuse, and adapt this work.</li>
                 <li>You must attribute for any public use of this work.</li>
                 <li>Derived work that is published must carry the same terms and conditions of this license.</li>

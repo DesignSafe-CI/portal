@@ -94,7 +94,7 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     if facility['name']:
         query_filters.append(search_utils.experimental_facility_query(facility))
     if experiment_type:
-        query_filters.append(search_utils.experiment_type_query)
+        query_filters.append(search_utils.experiment_type_query(experiment_type))
 
     # Simulation advanced filters
     simulation_type = query_dict['advancedFilters']['simulation']['simulationType']
