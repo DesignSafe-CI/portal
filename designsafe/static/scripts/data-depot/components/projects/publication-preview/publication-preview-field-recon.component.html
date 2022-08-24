@@ -1,167 +1,8 @@
 <div style="background:white;">
     <!-- Project Header Start -->
     <div ng-if="!$ctrl.ui.loading">
-        <div class="prj-head-container">
-            <span class="prj-head-title">
-                {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
-            </span>
-            <div class="prj-head-buttons">
-                <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
-                    <span class="curation-download"></span>
-                    &nbsp;&nbsp;Download Dataset
-                </button>
-            </div>
-        </div>
-        <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
-            <colgroup>
-                <col style="width: 15%">
-                <col style="width: 84%">
-            </colgroup>
-            <tr class="prj-row">
-                <td>PI</td>
-                <td class="prj-data">
-                    <span ng-if="!$ctrl.loadingUserData.pi">
-                        <a href="javascript:;" ng-click="$ctrl.showAuthor($ctrl.authorData.pi)">
-                            {{ $ctrl.authorData.pi.lname }}, {{ $ctrl.authorData.pi.fname }}
-                        </a>
-                    </span>
-                </td>
-            </tr>
-            <tr ng-if="$ctrl.browser.project.value.coPis.length">
-                <td>Co-PIs</td>
-                <td class="prj-data">
-                    <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
-                        <a href="javascript:;" ng-click="$ctrl.showAuthor(coPi)">{{ coPi.lname }}, {{ coPi.fname }}</a><span ng-if="!$last">, </span>
-                    </span>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.project.value.dois.length">
-                <td>
-                    <span>DOI</span>
-                    <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
-                        Citation
-                    </button>
-                </td>
-                <td>
-                    <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-                <td>Project Type</td>
-                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'">
-                    {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}
-                </td>
-                <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'">
-                    Field Research
-                    <span ng-if="$ctrl.browser.project.value.frTypes.length">
-                        |
-                        <span ng-repeat="frType in $ctrl.browser.project.value.frTypes">
-                            <span ng-if="!$last">{{ frType }},</span>
-                            <span ng-if="$last">{{ frType }}</span>
-                        </span>
-                    </span>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-                <td>Data Type</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
-            </tr>
-            <tr class="prj-row"
-                ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhTypes.length">
-                <td>Natural Hazard Type</td>
-                <td class="prj-data">
-                    <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
-                        <span ng-if="!$last">{{ nhtype }},</span>
-                        <span ng-if="$last">{{ nhtype }}</span>
-                    </span>
-                </td>
-            </tr>
-            <!-- FR -->
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
-                <td>Event</td>
-                <td class="prj-data">
-                    {{ $ctrl.browser.project.value.nhEvent }} |
-                    <span ng-if="$ctrl.browser.project.value.nhLocation">{{ $ctrl.browser.project.value.nhLocation }} |</span>
-                    {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                    <span ng-if="$ctrl.browser.project.value.nhEventEnd && $ctrl.browser.project.value.nhEventStart !== $ctrl.browser.project.value.nhEventEnd">
-                        ― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
-                    </span>
-                    <span ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLatitude">|</span>
-                    <a href="http://www.google.com/maps/place/{{ $ctrl.browser.project.value.nhLatitude }},{{ $ctrl.browser.project.value.nhLongitude }}"
-                        rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLatitude">
-                        Lat {{ $ctrl.browser.project.value.nhLatitude }} Long {{ $ctrl.browser.project.value.nhLongitude }}
-                    </a>
-                </td>
-            </tr>
-            <!-- FR -->
-            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
-                ng-if="!$ctrl.readOnly">
-                <td ng-if="$first">Awards</td>
-                <td ng-if="!$first"></td>
-                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-            </tr>
-            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumbers | orderBy:'order' track by $index"
-                ng-if="$ctrl.readOnly">
-                <td ng-if="$first">Awards</td>
-                <td ng-if="!$first"></td>
-                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-            </tr>
-            <tr ng-repeat="(uuid, citation) in $ctrl.doiList">
-                <td ng-if="$first">DOI(s) in Project</td>
-                <td ng-if="!$first"></td>
-                <td>
-                    <strong>
-                        <a
-                            ng-click="$ctrl.goToHash(citation.hash)"
-                            data-toggle="collapse"
-                            data-target="{{ citation.type === 'mission' ? '#data-' : '#files-' }}{{uuid}}"
-                        >
-                            {{ citation.doi }}
-                        </a>
-                    </strong>
-                </td>
-            </tr>
-            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
-                <td ng-if="$first">Related Work</td>
-                <td ng-if="!$first"></td>
-                <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
-            </tr>
-            <tr class="prj-row">
-                <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
-            </tr>
-            <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
-                <td>Hazmapper Maps</td>
-                <td>
-                    <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
-                    </hazmapper-maps>
-                </td>
-            </tr>
-        </table>
-        <div class="pad-content">
-            <a ng-click="$ctrl.treeDiagram()">
-                <strong>View Data Diagram</strong>
-            </a>
-            <span ng-if="$ctrl.readOnly">
-                |<a ng-click="$ctrl.metrics()">
-                    &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
-                    <strong>&nbsp;View Project Metrics</strong>
-                </a>
-                |<a ng-click="$ctrl.leaveFeedback()">
-                    &nbsp;<img src='/static/images/ds-icons/icon-feedback.svg' style="width: 12px;">
-                    <strong>&nbsp;Leave Feedback</strong>
-                </a>
-            </span>
-        </div>
-        <div ng-if="$ctrl.browser.project.value.description">
-            <p>
-                <show-more
-                    label="'Description'"
-                    content="$ctrl.browser.project.value.description"
-                >
-                </show-more>
-            </p>
-        </div>
+        <!-- pub preview metadata -->
+        <prj-pub-preview-metadata></prj-pub-preview-metadata>
     </div>
     <!-- Project Header End -->
     <table class="tg" style="table-layout: fixed; width: 100%;" data-ng-if="!$ctrl.readOnly && !$ctrl.ui.loading">
@@ -210,7 +51,7 @@
             custom-root="$ctrl.breadcrumbParams.root"
             skip-root="$ctrl.breadcrumbParams.skipRoot"
         ></breadcrumb>
-        <files-listing show-select="true" show-tags="true"
+        <files-listing show-select="true" show-tags="true" published="true"
             on-scroll="$ctrl.scrollToBottom()"
             listing="$ctrl.FileListingService.listings.main"
             on-browse="$ctrl.onBrowse(file)"
@@ -280,7 +121,7 @@
                                     <span>(Appears when published)</span>
                                 </div>
                                 <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                                    <span>{{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}</span>
+                                    <span>{{ $ctrl.publication.created | date:'MM-dd-yyyy' }}</span>
                                 </div>
                             </div>
                             <div class="entity-meta-field">
@@ -332,6 +173,7 @@
                         <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
                             <files-listing show-select="true"
                                            show-tags="true"
+                                           published="true"
                                            on-scroll="$ctrl.scrollToBottom()"
                                            listing="$ctrl.FileListingService.listings[mission.uuid]"
                                            on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -468,7 +310,7 @@
                                 <br>{{ mission.value.description }}
                             </p>
                             <!-- Old Collections -->
-                            <div ng-repeat="collection in $ctrl.browser.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
+                            <div ng-repeat="collection in $ctrl.project.collection_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(mission, collection)">
                                 <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
                                     <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mission.uuid}}"
                                         style="width:100%;">
@@ -537,6 +379,7 @@
                                         <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
                                             <files-listing show-select="true"
                                                            show-tags="true"
+                                                           published="true"
                                                            on-scroll="$ctrl.scrollToBottom()"
                                                            listing="$ctrl.FileListingService.listings[collection.uuid]"
                                                            on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -671,6 +514,7 @@
                                             <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
                                                 <files-listing show-select="true"
                                                                show-tags="true"
+                                                               published="true"
                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                listing="$ctrl.FileListingService.listings[collection.uuid]"
                                                                on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -763,6 +607,7 @@
                                             <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
                                                 <files-listing show-select="true"
                                                                show-tags="true"
+                                                               published="true"
                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                listing="$ctrl.FileListingService.listings[collection.uuid]"
                                                                on-browse="$ctrl.onBrowse(file)">&nbsp;
@@ -810,6 +655,7 @@
                                             <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
                                                 <files-listing show-select="true"
                                                                show-tags="true"
+                                                               published="true"
                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                listing="$ctrl.FileListingService.listings[collection.uuid]"
                                                                on-browse="$ctrl.onBrowse(file)">&nbsp;

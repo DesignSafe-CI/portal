@@ -204,7 +204,8 @@ export const FilesListingComponent = {
         operationLabel: '<', //button text for move/copy operation.
         operation: '&', // Callback for move/copy operation.
         showTags: '<',
-        editTags: '<'
+        editTags: '<', 
+        published: '<'
     },
 };
 

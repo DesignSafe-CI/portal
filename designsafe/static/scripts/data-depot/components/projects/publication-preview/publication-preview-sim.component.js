@@ -10,7 +10,6 @@ class PublicationPreviewSimCtrl {
         this.ProjectService = ProjectService;
         this.FileOperationService = FileOperationService;
         this.FileListingService = FileListingService;
-        this.browser = {}
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$stateParams = $stateParams;
@@ -65,13 +64,13 @@ class PublicationPreviewSimCtrl {
                 path: this.FileListingService.listings.main.params.path,
                 skipRoot: false
             };
-            this.browser.project = project;
-            this.browser.project.appendEntitiesRel(ents);
-            this.browser.listing = this.FileListingService.listings.main.listing;
+            this.project = project;
+            this.project.appendEntitiesRel(ents);
+            this.listing = this.FileListingService.listings.main.listing;
             this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
                 this.ui.loading = false;
             });
-            const { pi } = this.browser.project.value;
+            const { pi } = this.project.value;
             this.UserService.get(pi).then((res) => {
                 this.authorData.pi = {
                     fname: res.first_name,
@@ -82,9 +81,9 @@ class PublicationPreviewSimCtrl {
                 };
                 this.loadingUserData.pi = false;
             });
-            if (this.browser.project.value.coPis) {
-                this.authorData.coPis = new Array(this.browser.project.value.coPis.length);
-                this.browser.project.value.coPis.forEach((coPi, idx) => {
+            if (this.project.value.coPis) {
+                this.authorData.coPis = new Array(this.project.value.coPis.length);
+                this.project.value.coPis.forEach((coPi, idx) => {
                     this.UserService.get(coPi).then((res) => {
                         this.authorData.coPis[idx] = {
                             fname: res.first_name,
@@ -93,7 +92,7 @@ class PublicationPreviewSimCtrl {
                             name: res.username,
                             inst: res.profile.institution,
                         };
-                        if (idx === this.browser.project.value.coPis.length - 1) this.loadingUserData.coPis = false;
+                        if (idx === this.project.value.coPis.length - 1) this.loadingUserData.coPis = false;
                     });
                 });
             }
@@ -125,28 +124,28 @@ class PublicationPreviewSimCtrl {
     }
 
     goWork() {
-        this.$state.go('projects.view', {projectId: this.browser.project.uuid, data: this.browser});
+        this.$state.go('projects.view', {projectId: this.project.uuid, data: this.project});
     }
 
     goCuration() {
-        this.$state.go('projects.curation', {projectId: this.browser.project.uuid});
+        this.$state.go('projects.curation', {projectId: this.project.uuid});
     }
 
     prepareModal() {
         this.$uibModal.open({
             template: PublicationPopupTemplate,
             controllerAs: '$ctrl',
-            controller: ['$uibModalInstance', 'state', 'browser', function($uibModalInstance, state, browser) {
+            controller: ['$uibModalInstance', 'state', 'project', function($uibModalInstance, state, project) {
                 this.cancel = function () {
                     $uibModalInstance.close();
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineStart', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineStart', {projectId: project.uuid}, {reload: true});
                 };
             }],
             resolve: {
-                browser: this.browser,
+                project: this.project,
                 state: this.$state,
             },
             bindings: {
@@ -161,7 +160,7 @@ class PublicationPreviewSimCtrl {
         this.$uibModal.open({
             component: 'projectTree',
             resolve: {
-                project: () => {return this.browser.project; },
+                project: () => {return this.project; },
                 readOnly: () => {return true;},
             },
             size: 'lg'

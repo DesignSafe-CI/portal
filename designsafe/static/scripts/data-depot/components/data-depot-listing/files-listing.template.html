@@ -20,9 +20,8 @@
                         <span ng-if="!$ctrl.showSelect">Name</span>
                     </th>
                     <th>Size</th>
-                    <th>Last modified</th>
+                    <th ng-if="!$ctrl.published">Last modified</th>
                     <th ng-if="$ctrl.operationLabel">Operation</th>
-                    <th ng-if="!$ctrl.FileListingService.listings.main.loading && $ctrl.hasNotebooks()">Open with</th>
                 </tr>
             </thead>
             <tbody>
@@ -76,14 +75,11 @@
                     </td>
                     <td data-ng-if="item.format== 'folder'" class="test-length-folder">--</td>
                     <td data-ng-if="item.format== 'raw'" class="test-length-file">{{ item.length|bytes }}</td>
-                    <td data-ng-if="item.lastModified" class="test-date">{{ item.lastModified|date:"short" }}</td>
-                    <td data-ng-if="!item.lastModified"class="test-date-missing">--</td>
+                    <td data-ng-if="item.lastModified && !$ctrl.published" class="test-date">{{ item.lastModified|date:"short" }}</td>
+                    <td data-ng-if="!item.lastModified && !$ctrl.published"class="test-date-missing">--</td>
                     <td data-ng-if="$ctrl.operationLabel" class="test-op-label">
                         <button class="btn btn-primary test-op-btn" ng-if="item.type==='dir'" ng-click="$ctrl.operation({file: item})">{{$ctrl.operationLabel}}
-
-                        </button></td>
-                    <td data-ng-if="!$ctrl.FileListingService.listings.main.loading && $ctrl.hasNotebooks()">
-                        <a href="{{$ctrl.openInApp(item)}}" target="_blank" rel="noopener" data-ng-if="$ctrl.isNotebook(item)">Jupyter</span>
+                        </button>
                     </td>
                 </tr>
                 <tr >
