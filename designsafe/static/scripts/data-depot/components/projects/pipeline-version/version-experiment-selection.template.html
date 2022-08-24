@@ -42,109 +42,9 @@
     <div ng-if="!$ctrl.ui.loading">
         <!-- Project Header Start -->
         <div class="pipeline-section">
-            <div class="prj-head-container">
-                <span class="prj-head-title">
-                    {{$ctrl.project.value.projectId}} | <strong>{{ $ctrl.project.value.title }}</strong>
-                </span>
-            </div>
-            <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
-                <colgroup>
-                    <col style="width: 15%">
-                    <col style="width: 84%">
-                </colgroup>
-                <tr class="prj-row">
-                    <td>PI</td>
-                    <td class="prj-data">
-                        <ds-user-list usernames="[$ctrl.project.value.pi]"></ds-user-list>
-                    </td>
-                </tr>
-                <tr ng-if="$ctrl.project.value.coPis.length">
-                    <td>Co-PIs</td>
-                    <td class="prj-data">
-                        <ds-user-list usernames="$ctrl.project.value.coPis"></ds-user-list>
-                    </td>
-                </tr>
-                <tr class="prj-row" ng-hide="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
-                    <td>Project Type</td>
-                    <td class="prj-data" ng-if="$ctrl.project.value.projectType !== 'field_recon'">
-                        {{ $ctrl.project.value.projectType.replace('_', ' ') }}
-                    </td>
-                    <td class="prj-data" ng-if="$ctrl.project.value.projectType === 'field_recon'">
-                        Field Research
-                        <span ng-if="$ctrl.project.value.frTypes.length">
-                            |
-                            <span ng-repeat="frType in $ctrl.project.value.frTypes">
-                                <span ng-if="!$last">{{ frType }},</span>
-                                <span ng-if="$last">{{ frType }}</span>
-                            </span>
-                        </span>
-                    </td>
-                </tr>
-                <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'other' && $ctrl.project.value.dataType">
-                    <td>Data Type</td>
-                    <td class="prj-data">{{ $ctrl.project.value.dataType }}</td>
-                </tr>
-                <tr class="prj-row" ng-if="$ctrl.project.value.nhTypes.length">
-                    <td>Natural Hazard Type</td>
-                    <td class="prj-data">
-                        <span ng-repeat="nhtype in $ctrl.project.value.nhTypes">
-                            <span ng-if="!$last">{{ nhtype }},</span>
-                            <span ng-if="$last">{{ nhtype }}</span>
-                        </span>
-                    </td>
-                </tr>
-                <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
-                    <td ng-if="$first">Awards</td>
-                    <td ng-if="!$first"></td>
-                    <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-                </tr>
-                <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
-                    <td ng-if="$first">Related Work</td>
-                    <td ng-if="!$first"></td>
-                    <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
-                </tr>
-                <tr class="prj-row">
-                    <td ng-if="$ctrl.project.value.keywords">Keywords</td>
-                    <td class="prj-data">{{ $ctrl.project.value.keywords }}</td>
-                </tr>
-                <tr ng-if="$ctrl.project.value.hazmapperMaps.length">
-                    <td>Hazmapper Maps</td>
-                    <td>
-                        <hazmapper-maps maps="$ctrl.project.value.hazmapperMaps">
-                        </hazmapper-maps>
-                    </td>
-                </tr>
-            </table>
-            <div ng-if="$ctrl.project.value.description">
-                <p>{{ $ctrl.project.value.description }}</p>
-            </div>
+            <!-- Project Metadata -->
+            <prj-metadata></prj-metadata>
         </div>
-        <!-- Project Reports -->
-        <!-- <div ng-if="$ctrl.matchingGroup(experiment, report) && !$ctrl.ui.loading" ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'">
-            <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                <div class="pipeline-selection">
-                    <a ng-click="$ctrl.selectEntity(report)">Select this Report and all of its files</a>
-                    <span ng-if="$ctrl.selectedEnts.includes(report)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
-                </div>
-                <button class="btn tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
-                    <div class="collapse-tab">
-                        <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
-                        <span class="collapse-tab-content-right curation-chevron"></span>
-                    </div>
-                </button>
-                <div id="files-{{report.uuid}}" class="collapse">
-                    <div class="well" ng-if="report.value.description">
-                        <p>{{ report.value.description }}</p>
-                    </div>
-                    <files-listing show-tags="true"
-                                    on-scroll="$ctrl.scrollToBottom()"
-                                    listing="$ctrl.FileListingService.listings[report.uuid]"
-                                    on-browse="$ctrl.onBrowse(file)">
-                                    &nbsp;
-                    </files-listing> 
-                </div>
-            </div>
-        </div> -->
         <!-- Published Experiments -->
         <div ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.project.experiment_set">
             <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
@@ -242,7 +142,7 @@
                                                         listing="$ctrl.FileListingService.listings[report.uuid]"
                                                         on-browse="$ctrl.onBrowse(file)">
                                                         &nbsp;
-                                        </files-listing> 
+                                        </files-listing>
                                     </div>
                                 </div>
                             </div>
@@ -269,7 +169,7 @@
                                                         listing="$ctrl.FileListingService.listings[modelConfig.uuid]"
                                                         on-browse="$ctrl.onBrowse(file)">
                                                         &nbsp;
-                                        </files-listing> 
+                                        </files-listing>
                                     </div>
                                 </div>
                                 <!-- Sensors -->
@@ -307,7 +207,7 @@
                                                                         listing="$ctrl.FileListingService.listings[sensorList.uuid]"
                                                                         on-browse="$ctrl.onBrowse(file)">
                                                                         &nbsp;
-                                                        </files-listing> 
+                                                        </files-listing>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -346,7 +246,7 @@
                                                                                 listing="$ctrl.FileListingService.listings[event.uuid]"
                                                                                 on-browse="$ctrl.onBrowse(file)">
                                                                                 &nbsp;
-                                                                </files-listing> 
+                                                                </files-listing>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -387,7 +287,7 @@
                                                             listing="$ctrl.FileListingService.listings[analysis.uuid]"
                                                             on-browse="$ctrl.onBrowse(file)">
                                                             &nbsp;
-                                            </files-listing> 
+                                            </files-listing>
                                         </div>
                                     </div>
                                 </div>

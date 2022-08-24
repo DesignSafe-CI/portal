@@ -13,6 +13,10 @@ class PipelineProjectCtrl {
     }
 
     $onInit() {
+        this.ui = {
+            showEdit: true,
+            showOverview: false,
+        };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
         this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
