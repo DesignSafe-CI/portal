@@ -2,7 +2,6 @@ import ManageProjectTemplate from './manage-project.template.html';
 import AmendProjectTemplate from './amend-project.template.html';
 import FormOptions from './project-form-options.json';
 import FormDefaults from './project-form-defaults.json';
-import { object } from 'underscore';
 
 class ManageProjectCtrl {
     constructor(UserService, ProjectModel, PublicationService, $http, $q, $uibModal, $state) {
@@ -193,7 +192,6 @@ class ManageProjectCtrl {
                 let fields = ["nhEvent", "nhLocation", "nhLongitude", "nhLatitude"];
                 let result = fields.every((field) => {return typeof projectData[field] === 'string' && projectData[field].length})
                 let checkDate = isNaN(Date.parse(projectData.nhEventStart))
-                console.log(checkDate)
                 if (!result || checkDate) {
                     fields.forEach((field) => projectData[field] = '')
                     projectData.nhEventStart = ''
@@ -207,7 +205,6 @@ class ManageProjectCtrl {
             }
             
         }
-        console.log(projectData)
         return projectData;
     }
 
@@ -304,24 +301,6 @@ class ManageProjectCtrl {
         }
         let options = optionsList.filter(type => type != 'Other')
         return !options.includes(input) && typeof input !== 'undefined'
-    }
-
-    nhRequired() {
-        if (this.project.value.projectType === 'field_recon'){
-            return true
-        } 
-        // else if (this.form.nhEvent.$dirty)
-        //     return [console.log('nhEvent:' + true), true]
-        // else if (this.form.$watch('nh-event', function(newVal, oldVal) {
-        //     if(newVal !== '') {
-        //         return [console.log('watch:' + true), true]
-        //     }
-        // })
-        // })
-        // else {
-        //     return false
-        // }
-        
     }
 }
 

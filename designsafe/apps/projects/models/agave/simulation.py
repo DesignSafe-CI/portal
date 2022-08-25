@@ -28,7 +28,6 @@ class SimulationProject(Project):
     nh_location = fields.CharField('Natural Hazard Location', default='')
     nh_latitude = fields.CharField('Natural Hazard Latitude', default='')
     nh_longitude = fields.CharField('Natural Hazard Longitude', default='')
-
     nh_types = fields.ListField('Natural Hazard Type')
     dois = fields.ListField('Dois')
     hazmapper_maps = fields.ListField('Hazmapper Maps')
