@@ -262,6 +262,7 @@ class Project(MetadataModel):
                 "name": "Designsafe-CI",
                 "url": "https://designsafe-ci.org"
             },
+            "hasPart": {}
         }
 
         if getattr(self, 'team_order', False):
@@ -334,7 +335,7 @@ class Project(MetadataModel):
             related_ents = self.related_entities()
             for i in range(len(related_ents)):
                 if hasattr(related_ents[i], 'dois') and related_ents[i].dois:
-                    dataset_json[str(i)] = {
+                    dataset_json['hasPart']['relatedIdentifier_' + str(i)] = {
                         "@context": "http://schema.org",
                         "@type": "Dataset",
                         "@id" : "",
@@ -377,11 +378,11 @@ class Project(MetadataModel):
                             "@type": "DataCatalog",
                             "name": "Designsafe-CI",
                             "url": "https://designsafe-ci.org"
-                        }, 
-                        "funding": []
+                        },
+                        "funding": ""
                     }
-                    dataset_json[str(i)]['@id'] = related_ents[i].dois[0]
-                    dataset_json[str(i)]['identifier'] = related_ents[i].dois[0]
+                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['@id'] = related_ents[i].dois[0]
+                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['identifier'] = related_ents[i].dois[0]
                     
                     if len(self.award_number) and type(self.award_number[0]) is not dict:
                         self.award_number = [{'order': 0, 'name': ''.join(self.award_number)}]
@@ -389,9 +390,9 @@ class Project(MetadataModel):
                         self.award_number,
                         key=lambda x: (x.get('order', 0), x.get('name', ''), x.get('number', ''))
                     )
-                    dataset_json[str(i)]['funding'] = []
+                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['funding'] = []
                     for award in awards:
-                        dataset_json[str(i)]['funding'].append({
+                        dataset_json['hasPart']['relatedIdentifier_' + str(i)]['funding'].append({
                             'name': award['name'],
                             'identifier': '' if 'number' not in award else award['number']
                         })
@@ -400,13 +401,17 @@ class Project(MetadataModel):
                         authors = sorted(related_ents[i].team_order, key=lambda x: x['order'])
                     else:
                         authors = [{'name': username} for username in [self.pi] + self.co_pis]
-                    dataset_json[str(i)]['creator'] = generate_creators(authors)
-                    dataset_json[str(i)]['author'] = generate_creators(authors)
+                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['creator'] = generate_creators(authors)
+                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['author'] = generate_creators(authors)
                     try:
-                        dataset_json[str(i)]['license'] = dataset_json['license']
+                        dataset_json['hasPart']['relatedIdentifier_' + str(i)]['license'] = dataset_json['license']
                     except (DocumentNotFound, AttributeError):
                         pass       
-         
+                    # logger.info('***'*999)
+                    # logger.info(dataset_json['relatedIdentifier_' + str(i)])
+                    # logger.info('***'*999)
+                    #dataset_json['hasPart'].append(dataset_json['relatedIdentifier_' + str(i)])
+
         return dataset_json
 
     def to_datacite_json(self):
