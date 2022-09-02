@@ -1,5 +1,7 @@
 import VersionExperimentSelectionTemplate from './version-experiment-selection.template.html';
 import VersionExperimentCitationTemplate from './version-experiment-citation.template.html';
+import VersionFieldReconSelectionTemplate from './version-field-recon-selection.template.html';
+import VersionFieldReconCitationTemplate from './version-field-recon-citation.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineVersionCtrl {
@@ -9,6 +11,7 @@ class PipelineVersionCtrl {
         FileListingService,
         ProjectService,
         $state,
+        $http,
         $q
     ) {
         'ngInject';
@@ -17,6 +20,7 @@ class PipelineVersionCtrl {
         this.FileListingService = FileListingService;
         this.ProjectService = ProjectService;
         this.$state = $state;
+        this.$http = $http;
         this.$q = $q;
     }
 
@@ -50,16 +54,71 @@ class PipelineVersionCtrl {
                 this.project = project;
                 this.project.appendEntitiesRel(entities);
                 const prjType = this.project.value.projectType;
+                this.doiList = {}
                 if (prjType === 'experimental') {
-                    this.ui.selectionComp = 'projects.versionSelection'
-                    this.ui.citationComp = 'projects.versionCitation'
+                    this.ui.selectionComp = 'projects.versionExperimentSelection'
+                    this.ui.citationComp = 'projects.versionExperimentCitation'
                     this.ui.placeholder = 'Experiment'
                     this.matchingGroupKey = 'experiments'
                     this.publishedKeyNames = ['experimentsList']
                     this.subEntities = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
-                } else {
+                } else if (prjType === 'field_recon') {
+                    this.ui.selectionComp = 'projects.versionExperimentSelection'
+                    this.ui.citationComp = 'projects.versionExperimentCitation'
+                    this.ui.placeholder = 'Mission'
+                    this.matchingGroupKey = 'missions'
+                    this.publishedKeyNames = ['missions', 'reports']
+                    this.subEntities = ['planning_set', 'socialscience_set', 'geoscience_set'];
+
+                    this.primaryEnts = [].concat(
+                        this.project.mission_set || [],
+                        this.project.report_set || []
+                    );
+                    this.secondaryEnts = [].concat(
+                        this.project.socialscience_set || [],
+                        this.project.planning_set || [],
+                        this.project.geoscience_set || []
+                        // TODO: throw error if collections found in publication or project
+                    );
+                    this.orderedPrimary = this.ordered(this.project, this.primaryEnts);
+                    this.orderedSecondary = {};
+                    this.orderedPrimary.forEach((primEnt) => {
+                        if (primEnt.name === 'designsafe.project.field_recon.mission') {
+                            this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
+                        }
+                    });
+                    this.orderedPrimary.forEach((ent) => {
+                        if (ent.value.dois) {
+                            this.doiList[ent.uuid] = {
+                                doi: ent.value.dois[0], // TODO: need to account for entities that do not have DOIs
+                                type: ent.name.split('.').pop(),
+                                hash: `details-${ent.uuid}`
+                            }
+                        }
+                    });
+                    if (this.doiList) {
+                        let dataciteRequests = Object.values(this.doiList).map(({doi}) => {
+                            return this.$http.get(`/api/publications/data-cite/${doi}`);
+                        });
+                        this.$q.all(dataciteRequests).then((responses) => {
+                            let citations = responses.map((resp) => {
+                                if (resp.status == 200) {
+                                    return resp.data.data.attributes
+                                }
+                            });
+                            citations.forEach((cite) => {
+                                let doiObj = Object.values(this.doiList).find(x => x.doi === cite.doi);
+                                doiObj['created'] = cite.created;
+                            })
+                        });
+                    } 
+                } 
+                else {
                     this.goStart();
                 }
+                
+                
+
                 this.FileListingService.abstractListing(entities, project.uuid).then((_) => {
                     // autoselect the published entities from the project
                     if (!this.selectedEnts.length) {
@@ -246,7 +305,7 @@ class PipelineVersionCtrl {
     }
     
     goSelection() {
-        this.navigate('projects.versionExperimentSelection');
+        this.navigate(this.ui.selectionComp);
     }
 
     goCitation() {
@@ -257,7 +316,7 @@ class PipelineVersionCtrl {
             this.selectedListings
         );
         if (this.missing.length) { return };
-        this.navigate('projects.versionExperimentCitation');
+        this.navigate(this.ui.citationComp);
     }
 
     goChanges() {
@@ -266,6 +325,23 @@ class PipelineVersionCtrl {
 
     goProject() {
         this.navigate('projects.view');
+    }
+
+    ordered(parent, entities) {
+        let order = (ent) => {
+            if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
+                return ent._ui.orders.find(order => order.parent === parent.uuid);
+            }
+            return 0;
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
     }
 }
 
@@ -283,6 +359,28 @@ export const VersionExperimentSelectionComponent = {
 
 export const VersionExperimentCitationComponent = {
     template: VersionExperimentCitationTemplate,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionFieldReconSelectionComponent = {
+    template: VersionFieldReconSelectionTemplate,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionFieldReconCitationComponent = {
+    template: VersionFieldReconCitationTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {

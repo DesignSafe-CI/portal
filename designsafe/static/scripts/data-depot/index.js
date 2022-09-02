@@ -431,6 +431,44 @@ function config(
                 }]
             }
         })
+        .state('projects.versionFieldReconSelection', {
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            component: 'versionFieldReconSelection',
+            params: {
+                project: null,
+                publication: null,
+                selectedEnts: [],
+                selectedListings: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                }]
+            }
+        })
+        .state('projects.versionFieldReconCitation', {
+            url: '/projects/{projectId}/curation/citation',
+            component: 'versionFieldReconCitation',
+            params: {
+                project: null,
+                publication: null,
+                selectedEnts: [],
+                selectedListings: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                }]
+            }
+        })
         .state('projects.versionChanges', {
             url: '/projects/{projectId}/curation/changes',
             component: 'versionChanges',
