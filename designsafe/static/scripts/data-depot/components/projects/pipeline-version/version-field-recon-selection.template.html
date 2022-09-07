@@ -75,16 +75,6 @@
                     </button>
                     <div id="files-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
-                            <!-- Tombstone Banner -->
-                            <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mission.uuid)">
-                                <i class="fa fa-warning notification-icon"></i>
-                                <div>
-                                    <strong>The following Dataset does not exist anymore</strong><br>
-                                    The Dataset with DOI:
-                                    <a href="https://doi.org/{{mission.value.dois[0]}}">https://doi.org/{{mission.value.dois[0]}}</a>
-                                    was incomplete and removed. The metadata is still available.
-                                </div>
-                            </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi" data-ng-if="mission.value.authors.length">
                                     Author(s)
@@ -116,13 +106,11 @@
                                 <p>{{ mission.value.description }}</p>
                             </div>
                         </div>
-                        <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
-                            <files-listing show-tags="true"
-                                           on-scroll="$ctrl.scrollToBottom()"
-                                           listing="$ctrl.FileListingService.listings[mission.uuid]"
-                                           on-browse="$ctrl.onBrowse(file)">&nbsp;
-                            </files-listing>
-                        </div>
+                        <files-listing show-tags="true"
+                                        on-scroll="$ctrl.scrollToBottom()"
+                                        listing="$ctrl.FileListingService.listings[mission.uuid]"
+                                        on-browse="$ctrl.onBrowse(file)">&nbsp;
+                        </files-listing>
                     </div>
                 </div>
             </div>
@@ -153,16 +141,6 @@
                     </button>
                     <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
-                            <!-- Tombstone Banner -->
-                            <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mission.uuid)">
-                                <i class="fa fa-warning notification-icon"></i>
-                                <div>
-                                    <strong>The following Dataset does not exist anymore</strong><br>
-                                    The Dataset with DOI:
-                                    <a href="https://doi.org/{{mission.value.dois[0]}}">https://doi.org/{{mission.value.dois[0]}}</a>
-                                    was incomplete and removed. The metadata is still available.
-                                </div>
-                            </div>
                             <div class="entity-meta-field" ng-if="mission.value.event">
                                 <div class="entity-meta-label">Event</div>
                                 <div class="entity-meta-data">
@@ -277,13 +255,11 @@
                                                 <p>{{ collection.value.description }}</p>
                                             </div>
                                         </div>
-                                        <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
-                                            <files-listing show-tags="true"
-                                                           on-scroll="$ctrl.scrollToBottom()"
-                                                           listing="$ctrl.FileListingService.listings[collection.uuid]"
-                                                           on-browse="$ctrl.onBrowse(file)">&nbsp;
-                                            </files-listing>
-                                        </div>
+                                        <files-listing show-tags="true"
+                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                        listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                                        on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                        </files-listing>
                                     </div>
                                 </div>
                             </div>
@@ -394,29 +370,15 @@
                                                         </ul>
                                                     </div>
                                                 </div>
-                                                <div class="entity-meta-field">
-                                                    <div class="entity-meta-label">Data Reuse</div>
-                                                    <span ng-if="$ctrl.readOnly">
-                                                        <a ng-click="$ctrl.entityMetrics(collection.doi, 'Collection')">
-                                                            &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
-                                                            <strong>&nbsp;View Collection Metrics</strong>
-                                                        </a>
-                                                    </span>
-                                                    <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
-                                                        <span>(Appears when published)</span>
-                                                    </div>
-                                                    </div>
                                                 <div class="entity-meta-field" ng-if="collection.value.description">
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>
                                             </div>
-                                            <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
-                                                <files-listing show-tags="true"
-                                                               on-scroll="$ctrl.scrollToBottom()"
-                                                               listing="$ctrl.FileListingService.listings[collection.uuid]"
-                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
-                                                </files-listing>
-                                            </div>
+                                            <files-listing show-tags="true"
+                                                            on-scroll="$ctrl.scrollToBottom()"
+                                                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                                            on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                            </files-listing>
                                         </div>
                                     </div>
                                 </div>
@@ -501,13 +463,11 @@
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>
                                             </div>
-                                            <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
-                                                <files-listing show-tags="true"
-                                                               on-scroll="$ctrl.scrollToBottom()"
-                                                               listing="$ctrl.FileListingService.listings[collection.uuid]"
-                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
-                                                </files-listing>
-                                            </div>
+                                            <files-listing show-tags="true"
+                                                            on-scroll="$ctrl.scrollToBottom()"
+                                                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                                            on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                            </files-listing>
                                           </div>
                                     </div>
                                 </div>
@@ -547,13 +507,11 @@
                                                     <p>{{ collection.value.description }}</p>
                                                 </div>
                                             </div>
-                                            <div ng-if="!$ctrl.publication.tombstone.includes(mission.uuid)">
-                                                <files-listing show-tags="true"
-                                                               on-scroll="$ctrl.scrollToBottom()"
-                                                               listing="$ctrl.FileListingService.listings[collection.uuid]"
-                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
-                                                </files-listing>
-                                            </div>    
+                                            <files-listing show-tags="true"
+                                                            on-scroll="$ctrl.scrollToBottom()"
+                                                            listing="$ctrl.FileListingService.listings[collection.uuid]"
+                                                            on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                            </files-listing>
                                         </div>
                                     </div>
                                 </div>
