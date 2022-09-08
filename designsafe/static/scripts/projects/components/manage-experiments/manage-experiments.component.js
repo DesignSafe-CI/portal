@@ -12,6 +12,7 @@ class ManageExperimentsCtrl {
         this.$uibModal = $uibModal;
     }
 
+    // TODO: When we Edit an experiment, we're not pulling in new guest users from the project...
     $onInit() {
         this.ui = {
             loading: true,

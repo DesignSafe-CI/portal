@@ -15,6 +15,7 @@ class ManageProjectCtrl {
         this.$state = $state;
     }
 
+    // TODO: The project does not update correctly immediately after changing the project type.
     $onInit() {
         this.ui = {
             hasType: true,
@@ -291,8 +292,8 @@ class ManageProjectCtrl {
     ------- Configure this for "guestMembers" and "awardNumber"
     ------- Remove "Order" fields
     ------- Make sure you update the "Amend" Template as well
-    - Update ElasticSearch index with the new field values
-    - Add a new field for Related Work stuff to the entities that are publishable
+    ??????? Update ElasticSearch index with the new field values
+    ------- Add a new field for Related Work stuff to the entities that are publishable
     - Send the new inputs data to DataCite
     */
     requireField(field) {
@@ -309,11 +310,13 @@ class ManageProjectCtrl {
         }
     }
 
-    dropObjField(fieldName) {
+    dropObjField(fieldName, index) {
         if (this.form[fieldName].length === 1) {
             this.form[fieldName].pop();
             this.form[fieldName].push({...this.FormDefaults[this.form.projectType][fieldName][0]});
             this.ui.require[fieldName] = false;
+        } else if (Number.isInteger(index)) {
+            this.form[fieldName].splice(index,1);
         } else {
             this.form[fieldName].pop();
         }
@@ -327,11 +330,13 @@ class ManageProjectCtrl {
         }
     }
 
-    dropUserField(userType) {
+    dropUserField(userType, index) {
         if (this.form[userType].length === 1) {
             this.form[userType].pop();
             this.form[userType].push(null);
             this.ui.require[userType] = false;
+        } else if (Number.isInteger(index)) {
+            this.form[userType].splice(index,1);
         } else {
             this.form[userType].pop();
         }

@@ -202,6 +202,17 @@
                                 </div>
                             </div>
                             <div class="entity-meta-field">
+                                <div class="entity-meta-label-multi">Related Work</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="work in mission.value.relatedWork track by $index">
+                                        <span ng-if="work.type">
+                                          {{ work.type }} | 
+                                        </span>
+                                        <a href="{{ work.doi }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi">
                                     Site Location
                                 </div>

@@ -107,7 +107,14 @@
   <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
     <td ng-if="$first">Related Work</td>
     <td ng-if="!$first"></td>
-    <td id="test-prj-related"><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
+    <td id="test-prj-related">
+      <strong>
+        <span ng-if="work.type">
+          {{ work.type }} | 
+        </span>
+        <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a>
+      </strong>
+    </td>
   </tr>
   <!-- end Related Work -->
 

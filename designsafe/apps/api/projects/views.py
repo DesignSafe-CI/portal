@@ -638,7 +638,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
     def put(self, request, uuid):
         """
         Update Project Related Metadata
-        This should create a new entity related to a project
+        This should update an existing entity related to a project
 
         :param request:
         :return:

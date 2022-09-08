@@ -232,13 +232,21 @@
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">
-                                    Date(s) of Mission
+                                    Date of Mission
                                 </div>
                                 <div class="entity-meta-data">
                                     <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
                                     <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.value.dateStart">
                                         &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="work in mission.value.relatedWork track by $index">
+                                        <a href="{{ work.doi }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="entity-meta-field">

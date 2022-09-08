@@ -2769,6 +2769,9 @@ input[type="search"] {
 .project-form-name {
   width: 49% !important;
 }
+.project-form-name {
+  width:80%;
+}
 .manage-prj-header {
   background: #e6e6e6;
 }
@@ -2788,6 +2791,15 @@ input[type="search"] {
 }
 .manage-prj-td {
   padding-right:10px;
+  vertical-align: middle;
+  display: table-cell;
+}
+.manage-prj-td-last {
+  vertical-align: middle;
+  display: table-cell;
+}
+.manage-prj-td.align-top {
+  vertical-align: top !important;
 }
 .manage-prj-alert {
   border: solid;

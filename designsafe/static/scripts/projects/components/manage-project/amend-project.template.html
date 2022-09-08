@@ -94,7 +94,8 @@
                 <table class="manage-prj-table">
                     <colgroup>
                         <col style="width: 60%">
-                        <col style="width: 40%">
+                        <col style="width: 38%">
+                        <col style="width: 2%">
                     </colgroup>
                     <tr>
                         <label for="id-project-awards">
@@ -127,7 +128,7 @@
                                     ng-required="$ctrl.ui.require.awardNumber"
                                     required>
                         </td>
-                        <td>
+                        <td class="manage-prj-td">
                             <input  class="project-form-input"
                                     type="text"
                                     id="award-number{{$index}}"
@@ -136,6 +137,13 @@
                                     ng-disabled="!$ctrl.ui.require.awardNumber"
                                     ng-required="$ctrl.ui.require.awardNumber"
                                     required>
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-disabled="!$ctrl.ui.require.awardNumber"
+                                    ng-click="$ctrl.dropUserField('awardNumber', $index)">
+                                <i class="fa fa-times"></i>
+                            </button>
                         </td>
                     </tr>
                 </table>
@@ -158,7 +166,8 @@
                     <colgroup>
                         <col style="width: 20%">
                         <col style="width: 40%">
-                        <col style="width: 40%">
+                        <col style="width: 38%">
+                        <col style="width: 2%">
                     </colgroup>
                     <tr>
                         <label for="id-project-works">
@@ -184,7 +193,7 @@
                         </td>
                     </tr>
                     <tr ng-repeat="work in $ctrl.form.associatedProjects track by $index">
-                        <td class="manage-prj-td">
+                        <td class="manage-prj-td align-top">
                             <select class="project-form-input"
                                     id="work-type{{$index}}"
                                     name="related-work"
@@ -195,7 +204,7 @@
                                     <option value="">-- Type --</option>
                             </select>
                         </td>
-                        <td class="manage-prj-td">
+                        <td class="manage-prj-td align-top">
                             <input  class="project-form-input"
                                     type="text"
                                     id="work-title{{$index}}"
@@ -204,7 +213,7 @@
                                     ng-disabled="!$ctrl.ui.require.associatedProjects"
                                     ng-required="$ctrl.ui.require.associatedProjects">
                         </td>
-                        <td class="manage-prj-td">
+                        <td class="manage-prj-td align-top">
                             <input  class="project-form-input"
                                     type="text"
                                     id="work-href{{$index}}"
@@ -228,6 +237,13 @@
                                     ng-disabled="!$ctrl.ui.require.associatedProjects"
                                     ng-required="$ctrl.ui.require.associatedProjects">
                             <label for="URL">URL</label>
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-click="$ctrl.dropUserField('associatedProjects', $index)">
+                                <i class="fa fa-times"></i>
+                            </button>
                         </td>
                     </tr>
                 </table>

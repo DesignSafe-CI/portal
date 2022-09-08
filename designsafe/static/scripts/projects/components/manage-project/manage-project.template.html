@@ -233,12 +233,12 @@
                     </div>
                 </div>
             </div>
-            <!-- Add PI and PRJ Members -->
+            <!-- PI and Co-PI -->
             <div class="form-group">
                 <table class="manage-prj-table">
                     <colgroup>
-                        <col style="width: 48%">
-                        <col style="width: 50%">
+                        <col style="width: 60%">
+                        <col style="width: 40%">
                     </colgroup>
                     <tr>
                         <label for="id-project-pis">
@@ -252,92 +252,124 @@
                                 </span>
                             </div>
                         </label>
-                    </tr> 
+                    </tr>
                     <tr>
-                        <div style="margin-bottom: 20px;">
-                                <input  class="project-form-input project-form-name"
-                                        type="text"
-                                        id="id_pi"
-                                        name="pi"
-                                        ng-model="$ctrl.form.pi"
-                                        placeholder="Lookup user by name or email address"
-                                        uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
-                                        typeahead-loading="searching"
-                                        typeahead-no-results="noResults"
-                                        typeahead-input-formatter="$ctrl.formatSelection($ctrl.form.pi)"
-                                        typeahead-template-url="itemTmpl.html"
-                                        ng-required="true"
-                                >
-                                <span ng-repeat="(i, coPi) in $ctrl.form.coPis track by $index">
-                                    <input  class="project-form-input project-form-name"
-                                            type="text"
-                                            id="copi{{$index}}"
-                                            name="copi"
-                                            ng-model="$ctrl.form.coPis[i]"
-                                            ng-style="{'float': $even ? 'right' : 'none'}"
-                                            placeholder="Lookup user by name or email address"
-                                            uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
-                                            typeahead-loading="searching"
-                                            typeahead-input-formatter="$ctrl.formatSelection(coPi)"
-                                            typeahead-template-url="itemTmpl.html"
-                                            ng-disabled="!$ctrl.ui.require.coPis"
-                                            ng-required="$ctrl.ui.require.coPis"
-                                            required
-                                    >
-                                </span>
+                        <td class="manage-prj-td">
+                            <input  class="project-form-input"
+                                    type="text"
+                                    id="id_pi"
+                                    name="pi"
+                                    ng-model="$ctrl.form.pi"
+                                    placeholder="Lookup user by name or email address"
+                                    uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
+                                    typeahead-loading="searching"
+                                    typeahead-no-results="noResults"
+                                    typeahead-input-formatter="$ctrl.formatSelection($ctrl.form.pi)"
+                                    typeahead-template-url="itemTmpl.html"
+                                    ng-required="true"
+                            >
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="(i, coPi) in $ctrl.form.coPis track by $index">
+                        <td class="manage-prj-td">
+                            <!-- ng-style="{'float': $even ? 'right' : 'none'}" -->
+                            <input  class="project-form-input"
+                                    type="text"
+                                    id="copi{{$index}}"
+                                    name="copi"
+                                    placeholder="Lookup user by name or email address"
+                                    uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
+                                    typeahead-loading="searching"
+                                    typeahead-input-formatter="$ctrl.formatSelection(coPi)"
+                                    typeahead-template-url="itemTmpl.html"
+                                    ng-model="$ctrl.form.coPis[i]"
+                                    ng-disabled="!$ctrl.ui.require.coPis"
+                                    ng-required="$ctrl.ui.require.coPis"
+                                    required
+                            >
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-disabled="!$ctrl.ui.require.coPis"
+                                    ng-click="$ctrl.dropUserField('coPis', $index)">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addUserField('coPis')">
+                            &#x2b; Add another PI
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropUserField('coPis')"
+                            ng-disabled="!$ctrl.ui.require.coPis">
+                            &#x2212; Remove PI
+                    </button>
+                </div>
+            </div>
+            <!-- Project Members -->
+            <div class="form-group">
+                <table class="manage-prj-table">
+                    <colgroup>
+                        <col style="width: 60%">
+                        <col style="width: 40%">
+                    </colgroup>
+                    <tr>
+                        <label for="id-project-pis">
+                            <div class="label-form">
                                 <div>
-                                    <button class="btn-project-add-rm"
-                                            ng-click="$ctrl.addUserField('coPis')">
-                                            &#x2b; Add another PI
-                                    </button>
-                                    |
-                                    <button class="btn-project-add-rm"
-                                            ng-click="$ctrl.dropUserField('coPis')"
-                                            ng-disabled="!$ctrl.ui.require.coPis">
-                                            &#x2212; Remove PI
-                                    </button>
+                                    <span class="label-form-name">Project Members</span>
                                 </div>
-                        </div>
+                                <span class="label-form-desc">
+                                    These users can view, edit, curate, and publish.
+                                </span>
+                            </div>
+                        </label>
                     </tr>
-                    <tr valign="top">
-                        <div style="margin-bottom: 5px;">
-                            <strong>Project Members</strong>
-                            <div>These users can view, edit, curate, and publish.</div>
-                        </div>
-                    </tr>
-                    <tr>
-                        <span ng-repeat="(i, member) in $ctrl.form.teamMembers track by $index">
-                            <input  class="project-form-input project-form-name"
+                    <tr ng-repeat="(i, member) in $ctrl.form.teamMembers track by $index">
+                        <td class="manage-prj-td">
+                            <input  class="project-form-input"
                                     type="text"
                                     id="member{{$index}}"
                                     name="member"
-                                    ng-style="{'float': $odd ? 'right' : 'none'}"
-                                    ng-model="$ctrl.form.teamMembers[i]"
                                     placeholder="Lookup user by name or email address"
                                     uib-typeahead="user for user in $ctrl.searchUsers($viewValue)"
                                     typeahead-loading="searching"
                                     typeahead-input-formatter="$ctrl.formatSelection(member)"
                                     typeahead-template-url="itemTmpl.html"
+                                    ng-model="$ctrl.form.teamMembers[i]"
                                     ng-disabled="!$ctrl.ui.require.teamMembers"
                                     ng-required="$ctrl.ui.require.teamMembers"
                                     required
                             >
-                        </span>
-                        <div>
-                            <button class="btn-project-add-rm"
-                                    ng-click="$ctrl.addUserField('teamMembers')">
-                                    &#x2b; Add <span ng-if="$ctrl.ui.require.teamMembers">another</span>
-                                    Project Member
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-disabled="!$ctrl.ui.require.teamMembers"
+                                    ng-click="$ctrl.dropUserField('teamMembers', $index)">
+                                <i class="fa fa-times"></i>
                             </button>
-                            |
-                            <button class="btn-project-add-rm"
-                                    ng-click="$ctrl.dropUserField('teamMembers')"
-                                    ng-disabled="!$ctrl.ui.require.teamMembers">
-                                    &#x2212; Remove Project Member
-                            </button>
-                        </div>
+                        </td>
                     </tr>
                 </table>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addUserField('teamMembers')">
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.teamMembers">another</span>
+                            Project Member
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropUserField('teamMembers')"
+                            ng-disabled="!$ctrl.ui.require.teamMembers">
+                            &#x2212; Remove Project Member
+                    </button>
+                </div>
             </div>
             <div class="expAuthorsAssign form-group" ng-if="$ctrl.project && $ctrl.ui.hasType">
                 <label for="id-project-guest">
@@ -354,7 +386,8 @@
                 <table class="manage-prj-table">
                     <colgroup>
                         <col span="3" style="width: 20%">
-                        <col style="width: 40%">
+                        <col style="width: 38%">
+                        <col style="width: 2%">
                     </colgroup>
                     <tr>
                         <td>First Name</td>
@@ -396,7 +429,7 @@
                                     ng-required="$ctrl.ui.require.guestMembers"
                                     required>
                         </td>
-                        <td>
+                        <td class="manage-prj-td">
                             <input class="project-form-input"
                                     type="text"
                                     id="guest-inst{{$index}}"
@@ -406,6 +439,13 @@
                                     ng-disabled="!$ctrl.ui.require.guestMembers"
                                     ng-required="$ctrl.ui.require.guestMembers"
                                     required>
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-disabled="!$ctrl.ui.require.guestMembers"
+                                    ng-click="$ctrl.dropObjField('guestMembers', $index)">
+                                <i class="fa fa-times"></i>
+                            </button>
                         </td>
                     </tr>
                 </table>
@@ -455,7 +495,8 @@
                     <table class="manage-prj-table">
                         <colgroup>
                             <col style="width: 60%">
-                            <col style="width: 40%">
+                            <col style="width: 38%">
+                            <col style="width: 2%">
                         </colgroup>
                         <tr>
                             <label for="id-project-awards">
@@ -488,7 +529,7 @@
                                         ng-required="$ctrl.ui.require.awardNumber"
                                         required>
                             </td>
-                            <td>
+                            <td class="manage-prj-td">
                                 <input  class="project-form-input"
                                         type="text"
                                         id="award-number{{$index}}"
@@ -497,6 +538,13 @@
                                         ng-disabled="!$ctrl.ui.require.awardNumber"
                                         ng-required="$ctrl.ui.require.awardNumber"
                                         required>
+                            </td>
+                            <td class="manage-prj-td-last">
+                                <button class="btn btn-danger btn-xs"
+                                        ng-disabled="!$ctrl.ui.require.awardNumber"
+                                        ng-click="$ctrl.dropObjField('awardNumber', $index)">
+                                    <i class="fa fa-times"></i>
+                                </button>
                             </td>
                         </tr>
                     </table>
@@ -519,7 +567,8 @@
                         <colgroup>
                             <col style="width: 20%">
                             <col style="width: 40%">
-                            <col style="width: 40%">
+                            <col style="width: 38%">
+                            <col style="width: 2%">
                         </colgroup>
                         <tr>
                             <label for="id-project-works">
@@ -545,7 +594,7 @@
                             </td>
                         </tr>
                         <tr ng-repeat="work in $ctrl.form.associatedProjects track by $index">
-                            <td class="manage-prj-td">
+                            <td class="manage-prj-td align-top">
                                 <select class="project-form-input"
                                         id="work-type{{$index}}"
                                         name="related-work"
@@ -556,7 +605,7 @@
                                         <option value="">-- Type --</option>
                                 </select>
                             </td>
-                            <td class="manage-prj-td">
+                            <td class="manage-prj-td align-top">
                                 <input  class="project-form-input"
                                         type="text"
                                         id="work-title{{$index}}"
@@ -565,7 +614,7 @@
                                         ng-disabled="!$ctrl.ui.require.associatedProjects"
                                         ng-required="$ctrl.ui.require.associatedProjects">
                             </td>
-                            <td class="manage-prj-td">
+                            <td class="manage-prj-td align-top">
                                 <input  class="project-form-input"
                                         type="text"
                                         id="work-href{{$index}}"
@@ -589,6 +638,13 @@
                                         ng-disabled="!$ctrl.ui.require.associatedProjects"
                                         ng-required="$ctrl.ui.require.associatedProjects">
                                 <label for="URL">URL</label>
+                            </td>
+                            <td class="manage-prj-td-last">
+                                <button class="btn btn-danger btn-xs"
+                                        ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                        ng-click="$ctrl.dropObjField('associatedProjects', $index)">
+                                    <i class="fa fa-times"></i>
+                                </button>
                             </td>
                         </tr>
                     </table>

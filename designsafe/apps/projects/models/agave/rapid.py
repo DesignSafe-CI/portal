@@ -64,6 +64,7 @@ class Mission(RelatedEntity):
     event = fields.CharField('Event', max_length=1024, default='')
     date_start = fields.CharField('Date Start', max_length=1024, default='')
     date_end = fields.CharField('Date End', max_length=1024, default='')
+    related_work = fields.ListField('Related Work')
     location = fields.CharField('Site Location', max_length=1024)
     latitude = fields.CharField('Location Latitude', max_length=1024)
     longitude = fields.CharField('Location Longitude', max_length=1024)

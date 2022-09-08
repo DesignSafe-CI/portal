@@ -7,9 +7,6 @@
     </h4>
 </div>
 <div class="modal-body">
-    <div class="error" data-ng-if="$ctrl.data.error">
-        {{$ctrl.data.error}}
-    </div>
     <div class="well">
         <form name="addForm">
             <div class="expTitle form-group">
@@ -69,6 +66,77 @@
                             type="date"
                             ng-model="$ctrl.form.dateEnd"
                             ng-required="false">
+                </div>
+            </div>
+            <!-- Related Work -->
+            <div class="form-group">
+                <table class="manage-prj-table">
+                    <colgroup>
+                        <col style="width: 60%">
+                        <col style="width: 38%">
+                        <col style="width: 2%">
+                    </colgroup>
+                    <tr>
+                        <label for="related-work">
+                            <div class="label-form">
+                                <div>
+                                    <span class="label-form-name">Related Work</span>
+                                </div>
+                                <span class="label-form-desc">
+                                    Works that cite the DOI for this Dataset
+                                </span>
+                            </div>
+                        </label>
+                    </tr>
+                    <tr>
+                        <td>
+                            Title
+                        </td>
+                        <td>
+                            DOI
+                        </td>
+                    </tr>
+                    <tr ng-repeat="work in $ctrl.form.relatedWork track by $index">
+                        <td class="manage-prj-td">
+                            <input  class="project-form-input"
+                                    type="text"
+                                    id="work-title{{$index}}"
+                                    name="work-title"
+                                    ng-model="work.title"
+                                    ng-disabled="!$ctrl.ui.require.relatedWork"
+                                    ng-required="$ctrl.ui.require.relatedWork"
+                                    required>
+                        </td>
+                        <td class="manage-prj-td">
+                            <input  class="project-form-input"
+                                    type="text"
+                                    id="work-doi{{$index}}"
+                                    name="work-doi"
+                                    ng-model="work.doi"
+                                    ng-disabled="!$ctrl.ui.require.relatedWork"
+                                    ng-required="$ctrl.ui.require.relatedWork"
+                                    required>
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-disabled="!$ctrl.ui.require.relatedWork"
+                                    ng-click="$ctrl.dropObjField('relatedWork', $index)">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addObjField('relatedWork')">
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.relatedWork">another</span> Related Work
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropObjField('relatedWork')"
+                            ng-disabled="!$ctrl.ui.require.relatedWork">
+                            &#x2212; Remove Related Work
+                    </button>
                 </div>
             </div>
             <div class="expAuthors form-group">
@@ -159,11 +227,23 @@
                     &nbsp;
                 </textarea>
             </div>
+        <!-- Notifications -->
+        <div class="alert alert-danger flex-container" ng-if="$ctrl.ui.error">
+            <i class="fa fa-exclamation notification-icon"></i>
+            <div>
+                An error has occurred when attempting to save.
+            </div>
+        </div>
         <!-- Update Exp Btn -->
             <div class="text-right">
+                <button class="btn btn-default"
+                        data-ng-if="$ctrl.ui.editing"
+                        ng-click="$ctrl.resetForm()">
+                    Cancel
+                </button>
                 <button class="btn btn-add"
                         type="submit"
-                        data-ng-if="$ctrl.data.editMission"
+                        data-ng-if="$ctrl.ui.editing"
                         data-ng-click="addForm.$valid && $ctrl.updateMission($event)"
                 >
                     Update
@@ -171,8 +251,8 @@
             </div>
             <div class="text-right">
             <button class="btn btn-add"
-                    data-ng-click="addForm.$valid && $ctrl.saveMission($event)"
-                    data-ng-if="!$ctrl.data.editMission"
+                    data-ng-click="addForm.$valid && $ctrl.createMission($event)"
+                    data-ng-if="!$ctrl.ui.editing"
                     type="submit"
             >
                 <i class="fa fa-plus">&nbsp;</i>
@@ -186,7 +266,7 @@
             <label>Mission Inventory</label>
         </div>
         <div class="dropdown">
-            <div data-ng-repeat="mission in $ctrl.data.missions">
+            <div data-ng-repeat="mission in $ctrl.missions">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-gray" data-toggle="collapse"
                             data-target="#files-{{mission.uuid}}" style="width: 100%;">
@@ -230,6 +310,14 @@
                                     <span ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.value.dateStart">
                                         &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="work in mission.value.relatedWork track by $index">
+                                        <a href="{{ work.doi }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="entity-meta-field">
