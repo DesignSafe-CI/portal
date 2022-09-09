@@ -450,9 +450,9 @@ function config(
                 }]
             }
         })
-        .state('projects.versionFieldReconCitation', {
+        .state('projects.versionCitation', {
             url: '/projects/{projectId}/curation/citation',
-            component: 'versionFieldReconCitation',
+            component: 'versionCitation',
             params: {
                 project: null,
                 publication: null,

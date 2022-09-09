@@ -24,15 +24,30 @@
             <!-- Order Authors -->
             <div class="well">
                 <div class="prj-head-title" style="padding-bottom:20px">
-                    {{$ctrl.ui.placeholder}} | <strong>{{ primEnt.value.title }}</strong>
+                    <div ng-if="primEnt.name.includes('field_recon')" ng-init = "fr_placeholder = primEnt.name.endsWith('report') ? 'Document' : $ctrl.ui.placeholder">
+                        {{fr_placeholder}} | <strong>{{ primEnt.value.title }}</strong>
+                    </div>
+                    <div ng-if="!primEnt.name.includes('field_recon')">
+                        {{$ctrl.ui.placeholder}} | <strong>{{ primEnt.value.title }}</strong>
+                    </div>
                 </div>
                 <!-- Success Alert -->
                 <div class="alert alert-success text-center" ng-if="$ctrl.ui.savedStatus[primEnt.uuid]">
                     <h4>Success</h4>
-                    The author order for this {{$ctrl.ui.placeholder}} has been saved.
+                    <div ng-if="primEnt.name.includes('field_recon')" ng-init = "fr_placeholder = primEnt.name.endsWith('report') ? 'Document' : $ctrl.ui.placeholder">
+                        The author order for this {{fr_placeholder}} has been saved.
+                    </div>
+                    <div ng-if="!primEnt.name.includes('field_recon')">
+                        The author order for this {{$ctrl.ui.placeholder}} has been saved.
+                    </div>
                 </div>
                 <div ng-hide="$ctrl.validAuths">
-                    Your authors need to be updated. Edit your {{$ctrl.ui.placeholder}} and select which users are authors for the {{$ctrl.ui.placeholder}}.
+                    <div ng-if="primEnt.name.includes('field_recon')" ng-init = "fr_placeholder = primEnt.name.endsWith('report') ? 'Document' : $ctrl.ui.placeholder">
+                        Your authors need to be updated. Edit your {{fr_placeholder}} and select which users are authors for the {{fr_placeholder}}.
+                    </div>
+                    <div ng-if="!primEnt.name.includes('field_recon')">
+                        Your authors need to be updated. Edit your {{$ctrl.ui.placeholder}} and select which users are authors for the {{$ctrl.ui.placeholder}}.
+                    </div>
                 </div>
                 <div ng-show="$ctrl.ui.loading">
                     <h3 class="text-center">

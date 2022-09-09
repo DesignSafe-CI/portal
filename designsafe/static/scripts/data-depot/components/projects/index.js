@@ -17,7 +17,7 @@ import {
     VersionExperimentSelectionComponent,
     VersionExperimentCitationComponent,
     VersionFieldReconSelectionComponent,
-    VersionFieldReconCitationComponent
+    VersionCitationComponent
 } from './pipeline-version/pipeline-version.component';
 import { VersionChangesComponent } from './pipeline-version/pipeline-version-changes.component';
 import { AmendExperimentComponent } from './pipeline-amend/pipeline-amend.component';
@@ -96,7 +96,7 @@ ddProjectsComponents.component('versionOtherCitation', VersionOtherCitationCompo
 ddProjectsComponents.component('versionExperimentSelection', VersionExperimentSelectionComponent);
 ddProjectsComponents.component('versionExperimentCitation', VersionExperimentCitationComponent);
 ddProjectsComponents.component('versionFieldReconSelection', VersionFieldReconSelectionComponent);
-ddProjectsComponents.component('versionFieldReconCitation', VersionFieldReconCitationComponent);
+ddProjectsComponents.component('versionCitation', VersionCitationComponent);
 ddProjectsComponents.component('versionChanges', VersionChangesComponent);
 ddProjectsComponents.component('pipelineSelectExp', PipelineSelectionExpComponent);
 ddProjectsComponents.component('pipelineSelectSim', PipelineSelectionSimComponent);

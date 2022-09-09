@@ -1,7 +1,7 @@
 import VersionExperimentSelectionTemplate from './version-experiment-selection.template.html';
 import VersionExperimentCitationTemplate from './version-experiment-citation.template.html';
 import VersionFieldReconSelectionTemplate from './version-field-recon-selection.template.html';
-import VersionFieldReconCitationTemplate from './version-field-recon-citation.template.html';
+import VersionCitationTemplate from './version-citation.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineVersionCtrl {
@@ -57,14 +57,14 @@ class PipelineVersionCtrl {
                 this.doiList = {}
                 if (prjType === 'experimental') {
                     this.ui.selectionComp = 'projects.versionExperimentSelection'
-                    this.ui.citationComp = 'projects.versionExperimentCitation'
+                    this.ui.citationComp = 'projects.versionCitation'
                     this.ui.placeholder = 'Experiment'
                     this.matchingGroupKey = 'experiments'
                     this.publishedKeyNames = ['experimentsList']
                     this.subEntities = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
                 } else if (prjType === 'field_recon') {
-                    this.ui.selectionComp = 'projects.versionExperimentSelection'
-                    this.ui.citationComp = 'projects.versionExperimentCitation'
+                    this.ui.selectionComp = 'projects.versionFieldReconSelection'
+                    this.ui.citationComp = 'projects.versionCitation'
                     this.ui.placeholder = 'Mission'
                     this.matchingGroupKey = 'missions'
                     this.publishedKeyNames = ['missions', 'reports']
@@ -88,9 +88,9 @@ class PipelineVersionCtrl {
                         }
                     });
                     this.orderedPrimary.forEach((ent) => {
-                        if (ent.value.dois) {
+                        if (ent.value.dois && ent.value.dois.length) {
                             this.doiList[ent.uuid] = {
-                                doi: ent.value.dois[0], // TODO: need to account for entities that do not have DOIs
+                                doi: ent.value.dois[0], 
                                 type: ent.name.split('.').pop(),
                                 hash: `details-${ent.uuid}`
                             }
@@ -117,8 +117,6 @@ class PipelineVersionCtrl {
                     this.goStart();
                 }
                 
-                
-
                 this.FileListingService.abstractListing(entities, project.uuid).then((_) => {
                     // autoselect the published entities from the project
                     if (!this.selectedEnts.length) {
@@ -379,8 +377,8 @@ export const VersionFieldReconSelectionComponent = {
     },
 };
 
-export const VersionFieldReconCitationComponent = {
-    template: VersionFieldReconCitationTemplate,
+export const VersionCitationComponent = {
+    template: VersionCitationTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {

@@ -94,6 +94,7 @@
             <div ng-if="mission.name == 'designsafe.project.field_recon.report'">
                 <a ng-click="$ctrl.selectEntity(mission)">Select this Report and all of its files</a>
                 <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                
                 <div class="dropdown dropdown-spacer-lg" id="details-{{mission.uuid}}">
                     <button class="btn collapsed tab-gray" data-toggle="collapse"
                             data-target="#files-{{mission.uuid}}" style="width:100%;">
