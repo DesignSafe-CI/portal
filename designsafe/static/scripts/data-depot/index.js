@@ -340,6 +340,23 @@ function config(
                 }]
             }
         })
+        .state('projects.amendFieldRecon', {
+            url: '/projects/{projectId}/curation/amend/fr',
+            component: 'amendFieldRecon',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
         .state('projects.amendCitation', {
             url: '/projects/{projectId}/curation/amend/citation',
             component: 'amendCitation',

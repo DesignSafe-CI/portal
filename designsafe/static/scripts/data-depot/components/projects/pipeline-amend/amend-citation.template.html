@@ -49,16 +49,19 @@
         </div>
     </div>
     <div ng-if="!$ctrl.ui.loading && !$ctrl.ui.submitted">
-        <div ng-repeat="pubEnt in $ctrl.publishedEntities | orderBy: pubEnt.value.title" style="margin-bottom: 40px;">
+        <div ng-repeat="pubEnt in $ctrl.publishedEntities | orderBy: pubEnt.value.title track by $index" style="margin-bottom: 40px;">
             <!-- Order Authors -->
             <div class="well">
                 <div class="prj-head-title" style="padding-bottom:20px">
-                    {{$ctrl.ui.placeholder}} | <strong>{{ pubEnt.value.title }}</strong>
+                    {{pubEnt.name.endsWith('report') ? 'Document' : $ctrl.ui.placeholder}} | <strong>{{ pubEnt.value.title }}</strong>
                 </div>
+                <!-- <div ng-if="pubEnd.name.endsWith('report')" class="prj-head-title" style="padding-bottom:20px">
+                    Document | <strong>{{ pubEnt.value.title }}</strong>
+                </div> -->
                 <!-- Success Alert -->
                 <div class="alert alert-success text-center" ng-if="$ctrl.ui.savedStatus[pubEnt.uuid]">
                     <h4>Success</h4>
-                    The author order for this {{$ctrl.ui.placeholder}} has been saved.
+                    The author order for this {{pubEnt.name.endsWith('report') ? 'Document' : $ctrl.ui.placeholder}} has been saved.
                 </div>
                 <div ng-show="$ctrl.ui.loading">
                     <h3 class="text-center">
