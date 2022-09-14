@@ -1,5 +1,4 @@
 import VersionExperimentSelectionTemplate from './version-experiment-selection.template.html';
-import VersionExperimentCitationTemplate from './version-experiment-citation.template.html';
 import VersionFieldReconSelectionTemplate from './version-field-recon-selection.template.html';
 import VersionCitationTemplate from './version-citation.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
@@ -346,17 +345,6 @@ class PipelineVersionCtrl {
 
 export const VersionExperimentSelectionComponent = {
     template: VersionExperimentSelectionTemplate,
-    controller: PipelineVersionCtrl,
-    controllerAs: '$ctrl',
-    bindings: {
-        resolve: '<',
-        close: '&',
-        dismiss: '&'
-    },
-};
-
-export const VersionExperimentCitationComponent = {
-    template: VersionExperimentCitationTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {

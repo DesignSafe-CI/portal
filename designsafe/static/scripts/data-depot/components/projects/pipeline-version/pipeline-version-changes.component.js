@@ -75,7 +75,7 @@ class PipelineVersionChangesCtrl {
                 if (this.prjType === 'experimental') {
                     entityListName = 'experimentsList';
                     this.ui.selectionComp = 'projects.versionExperimentSelection'
-                    this.ui.citationComp = 'projects.versionExperimentCitation'
+                    this.ui.citationComp = 'projects.versionCitation'
                 }
                 this.pubData[entityListName] = [];
                 this.selectedEnts.forEach((entity) => {

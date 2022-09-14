@@ -15,7 +15,6 @@ import {
 } from './pipeline-version/pipeline-version-other.component';
 import {
     VersionExperimentSelectionComponent,
-    VersionExperimentCitationComponent,
     VersionFieldReconSelectionComponent,
     VersionCitationComponent
 } from './pipeline-version/pipeline-version.component';
@@ -94,7 +93,6 @@ ddProjectsComponents.component('amendCitation', AmendCitationComponent);
 ddProjectsComponents.component('versionOtherSelection', VersionOtherSelectionComponent);
 ddProjectsComponents.component('versionOtherCitation', VersionOtherCitationComponent);
 ddProjectsComponents.component('versionExperimentSelection', VersionExperimentSelectionComponent);
-ddProjectsComponents.component('versionExperimentCitation', VersionExperimentCitationComponent);
 ddProjectsComponents.component('versionFieldReconSelection', VersionFieldReconSelectionComponent);
 ddProjectsComponents.component('versionCitation', VersionCitationComponent);
 ddProjectsComponents.component('versionChanges', VersionChangesComponent);
