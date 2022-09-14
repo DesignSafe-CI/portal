@@ -28,7 +28,7 @@ class MATLABLicenseView(SecureMixin, BaseApiView):
                 licenses = MATLABLicense.objects.filter(user=user)
 
         matlab_license = licenses[0].license_as_str() if len(licenses) > 0 else '' 
-        return JsonResponse({'license': str(active_licenses)}, encoder=AgaveJSONEncoder)
+        return JsonResponse({'license': matlab_license}, encoder=AgaveJSONEncoder)
 
 class LSDYNALicenseView(SecureMixin, BaseApiView):
     @profile_fn
