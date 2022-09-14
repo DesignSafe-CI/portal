@@ -130,20 +130,12 @@ class PipelineAmendCitationCtrl {
                 return;
             }
             // move up
-            console.log(this.selectedAuthor);
-            console.log(this.authors);
-            console.log("up");
-            console.log(this.authors[entity.uuid]);
             a = this.authors[entity.uuid].find(x => x.order === this.selectedAuthor.order - 1);
             b = this.authors[entity.uuid].find(x => x.order === this.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
         } else {
-            console.log(this.selectedAuthor);
-            console.log(this.authors);
-            console.log("down");
-            console.log(this.authors[entity.uuid]);
             if (this.selectedAuthor.order >= this.authors[entity.uuid].length - 1) {
                 return;
             }

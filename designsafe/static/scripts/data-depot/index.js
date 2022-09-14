@@ -20,7 +20,7 @@ angular.module('designsafe.portal').requires.push('ds-data');
 /**
  * @function
  * @param {Object} $httpProvider
- * @param {Object} $locationProvider 
+ * @param {Object} $locationProvider
  * @param {Object} $stateProvider
  * @param {Object} $urlRouterProvider
  * @param {Object} Django
@@ -80,7 +80,6 @@ function config(
                         type: 'authn',
                         context: Django.context,
                     });
-                
                 },
             },
         })
@@ -106,7 +105,6 @@ function config(
                         type: 'authn',
                         context: Django.context,
                     });
-                
                 },
             },
         })
