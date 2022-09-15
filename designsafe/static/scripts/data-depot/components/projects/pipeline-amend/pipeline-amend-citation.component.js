@@ -146,7 +146,6 @@ class PipelineAmendCitationCtrl {
             b.order = a.order - b.order;
             a.order = a.order - b.order;
         }
-        console.log(this.authors);
     }
 
     goAmend() {

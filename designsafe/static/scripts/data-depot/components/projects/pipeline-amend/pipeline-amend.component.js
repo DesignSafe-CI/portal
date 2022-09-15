@@ -213,8 +213,6 @@ class PipelineAmendCtrl {
     amendPrimaryEntity(amendedEnt) {
         let prjEntity = this.project.getAllRelatedObjects()
             .find(ent => ent.uuid == amendedEnt.uuid);
-        console.log(prjEntity);
-        console.log(this.ui.primaryModalName);
         this.$uibModal.open({
             component: this.ui.primaryModalName,
             resolve: {
