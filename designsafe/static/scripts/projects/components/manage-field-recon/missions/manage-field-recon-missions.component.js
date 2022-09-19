@@ -3,9 +3,8 @@ import ManageFieldReconMissionsTemplate from './manage-field-recon-missions.comp
 import MissionDefaults from './mission-form-defaults.json'
 
 class ManageFieldReconMissionsCtrl {
-    constructor($q, $http, $uibModal, UserService, ProjectEntitiesService) {
+    constructor($q, $http, $uibModal, UserService) {
         'ngInject';
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.UserService = UserService;
         this.$http = $http;
         this.$q = $q;
@@ -20,8 +19,10 @@ class ManageFieldReconMissionsCtrl {
         this.ui = {
             loading: false,
             editing: false,
+            relatedWorkTypes: ["Context", "Linked Project"],
             require: {
-                relatedWork: false
+                relatedWork: false,
+                referencedData: false,
             }
         };
         this.configureForm(this.edit);
@@ -74,6 +75,7 @@ class ManageFieldReconMissionsCtrl {
             }
         }
         this.ui.require.relatedWork = this.requireField(form.relatedWork);
+        this.ui.require.referencedData = this.requireField(form.referencedData);
         this.form = structuredClone(form);
     }
 
@@ -121,9 +123,6 @@ class ManageFieldReconMissionsCtrl {
             let currentAuthors = mission.value.authors.filter((author) => { return projectUsers.includes(author.name) });
             let newAuthors = projectMembers.filter((author) => { return !missionUsers.includes(author.name) });
 
-            console.log(currentAuthors);
-            console.log(newAuthors);
-
             //combine and return unique
             let authors = currentAuthors.concat(newAuthors);
             authors.forEach((author, i) => { author.order = i });
@@ -154,9 +153,6 @@ class ManageFieldReconMissionsCtrl {
         if (isNaN(Date.parse(this.form.dateEnd))) {
             this.form.dateEnd = new Date(this.form.dateStart);
         }
-        this.form.relatedWork = this.form.relatedWork.filter((work) => {
-            return work.title && work.doi;
-        });
     }
 
     createMission() {

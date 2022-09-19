@@ -133,53 +133,38 @@
     </tr>
     <!-- end Date of Publication -->
 
-    <!-- DOI Listings -->
-    <!-- non-other doi listing -->
-    <tr ng-if="$ctrl.project.value.projectType !== 'other'" ng-repeat="(uuid, citation) in $ctrl.doiList">
-        <td ng-if="$first">DOI(s) in Project</td>
-        <td ng-if="!$first"></td>
-        <td>
-            <strong>
-                <a
-                    ng-click="$ctrl.goToHash(citation.hash)"
-                    data-toggle="collapse"
-                    data-target="{{ citation.type === 'mission' ? '#data-' : '#files-' }}{{uuid}}"
-                >
-                    {{ citation.doi }}
-                </a>
-            </strong>
-        </td>
-    </tr>
-    <!-- other project type doi listing -->
-    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.publication.project.value.dois.length && $ctrl.project.value.projectType === 'other'">
-        <td>
-            <span>DOI</span>
-            <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
-                Citation
-            </button>
-        </td>
-        <td>
-            <strong>{{ $ctrl.publication.project.value.dois[0] }}</strong>
-        </td>
-    </tr>
-    <!-- end DOI Listings -->
-
     <!-- Awards -->
-    <!-- preview version-->
+    <!-- for preview -->
     <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index"
         ng-if="!$ctrl.readOnly">
         <td ng-if="$first">Awards</td>
         <td ng-if="!$first"></td>
-        <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+        <td><strong>{{ award.name }} | {{ award.number }}</strong></td>
     </tr>
-    <!-- publication version -->
+    <!-- for publication -->
     <tr ng-repeat="award in $ctrl.project.value.awardNumbers | orderBy:'order' track by $index"
         ng-if="$ctrl.readOnly">
         <td ng-if="$first">Awards</td>
         <td ng-if="!$first"></td>
-        <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+        <td><strong>{{ award.name }} | {{ award.number }}</strong></td>
     </tr>
     <!-- end Awards-->
+
+    <!-- Referenced Data -->
+    <tr ng-if="$ctrl.project.value.referencedData.length"
+        ng-repeat="ref in $ctrl.project.value.referencedData track by $index">
+        <td ng-if="$first">Referenced Data</td>
+        <td ng-if="!$first"></td>
+        <td id="test-prj-related">
+        <strong>
+            <span ng-if="ref.title">
+            {{ ref.title }} | 
+            </span>
+            <a href="{{ ref.doi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.doi }}</a>
+        </strong>
+        </td>
+    </tr>
+    <!-- end Referenced Data -->
 
     <!-- Related Work -->
     <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
@@ -205,6 +190,61 @@
         </td>
     </tr>
     <!-- end Hazmapper links -->
+
+    <!-- DOI listing -->
+    <tr ng-if="$ctrl.project.value.projectType !== 'other'" ng-repeat="(uuid, citation) in $ctrl.doiList">
+        <td ng-if="$first">DOIs in Project</td>
+        <td ng-if="!$first"></td>
+        <td>
+            <strong>
+                <a ng-if="$ctrl.project.value.projectType === 'field_recon'"
+                   ng-click="$ctrl.goToHash(citation.hash)"
+                   data-toggle="collapse"
+                   data-target="{{ citation.type === 'mission' ? '#data-' : '#files-' }}{{uuid}}"
+                >
+                    {{ citation.doi }}
+                </a>
+                <a ng-if="$ctrl.project.value.projectType != 'field_recon'"
+                   ng-click="$ctrl.goToHash(citation.hash)"
+                   data-toggle="collapse"
+                   data-target="#data-{{uuid}}"
+                >
+                    {{ citation.doi }}
+                </a>
+            </strong>
+        </td>
+    </tr>
+    <!-- end DOI listing -->
+
+    <!-- Citation Details (other only)-->
+    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.project.value.projectType === 'other'"> <!-- hide this for anything not OTHER -->
+        <td>
+            <span>DOI</span>
+            <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
+                Citation
+            </button>
+        </td>
+        <td>
+            <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
+        </td>
+    </tr>
+    <!-- Citation Details (other only)-->
+
+    <!-- Version Dropdown -->
+    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
+        <td>
+            <span>Version</span>
+        </td>
+        <td>
+            <select class="prj-dropdown"
+                    ng-options="version for version in $ctrl.versions"
+                    ng-change="$ctrl.getVersion()"
+                    ng-model="$ctrl.selectedVersion">
+            </select>
+            &nbsp;<a ng-click="$ctrl.showVersionInfo()" ng-if="$ctrl.selectedVersion != '1'"><strong>Version Changes</strong></a>
+        </td>
+    </tr>
+    <!-- Version Dropdown End -->
 
     <!-- Licenses -->
     <!-- type Other only -->
@@ -255,8 +295,7 @@
 <!-- end Description -->
 
 <!-- Tombstone -->
-<!-- type Other only -->
-<!-- this is in other places on non-other projects -->
+<!-- tombstone banners can be displayed over publishable metadata -->
 <div class="alert alert-warning flex-container"
         ng-if="$ctrl.publication.tombstone.includes($ctrl.project.uuid) && $ctrl.project.projectType === 'other'">
     <i class="fa fa-warning notification-icon"></i>

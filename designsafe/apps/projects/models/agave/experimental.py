@@ -43,6 +43,8 @@ class Experiment(RelatedEntity):
     experiment_type_other = fields.CharField('Experiment Type Other', max_length=255, default='')
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=1024)
+    referenced_data = fields.ListField('Referenced Data')
+    related_work = fields.ListField('Related Work')
     experimental_facility = fields.CharField('Experimental Facility', max_length=1024)
     experimental_facility_other = fields.CharField('Experimental Facility Other', max_length=1024)
     equipment_type = fields.CharField('Equipment Type')

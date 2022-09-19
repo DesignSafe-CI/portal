@@ -26,6 +26,7 @@ class ManageProjectCtrl {
                 guestMembers: true,
                 awardNumber: true,
                 associatedProjects: true,
+                referencedData: true,
                 coPis: false,
                 teamMembers: false,
             },
@@ -92,7 +93,10 @@ class ManageProjectCtrl {
                 if (this.form.projectType in this.FormDefaults) {
                     this.ui.require.guestMembers = this.requireField(this.form.guestMembers);
                     this.ui.require.awardNumber = this.requireField(this.form.awardNumber);
-                    this.ui.require.associatedProjects = this.requireField(this.form.associatedProjects);
+                    if (this.form.projectType === 'other') {
+                        this.ui.require.associatedProjects = this.requireField(this.form.associatedProjects);
+                        this.ui.require.referencedData = this.requireField(this.form.referencedData);
+                    }
                 }
                 this.ui.loading = false;
             });
@@ -211,7 +215,17 @@ class ManageProjectCtrl {
         if (hasPrjType) {
             projectData.guestMembers = this.validInputs(this.form.guestMembers, ['fname', 'lname']);
             projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number']);
-            projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
+            if (this.form.projectType === 'other') {
+                projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
+                projectData.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
+            } else { // BOOKMARK: remove this when finished with testing...
+                if ('associatedProjects' in projectData) {
+                    projectData.associatedProjects = [];
+                }
+                if ('referencedData' in projectData) {
+                    projectData.referencedData = [];
+                }
+            }
             projectData.guestMembers.forEach((guest, i) => {
                 guest.user = "guest" + guest.fname + guest.lname.charAt(0) + i;
             });
@@ -287,15 +301,6 @@ class ManageProjectCtrl {
         }
     }
 
-    /* TODO:
-    ------- Set up the related work stuff to be conditional if a new project or project none is opened.
-    ------- Configure this for "guestMembers" and "awardNumber"
-    ------- Remove "Order" fields
-    ------- Make sure you update the "Amend" Template as well
-    ??????? Update ElasticSearch index with the new field values
-    ------- Add a new field for Related Work stuff to the entities that are publishable
-    - Send the new inputs data to DataCite
-    */
     requireField(field) {
         // Sets the field to disabled or enabled during init
         if (field.length > 1) return true;

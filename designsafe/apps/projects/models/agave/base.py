@@ -87,7 +87,8 @@ class Project(MetadataModel):
     pi = fields.CharField('PI', max_length=255)
     award_number = fields.ListField('Award Number')
     award_numbers = fields.ListField('Award Numbers')
-    associated_projects = fields.ListField('Associated Project')
+    associated_projects = fields.ListField('Associated Project') #AKA Related Work
+    referenced_data = fields.ListField('Referenced Data')
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
     keywords = fields.CharField('Keywords', default='')
     file_tags = fields.ListField('File Tags')

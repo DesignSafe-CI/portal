@@ -292,7 +292,7 @@
                         </td>
                         <td class="manage-prj-td-last">
                             <button class="btn btn-danger btn-xs"
-                                    ng-disabled="!$ctrl.ui.require.coPis"
+                                    ng-if="$ctrl.ui.require.coPis"
                                     ng-click="$ctrl.dropUserField('coPis', $index)">
                                 <i class="fa fa-times"></i>
                             </button>
@@ -350,7 +350,7 @@
                         </td>
                         <td class="manage-prj-td-last">
                             <button class="btn btn-danger btn-xs"
-                                    ng-disabled="!$ctrl.ui.require.teamMembers"
+                                    ng-if="$ctrl.ui.require.teamMembers"
                                     ng-click="$ctrl.dropUserField('teamMembers', $index)">
                                 <i class="fa fa-times"></i>
                             </button>
@@ -442,7 +442,7 @@
                         </td>
                         <td class="manage-prj-td-last">
                             <button class="btn btn-danger btn-xs"
-                                    ng-disabled="!$ctrl.ui.require.guestMembers"
+                                    ng-if="$ctrl.ui.require.guestMembers"
                                     ng-click="$ctrl.dropObjField('guestMembers', $index)">
                                 <i class="fa fa-times"></i>
                             </button>
@@ -541,7 +541,7 @@
                             </td>
                             <td class="manage-prj-td-last">
                                 <button class="btn btn-danger btn-xs"
-                                        ng-disabled="!$ctrl.ui.require.awardNumber"
+                                        ng-if="$ctrl.ui.require.awardNumber"
                                         ng-click="$ctrl.dropObjField('awardNumber', $index)">
                                     <i class="fa fa-times"></i>
                                 </button>
@@ -561,8 +561,79 @@
                         </button>
                     </div>
                 </div>
+                <!-- Project Referenced Data -->
+                <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
+                    <table class="manage-prj-table">
+                        <colgroup>
+                            <col style="width: 60%">
+                            <col style="width: 38%">
+                            <col style="width: 2%">
+                        </colgroup>
+                        <tr>
+                            <label for="id-project-referenced-data">
+                                <div class="label-form">
+                                    <div>
+                                        <span class="label-form-name">Referenced Data</span>
+                                    </div>
+                                    <span class="label-form-desc">
+                                        Citations for data used in this project.
+                                    </span>
+                                </div>
+                            </label>
+                        </tr>
+                        <tr>
+                            <td>
+                                Title
+                            </td>
+                            <td>
+                                DOI
+                            </td>
+                        </tr>
+                        <tr ng-repeat="reference in $ctrl.form.referencedData track by $index">
+                            <td class="manage-prj-td">
+                                <input  class="project-form-input"
+                                        type="text"
+                                        id="reference-name{{$index}}"
+                                        name="reference-name"
+                                        ng-model="reference.title"
+                                        ng-disabled="!$ctrl.ui.require.referencedData"
+                                        ng-required="$ctrl.ui.require.referencedData"
+                                        required>
+                            </td>
+                            <td class="manage-prj-td">
+                                <input  class="project-form-input"
+                                        type="text"
+                                        id="reference-number{{$index}}"
+                                        name="reference-number"
+                                        ng-model="reference.doi"
+                                        ng-disabled="!$ctrl.ui.require.referencedData"
+                                        ng-required="$ctrl.ui.require.referencedData"
+                                        required>
+                            </td>
+                            <td class="manage-prj-td-last">
+                                <button class="btn btn-danger btn-xs"
+                                        ng-if="$ctrl.ui.require.referencedData"
+                                        ng-click="$ctrl.dropObjField('referencedData', $index)">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <div>
+                        <button class="btn-project-add-rm"
+                                ng-click="$ctrl.addObjField('referencedData')">
+                                &#x2b; Add <span ng-if="$ctrl.ui.require.referencedData">another</span> Reference
+                        </button>
+                        |
+                        <button class="btn-project-add-rm"
+                                ng-click="$ctrl.dropObjField('referencedData')"
+                                ng-disabled="!$ctrl.ui.require.referencedData">
+                                &#x2212; Remove Reference
+                        </button>
+                    </div>
+                </div>
                 <!-- Related Works -->
-                <div class="form-group">
+                <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
                     <table class="manage-prj-table">
                         <colgroup>
                             <col style="width: 20%">
@@ -641,7 +712,7 @@
                             </td>
                             <td class="manage-prj-td-last">
                                 <button class="btn btn-danger btn-xs"
-                                        ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                        ng-if="$ctrl.ui.require.associatedProjects"
                                         ng-click="$ctrl.dropObjField('associatedProjects', $index)">
                                     <i class="fa fa-times"></i>
                                 </button>
