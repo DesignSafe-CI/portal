@@ -5,12 +5,7 @@ from django.contrib.auth import get_user_model
 from django.http.response import HttpResponseForbidden, HttpResponseNotFound
 from django.http import JsonResponse
 from django.apps import apps
-from designsafe.apps.licenses.models import MATLABLicense, LSDYNALicense
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 
 class LicenseView(SecureMixin, BaseApiView):
