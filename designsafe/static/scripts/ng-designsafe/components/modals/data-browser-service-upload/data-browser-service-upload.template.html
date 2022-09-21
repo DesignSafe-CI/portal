@@ -11,7 +11,7 @@
     </p>
     <form>
         <div class="form-group">
-            <label for="id-choose-files">Select {{ $ctrl.resolve.directory && $ctrl.directoryUploadSupported ? 'folder' : 'files' }} (for more than 100 MB or 25 files, please use Globus to upload)</label>
+            <label for="id-choose-files">Select {{ $ctrl.resolve.directory && $ctrl.directoryUploadSupported ? 'folder' : 'files' }} (for more than 2GB or 25 files, please use Globus to upload)</label>
             <input type="file" multiple class="form-control" id="id-choose-files" name="choose-files"
                    ng-disabled="state.uploading || state.retry"
                    ng-attr-directory="{{ $ctrl.resolve.directory && 'true' || undefined }}"
