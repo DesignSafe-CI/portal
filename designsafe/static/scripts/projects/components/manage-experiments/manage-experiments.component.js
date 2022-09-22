@@ -1,7 +1,6 @@
-import _ from 'underscore';
 import ManageExperimentsTemplate from './manage-experiments.template.html';
-import experimentalData from './experimental-data.json';
-import ExperimentDefaults from './experiment-form-defaults.json'
+const ExperimentDefaults = require('./experiment-form-defaults.json');
+const ExperimentalData = require('./experimental-data.json');
 
 class ManageExperimentsCtrl {
 
@@ -26,9 +25,9 @@ class ManageExperimentsCtrl {
                 referencedData: false,
             },
             relatedWorkTypes: ["Context", "Linked Project"],
-            experimentalFacilities: experimentalData.experimentalFacility.experimental,
-            equipmentTypes: experimentalData.equipmentTypes,
-            experimentTypes: experimentalData.experimentTypes,
+            experimentalFacilities: ExperimentalData.experimentalFacility.experimental,
+            equipmentTypes: ExperimentalData.equipmentTypes,
+            experimentTypes: ExperimentalData.experimentTypes,
         };
         this.configureForm(this.edit);
         this.form.authors = this.configureAuthors(this.edit, false);
@@ -127,6 +126,27 @@ class ManageExperimentsCtrl {
         return true;
     }
 
+    validInputs(objArray, reqKeys, objValue) {
+        /* 
+        Validate Inputs
+        - check each object provided for defined key values
+        - return the object or a value within the object
+
+        objArray - The array of objects to check
+        reqKeys  - The required keys for those objects
+        objValue - Include if you want to return just the values from the 
+                   object array (ex: returning an array of strings
+                   from valid objects)
+        */
+        return objArray.filter((obj) => {
+            return obj && reqKeys.every((key) => {
+                return typeof obj[key] !== 'undefined' && obj[key] !== '';
+            });
+        }).map((obj) => {
+            return obj[objValue] || obj;
+        });
+    }
+
     addObjField(fieldName) {
         if (this.form[fieldName].length === 1 && !this.ui.require[fieldName]) {
             this.ui.require[fieldName] = true;
@@ -193,9 +213,11 @@ class ManageExperimentsCtrl {
         ]
         fields.forEach((field) => {
             if(this.form[field] != 'other') {
-                this.form[field+'Other'] = ''
+                this.form[field+'Other'] = '';
             }
         })
+        this.form.relatedWork = this.validInputs(this.form.relatedWork, ['title', 'href']);
+        this.form.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
         if (isNaN(Date.parse(this.form.procedureEnd))) {
             this.form.procedureEnd = new Date(this.form.procedureStart);
         }
@@ -245,7 +267,7 @@ class ManageExperimentsCtrl {
         });
     }
 
-    deleteExperiment(entity) {
+    deleteExperiment(experiment) {
         let confirmDelete = (msg) => {
             let modalInstance = this.$uibModal.open({
                 component: 'confirmMessage',
@@ -257,7 +279,7 @@ class ManageExperimentsCtrl {
 
             modalInstance.result.then((res) => {
                 if (res) {
-                    this.$http.delete(`/api/projects/meta/${entity.uuid}`)
+                    this.$http.delete(`/api/projects/meta/${experiment.uuid}`)
                     .then((resp) => {
                         this.project.removeEntity(resp.data);
                         this.experiments = this.project.experiment_set;
@@ -265,7 +287,7 @@ class ManageExperimentsCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + entity.value.title + "?");
+        confirmDelete("Are you sure you want to delete " + experiment.value.title + "?");
     }
 }
 

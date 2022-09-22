@@ -60,6 +60,8 @@ class HybridSimulation(RelatedEntity):
         max_length=1024,
         default=''
     )
+    referenced_data = fields.ListField('Referenced Data')
+    related_work = fields.ListField('Related Work')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(HybridSimulationProject)
     dois = fields.ListField('Dois')

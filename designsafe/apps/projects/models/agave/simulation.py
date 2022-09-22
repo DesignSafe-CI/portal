@@ -43,6 +43,8 @@ class Simulation(RelatedEntity):
     title = fields.CharField('Title', max_length=1024)
     simulation_type = fields.CharField('Simulation Type', max_length=1024)
     simulation_type_other = fields.CharField('Simulation Type Other', max_length=1024)
+    referenced_data = fields.ListField('Referenced Data')
+    related_work = fields.ListField('Related Work')
     description = fields.CharField('Description', max_length=1024, default='')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(SimulationProject)

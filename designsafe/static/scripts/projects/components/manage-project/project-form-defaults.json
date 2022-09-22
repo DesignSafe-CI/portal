@@ -3,6 +3,7 @@
         "pi": "",
         "coPis": [null],
         "teamMembers": [null],
+        "projectType": "None",
         "title": ""
     },
     "other": {

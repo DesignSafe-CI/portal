@@ -1,7 +1,7 @@
 <div class="modal-header" id="modal-header" style="background: #e6e6e6;">
     <h4 class="modal-title" style="border:none;">
         <span>Add Missions</span>
-        <span class="pull-right" data-ng-click="$ctrl.close()">
+        <span class="pull-right" ng-click="$ctrl.close()">
             <i class="fa fa-times">&nbsp;</i>
         </span>
     </h4>
@@ -17,14 +17,16 @@
                             <span class="label label-danger">Required</span>
                         </div>
                         <span style="display: block; font-weight:normal;">
-                            Different from the Project Title. Make it focused on the methods used to obtain the data.
+                            This is the title of a stand alone publication that will be shown in the citation with a DOI.
+                            Make sure to build a unique title, different from project one.
+                            Use keyword terms and focus on dataset that is being published.
                         </span>
                     </div>
                 </label>
                 <input type="text"
                        id="id-title"
-                       data-ng-model="$ctrl.form.title"
-                       data-ng-required="true"
+                       ng-model="$ctrl.form.title"
+                       ng-required="true"
                        class="form-control"/>
             </div>
             <div class="expEvent form-group">
@@ -40,7 +42,7 @@
                 </label>
                 <input type="text"
                        id="id-event"
-                       data-ng-model="$ctrl.form.event"
+                       ng-model="$ctrl.form.event"
                        class="form-control"/>
             </div>
             <div class="form-group">
@@ -258,8 +260,8 @@
                                 format="lname"
                                 ng-checked="usr.authorship"
                                 id="{{ 'newAuthor' + $index }}"
-                                data-ng-model="usr.authorship"
-                                data-ng-required="$ctrl.validAuthors()">
+                                ng-model="usr.authorship"
+                                ng-required="$ctrl.validAuthors()">
                         <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
                         <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
                     </div>
@@ -281,8 +283,8 @@
                         </label>
                         <input type="text"
                                id="id-location"
-                               data-ng-model="$ctrl.form.location"
-                               data-ng-required="true"
+                               ng-model="$ctrl.form.location"
+                               ng-required="true"
                                class="form-control"/>
                     </div>
                     <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -291,8 +293,8 @@
                         </label>
                         <input type="text"
                                id="id-latitude"
-                               data-ng-model="$ctrl.form.latitude"
-                               data-ng-required="true"
+                               ng-model="$ctrl.form.latitude"
+                               ng-required="true"
                                class="form-control"/>
                     </div>
                     <div style="width: 21%; display:inline-block; margin-left:5px;">
@@ -301,8 +303,8 @@
                         </label>
                         <input type="text"
                                id="id-longitude"
-                               data-ng-model="$ctrl.form.longitude"
-                               data-ng-required="true"
+                               ng-model="$ctrl.form.longitude"
+                               ng-required="true"
                                class="form-control" />
                     </div>
                 </div>
@@ -322,8 +324,8 @@
                 </label>
                 <textarea class="form-textbox"
                           id="id-description"
-                          data-ng-model="$ctrl.form.description"
-                          data-ng-required="true">
+                          ng-model="$ctrl.form.description"
+                          ng-required="true">
                     &nbsp;
                 </textarea>
             </div>
@@ -337,22 +339,22 @@
             <!-- Submit Btn -->
             <div class="text-right">
                 <button class="btn btn-default"
-                        data-ng-if="$ctrl.ui.editing"
+                        ng-if="$ctrl.ui.editing"
                         ng-click="$ctrl.resetForm()">
                     Cancel
                 </button>
                 <button class="btn btn-add"
                         type="submit"
-                        data-ng-if="$ctrl.ui.editing"
-                        data-ng-click="addForm.$valid && $ctrl.updateMission($event)"
+                        ng-if="$ctrl.ui.editing"
+                        ng-click="addForm.$valid && $ctrl.updateMission($event)"
                 >
                     Update
                 </button>
             </div>
             <div class="text-right">
                 <button class="btn btn-add"
-                        data-ng-click="addForm.$valid && $ctrl.createMission($event)"
-                        data-ng-if="!$ctrl.ui.editing"
+                        ng-click="addForm.$valid && $ctrl.createMission($event)"
+                        ng-if="!$ctrl.ui.editing"
                         type="submit"
                 >
                     <i class="fa fa-plus">&nbsp;</i>
@@ -366,7 +368,7 @@
             <label>Mission Inventory</label>
         </div>
         <div class="dropdown">
-            <div data-ng-repeat="mission in $ctrl.missions">
+            <div ng-repeat="mission in $ctrl.missions">
                 <div class="dropdown dropdown-spacer-sm">
                     <button class="btn collapsed tab-gray" data-toggle="collapse"
                             data-target="#files-{{mission.uuid}}" style="width: 100%;">
@@ -378,7 +380,7 @@
                     <div id="files-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
                             <div class="entity-meta-field">
-                                <div data-ng-if="mission.value.event">
+                                <div ng-if="mission.value.event">
                                     <div class="entity-meta-label-multi">Event</div>
                                     <div class="entity-meta-data">
                                         <div>
@@ -390,14 +392,14 @@
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi">Author(s)</div>
                                 <div class="entity-meta-data">
-                                    <div data-ng-repeat="author in mission.value.authors | orderBy: 'order'"
-                                         data-ng-if="!author.length && author.authorship">
-                                        <span data-ng-if="!author.guest">
+                                    <div ng-repeat="author in mission.value.authors | orderBy: 'order'"
+                                         ng-if="!author.length && author.authorship">
+                                        <span ng-if="!author.guest">
                                             <ds-user data-username="author.name" data-format="lname">
                                                 {{author}}
                                             </ds-user>
                                         </span>
-                                        <span data-ng-if="author.guest">
+                                        <span ng-if="author.guest">
                                             {{author.lname}}, {{author.fname}}
                                         </span>
                                     </div>
@@ -420,7 +422,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
+                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
                                 <div class="entity-meta-label-multi">Referenced Data</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="reference in mission.value.referencedData track by $index">
@@ -432,20 +434,20 @@
                                 </div>
                             </div>
                             <div class="entity-meta-field">
-                                <div class="entity-meta-label-multi" data-ng-if="mission.value.location">
+                                <div class="entity-meta-label-multi" ng-if="mission.value.location">
                                     Site Location
                                 </div>
                                 <div class="entity-meta-data"
-                                     data-ng-if="mission.value.location">
+                                     ng-if="mission.value.location">
                                     <ul style="list-style:none; padding-left:0;">
                                         <li>
-                                            <span data-ng-if="mission.value.location">
+                                            <span ng-if="mission.value.location">
                                                 {{mission.value.location}} | 
                                             </span>
-                                            <span data-ng-if="mission.value.latitude">
+                                            <span ng-if="mission.value.latitude">
                                                 Lat {{mission.value.latitude}}
                                             </span>
-                                            <span data-ng-if="mission.value.longitude">
+                                            <span ng-if="mission.value.longitude">
                                                 Long {{mission.value.longitude}}
                                             </span>
                                         </li>
@@ -458,13 +460,13 @@
                             <div style="margin-top: 10px;">
                                 <button type="button"
                                         class="btn btn-link"
-                                        data-ng-click="$ctrl.editMission(mission)">
+                                        ng-click="$ctrl.editMission(mission)">
                                     Edit
                                 </button>
                                 <span> | </span>
                                 <button type="button"
                                         class="btn btn-link"
-                                        data-ng-click="$ctrl.deleteMission(mission)">
+                                        ng-click="$ctrl.deleteMission(mission)">
                                     Delete
                                 </button>
                             </div>

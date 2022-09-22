@@ -1,6 +1,5 @@
-import _ from 'underscore';
-import ManageFieldReconMissionsTemplate from './manage-field-recon-missions.component.html'; //TODO: rename this to 'template.html'
-import MissionDefaults from './mission-form-defaults.json'
+import ManageFieldReconMissionsTemplate from './manage-field-recon-missions.template.html';
+const MissionDefaults = require('./mission-form-defaults.json');
 
 class ManageFieldReconMissionsCtrl {
     constructor($q, $http, $uibModal, UserService) {
@@ -148,11 +147,34 @@ class ManageFieldReconMissionsCtrl {
         return true;
     }
 
+    validInputs(objArray, reqKeys, objValue) {
+        /* 
+        Validate Inputs
+        - check each object provided for defined key values
+        - return the object or a value within the object
+
+        objArray - The array of objects to check
+        reqKeys  - The required keys for those objects
+        objValue - Include if you want to return just the values from the 
+                   object array (ex: returning an array of strings
+                   from valid objects)
+        */
+        return objArray.filter((obj) => {
+            return obj && reqKeys.every((key) => {
+                return typeof obj[key] !== 'undefined' && obj[key] !== '';
+            });
+        }).map((obj) => {
+            return obj[objValue] || obj;
+        });
+    }
+
     prepareData() {
         // drop or reformat inputs before for submission
         if (isNaN(Date.parse(this.form.dateEnd))) {
             this.form.dateEnd = new Date(this.form.dateStart);
         }
+        this.form.relatedWork = this.validInputs(this.form.relatedWork, ['title', 'href']);
+        this.form.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
     }
 
     createMission() {
@@ -199,7 +221,7 @@ class ManageFieldReconMissionsCtrl {
         });
     }
 
-    deleteMission(entity) {
+    deleteMission(mission) {
         let confirmDelete = (msg) => {
             let modalInstance = this.$uibModal.open({
                 component: 'confirmMessage',
@@ -211,7 +233,7 @@ class ManageFieldReconMissionsCtrl {
 
             modalInstance.result.then((res) => {
                 if (res) {
-                    this.$http.delete(`/api/projects/meta/${entity.uuid}`)
+                    this.$http.delete(`/api/projects/meta/${mission.uuid}`)
                     .then((resp) => {
                         this.project.removeEntity(resp.data);
                         this.missions = this.project.mission_set;
@@ -219,7 +241,7 @@ class ManageFieldReconMissionsCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + entity.value.title + "?");
+        confirmDelete("Are you sure you want to delete " + mission.value.title + "?");
     }
 }
 
