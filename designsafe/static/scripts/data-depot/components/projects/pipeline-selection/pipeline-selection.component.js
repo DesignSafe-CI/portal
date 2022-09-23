@@ -252,6 +252,13 @@ class PipelineSelectionCtrl {
         }
     }
 
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+
     gatherSelections() {
         this.selectedListings = {};
         Object.keys(this.FileListingService.listings).forEach((key) => {

@@ -90,6 +90,13 @@ class PipelinePrimaryEntityCtrl {
         return eqt.label;
     }
 
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view', {projectId: this.project.uuid}, {reload: true});

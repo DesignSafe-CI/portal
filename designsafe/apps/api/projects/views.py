@@ -169,14 +169,14 @@ class PublicationView(BaseApiView):
 class AmendPublicationView(BaseApiView):
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
-    def post(self, request, **kwargs):
+    def put(self, request, **kwargs):
         """
         Amend a Publication
         """
         if request.is_ajax():
             data = json.loads(request.body)
         else:
-            data = request.POST
+            data = request.PUT
 
         project_id = data['projectId']
         authors = data.get('authors', None)
