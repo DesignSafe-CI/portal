@@ -4,12 +4,12 @@ const ExperimentalData = require('./experimental-data.json');
 
 class ManageExperimentsCtrl {
 
-    constructor($q, $http, $uibModal, UserService) {
+    constructor(ProjectEntitiesService, UserService, $uibModal, $q) {
         'ngInject';
+        this.ProjectEntitiesService = ProjectEntitiesService;
         this.UserService = UserService;
-        this.$http = $http;
-        this.$q = $q;
         this.$uibModal = $uibModal;
+        this.$q = $q;
     }
 
     $onInit() {
@@ -227,11 +227,11 @@ class ManageExperimentsCtrl {
         this.prepareData();
         const uuid = this.project.uuid;
         const name = 'designsafe.project.experiment';
-        this.$http.post(
-            `/api/projects/${uuid}/meta/${name}/`,
-            { entity: this.form }
-        ).then((resp) => {
-            this.project.addEntity(resp.data);
+        this.ProjectEntitiesService.create({
+            data: { uuid: uuid, name: name, entity: this.form }
+        })
+        .then((resp) => {
+            this.project.addEntity(resp);
             this.experiments = this.project.experiment_set;
             this.resetForm();
         });
@@ -256,13 +256,14 @@ class ManageExperimentsCtrl {
         this.prepareData();
         let experiment = this.project.getRelatedByUuid(this.uuid);
         const updatedExperiment = { ...experiment, value: this.form };
-        this.$http.put(
-            `/api/projects/meta/${this.uuid}`,
-            {entity: updatedExperiment}
-        ).then((resp) => {
-            experiment.update(resp.data);
+        this.ProjectEntitiesService.update({
+            data: { uuid: this.uuid, entity: updatedExperiment }
+        })
+        .then((resp) => {
+            experiment.update(resp);
             this.resetForm();
-        }).catch((err) => {
+        })
+        .catch((err) => {
             this.ui.error = true;
         });
     }
@@ -279,9 +280,11 @@ class ManageExperimentsCtrl {
 
             modalInstance.result.then((res) => {
                 if (res) {
-                    this.$http.delete(`/api/projects/meta/${experiment.uuid}`)
+                    this.ProjectEntitiesService.delete({
+                        data: { uuid: experiment.uuid }
+                    })
                     .then((resp) => {
-                        this.project.removeEntity(resp.data);
+                        this.project.removeEntity(resp);
                         this.experiments = this.project.experiment_set;
                     });
                 }

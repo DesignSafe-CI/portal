@@ -11,7 +11,6 @@ export class FileListingService {
         $q,
         $timeout,
         ProjectService,
-        ProjectEntitiesService,
         FileOperationService,
         Django
     ) {
@@ -25,7 +24,6 @@ export class FileListingService {
         this.$timeout = $timeout;
         this.ProjectService = ProjectService;
         this.FileOperationService = FileOperationService;
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.from = from; // bind rxjs method for mocking
 
         this.modalCloseSubject = new Subject();

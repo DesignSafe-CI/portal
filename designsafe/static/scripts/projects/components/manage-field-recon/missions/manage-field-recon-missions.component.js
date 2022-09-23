@@ -2,12 +2,12 @@ import ManageFieldReconMissionsTemplate from './manage-field-recon-missions.temp
 const MissionDefaults = require('./mission-form-defaults.json');
 
 class ManageFieldReconMissionsCtrl {
-    constructor($q, $http, $uibModal, UserService) {
+    constructor(ProjectEntitiesService, UserService, $uibModal, $q) {
         'ngInject';
+        this.ProjectEntitiesService = ProjectEntitiesService;
         this.UserService = UserService;
-        this.$http = $http;
-        this.$q = $q;
         this.$uibModal = $uibModal;
+        this.$q = $q;
     }
 
     $onInit() {
@@ -181,11 +181,11 @@ class ManageFieldReconMissionsCtrl {
         this.prepareData();
         const uuid = this.project.uuid;
         const name = 'designsafe.project.field_recon.mission';
-        this.$http.post(
-            `/api/projects/${uuid}/meta/${name}/`,
-            { entity: this.form }
-        ).then((resp) => {
-            this.project.addEntity(resp.data);
+        this.ProjectEntitiesService.create({
+            data: { uuid: uuid, name: name, entity: this.form }
+        })
+        .then((resp) => {
+            this.project.addEntity(resp);
             this.missions = this.project.mission_set;
             this.resetForm();
         });
@@ -210,13 +210,14 @@ class ManageFieldReconMissionsCtrl {
         this.prepareData();
         let mission = this.project.getRelatedByUuid(this.uuid);
         const updatedMission = { ...mission, value: this.form };
-        this.$http.put(
-            `/api/projects/meta/${this.uuid}`,
-            {entity: updatedMission}
-        ).then((resp) => {
-            mission.update(resp.data);
+        this.ProjectEntitiesService.update({
+            data: { uuid: this.uuid, entity: updatedMission }
+        })
+        .then((resp) => {
+            mission.update(resp);
             this.resetForm();
-        }).catch((err) => {
+        })
+        .catch((err) => {
             this.ui.error = true;
         });
     }
@@ -233,9 +234,11 @@ class ManageFieldReconMissionsCtrl {
 
             modalInstance.result.then((res) => {
                 if (res) {
-                    this.$http.delete(`/api/projects/meta/${mission.uuid}`)
+                    this.ProjectEntitiesService.delete({
+                        data: { uuid: mission.uuid }
+                    })
                     .then((resp) => {
-                        this.project.removeEntity(resp.data);
+                        this.project.removeEntity(resp);
                         this.missions = this.project.mission_set;
                     });
                 }
