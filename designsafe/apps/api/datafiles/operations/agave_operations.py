@@ -5,7 +5,7 @@ import os
 import urllib
 from designsafe.apps.api.datafiles.utils import *
 from designsafe.apps.data.models.elasticsearch import IndexedFile
-from designsafe.apps.data.tasks import agave_indexer
+from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
 from django.conf import settings
 from elasticsearch_dsl import Q
 import requests
@@ -50,7 +50,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
 
     # Update Elasticsearch after each listing.
     # agave_listing_indexer.delay(listing)
-
+    agave_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
 
 
