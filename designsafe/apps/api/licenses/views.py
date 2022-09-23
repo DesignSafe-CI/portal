@@ -11,7 +11,7 @@ from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 class LicenseView(SecureMixin, BaseApiView):
     @profile_fn
     def get(self, request, app_name, username):
-        if not request.user.is_superuser:
+        if not request.user.is_staff:
             return HttpResponseForbidden()
         
         if app_name not in ['MATLAB','LSDYNA']:
