@@ -14,9 +14,10 @@ class LicenseView(SecureMixin, BaseApiView):
         if not request.user.is_staff:
             return HttpResponseForbidden()
         
-        if app_name not in ['MATLAB','LSDYNA']:
+        try:
+            app_license = apps.get_model('designsafe_licenses', '{}License'.format(app_name))
+        except:
             return HttpResponseNotFound()
-        app_license = apps.get_model('designsafe_licenses', '{}License'.format(app_name))
 
         user = get_user_model().objects.get(username=username)
         licenses = app_license.objects.filter(user=user)
