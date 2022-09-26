@@ -53,7 +53,7 @@ class PipelineAmendOtherCtrl {
 
     submitAmend() {
         this.ui.loading = true;
-        this.$http.post(
+        this.$http.put(
             '/api/projects/amend-publication/',
             {
                 projectId: this.project.value.projectId,

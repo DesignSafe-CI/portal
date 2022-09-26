@@ -42,6 +42,7 @@ class PipelineAmendCitationCtrl {
         if (prj_type == 'experimental') {
             this.ui.placeholder = 'Experiment'
             this.amendFields = [
+                'experimentsList',
                 'modelConfigs',
                 'sensorLists',
                 'eventsList',
@@ -68,11 +69,13 @@ class PipelineAmendCitationCtrl {
         this.ui.loading = true;
         let amendments = [];
         this.amendFields.forEach((field) => {
-            this.amendment[field].forEach((entity) => {
-                amendments.push(entity);
-            });
+            if (field in this.amendment) {
+                this.amendment[field].forEach((entity) => {
+                    amendments.push(entity);
+                });
+            }
         });
-        this.$http.post(
+        this.$http.put(
             '/api/projects/amend-publication/',
             {
                 projectId: this.project.value.projectId,
@@ -88,6 +91,7 @@ class PipelineAmendCitationCtrl {
             this.ui.submitted = true;
             this.ui.loading = false;
         });
+        this.ui.loading = false;
     }
 
     saveAuthors(entity, status) {
