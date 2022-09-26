@@ -16,7 +16,7 @@ class LicenseView(SecureMixin, BaseApiView):
 
         try:
             app_license = apps.get_model('designsafe_licenses', '{}License'.format(app_name))
-        except app_name not in ['MATLAB', 'LSDYNA']:
+        except LookupError:
             return HttpResponseNotFound()
 
         user = get_user_model().objects.get(username=username)
