@@ -13,14 +13,14 @@ class LicenseView(SecureMixin, BaseApiView):
     def get(self, request, app_name, username):
         if not request.user.is_staff:
             return HttpResponseForbidden()
-        
+
         try:
             app_license = apps.get_model('designsafe_licenses', '{}License'.format(app_name))
-        except:
+        except app_name not in ['MATLAB', 'LSDYNA']:
             return HttpResponseNotFound()
 
         user = get_user_model().objects.get(username=username)
         licenses = app_license.objects.filter(user=user)
 
-        user_license = licenses[0].license_as_str() if len(licenses) > 0 else '' 
+        user_license = licenses[0].license_as_str() if len(licenses) > 0 else ''
         return JsonResponse({'license': user_license}, encoder=AgaveJSONEncoder)
