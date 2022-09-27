@@ -145,7 +145,6 @@ def agave_oauth_callback(request):
             'redirect_uri': redirect_uri,
         }
         # TODO update to token call in agavepy
-
         response = requests.post('%s/token' % tenant_base_url,
                                  data=body,
                                  auth=(client_key, client_sec))
