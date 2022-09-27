@@ -718,7 +718,7 @@ def swap_file_tag_uuids(self, project_id, revision=None):
 def set_publish_status(self, project_id, entity_uuids=None, publish_dois=False, revision=None):
     from designsafe.apps.projects.managers import publication as PublicationManager
     # Only publish DOIs created from prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'default':
         publish_dois = True
 
     PublicationManager.publish_resource(
