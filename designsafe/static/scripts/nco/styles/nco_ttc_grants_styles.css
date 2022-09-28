@@ -1,0 +1,52 @@
+.ttc-intro {
+    padding: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.nco-ttc-grants {
+    margin: auto;
+}
+
+.ttc-grant-item {
+    padding: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.ttc-row {
+    padding: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.ttc-left {
+    float: left;
+    width: 50%;
+}
+
+.ttc-right {
+    float: right;
+    width: 50%;
+}
+
+.ttc-award-number {
+}
+
+.ttc-award-title {
+}
+
+.ttc-timespan {
+}
+
+.ttc-pi-name {
+}
+
+.ttc-facility {
+}
+
+.ttc-abstract {
+}
+
+.ttc-labels {
+}
