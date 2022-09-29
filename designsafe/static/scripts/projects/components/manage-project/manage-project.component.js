@@ -22,6 +22,7 @@ class ManageProjectCtrl {
             editType: true,
             submitting: false,
             error: null,
+            showFREvents: false
         };
         this.project = this.resolve.project;
         this.naturalHazardTypes = FormOptions.nhTypes;
@@ -180,12 +181,29 @@ class ManageProjectCtrl {
                 guest.user = "guest" + guest.fname + guest.lname.charAt(0) + i;
             });
             projectData.nhTypes = this.form.nhTypes.filter(type => typeof type === 'string' && type.length);
+            
             if (projectData.projectType === 'field_recon') {
                 projectData.frTypes = this.form.frTypes.filter(type => typeof type === 'string' && type.length);
                 if (isNaN(Date.parse(projectData.nhEventEnd))) {
                     projectData.nhEventEnd = new Date(projectData.nhEventStart);
                 }
             }
+            else {
+                let fields = ["nhEvent", "nhLocation", "nhLongitude", "nhLatitude"];
+                let result = fields.every((field) => {return typeof projectData[field] === 'string' && projectData[field].length})
+                let checkDate = isNaN(Date.parse(projectData.nhEventStart))
+                if (!result || checkDate) {
+                    fields.forEach((field) => projectData[field] = '')
+                    projectData.nhEventStart = ''
+                    projectData.nhEventEnd = ''
+                }
+                else {
+                    if (isNaN(Date.parse(projectData.nhEventEnd))) {
+                        projectData.nhEventEnd = new Date(projectData.nhEventStart);
+                    }
+                }
+            }
+            
         }
         return projectData;
     }
