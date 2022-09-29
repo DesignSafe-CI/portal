@@ -2,6 +2,7 @@
 from future.utils import python_2_unicode_compatible
 import logging
 import json
+import datetime
 from django.conf import settings
 from django.db import models
 from elasticsearch_dsl.connections import connections
@@ -13,34 +14,38 @@ from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError, ConnectionTimeout
 from designsafe.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
+from designsafe.libs.elasticsearch.utils import file_uuid_sha256
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
-
-@python_2_unicode_compatible
 class IndexedFile(Document):
+    """
+    Elasticsearch document representing an indexed file. Thin wrapper around
+    `elasticsearch_dsl.Document`.
+    """
     name = Text(analyzer=file_analyzer, fields={
         '_exact': Keyword(),
         '_pattern': Text(analyzer=file_pattern_analyzer),
-        '_reverse': Text(analyzer=reverse_file_analyzer)
-    })
+        '_reverse': Text(analyzer=reverse_file_analyzer)})
     path = Text(fields={
+        '_comps': Text(analyzer=path_analyzer),
         '_exact': Keyword(),
-        '_path': Text(analyzer=path_analyzer)
-    })
+        '_reverse': Text(analyzer=reverse_file_analyzer)},
+    )
     lastModified = Date()
     length = Long()
     format = Text()
     mimeType = Keyword()
     type = Text()
-    system = Text(fields={
-        '_exact': Keyword()
-    })
-    systemId = Text()
-    basePath=Text(fields={ '_exact': Keyword() })
-    dsMeta = Nested()
-    permissions = Nested(properties={
+    system = Text(fields={'_exact': Keyword()})
+    basePath = Text(
+        fields={
+            '_comps': Text(analyzer=path_analyzer),
+            '_exact': Keyword()})
+    lastUpdated = Date()
+    permissions = Keyword()
+    legacyPermissions = Nested(properties={
         'username': Keyword(),
         'recursive': Boolean(),
         'permission': Nested(properties={
@@ -49,74 +54,83 @@ class IndexedFile(Document):
             'execute': Boolean()
         })
     })
+    _links = Object(properties={
+        'self': Object(properties={
+            'href': Keyword()
+            }),
+        'system': Object(properties={
+            'href': Keyword()
+            })
+        })
 
-    @classmethod
-    def _pems_filter(self):
-        term_username_query = Q(
-            'term',
-            **{'permissions.username': self.username}
-        )
-        term_world_query = Q(
-            'term',
-            **{'permissions.username': 'WORLD'}
-        )
-        bool_query = Q('bool')
-        bool_query.should = [term_username_query, term_world_query]
-        nested_query = Q('nested')
-        nested_query.path = 'permissions'
-        nested_query.query = bool_query
-        return nested_query
+    def save(self, *args, **kwargs):
+        """
+        Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.save()
+        """
+        self.lastUpdated = datetime.datetime.now()
+        return super(IndexedFile, self).save(*args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        """
+        Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.update()
+        """
+        lastUpdated = datetime.datetime.now()
+        return super(IndexedFile, self).update(lastUpdated=lastUpdated, *args, **kwargs)
 
     @classmethod
     def from_path(cls, system, path):
-        Index(settings.ES_INDICES['files']['alias']).refresh()
-        search = cls.search()
-        sys_filter = Q('term', **{'system._exact': system})
-        path_filter = Q('term', **{'path._exact': path})
-        search = search.filter(sys_filter & path_filter)
-        try:
-            res = search.execute()
-        except Exception as exc:
-            raise exc
-        if res.hits.total.value > 1:
-            id_filter = Q('term', **{'_id': res[0].meta.id}) 
-            # Delete all files indexed with the same system/path, except the first result
-            delete_query = sys_filter & path_filter & ~id_filter
-            cls.search().filter(delete_query).delete()
-            return cls.get(res[0].meta.id)
-        elif res.hits.total.value == 1:
-            return cls.get(res[0].meta.id)
-        else:
-            raise DocumentNotFound("No document found for "
-                                   "{}/{}".format(system, path))
+        """
+        Fetches an IndexedFile with the specified system and path.
 
-    @classmethod
-    def children(cls, username, system, path, limit=100, search_after=None):
-        search = cls.search()
-        # search = search.filter(cls._pems_filter(username))
-        search = search.filter('term', **{'basePath._exact': path})
-        search = search.filter('term', **{'system._exact': system})
-        search = search.sort('_id')
-        search = search.extra(size=limit)
-        if search_after:
-            search = search.extra(search_after=search_after)
-        try:
-            res = search.execute()
-        except TransportError:
-            raise TransportError
-        if len(res.hits) > 0:
-            wrapped_children = [cls.get(doc.meta.id) for doc in res]
-            sort_key = res.hits.hits[-1]['sort']
-            return wrapped_children, sort_key
-        else:
-            return [], None
+        Parameters
+        ----------
+        system: str
+            System attribute of the indexed file.
+        path: str
+            Path attribute of the indexed file.
+        Returns
+        -------
+        IndexedFile
+
+        Raises
+        ------
+        elasticsearch.exceptions.NotFoundError
+        """
+        uuid = file_uuid_sha256(system, path)
+        return cls.get(uuid)
+
+    def children(self):
+        """
+        Yields all children of the indexed file. Non-recursive.
+
+        Yields
+        ------
+        IndexedFile
+        """
+        search = self.search()
+        search = search.filter('term', **{'basePath._exact': self.path})
+        search = search.filter('term', **{'system._exact': self.system})
+
+        for hit in search.scan():
+            yield self.get(hit.meta.id)
+
+    def delete_recursive(self):
+        """
+        Recursively delete an indexed file and all of its children.
+
+        Returns
+        -------
+        Void
+        """
+        for child in self.children():
+            child.delete_recursive()
+        self.delete()
 
     class Index:
         name = settings.ES_INDICES['files']['alias']
     class Meta:
         dynamic = MetaField('strict')
 
-    
 class IndexedFileLegacy(Document):
     name = Text(analyzer=file_analyzer, fields={
         '_exact': Keyword(),

@@ -57,6 +57,7 @@ def ticketdetail(request, ticketId):
     })
 
 
+@login_required
 def ticketcreate(request):
 
     template_name = 'djangoRT/ticketCreate.html'
