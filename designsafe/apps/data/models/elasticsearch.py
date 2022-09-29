@@ -45,6 +45,15 @@ class IndexedFile(Document):
             '_exact': Keyword()})
     lastUpdated = Date()
     permissions = Keyword()
+    legacyPermissions = Nested(properties={
+        'username': Keyword(),
+        'recursive': Boolean(),
+        'permission': Nested(properties={
+            'read': Boolean(),
+            'write': Boolean(),
+            'execute': Boolean()
+        })
+    })
     _links = Object(properties={
         'self': Object(properties={
             'href': Keyword()
