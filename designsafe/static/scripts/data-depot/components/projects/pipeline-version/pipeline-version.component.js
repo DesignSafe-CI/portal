@@ -229,6 +229,13 @@ class PipelineVersionCtrl {
         }
     }
 
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+
     navigate(destCompName) {
         let params = {
             projectId: this.projectId,

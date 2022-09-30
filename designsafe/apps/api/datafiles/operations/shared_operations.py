@@ -42,12 +42,12 @@ def listing(client, system, path, username, offset=0, limit=100, *args, **kwargs
     if path:
         return agave_listing(client, system, path, offset, limit)
 
-    username_q = Q('term', **{'permissions.username': username})
-    world_q = Q('term', **{'permissions.username': 'WORLD'})
+    username_q = Q('term', **{'legacyPermissions.username': username})
+    world_q = Q('term', **{'legacyPermissions.username': 'WORLD'})
     pems_filter = Q('bool', should=[username_q, world_q])
 
     nested_filter = Q('nested')
-    nested_filter.path = 'permissions'
+    nested_filter.path = 'legacyPermissions'
     nested_filter.query = pems_filter
 
     file_path = '/'
@@ -104,12 +104,12 @@ def search(client, system, path, username, offset=0, limit=100, query_string='',
                     default_operator='and')
 
 
-    username_q = Q('term', **{'permissions.username': username})
-    world_q = Q('term', **{'permissions.username': 'WORLD'})
+    username_q = Q('term', **{'legacyPermissions.username': username})
+    world_q = Q('term', **{'legacyPermissions.username': 'WORLD'})
     pems_filter = Q('bool', should=[username_q, world_q])
 
     nested_filter = Q('nested')
-    nested_filter.path = 'permissions'
+    nested_filter.path = 'legacyPermissions'
     nested_filter.query = pems_filter
 
     home_filter = Q('prefix', **{'path._exact': '/' + username})

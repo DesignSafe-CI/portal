@@ -219,8 +219,9 @@ class BaseESPublication(BaseESResource):
         dict_obj = self._wrapped.to_dict()
         uuids = []
         for key in self.entity_keys():
-            for ent in dict_obj[key]:
-                uuids.append(ent['uuid'])
+            if key in dict_obj:
+                for ent in dict_obj[key]:
+                    uuids.append(ent['uuid'])
         return uuids
 
 
