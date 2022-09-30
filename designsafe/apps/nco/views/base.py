@@ -9,10 +9,14 @@ from django.views.generic.base import TemplateView
 # from designsafe.apps.api.agave import service_account
 
 
-LOG = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class NcoIndexView(TemplateView):
     """Nco Index view."""
 
+    pass
+
+class NcoTtcGrantsView(TemplateView):
+    """NCO TTC Grants view."""
     pass

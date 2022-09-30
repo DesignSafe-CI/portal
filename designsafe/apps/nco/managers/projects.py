@@ -153,9 +153,9 @@ class NcoProjectsManager(object):
             ids.add(doc["projectId"])
             self._mp._mc.scheduler.projects.delete_many({"projectId": doc["projectId"]})
         for prj_id in ids:
-            self.save_projct_to_mongo(prj_id)
+            self.save_project_to_mongo(prj_id)
 
-    def save_projct_to_mongo(self, prj_id):
+    def save_project_to_mongo(self, prj_id):
         """Save project from Agave to mongo.
 
         :param str prj_id: Agave's prj id.

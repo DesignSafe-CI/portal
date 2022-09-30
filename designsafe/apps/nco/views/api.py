@@ -6,11 +6,11 @@
 import json
 import logging
 from designsafe.apps.api.views import BaseApiView
-from designsafe.apps.nco.managers import NcoProjectsManager
+from designsafe.apps.nco.managers import NcoProjectsManager, NcoTtcGrantsManager
 from designsafe.libs.mongo.response import MongoJsonResponse
 
 
-LOG = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class ProjectsListView(BaseApiView):
@@ -66,4 +66,16 @@ class FiltersListView(BaseApiView):
         return MongoJsonResponse({
             "status": "OK",
             "response": filters,
+        })
+
+class TtcGrantsView(BaseApiView):
+    """NCO TTC Grants View."""
+
+    def get(self,request):
+        """Return a list of all TTC Grants."""
+        ttc_mgr = NcoTtcGrantsManager(request.user)
+        grants = ttc_mgr.ttc_grants()
+        return MongoJsonResponse({
+            "status": "OK",
+            "response": grants,
         })
