@@ -22,7 +22,7 @@
   <!-- end PI -->
 
   <!-- co-PIs -->
-  <tr ng-if="$ctrl.project.value.coPis.length">
+  <tr class="prj-row" ng-if="$ctrl.project.value.coPis.length">
     <td>Co-PIs</td>
     <td class="prj-data" id="test-prj-copi">
       <ds-user-list usernames="$ctrl.project.value.coPis"></ds-user-list>
@@ -119,7 +119,7 @@
   <!-- end Keywords -->
 
   <!-- Hazmapper Maps start -->
-  <tr ng-if="$ctrl.project.value.hazmapperMaps.length">
+  <tr class="prj-row" ng-if="$ctrl.project.value.hazmapperMaps.length">
     <td>Hazmapper Maps</td>
     <td>
       <hazmapper-maps maps="$ctrl.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
