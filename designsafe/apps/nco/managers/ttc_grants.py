@@ -1,8 +1,7 @@
-"""Nco projects manager.
+"""Nco ttc grants manager.
 
-.. module:: designsafe.apps.nco.managers.projects
-    :synopsis: Nco projects manager. Should only do read actions.
-    Unless it is to update the mongo database.
+.. module:: designsafe.apps.nco.managers.ttc_grants
+    :synopsis: Nco ttc_grants manager. Should only do read actions.
 """
 from __future__ import unicode_literals, absolute_import
 import six
