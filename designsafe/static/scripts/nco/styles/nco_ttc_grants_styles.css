@@ -20,6 +20,10 @@
     border: 1px solid;
 }
 
+.ttc-header {
+    font-weight: bold;
+}
+
 .ttc-row {
     display: table-row;
     margin: auto;

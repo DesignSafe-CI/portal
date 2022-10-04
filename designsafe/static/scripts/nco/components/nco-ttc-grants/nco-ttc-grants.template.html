@@ -3,6 +3,35 @@
         <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </span>
 
+    <!-- Header Row -->
+    <div class="ttc-grant-item ttc-header">
+        <!-- row1 items -->
+        <div class="ttc-row">
+            <div class="ttc-award-number-title ttc-data-cell ttc-left">[Award Number] Title</div>
+            <div class="ttc-timespan ttc-data-cell ttc-right">Start Date - End Date</div>
+        </div>
+
+        <!-- row2 items -->
+        <div class="ttc-row">
+            <div class="ttc-pi-name ttc-data-cell ttc-left">
+                PI / Co-PI
+                <br />
+                Grant Org - State
+            </div>
+            <div class="ttc-facility ttc-data-cell ttc-right">NHERI Facility</div>
+        </div>
+
+        <!-- row3 items -->
+        <div class="ttc-row">
+            <div class="ttc-abstract ttc-data-cell ttc-left">Abstract</div>
+            <div class="ttc-labels ttc-data-cell ttc-right">Category Labels</div>
+        </div>
+
+        <!-- for gap between grants-->
+        <br />
+    </div>
+
+    <!-- Data from DB table -->
     <div class="ttc-grant-item" ng-repeat="grant in $ctrl.grantList">
         <!-- row1 items -->
         <div class="ttc-row">
@@ -13,9 +42,9 @@
         <!-- row2 items -->
         <div class="ttc-row">
             <div class="ttc-pi-name ttc-data-cell ttc-left">
-                {{grant.PiName}}
+                {{grant.PiName}} <span ng-if="grant.CoPiName"> / {{grant.CoPiName}}</span>
                 <br />
-                {{grant.Org}}
+                {{grant.Org}} - {{grant.OrgState}}
             </div>
             <div class="ttc-facility ttc-data-cell ttc-right" ng-if="grant.NheriFacility">{{grant.NheriFacility}}</div>
             <div class="ttc-facility ttc-data-cell ttc-right" ng-if="!grant.NheriFacility">No Facility Listed</div>
@@ -23,15 +52,11 @@
 
         <!-- row3 items -->
         <div class="ttc-row">
-            <!-- <nco-expand class="ttc-abstract">really really long abstract goes here and hopefully i can make it wrap to make sure this will work as expected but i don't remember how long it needs to be so i'm just going to creat a runon sentence for forever becuase that's what i do to test</nco-expand> -->
-            <div class="ttc-abstract ttc-data-cell ttc-left"> </div>
-            <div class="ttc-labels ttc-data-cell ttc-right">category labels go here</div>
+            <div class="ttc-abstract ttc-data-cell ttc-left">View Abstract (coming soon)</div>
+            <div class="ttc-labels ttc-data-cell ttc-right">No Category or Labels</div>
         </div>
 
-        <!-- row4 items -->
-        <div class="ttc-row">
-            <div colspan="2" class="ttc-abstract ttc-data-cell">{{grant.Abstract}}</div>
-        </div>
-        <br /><br />
+        <!-- for gap between grants-->
+        <br />
     </div>
 </div>

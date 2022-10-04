@@ -9,21 +9,23 @@ NHERI Facilities Scheduling Dashbaord
 {% endblock %}
 
 {% block content %}
+
     <div class="container">
 	    <!-- PAGE INTRO ROW -->
         <div class="top-row ttc-intro">
 	        <!-- TTC INTRO -->
-            These are grants identified to be related to NHERI projects.
+              <h1>NHERI Grants</h1>
+            These are grants the NCO identified as being related to NHERI projects.
 	    </div>
-	</div>
-	<hr class="top-line"/>
+        <hr class="top-line"/>
 
-	<!-- Grants VIEW -->
-    <nco-ttc-grants>
-        <div class="bg-info text-info" data-ng-if="!$ctrl.initialized">
-            <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
-        </div>
-    </nco-ttc-grants>
+        <!-- Grants VIEW -->
+        <nco-ttc-grants>
+            <div class="bg-info text-info" data-ng-if="!$ctrl.initialized">
+                <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+            </div>
+        </nco-ttc-grants>
+    </div>
 
 	<!-- CLOSING ROW -->
     <hr />

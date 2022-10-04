@@ -3,7 +3,6 @@ import { NcoSchedulerFiltersComponent } from './nco-scheduler-filters/nco-schedu
 import { NcoSchedulerListComponent } from './nco-scheduler-list/nco-scheduler-list.component.js';
 import { NcoSchedulerPaginationComponent } from './nco-scheduler-pagination/nco-scheduler-pagination.components.js';
 import { NcoTtcGrantsComponent } from './nco-ttc-grants/nco-ttc-grants.component.js';
-// import { NcoExpandComponent } from './nco-expand/nco-expand.component.js';
 
 let ncoComponents = angular.module('nco.components', []);
 
@@ -15,6 +14,5 @@ ncoComponents.component('ncoSchedulerPagination', NcoSchedulerPaginationComponen
 
 //ttc_grants components
 ncoComponents.component('ncoTtcGrants', NcoTtcGrantsComponent);
-//ncoComponents.component('ncoExpand', NcoExpandComponent);
 
 export default ncoComponents;
