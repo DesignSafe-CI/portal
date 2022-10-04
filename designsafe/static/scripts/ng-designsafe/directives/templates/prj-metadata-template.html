@@ -96,18 +96,18 @@
         this is not supported anymore
         if user has issue, fix manually for them
     -->
-  <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
+  <tr class="prj-row" ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
     <td ng-if="$first">Awards</td>
     <td ng-if="!$first"></td>
-    <td class="test-prj-award"><strong>{{ award.name }} - {{ award.number }}</strong></td>
+    <td class="test-prj-award prj-data"><strong>{{ award.name }} - {{ award.number }}</strong></td>
   </tr>
   <!-- end Awards -->
 
   <!-- Related Work -->
-  <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
+  <tr class="prj-row" ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
     <td ng-if="$first">Related Work</td>
     <td ng-if="!$first"></td>
-    <td id="test-prj-related"><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
+    <td id="test-prj-related" class="prj-data"><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
   </tr>
   <!-- end Related Work -->
 
