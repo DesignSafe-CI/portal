@@ -10,7 +10,7 @@ from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 
 class LicenseView(SecureMixin, BaseApiView):
     @profile_fn
-    def get(self, request, app_name, username):
+    def get(self, request, app_name):
         if not request.user.is_staff:
             return HttpResponseForbidden()
 
@@ -18,7 +18,9 @@ class LicenseView(SecureMixin, BaseApiView):
             app_license = apps.get_model('designsafe_licenses', '{}License'.format(app_name))
         except LookupError:
             return HttpResponseNotFound()
-
+        username = request.GET.get('user', None)
+        if not username:
+            return HttpResponseNotFound()
         user = get_user_model().objects.get(username=username)
         licenses = app_license.objects.filter(user=user)
 
