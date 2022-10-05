@@ -68,8 +68,7 @@ class IndexedProject(Document):
             'nhLocation': Text(fields={'_exact': Keyword()}),
             'nhLatitude': Text(fields={'_exact': Keyword()}),
             'nhLongitude': Text(fields={'_exact': Keyword()}),
-            'fr_types': Text(fields={'_exact': Keyword()}, multi=True),
-
+            'frTypes': Text(fields={'_exact': Keyword()}, multi=True),
             'coPis': Text(fields={'_exact': Keyword()}, multi=True),
             'projectType': Text(fields={'_exact': Keyword()}, analyzer='english'),
             'description': Text(analyzer='english'),
@@ -78,11 +77,15 @@ class IndexedProject(Document):
             'title': Text(analyzer='english'),
             'keywords': Text(analyzer='english'),
             'ef': Text(analyzer='english'),
+            'referencedData': Text(fields={'_exact': Keyword()}, analyzer='english', multi=True),
+            'relatedFiles': Text(fields={'_exact': Keyword()}),
             'associatedProjects': Nested(properties={
                 'title': Text(analyzer='english'),
                 'href': Text(fields={'_exact':Keyword()}),
                 'order': Long(),
-                'delete': Boolean()
+                'delete': Boolean(),
+                'type': Text(fields={'_exact':Keyword()}),
+                'hrefType': Text(fields={'_exact':Keyword()}),
             }),
             'pi': Text(fields={'_exact': Keyword()}),
             'awardNumber': Nested(properties={
@@ -100,7 +103,8 @@ class IndexedProject(Document):
                 'name': Text(fields={'_exact':Keyword()}),
                 'path': Text(fields={'_exact':Keyword()}),
                 'uuid': Text(fields={'_exact':Keyword()}),
-                'deployment': Text(fields={'_exact':Keyword()})
+                'deployment': Text(fields={'_exact':Keyword()}),
+                'href': Text(fields={'_exact':Keyword()})
             }),
         })
 
