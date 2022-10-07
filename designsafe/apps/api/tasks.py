@@ -4,11 +4,13 @@ import re
 import os
 import sys
 import json
+from tkinter import N
 import urllib.request, urllib.parse, urllib.error
 from datetime import datetime
 from celery import shared_task
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
+from pytas.models import User as TASUser
 from django.conf import settings
 from requests.exceptions import HTTPError
 
@@ -468,6 +470,23 @@ def index_projects_listing(projects):
 
         project_dict = dict(_project)
         project_dict = {key: value for key, value in project_dict.items() if key != '_links'}
+
+        #TO-DO: handle blanks, remove single quotes? !!!
+        pi_id = project_dict['value'].get('pi',[])
+        coPis_id = project_dict['value'].get('coPis',[])
+        team_members = project_dict['value'].get('teamMembers',[])
+
+        users = [pi_id] + coPis_id + team_members
+        user_list = []
+        for user in users: 
+            if user_list is None:
+                continue
+            else:
+                user_profile = TASUser(username=user)
+                user_list.append(user_profile.lastName)
+                user_list.append(user_profile.firstName)
+        print('Users',user_list)
+
         award_number = project_dict['value'].get('awardNumber', []) 
         if not isinstance(award_number, list):
             award_number = [{'number': project_dict['value']['awardNumber'] }]

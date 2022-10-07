@@ -29,6 +29,7 @@ class IndexedProject(Document):
     owner = Text(fields={'_exact': Keyword()})
     value = Object(
         properties={
+            'authors': Text(analyzer='english', multi=True),
             'teamMembers': Text(fields={'_exact': Keyword()}, multi=True),
             'teamMember': Text(fields={'_exact': Keyword()}, multi=True),
             'guestMembers': Nested(properties={
@@ -106,6 +107,7 @@ class IndexedProject(Document):
                 'deployment': Text(fields={'_exact':Keyword()}),
                 'href': Text(fields={'_exact':Keyword()})
             }),
+            'users': Text(fields={'_exact': Keyword()}, multi=True)
         })
 
     class Index:
