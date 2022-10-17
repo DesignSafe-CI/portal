@@ -471,7 +471,6 @@ def index_projects_listing(projects):
         project_dict = dict(_project)
         project_dict = {key: value for key, value in project_dict.items() if key != '_links'}
 
-        #TO-DO: handle blanks, remove single quotes? !!!
         pi_id = project_dict['value'].get('pi',[])
         coPis_id = project_dict['value'].get('coPis',[])
         team_members = project_dict['value'].get('teamMembers',[])
@@ -479,13 +478,14 @@ def index_projects_listing(projects):
         users = [pi_id] + coPis_id + team_members
         user_list = []
         for user in users: 
-            if user_list is None:
+            if user is None or user == 'None':
                 continue
             else:
                 user_profile = TASUser(username=user)
-                user_list.append(user_profile.lastName)
-                user_list.append(user_profile.firstName)
-        print('Users',user_list)
+                if user_profile.lastName:
+                    user_list.append(user_profile.lastName)
+                    user_list.append(user_profile.firstName)
+        project_dict['value']['users'] = user_list
 
         award_number = project_dict['value'].get('awardNumber', []) 
         if not isinstance(award_number, list):
