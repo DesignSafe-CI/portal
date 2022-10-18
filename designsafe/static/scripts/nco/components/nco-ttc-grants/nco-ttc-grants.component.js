@@ -2,9 +2,10 @@ import _ from 'underscore';
 import NcoTtcGrantsTemplate from './nco-ttc-grants.template.html';
 
 class NcoTtcGrantsCtrl {
-    constructor($http) {
+    constructor($http, $uibModal) {
         'ngInject';
         this.$http = $http;
+        this.$uibModal = $uibModal;
     }
 
     $onInit() {
@@ -34,6 +35,16 @@ class NcoTtcGrantsCtrl {
             }).finally ( () => {
                 this._ui.loading = false;
             });
+    }
+
+    showAbstract(abstract) {
+        this.$uibModal.open({
+            component: 'ncoTtcAbstract',
+            resolve: {
+                abstract: () => abstract
+            },
+            size: 'lg',
+        });
     }
 }
 

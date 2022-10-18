@@ -3,7 +3,7 @@
         <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </span>
 
-    <!-- Header Row -->
+    <!-- Legend row -->
     <div class="ttc-grant-item ttc-header">
         <!-- row1 items -->
         <div class="ttc-row">
@@ -30,6 +30,7 @@
         <!-- for gap between grants-->
         <br />
     </div>
+    <!-- end Legend row -->
 
     <!-- Data from DB table -->
     <div class="ttc-grant-item" ng-repeat="grant in $ctrl.grantList">
@@ -52,7 +53,7 @@
 
         <!-- row3 items -->
         <div class="ttc-row">
-            <div class="ttc-abstract ttc-data-cell ttc-left">View Abstract (coming soon)</div>
+            <a class="ttc-abstract ttc-data-cell ttc-left" ng-click="$ctrl.showAbstract(grant.Abstract)">View Abstract</a>
             <div class="ttc-labels ttc-data-cell ttc-right">No Category or Labels</div>
         </div>
 
