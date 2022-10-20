@@ -55,9 +55,6 @@
                 <div class="prj-head-title" style="padding-bottom:20px">
                     {{pubEnt.name.endsWith('report') ? 'Document' : $ctrl.ui.placeholder}} | <strong>{{ pubEnt.value.title }}</strong>
                 </div>
-                <!-- <div ng-if="pubEnd.name.endsWith('report')" class="prj-head-title" style="padding-bottom:20px">
-                    Document | <strong>{{ pubEnt.value.title }}</strong>
-                </div> -->
                 <!-- Success Alert -->
                 <div class="alert alert-success text-center" ng-if="$ctrl.ui.savedStatus[pubEnt.uuid]">
                     <h4>Success</h4>

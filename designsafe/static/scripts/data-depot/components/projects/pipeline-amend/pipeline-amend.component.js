@@ -36,15 +36,14 @@ class PipelineAmendCtrl {
         if (!this.publication || !this.project) {
             this.goStart();
         }
-        //if (!this.amendment) {
-            /* Amendment Preview:
-            the amendment preview (this.amendment) is a combination of
-            the latest published version of the project with metadata from
-            the workspace project backfilled into the fields that are
-            amendable.
-            */
-            this.configureAmendment();
-        //}
+
+        /* Amendment Preview:
+        the amendment preview (this.amendment) is a combination of
+        the latest published version of the project with metadata from
+        the workspace project backfilled into the fields that are
+        amendable.
+        */
+        this.configureAmendment();
 
         //make sure FR objects get sorted correctly before rendering template
         if(this.project.value.projectType == 'field_recon'){
@@ -88,7 +87,6 @@ class PipelineAmendCtrl {
                 'socialscience'
             ]
         }
-
         // else if (prj_type == 'simulation') ...
 
         if (update === 'all') {

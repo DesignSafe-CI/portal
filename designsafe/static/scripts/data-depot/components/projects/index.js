@@ -20,7 +20,6 @@ import {
 } from './pipeline-version/pipeline-version.component';
 import { VersionChangesComponent } from './pipeline-version/pipeline-version-changes.component';
 import { AmendExperimentComponent, AmendFieldReconComponent } from './pipeline-amend/pipeline-amend.component';
-//import { AmendFieldReconComponent } from './pipeline-amend/pipeline-amend.component';
 import { AmendOtherComponent } from './pipeline-amend/pipeline-amend-other.component';
 import { AmendCitationComponent } from './pipeline-amend/pipeline-amend-citation.component';
 import {
