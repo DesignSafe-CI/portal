@@ -40,6 +40,7 @@ class PipelineAmendCitationCtrl {
         this.amendFields = [];
         this.authors = {};
         if (prj_type == 'experimental') {
+            this.amendComp = 'projects.amendExperiment';
             this.ui.placeholder = 'Experiment'
             this.amendFields = [
                 'experimentsList',
@@ -56,11 +57,30 @@ class PipelineAmendCitationCtrl {
                     this.ui.savedStatus[experiment.uuid] = false;
                 }
             });
+        }
+        else if (prj_type == 'field_recon') {
+            this.amendComp = 'projects.amendFieldRecon';
+            this.ui.placeholder = 'Mission';
+            this.amendFields = [];
+
+            //make sure we get the order of the primary entities first
+            this.primaryEnts = [].concat(
+                this.amendment.missions || [],
+                this.amendment.reports || []
+            );
+            this.orderedPrimary = this.ordered(this.project, this.primaryEnts);
+
+            //add ordered primary entities to published entities variable
+            this.orderedPrimary.forEach((entity) => {
+                if(entity.value.dois.length) {
+                    this.publishedEntities.push(entity);
+                    this.authors[entity.uuid] = entity.authors;
+                    this.ui.savedStatus[entity.uuid] = false;
+                }
+            });
         } else {
             this.goStart();
         }
-
-        
 
         this.ui.loading = false;
     }
@@ -133,13 +153,12 @@ class PipelineAmendCitationCtrl {
     }
 
     goAmend() {
-        this.$state.go('projects.amendExperiment', {
+        this.$state.go(this.amendComp, {
             projectId: this.project.uuid,
             project: this.project,
             publication: this.publication,
             amendment: this.amendment,
             authors: this.authors,
-            publishedEntities: this.publishedEntities,
         }, { reload: true });
     }
 
@@ -149,6 +168,23 @@ class PipelineAmendCitationCtrl {
 
     goStart() {
         this.$state.go('projects.pipelineStart', { projectId: this.projectId }, { reload: true });
+    }
+
+    ordered(parent, entities) {
+        let order = (ent) => {
+            if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
+                return ent._ui.orders.find(order => order.parent === parent.uuid);
+            }
+            return 0;
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
     }
 }
 

@@ -131,6 +131,7 @@
                 <a class="prj-ent-amend" ng-click="$ctrl.amendProject($event)"><strong>Edit Project Metadata</strong></a>
             </div>
         </div>
+        <!-- Project Header End -->
         <hr>
         <div>
             <!-- Experiments -->
@@ -201,6 +202,7 @@
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Date of Publication</div>
+                                <!-- TODO: Change this to make the call to DataCite for DOI publication date -->
                                 <span class="entity-meta-data">
                                     {{ $ctrl.amendment.created | date:'MM-dd-yyyy' }}
                                 </span>
@@ -435,5 +437,4 @@
             </div>
         </div>
     </div>
-    <!-- Project Header End -->
 </div>
