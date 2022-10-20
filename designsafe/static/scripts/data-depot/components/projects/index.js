@@ -15,10 +15,11 @@ import {
 } from './pipeline-version/pipeline-version-other.component';
 import {
     VersionExperimentSelectionComponent,
-    VersionExperimentCitationComponent
+    VersionFieldReconSelectionComponent,
+    VersionCitationComponent
 } from './pipeline-version/pipeline-version.component';
 import { VersionChangesComponent } from './pipeline-version/pipeline-version-changes.component';
-import { AmendExperimentComponent } from './pipeline-amend/pipeline-amend.component';
+import { AmendExperimentComponent, AmendFieldReconComponent } from './pipeline-amend/pipeline-amend.component';
 import { AmendOtherComponent } from './pipeline-amend/pipeline-amend-other.component';
 import { AmendCitationComponent } from './pipeline-amend/pipeline-amend-citation.component';
 import {
@@ -89,11 +90,13 @@ ddProjectsComponents.component('publicationPreviewFieldRecon', PublicationPrevie
 ddProjectsComponents.component('pipelineStart', PipelineStartComponent);
 ddProjectsComponents.component('amendOther', AmendOtherComponent);
 ddProjectsComponents.component('amendExperiment', AmendExperimentComponent);
+ddProjectsComponents.component('amendFieldRecon', AmendFieldReconComponent);
 ddProjectsComponents.component('amendCitation', AmendCitationComponent);
 ddProjectsComponents.component('versionOtherSelection', VersionOtherSelectionComponent);
 ddProjectsComponents.component('versionOtherCitation', VersionOtherCitationComponent);
 ddProjectsComponents.component('versionExperimentSelection', VersionExperimentSelectionComponent);
-ddProjectsComponents.component('versionExperimentCitation', VersionExperimentCitationComponent);
+ddProjectsComponents.component('versionFieldReconSelection', VersionFieldReconSelectionComponent);
+ddProjectsComponents.component('versionCitation', VersionCitationComponent);
 ddProjectsComponents.component('versionChanges', VersionChangesComponent);
 ddProjectsComponents.component('pipelineSelectExp', PipelineSelectionExpComponent);
 ddProjectsComponents.component('pipelineSelectSim', PipelineSelectionSimComponent);
