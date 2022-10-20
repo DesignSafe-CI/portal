@@ -70,18 +70,34 @@ class PipelineVersionChangesCtrl {
                     this.pubData[attr].push(pubEntity);
                 });
     
-                let entityListName = '';
+
                 this.mainEntityUuids = [];
                 if (this.prjType === 'experimental') {
-                    entityListName = 'experimentsList';
                     this.ui.selectionComp = 'projects.versionExperimentSelection'
-                    this.ui.citationComp = 'projects.versionExperimentCitation'
+                    this.ui.citationComp = 'projects.versionCitation'
+
+                    this.pubData['experimentsList'] = [];
+                    this.selectedEnts.forEach((entity) => {
+                        this.pubData['experimentsList'].push({uuid: entity.uuid});
+                        this.mainEntityUuids.push(entity.uuid);
+                    });
                 }
-                this.pubData[entityListName] = [];
-                this.selectedEnts.forEach((entity) => {
-                    this.pubData[entityListName].push({uuid: entity.uuid});
-                    this.mainEntityUuids.push(entity.uuid);
-                });
+                if (this.prjType === 'field_recon') {
+                    this.ui.selectionComp = 'projects.versionFieldReconSelection'
+                    this.ui.citationComp = 'projects.versionCitation'
+
+                    this.pubData['missions'] = [];
+                    this.pubData['reports'] = [];
+                    this.selectedEnts.forEach((entity) => {
+                        if (entity.name === 'designsafe.project.field_recon.mission') {
+                            this.pubData['missions'].push({uuid: entity.uuid});
+                        }
+                        if (entity.name === 'designsafe.project.field_recon.report') {
+                            this.pubData['reports'].push({uuid: entity.uuid});
+                        }
+                        this.mainEntityUuids.push(entity.uuid);
+                    });
+                }
             } else {
                 this.revisionAuthors = this.publication.project.value.teamOrder
                 this.ui.selectionComp = 'projects.versionOtherSelection'
