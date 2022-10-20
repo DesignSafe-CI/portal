@@ -20,7 +20,7 @@ angular.module('designsafe.portal').requires.push('ds-data');
 /**
  * @function
  * @param {Object} $httpProvider
- * @param {Object} $locationProvider 
+ * @param {Object} $locationProvider
  * @param {Object} $stateProvider
  * @param {Object} $urlRouterProvider
  * @param {Object} Django
@@ -80,7 +80,6 @@ function config(
                         type: 'authn',
                         context: Django.context,
                     });
-                
                 },
             },
         })
@@ -106,7 +105,6 @@ function config(
                         type: 'authn',
                         context: Django.context,
                     });
-                
                 },
             },
         })
@@ -326,6 +324,23 @@ function config(
         .state('projects.amendExperiment', {
             url: '/projects/{projectId}/curation/amend/exp',
             component: 'amendExperiment',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
+        .state('projects.amendFieldRecon', {
+            url: '/projects/{projectId}/curation/amend/fr',
+            component: 'amendFieldRecon',
             params: {
                 project: null,
                 publication: null,
