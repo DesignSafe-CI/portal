@@ -184,7 +184,8 @@ class Report(RelatedEntity):
     model_name = 'designsafe.project.field_recon.report'
     title = fields.CharField('Title', max_length=1024)
     authors = fields.ListField('Authors')
-    referenced_data = fields.ListField('Reference Data', list_cls=ReferencedData)
+    referenced_data = fields.ListField('Referenced Data')
+    related_work = fields.ListField('Related Work')
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(FieldReconProject)
     files = fields.RelatedObjectField(FileModel, multiple=True)

@@ -2923,8 +2923,19 @@ input[type="search"] {
   padding: 6px 12px;
   color: #555555;
 }
-.curation-tools {
-  vertical-align: middle;
+.project-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-weight: bold;
+  justify-content: start;
+}
+.project-preview-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-weight: bold;
+  justify-content: space-between;
 }
 .collapse-tab {
   display: flex;

@@ -4,12 +4,10 @@ const HybridSimTypes = require('./hybrid-simulation-types.json');
 
 class ManageHybridSimCtrl {
 
-    constructor(ProjectEntitiesService, UserService, $uibModal, $q) {
+    constructor(ProjectEntitiesService, $uibModal) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.UserService = UserService;
         this.$uibModal = $uibModal;
-        this.$q = $q;
     }
 
     $onInit() {
@@ -223,8 +221,6 @@ class ManageHybridSimCtrl {
         });
     }
 
-    // BOOKMARK: Fix the template...
-
     deleteHybridSim(hybridSim) {
         let confirmDelete = (msg) => {
             let modalInstance = this.$uibModal.open({
@@ -247,7 +243,7 @@ class ManageHybridSimCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + hybridSim.value.title + "?");
+        confirmDelete(`Are you sure you want to delete ${hybridSim.value.title}?`);
     }
 }
 

@@ -1,111 +1,80 @@
 <div style="background:white;">
-    <!-- Project Header Start -->
     <div ng-if="!$ctrl.loading">
         <!--Project Metadata-->
         <prj-metadata></prj-metadata>
+        <!-- Project Nav -->
+        <span class="project-nav">
+            <button class="btn btn-project-l grayed-out"
+                    ng-click="$ctrl.goWork()"
+                    ng-disabled="$ctrl.loading"
+            >
+                Working Directory
+            </button>
+            <button class="btn btn-project-m"
+                    ng-click="$ctrl.goCuration()"
+                    ng-disabled="$ctrl.loading"
+            >
+                Curation Directory
+            </button>
+            <button class="btn btn-project-r grayed-out"
+                    ng-click="$ctrl.goPreview()"
+                    ng-disabled="$ctrl.loading"
+            >
+                Publication Preview
+            </button>
+            <div ng-if="$ctrl.project.value.projectType != 'other'" style="width: 40px"></div>
+            <span ng-if="$ctrl.project.value.projectType != 'other'" style="padding-right: 12px;">1 |</span>
+            <span ng-if="$ctrl.project.value.projectType != 'other'" >
+                <a  ng-click="$ctrl.manageExperiments()"
+                    ng-if="$ctrl.project.value.projectType === 'experimental'"
+                    href="#">
+                    Add Experiments
+                </a>
+                <a  ng-click="$ctrl.manageSimulations()"
+                    ng-if="$ctrl.project.value.projectType === 'simulation'"
+                    href="#">
+                    Add Simulations
+                </a>
+                <a  ng-click="$ctrl.manageHybridSimulations()"
+                    ng-if="$ctrl.project.value.projectType === 'hybrid_simulation'"
+                    href="#">
+                    Add Hybrid Simulations
+                </a>
+                <div>
+                    <div ng-if="$ctrl.project.value.projectType === 'field_recon'">
+                        <a ng-click="$ctrl.manageFieldReconMissions()" href="#">
+                            Add Missions
+                        </a>
+                    </div>
+                    <div ng-if="$ctrl.project.value.projectType === 'field_recon'">
+                        <a ng-click="$ctrl.manageFieldReconDocuments()" href="#">
+                            Add Documents
+                        </a>
+                    </div>
+                </div>
+            </span>
+            <span ng-if="$ctrl.project.value.projectType != 'other'"  style="padding-right: 12px; padding-left: 12px;">2 |</span>
+            <span ng-if="$ctrl.project.value.projectType != 'other'" >
+                <a ng-click="$ctrl.manageCategories()"
+                ng-if="$ctrl.project.value.projectType !== 'field_recon'"
+                href="#">
+                    Add Categories
+                </a>
+                <a data-ng-click="$ctrl.manageFieldReconCollections()"
+                data-ng-if="$ctrl.project.value.projectType === 'field_recon'"
+                href="#">
+                    Add Collections
+                </a>
+            </span>
+            <span ng-if="$ctrl.project.value.projectType != 'other'"  style="padding-right: 12px; padding-left: 12px;">3 |</span>
+            <span ng-if="$ctrl.project.value.projectType != 'other'" >
+                <a ng-click="$ctrl.relateData()"
+                href="#">
+                Relate Data
+            </a>
+            </span>
+        </span>
     </div>
-    <!-- Project Header End -->
-    <table class="tg" style="table-layout: fixed; width: 100%;" ng-if="!$ctrl.loading">
-        <colgroup>
-            <col style="width: 46%">
-            <col style="width: 50%">
-        </colgroup>
-        <tr>
-            <td class="tg-0lax">
-                <button class="btn btn-project-l grayed-out"
-                        ng-click="$ctrl.goWork()"
-                        ng-disabled="$ctrl.loading"
-                >
-                    Working Directory
-                </button>
-                <button class="btn btn-project-m"
-                        ng-click="$ctrl.goCuration()"
-                        ng-disabled="$ctrl.loading"
-                >
-                    Curation Directory
-                </button>
-                <button class="btn btn-project-r grayed-out"
-                        ng-click="$ctrl.goPreview()"
-                        ng-disabled="$ctrl.loading"
-                >
-                    Publication Preview
-                </button>
-            </td>
-            <td class="curation-tools" ng-if="!$ctrl.loading">
-                <div ng-hide="$ctrl.project.value.projectType === 'other'">
-                    <span style="padding:10px; font-weight:bold;">1
-                        <a  ng-click="$ctrl.manageExperiments()"
-                            ng-if="$ctrl.project.value.projectType === 'experimental'"
-                            href="#">
-                            Add Experiments
-                        </a>
-                        <a  ng-click="$ctrl.manageSimulations()"
-                            ng-if="$ctrl.project.value.projectType === 'simulation'"
-                            href="#">
-                            Add Simulations
-                        </a>
-                        <a  ng-click="$ctrl.manageHybridSimulations()"
-                            ng-if="$ctrl.project.value.projectType === 'hybrid_simulation'"
-                            href="#">
-                            Add Hybrid Simulations
-                        </a>
-                        <a data-ng-click="$ctrl.manageFieldReconMissions()"
-                           data-ng-if="$ctrl.project.value.projectType === 'field_recon'"
-                           href="#">
-                            Add Missions
-                        </a>
-                    </span>
-                    <span style="padding:5px; font-weight:bold;">|</span>
-                    <span style="padding:10px; font-weight:bold;">2
-                        <a ng-click="$ctrl.manageCategories()"
-                           ng-if="$ctrl.project.value.projectType !== 'field_recon'"
-                           href="#">
-                            Add Categories
-                        </a>
-                        <a data-ng-click="$ctrl.manageFieldReconCollections()"
-                           data-ng-if="$ctrl.project.value.projectType === 'field_recon'"
-                           href="#">
-                            Add Collections
-                        </a>
-                    </span>
-                    <span style="padding:5px; font-weight:bold;">|</span>
-                    <span style="padding:10px; font-weight:bold;">3
-                        <a ng-click="$ctrl.relateData()"
-                            href="#">
-                            Relate Data
-                        </a>
-                    </span>
-                </div>
-            </td>
-            <td class="tg-0lax" ng-if="$ctrl.loading" style="opacity: 0.5;">
-                <div ng-hide="$ctrl.project.value.projectType === 'other'">
-                    <span style="padding:10px; font-weight:bold;">1
-                        <strong ng-if="$ctrl.project.value.projectType === 'experimental'">
-                            Add Experiments
-                        </strong>
-                        <strong ng-if="$ctrl.project.value.projectType === 'simulation'">
-                            Add Simulations
-                        </strong>
-                        <strong ng-if="$ctrl.project.value.projectType === 'hybrid_simulation'">
-                            Add Hybrid Simulations
-                        </strong>
-                        <strong ng-if="$ctrl.project.value.projectType === 'field_recon'">
-                            Add Missions
-                        </strong>
-                    </span>
-                    <span style="padding:5px; font-weight:bold;">|</span>
-                    <span style="padding:10px; font-weight:bold;">2
-                        <strong ng-if="$ctrl.project.value.projectType !== 'field_recon'"> Add Categories</strong>
-                        <strong ng-if="$ctrl.project.value.projectType === 'field_recon'"> Add Collections</strong>
-                    </span>
-                    <span style="padding:5px; font-weight:bold;">|</span>
-                    <span style="padding:10px; font-weight:bold;">3
-                        <strong> Relate Data</strong>
-                    </span>
-                </div>
-            </td>
-        </tr>
-    </table>
     <br>
     <div ng-if="$ctrl.loading">
         <h3 class="text-center">

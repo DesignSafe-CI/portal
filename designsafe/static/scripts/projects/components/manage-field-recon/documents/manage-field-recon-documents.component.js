@@ -1,7 +1,7 @@
-import ManageFieldReconMissionsTemplate from './manage-field-recon-missions.template.html';
-const MissionDefaults = require('./mission-form-defaults.json');
+import ManageFieldReconDocumentsTemplate from './manage-field-recon-documents.template.html';
+const DocumentsDefaults = require('./documents-form-defaults.json');
 
-class ManageFieldReconMissionsCtrl {
+class ManageFieldReconDocumentsCtrl {
 
     constructor(ProjectEntitiesService, $uibModal) {
         'ngInject';
@@ -11,9 +11,9 @@ class ManageFieldReconMissionsCtrl {
 
     $onInit() {
         this.project = this.resolve.project;
-        this.missions = this.project.mission_set;
+        this.documents = this.project.report_set;
         this.edit = this.resolve.edit;
-        this.MissionDefaults = MissionDefaults;
+        this.DocumentsDefaults = DocumentsDefaults;
         this.ui = {
             loading: false,
             editing: false,
@@ -53,22 +53,22 @@ class ManageFieldReconMissionsCtrl {
         }
     }
     
-    configureForm(mission) {
+    configureForm(doc) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
-        let form = structuredClone(this.MissionDefaults)
+        let form = structuredClone(this.DocumentsDefaults)
         this.uuid = '';
         this.ui.error = false;
-        if (mission) {
+        if (doc) {
             this.ui.editing = true;
-            form.name = mission.name;
-            this.uuid = mission.uuid;
+            form.name = doc.name;
+            this.uuid = doc.uuid;
             for (let key in form) {
-                if (mission.value[key] instanceof Array && mission.value[key].length) {
-                    form[key] = mission.value[key];
+                if (doc.value[key] instanceof Array && doc.value[key].length) {
+                    form[key] = doc.value[key];
                 } else if (['dateStart', 'dateEnd'].includes(key)) {
-                    form[key] = new Date(mission.value[key]);
-                } else if (typeof mission.value[key] === 'string' && mission.value[key]) {
-                    form[key] = mission.value[key];
+                    form[key] = new Date(doc.value[key]);
+                } else if (typeof doc.value[key] === 'string' && doc.value[key]) {
+                    form[key] = doc.value[key];
                 }
             }
         }
@@ -83,12 +83,12 @@ class ManageFieldReconMissionsCtrl {
         this.ui.editing = false;
     }
 
-    configureAuthors(mission, amending) {
-        /*  Configure Authors for Mission Editing
-            - check and remove authors from missions that don't exist on the project
-            - format project users as authors for mission metadata
+    configureAuthors(doc, amending) {
+        /*  Configure Authors for Document Editing
+            - check and remove authors from documentss that don't exist on the project
+            - format project users as authors for document metadata
         */
-        if (amending) return structuredClone(mission.value.authors);
+        if (amending) return structuredClone(doc.value.authors);
 
         let projectMembers = [this.project.value.pi].concat(
             this.project.value.coPis,
@@ -113,13 +113,13 @@ class ManageFieldReconMissionsCtrl {
                 };
             };
         });
-        if (mission) {
+        if (doc) {
             let projectUsers = projectMembers.map((member) => { return member.name });
-            let missionUsers = mission.value.authors.map((author) => { return author.name });
+            let docUsers = doc.value.authors.map((author) => { return author.name });
             // drop members who are no longer listed in the project...
-            // add members who are aren't listed in the mission...
-            let currentAuthors = mission.value.authors.filter((author) => { return projectUsers.includes(author.name) });
-            let newAuthors = projectMembers.filter((author) => { return !missionUsers.includes(author.name) });
+            // add members who are aren't listed in the document...
+            let currentAuthors = doc.value.authors.filter((author) => { return projectUsers.includes(author.name) });
+            let newAuthors = projectMembers.filter((author) => { return !docUsers.includes(author.name) });
 
             //combine and return unique
             let authors = currentAuthors.concat(newAuthors);
@@ -176,24 +176,24 @@ class ManageFieldReconMissionsCtrl {
         this.form.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
     }
 
-    createMission() {
+    createDocument() {
         this.prepareData();
         const uuid = this.project.uuid;
-        const name = 'designsafe.project.field_recon.mission';
+        const name = 'designsafe.project.field_recon.report';
         this.ProjectEntitiesService.create({
             data: { uuid: uuid, name: name, entity: this.form }
         })
         .then((resp) => {
             this.project.addEntity(resp);
-            this.missions = this.project.mission_set;
+            this.documents = this.project.report_set;
             this.resetForm();
         });
     }
 
-    editMission(mission) {
+    editDocument(doc) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
-        this.configureForm(mission);
-        this.form.authors = this.configureAuthors(mission, false);
+        this.configureForm(doc);
+        this.form.authors = this.configureAuthors(doc, false);
         if (this.form.dateEnd &&
             this.form.dateEnd !== this.form.dateStart) {
                 this.form.dateEnd = new Date(this.form.dateEnd);
@@ -205,15 +205,15 @@ class ManageFieldReconMissionsCtrl {
         );
     }
 
-    updateMission() {
+    updateDocument() {
         this.prepareData();
-        let mission = this.project.getRelatedByUuid(this.uuid);
-        const updatedMission = { ...mission, value: this.form };
+        let doc = this.project.getRelatedByUuid(this.uuid);
+        const updatedDoc = { ...doc, value: this.form };
         this.ProjectEntitiesService.update({
-            data: { uuid: this.uuid, entity: updatedMission }
+            data: { uuid: this.uuid, entity: updatedDoc }
         })
         .then((resp) => {
-            mission.update(resp);
+            doc.update(resp);
             this.resetForm();
         })
         .catch((err) => {
@@ -221,7 +221,7 @@ class ManageFieldReconMissionsCtrl {
         });
     }
 
-    deleteMission(mission) {
+    deleteDocument(doc) {
         let confirmDelete = (msg) => {
             let modalInstance = this.$uibModal.open({
                 component: 'confirmMessage',
@@ -234,22 +234,22 @@ class ManageFieldReconMissionsCtrl {
             modalInstance.result.then((res) => {
                 if (res) {
                     this.ProjectEntitiesService.delete({
-                        data: { uuid: mission.uuid }
+                        data: { uuid: doc.uuid }
                     })
                     .then((resp) => {
                         this.project.removeEntity(resp);
-                        this.missions = this.project.mission_set;
+                        this.documents = this.project.report_set;
                     });
                 }
             });
         };
-        confirmDelete(`Are you sure you want to delete ${mission.value.title}?`);
+        confirmDelete(`Are you sure you want to delete ${doc.value.title}?`);
     }
 }
 
-export const ManageFieldReconMissionsComponent = {
-    template: ManageFieldReconMissionsTemplate,
-    controller: ManageFieldReconMissionsCtrl,
+export const ManageFieldReconDocumentsComponent = {
+    template: ManageFieldReconDocumentsTemplate,
+    controller: ManageFieldReconDocumentsCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',

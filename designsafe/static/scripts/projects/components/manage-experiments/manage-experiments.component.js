@@ -4,12 +4,10 @@ const ExperimentalData = require('./experimental-data.json');
 
 class ManageExperimentsCtrl {
 
-    constructor(ProjectEntitiesService, UserService, $uibModal, $q) {
+    constructor(ProjectEntitiesService, $uibModal) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.UserService = UserService;
         this.$uibModal = $uibModal;
-        this.$q = $q;
     }
 
     $onInit() {
@@ -290,7 +288,7 @@ class ManageExperimentsCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + experiment.value.title + "?");
+        confirmDelete(`Are you sure you want to delete ${experiment.value.title}?`);
     }
 }
 

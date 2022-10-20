@@ -4,12 +4,10 @@ const SimulationTypes = require('./simulation-types.json');
 
 class ManageSimulationCtrl {
 
-    constructor(ProjectEntitiesService, UserService, $uibModal, $q) {
+    constructor(ProjectEntitiesService, $uibModal) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.UserService = UserService;
         this.$uibModal = $uibModal;
-        this.$q = $q;
     }
 
     $onInit() {
@@ -243,7 +241,7 @@ class ManageSimulationCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + simulation.value.title + "?");
+        confirmDelete(`Are you sure you want to delete ${simulation.value.title}?`);
     }
 }
 
