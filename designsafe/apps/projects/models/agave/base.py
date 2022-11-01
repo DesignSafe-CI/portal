@@ -479,9 +479,23 @@ class Project(MetadataModel):
         attributes['relatedIdentifiers'] = []
 
         # remember, related works are not required, so they can be missing...
-        # for related_work in self.associated_projects:
-        #     logger.info(related_work)
-            # related works...
+        for a_proj in self.associated_projects: #relatedwork
+            identifier = {}
+            mapping = {'Linked Project': 'isSupplementTo', 'Cited By': 'isCitedBy', 'Context': 'isDocumentedBy'}
+            if {'type', 'href', 'hrefType'} <= a_proj.keys():
+                identifier['relationType'] = mapping[a_proj['type']]
+                identifier['relatedIdentifierType'] = a_proj['hrefType']
+                identifier['relatedIdentifier'] = a_proj['href']
+                attributes['relatedIdentifiers'].append(identifier)
+
+        for r_data in self.referenced_data:
+            identifier = {}
+            if {'doi', 'hrefType'} <= r_data.keys():
+                identifier['relationType'] = 'References'
+                identifier['relatedIdentifier'] = r_data['doi']
+                identifier['relatedIdentifierType'] = r_data['hrefType']
+                attributes['relatedIdentifiers'].append(identifier)
+
         # checks related entities for DOIs
         for related_entity in self.related_entities():
             rel_ent_dict = related_entity.to_body_dict()

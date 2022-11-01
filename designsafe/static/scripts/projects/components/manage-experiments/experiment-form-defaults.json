@@ -9,7 +9,7 @@
     "procedureStart": "",
     "procedureEnd": "",
     "relatedWork": [{"type": null, "title": "", "href": "" , "hrefType": null}],
-    "referencedData": [{"title": "", "doi": ""}],
+    "referencedData": [{"title": "", "doi": "" , "hrefType": null}],
     "authors": [],
     "description": ""
 }

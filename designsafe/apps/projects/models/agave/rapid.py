@@ -81,6 +81,27 @@ class Mission(RelatedEntity):
         attributes['types']['resourceType'] = "Mission/{location}".format(
             location=self.location.title()
         )
+        # related works are not required, so they can be missing...
+        attributes['relatedIdentifiers'] = []
+        for r_work in self.related_work:
+            identifier = {}
+            mapping = {'Linked Project': 'isSupplementTo', 'Cited By': 'isCitedBy', 'Context': 'isDocumentedBy'}
+            if {'type', 'href', 'hrefType'} <= r_work.keys():
+                identifier['relationType'] = mapping[r_work['type']]
+                identifier['relatedIdentifierType'] = r_work['hrefType']
+                identifier['relatedIdentifier'] = r_work['href']
+                attributes['relatedIdentifiers'].append(identifier)
+
+        for r_data in self.referenced_data:
+            identifier = {}
+            if {'doi', 'hrefType'} <= r_data.keys():
+                identifier['relationType'] = 'References'
+                identifier['relatedIdentifier'] = r_data['doi']
+                identifier['relatedIdentifierType'] = r_data['hrefType']
+                attributes['relatedIdentifiers'].append(identifier)
+        if not len(attributes['relatedIdentifiers']):
+            del attributes['relatedIdentifiers']
+
         return attributes
 
     def to_dataset_json(self):
@@ -196,6 +217,27 @@ class Report(RelatedEntity):
         """Serialize object to datacite JSON."""
         attributes = super(Report, self).to_datacite_json()
         attributes['types']['resourceType'] = "Project/Report"
+        # related works are not required, so they can be missing...
+        attributes['relatedIdentifiers'] = []
+        for r_work in self.related_work:
+            identifier = {}
+            mapping = {'Linked Project': 'isSupplementTo', 'Cited By': 'isCitedBy', 'Context': 'isDocumentedBy'}
+            if {'type', 'href', 'hrefType'} <= r_work.keys():
+                identifier['relationType'] = mapping[r_work['type']]
+                identifier['relatedIdentifierType'] = r_work['hrefType']
+                identifier['relatedIdentifier'] = r_work['href']
+                attributes['relatedIdentifiers'].append(identifier)
+
+        for r_data in self.referenced_data:
+            identifier = {}
+            if {'doi', 'hrefType'} <= r_data.keys():
+                identifier['relationType'] = 'References'
+                identifier['relatedIdentifier'] = r_data['doi']
+                identifier['relatedIdentifierType'] = r_data['hrefType']
+                attributes['relatedIdentifiers'].append(identifier)
+        if not len(attributes['relatedIdentifiers']):
+            del attributes['relatedIdentifiers']
+
         return attributes
 
     def to_dataset_json(self):

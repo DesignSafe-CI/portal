@@ -18,7 +18,7 @@
         "keywords": "",
         "awardNumber": [{ "name": "", "number": "" }],
         "associatedProjects": [{"type": null, "title": "", "href": "" , "hrefType": null}],
-        "referencedData": [{"title": "", "doi": ""}],
+        "referencedData": [{"title": "", "doi": "", "hrefType": null}],
         "fileTags": [],
         "dataType": null,
         "nhTypes": [null]

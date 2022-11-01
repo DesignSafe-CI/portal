@@ -54,11 +54,11 @@
                             Title
                         </td>
                         <td>
-                            DOI
+                            DOI or URL
                         </td>
                     </tr>
                     <tr ng-repeat="reference in $ctrl.form.referencedData track by $index">
-                        <td class="manage-prj-td">
+                        <td class="manage-prj-td align-top">
                             <input  class="project-form-input"
                                     type="text"
                                     id="reference-name{{$index}}"
@@ -68,15 +68,30 @@
                                     ng-required="$ctrl.ui.require.referencedData"
                                     required>
                         </td>
-                        <td class="manage-prj-td">
+                        <td class="manage-prj-td align-top">
                             <input  class="project-form-input"
                                     type="text"
-                                    id="reference-number{{$index}}"
-                                    name="reference-number"
+                                    id="reference-href{{$index}}"
+                                    name="reference-href-type"
                                     ng-model="reference.doi"
                                     ng-disabled="!$ctrl.ui.require.referencedData"
-                                    ng-required="$ctrl.ui.require.referencedData"
-                                    required>
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <input type="radio"
+                                    id="reference-href-type-doi{{$index}}"
+                                    name="reference-href-type{{$index}}"
+                                    value="DOI"
+                                    ng-model="reference.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <label for="DOI">DOI</label>
+                            <input type="radio"
+                                    id="reference-href-type-url{{$index}}"
+                                    name="reference-href-type{{$index}}"
+                                    value="URL"
+                                    ng-model="reference.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <label for="URL">URL</label>
                         </td>
                         <td class="manage-prj-td-last">
                             <button class="btn btn-danger btn-xs"

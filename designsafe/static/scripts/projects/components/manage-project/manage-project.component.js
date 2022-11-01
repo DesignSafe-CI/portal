@@ -1,7 +1,7 @@
 import ManageProjectTemplate from './manage-project.template.html';
 import AmendProjectTemplate from './amend-project.template.html';
-import FormOptions from './project-form-options.json';
-import FormDefaults from './project-form-defaults.json';
+const FormOptions = require('./project-form-options.json');
+const FormDefaults = require('./project-form-defaults.json');
 
 class ManageProjectCtrl {
     constructor(UserService, ProjectModel, PublicationService, $http, $q, $uibModal, $state) {
@@ -155,10 +155,6 @@ class ManageProjectCtrl {
         }
     }
 
-    warn(msg) {
-        console.log(msg);
-    }
-
     update() {
         this.ui.submitting = true;
         let data = (this.project.value.projectType === 'None'
@@ -218,7 +214,7 @@ class ManageProjectCtrl {
             if (this.form.projectType === 'other') {
                 projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
                 projectData.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
-            } else { // BOOKMARK: remove this when finished with testing...
+            } else {
                 if ('associatedProjects' in projectData) {
                     projectData.associatedProjects = [];
                 }
