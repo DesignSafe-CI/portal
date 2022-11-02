@@ -54,7 +54,7 @@
                             Title
                         </td>
                         <td>
-                            DOI or URL
+                            URL or DOI for the reference data, in URL format
                         </td>
                     </tr>
                     <tr ng-repeat="reference in $ctrl.form.referencedData track by $index">
@@ -305,7 +305,7 @@
                     <button class="btn collapsed tab-gray" data-toggle="collapse"
                             data-target="#files-{{doc.uuid}}" style="width: 100%;">
                         <div class="collapse-tab">
-                            <span class="collapse-tab-content-left">Document | <strong>{{doc.value.title}}</strong></span>
+                            <span class="collapse-tab-content-left">Documents | <strong>{{doc.value.title}}</strong></span>
                             <span class="collapse-tab collapse-tab-content-right" ng-if="!doc.value.dois[0]">
                                 <span class="curation-chevron"></span>
                             </span>

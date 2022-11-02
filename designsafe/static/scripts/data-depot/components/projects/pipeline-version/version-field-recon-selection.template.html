@@ -90,16 +90,23 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
-                                <div class="entity-meta-label-multi">
-                                    Referenced Data
-                                </div>
+                            <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">
-                                    <ul class="collection-list">
-                                        <li data-ng-repeat="data in mission.value.referencedData">
-                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
-                                        </li>
-                                    </ul>
+                                    <div ng-repeat="work in mission.value.relatedWork track by $index">
+                                        <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
+                                <div class="entity-meta-label-multi">Referenced Data</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="reference in mission.value.referencedData track by $index">
+                                        <span ng-if="reference.type">
+                                            {{ reference.type }} | 
+                                          </span>
+                                          <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="entity-meta-field" ng-if="mission.value.description">
@@ -171,6 +178,25 @@
                                     <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.value.dateStart">
                                         &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="work in mission.value.relatedWork track by $index">
+                                        <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
+                                <div class="entity-meta-label-multi">Referenced Data</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="reference in mission.value.referencedData track by $index">
+                                        <span ng-if="reference.type">
+                                            {{ reference.type }} | 
+                                          </span>
+                                          <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="entity-meta-field">

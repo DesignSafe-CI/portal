@@ -60,7 +60,11 @@ class PipelineAmendCitationCtrl {
         else if (prj_type == 'field_recon') {
             this.amendComp = 'projects.amendFieldRecon';
             this.ui.placeholder = 'Mission';
-            this.amendFields = [];
+            this.amendFields = [
+                'socialscience',
+                'planning',
+                'geoscience'
+            ];
 
             //make sure we get the order of the primary entities first
             this.primaryEnts = [].concat(

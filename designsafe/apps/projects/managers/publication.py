@@ -58,7 +58,7 @@ FIELD_MAP = {
     "designsafe.project.field_recon.report": "reports",
 }
 
-UNAMENDABLE_FIELDS = {
+UNAMENDABLE_FIELDS = { # review
     'project': [
         'pi',
         'coPis',

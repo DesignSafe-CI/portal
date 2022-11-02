@@ -89,77 +89,6 @@
                     />
                 </div>
             </div>
-            <!-- Project Awards -->
-            <div class="form-group">
-                <table class="manage-prj-table">
-                    <colgroup>
-                        <col style="width: 60%">
-                        <col style="width: 38%">
-                        <col style="width: 2%">
-                    </colgroup>
-                    <tr>
-                        <label for="id-project-awards">
-                            <div class="label-form">
-                                <div>
-                                    <span class="label-form-name">Award Info</span>
-                                </div>
-                                <span class="label-form-desc">
-                                    Recommended for funded projects.
-                                </span>
-                            </div>
-                        </label>
-                    </tr>
-                    <tr>
-                        <td>
-                            Award Name
-                        </td>
-                        <td>
-                            Award Number
-                        </td>
-                    </tr>
-                    <tr ng-repeat="award in $ctrl.form.awardNumber track by $index">
-                        <td class="manage-prj-td">
-                            <input  class="project-form-input"
-                                    type="text"
-                                    id="award-name{{$index}}"
-                                    name="award-name"
-                                    ng-model="award.name"
-                                    ng-disabled="!$ctrl.ui.require.awardNumber"
-                                    ng-required="$ctrl.ui.require.awardNumber"
-                                    required>
-                        </td>
-                        <td class="manage-prj-td">
-                            <input  class="project-form-input"
-                                    type="text"
-                                    id="award-number{{$index}}"
-                                    name="award-number"
-                                    ng-model="award.number"
-                                    ng-disabled="!$ctrl.ui.require.awardNumber"
-                                    ng-required="$ctrl.ui.require.awardNumber"
-                                    required>
-                        </td>
-                        <td class="manage-prj-td-last">
-                            <button class="btn btn-danger btn-xs"
-                                    ng-if="$ctrl.ui.require.awardNumber"
-                                    ng-click="$ctrl.dropUserField('awardNumber', $index)">
-                                <i class="fa fa-times"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </table>
-                <div>
-                    <button class="btn-project-add-rm"
-                    ng-click="$ctrl.addObjField('awardNumber')">
-                    &#x2b; Add <span ng-if="$ctrl.ui.require.awardNumber">another</span> Award
-            </button>
-            |
-            <button class="btn-project-add-rm"
-                    ng-click="$ctrl.dropObjField('awardNumber')"
-                    ng-disabled="!$ctrl.ui.require.awardNumber">
-                    &#x2212; Remove Award
-            </button>
-                </div>
-            </div>
             <!-- Project Referenced Data -->
             <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
                 <table class="manage-prj-table">
@@ -185,11 +114,11 @@
                             Title
                         </td>
                         <td>
-                            DOI
+                            URL or DOI for the reference data, in URL format
                         </td>
                     </tr>
                     <tr ng-repeat="reference in $ctrl.form.referencedData track by $index">
-                        <td class="manage-prj-td">
+                        <td class="manage-prj-td align-top">
                             <input  class="project-form-input"
                                     type="text"
                                     id="reference-name{{$index}}"
@@ -199,15 +128,30 @@
                                     ng-required="$ctrl.ui.require.referencedData"
                                     required>
                         </td>
-                        <td class="manage-prj-td">
+                        <td class="manage-prj-td align-top">
                             <input  class="project-form-input"
                                     type="text"
-                                    id="reference-number{{$index}}"
-                                    name="reference-number"
+                                    id="reference-href{{$index}}"
+                                    name="reference-href-type"
                                     ng-model="reference.doi"
                                     ng-disabled="!$ctrl.ui.require.referencedData"
-                                    ng-required="$ctrl.ui.require.referencedData"
-                                    required>
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <input type="radio"
+                                    id="reference-href-type-doi{{$index}}"
+                                    name="reference-href-type{{$index}}"
+                                    value="DOI"
+                                    ng-model="reference.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <label for="DOI">DOI</label>
+                            <input type="radio"
+                                    id="reference-href-type-url{{$index}}"
+                                    name="reference-href-type{{$index}}"
+                                    value="URL"
+                                    ng-model="reference.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <label for="URL">URL</label>
                         </td>
                         <td class="manage-prj-td-last">
                             <button class="btn btn-danger btn-xs"
@@ -232,7 +176,7 @@
                 </div>
             </div>
             <!-- Related Works -->
-            <div class="form-group">
+            <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
                 <table class="manage-prj-table">
                     <colgroup>
                         <col style="width: 20%">
