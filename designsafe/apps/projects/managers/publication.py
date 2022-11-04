@@ -317,10 +317,6 @@ def amend_datacite_doi(publication):
     
     :param elasticsearch publication: Publication to amend
     """
-    # Only amend doi while in prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
-        return
-
     pub_dict = publication.to_dict()
     project_type = pub_dict['project']['value']['projectType']
 

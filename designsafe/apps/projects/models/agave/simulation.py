@@ -20,6 +20,7 @@ class SimulationProject(Project):
     award_number = fields.ListField('Award Number')
     award_numbers = fields.ListField('Award Numbers')
     associated_projects = fields.ListField('Associated Project')
+    referenced_data = fields.ListField('Referenced Data')
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
     keywords = fields.CharField('Keywords', default='')
     nh_types = fields.ListField('Natural Hazard Type')

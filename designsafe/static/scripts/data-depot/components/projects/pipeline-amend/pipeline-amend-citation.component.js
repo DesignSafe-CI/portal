@@ -92,9 +92,11 @@ class PipelineAmendCitationCtrl {
         this.ui.loading = true;
         let amendments = [];
         this.amendFields.forEach((field) => {
-            this.amendment[field].forEach((entity) => {
-                amendments.push(entity);
-            });
+            if (field in this.amendment) {
+                this.amendment[field].forEach((entity) => {
+                    amendments.push(entity);
+                });
+            }
         });
         this.$http.post(
             '/api/projects/amend-publication/',

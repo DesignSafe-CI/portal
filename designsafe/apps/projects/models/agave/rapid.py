@@ -33,6 +33,7 @@ class FieldReconProject(Project):
     award_number = fields.ListField('Award Number')
     award_numbers = fields.ListField('Award Numbers')
     associated_projects = fields.ListField('Associated Project')
+    referenced_data = fields.ListField('Referenced Data')
     keywords = fields.CharField('Keywords')
     nh_event = fields.CharField('Natural Hazard Event', default='')
     nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
