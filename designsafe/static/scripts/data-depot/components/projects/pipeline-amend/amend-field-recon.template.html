@@ -154,7 +154,7 @@
                                 </tr>
                             </table>
                         </button>
-                        <div id="files-{{mainEntity.uuid}}" class="collapse">
+                        <div id="files-{{mainEntity.uuid}}" class="collapse in dropdown-spacer-lg">
                             <div class="well">
                                 <!-- Tombstone Banner -->
                                 <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mainEntity.uuid)">
@@ -178,16 +178,23 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="entity-meta-field" ng-if="mainEntity.value.referencedData.length">
-                                    <div class="entity-meta-label-multi">
-                                        Referenced Data
-                                    </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.relatedWork.length">
+                                    <div class="entity-meta-label-multi">Related Work</div>
                                     <div class="entity-meta-data">
-                                        <ul class="collection-list">
-                                            <li data-ng-repeat="data in mainEntity.value.referencedData">
-                                                <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
-                                            </li>
-                                        </ul>
+                                        <div ng-repeat="work in mainEntity.value.relatedWork track by $index">
+                                            <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.referencedData.length">
+                                    <div class="entity-meta-label-multi">Referenced Data</div>
+                                    <div class="entity-meta-data">
+                                        <div ng-repeat="reference in mainEntity.value.referencedData track by $index">
+                                            <span ng-if="reference.type">
+                                                {{ reference.type }} | 
+                                              </span>
+                                              <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="entity-meta-field">
@@ -234,7 +241,7 @@
                                     <p>{{ mainEntity.value.description }}</p>
                                 </div>
                                 <div>
-                                    <a class="prj-ent-amend" ng-click="$ctrl.amendPrimaryEntity(mainEntity)"><strong>Edit Documents Metadata</strong></a>
+                                    <a class="prj-ent-amend" ng-click="$ctrl.amendPrimaryEntity(mainEntity, 'fieldReconDocumentsModal')"><strong>Edit Documents Metadata</strong></a>
                                 </div>
                             </div>
                         </div>
@@ -255,7 +262,7 @@
                                 </tr>
                             </table>
                         </button>
-                        <div id="data-{{mainEntity.uuid}}" class="collapse dropdown-spacer-lg">
+                        <div id="data-{{mainEntity.uuid}}" class="collapse in dropdown-spacer-lg">
                             <div class="well">
                                 <!-- Tombstone Banner -->
                                 <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mainEntity.uuid)">
@@ -294,6 +301,25 @@
                                         <span data-ng-if="mainEntity.value.dateEnd && mainEntity.value.dateEnd !== mainEntity.value.dateStart">
                                             &#8213; {{mainEntity.value.dateEnd | date:'MM-dd-yyyy' }}
                                         </span>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.relatedWork.length">
+                                    <div class="entity-meta-label-multi">Related Work</div>
+                                    <div class="entity-meta-data">
+                                        <div ng-repeat="work in mainEntity.value.relatedWork track by $index">
+                                            <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.referencedData.length">
+                                    <div class="entity-meta-label-multi">Referenced Data</div>
+                                    <div class="entity-meta-data">
+                                        <div ng-repeat="reference in mainEntity.value.referencedData track by $index">
+                                            <span ng-if="reference.type">
+                                                {{ reference.type }} | 
+                                              </span>
+                                              <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="entity-meta-field">
@@ -343,7 +369,7 @@
                                     <br>{{ mainEntity.value.description }}
                                 </p>
                                 <div>
-                                    <a class="prj-ent-amend" ng-click="$ctrl.amendPrimaryEntity(mainEntity)"><strong>Edit Mission Metadata</strong></a>
+                                    <a class="prj-ent-amend" ng-click="$ctrl.amendPrimaryEntity(mainEntity, 'fieldReconMissionsModal')"><strong>Edit Mission Metadata</strong></a>
                                 </div>
                                 <br>
                                 <div ng-repeat="collection in $ctrl.orderedSecondary[mainEntity.uuid]">
@@ -466,7 +492,7 @@
                                                         <p>{{ collection.value.description }}</p>
                                                     </div>
                                                     <div>
-                                                        <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(collection)"><strong>Edit Collection Metadata</strong></a>
+                                                        <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(collection, 'fieldReconCollectionsModal')"><strong>Edit Collection Metadata</strong></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -553,7 +579,7 @@
                                                         <p>{{ collection.value.description }}</p>
                                                     </div>
                                                     <div>
-                                                      <a class="prj-ent-amend" ng-click="$ctrl.amendProject($event)"><strong>Edit Collection Metadata</strong></a>
+                                                      <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(collection, 'fieldReconCollectionsModal')"><strong>Edit Collection Metadata</strong></a>
                                                     </div>
                                                 </div>
                                               </div>
@@ -595,7 +621,7 @@
                                                         <p>{{ collection.value.description }}</p>
                                                     </div>
                                                     <div>
-                                                        <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(collection)"><strong>Edit Collection Metadata</strong></a>
+                                                        <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(collection, 'fieldReconCollectionsModal')"><strong>Edit Collection Metadata</strong></a>
                                                     </div>
                                                 </div>
                                             </div>

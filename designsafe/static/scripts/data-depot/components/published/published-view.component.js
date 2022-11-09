@@ -173,9 +173,6 @@ class PublishedViewCtrl {
             this.browser.publication.exp_substructures.forEach(this.getFileObjs);
             this.browser.publication.sim_substructures.forEach(this.getFileObjs);
         } else if (this.browser.publication.project.value.projectType === 'field_recon') {
-            if (typeof this.browser.publication.analysiss != 'undefined') {
-                this.browser.publication.analysiss.forEach(this.getFileObjs);
-            }
             if (typeof this.browser.publication.reports != 'undefined') {
                 this.browser.publication.reports.forEach(this.getFileObjs);
             }

@@ -34,11 +34,11 @@
                         <span class="category-yellow">Social Sciences Collection</span>
                         Groups related data from the social sciences domain.
                     </div>
-                    <div>
+                    <!-- <div>
                         <span class="category-gray">Documents Collection</span>
                         Can include instruments, protocols, and different reports (Virtual Recon, Field Assessment, Preliminary Virtual Assessment, etc).
                         These documents are published separately with their own DOI.
-                    </div>
+                    </div> -->
                 </div>
                 <div>
                     <select class="form-control"
@@ -103,8 +103,8 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.modes)"
-                            ng-disabled="$ctrl.minimumInputs($ctrl.form.modes)">
+                            ng-click="$ctrl.form.modes.pop()"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.modes)">
                             &#x2212; Remove Mode of Collection
                     </button>
                 </div>
@@ -127,8 +127,8 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.sampleApproach)"
-                            ng-disabled="$ctrl.minimumInputs($ctrl.form.sampleApproach)">
+                            ng-click="$ctrl.form.sampleApproach.pop()"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.sampleApproach)">
                             &#x2212; Remove Sampling Approach
                     </button>
                 </div>
@@ -177,8 +177,8 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.observationTypes); $ctrl.removeInput($ctrl.form.observationTypesOther)"
-                            ng-disabled="$ctrl.minimumInputs($ctrl.form.observationTypes)">
+                            ng-click="$ctrl.form.observationTypes.pop(); $ctrl.form.observationTypesOther.pop()"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.observationTypes)">
                             &#x2212; Remove Observation Type
                     </button>
                 </div>
@@ -329,8 +329,8 @@
                         </button>
                         |
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.removeInput($ctrl.form.equipment); $ctrl.removeInput($ctrl.form.equipmentOther)"
-                                ng-disabled="$ctrl.minimumInputs($ctrl.form.equipment)">
+                                ng-click="$ctrl.form.equipment.pop(); $ctrl.form.equipmentOther.pop()"
+                                ng-disabled="$ctrl.checkEmpty($ctrl.form.equipment)">
                                 &#x2212; Remove Equipment
                         </button>
                     </div>
@@ -347,7 +347,7 @@
                         data-ng-required="false"
                         class="form-control" />
                 </div>
-                <div class="referenced-data form-group">
+                <!-- <div class="referenced-data form-group">
                     <div style="width:45%; display:inline-block;">
                         <label>
                             Referenced Data Title
@@ -382,11 +382,11 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.referencedData)"
-                            ng-disabled="$ctrl.minimumInputs($ctrl.form.referencedData)">
+                            ng-click="$ctrl.form.referencedData.pop()"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.referencedData)">
                             &#x2212; Remove Referenced Data
                     </button>
-                </div>
+                </div> -->
                 <div class="description form-group">
                     <label for="id-description">
                         <div class="label-form">
@@ -511,7 +511,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div ng-if="collection.value.referencedData.length">
+                        <!-- <div ng-if="collection.value.referencedData.length">
                             <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
@@ -522,7 +522,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
@@ -651,7 +651,7 @@
                                 <span>{{collection.value.restriction}}</span>
                             </div>
                         </div>
-                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                        <!-- <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                             <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
@@ -662,7 +662,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
@@ -762,7 +762,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                        <!-- <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                             <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
@@ -773,7 +773,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
@@ -824,7 +824,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                        <!-- <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                             <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
@@ -835,7 +835,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
@@ -857,7 +857,7 @@
             </div>
         </div>
         <!-- Reports -->
-        <div ng-repeat="collection in $ctrl.data.reportCollections | orderBy: 'value.title'">
+        <!-- <div ng-repeat="collection in $ctrl.data.reportCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
                 <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
@@ -917,6 +917,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>

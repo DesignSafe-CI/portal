@@ -20,6 +20,7 @@ class SimulationProject(Project):
     award_number = fields.ListField('Award Number')
     award_numbers = fields.ListField('Award Numbers')
     associated_projects = fields.ListField('Associated Project')
+    referenced_data = fields.ListField('Referenced Data')
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
     keywords = fields.CharField('Keywords', default='')
     nh_event = fields.CharField('Natural Hazard Event', default='')
@@ -49,6 +50,8 @@ class Simulation(RelatedEntity):
     title = fields.CharField('Title', max_length=1024)
     simulation_type = fields.CharField('Simulation Type', max_length=1024)
     simulation_type_other = fields.CharField('Simulation Type Other', max_length=1024)
+    referenced_data = fields.ListField('Referenced Data')
+    related_work = fields.ListField('Related Work')
     description = fields.CharField('Description', max_length=1024, default='')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(SimulationProject)
@@ -65,6 +68,27 @@ class Simulation(RelatedEntity):
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type.title()
             )
+        # related works are not required, so they can be missing...
+        attributes['relatedIdentifiers'] = []
+        for r_work in self.related_work:
+            identifier = {}
+            mapping = {'Linked Project': 'isSupplementTo', 'Cited By': 'isCitedBy', 'Context': 'isDocumentedBy'}
+            if {'type', 'href', 'hrefType'} <= r_work.keys():
+                identifier['relationType'] = mapping[r_work['type']]
+                identifier['relatedIdentifierType'] = r_work['hrefType']
+                identifier['relatedIdentifier'] = r_work['href']
+                attributes['relatedIdentifiers'].append(identifier)
+
+        for r_data in self.referenced_data:
+            identifier = {}
+            if {'doi', 'hrefType'} <= r_data.keys():
+                identifier['relationType'] = 'References'
+                identifier['relatedIdentifier'] = r_data['doi']
+                identifier['relatedIdentifierType'] = r_data['hrefType']
+                attributes['relatedIdentifiers'].append(identifier)
+        if not len(attributes['relatedIdentifiers']):
+            del attributes['relatedIdentifiers']
+
         return attributes
 
     def to_dataset_json(self):

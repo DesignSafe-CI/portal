@@ -3,31 +3,23 @@
     <div ng-if="!$ctrl.ui.loading">
         <!-- pub preview metadata -->
         <prj-pub-preview-metadata></prj-pub-preview-metadata>
+        <!-- Project Nav -->
+        <span class="project-preview-nav" ng-if="!$ctrl.readOnly && !$ctrl.ui.loading">
+            <button class="btn btn-project-l grayed-out" ng-click="$ctrl.goWork()">
+                Working Directory
+            </button>
+            <button class="btn btn-project-m grayed-out" ng-click="$ctrl.goCuration()">
+                Curation Directory
+            </button>
+            <button class="btn btn-project-r" ng-click="$ctrl.goPreview()">
+                Publication Preview
+            </button>
+            <div style="flex-grow: 1"></div>
+            <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
+                Publish / Version / Amend
+            </button>
+        </span>
     </div>
-    <!-- Project Header End -->
-    <table class="tg" style="table-layout: fixed; width: 100%;" data-ng-if="!$ctrl.readOnly && !$ctrl.ui.loading">
-        <colgroup>
-            <col style="width: 46%">
-            <col style="width: 50%">
-        </colgroup>
-        <tr>
-            <td class="tg-0lax">
-                <button class="btn btn-project-l grayed-out" ng-click="$ctrl.goWork()">
-                    Working Directory</button>
-                <button class="btn btn-project-m grayed-out" ng-click="$ctrl.goCuration()">
-                    Curation Directory</button>
-                <button class="btn btn-project-r" ng-click="publicationPreview()">
-                    Publication Preview</button>
-            </td>
-            <td class="tg-0lax">
-                <div class="btn-group pull-right" role="group" aria-label="Publish buttons">
-                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
-                        Publish / Version / Amend 
-                    </button>
-                </div>
-            </td>
-        </tr>
-    </table>
     <br>
     <div style="margin-bottom: 2px;" ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading">
         <breadcrumb
@@ -103,16 +95,23 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
-                                <div class="entity-meta-label-multi">
-                                    Referenced Data
-                                </div>
+                            <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">
-                                    <ul class="collection-list">
-                                        <li data-ng-repeat="data in mission.value.referencedData">
-                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
-                                        </li>
-                                    </ul>
+                                    <div ng-repeat="work in mission.value.relatedWork track by $index">
+                                        <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
+                                <div class="entity-meta-label-multi">Referenced Data</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="reference in mission.value.referencedData track by $index">
+                                        <span ng-if="reference.type">
+                                            {{ reference.type }} | 
+                                          </span>
+                                          <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="entity-meta-field">
@@ -232,13 +231,32 @@
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">
-                                    Date(s) of Mission
+                                    Date of Mission
                                 </div>
                                 <div class="entity-meta-data">
                                     <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
                                     <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.value.dateStart">
                                         &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="work in mission.value.relatedWork track by $index">
+                                        <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
+                                <div class="entity-meta-label-multi">Referenced Data</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="reference in mission.value.referencedData track by $index">
+                                        <span ng-if="reference.type">
+                                            {{ reference.type }} | 
+                                          </span>
+                                          <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="entity-meta-field">

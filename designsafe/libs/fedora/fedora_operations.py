@@ -239,6 +239,7 @@ def format_metadata_for_fedora(project_id, version=None):
     if licenses:
         fc_meta['license'] = list(licenses.to_dict().values())
 
+    # Will we need to update this since the object now has a "type" and "hrefType"?
     associated_projects = getattr(pub_meta, 'associatedProjects', None)
     if associated_projects:
         references = list(map(lambda assoc: assoc['title'], associated_projects))

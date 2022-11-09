@@ -66,8 +66,6 @@ class PipelineAmendCtrl {
         let primaryEntNames = [];
         let secondaryEntNames = [];
         if (prj_type == 'experimental') {
-            this.ui.primaryModalName = 'manageExperimentsModal';
-            this.ui.secondaryModalName = 'manageCategories';
             primaryEntNames = ['experimentsList']
             secondaryEntNames = [
                 'modelConfigs',
@@ -78,8 +76,6 @@ class PipelineAmendCtrl {
             ]
         }
         else if (prj_type == 'field_recon') {
-            this.ui.primaryModalName = 'fieldReconMissionsModal'; //TODO: change this to the correct modal once created
-            this.ui.secondaryModalName = 'fieldReconCollectionsModal'; //TODO: change this to the correct modal once created
             primaryEntNames = ['missions','reports']
             secondaryEntNames = [
                 'geoscience',
@@ -93,7 +89,7 @@ class PipelineAmendCtrl {
             this.amendment = JSON.parse(JSON.stringify(this.publication));
         }
         if (update === 'all' || update === 'project') { // update project fields...
-            Object.keys(this.amendment.project.value).forEach((prjKey) => {
+            Object.keys(this.project.value).forEach((prjKey) => {
                 if (!unamendableFields.project.includes(prjKey)) {
                     this.amendment.project.value[prjKey] = this.project.value[prjKey];
                 }
@@ -106,7 +102,7 @@ class PipelineAmendCtrl {
                     if (!prjEntity) {
                         this.ui.missing[amendEntity.uuid] = { 'title': amendEntity.value.title };
                     } else {
-                        Object.keys(amendEntity.value).forEach((entKey) => {
+                        Object.keys(prjEntity.value).forEach((entKey) => {
                             if (!unamendableFields.entity.includes(entKey)) {
                                 amendEntity.value[entKey] = prjEntity.value[entKey];
                             }
@@ -208,11 +204,11 @@ class PipelineAmendCtrl {
         });
     }
 
-    amendPrimaryEntity(amendedEnt) {
+    amendPrimaryEntity(amendedEnt, primaryModalName) {
         let prjEntity = this.project.getAllRelatedObjects()
             .find(ent => ent.uuid == amendedEnt.uuid);
         this.$uibModal.open({
-            component: this.ui.primaryModalName,
+            component: primaryModalName,
             resolve: {
                 project: () => this.project,
                 edit: () => prjEntity,
@@ -224,12 +220,12 @@ class PipelineAmendCtrl {
         });
     }
 
-    amendSecondaryEntity(amendedEnt) {
+    amendSecondaryEntity(amendedEnt, secondaryModalName) {
         let prjEntity = this.project.getAllRelatedObjects()
             .find(ent => ent.uuid == amendedEnt.uuid);
         if (prjEntity) {
             this.$uibModal.open({
-                component: this.ui.secondaryModalName,
+                component: secondaryModalName,
                 resolve: {
                     project: () => this.project,
                     edit: () => prjEntity,

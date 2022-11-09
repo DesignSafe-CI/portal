@@ -896,7 +896,8 @@ def email_user_publication_request_confirmation(self, username):
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
 def check_published_files(project_id, revision=None, selected_files=None):
 
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+    # do not attempt to check for files for local publication attempts
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
         return
 
     #get list of files that should be in the publication

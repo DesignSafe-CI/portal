@@ -62,6 +62,7 @@ import { ManageExperimentsComponent } from '../../../projects/components/manage-
 import { ManageHybridSimComponent } from '../../../projects/components/manage-hybrid-simulations/manage-hybrid-simulations.component';
 import { ManageSimulationComponent } from '../../../projects/components/manage-simulations/manage-simulations.component';
 import { ManageFieldReconMissionsComponent } from '../../../projects/components/manage-field-recon/missions/manage-field-recon-missions.component.js';
+import { ManageFieldReconDocumentsComponent } from '../../../projects/components/manage-field-recon/documents/manage-field-recon-documents.component.js';
 import { ManageFieldReconCollectionsComponent } from '../../../projects/components/manage-field-recon/collections/manage-field-recon-collections.component.js';
 import { AmendEntityComponent } from '../../../projects/components/amend-entity-modal/amend-entity.component.js';
 import { ProjectTreeComponent } from '../../../projects/components/project-tree/project-tree.component';
@@ -127,6 +128,7 @@ ddProjectsComponents.component('manageExperimentsModal', ManageExperimentsCompon
 ddProjectsComponents.component('manageHybridSimulationsModal', ManageHybridSimComponent);
 ddProjectsComponents.component('manageSimulationsModal', ManageSimulationComponent);
 ddProjectsComponents.component('fieldReconMissionsModal', ManageFieldReconMissionsComponent);
+ddProjectsComponents.component('fieldReconDocumentsModal', ManageFieldReconDocumentsComponent);
 ddProjectsComponents.component('fieldReconCollectionsModal', ManageFieldReconCollectionsComponent);
 ddProjectsComponents.component('amendEntityModal', AmendEntityComponent);
 ddProjectsComponents.component('projectTree', ProjectTreeComponent);

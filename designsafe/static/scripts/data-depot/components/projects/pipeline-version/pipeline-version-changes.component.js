@@ -87,13 +87,9 @@ class PipelineVersionChangesCtrl {
                     this.ui.citationComp = 'projects.versionCitation'
 
                     this.pubData['missions'] = [];
-                    this.pubData['reports'] = [];
                     this.selectedEnts.forEach((entity) => {
                         if (entity.name === 'designsafe.project.field_recon.mission') {
                             this.pubData['missions'].push({uuid: entity.uuid});
-                        }
-                        if (entity.name === 'designsafe.project.field_recon.report') {
-                            this.pubData['reports'].push({uuid: entity.uuid});
                         }
                         this.mainEntityUuids.push(entity.uuid);
                     });
