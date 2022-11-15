@@ -275,91 +275,112 @@
                     </button>
                 </div>
             </div>
-            <!-- FR Fields -->
-            <div ng-if="$ctrl.form.projectType === 'field_recon'">
-                <div style="width: 100%;">
-                    <!-- Event -->
-                    <div style="width:45%; display:inline-block;" class="pull-left form-group">
-                        <label for="id-nh-event">
-                            <span class="pull-left">Event</span>
-                            <span class="label label-danger" style="margin-left: 5px">Required</span>
-                            <br>
-                            <span style="font-weight:normal;">
-                                Name given to the natural hazard event (ex. Hurricane Katrina).
-                            </span>
+            <!-- NH Fields -->
+            <div class="form-group">
+                <table class="manage-prj-table">
+                    <colgroup>
+                        <col style="width: 60%">
+                        <col style="width: 20%">
+                        <col style="width: 20%">
+                    </colgroup>
+                    <tr>
+                        <label for="id-project-events">
+                            <div class="label-form">
+                                <div>
+                                    <span class="label-form-name">Event</span>
+                                </div>
+                                <span class="label-form-desc">
+                                    Details related to a specific event such as a natural hazard (ex. Hurricane Katrina).
+                                </span>
+                            </div>
                         </label>
-                        <input class="project-form-input"
-                                type="text"
-                                id="id-nh-event"
-                                name="nh-event"
-                                ng-model="$ctrl.form.nhEvent"
-                                ng-required="true"/>
-                    </div>
-                    <!-- Event Dates -->
-                    <div style="width:50%;" class="form-group">
-                        <label for="id-nh-event-date">
-                            <span class="pull-left">Event Date(s)</span>
-                            <span class="label label-danger" style="margin-left: 5px">Required</span>
-                            <br>
-                            <span style="font-weight:normal;">
-                                If you only want to enter a single date, fill in the first field.
-                            </span>
-                        </label>
-                        <div style="display:flex;">
-                            <input  class="form-control"
+                    </tr>
+                    <tr>
+                        <td>
+                            Event Name
+                        </td>
+                        <td>
+                            Start Date
+                        </td>
+                        <td>
+                            End Date (optional)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input"
+                                    type="text"
+                                    id="id-nh-event"
+                                    name="nh-event"
+                                    ng-model="$ctrl.form.nhEvent"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents"/>
+                        </td>
+                        <td class="manage-prj-td">
+                            <input  class="project-form-input"
                                     type="date"
                                     ng-model="$ctrl.form.nhEventStart"
-                                    ng-required="true">
-                            <span style="padding:6px;">&#8213;</span>
-                            <input  class="form-control"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents">
+                        </td>
+                        <td class="manage-prj-td">
+                            <input  class="project-form-input"
                                     type="date"
                                     ng-model="$ctrl.form.nhEventEnd"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
                                     ng-required="false">
-                        </div>
-                    </div>
-                </div>
-                <!-- Event Location -->
-                <div class="form-group">
-                    <label for="id-location">
-                        <div class="label-form">
-                            <div>
-                                <span class="label-form-name pull-left">Event Location</span>
-                                <span class="label label-danger">Required</span>
-                            </div>
-                        </div>
-                    </label>
-                    <div>
-                        <div style="width: 55%; display:inline-block;">
-                            <label for="id-location" class="label-secondary">
-                                Location
-                            </label>
-                            <input type="text"
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Location
+                        </td>
+                        <td>
+                            Latitude
+                        </td>
+                        <td>
+                            Longitude
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input"
+                                    type="text"
                                     id="id-location"
                                     ng-model="$ctrl.form.nhLocation"
-                                    ng-required="true"
-                                    class="form-control"/>
-                        </div>
-                        <div style="width: 21%; display:inline-block; margin-left:5px;">
-                            <label for="id-location" class="label-secondary">
-                                Latitude
-                            </label>
-                            <input type="text"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents"/>
+                        </td>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input"
+                                    type="text"
                                     id="id-latitude"
                                     ng-model="$ctrl.form.nhLatitude"
-                                    ng-required="true"
-                                    class="form-control"/>
-                        </div>
-                        <div style="width: 21%; display:inline-block; margin-left:5px;">
-                            <label for="id-location" class="label-secondary">
-                                Longitude
-                            </label>
-                            <input type="text"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents"/>
+                        </td>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input"
+                                    type="text"
                                     id="id-longitude"
                                     ng-model="$ctrl.form.nhLongitude"
-                                    ng-required="true"
-                                    class="form-control" />
-                        </div>
-                    </div>
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents"/>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.ui.require.nhEvents = !$ctrl.ui.require.nhEvents"
+                            ng-disabled="$ctrl.ui.require.nhEvents">
+                            &#x2b; Add Event
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropEvent()"
+                            ng-disabled="!$ctrl.ui.require.nhEvents">
+                            &#x2212; Remove Event
+                    </button>
                 </div>
             </div>
             <!-- Project Keywords -->

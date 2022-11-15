@@ -22,13 +22,12 @@ class ManageProjectCtrl {
             loading: true,
             editType: true,
             submitting: false,
-            error: null,
-            showFREvents: false,
             require: {
                 guestMembers: true,
                 awardNumber: true,
                 associatedProjects: true,
                 referencedData: true,
+                nhEvents: false,
                 coPis: false,
                 teamMembers: false,
             },
@@ -58,7 +57,7 @@ class ManageProjectCtrl {
                 } else if (projectCopy[key] instanceof Object && Object.keys(projectCopy[key]).length){
                     this.form[key] = projectCopy[key];
                 } else if (['nhEventStart', 'nhEventEnd'].includes(key)) {
-                    this.form[key] = new Date(projectCopy[key]);
+                    this.form[key] = (projectCopy[key] ? new Date(projectCopy[key]) : null);
                 } else if (typeof projectCopy[key] === 'string' && projectCopy[key]) {
                     this.form[key] = projectCopy[key];
                 }
@@ -95,6 +94,7 @@ class ManageProjectCtrl {
                 if (this.form.projectType in this.FormDefaults) {
                     this.ui.require.guestMembers = this.requireField(this.form.guestMembers);
                     this.ui.require.awardNumber = this.requireField(this.form.awardNumber);
+                    this.ui.require.nhEvents = this.requireEvent();
                     if (this.form.projectType === 'other') {
                         this.ui.require.associatedProjects = this.requireField(this.form.associatedProjects);
                         this.ui.require.referencedData = this.requireField(this.form.referencedData);
@@ -231,26 +231,20 @@ class ManageProjectCtrl {
             
             if (projectData.projectType === 'field_recon') {
                 projectData.frTypes = this.form.frTypes.filter(type => typeof type === 'string' && type.length);
+            }
+            let fields = ["nhEvent", "nhLocation", "nhLongitude", "nhLatitude"];
+            let result = fields.every((field) => {return typeof projectData[field] === 'string' && projectData[field].length})
+            let checkDate = isNaN(Date.parse(projectData.nhEventStart))
+            if (!result || checkDate) {
+                fields.forEach((field) => projectData[field] = '')
+                projectData.nhEventStart = '';
+                projectData.nhEventEnd = '';
+            }
+            else {
                 if (isNaN(Date.parse(projectData.nhEventEnd))) {
                     projectData.nhEventEnd = new Date(projectData.nhEventStart);
                 }
-            }
-            else {
-                let fields = ["nhEvent", "nhLocation", "nhLongitude", "nhLatitude"];
-                let result = fields.every((field) => {return typeof projectData[field] === 'string' && projectData[field].length})
-                let checkDate = isNaN(Date.parse(projectData.nhEventStart))
-                if (!result || checkDate) {
-                    fields.forEach((field) => projectData[field] = '')
-                    projectData.nhEventStart = ''
-                    projectData.nhEventEnd = ''
-                }
-                else {
-                    if (isNaN(Date.parse(projectData.nhEventEnd))) {
-                        projectData.nhEventEnd = new Date(projectData.nhEventStart);
-                    }
-                }
-            }
-            
+            }            
         }
         return projectData;
     }
@@ -314,6 +308,36 @@ class ManageProjectCtrl {
         if (!group.includes(undefined)){
             group.push(undefined);
         }
+    }
+
+    requireEvent() {
+        const eventFields = [
+            "nhEventStart",
+            "nhEventEnd",
+            "nhEvent",
+            "nhLocation",
+            "nhLatitude",
+            "nhLongitude"
+        ]
+        return eventFields.some((field) => this.form[field]);
+    }
+
+    dropEvent(){
+        const eventFields = [
+            "nhEventStart",
+            "nhEventEnd",
+            "nhEvent",
+            "nhLocation",
+            "nhLatitude",
+            "nhLongitude"
+        ]
+        eventFields.forEach((field) => {
+            if (field == "nhEventStart" || field == "nhEventEnd") {
+                this.form[field] = null;
+            }
+            this.form[field] = '';
+        })
+        this.ui.require.nhEvents = false;
     }
 
     requireField(field) {
