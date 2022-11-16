@@ -295,6 +295,10 @@ def amend_publication(project_id, amendments=None, authors=None, revision=None):
         award_number = []
     prj_dict['value']['awardNumbers'] = award_number
     prj_dict['value'].pop('awardNumber', None)
+    if 'nhEventStart' in prj_dict['value'] and prj_dict['value']['nhEventStart'] == '':
+        del prj_dict['value']['nhEventStart']
+    if 'nhEventEnd' in prj_dict['value'] and prj_dict['value']['nhEventEnd'] == '':
+        del prj_dict['value']['nhEventEnd']
 
     for key in prj_dict['value']:
         if key not in UNAMENDABLE_FIELDS['project']:
