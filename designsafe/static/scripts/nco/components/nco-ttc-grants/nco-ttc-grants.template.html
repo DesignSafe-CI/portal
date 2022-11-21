@@ -37,13 +37,14 @@
         <!-- row1 items -->
         <div class="ttc-row">
             <div class="ttc-award-number-title ttc-data-cell ttc-left">[{{grant.AwardNumber}}] {{grant.Title}}</div>
-            <div class="ttc-timespan ttc-data-cell ttc-right">{{grant.StartDate.$date | date}} - {{grant.EndDate.$date | date}}</div>
+            <div class="ttc-timespan ttc-data-cell ttc-right" ng-if="grant.StartDate.$date">{{grant.StartDate.$date | date}} - {{grant.EndDate.$date | date}}</div>
+            <div class="ttc-timespan ttc-data-cell ttc-right" ng-if="!grant.StartDate.$date">{{grant.StartDate}} - {{grant.EndDate}}</div>
         </div>
 
         <!-- row2 items -->
         <div class="ttc-row">
             <div class="ttc-pi-name ttc-data-cell ttc-left">
-                {{grant.PiName}} <span ng-if="grant.CoPiName"> / {{grant.CoPiName}}</span>
+                {{grant.PiName}} <span ng-if="grant.CoPiNames"> / {{grant.CoPiNames}}</span>
                 <br />
                 {{grant.Org}} - {{grant.OrgState}}
             </div>
