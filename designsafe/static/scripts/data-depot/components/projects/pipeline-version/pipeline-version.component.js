@@ -140,11 +140,13 @@ class PipelineVersionCtrl {
         })
 
         this.publishedKeyNames.forEach((key) => {
-            this.publication[key].forEach((pubEnt) => {
-                if (pubEnt.uuid in this.revisionAuthors) {
-                    this.revisionAuthors[pubEnt.uuid] = pubEnt.authors;
-                }
-            });
+            if (key in this.publication) {
+                this.publication[key].forEach((pubEnt) => {
+                    if (pubEnt.uuid in this.revisionAuthors) {
+                        this.revisionAuthors[pubEnt.uuid] = pubEnt.authors;
+                    }
+                });
+            }
         });
     }
 

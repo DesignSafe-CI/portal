@@ -375,6 +375,12 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
             prj.add_team_members([request.user.username])
 
         # Email collaborators
+        """TODO:
+        set_project_id  is being run as a task to prevent duplicate project IDs from being created.
+        A race condition during project creation is caused when we redirect users to their project workspace
+        before the Project ID (PRJ-XXXX) is created, so the user sees NONE after creating a new project
+        sometimes.
+        """
         chain(
             tasks.set_project_id.s(prj.uuid).set(queue="api") |
             tasks.email_collaborator_added_to_project.s(
@@ -435,6 +441,13 @@ class ProjectInstanceView(BaseApiView):
 
         :param request: 
         :return:
+        """
+        """TODO:
+        Changing a project's project type needs to be cleaned up. If a user changes an
+        Experimental project to something else, any associated metadata to the project
+        should be deleted (unless it has a DOI in which case changing project types
+        should be prevented anyways). Once that data is deleted, then we should update
+        the type of project.
         """
         if request.is_ajax():
             post_data = json.loads(request.body)
