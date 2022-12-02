@@ -97,18 +97,20 @@ class PipelineAmendCtrl {
         }
         if (update === 'all' || update === 'primary') { // update primary entity fields...
             primaryEntNames.forEach((fieldName) => {
-                this.amendment[fieldName].forEach((amendEntity) => {
-                    let prjEntity = prjEnts.find(ent => ent.uuid === amendEntity.uuid);
-                    if (!prjEntity) {
-                        this.ui.missing[amendEntity.uuid] = { 'title': amendEntity.value.title };
-                    } else {
-                        Object.keys(prjEntity.value).forEach((entKey) => {
-                            if (!unamendableFields.entity.includes(entKey)) {
-                                amendEntity.value[entKey] = prjEntity.value[entKey];
-                            }
-                        });
-                    }
-                });
+                if (fieldName in this.amendment) {
+                    this.amendment[fieldName].forEach((amendEntity) => {
+                        let prjEntity = prjEnts.find(ent => ent.uuid === amendEntity.uuid);
+                        if (!prjEntity) {
+                            this.ui.missing[amendEntity.uuid] = { 'title': amendEntity.value.title };
+                        } else {
+                            Object.keys(prjEntity.value).forEach((entKey) => {
+                                if (!unamendableFields.entity.includes(entKey)) {
+                                    amendEntity.value[entKey] = prjEntity.value[entKey];
+                                }
+                            });
+                        }
+                    });
+                }
             });
         }
         if (update === 'all' || update === 'secondary') { // update sub entity fields...
