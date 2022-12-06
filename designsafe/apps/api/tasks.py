@@ -897,7 +897,7 @@ def email_user_publication_request_confirmation(self, username):
 def check_published_files(project_id, revision=None, selected_files=None):
 
     # do not attempt to check for files for local publication attempts
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
         return
 
     #get list of files that should be in the publication

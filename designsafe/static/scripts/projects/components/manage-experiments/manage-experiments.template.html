@@ -165,6 +165,7 @@
                                     type="text"
                                     id="reference-href{{$index}}"
                                     name="reference-href-type"
+                                    placeholder="https://"
                                     ng-model="reference.doi"
                                     ng-disabled="!$ctrl.ui.require.referencedData"
                                     ng-required="$ctrl.ui.require.referencedData">
@@ -264,6 +265,7 @@
                                     type="text"
                                     id="work-href{{$index}}"
                                     name="related-work"
+                                    placeholder="https://"
                                     ng-model="work.href"
                                     ng-disabled="!$ctrl.ui.require.relatedWork"
                                     ng-required="$ctrl.ui.require.relatedWork">

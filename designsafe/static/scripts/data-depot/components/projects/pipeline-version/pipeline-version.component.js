@@ -40,6 +40,7 @@ class PipelineVersionCtrl {
         this.publication = this.ProjectService.resolveParams.publication;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.selectedEnts = this.ProjectService.resolveParams.selectedEnts;
+        this.curDate = new Date().getFullYear();
         this.revisionAuthors = {}
         this.selectedAuthor = '';
         if (!this.publication) {
@@ -153,11 +154,20 @@ class PipelineVersionCtrl {
     saveAuthors(entity, status) {
         this.ui.savedStatus[entity.uuid] = status;
         let statuses = Object.values(this.ui.savedStatus);
+        const updateAuths = structuredClone(this.revisionAuthors[entity.uuid]);
+        if (status) {
+            this.ui.loading = true;
+            delete this.revisionAuthors[entity.uuid];
+        }
         if (statuses.every(value => value === true)) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             this.ui.confirmed = true;
         } else {
             this.ui.confirmed = false;
+        }
+        if (status) {
+            this.revisionAuthors[entity.uuid] = updateAuths;
+            this.ui.loading = false;
         }
     }
 

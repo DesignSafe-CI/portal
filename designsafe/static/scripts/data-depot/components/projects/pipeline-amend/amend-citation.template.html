@@ -67,7 +67,7 @@
                 </div>
                 <!-- Citation Preview -->
                 <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
-                <div class="well" style="margin-bottom:20px; background-color: white;">
+                <div class="well" style="margin-bottom:20px; background-color: white;"  ng-show="!$ctrl.ui.loading">
                     <div>
                         <ds-author-list format="hname" authors="$ctrl.authors[pubEnt.uuid]"></ds-author-list>
                         <span>

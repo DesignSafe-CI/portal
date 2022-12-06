@@ -121,11 +121,20 @@ class PipelineAmendCitationCtrl {
     saveAuthors(entity, status) {
         this.ui.savedStatus[entity.uuid] = status;
         let statuses = Object.values(this.ui.savedStatus);
+        const updateAuths = structuredClone(this.authors[entity.uuid]);
+        if (status) {
+            this.ui.loading = true;
+            delete this.authors[entity.uuid];
+        }
         if (statuses.every(value => value === true)) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             this.ui.confirmed = true;
         } else {
             this.ui.confirmed = false;
+        }
+        if (status) {
+            this.authors[entity.uuid] = updateAuths;
+            this.ui.loading = false;
         }
     }
 
