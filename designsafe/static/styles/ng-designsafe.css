@@ -4,6 +4,7 @@
     margin-bottom: 20px;
     margin-left: 0;
     padding: 5px 5px 5px 0;
+    z-index:10;
 }
 
 .btn-toolbar-right {
@@ -1033,4 +1034,8 @@ i[class^="icon-ls-pre/post"]:before,
 .feedback-item {
     width: 50%;
     padding: 10px;
+}
+
+.pub-header{
+    padding-top: 85px;
 }
