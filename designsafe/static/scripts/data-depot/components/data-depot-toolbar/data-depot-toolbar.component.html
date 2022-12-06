@@ -1,4 +1,4 @@
-<div class="clearfix btn-toolbar-ds dd-toolbar" ng-class="$ctrl.$state.current.name === 'publishedData' ? 'btn-toolbar-pub' : none" ng-hide="$ctrl.$state.current.name === 'publicData'">
+<div class="clearfix btn-toolbar-ds dd-toolbar" ng-class="$ctrl.$state.current.name === 'publishedData' || $ctrl.$state.current.name === 'publicDataLegacy'? 'btn-toolbar-pub' : none" ng-hide="$ctrl.$state.current.name === 'publicData'">
         <div class="btn-toolbar btn-toolbar-left" 
             role="toolbar"
             aria-label="Data Browser Search"
@@ -14,7 +14,7 @@
             <div class="btn-toolbar-right">
                 <div class="btn-group-data-depot-toolbar btn-group">
                     <button class="btn btn-sm btn-default" title="Rename" ng-click="$ctrl.rename()" style="text-align: center;"
-                            ng-hide="$ctrl.$state.current.name === 'publishedData'"
+                            ng-hide="$ctrl.$state.current.name === 'publishedData' || $ctrl.$state.current.name === 'publicDataLegacy'"
                             ng-disabled="!$ctrl.FileOperationService.tests.rename ||
                                         $ctrl.browser.project.publicationStatus === 'publishing'">
                         <i class="fa fa-pencil"></i><span style="display:block;">Rename</span>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="btn-group-data-depot-toolbar btn-group">
                     <button class="btn btn-sm btn-default" title="Move" ng-click="$ctrl.move()" style="text-align: center;"
-                            ng-hide="$ctrl.$state.current.name === 'publishedData'"
+                            ng-hide="$ctrl.$state.current.name === 'publishedData' || $ctrl.$state.current.name === 'publicDataLegacy'"
                             ng-disabled="!$ctrl.FileOperationService.tests.move ||
                                         $ctrl.browser.project.publicationStatus === 'publishing'">
                         <i class="fa fa-arrows"></i><span style="display:block;">Move</span>
@@ -54,7 +54,7 @@
                 </div>
                 <div class="btn-group-data-depot-toolbar btn-group">
                     <button class="btn btn-sm btn-default" title="Move to trash" ng-click="$ctrl.trash()" style="text-align: center;"
-                            ng-hide="$ctrl.$state.current.name === 'publishedData'"
+                            ng-hide="$ctrl.$state.current.name === 'publishedData' || $ctrl.$state.current.name === 'publicDataLegacy'"
                             ng-disabled="!$ctrl.FileOperationService.tests.trash ||
                                         $ctrl.browser.project.publicationStatus === 'publishing'"
                             ng-if="!$ctrl.browser.tests.canDelete">
