@@ -93,7 +93,7 @@ def agave_jwt_login(func):
 
         jwt_username = jwt_payload.get(settings.AGAVE_JWT_USER_CLAIM_FIELD, '')
         if jwt_username == settings.AGAVE_JWT_SERVICE_ACCOUNT:
-            username = request.GET.get('user', None)
+            username = request.GET.get('user', jwt_username)
         else:
             username = jwt_username
 
