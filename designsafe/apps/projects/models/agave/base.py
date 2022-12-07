@@ -87,9 +87,16 @@ class Project(MetadataModel):
     pi = fields.CharField('PI', max_length=255)
     award_number = fields.ListField('Award Number')
     award_numbers = fields.ListField('Award Numbers')
-    associated_projects = fields.ListField('Associated Project')
+    associated_projects = fields.ListField('Associated Project') #AKA Related Work
+    referenced_data = fields.ListField('Referenced Data')
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
     keywords = fields.CharField('Keywords', default='')
+    nh_event = fields.CharField('Natural Hazard Event', default='')
+    nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
+    nh_event_end = fields.CharField('Date End', max_length=1024, default='')
+    nh_location = fields.CharField('Natural Hazard Location', default='')
+    nh_latitude = fields.CharField('Natural Hazard Latitude', default='')
+    nh_longitude = fields.CharField('Natural Hazard Longitude', default='')
     file_tags = fields.ListField('File Tags')
     nh_types = fields.ListField('Natural Hazard Type')
     dois = fields.ListField('Dois')
@@ -476,6 +483,26 @@ class Project(MetadataModel):
                 })
 
         attributes['relatedIdentifiers'] = []
+
+        # remember, related works are not required, so they can be missing...
+        for a_proj in self.associated_projects: #relatedwork
+            identifier = {}
+            mapping = {'Linked Project': 'isSupplementTo', 'Cited By': 'isCitedBy', 'Context': 'isDocumentedBy'}
+            if {'type', 'href', 'hrefType'} <= a_proj.keys():
+                identifier['relationType'] = mapping[a_proj['type']]
+                identifier['relatedIdentifierType'] = a_proj['hrefType']
+                identifier['relatedIdentifier'] = a_proj['href']
+                attributes['relatedIdentifiers'].append(identifier)
+
+        for r_data in self.referenced_data:
+            identifier = {}
+            if {'doi', 'hrefType'} <= r_data.keys():
+                identifier['relationType'] = 'References'
+                identifier['relatedIdentifier'] = r_data['doi']
+                identifier['relatedIdentifierType'] = r_data['hrefType']
+                attributes['relatedIdentifiers'].append(identifier)
+
+        # checks related entities for DOIs
         for related_entity in self.related_entities():
             rel_ent_dict = related_entity.to_body_dict()
             if 'dois' in rel_ent_dict['value'] and len(rel_ent_dict['value']['dois']):

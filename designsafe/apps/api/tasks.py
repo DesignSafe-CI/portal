@@ -563,6 +563,8 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
     :param int revision: The revision number of the publication
     :param list of selected_files strings: Only provided if project type == other.
     """
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+        return
 
     es_client = new_es_client()
     publication = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
@@ -630,7 +632,7 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
     index_path = '/' + project_id
     if revision:
         index_path += 'v{}'.format(revision)
-    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': index_path, 'recurse':True}, queue='indexing')
+    agave_indexer.apply_async(kwargs={'systemId': 'designsafe.storage.published', 'filePath': index_path, 'recurse':True}, queue='indexing')
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
@@ -912,6 +914,10 @@ def email_user_publication_request_confirmation(self, username):
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
 def check_published_files(project_id, revision=None, selected_files=None):
+
+    # do not attempt to check for files for local publication attempts
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+        return
 
     #get list of files that should be in the publication
     es_client = new_es_client()

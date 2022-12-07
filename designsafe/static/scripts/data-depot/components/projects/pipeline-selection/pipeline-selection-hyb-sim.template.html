@@ -140,6 +140,25 @@
                                 <ds-author-list authors="hybsim.value.authors"></ds-author-list>
                             </div>
                         </div>
+                        <div class="entity-meta-field" ng-if="hybsim.value.relatedWork.length">
+                            <div class="entity-meta-label-multi">Related Work</div>
+                            <div class="entity-meta-data">
+                                <div ng-repeat="work in hybsim.value.relatedWork track by $index">
+                                    <a href="{{ work.href }}" target=”_blank”>{{ work.title }}</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="entity-meta-field" ng-if="hybsim.value.referencedData.length">
+                            <div class="entity-meta-label-multi">Referenced Data</div>
+                            <div class="entity-meta-data">
+                                <div ng-repeat="reference in hybsim.value.referencedData track by $index">
+                                    <span ng-if="reference.type">
+                                        {{ reference.type }} | 
+                                      </span>
+                                      <a href="{{ reference.doi }}" target=”_blank”>{{ reference.title }}</a>
+                                </div>
+                            </div>
+                        </div>
                         <div class="entity-meta-field">
                             <div class="entity-meta-label">Date of Publication</div>
                             <span class="entity-meta-data">

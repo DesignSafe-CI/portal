@@ -6,10 +6,8 @@ import experimentalData from '../../../../projects/components/manage-experiments
 
 class PipelinePrimaryEntityCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, $uibModal, $state) {
+    constructor(ProjectService, $uibModal, $state) {
         'ngInject';
-
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.$uibModal = $uibModal;
         this.$state = $state;

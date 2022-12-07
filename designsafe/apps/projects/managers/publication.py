@@ -58,7 +58,7 @@ FIELD_MAP = {
     "designsafe.project.field_recon.report": "reports",
 }
 
-UNAMENDABLE_FIELDS = {
+UNAMENDABLE_FIELDS = { # review
     'project': [
         'pi',
         'coPis',
@@ -295,6 +295,10 @@ def amend_publication(project_id, amendments=None, authors=None, revision=None):
         award_number = []
     prj_dict['value']['awardNumbers'] = award_number
     prj_dict['value'].pop('awardNumber', None)
+    if 'nhEventStart' in prj_dict['value'] and prj_dict['value']['nhEventStart'] == '':
+        del prj_dict['value']['nhEventStart']
+    if 'nhEventEnd' in prj_dict['value'] and prj_dict['value']['nhEventEnd'] == '':
+        del prj_dict['value']['nhEventEnd']
 
     for key in prj_dict['value']:
         if key not in UNAMENDABLE_FIELDS['project']:
@@ -317,10 +321,6 @@ def amend_datacite_doi(publication):
     
     :param elasticsearch publication: Publication to amend
     """
-    # Only amend doi while in prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') != 'default':
-        return
-
     pub_dict = publication.to_dict()
     project_type = pub_dict['project']['value']['projectType']
 
@@ -771,6 +771,10 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=N
 
     prj_dict['value']['awardNumbers'] = award_number
     prj_dict['value'].pop('awardNumber', None)
+    if 'nhEventStart' in prj_dict['value'] and prj_dict['value']['nhEventStart'] == '':
+        del prj_dict['value']['nhEventStart']
+    if 'nhEventEnd' in prj_dict['value'] and prj_dict['value']['nhEventEnd'] == '':
+        del prj_dict['value']['nhEventEnd']
     if publication.get('project'):
         publication['project'].update(prj_dict)
     else:
