@@ -1,5 +1,4 @@
 import ManageCategoriesTemplate from './manage-categories.component.html';
-import _ from 'underscore';
 
 class ManageCategoriesCtrl {
 
@@ -304,7 +303,7 @@ class ManageCategoriesCtrl {
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete(`Are you sure you want to delete ${ent.value.title}?`);
     }
 
     onBrowse(file) {

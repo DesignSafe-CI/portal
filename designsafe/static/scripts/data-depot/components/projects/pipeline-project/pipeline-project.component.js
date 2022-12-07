@@ -1,12 +1,9 @@
 import PipelineProjectTemplate from './pipeline-project.component.html';
-import _ from 'underscore';
 
 class PipelineProjectCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, $uibModal, $state) {
+    constructor(ProjectService, $uibModal, $state) {
         'ngInject';
-
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.$uibModal = $uibModal;
         this.$state = $state;
@@ -129,8 +126,6 @@ class PipelineProjectCtrl {
     }
 
 }
-
-PipelineProjectCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];
 
 export const PipelineProjectComponent = {
     template: PipelineProjectTemplate,

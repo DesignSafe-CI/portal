@@ -2,10 +2,8 @@ import PipelineLicensesTemplate from './pipeline-licenses.component.html';
 
 class PipelineLicensesCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, $uibModal, $state) {
+    constructor(ProjectService, $uibModal, $state) {
         'ngInject';
-
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.$uibModal = $uibModal;
         this.$state = $state;

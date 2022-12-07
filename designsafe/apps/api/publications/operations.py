@@ -235,6 +235,7 @@ def initilize_publication(publication, status='publishing', revision=None, revis
         except DocumentNotFound:
             pub = IndexedPublication(project_id=publication['projectId'], **publication)
             pub.save(using=es_client)
+
         pub.save(using=es_client)
 
         # Refresh index so that search works in subsequent pipeline operations.
