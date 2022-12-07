@@ -106,7 +106,7 @@ describe('projectView', () => {
         expect(component.find('#test-prj-pi').text()).toContain('pi_lname, pi_fname')
         expect(component.find('#test-prj-copi').text()).toContain('copi_lname, copi_fname')
         expect(component.find('#test-prj-type').text()).toContain('experimental')
-        expect(component.find('.test-prj-award').text()).toContain('Awards for Experimental Greatness - 1234567')
+        expect(component.find('.test-prj-award').text()).toContain('Awards for Experimental Greatness | 1234567')
         expect(component.find('#test-prj-related').text()).toContain('Huge Dataset I')
         expect(component.find('#test-prj-keywords').text()).toContain('project, experiment, walk, presentations, demo, test')
         

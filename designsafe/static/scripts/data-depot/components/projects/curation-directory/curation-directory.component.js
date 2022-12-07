@@ -196,6 +196,17 @@ class CurationDirectoryCtrl {
         });
     }
 
+    manageFieldReconDocuments() {
+        this.$uibModal.open({
+            component: 'fieldReconDocumentsModal',
+            resolve: {
+                project: () => { return this.project; },
+            },
+            backdrop: 'static',
+            size: 'lg',
+        });
+    }
+
     manageFieldReconCollections() {
         this.$uibModal.open({
             component: 'fieldReconCollectionsModal',
