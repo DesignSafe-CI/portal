@@ -1,0 +1,638 @@
+<div class="pipeline-nav">
+    <a ng-class="{'btn disabled': $ctrl.ui.loading || $ctrl.ui.submitted}"
+       ng-click="$ctrl.goStart()"
+    >
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+    <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goCitation()"
+            ng-disabled="$ctrl.ui.loading"
+    >
+        Continue to Authors
+    </button>
+</div>
+<div class="pipeline-page">
+    <div class="pipeline-header">
+        <h3>Amend Metadata</h3>
+        If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">curation office hours</a>.
+        <div ng-if="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+    </div>
+    <!-- Notifications -->
+    <div class="pipeline-notification">
+        <div class="alert alert-danger flex-container" ng-if="!$ctrl.isEmpty($ctrl.ui.missing)">
+            <i class="fa fa-exclamation notification-icon"></i>
+            <div>
+                Some of your project's amendments were not able to be imported. Please review and amend
+                the the highlighted categories below.
+                <strong>
+                    IMPORTANT: None of the changes made during this process will save to the project.
+                    Changes made here will only amend the publication once submitted.
+                </strong>
+                <br>
+                <div ng-repeat="entity in $ctrl.ui.missing">
+                    <li>{{entity.title}}</li>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-if="!$ctrl.ui.loading">
+        <div class="pipeline-section">
+            <ul>
+                <li>Please review the preview of your amended publication carefully.</li>
+                <li>Any acceptable changes you make from the project workspace are automatically imported to this preview.</li>
+                <li>This preview shows what your publication will look like once it is amended.</li>
+                <li>Categories may not be added or removed.</li>
+                <li>Files related to any categories may not be modified.</li>
+                <li>When you have finished proofreading your amended publication, click continue to move onto the next step.</li>
+            </ul>
+        </div>
+        <!-- Project Header Start -->
+        <div class="pipeline-section">
+            <div class="prj-head-container">
+                <span class="prj-head-title">
+                    {{$ctrl.amendment.project.value.projectId}} | <strong>{{ $ctrl.amendment.project.value.title }}</strong>
+                </span>
+            </div>
+            <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
+                <colgroup>
+                    <col style="width: 15%">
+                    <col style="width: 84%">
+                </colgroup>
+                <tr class="prj-row">
+                    <td>PI</td>
+                    <td class="prj-data">
+                        <ds-user-list usernames="[$ctrl.amendment.project.value.pi]"></ds-user-list>
+                    </td>
+                </tr>
+                <tr ng-if="$ctrl.amendment.project.value.coPis.length">
+                    <td>Co-PIs</td>
+                    <td class="prj-data">
+                        <ds-user-list usernames="$ctrl.amendment.project.value.coPis"></ds-user-list>
+                    </td>
+                </tr>
+                <tr class="prj-row" ng-hide="$ctrl.amendment.project.value.projectType === 'other' && $ctrl.amendment.project.value.dataType">
+                    <td>Project Type</td>
+                    <td class="prj-data" ng-if="$ctrl.amendment.project.value.projectType !== 'field_recon'">
+                        {{ $ctrl.amendment.project.value.projectType.replace('_', ' ') }}
+                    </td>
+                    <td class="prj-data" ng-if="$ctrl.amendment.project.value.projectType === 'field_recon'">
+                        Field Research
+                        <span ng-if="$ctrl.amendment.project.value.frTypes.length">
+                            |
+                            <span ng-repeat="frType in $ctrl.amendment.project.value.frTypes">
+                                <span ng-if="!$last">{{ frType }},</span>
+                                <span ng-if="$last">{{ frType }}</span>
+                            </span>
+                        </span>
+                    </td>
+                </tr>
+                <tr class="prj-row" ng-if="$ctrl.amendment.project.value.projectType === 'other' && $ctrl.amendment.project.value.dataType">
+                    <td>Data Type</td>
+                    <td class="prj-data">{{ $ctrl.amendment.project.value.dataType }}</td>
+                </tr>
+                <tr class="prj-row" ng-if="$ctrl.amendment.project.value.nhTypes.length">
+                    <td>Natural Hazard Type</td>
+                    <td class="prj-data">
+                        <span ng-repeat="nhtype in $ctrl.amendment.project.value.nhTypes">
+                            <span ng-if="!$last">{{ nhtype }},</span>
+                            <span ng-if="$last">{{ nhtype }}</span>
+                        </span>
+                    </td>
+                </tr>
+                <tr ng-repeat="award in $ctrl.amendment.project.value.awardNumber | orderBy:'order' track by $index">
+                    <td ng-if="$first">Awards</td>
+                    <td ng-if="!$first"></td>
+                    <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
+                </tr>
+                <tr ng-repeat="work in $ctrl.amendment.project.value.associatedProjects | orderBy:'order' track by $index">
+                    <td ng-if="$first">Related Work</td>
+                    <td ng-if="!$first"></td>
+                    <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
+                </tr>
+                <tr class="prj-row">
+                    <td ng-if="$ctrl.amendment.project.value.keywords">Keywords</td>
+                    <td class="prj-data">{{ $ctrl.amendment.project.value.keywords }}</td>
+                </tr>
+                <tr ng-if="$ctrl.amendment.project.value.hazmapperMaps.length">
+                    <td>Hazmapper Maps</td>
+                    <td>
+                        <hazmapper-maps maps="$ctrl.amendment.project.value.hazmapperMaps"></hazmapper-maps>
+                    </td>
+                </tr>
+            </table>
+            <div ng-if="$ctrl.amendment.project.value.description">
+                <p>{{ $ctrl.amendment.project.value.description }}</p>
+            </div>
+            <div>
+                <a class="prj-ent-amend" ng-click="$ctrl.amendProject($event)"><strong>Edit Project Metadata</strong></a>
+            </div>
+        </div>
+        <!-- Project Header End -->
+        <hr>
+
+        <!-- Published Entities -->
+        <div>
+            <!-- the mainEntity below can be a mission or a report -->
+            <div ng-repeat="mainEntity in $ctrl.orderedPrimary">
+                <!-- Reports -->
+                <div ng-if="mainEntity.name == 'designsafe.project.field_recon.report' && !$ctrl.ui.loading">
+                    <div class="dropdown dropdown-spacer-sm" id="details-{{mainEntity.uuid}}">
+                        <button ng-click="$ctrl.logEntity(mainEntity, 'reportsList')" class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{mainEntity.uuid}}"
+                            style="width:100%;">
+                            <table style="width:100%" id="anchor-{{ mainEntity.uuid }}">
+                                <tr>
+                                    <td class="tab-cell">
+                                        <span>Documents | <strong>{{mainEntity.value.title}}</strong></span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </button>
+                        <div id="files-{{mainEntity.uuid}}" class="collapse in dropdown-spacer-lg">
+                            <div class="well">
+                                <!-- Tombstone Banner -->
+                                <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mainEntity.uuid)">
+                                    <i class="fa fa-warning notification-icon"></i>
+                                    <div>
+                                        <strong>The following Dataset does not exist anymore</strong><br>
+                                        The Dataset with DOI:
+                                        <a href="https://doi.org/{{mainEntity.value.dois[0]}}">https://doi.org/{{mainEntity.value.dois[0]}}</a>
+                                        was incomplete and removed. The metadata is still available.
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label-multi" data-ng-if="mainEntity.value.authors.length">
+                                        Author(s)
+                                    </div>
+                                    <div class="entity-meta-data" data-ng-if="mainEntity.value.authors.length">
+                                        <span>
+                                            <span ng-repeat="author in $ctrl.sortAuthors(mainEntity.authors) | filter: { authorship: true }">
+                                                <a href="javascript:;" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.relatedWork.length">
+                                    <div class="entity-meta-label-multi">Related Work</div>
+                                    <div class="entity-meta-data">
+                                        <div ng-repeat="work in mainEntity.value.relatedWork track by $index">
+                                            <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.referencedData.length">
+                                    <div class="entity-meta-label-multi">Referenced Data</div>
+                                    <div class="entity-meta-data">
+                                        <div ng-repeat="reference in mainEntity.value.referencedData track by $index">
+                                            <span ng-if="reference.type">
+                                                {{ reference.type }} | 
+                                              </span>
+                                              <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Date of Publication</div>
+                                    <div class="entity-meta-data">
+                                        <span>
+                                            {{ $ctrl.doiList[mainEntity.uuid].created | date:'MM-dd-yyyy' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">
+                                        DOI
+                                        <button class="btn btn-info btn-sm btn-cite"
+                                                data-ng-click="$ctrl.showCitation(mainEntity)">
+                                            Citation
+                                        </button>
+                                    </div>
+                                    <div class="entity-meta-data">
+                                        <span>{{mainEntity.doi}}</span>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label-multi">License(s)</div>
+                                    <div class="entity-meta-data">
+                                        <strong>
+                                            <div class="license-element">
+                                                <span ng-class="$ctrl.ui.licenseType"></span>
+                                                &nbsp;{{$ctrl.ui.license}}
+                                            </div>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Data Reuse</div>
+                                    <span>
+                                        <a ng-click="$ctrl.entityMetrics(mainEntity.doi, 'Mission')">
+                                        &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+                                        <strong>&nbsp;View Metrics</strong>
+                                        </a>
+                                    </span>
+                                </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.description">
+                                    <p>{{ mainEntity.value.description }}</p>
+                                </div>
+                                <div>
+                                    <a class="prj-ent-amend" ng-click="$ctrl.amendPrimaryEntity(mainEntity, 'fieldReconDocumentsModal')"><strong>Edit Documents Metadata</strong></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Missions -->
+                <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading && mainEntity.name == 'designsafe.project.field_recon.mission'">
+                    <div class="dropdown dropdown-spacer-sm" id="details-{{mainEntity.uuid}}">
+                        <button ng-click="$ctrl.logEntity(mainEntity, 'mainEntitysList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{mainEntity.uuid}}" style="width:100%;">
+                            <table style="width:100%" id="anchor-{{ mainEntity.uuid }}">
+                                <tr>
+                                    <td class="tab-cell">
+                                        <span>Mission | <strong>{{mainEntity.value.title}}</strong></span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <span class="curation-chevron" style="font-size: 18px;"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </button>
+                        <div id="data-{{mainEntity.uuid}}" class="collapse in dropdown-spacer-lg">
+                            <div class="well">
+                                <!-- Tombstone Banner -->
+                                <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mainEntity.uuid)">
+                                    <i class="fa fa-warning notification-icon"></i>
+                                    <div>
+                                        <strong>The following Dataset does not exist anymore</strong><br>
+                                        The Dataset with DOI:
+                                        <a href="https://doi.org/{{mainEntity.value.dois[0]}}">https://doi.org/{{mainEntity.value.dois[0]}}</a>
+                                        was incomplete and removed. The metadata is still available.
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.event">
+                                    <div class="entity-meta-label">Event</div>
+                                    <div class="entity-meta-data">
+                                        <span>{{ mainEntity.value.event }}</span>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label-multi" data-ng-if="mainEntity.value.authors.length">
+                                        Author(s)
+                                    </div>
+                                    <div class="entity-meta-data" data-ng-if="mainEntity.value.authors.length">
+                                        <span>
+                                            <span ng-repeat="author in $ctrl.sortAuthors(mainEntity.authors) | filter: { authorship: true }">
+                                                <a href="javascript:;" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">;</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">
+                                        Date(s) of Mission
+                                    </div>
+                                    <div class="entity-meta-data">
+                                        <span>{{mainEntity.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                        <span data-ng-if="mainEntity.value.dateEnd && mainEntity.value.dateEnd !== mainEntity.value.dateStart">
+                                            &#8213; {{mainEntity.value.dateEnd | date:'MM-dd-yyyy' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.relatedWork.length">
+                                    <div class="entity-meta-label-multi">Related Work</div>
+                                    <div class="entity-meta-data">
+                                        <div ng-repeat="work in mainEntity.value.relatedWork track by $index">
+                                            <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field" ng-if="mainEntity.value.referencedData.length">
+                                    <div class="entity-meta-label-multi">Referenced Data</div>
+                                    <div class="entity-meta-data">
+                                        <div ng-repeat="reference in mainEntity.value.referencedData track by $index">
+                                            <span ng-if="reference.type">
+                                                {{ reference.type }} | 
+                                              </span>
+                                              <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">
+                                        Site Location
+                                    </div>
+                                    <div class="entity-meta-data">
+                                        <span>{{mainEntity.value.location}} |</span>
+                                        <a href="http://www.google.com/maps/place/{{ mainEntity.value.latitude }},{{ mainEntity.value.longitude }}"
+                                            rel="noopener noreferrer" target=”_blank” ng-if="mainEntity.value.latitude && mainEntity.value.longitude">
+                                            Lat {{mainEntity.value.latitude}} Long {{mainEntity.value.longitude}}
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Date of Publication</div>
+                                    <div class="entity-meta-data">
+                                        <span>
+                                            {{ $ctrl.doiList[mainEntity.uuid].created | date:'MM-dd-yyyy' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">
+                                        DOI
+                                        <button class="btn btn-info btn-sm btn-cite"
+                                                data-ng-click="$ctrl.showCitation(mainEntity)">
+                                            Citation
+                                        </button>
+                                    </div>
+                                    <div class="entity-meta-data">
+                                        <span>{{mainEntity.doi}}</span>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label-multi">License(s)</div>
+                                    <div class="entity-meta-data">
+                                        <strong>
+                                            <div class="license-element">
+                                                <span ng-class="$ctrl.ui.licenseType"></span>
+                                                &nbsp;{{$ctrl.ui.license}}
+                                            </div>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <p>
+                                    <br>{{ mainEntity.value.description }}
+                                </p>
+                                <div>
+                                    <a class="prj-ent-amend" ng-click="$ctrl.amendPrimaryEntity(mainEntity, 'fieldReconMissionsModal')"><strong>Edit Mission Metadata</strong></a>
+                                </div>
+                                <br>
+                                <div ng-repeat="collection in $ctrl.orderedSecondary[mainEntity.uuid]">
+                                    <!-- Social Science -->
+                                    <div ng-if="$ctrl.matchingGroup(mainEntity, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
+                                        <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                            <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mainEntity.uuid}}"
+                                                style="width:100%;">
+                                                <div class="collapse-tab">
+                                                    <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                                    <span class="collapse-tab-content-right curation-chevron"></span>
+                                                </div>
+                                            </button>
+                                            <div id="files-{{collection.uuid}}-{{mainEntity.uuid}}" class="collapse">
+                                                <div class="well">
+                                                    <div class="entity-meta-field" ng-if="collection.value.unit">
+                                                        <div class="entity-meta-label">Unit of Analysis</div>
+                                                        <div class="entity-meta-data">
+                                                            <span>{{collection.value.unit}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.modes.length">
+                                                        <div class="entity-meta-label-multi">Mode(s) of Collection</div>
+                                                        <div class="entity-meta-data">
+                                                            <ul class="collection-list">
+                                                                <li data-ng-repeat="mode in collection.value.modes">
+                                                                    {{mode}}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.sampleApproach.length">
+                                                        <div class="entity-meta-label-multi">Sampling Approach(es)</div>
+                                                        <div class="entity-meta-data">
+                                                            <ul class="collection-list">
+                                                                <li data-ng-repeat="sample in collection.value.sampleApproach">
+                                                                    {{sample}}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.sampleSize">
+                                                        <div class="entity-meta-label">Sample Size</div>
+                                                        <div class="entity-meta-data">
+                                                            <span>{{collection.value.sampleSize}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label">Date(s) of Collection</div>
+                                                        <div class="entity-meta-data">
+                                                            <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                                            <span data-ng-if="collection.value.dateEnd && collection.value.dateEnd !== collection.value.dateStart"></span>
+                                                                &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                                                            Data Collector(s)
+                                                        </div>
+                                                        <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
+                                                            <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label-multi" data-ng-if="collection.value.location">
+                                                            Site Location
+                                                        </div>
+                                                        <div class="entity-meta-data"
+                                                                data-ng-if="collection.value.location">
+                                                            <ul class="collection-list">
+                                                                <li>
+                                                                    <span>{{collection.value.location}} |</span>
+                                                                    <a href="http://www.google.com/maps/place/{{ collection.value.latitude }},{{ collection.value.longitude }}"
+                                                                        rel="noopener noreferrer" target=”_blank” ng-if="collection.value.latitude && collection.value.longitude">
+                                                                        Lat {{collection.value.latitude}} Long {{collection.value.longitude}}
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label-multi">Equipment</div>
+                                                        <div class="entity-meta-data">
+                                                            <ul class="collection-list">
+                                                                <li data-ng-repeat="eqp in collection.value.equipment">
+                                                                    {{eqp}}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.restriction">
+                                                        <div class="entity-meta-label">Restriction</div>
+                                                        <div class="entity-meta-data">
+                                                            <span>{{collection.value.restriction}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                                                        <div class="entity-meta-label-multi">
+                                                            Referenced Data
+                                                        </div>
+                                                        <div class="entity-meta-data">
+                                                            <ul class="collection-list">
+                                                                <li data-ng-repeat="data in collection.value.referencedData">
+                                                                    <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label">Data Reuse</div>
+                                                        <span>
+                                                            <a ng-click="$ctrl.entityMetrics(collection.doi, 'Collection')">
+                                                                &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
+                                                                <strong>&nbsp;View Collection Metrics</strong>
+                                                            </a>
+                                                        </span>
+                                                        </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.description">
+                                                        <p>{{ collection.value.description }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(collection, 'fieldReconCollectionsModal')"><strong>Edit Collection Metadata</strong></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- GeoscienceEngineering -->
+                                    <div ng-if="$ctrl.matchingGroup(mainEntity, collection) && collection.name == 'designsafe.project.field_recon.geoscience'">
+                                        <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                            <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mainEntity.uuid}}"
+                                                style="width:100%;">
+                                                <div class="collapse-tab">
+                                                    <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
+                                                    <span class="collapse-tab-content-right curation-chevron"></span>
+                                                </div>
+                                            </button>
+                                            <div id="files-{{collection.uuid}}-{{mainEntity.uuid}}" class="collapse">
+                                                <div class="well">
+                                                    <div class="entity-meta-field" ng-if="collection.value.observationTypes.length">
+                                                        <div class="entity-meta-label-multi">Observation Type(s)</div>
+                                                        <div class="entity-meta-data">
+                                                            <ul class="collection-list">
+                                                                <li data-ng-repeat="obs in collection.value.observationTypes">
+                                                                    {{obs}}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label">Date(s) of Collection</div>
+                                                        <div class="entity-meta-data">
+                                                            <span>{{collection.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                                            <span data-ng-if="collection.value.dateEnd && collection.value.dateEnd !== collection.value.dateStart"></span>
+                                                                &#8213; {{collection.value.dateEnd | date:'MM-dd-yyyy' }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                                                            Data Collector(s)
+                                                        </div>
+                                                        <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
+                                                            <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label-multi" data-ng-if="collection.value.location">
+                                                            Site Location
+                                                        </div>
+                                                        <div class="entity-meta-data" data-ng-if="collection.value.location">
+                                                            <ul class="collection-list">
+                                                                <li>
+                                                                    <span>{{collection.value.location}} |</span>
+                                                                    <a href="http://www.google.com/maps/place/{{ collection.value.latitude }},{{ collection.value.longitude }}"
+                                                                        rel="noopener noreferrer" target=”_blank” ng-if="collection.value.latitude && collection.value.longitude">
+                                                                        Lat {{collection.value.latitude}} Long {{collection.value.longitude}}
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label-multi">Equipment</div>
+                                                        <div class="entity-meta-data">
+                                                            <ul class="collection-list">
+                                                                <li data-ng-repeat="eqp in collection.value.equipment">
+                                                                    {{eqp}}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                                                        <div class="entity-meta-label-multi">
+                                                            Referenced Data
+                                                        </div>
+                                                        <div class="entity-meta-data">
+                                                            <ul class="collection-list">
+                                                                <li data-ng-repeat="data in collection.value.referencedData">
+                                                                    <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.description">
+                                                        <p>{{ collection.value.description }}</p>
+                                                    </div>
+                                                    <div>
+                                                      <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(collection, 'fieldReconCollectionsModal')"><strong>Edit Collection Metadata</strong></a>
+                                                    </div>
+                                                </div>
+                                              </div>
+                                        </div>
+                                    </div>
+                                    <!-- Research Planning Collection -->
+                                    <div ng-if="$ctrl.matchingGroup(mainEntity, collection) && collection.name == 'designsafe.project.field_recon.planning'">
+                                        <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
+                                            <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{collection.uuid}}-{{mainEntity.uuid}}"
+                                                style="width:100%;">
+                                                <div class="collapse-tab">
+                                                    <span class="collapse-tab-content-left">Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
+                                                    <span class="collapse-tab-content-right curation-chevron"></span>
+                                                </div>
+                                            </button>
+                                            <div id="files-{{collection.uuid}}-{{mainEntity.uuid}}" class="collapse">
+                                                <div class="well">
+                                                    <div class="entity-meta-field">
+                                                        <div class="entity-meta-label-multi" data-ng-if="collection.value.dataCollectors.length">
+                                                            Data Collector(s)
+                                                        </div>
+                                                        <div class="entity-meta-data" data-ng-if="collection.value.dataCollectors.length">
+                                                            <ds-author-list authors="collection.value.dataCollectors"></ds-author-list>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                                                        <div class="entity-meta-label-multi">
+                                                            Referenced Data
+                                                        </div>
+                                                        <div class="entity-meta-data">
+                                                            <ul class="collection-list">
+                                                                <li data-ng-repeat="data in collection.value.referencedData">
+                                                                    <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="entity-meta-field" ng-if="collection.value.description">
+                                                        <p>{{ collection.value.description }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(collection, 'fieldReconCollectionsModal')"><strong>Edit Collection Metadata</strong></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

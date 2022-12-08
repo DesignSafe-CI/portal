@@ -49,10 +49,13 @@ class ProjectsManager(object):
             project_id=project_id
         )
         if len(metas) > 1:
+            affected_uuids = []
+            for meta in metas:
+                affected_uuids.append(meta['uuid'])
             LOG.info(
-                "More than one record with project id: %(project_id)s found."
-                "Using only the first one",
-                {project_id: project_id}
+                "More than one record with project id: {prj_id} found. "
+                "Affected project UUIDs: {uuids}"
+                .format(prj_id=project_id, uuids=affected_uuids)
             )
 
         prj_json = metas[0]
