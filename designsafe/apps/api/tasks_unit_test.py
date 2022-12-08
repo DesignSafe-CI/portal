@@ -21,6 +21,7 @@ TEST_PROJECT = {'uuid': '6262924605326814745-242ac11c-0001-012',
                           'pi': 'akenned4',
                           'awardNumber': [{'name': '12345', 'number': "CMMI-1841667", 'deployment': 'deployment', 'href': "https://www.google.com"}],
                           'associatedProjects': [], 'ef': 'None', 'keywords': '', 'dois': [], 'type': "Linked Project", 'hrefType': "URL", 'delete': False},
+                          'users': 'Vanessa Gonzalez',
                 'created': '2018-01-18T11:04:35.636-06:00', 'owner': 'ds_admin',
                 '_links': {'associationIds': []}}
 
