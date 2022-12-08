@@ -30,7 +30,11 @@ def reindex_uuids(scan_generator, limit=1000):
             doc['_links']['self'] = doc['_links'].pop('_self')
         except KeyError:
             pass
-
+        try:
+            doc['legacyPermissions'] = doc['permissions']
+            del doc['permissions']
+        except KeyError:
+            pass
         return {
             '_index': idx_name,
             '_id': uuid,

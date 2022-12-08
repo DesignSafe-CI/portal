@@ -1,8 +1,5 @@
-import _ from 'underscore';
-
-export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, ProjectEntityModel) {
+export function ProjectEntitiesService(httpi, ProjectEntityModel) {
     'ngInject';
-
 
     var service = {};
 
@@ -20,7 +17,7 @@ export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, Proje
      */
     service.listEntities = function(options){
       return entitiesResource.get({params: options}).then(function(resp){
-        return _.map(resp.data, function(entity){
+        return resp.data.map(function(entity){
             return new ProjectEntityModel(entity);
             });
       });

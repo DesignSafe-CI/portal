@@ -1,5 +1,24 @@
 # DesignSafe-CI Portal Release Notes
 
+## v5.6.2
+## What's Changed
+* DES-2037: empty folder msg VS no search reslts msg by @van-go in https://github.com/DesignSafe-CI/portal/pull/991
+* removed Jupyter link from Community Data and Published by @van-go in https://github.com/DesignSafe-CI/portal/pull/989
+* DES-2263: Project Metadata Changes by @SilversunKSauri in https://github.com/DesignSafe-CI/portal/pull/992
+* DES-1897: changes to pub preview for all proj typs by @van-go in https://github.com/DesignSafe-CI/portal/pull/990
+* bug/DES-2288: Fix for infinite scroll not triggering by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/993
+* task/DES-2284 - SEO updates by @fnets in https://github.com/DesignSafe-CI/portal/pull/998
+* Bug/DES-2333 - Fix Citation and DOI section of published metadata header by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/1003
+* Remove Open In Jupyter button in file previews. by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/1001
+* Task/des 2305 update upload limit size by @van-go in https://github.com/DesignSafe-CI/portal/pull/1004
+* task/DES-2203: Port CEPV2 file indexer to Designsafe by @jarosenb in https://github.com/DesignSafe-CI/portal/pull/948
+* Bug/DES-2322 - Bugfixes for experimental amends and projects by @Strmiska in https://github.com/DesignSafe-CI/portal/pull/999
+* task/DES-2330: Add support for licenses in API by @edmondsgarrett in https://github.com/DesignSafe-CI/portal/pull/1002
+* Task/des 2055 add natural hazard event to all project types as optional by @van-go in https://github.com/DesignSafe-CI/portal/pull/996
+
+
+**Full Changelog**: https://github.com/DesignSafe-CI/portal/compare/v5.6.1...v5.6.2
+
 ## v5.6.1
 ## What's Changed
 * DES-2255: add Last Status Message by @van-go in https://github.com/DesignSafe-CI/portal/pull/983
