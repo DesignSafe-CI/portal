@@ -68,10 +68,12 @@ def nh_event_query(nh_event):
 
 def other_type_query(data_type):
     data_types = [
+            'Benchmark Dataset',
             'Check Sheet',
             'Code',
             'Database',
             'Dataset',
+            'Field Survey',
             'Image',
             'Jupyter Notebook',
             'Learning Object',
@@ -81,11 +83,11 @@ def other_type_query(data_type):
             'Poster',
             'Presentation',
             'Report',
-            'REU',
+            'Reseach Experience for Undergraduates',
             'SimCenter Testbed',
             'Social Sciences',
-            'Software',
-            'Survey',
+            'Survey Instrument',
+            'Testbed',
             'Video',
             'White Paper',
     ]
