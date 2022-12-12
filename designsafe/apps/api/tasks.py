@@ -4,7 +4,6 @@ import re
 import os
 import sys
 import json
-from tkinter import N
 import urllib.request, urllib.parse, urllib.error
 from datetime import datetime
 from celery import shared_task
