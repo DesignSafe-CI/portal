@@ -1,4 +1,13 @@
 {
+    "rwTypes": [
+        "Context",
+        "Linked Project"
+    ],
+    "rwTypesOther": [
+        "Context",
+        "Linked Project",
+        "Cited By"
+    ],
     "nhTypes": [
         "Other",
         "Earthquake",
@@ -21,13 +30,16 @@
         "Interdisciplinary",
         "Longitudinal Study",
         "Reconnaissance",
+        "Something Else",
         "Social Sciences"
     ],
     "otherTypes": [
+        "Benchmark Dataset",
         "Check Sheet",
         "Code",
         "Database",
         "Dataset",
+        "Field Survery",
         "Image",
         "Jupyter Notebook",
         "Learning Object",
@@ -37,11 +49,11 @@
         "Poster",
         "Presentation",
         "Report",
-        "REU",
+        "Research Experience for Undergraduates",
         "SimCenter Testbed",
         "Social Sciences",
-        "Software",
-        "Survey",
+        "Survey Instrument",
+        "Testbed",
         "Video",
         "White Paper",
         "Other"

@@ -350,13 +350,11 @@ export class ProjectService {
             /* 
             Field Research Requirements:
             Condition 1)
-                + A report may be published alone and must have:
-                    - Files associated to the Report
-
-            Condition 2)
-                + If a mission is published it must have the following:
-                    - Planning Set OR Social Science Set OR Geoscience Set
-                    - Files within all Sets
+                + A Mission or Documents may be published alone
+                + Missions must have at least one Collection of any type
+                    - Collections must have at least one categorized file
+                + Documents (defined as 'reports' in metadata) must have
+                  at least one categorized file
             
             Since FR is the only model which will require just one of multiple requirement
             types we will check for missing information first and then check that one of

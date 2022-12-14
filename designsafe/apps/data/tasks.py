@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="10/s")
-def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
+def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False, *args, **kwargs):
 
     client = get_service_account_client()
     if not filePath.startswith('/'):
