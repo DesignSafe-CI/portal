@@ -771,6 +771,10 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=N
 
     prj_dict['value']['awardNumbers'] = award_number
     prj_dict['value'].pop('awardNumber', None)
+    if 'nhEventStart' in prj_dict['value'] and prj_dict['value']['nhEventStart'] == '':
+        del prj_dict['value']['nhEventStart']
+    if 'nhEventEnd' in prj_dict['value'] and prj_dict['value']['nhEventEnd'] == '':
+        del prj_dict['value']['nhEventEnd']
     if publication.get('project'):
         publication['project'].update(prj_dict)
     else:
