@@ -1,7 +1,7 @@
 import ManageProjectTemplate from './manage-project.template.html';
 import AmendProjectTemplate from './amend-project.template.html';
-import FormOptions from './project-form-options.json';
-import FormDefaults from './project-form-defaults.json';
+const FormOptions = require('./project-form-options.json');
+const FormDefaults = require('./project-form-defaults.json');
 
 class ManageProjectCtrl {
     constructor(UserService, ProjectModel, PublicationService, $http, $q, $uibModal, $state) {
@@ -15,63 +15,96 @@ class ManageProjectCtrl {
         this.$state = $state;
     }
 
+    // TODO: The project does not update correctly immediately after changing the project type.
     $onInit() {
         this.ui = {
             hasType: true,
             loading: true,
             editType: true,
             submitting: false,
-            error: null,
-            showFREvents: false
+            require: {
+                guestMembers: true,
+                awardNumber: true,
+                associatedProjects: true,
+                referencedData: true,
+                nhEvents: false,
+                coPis: false,
+                teamMembers: false,
+            },
+            requireWorks: true,
+            invalidUserError: false,
+            invalidUser: ''
         };
         this.project = this.resolve.project;
-        this.naturalHazardTypes = FormOptions.nhTypes;
-        this.fieldResearchTypes = FormOptions.frTypes;
-        this.otherTypes = FormOptions.otherTypes;
-        this.formDefaults = FormDefaults;
+        this.FormDefaults = FormDefaults;
 
         if (this.project) {
-            if (this.project.value.projectType in this.formDefaults) {
-                this.form = {...this.formDefaults[this.project.value.projectType]};
-            }
-            else {
-                this.form = {...this.formDefaults.new};
+            let projectCopy = structuredClone(this.project.value);
+            this.naturalHazardTypes = FormOptions.nhTypes;
+            this.fieldResearchTypes = FormOptions.frTypes;
+            this.otherTypes = FormOptions.otherTypes;
+            this.relatedWorkTypes = (projectCopy.projectType != 'other' ? FormOptions.rwTypes : FormOptions.rwTypesOther);
+
+            if (projectCopy.projectType in this.FormDefaults) {
+                this.form = structuredClone(this.FormDefaults[projectCopy.projectType]);
+            } else {
+                this.form = structuredClone(this.FormDefaults.new);
                 this.ui.hasType = false;
             }
-            this.form.uuid = this.project.uuid;
-            for (const field in this.project.value) {
-                if (this.project.value[field] && this.project.value[field].length) {
-                    (['nhEventStart', 'nhEventEnd'].includes(field)
-                    ? this.form[field] = new Date(this.project.value[field])
-                    : this.form[field] = this.project.value[field])
+            for (let key in this.form) {
+                if (projectCopy[key] instanceof Array && projectCopy[key].length){
+                    this.form[key] = projectCopy[key];
+                } else if (projectCopy[key] instanceof Object && Object.keys(projectCopy[key]).length){
+                    this.form[key] = projectCopy[key];
+                } else if (['nhEventStart', 'nhEventEnd'].includes(key)) {
+                    this.form[key] = (projectCopy[key] ? new Date(projectCopy[key]) : null);
+                } else if (typeof projectCopy[key] === 'string' && projectCopy[key]) {
+                    this.form[key] = projectCopy[key];
                 }
             }
             if (Date.parse(this.form.nhEventStart) == Date.parse(this.form.nhEventEnd)) {
                 this.form.nhEventEnd = null;
             }
+            this.form.uuid = this.project.uuid;
+
             const usernames = new Set([
-                ...[this.project.value.pi],
-                ...this.project.value.coPis,
-                ...this.project.value.teamMembers
+                ...[projectCopy.pi],
+                ...projectCopy.coPis,
+                ...projectCopy.teamMembers
             ]);
             const promisesToResolve = {
                 proj_users: this.UserService.getPublic([...usernames]),
                 creator: this.UserService.authenticate()
             };
-            this.PublicationService.getPublished(this.project.value.projectId)
+            this.PublicationService.getPublished(projectCopy.projectId)
                 .then((_) => { this.ui.editType = false; });
             this.$q.all(promisesToResolve).then(({proj_users, creator}) => {
                 this.form.creator = creator
-                this.form.pi = proj_users.userData.find(user => user.username == this.project.value.pi);
-                this.form.coPis = proj_users.userData.filter(user => this.project.value.coPis.includes(user.username));
-                if (this.project.value.teamMembers.length) {
-                    this.form.teamMembers = proj_users.userData.filter(user => this.project.value.teamMembers.includes(user.username));
+                this.form.pi = proj_users.userData.find(user => user.username == projectCopy.pi);
+                let copis = proj_users.userData.filter(user => projectCopy.coPis.includes(user.username));
+                let team = proj_users.userData.filter(user => projectCopy.teamMembers.includes(user.username));
+                if (copis.length) {
+                    this.form.coPis = copis;
+                    this.ui.require.coPis = true;
+                };
+                if (team.length) {
+                    this.form.teamMembers = team;
+                    this.ui.require.teamMembers = true;
+                };
+                if (this.form.projectType in this.FormDefaults) {
+                    this.ui.require.guestMembers = this.requireField(this.form.guestMembers);
+                    this.ui.require.awardNumber = this.requireField(this.form.awardNumber);
+                    this.ui.require.nhEvents = this.requireEvent();
+                    if (this.form.projectType === 'other') {
+                        this.ui.require.associatedProjects = this.requireField(this.form.associatedProjects);
+                        this.ui.require.referencedData = this.requireField(this.form.referencedData);
+                    }
                 }
                 this.ui.loading = false;
             });
         } else {
             this.UserService.authenticate().then((creator) => {
-                this.form = {...this.formDefaults.new};
+                this.form = structuredClone(this.FormDefaults.new);
                 this.form.creator = creator
                 this.ui.loading = false;
             });
@@ -79,6 +112,10 @@ class ManageProjectCtrl {
     }
 
     create() {
+        let users = [this.form.pi].concat(this.form.coPis, this.form.teamMembers);
+        this.ui.invalidUser = users.find(usr => typeof usr != 'object');
+        if (this.ui.invalidUser) return this.ui.invalidUserError = true;
+
         this.ui.submitting = true;
         let data = this.prepareData(false);
         if (this.missingCreator(data)) {
@@ -176,7 +213,17 @@ class ManageProjectCtrl {
         if (hasPrjType) {
             projectData.guestMembers = this.validInputs(this.form.guestMembers, ['fname', 'lname']);
             projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number']);
-            projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
+            if (this.form.projectType === 'other') {
+                projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
+                projectData.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
+            } else {
+                if ('associatedProjects' in projectData) {
+                    projectData.associatedProjects = [];
+                }
+                if ('referencedData' in projectData) {
+                    projectData.referencedData = [];
+                }
+            }
             projectData.guestMembers.forEach((guest, i) => {
                 guest.user = "guest" + guest.fname + guest.lname.charAt(0) + i;
             });
@@ -184,26 +231,20 @@ class ManageProjectCtrl {
             
             if (projectData.projectType === 'field_recon') {
                 projectData.frTypes = this.form.frTypes.filter(type => typeof type === 'string' && type.length);
+            }
+            let fields = ["nhEvent", "nhLocation", "nhLongitude", "nhLatitude"];
+            let result = fields.every((field) => {return typeof projectData[field] === 'string' && projectData[field].length})
+            let checkDate = isNaN(Date.parse(projectData.nhEventStart))
+            if (!result || checkDate) {
+                fields.forEach((field) => projectData[field] = '')
+                projectData.nhEventStart = '';
+                projectData.nhEventEnd = '';
+            }
+            else {
                 if (isNaN(Date.parse(projectData.nhEventEnd))) {
                     projectData.nhEventEnd = new Date(projectData.nhEventStart);
                 }
-            }
-            else {
-                let fields = ["nhEvent", "nhLocation", "nhLongitude", "nhLatitude"];
-                let result = fields.every((field) => {return typeof projectData[field] === 'string' && projectData[field].length})
-                let checkDate = isNaN(Date.parse(projectData.nhEventStart))
-                if (!result || checkDate) {
-                    fields.forEach((field) => projectData[field] = '')
-                    projectData.nhEventStart = ''
-                    projectData.nhEventEnd = ''
-                }
-                else {
-                    if (isNaN(Date.parse(projectData.nhEventEnd))) {
-                        projectData.nhEventEnd = new Date(projectData.nhEventStart);
-                    }
-                }
-            }
-            
+            }            
         }
         return projectData;
     }
@@ -269,20 +310,80 @@ class ManageProjectCtrl {
         }
     }
 
-    addAwardField(group) {
-        group.push({
-            "name": undefined,
-            "number": undefined,
-            "order": group.length + 1
-        });
+    requireEvent() {
+        const eventFields = [
+            "nhEventStart",
+            "nhEventEnd",
+            "nhEvent",
+            "nhLocation",
+            "nhLatitude",
+            "nhLongitude"
+        ]
+        return eventFields.some((field) => this.form[field]);
     }
 
-    addWorkField(group) {
-        group.push({
-            "title": undefined,
-            "href": undefined,
-            "order": group.length + 1
-        });
+    dropEvent(){
+        const eventFields = [
+            "nhEventStart",
+            "nhEventEnd",
+            "nhEvent",
+            "nhLocation",
+            "nhLatitude",
+            "nhLongitude"
+        ]
+        eventFields.forEach((field) => {
+            if (field == "nhEventStart" || field == "nhEventEnd") {
+                this.form[field] = null;
+            }
+            this.form[field] = '';
+        })
+        this.ui.require.nhEvents = false;
+    }
+
+    requireField(field) {
+        // Sets the field to disabled or enabled during init
+        if (field.length > 1) return true;
+        return (Object.keys(field[0]).every(input => !field[0][input]) ? false : true );
+    }
+
+    addObjField(fieldName) {
+        if (this.form[fieldName].length === 1 && !this.ui.require[fieldName]) {
+            this.ui.require[fieldName] = true;
+        } else {
+            this.form[fieldName].push({...this.FormDefaults[this.form.projectType][fieldName][0]});
+        }
+    }
+
+    dropObjField(fieldName, index) {
+        if (this.form[fieldName].length === 1) {
+            this.form[fieldName].pop();
+            this.form[fieldName].push({...this.FormDefaults[this.form.projectType][fieldName][0]});
+            this.ui.require[fieldName] = false;
+        } else if (Number.isInteger(index)) {
+            this.form[fieldName].splice(index,1);
+        } else {
+            this.form[fieldName].pop();
+        }
+    }
+
+    addUserField(userType) {
+        if (this.form[userType].length === 1 && !this.ui.require[userType]) {
+            this.ui.require[userType] = true;
+        } else {
+            this.form[userType].push(null);
+        }
+    }
+
+    dropUserField(userType, index) {
+        if (this.form[userType].length === 1) {
+            this.form[userType].pop();
+            this.form[userType].push(null);
+            this.ui.require[userType] = false;
+        } else if (Number.isInteger(index)) {
+            this.form[userType].splice(index,1);
+        } else {
+            this.form[userType].pop();
+        }
     }
 
     dropField(group, ordered) {

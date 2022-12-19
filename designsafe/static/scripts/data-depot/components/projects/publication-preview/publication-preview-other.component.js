@@ -3,10 +3,8 @@ import PublicationPopupTemplate from './publication-popup.html';
 
 class PublicationPreviewOtherCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
+    constructor(ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
-
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;

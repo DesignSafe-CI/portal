@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Earthquake",
+        "label": "Earthquake"
+    },
+    {
+        "name": "Wind",
+        "label": "Wind"
+    },
+    {
+        "name": "Other",
+        "label": "Other"
+    }
+]

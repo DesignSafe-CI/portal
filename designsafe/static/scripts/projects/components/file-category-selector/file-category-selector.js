@@ -42,6 +42,12 @@ class FileCategorySelectorCtrl {
     }
 
     categorizeFiles(inputs) {
+        /* TODO:
+        We created new bulk metadata operations that are accessible in agavepy. These
+        types of categorization calls could be handled much more effeciently on the back
+        end by creating or updating these service methods to use agavepyclient.meta.bulkUpdate().
+        (Unless Tapis v3 is already available)
+        */
         this._ui.busy = true;
         const uuidPromises = []
         inputs.forEach(file => {

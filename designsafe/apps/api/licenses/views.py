@@ -6,6 +6,9 @@ from django.http.response import HttpResponseForbidden, HttpResponseNotFound
 from django.http import JsonResponse
 from django.apps import apps
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class LicenseView(SecureMixin, BaseApiView):
@@ -18,7 +21,7 @@ class LicenseView(SecureMixin, BaseApiView):
             app_license = apps.get_model('designsafe_licenses', '{}License'.format(app_name))
         except LookupError:
             return HttpResponseNotFound()
-        username = request.GET.get('user', None)
+        username = request.GET.get('username', None)
         if not username:
             return HttpResponseNotFound()
         user = get_user_model().objects.get(username=username)

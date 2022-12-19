@@ -131,6 +131,7 @@
                 <a class="prj-ent-amend" ng-click="$ctrl.amendProject($event)"><strong>Edit Project Metadata</strong></a>
             </div>
         </div>
+        <!-- Project Header End -->
         <hr>
         <div>
             <!-- Experiments -->
@@ -190,6 +191,25 @@
                                     {{ experiment.value.equipmentTypeOther }}
                                 </span>
                             </div>
+                            <div class="entity-meta-field" ng-if="experiment.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="work in experiment.value.relatedWork track by $index">
+                                        <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="experiment.value.referencedData.length">
+                                <div class="entity-meta-label-multi">Referenced Data</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="reference in experiment.value.referencedData track by $index">
+                                        <span ng-if="reference.type">
+                                            {{ reference.type }} | 
+                                          </span>
+                                          <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="entity-meta-field" ng-show="experiment.value.procedureStart">
                                 <div class="entity-meta-label">Date of Experiment</div>
                                 <span class="entity-meta-data" ng-if="experiment.value.procedureEnd && experiment.value.procedureStart !== experiment.value.procedureEnd">
@@ -201,6 +221,7 @@
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Date of Publication</div>
+                                <!-- TODO: Change this to make the call to DataCite for DOI publication date -->
                                 <span class="entity-meta-data">
                                     {{ $ctrl.amendment.created | date:'MM-dd-yyyy' }}
                                 </span>
@@ -232,7 +253,7 @@
                                 <br>{{ experiment.value.description }}
                             </p>
                             <div>
-                                <a class="prj-ent-amend" ng-click="$ctrl.amendPrimaryEntity(experiment)">
+                                <a class="prj-ent-amend" ng-click="$ctrl.amendPrimaryEntity(experiment, 'manageExperimentsModal')">
                                     <strong>Edit Experiment Metadata</strong>
                                 </a>
                             </div>
@@ -261,7 +282,7 @@
                                         <div id="files-{{report.uuid}}-{{experiment.uuid}}" class="collapse">
                                             <div class="well" ng-if="report.value.description">
                                                 <p>{{ report.value.description }}</p>
-                                                <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(report)">
+                                                <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(report, 'manageCategories')">
                                                     <strong>Edit Report Metadata</strong>
                                                 </a>
                                             </div>
@@ -291,7 +312,7 @@
                                         <div id="files-{{modelConfig.uuid}}-{{experiment.uuid}}" class="collapse">
                                             <div class="well" ng-if="modelConfig.value.description">
                                                 <p>{{ modelConfig.value.description }}</p>
-                                                <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(modelConfig)">
+                                                <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(modelConfig, 'manageCategories')">
                                                     <strong>Edit Model Metadata</strong>
                                                 </a>
                                             </div>
@@ -331,7 +352,7 @@
                                                         <div id="files-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}" class="collapse">
                                                             <div class="well" ng-if="sensorList.value.description">
                                                                 <p>{{ sensorList.value.description }}</p>
-                                                                <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(sensorList)">
+                                                                <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(sensorList, 'manageCategories')">
                                                                         <strong>Edit Sensor Metadata</strong>
                                                                 </a>
                                                             </div>
@@ -373,7 +394,7 @@
                                                                 <div id="files-{{event.uuid}}-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}" class="collapse">
                                                                     <div class="well" ng-if="event.value.description">
                                                                         <p>{{ event.value.description }}</p>
-                                                                        <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(event)">
+                                                                        <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(event, 'manageCategories')">
                                                                             <strong>Edit Event Metadata</strong>
                                                                         </a>
                                                                     </div>
@@ -421,7 +442,7 @@
                                                     </tr>
                                                 </table>
                                                 <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
-                                                <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(analysis)">
+                                                <a class="prj-ent-amend" ng-click="$ctrl.amendSecondaryEntity(analysis, 'manageCategories')">
                                                     <strong>Edit Analysis Metadata</strong>
                                                 </a>
                                             </div>
@@ -435,5 +456,4 @@
             </div>
         </div>
     </div>
-    <!-- Project Header End -->
 </div>

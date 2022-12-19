@@ -4,38 +4,27 @@
     <div>
       <!--Project Metadata-->
       <prj-metadata></prj-metadata>
-    </div>
-    <!-- Project Header End-->
-    <div style="width:100%; max-width: 100%;" role="group" aria-label="Listing views">
-      <table class="tg" style="table-layout: fixed; width: 100%;">
-        <colgroup>
-          <col style="width: 46%">
-          <col style="width: 50%">
-        </colgroup>
-        <tr>
-          <td>
-            <button class="btn btn-project-l"
-                    ng-click="$ctrl.workingDirectory()"
-                    ng-disabled="$ctrl.loading"
-            >
-              Working Directory</button>
-            <button class="btn btn-project-m grayed-out"
-                    ng-click="$ctrl.curationDirectory()"
-                    ng-disabled="$ctrl.loading"
-            >
-              Curation Directory
-            </button>
-            <button class="btn btn-project-r grayed-out"
-                    ng-click="$ctrl.publicationPreview()"
-                    ng-disabled="$ctrl.loading"
-            >
-              Publication Preview
-            </button>
-          </td>
-          <td>
-          </td>
-        </tr>
-      </table>
+      <!-- Project Nav -->
+      <span class="project-nav">
+        <button class="btn btn-project-l"
+                ng-click="$ctrl.workingDirectory()"
+                ng-disabled="$ctrl.loading"
+        >
+            Working Directory
+        </button>
+        <button class="btn btn-project-m  grayed-out"
+                ng-click="$ctrl.curationDirectory()"
+                ng-disabled="$ctrl.loading"
+        >
+            Curation Directory
+        </button>
+        <button class="btn btn-project-r grayed-out"
+                ng-click="$ctrl.publicationPreview()"
+                ng-disabled="$ctrl.loading"
+        >
+            Publication Preview
+        </button>
+    </span>
     </div>
     <br>
   </div>

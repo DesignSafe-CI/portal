@@ -1,4 +1,5 @@
 import AmendExperimentTemplate from './amend-experimental.template.html';
+import AmendFieldReconTemplate from './amend-field-recon.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineAmendCtrl {
@@ -7,7 +8,8 @@ class PipelineAmendCtrl {
         UserService,
         $uibModal,
         $state,
-        $http
+        $http,
+        $q,
     ) {
         'ngInject';
         this.ProjectService = ProjectService;
@@ -15,6 +17,7 @@ class PipelineAmendCtrl {
         this.$uibModal = $uibModal
         this.$state = $state;
         this.$http = $http;
+        this.$q = $q;
     }
 
     $onInit() {
@@ -33,14 +36,18 @@ class PipelineAmendCtrl {
         if (!this.publication || !this.project) {
             this.goStart();
         }
-        if (!this.amendment) {
-            /* Amendment Preview:
-            the amendment preview (this.amendment) is a combination of
-            the latest published version of the project with metadata from
-            the workspace project backfilled into the fields that are
-            amendable.
-            */
-            this.configureAmendment();
+
+        /* Amendment Preview:
+        the amendment preview (this.amendment) is a combination of
+        the latest published version of the project with metadata from
+        the workspace project backfilled into the fields that are
+        amendable.
+        */
+        this.configureAmendment();
+
+        //make sure FR objects get sorted correctly before rendering template
+        if(this.project.value.projectType == 'field_recon'){
+            this.configFR();
         }
         this.ui.loading = false;
     }
@@ -50,15 +57,15 @@ class PipelineAmendCtrl {
         const unamendableFields = {
             'project': ['pi', 'coPis', 'teamMembers', 'guestMembers', 'projectId', 'projectType', 'title', 'teamOrder', 'fileTags', 'dois'],
             'entity': ['title', 'dois', 'authors', 'fileTags', 'files', 'project'],
-            'experimentEntity': ['project', 'experiments', 'modelConfigs', 'sensorLists', 'files']
+            'experimentEntity': ['project', 'experiments', 'modelConfigs', 'sensorLists', 'files'],
+            'reportEntity': ['project','files','authors','dois'],
+            'missionEntity': ['project','files','authors','dois'],
         }
         let prjEnts = this.project.getAllRelatedObjects();
 
         let primaryEntNames = [];
         let secondaryEntNames = [];
         if (prj_type == 'experimental') {
-            this.ui.primaryModalName = 'manageExperimentsModal';
-            this.ui.secondaryModalName = 'manageCategories';
             primaryEntNames = ['experimentsList']
             secondaryEntNames = [
                 'modelConfigs',
@@ -67,13 +74,22 @@ class PipelineAmendCtrl {
                 'analysisList',
                 'reportsList'
             ]
-        } // else if (prj_type == 'simulation') ...
+        }
+        else if (prj_type == 'field_recon') {
+            primaryEntNames = ['missions','reports']
+            secondaryEntNames = [
+                'geoscience',
+                'planning',
+                'socialscience'
+            ]
+        }
+        // else if (prj_type == 'simulation') ...
 
         if (update === 'all') {
             this.amendment = JSON.parse(JSON.stringify(this.publication));
         }
         if (update === 'all' || update === 'project') { // update project fields...
-            Object.keys(this.amendment.project.value).forEach((prjKey) => {
+            Object.keys(this.project.value).forEach((prjKey) => {
                 if (!unamendableFields.project.includes(prjKey)) {
                     this.amendment.project.value[prjKey] = this.project.value[prjKey];
                 }
@@ -81,18 +97,20 @@ class PipelineAmendCtrl {
         }
         if (update === 'all' || update === 'primary') { // update primary entity fields...
             primaryEntNames.forEach((fieldName) => {
-                this.amendment[fieldName].forEach((amendEntity) => {
-                    let prjEntity = prjEnts.find(ent => ent.uuid === amendEntity.uuid);
-                    if (!prjEntity) {
-                        this.ui.missing[amendEntity.uuid] = { 'title': amendEntity.value.title };
-                    } else {
-                        Object.keys(amendEntity.value).forEach((entKey) => {
-                            if (!unamendableFields.entity.includes(entKey)) {
-                                amendEntity.value[entKey] = prjEntity.value[entKey];
-                            }
-                        });
-                    }
-                });
+                if (fieldName in this.amendment) {
+                    this.amendment[fieldName].forEach((amendEntity) => {
+                        let prjEntity = prjEnts.find(ent => ent.uuid === amendEntity.uuid);
+                        if (!prjEntity) {
+                            this.ui.missing[amendEntity.uuid] = { 'title': amendEntity.value.title };
+                        } else {
+                            Object.keys(prjEntity.value).forEach((entKey) => {
+                                if (!unamendableFields.entity.includes(entKey)) {
+                                    amendEntity.value[entKey] = prjEntity.value[entKey];
+                                }
+                            });
+                        }
+                    });
+                }
             });
         }
         if (update === 'all' || update === 'secondary') { // update sub entity fields...
@@ -129,6 +147,52 @@ class PipelineAmendCtrl {
         });
     }
 
+    configFR() {
+        //TODO: refactor ordering technical debt
+        this.doiList = {}
+        this.primaryEnts = [].concat(
+            this.amendment.missions || [],
+            this.amendment.reports || []
+        );
+        this.secondaryEnts = [].concat(
+            this.amendment.socialscience || [],
+            this.amendment.planning || [],
+            this.amendment.geoscience || [],
+            // TODO: throw error if collections found in publication or project
+        );
+        this.orderedPrimary = this.ordered(this.project, this.primaryEnts);
+        this.orderedSecondary = {};
+        this.orderedPrimary.forEach((primEnt) => {
+            if (primEnt.name === 'designsafe.project.field_recon.mission') {
+                this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
+            }
+        });
+
+        this.orderedPrimary.forEach((ent) => {
+            this.doiList[ent.uuid] = {
+                doi: ent.doi,
+                type: ent.name.split('.').pop(),
+                hash: `details-${ent.uuid}`
+            }
+        });
+        if (this.doiList) {
+            let dataciteRequests = Object.values(this.doiList).map(({doi}) => {
+                return this.$http.get(`/api/publications/data-cite/${doi}`);
+            });
+            this.$q.all(dataciteRequests).then((responses) => {
+                let citations = responses.map((resp) => {
+                    if (resp.status == 200) {
+                        return resp.data.data.attributes
+                    }
+                });
+                citations.forEach((cite) => {
+                    let doiObj = Object.values(this.doiList).find(x => x.doi === cite.doi);
+                    doiObj['created'] = cite.created;
+                })
+            });
+        }
+    }
+
     amendProject() {
         return this.$uibModal.open({
             component: 'amendProject',
@@ -142,11 +206,11 @@ class PipelineAmendCtrl {
         });
     }
 
-    amendPrimaryEntity(amendedEnt) {
+    amendPrimaryEntity(amendedEnt, primaryModalName) {
         let prjEntity = this.project.getAllRelatedObjects()
             .find(ent => ent.uuid == amendedEnt.uuid);
         this.$uibModal.open({
-            component: this.ui.primaryModalName,
+            component: primaryModalName,
             resolve: {
                 project: () => this.project,
                 edit: () => prjEntity,
@@ -158,12 +222,12 @@ class PipelineAmendCtrl {
         });
     }
 
-    amendSecondaryEntity(amendedEnt) {
+    amendSecondaryEntity(amendedEnt, secondaryModalName) {
         let prjEntity = this.project.getAllRelatedObjects()
-            .find(ent => ent.uuid == amendedEnt.uuid);        
+            .find(ent => ent.uuid == amendedEnt.uuid);
         if (prjEntity) {
             this.$uibModal.open({
-                component: this.ui.secondaryModalName,
+                component: secondaryModalName,
                 resolve: {
                     project: () => this.project,
                     edit: () => prjEntity,
@@ -277,10 +341,38 @@ class PipelineAmendCtrl {
             size: 'author',
         });
     }
+
+    ordered(parent, entities) {
+        let order = (ent) => {
+            if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
+                return ent._ui.orders.find(order => order.parent === parent.uuid);
+            }
+            return 0;
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
+    }
 }
 
 export const AmendExperimentComponent = {
     template: AmendExperimentTemplate,
+    controller: PipelineAmendCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const AmendFieldReconComponent = {
+    template: AmendFieldReconTemplate,
     controller: PipelineAmendCtrl,
     controllerAs: '$ctrl',
     bindings: {
