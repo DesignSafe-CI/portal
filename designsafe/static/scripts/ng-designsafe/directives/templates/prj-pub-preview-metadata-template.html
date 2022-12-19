@@ -150,13 +150,21 @@
     </tr>
     <!-- end Awards-->
 
-    <!-- Related Work -->
-    <tr class="prj-row" ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
-        <td ng-if="$first">Related Work</td>
+    <!-- Referenced Data -->
+    <tr class="prj-row" ng-if="$ctrl.project.value.referencedData.length"
+        ng-repeat="ref in $ctrl.project.value.referencedData track by $index">
+        <td ng-if="$first">Referenced Data</td>
         <td ng-if="!$first"></td>
-        <td class="prj-data"><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
+        <td id="test-prj-related">
+        <strong>
+            <span ng-if="ref.title">
+            {{ ref.title }} | 
+            </span>
+            <a href="{{ ref.doi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.doi }}</a>
+        </strong>
+        </td>
     </tr>
-    <!-- end Related Work -->
+    <!-- end Referenced Work -->
 
     <!-- Keywords -->
     <tr class="prj-row">
