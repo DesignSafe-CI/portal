@@ -488,7 +488,7 @@ export class FileListingService {
             // Filter for entities whose associationIds contain a file path matching the provided path.
             return associationIds.some((asc) => {
                 const comps = asc.href.split('project-' + projectId, 2);
-                return comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
+                return path && comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
             });
         });
 
