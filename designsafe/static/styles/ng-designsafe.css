@@ -4,6 +4,7 @@
     margin-bottom: 20px;
     margin-left: 0;
     padding: 5px 5px 5px 0;
+    z-index: 10;
 }
 
 .btn-toolbar-right {
@@ -12,6 +13,11 @@
 
 .btn-toolbar-right .btn-group {
     float: none;
+}
+
+.btn-toolbar-pub {
+    position: sticky;
+    top: 20px;
 }
 
 .breadcrumb-ds {
