@@ -24,6 +24,11 @@
     font-weight: bold;
 }
 
+.ttc-search-options {
+    width: 20%;
+    display: inline;
+}
+
 .ttc-row {
     display: table-row;
     margin: auto;
