@@ -551,8 +551,10 @@ export class FileListingService {
         const listingObservable$ = from(request).pipe(
             tap(this.abstractListingSuccessCallback(entitiesPerPath)),
             catchError(() => {
+                // If the listing fails, construct a synthetic listing as placeholder.
                 const children = Object.keys(entitiesPerPath).filter(k => k.startsWith(path))
                 const syntheticListing = children.map(path => {
+                    // Assume path is a dir if it doesn't contain a '.' character.
                     const type = path.search((/\./)) > 0 ? 'file' : 'dir'
                     return {
                         name: path.split('/').slice(-1)[0],
