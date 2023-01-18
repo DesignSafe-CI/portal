@@ -488,7 +488,7 @@ export class FileListingService {
             // Filter for entities whose associationIds contain a file path matching the provided path.
             return associationIds.some((asc) => {
                 const comps = asc.href.split('project-' + projectId, 2);
-                return comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
+                return path && comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
             });
         });
 
@@ -550,7 +550,25 @@ export class FileListingService {
 
         const listingObservable$ = from(request).pipe(
             tap(this.abstractListingSuccessCallback(entitiesPerPath)),
-            catchError(() => {})
+            catchError(() => {
+                // If the listing fails, construct a synthetic listing as placeholder.
+                const children = Object.keys(entitiesPerPath).filter(k => k.startsWith(path))
+                const syntheticListing = children.map(path => {
+                    // Assume path is a dir if it doesn't contain a '.' character.
+                    const type = path.search((/\./)) > 0 ? 'file' : 'dir'
+                    return {
+                        name: path.split('/').slice(-1)[0],
+                        path,
+                        system,
+                        permissions: 'ALL',
+                        type,
+                        format: type === 'dir' ? 'folder' : 'raw'
+                    }
+                })
+                const synthResponse = {data: {listing: syntheticListing}}
+                this.abstractListingSuccessCallback(entitiesPerPath)(synthResponse)
+                return of(null)
+            })
         );
         return listingObservable$;
     }
@@ -594,7 +612,7 @@ export class FileListingService {
             this.addSection(entity.uuid);
             this.listings[entity.uuid].listing = [];
             this.listings[entity.uuid].params = { section: entity.uuid, ...abstractListingParams };
-            entity._filePaths.forEach((path) => {
+            entity._filePaths.filter(s => s !== '/').forEach((path) => {
                 entitiesPerPath[path] = [...(entitiesPerPath[path] || []), entity];
             });
         });
