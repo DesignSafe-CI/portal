@@ -99,7 +99,7 @@
   <tr class="prj-row" ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
     <td ng-if="$first">Awards</td>
     <td ng-if="!$first"></td>
-    <td class="test-prj-award prj-data"><strong>{{ award.name }} - {{ award.number }}</strong></td>
+    <td class="test-prj-award prj-data"><strong>{{ award.name }} | {{ award.number }}</strong></td>
   </tr>
   <!-- end Awards -->
 
