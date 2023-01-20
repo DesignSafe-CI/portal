@@ -77,6 +77,7 @@ class PublishedViewCtrl {
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.versions = this.prepVersions(this.publication);
         this.selectedVersion = this.publication.revision || 1;
+        this.createdYear = new Date(this.publication.created).getFullYear();
         this.prjBasePath = (this.publication.revision && this.publication.revision > 0
             ? this.publication.projectId + 'v' + this.publication.revision
             : this.publication.projectId

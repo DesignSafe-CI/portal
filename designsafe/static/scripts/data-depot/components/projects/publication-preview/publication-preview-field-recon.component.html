@@ -184,17 +184,69 @@
             <!-- Missions -->
             <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading && mission.name == 'designsafe.project.field_recon.mission'">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
+                    <table style="width:100%; background: #F5F5F6;" id="anchor-{{ mission.uuid }}">
+                        <tr>
+                            <td class="tab-cell">
+                                <span>Mission | <strong>{{mission.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="background: #D9EDF7;">
+                        <div class="entity-meta-data">
+                            Cite this Data
+                        </div>
+                        <div ng-if="$ctrl.selectedVersion === 1"> ===1
+                            <span ng-repeat="author in $ctrl.publication.authors">
+                                <span ng-if=$first>
+                                    {{ author.lname }}, {{ author.fname[0] }}.  {{ mission.uuid }}
+                                </span>
+                                <span ng-if=!$first>
+                                    {{ author.fname[0] }}. {{author.lname}},  {{ mission.uuid }}
+                                </span>
+                            </span>
+                            <span>
+                                ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
+                                <a>{{ 'https://doi.org/' + $ctrl.publication.project.value.dois }}</a>
+                            </span>
+                        </div>
+
+                        <div ng-if="$ctrl.entity && $ctrl.selectedVersion > 1"> >>>1
+                            <ds-author-list format="hname" authors="$ctrl.authors"></ds-author-list>
+                            <span>
+                                ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
+                                <a>{{ 'https://doi.org/' + $ctrl.publication.project.value.dois }}</a>
+                                v{{$ctrl.version}}
+                                
+                            </span>
+                        </div>
+
+                        <div ng-if="!$ctrl.entity"> ????
+                            <ds-user-list usernames="$ctrl.authors" format="other"></ds-user-list>
+                            <span>
+                                ({{ $ctrl.createdYear }}) “{{ $ctrl.publication.project.value.title }}.” DesignSafe-CI.
+                                <a>{{ 'https://doi.org/' + $ctrl.publication.project.value.dois }}</a>
+                                v{{$ctrl.selectedVersion}} 
+                            </span>
+                        </div>
+
+                        <div class="entity-meta-data">
+                            Download Citation: <a href="$ctrl.downloadCitation()">Plain Text</a>
+                        </div>
+                    </div>
                     <button ng-click="$ctrl.logEntity(mission, 'missionsList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
                         <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
-                                <td class="tab-cell">
-                                    <span>Mission | <strong>{{mission.value.title}}</strong></span>
+                                <td style="text-align: center;">  
+                                    <span class="curation-chevron" style="font-size: 18px;"> View Data </span>
                                 </td>
-                                <td style="text-align: right;">
-                                    <span class="curation-chevron" style="font-size: 18px;"></span>
-                                </td>
+                                
                             </tr>
+                           
                         </table>
+                        
                     </button>
                     <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
@@ -215,6 +267,17 @@
                                 </div>
                             </div>
                             <div class="entity-meta-field">
+                                <div class="entity-meta-label">
+                                    Date of Mission
+                                </div>
+                                <div class="entity-meta-data">
+                                    <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
+                                    <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.value.dateStart">
+                                        &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi" data-ng-if="mission.value.authors.length">
                                     Author(s)
                                 </div>
@@ -226,17 +289,6 @@
                                     </span>
                                     <span ng-if="!$ctrl.readOnly">
                                         <ds-author-list authors="mission.value.authors"></ds-author-list>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="entity-meta-field">
-                                <div class="entity-meta-label">
-                                    Date of Mission
-                                </div>
-                                <div class="entity-meta-data">
-                                    <span>{{mission.value.dateStart | date:'MM-dd-yyyy'}}</span>
-                                    <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.value.dateStart">
-                                        &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
                                 </div>
                             </div>
@@ -285,11 +337,6 @@
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">
                                     DOI
-                                    <button class="btn btn-info btn-sm btn-cite"
-                                            ng-disabled="!$ctrl.readOnly"
-                                            data-ng-click="$ctrl.showCitation(mission)">
-                                        Citation
-                                    </button>
                                 </div>
                                 <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
                                     <span>(Appears when published)</span>

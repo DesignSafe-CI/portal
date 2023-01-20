@@ -18,6 +18,7 @@ import { ExpPublishedViewComponent,
     FieldReconPublishedViewComponent,
     OtherPublishedViewComponent
 } from './published/published-view.component.js';
+import { PublishedCitationComponent } from '../../projects/components/publication-citation/publication-citation.component'; 
 import { NeesCitationModalComponent } from './modals/nees-citation-modal.component';
 import { NeesDoiListComponent } from './modals/nees-doi-list.component'
 import { publicationAdvancedSearchComponent } from './data-depot-listing/publication-advanced-search/publication-advanced-search.component';
@@ -46,6 +47,7 @@ ddComponents.component('simPublishedView', SimPublishedViewComponent);
 ddComponents.component('simHybPublishedView', HybSimPublishedViewComponent);
 ddComponents.component('fieldReconPublishedView', FieldReconPublishedViewComponent);
 ddComponents.component('otherPublishedView', OtherPublishedViewComponent);
+ddComponents.component('publishedCitation', PublishedCitationComponent);
 ddComponents.component('neesCitationModal', NeesCitationModalComponent);
 ddComponents.component('neesDoiList', NeesDoiListComponent);
 ddComponents.component('publicationAdvancedSearch', publicationAdvancedSearchComponent);
