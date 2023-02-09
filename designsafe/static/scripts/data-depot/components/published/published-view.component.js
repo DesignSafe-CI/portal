@@ -47,6 +47,7 @@ class PublishedViewCtrl {
         this.browser.publication = this.publication;
         this.browser.project = this.publication.project;
         this.project = this.publication.project;
+        this.uuid = this.project.uuid;
         const { pi } = this.project.value;
         this.UserService.get(pi).then((res) => {
             this.authorData.pi = {
@@ -76,10 +77,23 @@ class PublishedViewCtrl {
 
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.versions = this.prepVersions(this.publication);
-        this.selectedVersion = this.publication.revision || 1;
         this.createdYear = new Date(this.publication.created).getFullYear();
-        this.prjBasePath = (this.publication.revision && this.publication.revision > 0
-            ? this.publication.projectId + 'v' + this.publication.revision
+        this.projectGen = this.publication.version || 1;
+        this.PublicationService.getMetrics(this.projId)
+            .then((resp) => {
+                this.data = resp.data;
+
+                this.cumMetrics = this.citationMetrics(resp.data);
+                this.error = false;
+                this.loading = false;
+            })
+            .catch((e) => {
+                this.error = true;
+                this.loading = false;
+                this.cumMetrics = { projectDownloads: 0, fileDownloads: 0, filePreviews: 0, fileViews: 0, total: 0, uniqueRequests: 0 };
+            });
+        this.prjBasePath = (this.publication.version && this.publication.version > 0
+            ? this.publication.projectId + 'v' + this.publication.version
             : this.publication.projectId
         );
         this.openEntities = {}
@@ -386,6 +400,29 @@ class PublishedViewCtrl {
             },
             size: 'md'
         });
+    }
+
+    citationMetrics(meta) {
+        let fileDownloads = 0;
+        let filePreviews = 0;
+        let uniqueRequests = 0;
+        meta.value
+            .filter((v) => v.doi === this.resolve.doi) 
+            .forEach((v) => {
+                v.metrics.forEach((m) => {
+                    fileDownloads += m.Downloads || 0;
+                    filePreviews += m.Previews || 0;
+                    uniqueRequests += m.UniqueRequests || 0;
+                })
+            });
+            console.log(meta.value.doi)
+        return {
+            fileDownloads,
+            filePreviews,
+            uniqueRequests,
+            fileViews: fileDownloads + filePreviews,
+            total: fileDownloads + filePreviews,
+        };
     }
 
     matchingGroup(exp, model) {

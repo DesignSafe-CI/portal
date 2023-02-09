@@ -393,7 +393,19 @@ export function dsAuthorList(UserService) {
               formattedNames += u.lname + ', ' + u.fname[0] + '. ';
             });
             element.text(formattedNames);
-          } else {
+          } else if (scope.format === 'citation') {
+            authorData.forEach((u, i, arr) => {
+              if (i === 0) {
+                formattedNames += u.lname + ', ' + u.fname[0] + '., ';
+              } else if (i === (arr.length - 1)) {
+                formattedNames += u.fname[0] + '. ' + u.lname + '. ';
+              } else {
+                formattedNames += u.fname[0] + '. ' + u.lname + ', ';
+              }
+            });
+            element.text(formattedNames);
+          } 
+          else {
             authorData.forEach((u, i, arr) => {
               if (i === (arr.length - 1)) {
                 formattedNames += u.lname + ', ' + u.fname;

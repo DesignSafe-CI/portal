@@ -1,50 +1,61 @@
-<div style="background: #D9EDF7;">
+<div style="background: #EEF9FC;">
     <div class="entity-meta-data">
-        Cite this Data {{entity}}
+        Cite this Data {{data}}
     </div>
-    <div ng-if="$ctrl.selectedVersion === 1"> ===1
-        <span ng-repeat="author in $ctrl.publication.authors">
-            <span ng-if=$first>
-                {{ author.lname }}, {{ author.fname[0] }}. 
-            </span>
-            <span ng-if=!$first>
-                {{ author.fname[0] }}. {{author.lname}},  
-            </span>
-        </span>
+    <div ng-if="$ctrl.projectGen === 1"> ===1
+        <ds-author-list format="citation" authors="mission.value.authors"></ds-author-list>
         <span>
             ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
-            <a>{{ 'https://doi.org/' + $ctrl.publication.project.value.dois }}</a>
+            <a>{{ 'https://doi.org/' + mission.value.dois }}</a>
+            {{ mission.doi }}
         </span>
     </div>
   
-    <div ng-if="$ctrl.entity && $ctrl.selectedVersion > 1"> >>>1
-        <ds-author-list format="hname" authors="$ctrl.authors"></ds-author-list>
+    <div ng-if="$ctrl.publication.missions && $ctrl.projectGen > 1"> >>>1
+        <span ng-if="$ctrl.readOnly">
+            <span ng-repeat="author in $ctrl.sortAuthors(mission.authors) | filter: { authorship: true }">
+                {{ author.lname }}, {{ author.fname }}<span ng-if="!$last">;</span>
+            </span>
+        </span>
+        <span ng-if="!$ctrl.readOnly">
+            <ds-author-list authors="mission.value.authors"></ds-author-list>
+        </span>    
         <span>
-            {{ publication.authors.lname }}, {{ authorData.pi.fname[0] }}.
             ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.publication.project.value.title }}</i>. DesignSafe-CI.
-            <a>{{ 'https://doi.org/' + $ctrl.publication.project.value.dois }}</a>
-            v{{$ctrl.version}}
-            
+            <a>{{ 'https://doi.org/' + mission.value.dois }}</a>
+            v{{$ctrl.projectGen}}
+           
         </span>
     </div>
-    <div ng-if="!$ctrl.entity"> ????
-        <!-- <ds-user-list usernames="$ctrl.authors" format="other"></ds-user-list> -->
-        <span ng-repeat="author in $ctrl.publication.authors">
-            <span ng-if=$first>
-                {{ author.lname }}, {{ author.fname[0] }}. 
+
+    <div ng-if="!$ctrl.publication.missions"> ????
+        <span ng-if="$ctrl.readOnly">
+            <span ng-repeat="author in $ctrl.sortAuthors(mission.authors) | filter: { authorship: true }">
+                {{ author.lname }}, {{ author.fname }}<span ng-if="!$last">;</span>
             </span>
-            <span ng-if=!$first>
-                {{ author.fname[0] }}. {{author.lname}},  
-            </span>
+        </span>
+        <span ng-if="!$ctrl.readOnly">
+            <ds-author-list authors="mission.value.authors"></ds-author-list>
         </span>
         <span>
             ({{ $ctrl.createdYear }}) “{{ $ctrl.publication.project.value.title }}.” DesignSafe-CI.
-            <a>{{ 'https://doi.org/' + $ctrl.publication.project.value.dois }}</a>
-            v{{$ctrl.selectedVersion}} 
+            <a>{{ 'https://doi.org/' + mission.value.dois }}</a>
+            v{{$ctrl.projectGen}} 
         </span>
     </div>
   
     <div class="entity-meta-data">
         Download Citation: <a href="$ctrl.downloadCitation()">Plain Text</a>
+    </div>
+    <div>
+        <span ng-repeat="met in $ctrl.data.value">
+            <span ng-if="met.doi === mission.value.dois.toString()">
+                {{ met.metrics }} Downloads
+            </span>         
+            <span>
+             Views
+            </span>
+        </span>
+
     </div>
   </div> 
