@@ -5,7 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 def cms_section(request):
-    nodes = menu_pool.get_nodes(request)
+    #nodes = menu_pool.get_nodes(request)
+    nodes = None
     if nodes:
         menu_root = nodes[0]
         if 'soft_root' in menu_root.attr:

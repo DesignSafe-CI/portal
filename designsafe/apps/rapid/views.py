@@ -5,7 +5,7 @@ import io
 from datetime import datetime
 from PIL import Image
 from elasticsearch import TransportError, ConnectionTimeout
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test

@@ -4,7 +4,6 @@
 import logging
 from functools import wraps
 from base64 import b64decode
-from django.utils.six import text_type
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
@@ -52,7 +51,7 @@ def _get_jwt_payload(request):
     :rtype: str
     """
     payload = request.META.get(settings.AGAVE_JWT_HEADER)
-    if payload and isinstance(payload, text_type):
+    if payload and isinstance(payload, str):
         # Header encoding (see RFC5987)
         payload = payload.encode('iso-8859-1')
 
