@@ -53,7 +53,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     
     'cmsplugin_cascade',
-    #'cmsplugin_cascade.extra_fields',
+    'cmsplugin_cascade.extra_fields',
     'djangocms_admin_style',
     'djangocms_text_ckeditor',
     'django_select2',
