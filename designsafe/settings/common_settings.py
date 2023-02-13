@@ -41,7 +41,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = (
 
     # 
-
+    'djangocms_admin_style',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,7 +54,7 @@ INSTALLED_APPS = (
     
     'cmsplugin_cascade',
     'cmsplugin_cascade.extra_fields',
-    'djangocms_admin_style',
+    
     'djangocms_text_ckeditor',
     'django_select2',
 
@@ -290,12 +290,12 @@ CMS_TEMPLATES = (
 )
 CMSPLUGIN_CASCADE = {
     'alien_plugins': (
-        #'TextPlugin',
-        #'StylePlugin',
-        #'FilerImagePlugin',
-        #'FormPlugin',
-        #'MeetingFormPlugin',
-        #'ResponsiveEmbedPlugin',
+        'TextPlugin',
+        'StylePlugin',
+        'FilerImagePlugin',
+        'FormPlugin',
+        'MeetingFormPlugin',
+        'ResponsiveEmbedPlugin',
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap4', 'cmsplugin_cascade.link']

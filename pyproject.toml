@@ -7,9 +7,9 @@ authors = ["DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"]
 [tool.poetry.dependencies]
 python = "^3.7.12"
 agavepy = "1.0.0a12"
-Django = "^2.1"
+Django = "^2.2.28"
 cryptography = "^2.3.1"
-django-cms = "3.6.1"
+django-cms = "3.8.0"
 importlib-resources = "^5.4.0"
 django-filer = "^1.7.1"
 django-formtools = "2.2"
