@@ -21,11 +21,12 @@ class TestSwapReindex(TestCase):
         self.addCleanup(self.patch_connections.stop)
         self.addCleanup(self.patch_elasticsearch.stop)
 
-    #@patch('designsafe.apps.data.management.commands.swap_reindex.Command.handle')
-    #def test_working(self, mock_handle):
-    #    opts = {'index': 'files'}
-    #    call_command('swap_reindex', **opts)
-    #    self.assertEqual(mock_handle.call_count, 1)
+    @patch('designsafe.apps.data.management.commands.swap_reindex.Command.handle')
+    def test_working(self, mock_handle):
+        mock_handle.return_value='OK'
+        opts = {'index': 'files'}
+        call_command('swap_reindex', **opts)
+        self.assertEqual(mock_handle.call_count, 1)
 
     @patch('designsafe.apps.data.management.commands.swap_reindex.input')
     def test_raises_when_user_does_not_proceed(self, mock_input):
