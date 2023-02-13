@@ -298,7 +298,7 @@ CMSPLUGIN_CASCADE = {
         #'ResponsiveEmbedPlugin',
     )
 }
-CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap4']
+CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap4', 'cmsplugin_cascade.link']
 
 # These settings enable iFrames in the CMS cktext-editor.
 TEXT_ADDITIONAL_TAGS = ('iframe',)
