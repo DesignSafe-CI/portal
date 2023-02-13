@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "designsafe"
-version = "5.2.12"
+version = "6.0"
 description = ""
 authors = ["DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"]
 
