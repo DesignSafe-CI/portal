@@ -17,7 +17,7 @@ class ManageFieldReconMissionsCtrl {
         this.ui = {
             loading: false,
             editing: false,
-            relatedWorkTypes: ["Context", "Linked Project"],
+            relatedWorkTypes: ["Context", "Linked Project", "Cited By"],
             require: {
                 relatedWork: false,
                 referencedData: false,

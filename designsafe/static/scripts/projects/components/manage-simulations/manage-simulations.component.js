@@ -22,7 +22,7 @@ class ManageSimulationCtrl {
                 relatedWork: false,
                 referencedData: false,
             },
-            relatedWorkTypes: ["Context", "Linked Project"],
+            relatedWorkTypes: ["Context", "Linked Project", "Cited By"],
             simulationTypes: SimulationTypes.simulationTypes
         };
         this.configureForm(this.edit);
