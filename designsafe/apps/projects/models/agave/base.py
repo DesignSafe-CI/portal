@@ -337,7 +337,7 @@ class Project(MetadataModel):
                     },
             }
 
-            
+
         else:
             related_ents = self.related_entities()
             for i in range(len(related_ents)):
@@ -390,7 +390,7 @@ class Project(MetadataModel):
                     }
                     dataset_json['hasPart']['relatedIdentifier_' + str(i)]['@id'] = related_ents[i].dois[0]
                     dataset_json['hasPart']['relatedIdentifier_' + str(i)]['identifier'] = related_ents[i].dois[0]
-                    
+
                     if len(self.award_number) and type(self.award_number[0]) is not dict:
                         self.award_number = [{'order': 0, 'name': ''.join(self.award_number)}]
                     awards = sorted(
@@ -413,7 +413,7 @@ class Project(MetadataModel):
                     try:
                         dataset_json['hasPart']['relatedIdentifier_' + str(i)]['license'] = dataset_json['license']
                     except (DocumentNotFound, AttributeError):
-                        pass       
+                        pass
                     # logger.info('***'*999)
                     # logger.info(dataset_json['relatedIdentifier_' + str(i)])
                     # logger.info('***'*999)
@@ -487,7 +487,7 @@ class Project(MetadataModel):
         # remember, related works are not required, so they can be missing...
         for a_proj in self.associated_projects: #relatedwork
             identifier = {}
-            mapping = {'Linked Project': 'isSupplementTo', 'Cited By': 'isCitedBy', 'Context': 'isDocumentedBy'}
+            mapping = {'Linked Project': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
             if {'type', 'href', 'hrefType'} <= a_proj.keys():
                 identifier['relationType'] = mapping[a_proj['type']]
                 identifier['relatedIdentifierType'] = a_proj['hrefType']
