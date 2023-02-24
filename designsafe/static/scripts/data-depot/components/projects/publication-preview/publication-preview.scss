@@ -18,6 +18,29 @@
   white-space: normal;
 }
 
+.citation-gray {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #f5f5f5;
+  border: 1px solid #CCCCCC;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 0px;
+}
+
+.citation-blue {
+  background: #EEF9FC; 
+  padding-left: 30px; 
+  padding-right: 30px; 
+  padding-top: 10px; 
+  padding-bottom: 10px; 
+  border: 1px solid #cccccc;
+}
+
 .category-blue {
   font-weight: bold;
   color: #1568C9;
