@@ -55,25 +55,35 @@
             <!-- Reports/Documents -->
             <div ng-if="mission.name == 'designsafe.project.field_recon.report'" >
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
-                    <table class="citation-gray" style="width:100%" id="anchor-{{ mission.uuid }}">
+                    <div class="citation-gray" id="anchor-{{ mission.uuid }}">
                         <tr>
                             <td class="tab-cell">
-                                <span>
+                                <div >
                                     Documents | <strong>{{mission.value.title}}</strong> 
-                                </span>
-                            </td>
-                            <td style="text-align: right;">
-                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                </div>
+                                <div ng-if="!$ctrl.readOnly">
+                                   <span ng-if="mission.value.dois.toString() === ''" class="unpublished-grey">
+                                        Unpublished
+                                    </span>
+                                    <span ng-if="mission.value.dois.toString() !== ''" class="published-green">
+                                        Published
+                                    </span> 
+                                </div>
                             </td>
                         </tr>
-                    </table>
+                    </div>
                     <div class="citation-blue">
                         <div class="entity-meta-data" style="line-height: 1.6;">
-                            Cite this Data: {{data}}
+                            <span ng-if="mission.value.dois.toString() === ''">
+                                Draft Citation. Authors can be reordered before publication. 
+                            </span>
+                            <span ng-if="mission.value.dois.toString() !== ''">
+                                Cite this Data: 
+                            </span>
                         </div>
                         <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
                         <div ng-if="$ctrl.projectGen === 1"> ===1
-                            <span ng-if="$ctrl.readOnly" style="padding-bottom: 5px;  line-height: 1.6;">
+                            <span ng-if="$ctrl.readOnly" style="padding-bottom: 5px; line-height: 1.6;">
                                 {{ $ctrl.listAuthors(mission.authors) }}
                             </span>
                             <span ng-if="!$ctrl.readOnly">
@@ -81,8 +91,8 @@
                             </span> 
                             <span style="padding-bottom: 5px;">
                                 <span ng-if="mission.value.dois.toString() === ''">
-                                    ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                    <a href="https://doi.org/10.12345/ABCDEF">https://doi.org/10.12345/ABCDEF</a>
+                                    (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                    (DOI)
                                 </span>
                                 <span ng-if="mission.value.dois.toString() !== ''">
                                     ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
@@ -99,8 +109,8 @@
                             </span>
                             <span style="padding-bottom: 5px;  line-height: 1.6;">
                                 <span ng-if="mission.value.dois.toString() === ''">
-                                    ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                    <a href="https://doi.org/10.12345/ABCDEF">https://doi.org/10.12345/ABCDEF</a>
+                                    (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                    (DOI)
                                 </span>
                                 <span ng-if="mission.value.dois.toString() !== ''">
                                     ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
@@ -120,8 +130,8 @@
                             </span>
                             <span style="padding-bottom: 5px;">
                                 <span ng-if="mission.value.dois.toString() === ''">
-                                    ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                    <a href="https://doi.org/10.12345/ABCDEF">https://doi.org/10.12345/ABCDEF</a>
+                                    (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                    (DOI)
                                 </span>
                                 <span ng-if="mission.value.dois.toString() !== ''">
                                     ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
@@ -130,19 +140,30 @@
                             </span>
                         </div>
                         <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
-                            Download Citation: <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{mission.value.dois.toString()}}">Plain Text</a>
+                            <span ng-if="mission.value.dois.toString() !== ''">
+                                Download Citation: 
+                                <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{mission.value.dois.toString()}}">Plain Text</a> |
+                                <a href="https://data.datacite.org/application/x-research-info-systems/{{mission.value.dois.toString()}}">RIS</a> |
+                                <a href="https://data.datacite.org">EndNote</a> |
+                                <a href="https://data.datacite.org/application/x-bibtex/{{mission.value.dois.toString()}}">Bibtex</a>
+                            </span>
+                            <span ng-if="mission.value.dois.toString() === ''">
+                                Download Citation: <span style="color:#9f9f9f"> Plain Text | RIS | EndNote | Bibtex</span>
+                            </span>
                         </div>
                         <div style="padding-bottom: 5px;"> 
-                            <span style="background-color: #ECE4BF;">
-                                {{ $ctrl.cumDoimMetrics[mission.value.dois].fileDownloads || 0 }} Downloads
-                            </span>
-                            &nbsp;&nbsp;
-                            <span style="background-color: #ECE4BF;">        
-                                {{ $ctrl.cumDoimMetrics[mission.value.dois].filePreviews || 0}} Views
+                            <span ng-if="$ctrl.readOnly">
+                                <span style="background-color: #ECE4BF;">
+                                    {{ $ctrl.cumDoimMetrics[mission.value.dois].fileDownloads || 0 }} Downloads
+                                </span>
+                                &nbsp;&nbsp;
+                                <span style="background-color: #ECE4BF;">        
+                                    {{ $ctrl.cumDoimMetrics[mission.value.dois].filePreviews || 0}} Views
+                                </span>
                             </span>
                         </div>
                     </div> 
-                    <button ng-init="toggle = true" ng-click="$ctrl.logEntity(mission, 'missionsList'); toggle = !toggle" class="btn citation-gray collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
+                    <button ng-init="toggle = true" ng-click="$ctrl.logEntity(mission, 'missionsList'); toggle = !toggle" class="btn citation-gray collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%; padding: 6px">
                         <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
                                 <td style="text-align: center;">  
@@ -154,15 +175,6 @@
                     <div id="data-{{mission.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
                             <!-- Tombstone Banner -->
-                            <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mission.uuid)">
-                                <i class="fa fa-warning notification-icon"></i>
-                                <div>
-                                    <strong>The following Dataset does not exist anymore</strong><br>
-                                    The Dataset with DOI:
-                                    <a href="https://doi.org/{{mission.value.dois[0]}}">https://doi.org/{{mission.value.dois[0]}}</a>
-                                    was incomplete and removed. The metadata is still available.
-                                </div>
-                            </div>
                             <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mission.uuid)">
                                 <i class="fa fa-warning notification-icon"></i>
                                 <div>
@@ -208,10 +220,10 @@
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Date of Publication</div>
-                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() === ''">
                                     <span>(Appears when published)</span>
                                 </div>
-                                <div class="entity-meta-data" ng-if="$ctrl.readOnly">
+                                <div class="entity-meta-data" ng-if="$ctrl.readOnly || mission.value.dois.toString() !== ''">
                                     <span>{{ $ctrl.dateCreated | date:'MM-dd-yyyy' }}</span>
                                 </div>
                             </div>
@@ -219,17 +231,20 @@
                                 <div class="entity-meta-label">
                                     DOI
                                 </div>
-                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() === ''">
                                     <span>(Appears when published)</span>
                                 </div>
-                                <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                                    <span>{{mission.doi}}</span>
+                                <div class="entity-meta-data" ng-if="$ctrl.readOnly || mission.value.dois.toString() !== ''">
+                                    <span>{{mission.value.dois.toString()}}</span>
                                 </div>
                             </div>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi">License(s)</div>
-                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() === ''">
                                     <span>(Appears when published)</span>
+                                </div>
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() !== ''">
+                                    <span>Information not available</span>
                                 </div>
                                 <div class="entity-meta-data" ng-if="$ctrl.readOnly">
                                     <strong>
@@ -259,21 +274,31 @@
             <!-- Missions -->
             <div ng-if="mission.name == 'designsafe.project.field_recon.mission'">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
-                    <table class="citation-gray" style="width:100%" id="anchor-{{ mission.uuid }}">
+                    <div class="citation-gray" style="width:100%" id="anchor-{{ mission.uuid }}">
                         <tr>
                             <td class="tab-cell">
-                                <span style="padding: 6px;">
+                                <div >
                                     Mission | <strong>{{mission.value.title}}</strong> 
-                                </span>
-                            </td>
-                            <td style="text-align: right;">
-                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                                </div>
+                                <div ng-if="!$ctrl.readOnly">
+                                   <span ng-if="mission.value.dois.toString() === ''" class="unpublished-grey">
+                                        Unpublished
+                                    </span>
+                                    <span ng-if="mission.value.dois.toString() !== ''" class="published-green">
+                                        Published
+                                    </span> 
+                                </div>
                             </td>
                         </tr>
-                    </table>
+                    </div>
                     <div class="citation-blue">
                         <div class="entity-meta-data" style="line-height: 1.6;">
-                            Cite this Data: {{data}}
+                            <span ng-if="mission.value.dois.toString() === ''">
+                                Draft Citation. Authors can be reordered before publication. 
+                            </span>
+                            <span ng-if="mission.value.dois.toString() !== ''">
+                                Cite this Data: 
+                            </span>
                         </div>
                         <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
                         <div ng-if="$ctrl.projectGen === 1"> ===1
@@ -285,8 +310,8 @@
                             </span> 
                             <span style="padding-bottom: 5px;">
                                 <span ng-if="mission.value.dois.toString() === ''">
-                                    ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                    <a href="https://doi.org/10.12345/ABCDEF">https://doi.org/10.12345/ABCDEF</a>
+                                    (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                    (DOI)
                                 </span>
                                 <span ng-if="mission.value.dois.toString() !== ''">
                                     ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
@@ -303,8 +328,8 @@
                             </span>
                             <span style="padding-bottom: 5px;  line-height: 1.6;">
                                 <span ng-if="mission.value.dois.toString() === ''">
-                                    ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                    <a href="https://doi.org/10.12345/ABCDEF">https://doi.org/10.12345/ABCDEF</a>
+                                    (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                    (DOI)
                                 </span>
                                 <span ng-if="mission.value.dois.toString() !== ''">
                                     ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
@@ -324,8 +349,8 @@
                             </span>
                             <span style="padding-bottom: 5px;">
                                 <span ng-if="mission.value.dois.toString() === ''">
-                                    ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                    <a href="https://doi.org/10.12345/ABCDEF">https://doi.org/10.12345/ABCDEF</a>
+                                    (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                    (DOI)
                                 </span>
                                 <span ng-if="mission.value.dois.toString() !== ''">
                                     ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
@@ -334,15 +359,26 @@
                             </span>
                         </div>
                         <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
-                            Download Citation: <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{mission.value.dois.toString()}}">Plain Text</a>
+                            <span ng-if="mission.value.dois.toString() !== ''">
+                                Download Citation: 
+                                <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{mission.value.dois.toString()}}">Plain Text</a> |
+                                <a href="https://data.datacite.org/application/x-research-info-systems/{{mission.value.dois.toString()}}">RIS</a> |
+                                <a href="https://data.datacite.org">EndNote</a> |
+                                <a href="https://data.datacite.org/application/x-bibtex/{{mission.value.dois.toString()}}">Bibtex</a>
+                            </span>
+                            <span ng-if="mission.value.dois.toString() === ''">
+                                Download Citation: <span style="color:#9f9f9f"> Plain Text | RIS | EndNote | Bibtex</span>
+                            </span>                        
                         </div>
                         <div style="padding-bottom: 5px;"> 
-                            <span style="background-color: #ECE4BF;">
-                                {{ $ctrl.cumDoimMetrics[mission.value.dois].fileDownloads || 0 }} Downloads
-                            </span>
-                            &nbsp;&nbsp;
-                            <span style="background-color: #ECE4BF;">        
-                                {{ $ctrl.cumDoimMetrics[mission.value.dois].filePreviews || 0}} Views
+                            <span ng-if="$ctrl.readOnly">
+                                <span style="background-color: #ECE4BF;">
+                                    {{ $ctrl.cumDoimMetrics[mission.value.dois].fileDownloads || 0 }} Downloads
+                                </span>
+                                &nbsp;&nbsp;
+                                <span style="background-color: #ECE4BF;">        
+                                    {{ $ctrl.cumDoimMetrics[mission.value.dois].filePreviews || 0}} Views
+                                </span>
                             </span>
                         </div>
                     </div>
@@ -433,10 +469,10 @@
                         </div>
                         <div class="entity-meta-field">
                             <div class="entity-meta-label">Date of Publication</div>
-                            <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                            <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() === ''">
                                 <span>(Appears when published)</span>
                             </div>
-                            <div class="entity-meta-data" ng-if="$ctrl.readOnly">
+                            <div class="entity-meta-data" ng-if="$ctrl.readOnly || mission.value.dois.toString() !== ''">
                                 <span>
                                     {{ $ctrl.dateCreated | date:'MM-dd-yyyy' }}
                                 </span>
@@ -446,17 +482,20 @@
                             <div class="entity-meta-label">
                                 DOI
                             </div>
-                            <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                            <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() === ''">
                                 <span>(Appears when published)</span>
                             </div>
-                            <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                                <span>{{mission.doi}}</span>
+                            <div class="entity-meta-data" ng-if="$ctrl.readOnly || mission.value.dois.toString() !== ''">
+                                <span>{{mission.value.dois.toString()}}</span>
                             </div>
                         </div>
                         <div class="entity-meta-field">
                             <div class="entity-meta-label-multi">License(s)</div>
-                            <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                            <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() === ''">
                                 <span>(Appears when published)</span>
+                            </div>
+                            <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() !== ''">
+                                <span>Information not available</span>
                             </div>
                             <div class="entity-meta-data" ng-if="$ctrl.readOnly">
                                 <strong>
