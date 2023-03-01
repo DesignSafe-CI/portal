@@ -289,12 +289,9 @@
                         </div>
                     </div>
                     <div class="entity-meta-field">
-                        <div class="entity-meta-label-multi">License(s)</div>
+                        <div class="entity-meta-label-multi" ng-if="(!$ctrl.readOnly && mission.value.dois.toString() === '') || $ctrl.readOnly">License(s)</div>
                         <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() === ''">
                             <span>(Appears when published)</span>
-                        </div>
-                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() !== ''">
-                            <span>Information not available</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly">
                             <strong>
