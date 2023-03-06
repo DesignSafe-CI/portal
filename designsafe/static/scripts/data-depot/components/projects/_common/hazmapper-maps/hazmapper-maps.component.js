@@ -10,13 +10,13 @@ class HazmapperMapsCtrl {
         maps.forEach((map) => {
             switch (map.deployment) {
                 case 'production':
-                    map.href = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${map.uuid}`;
+                    map.href = `https://hazmapper.tacc.utexas.edu/hazmapper/project-public/${map.uuid}`;
                     break;
                 case 'staging':
-                    map.href = `https://hazmapper.tacc.utexas.edu/staging/project/${map.uuid}`;
+                    map.href = `https://hazmapper.tacc.utexas.edu/staging/project-public/${map.uuid}`;
                     break;
                 default:
-                    map.href = `http://hazmapper.local:4200/project/${map.uuid}`;
+                    map.href = `http://hazmapper.local:4200/project-public/${map.uuid}`;
             }
         });
 
