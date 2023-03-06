@@ -22,7 +22,7 @@
   <!-- end PI -->
 
   <!-- co-PIs -->
-  <tr ng-if="$ctrl.project.value.coPis.length">
+  <tr class="prj-row" ng-if="$ctrl.project.value.coPis.length">
     <td>Co-PIs</td>
     <td class="prj-data" id="test-prj-copi">
       <ds-user-list usernames="$ctrl.project.value.coPis"></ds-user-list>
@@ -96,10 +96,10 @@
         this is not supported anymore
         if user has issue, fix manually for them
     -->
-  <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
+  <tr class="prj-row" ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index">
     <td ng-if="$first">Awards</td>
     <td ng-if="!$first"></td>
-    <td class="test-prj-award"><strong>{{ award.name }} | {{ award.number }}</strong></td>
+    <td class="test-prj-award prj-data"><strong>{{ award.name }} | {{ award.number }}</strong></td>
   </tr>
   <!-- end Awards -->
 
@@ -120,13 +120,13 @@
   <!-- end Referenced Data -->
 
   <!-- Related Work -->
-  <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
+  <tr class="prj-row" ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
     <td ng-if="$first">Related Work</td>
     <td ng-if="!$first"></td>
-    <td id="test-prj-related">
+    <td id="test-prj-related" class="prj-data">
       <strong>
         <span ng-if="work.type">
-          {{ work.type }} | 
+          {{ work.type }} |
         </span>
         <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a>
       </strong>
@@ -142,7 +142,7 @@
   <!-- end Keywords -->
 
   <!-- Hazmapper Maps start -->
-  <tr ng-if="$ctrl.project.value.hazmapperMaps.length">
+  <tr class="prj-row" ng-if="$ctrl.project.value.hazmapperMaps.length">
     <td>Hazmapper Maps</td>
     <td>
       <hazmapper-maps maps="$ctrl.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">

@@ -22,7 +22,7 @@ class ManageExperimentsCtrl {
                 relatedWork: false,
                 referencedData: false,
             },
-            relatedWorkTypes: ["Context", "Linked Project"],
+            relatedWorkTypes: ["Context", "Linked Project", "Cited By"],
             experimentalFacilities: ExperimentalData.experimentalFacility.experimental,
             equipmentTypes: ExperimentalData.equipmentTypes,
             experimentTypes: ExperimentalData.experimentTypes,
