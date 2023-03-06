@@ -92,7 +92,7 @@ docs/_build/
 .docs/build
 target/
 venv/
-metrics/
+designsafe/libs/metrics/*.json
 
 # ignore Google Drive API secrets
 *secrets.json
