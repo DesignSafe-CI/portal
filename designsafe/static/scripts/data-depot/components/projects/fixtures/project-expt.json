@@ -1233,8 +1233,8 @@
           "efs": {
             "experimental": [
               {
-                "name": "atlss",
-                "label": "Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University"
+                "name": "rtmd-lehigh",
+                "label": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities, Lehigh University"
               },
               {
                 "name": "cgm-ucdavis",
@@ -1273,7 +1273,7 @@
             ]
           },
           "equipmentTypes": {
-            "atlss": [
+            "rtmd-lehigh": [
               {
                 "name": "hybrid_simulation",
                 "label": "Hybrid Simulation"
@@ -1419,7 +1419,7 @@
             ]
           },
           "experimentTypes": {
-            "atlss": [
+            "rtmd-lehigh": [
               {
                 "name": "hybrid_simulation",
                 "label": "Hybrid Simulation"
@@ -1598,8 +1598,8 @@
           "efs": {
             "experimental": [
               {
-                "name": "atlss",
-                "label": "Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University"
+                "name": "rtmd-lehigh",
+                "label": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities, Lehigh University"
               },
               {
                 "name": "cgm-ucdavis",
@@ -1638,7 +1638,7 @@
             ]
           },
           "equipmentTypes": {
-            "atlss": [
+            "rtmd-lehigh": [
               {
                 "name": "hybrid_simulation",
                 "label": "Hybrid Simulation"
@@ -1784,7 +1784,7 @@
             ]
           },
           "experimentTypes": {
-            "atlss": [
+            "rtmd-lehigh": [
               {
                 "name": "hybrid_simulation",
                 "label": "Hybrid Simulation"
@@ -1967,8 +1967,8 @@
           "efs": {
             "experimental": [
               {
-                "name": "atlss",
-                "label": "Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University"
+                "name": "rtmd-lehigh",
+                "label": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities, Lehigh University"
               },
               {
                 "name": "cgm-ucdavis",
@@ -2007,7 +2007,7 @@
             ]
           },
           "equipmentTypes": {
-            "atlss": [
+            "rtmd-lehigh": [
               {
                 "name": "hybrid_simulation",
                 "label": "Hybrid Simulation"
@@ -2153,7 +2153,7 @@
             ]
           },
           "experimentTypes": {
-            "atlss": [
+            "rtmd-lehigh": [
               {
                 "name": "hybrid_simulation",
                 "label": "Hybrid Simulation"
@@ -2332,8 +2332,8 @@
           "efs": {
             "experimental": [
               {
-                "name": "atlss",
-                "label": "Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University"
+                "name": "rtmd-lehigh",
+                "label": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities, Lehigh University"
               },
               {
                 "name": "cgm-ucdavis",
@@ -2372,7 +2372,7 @@
             ]
           },
           "equipmentTypes": {
-            "atlss": [
+            "rtmd-lehigh": [
               {
                 "name": "hybrid_simulation",
                 "label": "Hybrid Simulation"
@@ -2518,7 +2518,7 @@
             ]
           },
           "experimentTypes": {
-            "atlss": [
+            "rtmd-lehigh": [
               {
                 "name": "hybrid_simulation",
                 "label": "Hybrid Simulation"

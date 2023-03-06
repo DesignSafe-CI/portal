@@ -26,7 +26,7 @@
             <ds-user-list usernames="[$ctrl.project.value.pi]"></ds-user-list>
         </td>
         <td ng-if="$ctrl.readOnly">Author(s)</td>
-        <td ng-if="$ctrl.readOnly">
+        <td class="prj-data" ng-if="$ctrl.readOnly">
             <strong>
                 <span ng-repeat="author in $ctrl.publication.project.value.teamOrder track by $index">
                     <a href="javascript:;" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">; </span>
@@ -49,7 +49,7 @@
 
     <!-- Co-PI Listings -->
     <!-- not Other -->
-    <tr ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType !== 'other'">
+    <tr class="prj-row" ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType !== 'other'">
         <td>Co-PIs</td>
         <td class="prj-data">
             <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
@@ -58,7 +58,7 @@
         </td>
     </tr>
     <!-- Other publication preview shows Co-PIs -->
-    <tr ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType === 'other' && !$ctrl.readOnly">
+    <tr class="prj-row" ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType === 'other' && !$ctrl.readOnly">
         <td>Co-PIs</td>
         <td class="prj-data">
             <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
@@ -135,23 +135,23 @@
 
     <!-- Awards -->
     <!-- for preview -->
-    <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index"
+    <tr class="prj-row" ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index"
         ng-if="!$ctrl.readOnly">
         <td ng-if="$first">Awards</td>
         <td ng-if="!$first"></td>
-        <td><strong>{{ award.name }} | {{ award.number }}</strong></td>
+        <td class="prj-data"><strong>{{ award.name }} | {{ award.number }}</strong></td>
     </tr>
     <!-- for publication -->
-    <tr ng-repeat="award in $ctrl.project.value.awardNumbers | orderBy:'order' track by $index"
+    <tr class="prj-row" ng-repeat="award in $ctrl.project.value.awardNumbers | orderBy:'order' track by $index"
         ng-if="$ctrl.readOnly">
         <td ng-if="$first">Awards</td>
         <td ng-if="!$first"></td>
-        <td><strong>{{ award.name }} | {{ award.number }}</strong></td>
+        <td class="prj-data"><strong>{{ award.name }} | {{ award.number }}</strong></td>
     </tr>
     <!-- end Awards-->
 
     <!-- Referenced Data -->
-    <tr ng-if="$ctrl.project.value.referencedData.length"
+    <tr class="prj-row" ng-if="$ctrl.project.value.referencedData.length"
         ng-repeat="ref in $ctrl.project.value.referencedData track by $index">
         <td ng-if="$first">Referenced Data</td>
         <td ng-if="!$first"></td>
@@ -166,20 +166,20 @@
     </tr>
     <!-- end Referenced Data -->
 
-      <!-- Related Work -->
-  <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
-    <td ng-if="$first">Related Work</td>
-    <td ng-if="!$first"></td>
-    <td id="test-prj-related">
-      <strong>
-        <span ng-if="work.type">
-          {{ work.type }} | 
-        </span>
-        <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a>
-      </strong>
-    </td>
-  </tr>
-  <!-- end Related Work -->
+    <!-- Related Work -->
+    <tr class="prj-row" ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
+      <td ng-if="$first">Related Work</td>
+      <td ng-if="!$first"></td>
+      <td id="test-prj-related">
+        <strong>
+          <span ng-if="work.type">
+            {{ work.type }} | 
+          </span>
+          <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a>
+        </strong>
+      </td>
+    </tr>
+    <!-- end Related Work -->
 
     <!-- Keywords -->
     <tr class="prj-row">
@@ -189,7 +189,7 @@
     <!-- end Keywords -->
 
     <!-- Hazmapper links -->
-    <tr ng-if="$ctrl.project.value.hazmapperMaps.length">
+    <tr class="prj-row" ng-if="$ctrl.project.value.hazmapperMaps.length">
         <td>Hazmapper Maps</td>
         <td>
             <hazmapper-maps maps="$ctrl.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
@@ -199,10 +199,10 @@
     <!-- end Hazmapper links -->
 
     <!-- DOI listing -->
-    <tr ng-if="$ctrl.project.value.projectType !== 'other'" ng-repeat="(uuid, citation) in $ctrl.doiList">
+    <tr class="prj-row" ng-if="$ctrl.project.value.projectType !== 'other'" ng-repeat="(uuid, citation) in $ctrl.doiList">
         <td ng-if="$first">DOIs in Project</td>
         <td ng-if="!$first"></td>
-        <td>
+        <td class="prj-data">
             <strong>
                 <a ng-if="$ctrl.project.value.projectType === 'field_recon'"
                    ng-click="$ctrl.goToHash(citation.hash)"
@@ -231,7 +231,7 @@
                 Citation
             </button>
         </td>
-        <td>
+        <td class="prj-data">
             <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
         </td>
     </tr>
@@ -242,7 +242,7 @@
         <td>
             <span>Version</span>
         </td>
-        <td>
+        <td class="prj-data">
             <select class="prj-dropdown"
                     ng-options="version for version in $ctrl.versions"
                     ng-change="$ctrl.getVersion()"
