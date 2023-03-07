@@ -488,7 +488,7 @@ def index_projects_listing(projects):
 
         award_number = project_dict['value'].get('awardNumber', []) 
         if not isinstance(award_number, list):
-            award_number = [{'number': project_dict['value']['awardNumber'] }]
+            award_number = [{'number': project_dict['value']['awardNumber']}]
         if not all(isinstance(el, dict) for el in award_number):
             # Punt if the list items are some type other than dict.
             award_number = []
