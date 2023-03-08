@@ -480,7 +480,7 @@ def index_projects_listing(projects):
             if user is None or user == 'None':
                 continue
             else:
-                user_profile = TASUser(username=users)
+                user_profile = TASUser(username=user)
                 if user_profile.lastName:
                     user_list.append(user_profile.lastName)
                     user_list.append(user_profile.firstName)
