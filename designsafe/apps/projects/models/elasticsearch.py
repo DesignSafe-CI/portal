@@ -29,7 +29,7 @@ class IndexedProject(Document):
     owner = Text(fields={'_exact': Keyword()})
     value = Object(
         properties={
-            'authors': Text(analyzer='english', multi=True),
+            # 'authors': Text(analyzer='english', multi=True),
             'teamMembers': Text(fields={'_exact': Keyword()}, multi=True),
             'teamMember': Text(fields={'_exact': Keyword()}, multi=True),
             'guestMembers': Nested(properties={
@@ -69,7 +69,7 @@ class IndexedProject(Document):
             'nhLocation': Text(fields={'_exact': Keyword()}),
             'nhLatitude': Text(fields={'_exact': Keyword()}),
             'nhLongitude': Text(fields={'_exact': Keyword()}),
-            'frTypes': Text(fields={'_exact': Keyword()}, multi=True),
+            'fr_types': Text(fields={'_exact': Keyword()}, multi=True),
             'coPis': Text(fields={'_exact': Keyword()}, multi=True),
             'projectType': Text(fields={'_exact': Keyword()}, analyzer='english'),
             'description': Text(analyzer='english'),
@@ -78,8 +78,8 @@ class IndexedProject(Document):
             'title': Text(analyzer='english'),
             'keywords': Text(analyzer='english'),
             'ef': Text(analyzer='english'),
-            'referencedData': Text(fields={'_exact': Keyword()}, analyzer='english', multi=True),
-            'relatedFiles': Text(fields={'_exact': Keyword()}),
+            # 'referencedData': Text(fields={'_exact': Keyword()}, analyzer='english', multi=True),
+            # 'relatedFiles': Text(fields={'_exact': Keyword()}),
             'associatedProjects': Nested(properties={
                 'title': Text(analyzer='english'),
                 'href': Text(fields={'_exact':Keyword()}),
@@ -105,9 +105,9 @@ class IndexedProject(Document):
                 'path': Text(fields={'_exact':Keyword()}),
                 'uuid': Text(fields={'_exact':Keyword()}),
                 'deployment': Text(fields={'_exact':Keyword()}),
-                'href': Text(fields={'_exact':Keyword()})
+                # 'href': Text(fields={'_exact':Keyword()})
             }),
-            'users': Text(fields={'_exact': Keyword()}, multi=True)
+            # 'users': Text(fields={'_exact': Keyword()}, multi=True)
         })
 
     class Index:
