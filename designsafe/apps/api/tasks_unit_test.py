@@ -9,7 +9,10 @@ TEST_PROJECT = {'uuid': '6262924605326814745-242ac11c-0001-012',
                 'associationIds': [],
                 'lastUpdated': '2020-04-17T09:44:42.939-05:00',
                 'name': 'designsafe.project',
-                'value': {'teamMembers': ['autumn88', 'agharag', 'jlwoodr3'],
+                'created': "2018-01-18T11:04:35.636000-06:00",
+                'owner': "ds_admin",
+                'value': {'authors':[],
+                          'teamMembers': ['autumn88', 'agharag', 'jlwoodr3'],
                           'coPis': ['jdietri1', 'akenned4'],
                           'guestMembers': [],
                           'projectType': 'simulation',
@@ -40,7 +43,6 @@ class TestProjectIndexer(TestCase):
         mock_index.Index.name = 'designsafe-test-projects'
         mock_index._get_connection.return_value = mock_connection
         from designsafe.apps.api.tasks import index_projects_listing 
-        print(mock_bulk, mock_index)
         index_projects_listing([TEST_PROJECT])
 
         expected_doc = {**TEST_PROJECT}
