@@ -40,7 +40,7 @@ class TestProjectIndexer(TestCase):
         mock_index.Index.name = 'designsafe-test-projects'
         mock_index._get_connection.return_value = mock_connection
         from designsafe.apps.api.tasks import index_projects_listing 
-        print(index_projects_listing([TEST_PROJECT]))
+        print(mock_bulk, mock_index)
         index_projects_listing([TEST_PROJECT])
 
         expected_doc = {**TEST_PROJECT}
