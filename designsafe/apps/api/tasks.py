@@ -480,11 +480,11 @@ def index_projects_listing(projects):
             if user is None or user == 'None':
                 continue
             else:
-                user_profile = TASUser(username=user)
+                user_profile = TASUser(username=users)
                 if user_profile.lastName:
                     user_list.append(user_profile.lastName)
                     user_list.append(user_profile.firstName)
-        # project_dict['value']['users'] = user_list
+        project_dict['value']['users'] = user_list
 
         award_number = project_dict['value'].get('awardNumber', []) 
         if not isinstance(award_number, list):
