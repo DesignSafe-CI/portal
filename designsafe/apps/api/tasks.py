@@ -470,21 +470,21 @@ def index_projects_listing(projects):
         project_dict = dict(_project)
         project_dict = {key: value for key, value in project_dict.items() if key != '_links'}
 
-        pi_id = project_dict['value'].get('pi',[])
-        coPis_id = project_dict['value'].get('coPis',[])
-        team_members = project_dict['value'].get('teamMembers',[])
+        # pi_id = project_dict['value'].get('pi',[])
+        # coPis_id = project_dict['value'].get('coPis',[])
+        # team_members = project_dict['value'].get('teamMembers',[])
 
-        users = [pi_id] + coPis_id + team_members
-        user_list = []
-        for user in users: 
-            if user is None or user == 'None':
-                continue
-            else:
-                user_profile = TASUser(username=user)
-                if user_profile.lastName:
-                    user_list.append(user_profile.lastName)
-                    user_list.append(user_profile.firstName)
-        project_dict['value']['users'] = user_list
+        # users = [pi_id] + coPis_id + team_members
+        # user_list = []
+        # for user in users: 
+        #     if user is None or user == 'None':
+        #         continue
+        #     else:
+        #         user_profile = TASUser(username=user)
+        #         if user_profile.lastName:
+        #             user_list.append(user_profile.lastName)
+        #             user_list.append(user_profile.firstName)
+        # project_dict['value']['users'] = user_list
 
         award_number = project_dict['value'].get('awardNumber', []) 
         if not isinstance(award_number, list):
