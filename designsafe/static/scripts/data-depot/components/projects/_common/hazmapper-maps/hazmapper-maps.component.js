@@ -10,8 +10,8 @@ class HazmapperMapsCtrl {
 
     filteredHazmapperMaps(readOnly) {
         const maps = this.maps ? this.maps : [];
-        if (!readOnly){
-          maps.forEach((map) => {
+
+        maps.forEach((map) => {
             switch (map.deployment) {
                 case 'production':
                     map.href = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${map.uuid}`;
@@ -27,25 +27,7 @@ class HazmapperMapsCtrl {
             if (window.location.origin.includes('designsafe-ci.org')) {
                 return maps.filter((map) => map.deployment === 'production');
             }  
-        } else {
-            maps.forEach((map) => {
-                switch (map.deployment) {
-                    case 'production':
-                        map.href = `https://hazmapper.tacc.utexas.edu/hazmapper/project-public/${map.uuid}`;
-                        break;
-                    case 'staging':
-                        map.href = `https://hazmapper.tacc.utexas.edu/staging/project-public/${map.uuid}`;
-                        break;
-                    default:
-                        map.href = `http://hazmapper.local:4200/project-public/${map.uuid}`;
-                }
-                });
     
-                if (window.location.origin.includes('designsafe-ci.org')) {
-                    return maps.filter((map) => map.deployment === 'production');
-                } 
-        }
-        
         return maps;
     }
 
