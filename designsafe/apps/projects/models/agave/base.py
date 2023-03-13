@@ -487,7 +487,7 @@ class Project(MetadataModel):
         # remember, related works are not required, so they can be missing...
         for a_proj in self.associated_projects: #relatedwork
             identifier = {}
-            mapping = {'Linked Project': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
+            mapping = {'Linked Dataset': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
             if {'type', 'href', 'hrefType'} <= a_proj.keys():
                 identifier['relationType'] = mapping[a_proj['type']]
                 identifier['relatedIdentifierType'] = a_proj['hrefType']

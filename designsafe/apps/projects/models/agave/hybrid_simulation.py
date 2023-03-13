@@ -88,7 +88,7 @@ class HybridSimulation(RelatedEntity):
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
             identifier = {}
-            mapping = {'Linked Project': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
+            mapping = {'Linked Dataset': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
             if {'type', 'href', 'hrefType'} <= r_work.keys():
                 identifier['relationType'] = mapping[r_work['type']]
                 identifier['relatedIdentifierType'] = r_work['hrefType']

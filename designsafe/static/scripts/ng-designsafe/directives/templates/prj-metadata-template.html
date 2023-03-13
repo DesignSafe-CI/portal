@@ -105,15 +105,12 @@
 
   <!-- Referenced Data -->
   <tr ng-if="$ctrl.project.value.referencedData.length"
-      ng-repeat="ref in $ctrl.project.value.referencedData track by $index">
+      ng-repeat="reference in $ctrl.project.value.referencedData track by $index">
     <td ng-if="$first">Referenced Data</td>
     <td ng-if="!$first"></td>
-    <td id="test-prj-related">
+    <td class="prj-data" id="test-prj-related">
       <strong>
-        <span ng-if="ref.title">
-          {{ ref.title }} | 
-        </span>
-        <a href="{{ ref.doi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.doi }}</a>
+        <referenced-data></referenced-data>
       </strong>
     </td>
   </tr>
@@ -125,10 +122,7 @@
     <td ng-if="!$first"></td>
     <td id="test-prj-related" class="prj-data">
       <strong>
-        <span ng-if="work.type">
-          {{ work.type }} |
-        </span>
-        <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a>
+          <related-work></related-work>
       </strong>
     </td>
   </tr>
