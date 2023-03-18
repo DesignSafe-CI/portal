@@ -197,6 +197,23 @@ td,
 th {
   padding: 0;
 }
+.table-container{
+  box-sizing: border-box;
+}
+.table-row {
+  margin-left:-5px;
+  margin-right:-5px;
+}
+.table-column-l {
+  float: left;
+  width: 80%;
+  padding: 5px;
+}
+.table-column-r {
+  float: left;
+  width: 20%;
+  padding: 5px;
+}
 /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
 @media print {
   *,
@@ -2375,6 +2392,15 @@ th {
 .table-bordered {
   border: 1px solid #dddddd;
 }
+.table-right-nav {
+  display: flex;
+}
+main {
+  flex: 3;
+}
+aside {
+  flex: 1;
+}
 .table-preview {
   width: 100%;
   max-width: 100%;
@@ -2602,6 +2628,14 @@ label {
   max-width: 100%;
   margin-bottom: 5px;
   font-weight: bold;
+}
+label-nb {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+}
+tr.solid {
+  border-bottom: 2px solid #919191;
 }
 input[type="search"] {
   -webkit-box-sizing: border-box;
