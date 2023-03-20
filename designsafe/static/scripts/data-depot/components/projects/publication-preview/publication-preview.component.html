@@ -69,16 +69,91 @@
         on-browse="$ctrl.onBrowse(file)"
     >&nbsp;</files-listing>    </div>
     <!-- Experiments -->
-    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.project.experiment_set">
+    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.project.experiment_set" style="margin-bottom:20px">
         <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
-            <button ng-click="$ctrl.logEntity(experiment, 'experimentsList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
+            <div class="citation-gray" id="anchor-{{ experiment.uuid }}">
+                <tr>
+                    <td class="tab-cell">
+                        <div>
+                            Experiment | <strong>{{experiment.value.title}}</strong>
+                        </div>
+                        <div ng-if="!$ctrl.readOnly">
+                            <span ng-if="experiment.value.dois.toString() === ''" class="unpublished-grey">
+                                 Unpublished
+                             </span>
+                             <span ng-if="experiment.value.dois.toString() !== ''" class="published-green">
+                                 Published
+                             </span> 
+                         </div>
+                    </td>
+                </tr>
+            </div>
+            <div class="citation-blue">
+                <div class="entity-meta-data" style="line-height: 1.6;">
+                    <span ng-if="experiment.value.dois.toString() === ''">
+                        Draft Citation. Authors can be reordered before publication. 
+                    </span>
+                    <span ng-if="experiment.value.dois.toString() !== ''">
+                        Cite this Data: 
+                    </span>
+                </div>
+                <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
+                <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px; line-height: 1.6;"> 
+                    {{ $ctrl.listAuthors(experiment.authors) }}
+                    ({{ $ctrl.createdYear }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
+                </div>
+                <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px; line-height: 1.6;"> 
+                    {{ $ctrl.listAuthors(experiment.authors) }}
+                    ({{ $ctrl.createdYear }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
+                    v{{$ctrl.version}}
+                </div>
+                <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px; line-height: 1.6;"> 
+                    <ds-author-list format="citation" authors="experiment.value.authors"></ds-author-list>
+                    <span ng-if="experiment.value.dois.toString() === ''">
+                        (Year of Publication) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                        (DOI)
+                    </span>
+                    <span ng-if="experiment.value.dois.toString() !== ''">
+                        ({{ $ctrl.createdYear }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                        <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
+                    </span>
+                </div>
+                <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
+                    <span ng-if="experiment.value.dois.toString() !== ''">
+                        Download Citation: 
+                        <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{experiment.value.dois.toString()}}">DataCite XML</a> |
+                        <a href="https://data.datacite.org/application/x-research-info-systems/{{experiment.value.dois.toString()}}">RIS</a> |
+                        <a href="https://data.datacite.org/application/x-bibtex/{{experiment.value.dois.toString()}}">BibTeX</a>
+                    </span>
+                    <span ng-if="experiment.value.dois.toString() === ''">
+                        Download Citation: <span style="color:#9f9f9f"> DataCite XML | RIS | BibTeX</span>
+                    </span>
+                </div>
+                <div style="padding-bottom: 5px;"> 
+                    <span ng-if="$ctrl.readOnly">
+                        <span style="background-color: #ECE4BF;">
+                            {{ $ctrl.cumDoimMetrics[experiment.value.dois].fileDownloads || 0 }} Downloads
+                        </span>
+                        &nbsp;&nbsp;
+                        <span style="background-color: #ECE4BF;">        
+                            {{ $ctrl.cumDoimMetrics[experiment.value.dois].filePreviews || 0}} Views
+                        </span>
+                        &nbsp;&nbsp;
+                        <span>
+                            <a ng-click="$ctrl.entityMetrics(experiment.doi, 'Experiment')">
+                                <strong>Details</strong>
+                            </a>
+                        </span>
+                    </span>
+                </div>
+            </div> 
+            <button ng-init="toggle = true" ng-click="$ctrl.logEntity(experiment, 'experimentsList'); toggle = !toggle" class="btn citation-gray collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%; padding: 6px">
                 <table style="width:100%" id="anchor-{{ experiment.uuid }}">
                     <tr>
-                        <td class="tab-cell">
-                            <span>Experiment | <strong>{{experiment.value.title}}</strong></span>
-                        </td>
-                        <td style="text-align: right;">
-                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                        <td style="text-align: center;">  
+                            <span class="curation-chevron">{{toggle ? ' View Data' : ' Hide Data'}}</span>
                         </td>
                     </tr>
                 </table>
@@ -165,36 +240,27 @@
                     </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Date of Publication</div>
-                        <span class="entity-meta-data"
-                                data-ng-if="!$ctrl.readOnly">
-                            (Appears when published)
-                        </span>
-                        <span class="entity-meta-data"
-                                data-ng-if="$ctrl.readOnly">
-                            {{ $ctrl.doiList[experiment.uuid].created | date:'MM-dd-yyyy' }}
-                        </span>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() === ''">
+                            <span>(Appears when published)</span>
+                        </div>
+                        <div class="entity-meta-data" ng-if="$ctrl.readOnly || experiment.value.dois.toString() !== ''">
+                            <span>{{ $ctrl.dateCreated | date:'MM-dd-yyyy' }}</span>
+                        </div>
                     </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">
                             DOI
-                            <button class="btn btn-info btn-sm btn-cite"
-                                    ng-disabled="!$ctrl.readOnly"
-                                    data-ng-click="$ctrl.showCitation(experiment)">
-                                Citation
-                            </button>
                         </div>
-                        <span class="entity-meta-data"
-                                data-ng-if="!$ctrl.readOnly">
-                            (Appears when published)
-                        </span>
-                        <span class="entity-meta-data"
-                                data-ng-if="$ctrl.readOnly">
-                            {{ experiment.doi }}
-                        </span>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() === ''">
+                            <span>(Appears when published)</span>
+                        </div>
+                        <div class="entity-meta-data" ng-if="$ctrl.readOnly || experiment.value.dois.toString() !== ''">
+                            <span>{{experiment.value.dois.toString()}}</span>
+                        </div>
                     </div>
                     <div class="entity-meta-field">
-                        <div class="entity-meta-label-multi">License(s)</div>
-                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                        <div class="entity-meta-label-multi" ng-if="(!$ctrl.readOnly && mission.value.dois.toString() === '') || $ctrl.readOnly">License(s)</div>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() === ''">
                             <span>(Appears when published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly">
@@ -204,18 +270,6 @@
                                     &nbsp;{{$ctrl.ui.license}}
                                 </div>
                             </strong>
-                        </div>
-                    </div>
-                    <div class="entity-meta-field">
-                        <div class="entity-meta-label">Data Reuse</div>
-                        <span ng-if="$ctrl.readOnly">
-                        <a ng-click="$ctrl.entityMetrics(experiment.doi, 'Experiment')">
-                            &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
-                            <strong>&nbsp;View Experiment Metrics</strong>
-                        </a>
-                        </span>
-                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
-                            <span>(Appears when published)</span>
                         </div>
                     </div>
                     <p>
