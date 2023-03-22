@@ -1686,7 +1686,7 @@ pre code {
 }
 @media (min-width: 1200px) {
   .container {
-    width: 1170px;
+    width: 90%;
   }
 }
 .container-fluid {
@@ -2635,7 +2635,7 @@ label-nb {
   margin-bottom: 5px;
 }
 tr.solid {
-  border-bottom: 2px solid #919191;
+  border-bottom: 2px solid #CCCCCC;
 }
 input[type="search"] {
   -webkit-box-sizing: border-box;

@@ -141,3 +141,16 @@ def description_query(description):
     if not description:
         return None
     return Q('query_string', query=description, fields=['project.value.description'])
+
+
+def search_string_query(search_string):
+    if not search_string:
+        return None
+    q1 =  Q('query_string', query=f"\"{search_string}\"", fields=['project.value.description',
+                                                          'project.value.keywords',
+                                                          'project.value.title',
+                                                          'projectId',
+                                                          'project.value.projectType',
+                                                          'project.value.dataType'])
+    q2 = Q({'term': {'projectId._exact': search_string}})
+    return q1 | q2 | author_query(search_string)

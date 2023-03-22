@@ -75,18 +75,9 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
 
 
     # Query string fields
-    author = query_dict['queries']['author']
-    title = query_dict['queries']['title']
-    keywords = query_dict['queries']['keyword']
-    description = query_dict['queries']['description']
-    if author:
-        query_filters.append(search_utils.author_query(author))
-    if title:
-        query_filters.append(search_utils.title_query(title))
-    if keywords:
-        query_filters.append(search_utils.keyword_query(keywords))
-    if description:
-        query_filters.append(search_utils.description_query(description))
+    search_string = query_dict['queries']['searchString']
+    if search_string:
+        query_filters.append(search_utils.search_string_query(search_string))
 
     # Experimental advanced filters
     facility = query_dict['advancedFilters']['experimental']['experimentalFacility']
