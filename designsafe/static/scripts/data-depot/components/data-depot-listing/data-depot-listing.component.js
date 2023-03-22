@@ -53,10 +53,7 @@ class PublicationListingCtrl {
 
         this.params = currentParams || {
             queries: {
-                author: '',
-                title: '',
-                keyword: '',
-                description: '',
+                searchString: ''
             },
             typeFilters: {
                 experimental: false,
@@ -97,7 +94,7 @@ class PublicationListingCtrl {
             });
         });
     }
-    getValidExperimentTypes(reset) {
+    getValidExperimentTypes(reset, browse) {
         if (reset) this.params.advancedFilters.experimental.experimentType = '';
         const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
         const facilityName = (
@@ -112,6 +109,9 @@ class PublicationListingCtrl {
         } else {
             this.validExperimentTypes = [{ name: '', label: 'All Types' }];
         }
+        
+
+        if (browse) this.browse();
     }
     toggleSearchPanel(e) {
         e.preventDefault();
@@ -125,6 +125,7 @@ class PublicationListingCtrl {
             Object.keys(this.params.advancedFilters[type]).forEach((key) => {
                 this.params.advancedFilters[type][key] = '';
             });
+        this.browse();
     }
     constructQueryString() {
         const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;

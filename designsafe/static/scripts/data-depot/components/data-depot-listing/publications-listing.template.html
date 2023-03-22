@@ -3,44 +3,29 @@
 <div class="table table-container">
     <div class="table-row">
         <div class="table-column-l">
-            <table
-            class="table"
-            style="
-                padding-bottom: 0px;
-                margin-bottom: 0px;
-                border-left: 1px solid #dddddd;
-                border-right: 1px solid #dddddd;"
-            >
-                <tbody style="background-color: #eeeeee;">
-                    <tr >
-                        <td style="border-right: none;">
-                            <label for="author-input">Author</label
-                            ><input ng-model="$ctrl.params.queries.author" class="form-control" id="author-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()"/>
-                        </td>
-                        <td style="border-left: none; border-right: none;">
-                            <label for="title-input">Title</label
-                            ><input ng-model="$ctrl.params.queries.title" class="form-control" id="title-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()" />
-                        </td>
-                        <td style="border-left: none; border-right: none;">
-                            <label for="keyword-input">Keyword</label
-                            ><input ng-model="$ctrl.params.queries.keyword" class="form-control" id="keyword-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()" />
-                        </td>
-                        <td style="border-left: none; border-right: none;">
-                            <label for="description-input">Description</label
-                            ><input ng-model="$ctrl.params.queries.description" class="form-control" id="description-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()" />
-                        </td>
-                        <td>
-                            <p>
-                                <a href="#" ng-click="$ctrl.cancel()" style="padding-right: 15px;">Clear Filters</a>
-                            </p>
-                            <button class="btn btn-success" ng-click="$ctrl.browse()" style="width: 100px; text-align: center; height: 34px;">
-                                Search
-                            </button> 
-                            
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div style="display:inline-flex; width:100%; padding-bottom: 10px;">
+                <div class="input-group" style="display:inline-flex; flex:1; align-items: center;">
+                    
+                    <button class="btn btn-success" ng-click="$ctrl.browse()" style="width:fit-content; white-space: nowrap; text-align: center; height: 34px;">
+                        <i class="fa fa-search">&nbsp;</i>Search
+                    </button>
+                    <input type="text" placeholder="Author, Title, Keyword, or Description" class="form-control" ng-model="$ctrl.params.queries.searchString" class="form-control" id="author-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()">
+                </div>
+                
+                <div style="display:flex; align-items: center; flex:1; justify-content: end;">
+                    <div class="input-group" style="display:inline-flex; align-items: center; padding-left: 15px;">
+                        <label for="nh-type-select">Natural Hazard Type&nbsp;</label>
+                        <select
+                            style="width: fit-content; border-radius: 5px;"
+                            id="nh-type-select"
+                            ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardType"
+                            ng-change="$ctrl.browse()"
+                            ng-options="opt.name as opt.label for opt in $ctrl.rapidEventTypes"
+                            class="form-control"
+                            ></select>
+                        </div>
+                    <a href="#" ng-click="$ctrl.cancel()" style="padding-left: 15px;">Clear Filters</a></div>
+            </div>
             <div class="table-responsive">
                 <div
                     class="ds-table-display-wrapper"
@@ -125,7 +110,7 @@
         <div class="table-column-r">
             <table
             class="table table-bordered"
-            style="padding-top: 0px; padding-bottom: 0px; margin-top: 0px; margin-bottom: 0px; border-bottom: none;"
+            style="padding-top: 0px; padding-bottom: 0px; margin-top: 0px; margin-bottom: 0px;"
             >
             <tbody style="background-color: #fafafa;">
                 <tr>
@@ -137,10 +122,10 @@
                         <div style="padding-bottom: 5px; font-weight: normal;">
                             <label-nb for="exp-facility-select">Experiment Facility</label-nb>
                             <select
-                                ng-disabled="!$ctrl.params.typeFilters.experimental"
+                                style="border-radius: 5px;"
                                 id="exp-facility-select"
                                 ng-model="$ctrl.params.advancedFilters.experimental.experimentalFacility"
-                                ng-change="$ctrl.getValidExperimentTypes(true)"
+                                ng-change="$ctrl.getValidExperimentTypes(true, true)"
                                 ng-options="ef.name as ef.label for ef in $ctrl.experimentFacilityOptions"
                                 class="form-control"
                                 ></select
@@ -149,10 +134,12 @@
                         <div style="padding-bottom: 5px; font-weight: normal;">
                             <label-nb for="exp-type-select">Experiment Type</label-nb>
                             <select
-                                ng-disabled="!$ctrl.params.typeFilters.experimental || !$ctrl.params.advancedFilters.experimental.experimentalFacility"
+                                style="border-radius: 5px;"
+                                ng-disabled="!$ctrl.params.advancedFilters.experimental.experimentalFacility"
                                 id="exp-type-select"
                                 ng-model="$ctrl.params.advancedFilters.experimental.experimentType"
                                 ng-options="ef.name as ef.label for ef in $ctrl.validExperimentTypes"
+                                ng-change="$ctrl.browse()"
                                 class="form-control"
                                 ></select
                             >
@@ -169,10 +156,11 @@
                         <div style="padding-bottom: 5px; font-weight: normal;">
                             <label-nb for="simulation-type-select">Simulation Type</label-nb>
                             <select
-                                ng-disabled="!$ctrl.params.typeFilters.simulation"
+                                style="border-radius: 5px;"
                                 id="simulation-type-select"
                                 ng-model="$ctrl.params.advancedFilters.simulation.simulationType"
                                 ng-options="ef.name as ef.label for ef in $ctrl.simulationTypes"
+                                ng-change="$ctrl.browse()"
                                 class="form-control"
                                 ></select
                             >
@@ -187,22 +175,9 @@
                             </label
                         >Field Research
                         <div style="padding-bottom: 5px; font-weight: normal;">
-                            <div style="padding-bottom: 5px;">
-                            <label-nb for="simulation-type-select">Natural Hazard Type</label-nb>
-                            <select
-                            ng-disabled="!$ctrl.params.typeFilters.field_recon"
-                                id="nh-type-select"
-                                ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardType"
-                                ng-options="opt.name as opt.label for opt in $ctrl.rapidEventTypes"
-                                class="form-control"
-                                ></select
-                            >
-                        </div>
-                        <div style="padding-bottom: 5px; font-weight: normal;">
                             <label-nb for="nh-event-select">Natural Hazard Event</label-nb>
                             <input
                                 class="form-control"
-                                ng-disabled="!$ctrl.params.typeFilters.field_recon"
                                 ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardEvent"
                             />
                         </div>
@@ -217,9 +192,10 @@
                         <div style="padding-bottom: 5px; font-weight: normal;">
                             <label-nb for="other-type-select">Data Type</label-nb>
                             <select
-                                ng-disabled="!$ctrl.params.typeFilters.other"
+                                style="border-radius: 5px;"
                                 id="other-type-select"
                                 ng-model="$ctrl.params.advancedFilters.other.dataType"
+                                ng-change="$ctrl.browse()"
                                 ng-options="opt.name as opt.label for opt in $ctrl.otherTypes"
                                 class="form-control"
                                 ></select
@@ -237,8 +213,9 @@
                         <div style="padding-bottom: 5px; font-weight: normal;">
                             <label-nb for="hybrid-sim-type-select">Hybrid Sim Type</label-nb>
                             <select
-                                ng-disabled="!$ctrl.params.typeFilters.hybrid_simulation"
+                                style="border-radius: 5px;"
                                 id="other-type-select"
+                                ng-change="$ctrl.browse()"
                                 ng-model="$ctrl.params.advancedFilters.hybrid_simulation.hybridSimulationType"
                                 ng-options="opt.name as opt.label for opt in $ctrl.hybridSimulationTypes"
                                 class="form-control"
