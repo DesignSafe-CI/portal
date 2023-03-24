@@ -75,11 +75,11 @@
     <div style="padding-bottom: 5px;"> 
         <span ng-if="$ctrl.readOnly">
             <span style="background-color: #ECE4BF;">
-                {{ $ctrl.cumDoimMetrics[$ctrl.project.value.dois].fileDownloads || 0 }} Downloads
+                {{ $ctrl.cumMetrics.otherTotal || 0 }} Downloads
             </span>
             &nbsp;&nbsp;
             <span style="background-color: #ECE4BF;">        
-                {{ $ctrl.cumDoimMetrics[$ctrl.project.value.dois].filePreviews || 0}} Views
+                {{ $ctrl.cumMetrics.filePreviews || 0}} Views
             </span>
             &nbsp;&nbsp;
             <span ng-if="$ctrl.readOnly">

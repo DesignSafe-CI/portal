@@ -198,31 +198,6 @@
     </tr>
     <!-- end Hazmapper links -->
 
-    <!-- DOI listing -->
-    <tr class="prj-row" ng-if="$ctrl.project.value.projectType !== 'other'" ng-repeat="(uuid, citation) in $ctrl.doiList">
-        <td ng-if="$first">DOIs in Project</td>
-        <td ng-if="!$first"></td>
-        <td class="prj-data">
-            <strong>
-                <a ng-if="$ctrl.project.value.projectType === 'field_recon'"
-                   ng-click="$ctrl.goToHash(citation.hash)"
-                   data-toggle="collapse"
-                   data-target="{{ citation.type === 'mission' ? '#data-' : '#files-' }}{{uuid}}"
-                >
-                    {{ citation.doi }}
-                </a>
-                <a ng-if="$ctrl.project.value.projectType != 'field_recon'"
-                   ng-click="$ctrl.goToHash(citation.hash)"
-                   data-toggle="collapse"
-                   data-target="#data-{{uuid}}"
-                >
-                    {{ citation.doi }}
-                </a>
-            </strong>
-        </td>
-    </tr>
-    <!-- end DOI listing -->
-
     <!-- Citation Details (other only)-->
     <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.project.value.projectType === 'other'"> <!-- hide this for anything not OTHER -->
         <td>

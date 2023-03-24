@@ -449,17 +449,36 @@ class PublishedViewCtrl {
     }
 
     citationMetrics(data) {
-        this.cumDoimMetrics = {};
+        let projectDownloads = 0;
+        const archiveMetrics = data.value.find((v) => v.doi === 'archive') || { metrics: [] };
+        archiveMetrics.metrics.forEach((m) => (projectDownloads += m.Downloads));
+        let fileDownloads = 0;
+        let filePreviews = 0;
+        this.cumDoiMetrics = {};
+        data.value
+            .filter((v) => v.doi !== 'archive')
+            .forEach((v) => {
+                v.metrics.forEach((m) => {
+                    fileDownloads += m.Downloads || 0;
+                    filePreviews += m.Previews || 0;
+                });
+            });
         data.value.forEach((v) => {
-            this.cumDoimMetrics[v.doi] = {
+            this.cumDoiMetrics[v.doi] = {
                 fileDownloads: 0,
                 filePreviews: 0,
             };
             v.metrics.forEach((m) => {
-                this.cumDoimMetrics[v.doi].fileDownloads += m.Downloads;
-                this.cumDoimMetrics[v.doi].filePreviews += m.Previews;
+                this.cumDoiMetrics[v.doi].fileDownloads += m.Downloads;
+                this.cumDoiMetrics[v.doi].filePreviews += m.Previews;
             });
         });
+        return {
+            projectDownloads,
+            fileDownloads,
+            filePreviews,
+            otherTotal: projectDownloads + fileDownloads 
+        };
     }
 
     matchingGroup(exp, model) {
