@@ -11,6 +11,82 @@
     </div>
 </div>
 <!-- end Header -->
+<!-- Other Citation -->
+<div class="citation-blue" style="border:none" ng-if="$ctrl.project.value.projectType === 'other'">
+    <div class="entity-meta-data" style="line-height: 1.6; width: 100%; display: flex; justify-content: space-between;">
+        <tr>
+            <td class="tab-cell">
+                <div style="height:100%">
+                    <div ng-if="$ctrl.project.value.dois.toString() === ''">
+                        Draft Citation. Authors can be reordered before publication. 
+                    </div>
+                    <div ng-if="$ctrl.project.value.dois.toString() !== ''">
+                        Cite this Data:
+                    </div>
+                </div>
+                <div ng-if="!$ctrl.readOnly" style="text-align:right; font-weight: normal;">
+                    <div ng-if="$ctrl.project.value.dois.toString() === ''" class="unpublished-grey" >
+                        Unpublished
+                    </div>
+                    <div ng-if="$ctrl.project.value.dois.toString() !== ''" class="published-green">
+                        Published
+                    </div> 
+                </div>
+            </td>
+        </tr>
+    </div>    
+    <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
+    <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px; line-height: 1.6;">
+        {{ $ctrl.listAuthors($ctrl.publication.project.value.teamOrder) }}
+        ({{ $ctrl.createdYear }}) "{{ $ctrl.project.value.title }}." DesignSafe-CI.
+        <a href="https://doi.org/{{$ctrl.project.value.dois.toString()}}">https://doi.org/{{$ctrl.project.value.dois.toString()}}</a>
+    </div>
+    <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
+        {{ $ctrl.listAuthors($ctrl.publication.project.value.teamOrder) }}
+        ({{ $ctrl.createdYear }}) "{{ $ctrl.project.value.title }}." DesignSafe-CI.
+        <a href="https://doi.org/{{$ctrl.project.value.dois.toString()}}">https://doi.org/{{$ctrl.project.value.dois.toString()}}</a>
+        v{{$ctrl.version}}
+    </div>
+    <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px;  line-height: 1.6;"> 
+        {{ $ctrl.listAuthors($ctrl.project.value.teamOrder) }}
+        <span ng-if="$ctrl.project.value.dois.toString() === ''">
+            (Year of Publication) "{{ $ctrl.project.value.title }}." DesignSafe-CI. (DOI)
+        </span>
+        <span ng-if="$ctrl.project.value.dois.toString() !== ''">
+            ({{ $ctrl.createdYear }}) "{{ $ctrl.project.value.title }}." DesignSafe-CI.
+            <a href="https://doi.org/{{$ctrl.project.value.dois.toString()}}">https://doi.org/{{$ctrl.project.value.dois.toString()}}</a>
+        </span>
+    </div>
+    <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
+        <span ng-if="$ctrl.project.value.dois.toString() !== ''">
+            Download Citation: 
+            <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{$ctrl.project.value.dois.toString()}}">DataCite XML</a> |
+            <a href="https://data.datacite.org/application/x-research-info-systems/{{$ctrl.project.value.dois.toString()}}">RIS</a> |
+            <a href="https://data.datacite.org/application/x-bibtex/{{$ctrl.project.value.dois.toString()}}">BibTeX</a>
+        </span>
+        <span ng-if="$ctrl.project.value.dois.toString() === ''">
+            Download Citation: <span style="color:#9f9f9f"> DataCite XML | RIS | BibTeX</span>
+        </span>
+    </div>
+    <div style="padding-bottom: 5px;"> 
+        <span ng-if="$ctrl.readOnly">
+            <span style="background-color: #ECE4BF;">
+                {{ $ctrl.cumMetrics.otherTotal || 0 }} Downloads
+            </span>
+            &nbsp;&nbsp;
+            <span style="background-color: #ECE4BF;">        
+                {{ $ctrl.cumMetrics.filePreviews || 0}} Views
+            </span>
+            &nbsp;&nbsp;
+            <span ng-if="$ctrl.readOnly">
+                <a ng-click="$ctrl.metrics()">
+                    <strong>Details</strong>
+                </a>
+            </span>
+        </span>
+    </div>
+</div>
+<!-- end Other Citation -->
 
 <!-- Project Metadata -->
 <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
