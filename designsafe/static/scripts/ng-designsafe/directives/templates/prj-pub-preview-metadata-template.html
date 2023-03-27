@@ -274,20 +274,6 @@
     </tr>
     <!-- end Hazmapper links -->
 
-    <!-- Citation Details (other only)-->
-    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.project.value.projectType === 'other'"> <!-- hide this for anything not OTHER -->
-        <td>
-            <span>DOI</span>
-            <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
-                Citation
-            </button>
-        </td>
-        <td class="prj-data">
-            <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
-        </td>
-    </tr>
-    <!-- Citation Details (other only)-->
-
     <!-- Version Dropdown -->
     <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
         <td>
