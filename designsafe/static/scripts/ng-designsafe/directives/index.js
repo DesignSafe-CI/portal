@@ -8,7 +8,7 @@ import { fileModel, spinnerOnLoad, httpSrc, accessfiles,
          selectOnFocus, dsDataDraggable, dsDraggable, dsInfiniteScroll,
          dsUser, dsUserList, dsAuthorList, dsFixTop, yamzTerm, iframeOnload,
         } from './ng-designsafe-directives';
-import { prjMetadata, prjPubPreviewMetadata, relatedWork, referencedData } from './project-directives';
+import { prjMetadata, prjPubPreviewMetadata, relatedWork, referencedData, prjPubCollections } from './project-directives';
 
 designsafeDirectives.directive('ddAltmetrics', ['$sce', '$filter', ddAltmetrics]);
 // designsafeDirectives.directive('myDataBrowser', myDataBrowser);
@@ -32,5 +32,6 @@ designsafeDirectives.directive('prjMetadata', prjMetadata);
 designsafeDirectives.directive('prjPubPreviewMetadata', prjPubPreviewMetadata);
 designsafeDirectives.directive('relatedWork', relatedWork);
 designsafeDirectives.directive('referencedData', referencedData);
+designsafeDirectives.directive('prjPubCollections', prjPubCollections);
 
 export default designsafeDirectives;

@@ -1,83 +1,248 @@
-<div ng-if="$ctrl.$state.current.name == 'publicData'"><publication-advanced-search /></div>
+<div ng-if="$ctrl.$state.current.name == 'publicData'"></div>
 
-
-
-<div class="table-responsive">
-    <div
-        class="ds-table-display-wrapper"
-        data-ds-infinite-scroll
-        data-scroll-bottom="$ctrl.scrollToBottom()"
-        data-scroll-top="$ctrl.scrollToTop()"
-        data-bottom-height="0"
-    >
-        <table class="table table-bordered table-striped files-listing-table" style="background-color: #fff;">
-            <thead>
-                <th style="width: 350px;">Project Title</th>
-                <th style="width: 100px;">Project PI</th>
-                <th style="width: 100px;">Project Description</th>
-                <th style="width: 150px;">Keywords</th>
-                <th style="width: 100px;">Date of Publication</th>
-                </thead>
-
-            <tbody>
-                <tr ng-if="!$ctrl.listing.loading"
-              ng-repeat="item in $ctrl.listing.publications"
-              ng-click=""
-          >
-              <td>
-                  <a ng-href="{{ $ctrl.href(item) }}">
-                      {{ item.project.value.title }}
-                  </a>
-                  <span style="text-transform:capitalize;">({{item.project.value.dataType ||  $ctrl.getType(item.project.value.projectType) }})</span>
-              </td>
-              <td >
-                <span ng-show="item.pi">{{ item.pi }}</span>
-            </td>
-            <td align="center" >
-                <a ng-click="$ctrl.showDescription(item)">View Description</a>
-            </td>
-              <td >
-                {{item.project.value.keywords}}
-              </td>
-              <td >
-                {{ item.created| date: 'M/d/yyyy'}}
-              </td>
-          </tr>
-                <tr ng-if="$ctrl.listing.loadingScroll">
-                    <td>
-                        <span class="bg-info text-info">
-                            <i class="fa fa-spinner fa-spin"></i> Loading...
-                        </span>
+<div class="table table-container">
+    <div class="table-row">
+        <div class="table-column-l">
+            <div style="display:inline-flex; width:100%; padding-bottom: 10px;">
+                <div class="input-group" style="display:inline-flex; flex:1; align-items: center;">
+                    
+                    <button class="btn btn-success" ng-click="$ctrl.browse()" style="width:fit-content; white-space: nowrap; text-align: center; height: 34px;">
+                        <i class="fa fa-search">&nbsp;</i>Search
+                    </button>
+                    <input type="text" placeholder="Author, Title, Keyword, or Description" class="form-control" ng-model="$ctrl.params.queries.searchString" class="form-control" id="author-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()">
+                </div>
+                
+                <div style="display:flex; align-items: center; flex:1; justify-content: end;">
+                    <div class="input-group" style="display:inline-flex; align-items: center; padding-left: 15px;">
+                        <label for="nh-type-select">Natural Hazard Type&nbsp;</label>
+                        <select
+                            style="width: fit-content; border-radius: 5px;"
+                            id="nh-type-select"
+                            ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardType"
+                            ng-change="$ctrl.browse()"
+                            ng-options="opt.name as opt.label for opt in $ctrl.rapidEventTypes"
+                            class="form-control"
+                            ></select>
+                        </div>
+                    <a href="#" ng-click="$ctrl.cancel()" style="padding-left: 15px;">Clear Filters</a></div>
+            </div>
+            <div class="table-responsive">
+                <div
+                    class="ds-table-display-wrapper"
+                    data-ds-infinite-scroll
+                    data-scroll-bottom="$ctrl.scrollToBottom()"
+                    data-scroll-top="$ctrl.scrollToTop()"
+                    data-bottom-height="0"
+                >
+                    <table class="table table-bordered table-striped files-listing-table" style="background-color: #fff;">
+                        <thead>
+                            <th style="width: 350px;">Project Title</th>
+                            <th style="width: 100px;">Project PI</th>
+                            <th style="width: 100px;">Project Description</th>
+                            <th style="width: 150px;">Keywords</th>
+                            <th style="width: 100px;">Date of Publication</th>
+                            </thead>
+            
+                        <tbody>
+                            <tr ng-if="!$ctrl.listing.loading"
+                          ng-repeat="item in $ctrl.listing.publications"
+                          ng-click=""
+                      >
+                          <td>
+                              <a ng-href="{{ $ctrl.href(item) }}">
+                                  {{ item.project.value.title }}
+                              </a>
+                              <span style="text-transform:capitalize;">({{item.project.value.dataType ||  $ctrl.getType(item.project.value.projectType) }})</span>
+                          </td>
+                          <td >
+                            <span ng-show="item.pi">{{ item.pi }}</span>
+                        </td>
+                        <td text-align="center" >
+                            <a ng-click="$ctrl.showDescription(item)">View Description</a>
+                        </td>
+                          <td >
+                            {{item.project.value.keywords}}
+                          </td>
+                          <td >
+                            {{ item.created| date: 'M/d/yyyy'}}
+                          </td>
+                      </tr>
+                            <tr ng-if="$ctrl.listing.loadingScroll">
+                                <td>
+                                    <span class="bg-info text-info">
+                                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <caption>
+                            <div data-ng-if="$ctrl.listing.loading"
+                                 style="padding:10px; font-size:large; width:100%;"
+                                 class="bg-info">
+                                <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
+                            </div>
+            
+                            <div ng-if="! $ctrl.listing.loading && $ctrl.listing.error"
+                                 class="text-center">
+                                <p class="alert alert-danger"
+                                   ng-bind-html="$ctrl.listing.error.message ||
+                                                 $ctrl.listing.error | toTrusted"></p>
+                            </div>
+            
+                            <div
+                                ng-if="! $ctrl.listing.loading &&
+                                       ! $ctrl.listing.error &&
+                                       ($ctrl.listing.publications|length) === 0"
+                                style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
+                                class="text-center"
+                            >
+                                <p class="lead">
+                                    This folder is empty!
+                                    <br /><i class="fa fa-folder-open-o"></i>
+                                </p>
+                            </div>
+                        </caption>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-column-r">
+            <table
+            class="table table-bordered"
+            style="padding-top: 0px; padding-bottom: 0px; margin-top: 0px; margin-bottom: 0px;"
+            >
+            <tbody style="background-color: #fafafa;">
+                <tr>
+                    <td style="width: 20%; border-bottom: none; font-weight: bold;">
+                        <label class="checkbox-inline" style="padding-left:0px;" ng-click="$ctrl.toggleFilter('experimental')"
+                            ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.experimental" />
+                            </label
+                        > Experimental
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="exp-facility-select">Experiment Facility</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                id="exp-facility-select"
+                                ng-model="$ctrl.params.advancedFilters.experimental.experimentalFacility"
+                                ng-change="$ctrl.getValidExperimentTypes(true, true)"
+                                ng-options="ef.name as ef.label for ef in $ctrl.experimentFacilityOptions"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="exp-type-select">Experiment Type</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                ng-disabled="!$ctrl.params.advancedFilters.experimental.experimentalFacility"
+                                id="exp-type-select"
+                                ng-model="$ctrl.params.advancedFilters.experimental.experimentType"
+                                ng-options="ef.name as ef.label for ef in $ctrl.validExperimentTypes"
+                                ng-change="$ctrl.browse()"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
+                    </td>
+                </tr>
+                <tr class="solid"></tr>
+                <tr>
+                    <td style="width: 20%; border-bottom: none; font-weight: bold;">
+                        <label class="checkbox-inline" style="padding-left:0px;" ng-click="$ctrl.toggleFilter('simulation')"
+                            ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.simulation" />
+                            </label
+                        >Simulation
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="simulation-type-select">Simulation Type</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                id="simulation-type-select"
+                                ng-model="$ctrl.params.advancedFilters.simulation.simulationType"
+                                ng-options="ef.name as ef.label for ef in $ctrl.simulationTypes"
+                                ng-change="$ctrl.browse()"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
+                    </td>
+                </tr>
+                <tr class="solid"></tr>
+                <tr>
+                    <td style="width: 20%; border-bottom: none; font-weight: bold;">
+                        <label class="checkbox-inline" style="padding-left:0px;" ng-click="$ctrl.toggleFilter('field_recon')"
+                            ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.field_recon" /> 
+                            </label
+                        >Field Research
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb style="width:100%;" for="fr-type-select">Natural Hazard Type&nbsp;</label>
+                            <select
+                                style="border-radius: 5px;"
+                                id="fr-type-select"
+                                ng-model="$ctrl.params.advancedFilters.field_recon.frType"
+                                ng-change="$ctrl.browse()"
+                                ng-options="opt.name as opt.label for opt in $ctrl.frTypes"
+                                class="form-control"
+                            ></select>
+                            <div style="padding-bottom: 5px;"></div>
+                            <label-nb style="width:100%;" for="fr-year-select">Natural Hazard Year</label>
+                            <select
+                                style="border-radius: 5px; width: 100%"
+                                id="fr-year-select"
+                                ng-model="$ctrl.params.advancedFilters.field_recon.frDate"
+                                ng-change="$ctrl.browse()"
+                                ng-options="opt.name as opt.label for opt in $ctrl.nhYears"
+                                class="form-control"
+                            ></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="solid"></tr>
+                <tr>
+                    <td style="width: 20%; border-bottom: none; font-weight: bold;">
+                        <label class="checkbox-inline" style="padding-left:0px;" ng-click="$ctrl.toggleFilter('other')"
+                            ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.other" /> </label
+                        >Other
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="other-type-select">Data Type</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                id="other-type-select"
+                                ng-model="$ctrl.params.advancedFilters.other.dataType"
+                                ng-change="$ctrl.browse()"
+                                ng-options="opt.name as opt.label for opt in $ctrl.otherTypes"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
+                    </td>
+                </tr>
+                <tr class="solid"></tr>
+                <tr>
+                    <td style="width: 20%; border-bottom: none; font-weight: bold;">
+                        <label class="checkbox-inline" style="padding-left:0px;" ng-click="$ctrl.toggleFilter('hybrid_simulation')"
+                            ><publication-advanced-search-checkbox selected="$ctrl.params.typeFilters.hybrid_simulation" />
+                            </label
+                        >Hybrid Simulation
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="hybrid-sim-type-select">Hybrid Sim Type</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                id="other-type-select"
+                                ng-change="$ctrl.browse()"
+                                ng-model="$ctrl.params.advancedFilters.hybrid_simulation.hybridSimulationType"
+                                ng-options="opt.name as opt.label for opt in $ctrl.hybridSimulationTypes"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
                     </td>
                 </tr>
             </tbody>
-            <caption>
-                <div data-ng-if="$ctrl.listing.loading"
-                     style="padding:10px; font-size:large; width:100%;"
-                     class="bg-info">
-                    <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
-                </div>
-
-                <div ng-if="! $ctrl.listing.loading && $ctrl.listing.error"
-                     class="text-center">
-                    <p class="alert alert-danger"
-                       ng-bind-html="$ctrl.listing.error.message ||
-                                     $ctrl.listing.error | toTrusted"></p>
-                </div>
-
-                <div
-                    ng-if="! $ctrl.listing.loading &&
-                           ! $ctrl.listing.error &&
-                           ($ctrl.listing.publications|length) === 0"
-                    style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
-                    class="text-center"
-                >
-                    <p class="lead">
-                        This folder is empty!
-                        <br /><i class="fa fa-folder-open-o"></i>
-                    </p>
-                </div>
-            </caption>
-        </table>
+            </table>
+        </div>
     </div>
 </div>
+
+
