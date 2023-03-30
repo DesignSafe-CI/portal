@@ -44,7 +44,7 @@
                                     <span class="label-form-name">Referenced Data</span>
                                 </div>
                                 <span class="label-form-desc">
-                                    Citations for data used in this project.
+                                    Published data used in the creation of this dataset.
                                 </span>
                             </div>
                         </label>
@@ -54,7 +54,7 @@
                             Title
                         </td>
                         <td>
-                            URL or DOI for the reference data, in URL format
+                            URL or DOI for the referenced data, in URL format
                         </td>
                     </tr>
                     <tr ng-repeat="reference in $ctrl.form.referencedData track by $index">
@@ -106,13 +106,13 @@
                 <div>
                     <button class="btn-project-add-rm"
                             ng-click="$ctrl.addObjField('referencedData')">
-                            &#x2b; Add <span ng-if="$ctrl.ui.require.referencedData">another</span> Reference
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.referencedData">another</span> Referenced Data
                     </button>
                     |
                     <button class="btn-project-add-rm"
                             ng-click="$ctrl.dropObjField('referencedData')"
                             ng-disabled="!$ctrl.ui.require.referencedData">
-                            &#x2212; Remove Reference
+                            &#x2212; Remove Referenced Data
                     </button>
                 </div>
             </div>
@@ -132,7 +132,7 @@
                                     <span class="label-form-name">Related Work</span>
                                 </div>
                                 <span class="label-form-desc">
-                                    Data from published projects or an external repository.
+                                    Information giving context, a linked dataset on DesignSafe, or works citing the DOI for this dataset.
                                 </span>
                             </div>
                         </label>
@@ -145,7 +145,7 @@
                             Title
                         </td>
                         <td valign="top">
-                            URL or DOI for the reference data, in URL format
+                            URL or DOI for the related work, in URL format
                         </td>
                     </tr>
                     <tr ng-repeat="work in $ctrl.form.relatedWork track by $index">
@@ -339,7 +339,7 @@
                                 <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="work in doc.value.relatedWork track by $index">
-                                        <a href="{{ work.href }}" target=”_blank”>{{ work.title }}</a>
+                                        <related-work></related-work>
                                     </div>
                                 </div>
                             </div>
@@ -347,10 +347,7 @@
                                 <div class="entity-meta-label-multi">Referenced Data</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="reference in doc.value.referencedData track by $index">
-                                        <span ng-if="reference.type">
-                                            {{ reference.type }} | 
-                                          </span>
-                                          <a href="{{ reference.doi }}" target=”_blank”>{{ reference.title }}</a>
+                                        <referenced-data></referenced-data>
                                     </div>
                                 </div>
                             </div>

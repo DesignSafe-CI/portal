@@ -104,7 +104,7 @@
                                     <span class="label-form-name">Referenced Data</span>
                                 </div>
                                 <span class="label-form-desc">
-                                    Citations for data used in this project.
+                                    Published data used in the creation of this dataset.
                                 </span>
                             </div>
                         </label>
@@ -114,7 +114,7 @@
                             Title
                         </td>
                         <td>
-                            URL or DOI for the reference data, in URL format
+                            URL or DOI for the referenced data, in URL format
                         </td>
                     </tr>
                     <tr ng-repeat="reference in $ctrl.form.referencedData track by $index">
@@ -166,13 +166,13 @@
                 <div>
                     <button class="btn-project-add-rm"
                             ng-click="$ctrl.addObjField('referencedData')">
-                            &#x2b; Add <span ng-if="$ctrl.ui.require.referencedData">another</span> Reference
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.referencedData">another</span> Referenced Data
                     </button>
                     |
                     <button class="btn-project-add-rm"
                             ng-click="$ctrl.dropObjField('referencedData')"
                             ng-disabled="!$ctrl.ui.require.referencedData">
-                            &#x2212; Remove Reference
+                            &#x2212; Remove Referenced Data
                     </button>
                 </div>
             </div>
@@ -192,7 +192,7 @@
                                     <span class="label-form-name">Related Work</span>
                                 </div>
                                 <span class="label-form-desc">
-                                    Data from published projects or an external repository.
+                                    Information giving context, a linked dataset on DesignSafe, or works citing the DOI for this dataset.
                                 </span>
                             </div>
                         </label>
@@ -205,7 +205,7 @@
                             Title
                         </td>
                         <td valign="top">
-                            URL or DOI for the reference data, in URL format
+                            URL or DOI for the related work, in URL format
                         </td>
                     </tr>
                     <tr ng-repeat="work in $ctrl.form.associatedProjects track by $index">

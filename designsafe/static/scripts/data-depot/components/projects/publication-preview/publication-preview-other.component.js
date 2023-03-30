@@ -27,10 +27,14 @@ class PublicationPreviewOtherCtrl {
                 // we do not display a file listing in other's preview section
                 this.ProjectService.get({ uuid: this.projectId }).then((project) => {
                 this.project = project;
+                this.createdYear = new Date(this.project.created).getFullYear();
+                this.dateCreated = new Date(this.project.created);
                 this.ui.loading = false;
             });
         } else {
             this.project = this.data;
+            this.createdYear = new Date(this.project.created).getFullYear();
+            this.dateCreated = new Date(this.project.created);
             this.ui.loading = false;
         }
     }
@@ -66,6 +70,23 @@ class PublicationPreviewOtherCtrl {
             },
             size: 'lg',
         });
+    }
+
+    listAuthors(authors) {
+        const prepAuthors = authors.sort((a, b) => a.order - b.order);
+        let listAuthors = [];
+        prepAuthors.forEach((u, i, arr) => {
+            if (i === 0 && arr.length - 1 === 0) {
+                listAuthors += `${u.lname}, ${u.fname[0]}. `;
+            } else if (i === 0 && arr.length - 1 > 0) {
+                listAuthors += `${u.lname}, ${u.fname[0]}., `;
+            } else if (i === arr.length - 1) {
+                listAuthors += `${u.fname[0]}. ${u.lname}. `;
+            } else {
+                listAuthors += `${u.fname[0]}. ${u.lname}, `;
+            }
+        });
+        return listAuthors;
     }
 
     onBrowse(file) {
