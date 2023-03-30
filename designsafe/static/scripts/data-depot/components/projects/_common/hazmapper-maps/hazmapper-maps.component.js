@@ -2,7 +2,10 @@ import angular from 'angular';
 import HazmapperMapsTemplate from './hazmapper-maps.component.html';
 
 class HazmapperMapsCtrl {
-    constructor($state) {this.$state = $state;}
+    constructor($state) {
+        'ngInject';
+        this.$state = $state;
+    }
 
     $onInit() {
         this.readOnly = this.$state.current.name.indexOf('publishedData') === 0;
