@@ -72,13 +72,94 @@
             on-browse="$ctrl.onBrowse(file)"
         >&nbsp;</files-listing>
     </div>
-    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.project.hybridsimulation_set">
+    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.project.hybridsimulation_set" style="margin-bottom:20px">
         <div class="dropdown dropdown-spacer-sm" id="details-{{hybsim.uuid}}">
-            <button ng-click="$ctrl.logEntity(hybsim, 'hybridSimulationList')" class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}" style="width:100%;">
-                <div class="collapse-tab">
-                    <span class="collapse-tab-content-left">Hybrid Simulation | <strong>{{hybsim.value.title}}</strong></span>
-                    <span class="collapse-tab-content-right curation-chevron"></span>
+            <div class="citation-gray" id="anchor-{{hybsim.uuid}}">
+                <tr>
+                    <td class="tab-cell">
+                        <div>
+                            Hybrid Simulation | <strong>{{hybsim.value.title}}</strong> 
+                        </div>
+                        <div ng-if="!$ctrl.readOnly">
+                            <span ng-if="hybsim.value.dois.toString() === ''" class="unpublished-grey">
+                                 Unpublished
+                             </span>
+                             <span ng-if="hybsim.value.dois.toString() !== ''" class="published-green">
+                                 Published
+                             </span> 
+                         </div>
+                    </td>
+                </tr>
+            </div>
+            <div class="citation-blue">
+                <div class="entity-meta-data" style="line-height: 1.6;">
+                    <span ng-if="hybsim.value.dois.toString() === ''">
+                        Draft Citation. Authors can be reordered before publication. 
+                    </span>
+                    <span ng-if="hybsim.value.dois.toString() !== ''">
+                        Cite this Data: 
+                    </span>
                 </div>
+                <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
+                <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px; line-height: 1.6;"> 
+                    {{ $ctrl.listAuthors(hybsim.authors) }}
+                    ({{ $ctrl.createdYear }}) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    <a href="https://doi.org/{{hybsim.value.dois.toString()}}">https://doi.org/{{hybsim.value.dois.toString()}}</a>
+                </div>
+                <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
+                    {{ $ctrl.listAuthors(hybsim.authors) }}
+                    ({{ $ctrl.createdYear }}) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    <a href="https://doi.org/{{hybsim.value.dois.toString()}}">https://doi.org/{{hybsim.value.dois.toString()}}</a>
+                    v{{$ctrl.version}}
+                </div>
+                <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px; line-height: 1.6;">  
+                    <ds-author-list format="citation" authors="hybsim.value.authors"></ds-author-list>
+                    <span ng-if="hybsim.value.dois.toString() === ''">
+                        (Year of Publication) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                        (DOI)
+                    </span>
+                    <span ng-if="hybsim.value.dois.toString() !== ''">
+                        ({{ $ctrl.createdYear }}) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                        <a href="https://doi.org/{{hybsim.value.dois.toString()}}">https://doi.org/{{hybsim.value.dois.toString()}}</a>
+                    </span>
+                </div>
+                <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
+                    <span ng-if="hybsim.value.dois.toString() !== ''">
+                        Download Citation: 
+                        <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{hybsim.value.dois.toString()}}">DataCite XML</a> |
+                        <a href="https://data.datacite.org/application/x-research-info-systems/{{hybsim.value.dois.toString()}}">RIS</a> |
+                        <a href="https://data.datacite.org/application/x-bibtex/{{hybsim.value.dois.toString()}}">BibTeX</a>
+                    </span>
+                    <span ng-if="hybsim.value.dois.toString() === ''">
+                        Download Citation: <span style="color:#9f9f9f"> DataCite XML | RIS | BibTeX</span>
+                    </span>
+                </div>
+                <div style="padding-bottom: 5px;"> 
+                    <span ng-if="$ctrl.readOnly">
+                        <span style="background-color: #ECE4BF;">
+                            {{ $ctrl.cumDoiMetrics[hybsim.value.dois].fileDownloads || 0 }} Downloads
+                        </span>
+                        &nbsp;&nbsp;
+                        <span style="background-color: #ECE4BF;">        
+                            {{ $ctrl.cumDoiMetrics[hybsim.value.dois].filePreviews || 0}} Views
+                        </span>
+                        &nbsp;&nbsp;
+                        <span>
+                            <a ng-click="$ctrl.entityMetrics(hybsim.doi, 'Hybrid Simulation')">
+                                <strong>Details</strong>
+                            </a>
+                        </span>
+                    </span>
+                </div>
+            </div> 
+            <button ng-init="toggle = true" ng-click="$ctrl.logEntity(hybsim, 'hybsimsList'); toggle = !toggle" class="btn-view tab-gray collapsed" data-toggle="collapse" data-target="#data-{{hybsim.uuid}}" style="width:100%;">
+                <table style="width:100%" id="anchor-{{ hybsim.uuid }}">
+                    <tr>
+                        <td style="text-align: center;">  
+                            <span class="curation-chevron">{{toggle ? ' View Data' : ' Hide Data'}}</span>
+                        </td>
+                    </tr>
+                </table>
             </button>
             <div id="data-{{hybsim.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
@@ -141,30 +222,23 @@
                         </span>
                         <span class="entity-meta-data"
                                 data-ng-if="$ctrl.readOnly">
-                            {{ $ctrl.doiList[hybsim.uuid].created | date:'MM-dd-yyyy' }}
+                            {{ $ctrl.dateCreated | date:'MM-dd-yyyy' }}
                         </span>
                     </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">
                             DOI
-                            <button class="btn btn-info btn-sm btn-cite"
-                                    ng-disabled="!$ctrl.readOnly"
-                                    data-ng-click="$ctrl.showCitation(hybsim)">
-                                Citation
-                            </button>
                         </div>
-                        <span class="entity-meta-data"
-                                data-ng-if="!$ctrl.readOnly">
+                        <span class="entity-meta-data" data-ng-if="!$ctrl.readOnly && hybsim.value.dois.toString() === ''">
                             (Appears when published)
                         </span>
-                        <span class="entity-meta-data"
-                                data-ng-if="$ctrl.readOnly">
-                            {{ hybsim.doi }}
+                        <span class="entity-meta-data" data-ng-if="$ctrl.readOnly || hybsim.value.dois.toString() !== ''">
+                            {{ hybsim.value.dois.toString() }}
                         </span>
                     </div>
                     <div class="entity-meta-field">
-                        <div class="entity-meta-label-multi">License(s)</div>
-                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                        <div class="entity-meta-label-multi" ng-if="(!$ctrl.readOnly && mission.value.dois.toString() === '') || $ctrl.readOnly">License(s)</div>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && hybsim.value.dois.toString() === ''">
                             <span>(Appears when published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly">
@@ -174,18 +248,6 @@
                                     &nbsp;{{$ctrl.ui.license}}
                                 </div>
                             </strong>
-                        </div>
-                        <div class="entity-meta-field">
-                            <div class="entity-meta-label">Data Reuse</div>
-                            <span ng-if="$ctrl.readOnly">
-                                <a ng-click="$ctrl.entityMetrics(hybsim.doi, 'Hybrid Simulation')">
-                                    &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
-                                    <strong>&nbsp;View Hybrid Simulation Metrics</strong>
-                                </a>
-                            </span>
-                            <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
-                                <span>(Appears when published)</span>
-                            </div>
                         </div>
                         <p>
                             <br>{{ hybsim.value.description }}
