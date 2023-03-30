@@ -358,7 +358,7 @@
 **/
 
 .ds-table-display-wrapper {
-    height:500px;
+    height:600px;
     overflow:scroll;
     overscroll-behavior-block: contain;
 }
