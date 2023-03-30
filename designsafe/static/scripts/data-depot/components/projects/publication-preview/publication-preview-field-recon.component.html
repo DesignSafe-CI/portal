@@ -55,8 +55,84 @@
             <!-- Reports/Documents -->
             <div ng-if="mission.name == 'designsafe.project.field_recon.report'" >
                 <div class="dropdown dropdown-spacer-sm" id="details-{{mission.uuid}}">
-                    <button ng-click="$ctrl.logEntity(mission, 'reportsList')" class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{mission.uuid}}"
-                        style="width:100%;">
+                    <div class="citation-gray" id="anchor-{{ mission.uuid }}">
+                        <tr>
+                            <td class="tab-cell">
+                                <div >
+                                    Documents | <strong>{{mission.value.title}}</strong> 
+                                </div>
+                                <div ng-if="!$ctrl.readOnly">
+                                   <span ng-if="mission.value.dois.toString() === ''" class="unpublished-grey">
+                                        Unpublished
+                                    </span>
+                                    <span ng-if="mission.value.dois.toString() !== ''" class="published-green">
+                                        Published
+                                    </span> 
+                                </div>
+                            </td>
+                        </tr>
+                    </div>
+                    <div class="citation-blue">
+                        <div class="entity-meta-data" style="line-height: 1.6;">
+                            <span ng-if="mission.value.dois.toString() === ''">
+                                Draft Citation. Authors can be reordered before publication. 
+                            </span>
+                            <span ng-if="mission.value.dois.toString() !== ''">
+                                Cite this Data: 
+                            </span>
+                        </div>
+                        <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
+                        <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
+                            {{ $ctrl.listAuthors(mission.authors) }}
+                            ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                            <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
+                        </div>
+                        <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
+                            {{ $ctrl.listAuthors(mission.authors) }}
+                            ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                            <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
+                            v{{$ctrl.version}}
+                        </div>
+                        <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px; line-height: 1.6;">
+                            <ds-author-list format="citation" authors="mission.value.authors"></ds-author-list>
+                            <span ng-if="mission.value.dois.toString() === ''">
+                                (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                (DOI)
+                            </span>
+                            <span ng-if="mission.value.dois.toString() !== ''">
+                                ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
+                            </span>
+                        </div>
+                        <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
+                            <span ng-if="mission.value.dois.toString() !== ''">
+                                Download Citation: 
+                                <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{mission.value.dois.toString()}}">DataCite XML</a> |
+                                <a href="https://data.datacite.org/application/x-research-info-systems/{{mission.value.dois.toString()}}">RIS</a> |
+                                <a href="https://data.datacite.org/application/x-bibtex/{{mission.value.dois.toString()}}">BibTeX</a>
+                            </span>
+                            <span ng-if="mission.value.dois.toString() === ''">
+                                Download Citation: <span style="color:#9f9f9f"> DataCite XML | RIS | BibTeX</span>
+                            </span>
+                        </div>
+                        <div style="padding-bottom: 5px;"> 
+                            <span ng-if="$ctrl.readOnly">
+                                <span style="background-color: #ECE4BF;">
+                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].fileDownloads || 0 }} Downloads
+                                </span>
+                                &nbsp;&nbsp;
+                                <span style="background-color: #ECE4BF;">        
+                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].filePreviews || 0}} Views
+                                </span>
+                                <span>
+                                    <a ng-click="$ctrl.entityMetrics(mission.doi, 'Mission')">
+                                        <strong>&nbsp;Details</strong>
+                                    </a>
+                                </span>
+                            </span>
+                        </div>
+                    </div> 
+                    <button ng-init="toggle = true" ng-click="$ctrl.logEntity(mission, 'missionsList'); toggle = !toggle" class="btn-view tab-gray collapsed" data-toggle="collapse" data-target="#data-{{mission.uuid}}" style="width:100%;">
                         <table style="width:100%" id="anchor-{{ mission.uuid }}">
                             <tr>
                                 <td style="text-align: center;">  
@@ -105,10 +181,6 @@
                                 <div class="entity-meta-data">
                                     <div ng-repeat="reference in mission.value.referencedData track by $index">
                                         <referenced-data></referenced-data>
-                                        <span ng-if="reference.type">
-                                            {{ reference.type }} | 
-                                        </span>
-                                        <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
                                     </div>
                                 </div>
                             </div>
@@ -301,7 +373,7 @@
                             <div class="entity-meta-label-multi">Related Work</div>
                             <div class="entity-meta-data">
                                 <div ng-repeat="work in mission.value.relatedWork track by $index">
-                                    <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                    <related-work></related-work>
                                 </div>
                             </div>
                         </div>
@@ -309,10 +381,7 @@
                             <div class="entity-meta-label-multi">Referenced Data</div>
                             <div class="entity-meta-data">
                                 <div ng-repeat="reference in mission.value.referencedData track by $index">
-                                    <span ng-if="reference.type">
-                                        {{ reference.type }} | 
-                                    </span>
-                                    <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                    <referenced-data></referenced-data>
                                 </div>
                             </div>
                         </div>
