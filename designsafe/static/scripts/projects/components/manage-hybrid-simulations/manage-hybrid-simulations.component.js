@@ -22,7 +22,7 @@ class ManageHybridSimCtrl {
                 relatedWork: false,
                 referencedData: false,
             },
-            relatedWorkTypes: ["Context", "Linked Project", "Cited By"],
+            relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
             hybridSimTypes: HybridSimTypes
         };
         this.configureForm(this.edit);

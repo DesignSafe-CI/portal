@@ -1,11 +1,11 @@
 {
     "rwTypes": [
         "Context",
-        "Linked Project"
+        "Linked Dataset"
     ],
     "rwTypesOther": [
         "Context",
-        "Linked Project",
+        "Linked Dataset",
         "Cited By"
     ],
     "nhTypes": [

@@ -111,7 +111,9 @@
                 <tr class="prj-row" ng-repeat="work in $ctrl.amendment.project.value.associatedProjects | orderBy:'order' track by $index">
                     <td ng-if="$first">Related Work</td>
                     <td ng-if="!$first"></td>
-                    <td class="prj-data"><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
+                    <td class="prj-data"><strong>
+                        <related-work></related-work>
+                    </strong></td>
                 </tr>
                 <tr class="prj-row">
                     <td ng-if="$ctrl.amendment.project.value.keywords">Keywords</td>
@@ -195,7 +197,7 @@
                                 <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="work in experiment.value.relatedWork track by $index">
-                                        <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                        <related-work></related-work>
                                     </div>
                                 </div>
                             </div>
@@ -203,10 +205,7 @@
                                 <div class="entity-meta-label-multi">Referenced Data</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="reference in experiment.value.referencedData track by $index">
-                                        <span ng-if="reference.type">
-                                            {{ reference.type }} | 
-                                          </span>
-                                          <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                        <referenced-data></referenced-data>
                                     </div>
                                 </div>
                             </div>
