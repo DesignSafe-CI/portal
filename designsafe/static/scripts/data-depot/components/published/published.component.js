@@ -35,7 +35,7 @@ export class PublishedDataCtrl {
     }
 
     $onInit() {
-        this.browser = {}
+        this.browser = {};
         this.browser.publication = this.publication;
         this.project = this.publication.project;
         this.breadcrumbParams = {
