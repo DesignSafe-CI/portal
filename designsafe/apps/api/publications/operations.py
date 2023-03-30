@@ -94,11 +94,15 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
 
     # Field recon advanced filters
     nh_type = query_dict['advancedFilters']['field_recon']['naturalHazardType']
-    nh_event = query_dict['advancedFilters']['field_recon']['naturalHazardEvent']
+    fr_type = query_dict['advancedFilters']['field_recon']['frType']
+    fr_date = query_dict['advancedFilters']['field_recon']['frDate']
+
     if nh_type:
         query_filters.append(search_utils.nh_type_query(nh_type))
-    if nh_event:
-        query_filters.append(search_utils.nh_event_query(nh_event))
+    if fr_date:
+        query_filters.append(search_utils.fr_date_query(fr_date))
+    if fr_type:
+        query_filters.append(search_utils.fr_type_query(fr_type))
 
     # Other advanced filters
     data_type = query_dict['advancedFilters']['other']['dataType']

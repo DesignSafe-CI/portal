@@ -4,7 +4,7 @@ import PublicationsListingTemplate from './publications-listing.template.html';
 import PublicationsLegacyListingTemplate from './publications-legacy-listing.template.html';
 const exptJson = require('../../../projects/components/manage-experiments/experimental-data.json');
 const { simulationTypes } = require('../../../projects/components/manage-simulations/simulation-types.json');
-const { nhTypes } = require('../../../projects/components/manage-project/project-form-options.json');
+const { nhTypes, frTypes } = require('../../../projects/components/manage-project/project-form-options.json');
 const { otherTypes } = require('../../../projects/components/manage-project/project-form-options.json');
 
 class PublicationListingCtrl {
@@ -26,8 +26,20 @@ class PublicationListingCtrl {
         this.rapidEventTypes = nhTypes.map((type) => ({ name: type, label: type }));
         this.rapidEventTypes = [{ name: '', label: 'All Types' }, ...this.rapidEventTypes];
 
+        this.frTypes = frTypes.filter(t => t !== 'Something Else').map((type) => ({ name: type, label: type }));
+        this.frTypes = [{ name: '', label: 'All Types' }, ...this.frTypes];
+
         this.otherTypes = otherTypes.map((type) => ({ name: type, label: type }));
         this.otherTypes = [{ name: '', label: 'All Types' }, ...this.otherTypes];
+
+        this.currentYear = new Date(Date.now()).getUTCFullYear();
+        //Show events going back 10 years
+        this.datesInRange = []
+        for (var i = 0; i <= 10; i++) {
+            this.datesInRange.push(this.currentYear - i);
+        }
+        this.nhYears = this.datesInRange.map((type) => ({ name: type, label: type }));
+        this.nhYears = [{ name: '', label: 'All Years' }, ...this.nhYears];
 
         this.hybridSimulationTypes = [
             { name: '', label: 'All Types' },
@@ -73,6 +85,8 @@ class PublicationListingCtrl {
                 field_recon: {
                     naturalHazardType: '',
                     naturalHazardEvent: '',
+                    frType: '',
+                    frDate: ''
                 },
                 other: {
                     dataType: '',

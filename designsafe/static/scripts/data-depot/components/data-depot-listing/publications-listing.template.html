@@ -175,11 +175,26 @@
                             </label
                         >Field Research
                         <div style="padding-bottom: 5px; font-weight: normal;">
-                            <label-nb for="nh-event-select">Natural Hazard Event</label-nb>
-                            <input
+                            <label-nb style="width:100%;" for="fr-type-select">Natural Hazard Type&nbsp;</label>
+                            <select
+                                style="border-radius: 5px;"
+                                id="fr-type-select"
+                                ng-model="$ctrl.params.advancedFilters.field_recon.frType"
+                                ng-change="$ctrl.browse()"
+                                ng-options="opt.name as opt.label for opt in $ctrl.frTypes"
                                 class="form-control"
-                                ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardEvent"
-                            />
+                            ></select>
+                            <div style="padding-bottom: 5px;"></div>
+                            <label-nb style="width:100%;" for="fr-year-select">Natural Hazard Year</label>
+                            <select
+                                style="border-radius: 5px; width: 100%"
+                                id="fr-year-select"
+                                ng-model="$ctrl.params.advancedFilters.field_recon.frDate"
+                                ng-change="$ctrl.browse()"
+                                ng-options="opt.name as opt.label for opt in $ctrl.nhYears"
+                                class="form-control"
+                            ></select>
+                            </div>
                         </div>
                     </td>
                 </tr>

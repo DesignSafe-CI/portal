@@ -131,6 +131,21 @@ def title_query(title):
     return Q({"query_string": {"fields": ["project.value.title"], "query": title}})
 
 
+def fr_date_query(year): 
+    if not year:
+        return None
+    return Q({'range': {'project.value.nhEventStart': {
+        "gte": f"{year}||/y",
+        "lte": f"{year}||/y", 
+        'format': 'yyyy'}
+    }})
+
+def fr_type_query(fr_type):
+    if not fr_type:
+        return None
+    return Q({'term': {'project.value.frTypes.keyword': fr_type}})
+
+
 def keyword_query(keywords):
     if not keywords:
         return None
