@@ -103,7 +103,7 @@
                 <div class="entity-meta-label-multi">Related Work</div>
                 <div class="entity-meta-data">
                     <div ng-repeat="work in primEnt.value.relatedWork track by $index">
-                        <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                        <related-work></related-work>
                     </div>
                 </div>
             </div>
@@ -111,10 +111,7 @@
                 <div class="entity-meta-label-multi">Referenced Data</div>
                 <div class="entity-meta-data">
                     <div ng-repeat="reference in primEnt.value.referencedData track by $index">
-                        <span ng-if="reference.type">
-                            {{ reference.type }} | 
-                          </span>
-                          <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                        <referenced-data></referenced-data>
                     </div>
                 </div>
             </div>

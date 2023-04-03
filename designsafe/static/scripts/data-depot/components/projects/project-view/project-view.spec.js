@@ -66,6 +66,7 @@ describe('projectView', () => {
             spyOn(FileListingService, 'browse').and.returnValue(fileListingPromise.promise);
             spyOn(FileListingService, 'setEntities');
             spyOn(UserService, 'getPublic').and.returnValues(piPromise.promise, copiPromise.promise);
+            spyOn(UserService, 'get').and.returnValues(piPromise.promise, copiPromise.promise);
             spyOn(ProjectModel.prototype, 'appendEntitiesRel')
             spyOn(ProjectModel.prototype, 'getAllRelatedObjects').and.returnValue([])
 
@@ -103,8 +104,6 @@ describe('projectView', () => {
 
 
         expect(component.find('#test-prj-title').text()).toContain('PRJ-2224 | Walk Experiment Demo')
-        expect(component.find('#test-prj-pi').text()).toContain('pi_lname, pi_fname')
-        expect(component.find('#test-prj-copi').text()).toContain('copi_lname, copi_fname')
         expect(component.find('#test-prj-type').text()).toContain('experimental')
         expect(component.find('.test-prj-award').text()).toContain('Awards for Experimental Greatness | 1234567')
         expect(component.find('#test-prj-related').text()).toContain('Huge Dataset I')

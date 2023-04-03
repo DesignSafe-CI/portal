@@ -113,7 +113,7 @@
 
           <tr ng-if="$ctrl.project.value.associatedProjects.length">
             <td style="padding:0px;">
-              <table class="table" style="margin-botto:0;">
+              <table class="table" style="margin-bottom:0;">
                 <tbody>
                   <tr>
                     <th style="border-top:none; width:25%">Associated Projects</th>
@@ -158,15 +158,14 @@
 <div ng-if="$ctrl.project.value.projectType != 'experimental' &&
             $ctrl.project.value.projectType != 'simulation' &&
             $ctrl.project.value.projectType != 'hybrid_simulation'
-            || $ctrl.filePathComps.length > 1 || $ctrl.$stateParams.query_string"><!-- File Listing View -->
+            || $ctrl.filePathComps.length > 1 || $ctrl.$stateParams.query_string">
+ <!-- File Listing View -->
  <div class="ds-table-display-wrapper" ds-infinite-scroll
         data-scroll-bottom="$ctrl.scrollToBottom()"
         data-scroll-top="$ctrl.scrollToTop()"
         data-bottom-height="0">
     <files-listing show-select="true" on-browse="$ctrl.onBrowse(file)" listing="$ctrl.FileListingService.listings.main"></files-listing>
   </div>
-
-
 </div><!-- Closing file listing view -->
 
 <div ng-if="$ctrl.project.value.projectType == 'experimental' && $ctrl.filePathComps.length <= 1 && !$ctrl.$stateParams.query_string">
@@ -477,7 +476,7 @@
   </div>
 </div>
 
-<div ng-if="$ctrl.project.value.projectType == 'simulation' && $ctrl.filePathComps.length <= 1 && !$ctrl.$stateParams.query_string">  <!-- simulation publishe dview -->
+<div ng-if="$ctrl.project.value.projectType == 'simulation' && $ctrl.filePathComps.length <= 1 && !$ctrl.$stateParams.query_string">  <!-- simulation published view -->
 
   <div ng-repeat="simulation in $ctrl.browser.publication.simulations | orderBy: 'value.title'" style="#fff;">
     <div class="dropdown entity-preview-header" id="details-{{simulation.uuid}}">

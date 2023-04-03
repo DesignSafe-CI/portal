@@ -197,6 +197,23 @@ td,
 th {
   padding: 0;
 }
+.table-container{
+  box-sizing: border-box;
+}
+.table-row {
+  margin-left:-5px;
+  margin-right:-5px;
+}
+.table-column-l {
+  float: left;
+  width: 80%;
+  padding: 5px;
+}
+.table-column-r {
+  float: left;
+  width: 20%;
+  padding: 5px;
+}
 /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
 @media print {
   *,
@@ -1669,7 +1686,7 @@ pre code {
 }
 @media (min-width: 1200px) {
   .container {
-    width: 1170px;
+    width: 90%;
   }
 }
 .container-fluid {
@@ -2375,6 +2392,15 @@ th {
 .table-bordered {
   border: 1px solid #dddddd;
 }
+.table-right-nav {
+  display: flex;
+}
+main {
+  flex: 3;
+}
+aside {
+  flex: 1;
+}
 .table-preview {
   width: 100%;
   max-width: 100%;
@@ -2602,6 +2628,14 @@ label {
   max-width: 100%;
   margin-bottom: 5px;
   font-weight: bold;
+}
+label-nb {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+}
+tr.solid {
+  border-bottom: 2px solid #CCCCCC;
 }
 input[type="search"] {
   -webkit-box-sizing: border-box;
@@ -3367,6 +3401,26 @@ select[multiple].input-lg {
     font-size: 12px;
   }
 }
+.btn-view {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  padding: 12px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 0px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .btn {
   display: inline-block;
   margin-bottom: 0;
@@ -4060,6 +4114,7 @@ tbody.collapse.in {
 }
 .dropdown-spacer-lg {
   margin-bottom: 16px;
+  margin-top: -2px;
 }
 .dropdown-toggle:focus {
   outline: 0;

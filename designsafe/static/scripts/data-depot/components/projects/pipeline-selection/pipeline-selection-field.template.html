@@ -94,7 +94,7 @@
             <div ng-if="mission.name == 'designsafe.project.field_recon.report'">
                 <a ng-click="$ctrl.selectEntity(mission)">Select this Report and all of its files</a>
                 <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
-                
+
                 <div class="dropdown dropdown-spacer-lg" id="details-{{mission.uuid}}">
                     <button class="btn collapsed tab-gray" data-toggle="collapse"
                             data-target="#files-{{mission.uuid}}" style="width:100%;">
@@ -117,7 +117,7 @@
                                 <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="work in mission.value.relatedWork track by $index">
-                                        <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                        <related-work></related-work>
                                     </div>
                                 </div>
                             </div>
@@ -125,10 +125,7 @@
                                 <div class="entity-meta-label-multi">Referenced Data</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="reference in mission.value.referencedData track by $index">
-                                        <span ng-if="reference.type">
-                                            {{ reference.type }} | 
-                                          </span>
-                                          <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                        <referenced-data></referenced-data>
                                     </div>
                                 </div>
                             </div>
@@ -213,7 +210,7 @@
                                 <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="work in mission.value.relatedWork track by $index">
-                                        <a href="{{work.href}}" target=”_blank”>{{ work.title }}</a>
+                                        <related-work></related-work>
                                     </div>
                                 </div>
                             </div>
@@ -221,10 +218,7 @@
                                 <div class="entity-meta-label-multi">Referenced Data</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="reference in mission.value.referencedData track by $index">
-                                        <span ng-if="reference.type">
-                                            {{ reference.type }} | 
-                                          </span>
-                                          <a href="{{reference.doi}}" target=”_blank”>{{ reference.title }}</a>
+                                        <referenced-data></referenced-data>
                                     </div>
                                 </div>
                             </div>
