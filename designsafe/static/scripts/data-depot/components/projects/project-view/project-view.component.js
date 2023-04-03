@@ -2,7 +2,7 @@ import ProjectViewTemplate from './project-view.component.html';
 
 class ProjectViewCtrl {
 
-  constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $state, $stateParams, $q, $uibModal) {
+  constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, UserService, $state, $stateParams, $q, $uibModal) {
     'ngInject';
 
     this.ProjectEntitiesService = ProjectEntitiesService;
@@ -13,6 +13,11 @@ class ProjectViewCtrl {
     this.$stateParams = $stateParams;
     this.$q = $q;
     this.$uibModal = $uibModal;
+    this.UserService = UserService;
+    this.authorData = {
+      pi: {},
+      coPis: null,
+    };
   }
 
   $onInit() {
@@ -56,6 +61,35 @@ class ProjectViewCtrl {
       }
       const projectEntities = this.project.getAllRelatedObjects();
       this.FileListingService.setEntities('main', projectEntities);
+
+      // convert usernames to full author data
+      // get pi
+      this.UserService.get(this.project.value.pi).then((res) => {
+        this.authorData.pi = {
+          fname: res.first_name,
+          lname: res.last_name,
+          email: res.email,
+          name: res.username,
+          inst: res.profile.institution,
+        };
+      });
+
+      // get copi(s)
+      if (this.project.value.coPis) {
+        this.authorData.coPis = new Array(this.project.value.coPis.length);
+        this.project.value.coPis.forEach((coPi, idx) => {
+          this.UserService.get(coPi).then((res) => {
+            this.authorData.coPis[idx] = {
+              fname: res.first_name,
+              lname: res.last_name,
+              email: res.email,
+              name: res.username,
+              inst: res.profile.institution,
+            };
+          });
+        });
+      }
+
       this.loading = false;
     });
   }
@@ -133,6 +167,16 @@ class ProjectViewCtrl {
     else {
       this.FileOperationService.openPreviewModal({api: 'agave', scheme: 'private', file})
     }
+  }
+
+  showAuthor(author) {
+    this.$uibModal.open({
+        component: 'authorInformationModal',
+        resolve: {
+            author,
+        },
+        size: 'author'
+    });
   }
 
 }
