@@ -1,4 +1,23 @@
 <div class="nco-ttc-grants">
+    <!-- search -->
+    <div class="ttc-search">
+        Search Grants text box here
+        <div class="filter-group">
+            <label>Field</label>
+            <select class="ttc-search-options form-control">
+                <option>Select a field</option>
+                <option>Award Number</option>
+                <option>Title</option>
+                <option>Start Date</option>
+                <option>End Date</option>
+            </select>
+        </div>
+        <div class="btn">Search</div>
+    </div>
+    <!-- end search -->
+
+    <br />
+
     <span class="bg-info text-info" data-ng-if="$ctrl._ui.loading">
         <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </span>

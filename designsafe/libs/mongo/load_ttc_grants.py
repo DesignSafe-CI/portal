@@ -5,7 +5,7 @@
     These utilities should only be used for the NCO Scheduler.
 """
 import logging
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING, ASCENDING
 from django.conf import settings
 
 
@@ -50,7 +50,7 @@ class MongoTTCHelper(object):
         query = query or {}
         mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
         mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'ttc_grant')]
-        cursor = mongo_collection.find(query)
+        cursor = mongo_collection.find(query).sort('StartDate', DESCENDING)
         results = list(cursor)
         for grant in results:
             yield grant

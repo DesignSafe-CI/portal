@@ -29,6 +29,8 @@ class NcoTtcGrantsCtrl {
                 this.grantList = _.map(
                     resp.data.response,
                 );
+                console.log(this.grantList.length);
+                console.log(this.grantList);
                 return this.grantList;
             }, (err) => {
                 this._ui.error = err.message;
@@ -45,6 +47,11 @@ class NcoTtcGrantsCtrl {
             },
             size: 'lg',
         });
+    }
+
+    filterSearch(user_search, filter='none'){
+        query = user_search;
+        filters = filter;
     }
 }
 
