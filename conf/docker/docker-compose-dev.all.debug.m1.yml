@@ -9,7 +9,7 @@ services:
       - redis_data:/data
       - ../redis.conf:/usr/local/etc/redis/redis.conf
     ports:
-      - 6379:6379
+      - 127.0.0.1:6379:6379
     command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
     container_name: des_redis
     hostname: des_redis
@@ -21,10 +21,10 @@ services:
       - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file: ../env_files/rabbitmq.env
     ports:
-      - 5672:5672
-      - 5673:5673
-      - 15673:15673
-      - 15672:15672
+      - 127.0.0.1:5672:5672
+      - 127.0.0.1:5673:5673
+      - 127.0.0.1:15673:15673
+      - 127.0.0.1:15672:15672
     container_name: des_rabbitmq
     hostname: des_rabbitmq
 
@@ -46,7 +46,7 @@ services:
       - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
       - es_data:/usr/share/elasticsearch/data
     ports:
-      - 9200:9200
+      - 127.0.0.1:9200:9200
     container_name: des_elasticsearch
     hostname: des_elasticsearch
 
@@ -58,7 +58,7 @@ services:
       - ../mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     env_file: ../env_files/mysql.env
     ports:
-      - 3306:3306
+      - 127.0.0.1:3306:3306
     container_name: des_mysql
     hostname: des_mysql
 
@@ -78,8 +78,8 @@ services:
     links:
       - django:django
     ports:
-      - 80:80
-      - 443:443
+      - 127.0.0.1:80:80
+      - 127.0.0.1:443:443
     container_name: des_nginx
     hostname: des_nginx
 
@@ -98,9 +98,9 @@ services:
       - ../../data/static:/var/www/designsafe-ci.org/static
       - ../../data/media:/var/www/designsafe-ci.org/media
     ports:
-      - 8000:8000
-      - 5555:5555
-      - 9000:9000
+      - 127.0.0.1:8000:8000
+      - 127.0.0.1:5555:5555
+      - 127.0.0.1:9000:9000
     dns:
       - 8.8.8.8
       - 8.8.4.4
