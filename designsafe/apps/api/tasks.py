@@ -26,6 +26,8 @@ from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
 
+django_user_model = get_user_model()
+
 @shared_task(bind=True)
 def box_download(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
     """
@@ -470,22 +472,23 @@ def index_projects_listing(projects):
         project_dict = dict(_project)
         project_dict = {key: value for key, value in project_dict.items() if key != '_links'}
 
-        pi_id = project_dict['value'].get('pi',[])
+        pi_id = project_dict['value'].get('pi', None)
         coPis_id = project_dict['value'].get('coPis',[])
         team_members = project_dict['value'].get('teamMembers',[])
 
-        if project_dict['value'].get('users', []) =='':
-            users = [pi_id] + coPis_id + team_members
+        if not project_dict['value'].get('users', None):
+            users = coPis_id + team_members
+            if pi_id:
+                users.append(pi_id)
             user_list = []
             for user in users: 
-                if user is None or user == 'None':
+                try:
+                    user_profile = django_user_model.objects.get(username=user)
+                    user_list.append(user_profile.last_name)
+                    user_list.append(user_profile.first_name)
+                except (django_user_model.DoesNotExist, AttributeError):
                     continue
-                else:
-                    user_profile = TASUser(username=user)
-                    if user_profile.lastName:
-                        user_list.append(user_profile.lastName)
-                        user_list.append(user_profile.firstName)
-            project_dict['value']['users'] = user_list
+            project_dict['value']['authors'] = user_list
 
         award_number = project_dict['value'].get('awardNumber', []) 
         if not isinstance(award_number, list):
@@ -495,12 +498,12 @@ def index_projects_listing(projects):
             award_number = []
         project_dict['value']['awardNumber'] = award_number
 
-        if project_dict['value'].get('guestMembers', []) == [None]:
-            project_dict['value']['guestMembers'] = []
-        if project_dict['value'].get('nhEventStart', []) == '':
-            project_dict['value']['nhEventStart'] = None
-        if project_dict['value'].get('nhEventEnd', []) == '':
-            project_dict['value']['nhEventEnd'] = None
+        project_dict['value'].pop('nhEventStart', None)
+        project_dict['value'].pop('nhEventEnd', None)
+        project_dict['value'].pop('referencedData', None)
+        project_dict['value'].pop('relatedFiles', None)
+        project_dict['value'].pop('hazmapperMaps', None)
+        project_dict['value'].pop('guestMembers', None)
 
         ops.append({
             '_index': idx,
