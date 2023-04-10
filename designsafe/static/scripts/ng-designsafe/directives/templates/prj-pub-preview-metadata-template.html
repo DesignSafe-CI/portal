@@ -1,3 +1,8 @@
+<!--
+    Note that if a ng-if value is readOnly, this is used for publications.
+    If an ng-if value is !readOnly, this is used for the publication preview.
+-->
+
 <!-- Header -->
 <div class="prj-head-container">
     <span class="prj-head-title">
@@ -11,6 +16,82 @@
     </div>
 </div>
 <!-- end Header -->
+<!-- Other Citation -->
+<div class="citation-blue" style="border:none" ng-if="$ctrl.project.value.projectType === 'other'">
+    <div class="entity-meta-data" style="line-height: 1.6; width: 100%; display: flex; justify-content: space-between;">
+        <tr>
+            <td class="tab-cell">
+                <div style="height:100%">
+                    <div ng-if="$ctrl.project.value.dois.toString() === ''">
+                        Draft Citation. Authors can be reordered before publication. 
+                    </div>
+                    <div ng-if="$ctrl.project.value.dois.toString() !== ''">
+                        Cite this Data:
+                    </div>
+                </div>
+                <div ng-if="!$ctrl.readOnly" style="text-align:right; font-weight: normal;">
+                    <div ng-if="$ctrl.project.value.dois.toString() === ''" class="unpublished-grey" >
+                        Unpublished
+                    </div>
+                    <div ng-if="$ctrl.project.value.dois.toString() !== ''" class="published-green">
+                        Published
+                    </div> 
+                </div>
+            </td>
+        </tr>
+    </div>    
+    <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
+    <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px; line-height: 1.6;">
+        {{ $ctrl.listAuthors($ctrl.publication.project.value.teamOrder) }}
+        ({{ $ctrl.createdYear }}) "{{ $ctrl.project.value.title }}." DesignSafe-CI.
+        <a href="https://doi.org/{{$ctrl.project.value.dois.toString()}}">https://doi.org/{{$ctrl.project.value.dois.toString()}}</a>
+    </div>
+    <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
+        {{ $ctrl.listAuthors($ctrl.publication.project.value.teamOrder) }}
+        ({{ $ctrl.createdYear }}) "{{ $ctrl.project.value.title }}." DesignSafe-CI.
+        <a href="https://doi.org/{{$ctrl.project.value.dois.toString()}}">https://doi.org/{{$ctrl.project.value.dois.toString()}}</a>
+        v{{$ctrl.version}}
+    </div>
+    <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px;  line-height: 1.6;"> 
+        {{ $ctrl.listAuthors($ctrl.project.value.teamOrder) }}
+        <span ng-if="$ctrl.project.value.dois.toString() === ''">
+            (Year of Publication) "{{ $ctrl.project.value.title }}." DesignSafe-CI. (DOI)
+        </span>
+        <span ng-if="$ctrl.project.value.dois.toString() !== ''">
+            ({{ $ctrl.createdYear }}) "{{ $ctrl.project.value.title }}." DesignSafe-CI.
+            <a href="https://doi.org/{{$ctrl.project.value.dois.toString()}}">https://doi.org/{{$ctrl.project.value.dois.toString()}}</a>
+        </span>
+    </div>
+    <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
+        <span ng-if="$ctrl.project.value.dois.toString() !== ''">
+            Download Citation: 
+            <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{$ctrl.project.value.dois.toString()}}">DataCite XML</a> |
+            <a href="https://data.datacite.org/application/x-research-info-systems/{{$ctrl.project.value.dois.toString()}}">RIS</a> |
+            <a href="https://data.datacite.org/application/x-bibtex/{{$ctrl.project.value.dois.toString()}}">BibTeX</a>
+        </span>
+        <span ng-if="$ctrl.project.value.dois.toString() === ''">
+            Download Citation: <span style="color:#9f9f9f"> DataCite XML | RIS | BibTeX</span>
+        </span>
+    </div>
+    <div style="padding-bottom: 5px;"> 
+        <span ng-if="$ctrl.readOnly">
+            <span style="background-color: #ECE4BF;">
+                {{ $ctrl.cumMetrics.otherTotal || 0 }} Downloads
+            </span>
+            &nbsp;&nbsp;
+            <span style="background-color: #ECE4BF;">        
+                {{ $ctrl.cumMetrics.filePreviews || 0}} Views
+            </span>
+            &nbsp;&nbsp;
+            <span ng-if="$ctrl.readOnly">
+                <a ng-click="$ctrl.metrics()">
+                    <strong>Details</strong>
+                </a>
+            </span>
+        </span>
+    </div>
+</div>
+<!-- end Other Citation -->
 
 <!-- Project Metadata -->
 <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
@@ -26,7 +107,7 @@
             <ds-user-list usernames="[$ctrl.project.value.pi]"></ds-user-list>
         </td>
         <td ng-if="$ctrl.readOnly">Author(s)</td>
-        <td ng-if="$ctrl.readOnly">
+        <td class="prj-data" ng-if="$ctrl.readOnly">
             <strong>
                 <span ng-repeat="author in $ctrl.publication.project.value.teamOrder track by $index">
                     <a href="javascript:;" ng-click="$ctrl.showAuthor(author)">{{ author.lname }}, {{ author.fname }}</a><span ng-if="!$last">; </span>
@@ -49,7 +130,7 @@
 
     <!-- Co-PI Listings -->
     <!-- not Other -->
-    <tr ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType !== 'other'">
+    <tr class="prj-row" ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType !== 'other'">
         <td>Co-PIs</td>
         <td class="prj-data">
             <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
@@ -58,7 +139,7 @@
         </td>
     </tr>
     <!-- Other publication preview shows Co-PIs -->
-    <tr ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType === 'other' && !$ctrl.readOnly">
+    <tr class="prj-row" ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType === 'other' && !$ctrl.readOnly">
         <td>Co-PIs</td>
         <td class="prj-data">
             <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
@@ -135,51 +216,45 @@
 
     <!-- Awards -->
     <!-- for preview -->
-    <tr ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index"
+    <tr class="prj-row" ng-repeat="award in $ctrl.project.value.awardNumber | orderBy:'order' track by $index"
         ng-if="!$ctrl.readOnly">
         <td ng-if="$first">Awards</td>
         <td ng-if="!$first"></td>
-        <td><strong>{{ award.name }} | {{ award.number }}</strong></td>
+        <td class="prj-data"><strong>{{ award.name }} | {{ award.number }}</strong></td>
     </tr>
     <!-- for publication -->
-    <tr ng-repeat="award in $ctrl.project.value.awardNumbers | orderBy:'order' track by $index"
+    <tr class="prj-row" ng-repeat="award in $ctrl.project.value.awardNumbers | orderBy:'order' track by $index"
         ng-if="$ctrl.readOnly">
         <td ng-if="$first">Awards</td>
         <td ng-if="!$first"></td>
-        <td><strong>{{ award.name }} | {{ award.number }}</strong></td>
+        <td class="prj-data"><strong>{{ award.name }} | {{ award.number }}</strong></td>
     </tr>
     <!-- end Awards-->
 
     <!-- Referenced Data -->
-    <tr ng-if="$ctrl.project.value.referencedData.length"
-        ng-repeat="ref in $ctrl.project.value.referencedData track by $index">
+    <tr class="prj-row" ng-if="$ctrl.project.value.referencedData.length"
+        ng-repeat="reference in $ctrl.project.value.referencedData track by $index">
         <td ng-if="$first">Referenced Data</td>
         <td ng-if="!$first"></td>
-        <td id="test-prj-related">
-        <strong>
-            <span ng-if="ref.title">
-            {{ ref.title }} | 
-            </span>
-            <a href="{{ ref.doi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.doi }}</a>
-        </strong>
+        <td class="prj-data" id="test-prj-related">
+            <strong>
+                <referenced-data></referenced-data>
+            </strong>
         </td>
     </tr>
     <!-- end Referenced Data -->
 
-      <!-- Related Work -->
-  <tr ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
-    <td ng-if="$first">Related Work</td>
-    <td ng-if="!$first"></td>
-    <td id="test-prj-related">
-      <strong>
-        <span ng-if="work.type">
-          {{ work.type }} | 
-        </span>
-        <a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a>
-      </strong>
-    </td>
-  </tr>
-  <!-- end Related Work -->
+    <!-- Related Work -->
+    <tr class="prj-row" ng-repeat="work in $ctrl.project.value.associatedProjects | orderBy:'order' track by $index">
+      <td ng-if="$first">Related Work</td>
+      <td ng-if="!$first"></td>
+      <td class="prj-data" id="test-prj-related">
+        <strong>
+            <related-work></related-work>
+        </strong>
+      </td>
+    </tr>
+    <!-- end Related Work -->
 
     <!-- Keywords -->
     <tr class="prj-row">
@@ -189,60 +264,21 @@
     <!-- end Keywords -->
 
     <!-- Hazmapper links -->
-    <tr ng-if="$ctrl.project.value.hazmapperMaps.length">
+    <tr class="prj-row" ng-if="$ctrl.project.value.hazmapperMaps.length">
         <td>Hazmapper Maps</td>
-        <td>
+        <td class="prj-data">
             <hazmapper-maps maps="$ctrl.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
             </hazmapper-maps>
         </td>
     </tr>
     <!-- end Hazmapper links -->
 
-    <!-- DOI listing -->
-    <tr ng-if="$ctrl.project.value.projectType !== 'other'" ng-repeat="(uuid, citation) in $ctrl.doiList">
-        <td ng-if="$first">DOIs in Project</td>
-        <td ng-if="!$first"></td>
-        <td>
-            <strong>
-                <a ng-if="$ctrl.project.value.projectType === 'field_recon'"
-                   ng-click="$ctrl.goToHash(citation.hash)"
-                   data-toggle="collapse"
-                   data-target="{{ citation.type === 'mission' ? '#data-' : '#files-' }}{{uuid}}"
-                >
-                    {{ citation.doi }}
-                </a>
-                <a ng-if="$ctrl.project.value.projectType != 'field_recon'"
-                   ng-click="$ctrl.goToHash(citation.hash)"
-                   data-toggle="collapse"
-                   data-target="#data-{{uuid}}"
-                >
-                    {{ citation.doi }}
-                </a>
-            </strong>
-        </td>
-    </tr>
-    <!-- end DOI listing -->
-
-    <!-- Citation Details (other only)-->
-    <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.project.value.projectType === 'other'"> <!-- hide this for anything not OTHER -->
-        <td>
-            <span>DOI</span>
-            <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
-                Citation
-            </button>
-        </td>
-        <td>
-            <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
-        </td>
-    </tr>
-    <!-- Citation Details (other only)-->
-
     <!-- Version Dropdown -->
     <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.latestRevision">
         <td>
             <span>Version</span>
         </td>
-        <td>
+        <td class="prj-data">
             <select class="prj-dropdown"
                     ng-options="version for version in $ctrl.versions"
                     ng-change="$ctrl.getVersion()"

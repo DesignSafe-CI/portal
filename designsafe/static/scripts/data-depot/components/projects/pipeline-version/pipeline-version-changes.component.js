@@ -116,8 +116,8 @@ class PipelineVersionChangesCtrl {
             if (!this.revisionTitles.length) return this.ui.warning = true;
         }
         this.ui.loading = true;
-        let filePaths = (this.selectedListing
-            ? this.selectedListing.listing.map((file) => file.path)
+        let filePaths = ( (this.selectedListings && this.selectedListings.listing)
+            ? this.selectedListings.listing.map((file) => file.path)
             : null);
         this.$http.post(
             '/api/projects/publication/',

@@ -88,7 +88,7 @@ class HybridSimulation(RelatedEntity):
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
             identifier = {}
-            mapping = {'Linked Project': 'isSupplementTo', 'Cited By': 'isCitedBy', 'Context': 'isDocumentedBy'}
+            mapping = {'Linked Project': 'IsSupplementTo', 'Linked Dataset': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
             if {'type', 'href', 'hrefType'} <= r_work.keys():
                 identifier['relationType'] = mapping[r_work['type']]
                 identifier['relatedIdentifierType'] = r_work['hrefType']
@@ -106,7 +106,7 @@ class HybridSimulation(RelatedEntity):
             del attributes['relatedIdentifiers']
 
         return attributes
-    
+
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
         attributes = super(HybridSimulation, self).to_dataset_json()

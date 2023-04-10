@@ -68,10 +68,12 @@ def nh_event_query(nh_event):
 
 def other_type_query(data_type):
     data_types = [
+            'Benchmark Dataset',
             'Check Sheet',
             'Code',
             'Database',
             'Dataset',
+            'Field Survey',
             'Image',
             'Jupyter Notebook',
             'Learning Object',
@@ -81,11 +83,11 @@ def other_type_query(data_type):
             'Poster',
             'Presentation',
             'Report',
-            'REU',
+            'Reseach Experience for Undergraduates',
             'SimCenter Testbed',
             'Social Sciences',
-            'Software',
-            'Survey',
+            'Survey Instrument',
+            'Testbed',
             'Video',
             'White Paper',
     ]
@@ -129,6 +131,21 @@ def title_query(title):
     return Q({"query_string": {"fields": ["project.value.title"], "query": title}})
 
 
+def fr_date_query(year): 
+    if not year:
+        return None
+    return Q({'range': {'project.value.nhEventStart': {
+        "gte": f"{year}||/y",
+        "lte": f"{year}||/y", 
+        'format': 'yyyy'}
+    }})
+
+def fr_type_query(fr_type):
+    if not fr_type:
+        return None
+    return Q({'term': {'project.value.frTypes.keyword': fr_type}})
+
+
 def keyword_query(keywords):
     if not keywords:
         return None
@@ -139,3 +156,16 @@ def description_query(description):
     if not description:
         return None
     return Q('query_string', query=description, fields=['project.value.description'])
+
+
+def search_string_query(search_string):
+    if not search_string:
+        return None
+    q1 =  Q('query_string', query=f"\"{search_string}\"", fields=['project.value.description',
+                                                          'project.value.keywords',
+                                                          'project.value.title',
+                                                          'projectId',
+                                                          'project.value.projectType',
+                                                          'project.value.dataType'])
+    q2 = Q({'term': {'projectId._exact': search_string}})
+    return q1 | q2 | author_query(search_string)

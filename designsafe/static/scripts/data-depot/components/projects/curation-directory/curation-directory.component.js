@@ -2,17 +2,22 @@ import CurationDirectoryTemplate from './curation-directory.component.html';
 
 class CurationDirectoryCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $state, $stateParams, $q, $uibModal) {
+    constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, UserService, $state, $stateParams, $q, $uibModal) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.FileListingService = FileListingService;
         this.FileOperationService = FileOperationService;
+        this.UserService = UserService;
         this.$state = $state;
         this.$q = $q;
         this.$uibModal = $uibModal;
         this.$stateParams = $stateParams;
+        this.authorData = {
+            pi: {},
+            coPis: null,
+        };
     }
 
     $onInit() {
@@ -40,11 +45,10 @@ class CurationDirectoryCtrl {
             })
         };
 
-
         if ( !(this.ProjectService.current && this.ProjectService.current.uuid === this.projectId )){
             this.loading = true;
             promisesToResolve.project = this.ProjectService.get({ uuid: this.projectId })
-            promisesToResolve.entities = this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }) 
+            promisesToResolve.entities = this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' })
         }
         else {
             this.project = this.ProjectService.current;
@@ -56,6 +60,35 @@ class CurationDirectoryCtrl {
             }
             const projectEntities = this.project.getAllRelatedObjects();
             this.FileListingService.setEntities('main', projectEntities);
+
+            // convert usernames to full author data
+            // get pi
+            this.UserService.get(this.project.value.pi).then((res) => {
+                this.authorData.pi = {
+                    fname: res.first_name,
+                    lname: res.last_name,
+                    email: res.email,
+                    name: res.username,
+                    inst: res.profile.institution,
+                };
+            });
+
+            // get copi(s)
+            if (this.project.value.coPis) {
+                this.authorData.coPis = new Array(this.project.value.coPis.length);
+                this.project.value.coPis.forEach((coPi, idx) => {
+                    this.UserService.get(coPi).then((res) => {
+                        this.authorData.coPis[idx] = {
+                            fname: res.first_name,
+                            lname: res.last_name,
+                            email: res.email,
+                            name: res.username,
+                            inst: res.profile.institution,
+                        };
+                    });
+                });
+            }
+
             this.loading = false;
         });
     }
@@ -227,6 +260,15 @@ class CurationDirectoryCtrl {
         }
     }
 
+    showAuthor(author) {
+        this.$uibModal.open({
+            component: 'authorInformationModal',
+            resolve: {
+                author,
+            },
+            size: 'author'
+        });
+    }
 }
 
 export const CurationDirectoryComponent = {

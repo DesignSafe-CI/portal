@@ -75,18 +75,9 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
 
 
     # Query string fields
-    author = query_dict['queries']['author']
-    title = query_dict['queries']['title']
-    keywords = query_dict['queries']['keyword']
-    description = query_dict['queries']['description']
-    if author:
-        query_filters.append(search_utils.author_query(author))
-    if title:
-        query_filters.append(search_utils.title_query(title))
-    if keywords:
-        query_filters.append(search_utils.keyword_query(keywords))
-    if description:
-        query_filters.append(search_utils.description_query(description))
+    search_string = query_dict['queries']['searchString']
+    if search_string:
+        query_filters.append(search_utils.search_string_query(search_string))
 
     # Experimental advanced filters
     facility = query_dict['advancedFilters']['experimental']['experimentalFacility']
@@ -103,11 +94,15 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
 
     # Field recon advanced filters
     nh_type = query_dict['advancedFilters']['field_recon']['naturalHazardType']
-    nh_event = query_dict['advancedFilters']['field_recon']['naturalHazardEvent']
+    fr_type = query_dict['advancedFilters']['field_recon']['frType']
+    fr_date = query_dict['advancedFilters']['field_recon']['frDate']
+
     if nh_type:
         query_filters.append(search_utils.nh_type_query(nh_type))
-    if nh_event:
-        query_filters.append(search_utils.nh_event_query(nh_event))
+    if fr_date:
+        query_filters.append(search_utils.fr_date_query(fr_date))
+    if fr_type:
+        query_filters.append(search_utils.fr_type_query(fr_type))
 
     # Other advanced filters
     data_type = query_dict['advancedFilters']['other']['dataType']

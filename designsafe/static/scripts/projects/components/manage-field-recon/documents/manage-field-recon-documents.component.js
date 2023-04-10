@@ -17,7 +17,7 @@ class ManageFieldReconDocumentsCtrl {
         this.ui = {
             loading: false,
             editing: false,
-            relatedWorkTypes: ["Context", "Linked Project"],
+            relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
             require: {
                 relatedWork: false,
                 referencedData: false,
@@ -52,7 +52,7 @@ class ManageFieldReconDocumentsCtrl {
             this.form[fieldName].pop();
         }
     }
-    
+
     configureForm(doc) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         let form = structuredClone(this.DocumentsDefaults)

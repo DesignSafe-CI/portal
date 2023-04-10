@@ -1,7 +1,7 @@
 {
     "experimentalFacility": {
         "experimental": [
-            { "name": "atlss", "label": "Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University" },
+            { "name": "rtmd-lehigh", "label": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities, Lehigh University" },
             { "name": "cgm-ucdavis", "label": "Center for Geotechnical Modeling, UC Davis" },
             { "name": "eqss-utaustin", "label": "Field mobile shakers, UT Austin" },
             { "name": "pfsml-florida", "label": "Powell Family Structures and Materials Laboratory, University of Florida" },
@@ -15,12 +15,12 @@
         ]
     },
     "equipmentTypes": {
-        "atlss": [
+        "rtmd-lehigh": [
             { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
-            {"name": "lsrthcshas", "label": "Large-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System"},
-            {"name": "ssrthcshas", "label": "Small-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System "},
-            {"name": "rssb", "label": "Reduced-Scale Soil Box"},
-            {"name": "ssihb", "label":"Soil-Structure Interaction Hybrid Simulation" },
+            { "name": "lsrthcshas", "label": "Large-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System" },
+            { "name": "ssrthcshas", "label": "Small-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System "},
+            { "name": "rssb", "label": "Reduced-Scale Soil Box" },
+            { "name": "ssihb", "label":"Soil-Structure Interaction Hybrid Simulation" },
             { "name": "other", "label": "Other" }
         ],
         "cgm-ucdavis": [
@@ -69,7 +69,7 @@
         ]
     },
     "experimentTypes": {
-        "atlss": [
+        "rtmd-lehigh": [
             { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
             { "name": "large", "label": "Large-Scale" },
             { "name": "small", "label": "Small-Scale" },
