@@ -9,6 +9,7 @@ from datetime import datetime
 from celery import shared_task
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
+from pytas.models import User as TASUser
 from django.conf import settings
 from requests.exceptions import HTTPError
 
@@ -24,6 +25,8 @@ from elasticsearch.helpers import bulk
 from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
+
+django_user_model = get_user_model()
 
 @shared_task(bind=True)
 def box_download(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
@@ -468,20 +471,39 @@ def index_projects_listing(projects):
 
         project_dict = dict(_project)
         project_dict = {key: value for key, value in project_dict.items() if key != '_links'}
+
+        pi_id = project_dict['value'].get('pi', None)
+        coPis_id = project_dict['value'].get('coPis',[])
+        team_members = project_dict['value'].get('teamMembers',[])
+
+        if not project_dict['value'].get('users', None):
+            users = coPis_id + team_members
+            if pi_id:
+                users.append(pi_id)
+            user_list = []
+            for user in users: 
+                try:
+                    user_profile = django_user_model.objects.get(username=user)
+                    user_list.append(user_profile.last_name)
+                    user_list.append(user_profile.first_name)
+                except (django_user_model.DoesNotExist, AttributeError):
+                    continue
+            project_dict['value']['authors'] = user_list
+
         award_number = project_dict['value'].get('awardNumber', []) 
         if not isinstance(award_number, list):
-            award_number = [{'number': project_dict['value']['awardNumber'] }]
+            award_number = [{'number': project_dict['value']['awardNumber']}]
         if not all(isinstance(el, dict) for el in award_number):
             # Punt if the list items are some type other than dict.
             award_number = []
         project_dict['value']['awardNumber'] = award_number
 
-        if project_dict['value'].get('guestMembers', []) == [None]:
-            project_dict['value']['guestMembers'] = []
-        if project_dict['value'].get('nhEventStart', []) == '':
-            project_dict['value']['nhEventStart'] = None
-        if project_dict['value'].get('nhEventEnd', []) == '':
-            project_dict['value']['nhEventEnd'] = None
+        project_dict['value'].pop('nhEventStart', None)
+        project_dict['value'].pop('nhEventEnd', None)
+        project_dict['value'].pop('referencedData', None)
+        project_dict['value'].pop('relatedFiles', None)
+        project_dict['value'].pop('hazmapperMaps', None)
+        project_dict['value'].pop('guestMembers', None)
 
         ops.append({
             '_index': idx,
