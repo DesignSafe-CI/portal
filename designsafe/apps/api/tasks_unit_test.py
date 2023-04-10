@@ -4,15 +4,18 @@ from django.contrib.auth import get_user_model
 from mock import patch, MagicMock
 
 TEST_PROJECT = {'uuid': '6262924605326814745-242ac11c-0001-012',
-                'schemaId': None, 'internalUsername': None,
+                'schemaId': None, 
+                'internalUsername': None,
                 'associationIds': [],
                 'lastUpdated': '2020-04-17T09:44:42.939-05:00',
                 'name': 'designsafe.project',
-                'value': {'teamMembers': ['autumn88', 'agharag', 'jlwoodr3'],
+                'created': "2018-01-18T11:04:35.636000-06:00",
+                'owner': "ds_admin",
+                'value': {'users':[],
+                          'teamMembers': ['autumn88', 'agharag', 'jlwoodr3'],
                           'coPis': ['jdietri1', 'akenned4'],
                           'guestMembers': [],
-                          'projectType':
-                          'simulation',
+                          'projectType': 'simulation',
                           'projectId': 'PRJ-2750',
                           'description': 'desc',
                           'pi': 'akenned4',
@@ -39,8 +42,7 @@ class TestProjectIndexer(TestCase):
         mock_connection = MagicMock()
         mock_index.Index.name = 'designsafe-test-projects'
         mock_index._get_connection.return_value = mock_connection
-        from designsafe.apps.api.tasks import index_projects_listing
-
+        from designsafe.apps.api.tasks import index_projects_listing 
         index_projects_listing([TEST_PROJECT])
 
         expected_doc = {**TEST_PROJECT}
