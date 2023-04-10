@@ -1,5 +1,6 @@
 import AmendExperimentTemplate from './amend-experimental.template.html';
 import AmendFieldReconTemplate from './amend-field-recon.template.html';
+import AmendSimulationTemplate from './amend-simulation.template.html'
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineAmendCtrl {
@@ -83,7 +84,16 @@ class PipelineAmendCtrl {
                 'socialscience'
             ]
         }
-        // else if (prj_type == 'simulation') ...
+        else if (prj_type == 'simulation') {
+            primaryEntNames = ['simulationsList']
+            secondaryEntNames = [
+                'models',
+                'input',
+                'output',
+                'analysiss',
+                'report'
+            ]
+        }
 
         if (update === 'all') {
             this.amendment = JSON.parse(JSON.stringify(this.publication));
@@ -373,6 +383,17 @@ export const AmendExperimentComponent = {
 
 export const AmendFieldReconComponent = {
     template: AmendFieldReconTemplate,
+    controller: PipelineAmendCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const AmendSimulationComponent = {
+    template: AmendSimulationTemplate,
     controller: PipelineAmendCtrl,
     controllerAs: '$ctrl',
     bindings: {
