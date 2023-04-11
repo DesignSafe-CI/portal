@@ -35,8 +35,8 @@ class PublicationListingCtrl {
         this.currentYear = new Date(Date.now()).getUTCFullYear();
         //Show events going back 10 years
         this.datesInRange = []
-        for (var i = 0; i <= 10; i++) {
-            this.datesInRange.push(this.currentYear - i);
+        for (var i = this.currentYear; i >=2015; i--) {
+            this.datesInRange.push(i);
         }
         this.nhYears = this.datesInRange.map((type) => ({ name: type, label: type }));
         this.nhYears = [{ name: '', label: 'All Years' }, ...this.nhYears];
@@ -65,7 +65,8 @@ class PublicationListingCtrl {
 
         this.params = currentParams || {
             queries: {
-                searchString: ''
+                searchString: '',
+                publicationYear: '',
             },
             typeFilters: {
                 experimental: false,
