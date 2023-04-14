@@ -40,17 +40,39 @@ class MongoTTCHelper(object):
             )
         )
 
-    def get_ttc_grants(self, query=None, page_size=5, page_number=0, sort=None):
-        """List projects stored in mongodb.
+    def get_ttc_grants(self, query=None, sort=None):
+        """List grants stored in mongodb.
 
         :param dict query: A query string to pass to mongo.
         :param int page_size: Page size.
         :param hex last_id: Last mongo id.
         """
         query = query or {}
+
+        #set sorting option
+        final_sort = []
+        if sort == "Start Date Descending":
+            final_sort = [('StartDate', DESCENDING)]
+        elif sort == "Start Date Ascending":
+            final_sort = [('StartDate', ASCENDING)]
+        elif sort == "End Date Descending":
+            final_sort = [('EndDate', DESCENDING)]
+        elif sort == "End Date Ascending":
+            final_sort = [('EndDate', ASCENDING)]
+        else:
+            final_sort = [('StartDate', DESCENDING)]
+
         mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-        mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'ttc_grant')]
-        cursor = mongo_collection.find(query).sort('StartDate', DESCENDING)
+        cursor = mongo_db.ttc_grant.find(query).sort(final_sort)
         results = list(cursor)
         for grant in results:
             yield grant
+
+    def get_ttc_facilities(self):
+        """Get unique facilities in the ttc grants db"""
+
+        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
+        cursor = mongo_db.ttc_grant.distinct('NheriFacility')
+        results = list(cursor)
+        for facility in results:
+            yield facility

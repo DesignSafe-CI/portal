@@ -9,33 +9,65 @@ class NcoTtcGrantsCtrl {
     }
 
     $onInit() {
-        this._ui = { loading: true };
+        this._ui = {
+            grantsLoading: true,
+            facilitiesLoading: false,
+        };
 
         this.loadGrants()
             .then((resp) => {
                 return resp;
             }, (err) => {
-                this._ui.error = err.message;
+                this._ui.grantsError = err.message;
             }).finally( () => {
-                this._ui.loading = false;
+                this._ui.grantsLoading = false;
                 this.initialized = true;
             });
+
+        this.loadFacilities({})
+            .then((resp) => {
+                return resp;
+            }, (err) => {
+                this._ui.facilitiesError = err.message;
+            }).finally( () => {
+                this._ui.facilitiesLoading = false;
+            });
+
+        this.sortOptions = [
+            "Start Date Descending",
+            "Start Date Ascending",
+            "End Date Descending",
+            "End Date Ascending",
+        ];
     }
 
-    loadGrants(){
-        this._ui.loading = true;
-        return this.$http.get('/nco/api/ttc_grants')
+    loadGrants(params){
+        this._ui.grantsLoading = true;
+        return this.$http.get('/nco/api/ttc_grants', { params: params })
             .then((resp) => {
                 this.grantList = _.map(
                     resp.data.response,
                 );
-                console.log(this.grantList.length);
-                console.log(this.grantList);
                 return this.grantList;
             }, (err) => {
-                this._ui.error = err.message;
+                this._ui.grantsError = err.message;
             }).finally ( () => {
-                this._ui.loading = false;
+                this._ui.grantsLoading = false;
+            });
+    }
+
+    loadFacilities(){
+        this._ui.facilitiesLoading = true;
+        return this.$http.get('/nco/api/ttc_facilities')
+            .then((resp) => {
+                this.facilitiesList = _.map(
+                    resp.data.response,
+                );
+                return this.facilitiesList;
+            }, (err) => {
+                this._ui.facilitiesError = err.message;
+            }).finally ( () => {
+                this._ui.facilitiesLoading = false;
             });
     }
 
@@ -49,9 +81,12 @@ class NcoTtcGrantsCtrl {
         });
     }
 
-    filterSearch(user_search, filter='none'){
-        query = user_search;
-        filters = filter;
+    filterSearch(){
+        var params = {
+            facility: this.selectedFacility,
+            sort: this.selectedSort,
+        };
+        this.loadGrants(params);
     }
 }
 

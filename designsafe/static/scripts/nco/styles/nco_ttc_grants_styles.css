@@ -12,11 +12,9 @@
 }
 
 .ttc-grant-item {
-    display: table-row-group;
     padding: 5px;
     padding-top: 10px;
     padding-bottom: 10px;
-    /* border-spacing: 0.1rem; */
     border: 1px solid;
 }
 
@@ -24,9 +22,14 @@
     font-weight: bold;
 }
 
-.ttc-search-options {
-    width: 20%;
+.ttc-search {
+    display: block;
+    padding: 10px;
+}
+
+.ttc-facility-filter, .ttc-sort-filter {
     display: inline;
+    padding: 10px;
 }
 
 .ttc-row {
@@ -42,31 +45,6 @@
     display: table-cell;
 }
 
-.ttc-left {
-    float: left;
-    width: 50%;
+.ttc-data {
+    padding: 5px;
 }
-
-.ttc-right {
-    float: right;
-    width: 50%;
-    text-align: right;
-}
-
-/* .ttc-award-number-title {
-}
-
-.ttc-timespan {
-}
-
-.ttc-pi-name {
-}
-
-.ttc-facility {
-}
-
-.ttc-abstract {
-}
-
-.ttc-labels {
-} */

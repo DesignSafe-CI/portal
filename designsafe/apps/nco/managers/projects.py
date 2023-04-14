@@ -15,7 +15,7 @@ from designsafe.apps.projects.managers.base import ProjectsManager
 from designsafe.apps.api.agave import service_account
 
 
-LOG = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class NcoProjectsManager(object):
@@ -130,6 +130,7 @@ class NcoProjectsManager(object):
     def projects(self, filters=None, page_number=0, sorts=None, page_size=10):
         """Return projects list."""
         filters = filters or []
+        logger.debug(filters)
         sorts = sorts or []
         query = self._process_filters(filters)
         sort = self._process_sort(sorts)

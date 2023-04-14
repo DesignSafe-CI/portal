@@ -1,18 +1,21 @@
 <div class="nco-ttc-grants">
     <!-- search -->
     <div class="ttc-search">
-        Search Grants text box here
-        <div class="filter-group">
-            <label>Field</label>
-            <select class="ttc-search-options form-control">
-                <option>Select a field</option>
-                <option>Award Number</option>
-                <option>Title</option>
-                <option>Start Date</option>
-                <option>End Date</option>
+        <form class="filter-group ttc-facility-filter">
+            <label for="ttc-facility-options">Filter by Facility:</label>
+            <select name="ttc-facility-options" ng-model="$ctrl.selectedFacility">
+                <option value="">--Filter by Facility--</option>
+                <option ng-repeat="facility in $ctrl.facilitiesList" value="{{facility}}">{{facility}}</option>
             </select>
-        </div>
-        <div class="btn">Search</div>
+        </form>
+        <form class="filter-group ttc-sort-filter">
+            <label for="ttc-sort-options">Sort by:</label>
+            <select name="ttc-sort-options" ng-model="$ctrl.selectedSort">
+                <option value="">--Sort Options--</option>
+                <option ng-repeat="sort in $ctrl.sortOptions" value="{{sort}}">{{sort}}</option>
+            </select>
+        </form>
+        <div class="btn btn-default ttc-search-button" ng-click="$ctrl.filterSearch()">Search</div>
     </div>
     <!-- end search -->
 
@@ -22,62 +25,39 @@
         <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </span>
 
-    <!-- Legend row -->
-    <div class="ttc-grant-item ttc-header">
-        <!-- row1 items -->
-        <div class="ttc-row">
-            <div class="ttc-award-number-title ttc-data-cell ttc-left">[Award Number] Title</div>
-            <div class="ttc-timespan ttc-data-cell ttc-right">Start Date - End Date</div>
-        </div>
+    <table class="nco-ttc-grants">
+        <!-- header labels -->
+        <tr class="ttc-row">
+            <th class="ttc-data">Award Number</th>
+            <th class="ttc-data">Title</th>
+            <th class="ttc-data">Start Date</th>
+            <th class="ttc-data">End Date</th>
+            <th class="ttc-data">PI / Co-PI</th>
+            <th class="ttc-data">Grant Org</th>
+            <th class="ttc-data">Org State</th>
+            <th class="ttc-data">NHERI Facility</th>
+            <th class="ttc-data">Abstract</th>
+            <th class="ttc-data">Category/Labels</th>
+        </tr>
+        <!-- end header labels-->
 
-        <!-- row2 items -->
-        <div class="ttc-row">
-            <div class="ttc-pi-name ttc-data-cell ttc-left">
-                PI / Co-PI
-                <br />
-                Grant Org - State
-            </div>
-            <div class="ttc-facility ttc-data-cell ttc-right">NHERI Facility</div>
-        </div>
-
-        <!-- row3 items -->
-        <div class="ttc-row">
-            <div class="ttc-abstract ttc-data-cell ttc-left">Abstract</div>
-            <div class="ttc-labels ttc-data-cell ttc-right">Category Labels</div>
-        </div>
-
-        <!-- for gap between grants-->
-        <br />
-    </div>
-    <!-- end Legend row -->
-
-    <!-- Data from DB table -->
-    <div class="ttc-grant-item" ng-repeat="grant in $ctrl.grantList">
-        <!-- row1 items -->
-        <div class="ttc-row">
-            <div class="ttc-award-number-title ttc-data-cell ttc-left">[{{grant.AwardNumber}}] {{grant.Title}}</div>
-            <div class="ttc-timespan ttc-data-cell ttc-right" ng-if="grant.StartDate.$date">{{grant.StartDate.$date | date}} - {{grant.EndDate.$date | date}}</div>
-            <div class="ttc-timespan ttc-data-cell ttc-right" ng-if="!grant.StartDate.$date">{{grant.StartDate}} - {{grant.EndDate}}</div>
-        </div>
-
-        <!-- row2 items -->
-        <div class="ttc-row">
-            <div class="ttc-pi-name ttc-data-cell ttc-left">
+        <!-- list of grants -->
+        <tr class="ttc-row ttc-grant-item" ng-repeat="grant in $ctrl.grantList">
+            <td class="ttc-data">{{grant.AwardNumber}}</td>
+            <td class="ttc-title ttc-data">{{grant.Title}}</td>
+            <td class="ttc-data">{{grant.StartDate.$date | date}}</td>
+            <td class="ttc-data">{{grant.EndDate.$date | date}}</td>
+            <td class="ttc-data">
                 {{grant.PiName}} <span ng-if="grant.CoPiNames"> / {{grant.CoPiNames}}</span>
-                <br />
-                {{grant.Org}} - {{grant.OrgState}}
-            </div>
-            <div class="ttc-facility ttc-data-cell ttc-right" ng-if="grant.NheriFacility">{{grant.NheriFacility}}</div>
-            <div class="ttc-facility ttc-data-cell ttc-right" ng-if="!grant.NheriFacility">No Facility Listed</div>
-        </div>
+            </td>
+            <td class="ttc-data">{{grant.Org}}</td>
+            <td class="ttc-data ttc-org-state">{{grant.OrgState}}</td>
+            <td class="ttc-data" ng-if="grant.NheriFacility">{{grant.NheriFacility}}</td>
+            <td class="ttc-data" ng-if="!grant.NheriFacility">No Facility Listed</td>
+            <td class="ttc-abstract ttc-data btn btn-default" ng-click="$ctrl.showAbstract(grant.Abstract)">View</td>
 
-        <!-- row3 items -->
-        <div class="ttc-row">
-            <a class="ttc-abstract ttc-data-cell ttc-left" ng-click="$ctrl.showAbstract(grant.Abstract)">View Abstract</a>
-            <div class="ttc-labels ttc-data-cell ttc-right">No Category or Labels</div>
-        </div>
-
-        <!-- for gap between grants-->
-        <br />
-    </div>
+            <!-- this last one doesn't exist in the db yet so putting filler info for now -->
+            <td class="ttc-data">None</td>
+        </tr>
+    </table>
 </div>

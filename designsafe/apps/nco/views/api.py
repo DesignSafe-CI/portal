@@ -74,8 +74,21 @@ class TtcGrantsView(BaseApiView):
     def get(self,request):
         """Return a list of all TTC Grants."""
         ttc_mgr = NcoTtcGrantsManager(request.user)
-        grants = ttc_mgr.ttc_grants()
+        facility = request.GET.get('facility')
+        sort = request.GET.get('sort')
+        grants = ttc_mgr.ttc_grants(facility,sort)
         return MongoJsonResponse({
             "status": "OK",
             "response": grants,
+        })
+
+class TtcFacilitiesView(BaseApiView):
+    """NCO TTC Grants Facilities View."""
+
+    def get(self,request):
+        ttc_mgr = NcoTtcGrantsManager(request.user)
+        facilities = ttc_mgr.ttc_facilities()
+        return MongoJsonResponse({
+            "status": "OK",
+            "response": facilities,
         })

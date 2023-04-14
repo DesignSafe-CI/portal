@@ -32,8 +32,19 @@ class NcoTtcGrantsManager(object):
 
         self._mttc = MongoTTCHelper(self._ac)
 
-    def ttc_grants(self, filters=None, page_number=0, sorts=None, page_size=10):
+    def ttc_grants(self, facility=None, sort=None):
         """Return ttc grants list."""
         query = {}
-        grants = [grant for grant in self._mttc.get_ttc_grants(query=query)]
+
+        #turn facility selection into query
+        if facility:
+            query = { 'NheriFacility' : facility }
+
+        #get the grants list
+        grants = [grant for grant in self._mttc.get_ttc_grants(query=query,sort=sort)]
         return grants
+
+    def ttc_facilities(self):
+        """Return list of distinct facilities in ttc_grant collection"""
+        facilities = [facility for facility in self._mttc.get_ttc_facilities()]
+        return facilities
