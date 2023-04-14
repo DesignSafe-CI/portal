@@ -79,6 +79,10 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     if search_string:
         query_filters.append(search_utils.search_string_query(search_string))
 
+    pub_year = query_dict['queries']['publicationYear']
+    if pub_year:
+        query_filters.append(search_utils.pub_date_query(pub_year))
+
     # Experimental advanced filters
     facility = query_dict['advancedFilters']['experimental']['experimentalFacility']
     experiment_type = query_dict['advancedFilters']['experimental']['experimentType']
