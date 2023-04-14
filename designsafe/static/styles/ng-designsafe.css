@@ -356,7 +356,10 @@
 * DATA BROWSER TABLE WRAPPER CSS
 *
 **/
-
+input:placeholder-shown {
+    text-overflow: ellipsis;
+  }
+  
 .ds-table-display-wrapper {
     height:600px;
     overflow:scroll;
