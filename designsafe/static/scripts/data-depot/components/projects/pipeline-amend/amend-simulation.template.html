@@ -137,7 +137,8 @@
         <hr>
         <div>
             <!-- Simulations -->
-            <div ng-hide="$ctrl.ui.loading" ng-repeat="simulation in $ctrl.amendment.simulationsList">
+            
+            <div ng-hide="$ctrl.ui.loading" ng-repeat="simulation in $ctrl.amendment.simulations">
                 <div class="dropdown dropdown-spacer-sm" id="details-{{simulation.uuid}}">
                     <button class="btn tab-gray"
                             data-toggle="collapse"
@@ -225,7 +226,7 @@
                                 <br>{{ simulation.value.description }}
                             </p>
                             <div>
-                                <a class="prj-ent-amend" ng-click="$ctrl.amendProject($event)"><strong>Edit Project Metadata</strong></a>
+                                <a class="prj-ent-amend" ng-click="$ctrl.amendPrimaryEntity(simulation, 'manageSimulationsModal')"><strong>Edit Simulation Metadata</strong></a>
                             </div>
                             <br>
                             <div>
@@ -260,7 +261,7 @@
                                     </div>
                                 </div>
                                 <!-- Models -->
-                                <div ng-repeat="model in $ctrl.amendment.model | orderBy: 'value.title'"
+                                <div ng-repeat="model in $ctrl.amendment.models | orderBy: 'value.title'"
                                     ng-if="$ctrl.matchingGroup(simulation, model)"
                                 >
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
@@ -289,7 +290,7 @@
                                         </div>
                                     </div>
                                     <!-- Inputs -->
-                                    <div ng-repeat="input in $ctrl.amendment.input | orderBy: 'value.title'"
+                                    <div ng-repeat="input in $ctrl.amendment.inputs | orderBy: 'value.title'"
                                         ng-if="$ctrl.matchingGroup(simulation, input) && $ctrl.matchingGroup(model, input)"
                                     >
                                         <div class="dropdown dropdown-spacer-sm"
@@ -331,7 +332,7 @@
                                                 </tr>
                                             </table>
                                             <!-- Output -->
-                                            <div ng-repeat="output in $ctrl.amendment.output | orderBy: 'value.title'"
+                                            <div ng-repeat="output in $ctrl.amendment.outputs | orderBy: 'value.title'"
                                                 ng-if="$ctrl.matchingGroup(simulation, output) && $ctrl.matchingGroup(model, output) 
                                                         && $ctrl.matchingGroup(input, output)"
                                             >
@@ -382,7 +383,7 @@
                                 </div>
                                 <!-- Models -->
                                 <!-- Analysis -->
-                                <div ng-repeat="analysis in $ctrl.amendment.analysis | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, analysis)">
+                                <div ng-repeat="analysis in $ctrl.amendment.analysiss | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(simulation, analysis)">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
                                         <button class="btn collapsed tab-light-blue"
                                                 data-toggle="collapse"

@@ -87,6 +87,7 @@ class PipelineAmendCtrl {
         else if (prj_type == 'simulation') {
             primaryEntNames = ['simulationsList']
             secondaryEntNames = [
+                'simulation',
                 'models',
                 'input',
                 'output',

@@ -87,6 +87,7 @@ class PipelineAmendCitationCtrl {
             this.amendComp = 'projects.amendSimulation';
             this.ui.placeholder = 'Simulation';
             this.amendFields = [
+                'simulations',
                 'models',
                 'inputs',
                 'outputs',
