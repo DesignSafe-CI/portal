@@ -95,6 +95,18 @@ class PublishedViewCtrl {
 
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.versions = this.prepVersions(this.publication);
+        this.selectedVersion = this.publication.revision || 1;
+        this.prjBasePath = (this.publication.revision && this.publication.revision > 0
+            ? this.publication.projectId + 'v' + this.publication.revision
+            : this.publication.projectId
+        );
+        this.openEntities = {};
+        this.breadcrumbParams = {
+            root: { label: this.prjBasePath, path: this.prjBasePath },
+            path: this.prjBasePath,
+            skipRoot: true,
+        };
+
         this.createdYear = new Date(this.publication.created).getFullYear();
         this.dateCreated = new Date(this.publication.created);
         this.projectGen = this.publication.version || 1;
@@ -124,17 +136,7 @@ class PublishedViewCtrl {
                     uniqueRequests: 0,
                 };
             });
-        this.prjBasePath =
-            this.publication.version && this.publication.version > 0
-                ? `${this.publication.projectId}v${this.publication.version}`
-                : this.publication.projectId;
-        this.openEntities = {};
-        this.breadcrumbParams = {
-            root: { label: this.prjBasePath, path: this.prjBasePath },
-            path: this.prjBasePath,
-            skipRoot: true,
-        };
-
+        
         this.getFileObjs = (evt) => {
             this.FileListingService.publishedListing(this.browser.publication, evt);
         };
