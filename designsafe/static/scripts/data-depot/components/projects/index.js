@@ -66,6 +66,7 @@ import { ManageFieldReconDocumentsComponent } from '../../../projects/components
 import { ManageFieldReconCollectionsComponent } from '../../../projects/components/manage-field-recon/collections/manage-field-recon-collections.component.js';
 import { AmendEntityComponent } from '../../../projects/components/amend-entity-modal/amend-entity.component.js';
 import { ProjectTreeComponent } from '../../../projects/components/project-tree/project-tree.component';
+import { PublishedCitationComponent } from '../../../projects/components/publication-citation/publication-citation.component.js';
 import { AuthorInformationModalComponent } from './publication-preview/modals/author-information-modal.component';
 import { PublicationDownloadModalComponent } from '../../../projects/components/publication-download/publication-download.component.js';
 import { PublishedDataModalComponent } from '../../../projects/components/published-data-modal/published-data-modal.component';
@@ -132,6 +133,7 @@ ddProjectsComponents.component('fieldReconDocumentsModal', ManageFieldReconDocum
 ddProjectsComponents.component('fieldReconCollectionsModal', ManageFieldReconCollectionsComponent);
 ddProjectsComponents.component('amendEntityModal', AmendEntityComponent);
 ddProjectsComponents.component('projectTree', ProjectTreeComponent);
+ddProjectsComponents.component('publishedCitationModal', PublishedCitationComponent);
 ddProjectsComponents.component('authorInformationModal', AuthorInformationModalComponent);
 ddProjectsComponents.component('publicationDownloadModal', PublicationDownloadModalComponent);
 ddProjectsComponents.component('publishedDataModal', PublishedDataModalComponent);

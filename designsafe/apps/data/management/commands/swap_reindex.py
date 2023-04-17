@@ -26,14 +26,14 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--index', help='key in settings.ES_INDICES to reindex')
         parser.add_argument('--cleanup', help='Remove documents after swapping aliases to save space.', default=False, action='store_true')
-        parser.add_argument('--swap-only', help='Only swap index aliases without reindexing.', default=False, action='store_true')
+        parser.add_argument('--swaponly', help='Only swap index aliases without reindexing.', default=False, action='store_true')
 
     def handle(self, *args, **options):
         HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
         es_client = elasticsearch.Elasticsearch(HOSTS, http_auth=settings.ES_AUTH)
         index = options.get('index')
         cleanup = options.get('cleanup')
-        swap_only = options.get('swap-only')
+        swap_only = options.get('swaponly')
 
         index_config = settings.ES_INDICES[index]
 

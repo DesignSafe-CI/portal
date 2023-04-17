@@ -4,23 +4,36 @@
     <div class="table-row">
         <div class="table-column-l">
             <div style="display:inline-flex; width:100%; padding-bottom: 10px;">
-                <div class="input-group" style="display:inline-flex; flex:1; align-items: center;">
+                <div class="input-group" style="display:inline-flex; flex:1; align-items: center; min-width:200px;">
                     
                     <button class="btn btn-success" ng-click="$ctrl.browse()" style="width:fit-content; white-space: nowrap; text-align: center; height: 34px;">
                         <i class="fa fa-search">&nbsp;</i>Search
                     </button>
-                    <input type="text" placeholder="Author, Title, Keyword, or Description" class="form-control" ng-model="$ctrl.params.queries.searchString" class="form-control" id="author-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()">
+                    <input type="text" placeholder="Author, Title, Keyword, Description, Natural Hazard Event, Project ID, or DOI" 
+                    data-toggle="tooltip" data-placement="top" title="Author, Title, Keyword, Description, Natural Hazard Event, Project ID, or DOI"
+                        class="form-control" ng-model="$ctrl.params.queries.searchString" class="form-control" id="author-input" ng-keydown="$event.keyCode === 13 && $ctrl.browse()">
                 </div>
                 
-                <div style="display:flex; align-items: center; flex:1; justify-content: end;">
+                <div style="display:flex; align-items: center; justify-content: end;">
                     <div class="input-group" style="display:inline-flex; align-items: center; padding-left: 15px;">
-                        <label for="nh-type-select">Natural Hazard Type&nbsp;</label>
+                        <label for="nh-type-select" style="margin-bottom: 0px;">Natural Hazard Type&nbsp;</label>
                         <select
-                            style="width: fit-content; border-radius: 5px;"
+                            style="max-width:11rem; border-radius: 5px;"
                             id="nh-type-select"
                             ng-model="$ctrl.params.advancedFilters.field_recon.naturalHazardType"
                             ng-change="$ctrl.browse()"
                             ng-options="opt.name as opt.label for opt in $ctrl.rapidEventTypes"
+                            class="form-control"
+                            ></select>
+                        </div>
+                    <div class="input-group" style="display:inline-flex; align-items: center; padding-left: 15px;">
+                        <label for="pub-year-select" style="margin-bottom: 0px;">Year Published&nbsp;</label>
+                        <select
+                            style="max-width:fit-content; border-radius: 5px;"
+                            id="pub-year-select"
+                            ng-model="$ctrl.params.queries.publicationYear"
+                            ng-change="$ctrl.browse()"
+                            ng-options="opt.name as opt.label for opt in $ctrl.nhYears"
                             class="form-control"
                             ></select>
                         </div>
@@ -38,9 +51,9 @@
                         <thead>
                             <th style="width: 350px;">Project Title</th>
                             <th style="width: 100px;">Project PI</th>
-                            <th style="width: 100px;">Project Description</th>
+                            <th style="width: 100px;">Description</th>
                             <th style="width: 150px;">Keywords</th>
-                            <th style="width: 100px;">Date of Publication</th>
+                            <th style="width: 100px;">Date Published</th>
                             </thead>
             
                         <tbody>
@@ -52,7 +65,8 @@
                               <a ng-href="{{ $ctrl.href(item) }}">
                                   {{ item.project.value.title }}
                               </a>
-                              <span style="text-transform:capitalize;">({{item.project.value.dataType ||  $ctrl.getType(item.project.value.projectType) }})</span>
+                              <br/>
+                              <div style="text-transform:capitalize; margin-top:0.5rem">{{item.project.value.dataType ||  $ctrl.getType(item.project.value.projectType) }}</div>
                           </td>
                           <td >
                             <span ng-show="item.pi">{{ item.pi }}</span>
@@ -175,7 +189,7 @@
                             </label
                         >Field Research
                         <div style="padding-bottom: 5px; font-weight: normal;">
-                            <label-nb style="width:100%;" for="fr-type-select">Natural Hazard Type&nbsp;</label>
+                            <label-nb style="width:100%;" for="fr-type-select">Field Research Type&nbsp;</label>
                             <select
                                 style="border-radius: 5px;"
                                 id="fr-type-select"

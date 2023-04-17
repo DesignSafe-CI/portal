@@ -140,6 +140,15 @@ def fr_date_query(year):
         'format': 'yyyy'}
     }})
 
+def pub_date_query(year): 
+    if not year:
+        return None
+    return Q({'range': {'created': {
+        "gte": f"{year}||/y",
+        "lte": f"{year}||/y", 
+        'format': 'yyyy'}
+    }})
+
 def fr_type_query(fr_type):
     if not fr_type:
         return None
