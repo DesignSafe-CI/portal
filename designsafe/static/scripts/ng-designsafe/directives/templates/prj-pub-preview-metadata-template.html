@@ -53,7 +53,12 @@
         v{{$ctrl.version}}
     </div>
     <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px;  line-height: 1.6;"> 
-        {{ $ctrl.listAuthors() }}
+        <span ng-if="$ctrl.project.value.dois.toString() === ''" >
+            PIs, Co-PIs, Team Members listed here.
+        </span>
+        <span ng-if="$ctrl.project.value.dois.toString() !== ''">
+            {{ $ctrl.listAuthors($ctrl.project.value.teamOrder) }}
+        </span> 
         <span ng-if="$ctrl.project.value.dois.toString() === ''">
             (Year of Publication) "{{ $ctrl.project.value.title }}." DesignSafe-CI. (DOI)
         </span>

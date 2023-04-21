@@ -3,7 +3,7 @@ import PublicationPopupTemplate from './publication-popup.html';
 
 class PublicationPreviewOtherCtrl {
 
-    constructor(ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q, UserService) {
+    constructor(ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
         this.ProjectService = ProjectService;
         this.FileListingService = FileListingService;
@@ -11,7 +11,6 @@ class PublicationPreviewOtherCtrl {
         this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;
-        this.UserService = UserService;
     }
 
     $onInit() {
@@ -22,11 +21,6 @@ class PublicationPreviewOtherCtrl {
         this.data = this.ProjectService.resolveParams.data;
         this.ui = {
             loading: true,
-        };
-        this.authorData = {
-            pi: {},
-            coPis: null,
-            teamMembers: null
         };
 
         if (!this.data) {
@@ -43,32 +37,6 @@ class PublicationPreviewOtherCtrl {
             this.dateCreated = new Date(this.project.created);
             this.ui.loading = false;
         }    
-
-        this.team = [];
-            let userNames = [this.project.value.pi].concat(this.project.value.coPis, this.project.value.teamMembers);
-            
-            this.UserService.getPublic(userNames).then((res) => {
-                res.userData.forEach((u) => {
-                    let member = {};
-                    member.order = 0;
-                    member.guest = false;
-                    member.name = u.username;
-                    member.fname = u.fname;
-                    member.lname = u.lname;
-                    this.team.push(member);
-                });
-
-                this.project.value.guestMembers.forEach((g) => {
-                    if (g) {
-                        g.order = 0;
-                        g.guest = true;
-                        this.team.push(g);
-                    }
-                });
-                this.team.forEach((t, index) => {
-                    t.order = index;
-                });
-            });
     }
 
     goWork() {
