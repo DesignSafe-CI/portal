@@ -510,15 +510,30 @@ class PublishedViewCtrl {
         const prepAuthors = authors.sort((a, b) => a.order - b.order);
         let listAuthors = [];
         prepAuthors.forEach((u, i, arr) => {
-            if (i === 0 && arr.length - 1 === 0) {
-                listAuthors += `${u.lname}, ${u.fname[0]}. `;
-            } else if (i === 0 && arr.length - 1 > 0) {
-                listAuthors += `${u.lname}, ${u.fname[0]}., `;
-            } else if (i === arr.length - 1) {
-                listAuthors += `${u.fname[0]}. ${u.lname}. `;
-            } else {
-                listAuthors += `${u.fname[0]}. ${u.lname}, `;
+            if (this.browser.project.value.projectType !== 'other'){
+                if (u.authorship){
+                    if (i === 0 && arr.length - 1 === 0) {
+                    listAuthors += `${u.lname}, ${u.fname[0]}. `;
+                    } else if (i === 0 && arr.length - 1 > 0) {
+                        listAuthors += `${u.lname}, ${u.fname[0]}., `;
+                    } else if (i === arr.length - 1) {
+                        listAuthors += `${u.fname[0]}. ${u.lname}. `;
+                    } else {
+                        listAuthors += `${u.fname[0]}. ${u.lname}, `;
+                    }
             }
+            } else {
+                if (i === 0 && arr.length - 1 === 0) {
+                listAuthors += `${u.lname}, ${u.fname[0]}. `;
+                } else if (i === 0 && arr.length - 1 > 0) {
+                    listAuthors += `${u.lname}, ${u.fname[0]}., `;
+                } else if (i === arr.length - 1) {
+                    listAuthors += `${u.fname[0]}. ${u.lname}. `;
+                } else {
+                    listAuthors += `${u.fname[0]}. ${u.lname}, `;
+                }
+            }
+            
         });
         return listAuthors;
     }
