@@ -114,7 +114,7 @@
                     v{{$ctrl.version}}
                 </div>
                 <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px; line-height: 1.6;"> 
-                    <ds-author-list format="citation" authors="simulations.value.authors"></ds-author-list>
+                    <ds-author-list format="citation" authors="simulation.value.authors"></ds-author-list>
                     <span ng-if="simulation.value.dois.toString() === ''">
                         (Year of Publication) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                         (DOI)

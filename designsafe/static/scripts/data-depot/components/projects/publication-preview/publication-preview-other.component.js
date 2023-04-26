@@ -36,7 +36,7 @@ class PublicationPreviewOtherCtrl {
             this.createdYear = new Date(this.project.created).getFullYear();
             this.dateCreated = new Date(this.project.created);
             this.ui.loading = false;
-        }
+        }    
     }
 
     goWork() {
