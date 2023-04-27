@@ -160,7 +160,7 @@
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Simulation Type</div>
                                 <span ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" class="entity-meta-data">
-                                    {{ $ctrl.getET(simulation) }}
+                                    {{ simulation.value.simulationType }}
                                 </span>
                                 <span ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" class="entity-meta-data">
                                     {{ simulation.value.simulationTypeOther }}

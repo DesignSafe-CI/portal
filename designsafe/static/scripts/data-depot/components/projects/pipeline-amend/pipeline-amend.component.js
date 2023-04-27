@@ -61,6 +61,7 @@ class PipelineAmendCtrl {
             'experimentEntity': ['project', 'experiments', 'modelConfigs', 'sensorLists', 'files'],
             'reportEntity': ['project','files','authors','dois'],
             'missionEntity': ['project','files','authors','dois'],
+            'simulationEntity': ['project'],
         }
         let prjEnts = this.project.getAllRelatedObjects();
 
