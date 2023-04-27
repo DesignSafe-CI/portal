@@ -70,7 +70,6 @@ class PipelineVersionChangesCtrl {
                     this.pubData[attr].push(pubEntity);
                 });
     
-
                 this.mainEntityUuids = [];
                 if (this.prjType === 'experimental') {
                     this.ui.selectionComp = 'projects.versionExperimentSelection'
@@ -91,6 +90,16 @@ class PipelineVersionChangesCtrl {
                         if (entity.name === 'designsafe.project.field_recon.mission') {
                             this.pubData['missions'].push({uuid: entity.uuid});
                         }
+                        this.mainEntityUuids.push(entity.uuid);
+                    });
+                }
+                if (this.prjType === 'simulation') {
+                    this.ui.selectionComp = 'projects.versionSimulationSelection'
+                    this.ui.citationComp = 'projects.versionCitation'
+
+                    this.pubData['simulationsList'] = [];
+                    this.selectedEnts.forEach((entity) => {
+                        this.pubData['simulationsList'].push({uuid: entity.uuid});
                         this.mainEntityUuids.push(entity.uuid);
                     });
                 }

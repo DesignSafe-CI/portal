@@ -94,7 +94,7 @@ class PipelineAmendCitationCtrl {
                 'analysiss',
                 'reports'
             ]
-            this.amendment.simulationsList.forEach((simulation) => {
+            this.amendment.simulations.forEach((simulation) => {
                 if (simulation.value.dois.length) {
                     this.publishedEntities.push(simulation);
                     this.authors[simulation.uuid] = simulation.authors;
