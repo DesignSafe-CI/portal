@@ -86,14 +86,14 @@ class PipelineAmendCtrl {
             ]
         }
         else if (prj_type == 'simulation') {
-            primaryEntNames = ['simulationsList']
+            primaryEntNames = ['simulations']
             secondaryEntNames = [
                 'simulation',
                 'models',
-                'input',
-                'output',
+                'inputs',
+                'outputs',
                 'analysiss',
-                'report'
+                'reports'
             ]
         }
 
@@ -137,9 +137,11 @@ class PipelineAmendCtrl {
                             Object.keys(amendEntity.value).forEach((entKey) => {
                                 if (!unamendableFields.experimentEntity.includes(entKey)) {
                                     amendEntity.value[entKey] = prjEntity.value[entKey];
+                                } else if (!unamendableFields.simulationEntity.includes(entKey)) {
+                                    amendEntity.value[entKey] = prjEntity.value[entKey];
                                 }
                             });
-                        }
+                        } 
                     });
                 }
             });
