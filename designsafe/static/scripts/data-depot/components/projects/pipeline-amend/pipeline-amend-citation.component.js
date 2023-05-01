@@ -82,6 +82,25 @@ class PipelineAmendCitationCtrl {
                     this.ui.savedStatus[entity.uuid] = false;
                 }
             });
+        } 
+        else if (prj_type == 'simulation'){
+            this.amendComp = 'projects.amendSimulation';
+            this.ui.placeholder = 'Simulation';
+            this.amendFields = [
+                'simulations',
+                'models',
+                'inputs',
+                'outputs',
+                'analysiss',
+                'reports'
+            ]
+            this.amendment.simulations.forEach((simulation) => {
+                if (simulation.value.dois.length) {
+                    this.publishedEntities.push(simulation);
+                    this.authors[simulation.uuid] = simulation.authors;
+                    this.ui.savedStatus[simulation.uuid] = false;
+                }
+            });
         } else {
             this.goStart();
         }
