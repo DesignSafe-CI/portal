@@ -1685,7 +1685,10 @@ pre code {
   }
 }
 @media (min-width: 1200px) {
-  .container {
+  .container:not(.dd-container) {
+    width: 1170px;
+  }
+  .dd-container {
     width: 90%;
   }
 }
