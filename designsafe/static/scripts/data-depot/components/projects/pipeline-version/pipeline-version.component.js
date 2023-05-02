@@ -1,5 +1,6 @@
 import VersionExperimentSelectionTemplate from './version-experiment-selection.template.html';
 import VersionFieldReconSelectionTemplate from './version-field-recon-selection.template.html';
+import VersionSimulationSelectionTemplate from './version-simulation-selection.template.html';
 import VersionCitationTemplate from './version-citation.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
@@ -62,6 +63,13 @@ class PipelineVersionCtrl {
                     this.matchingGroupKey = 'experiments'
                     this.publishedKeyNames = ['experimentsList']
                     this.subEntities = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
+                } else if (prjType === 'simulation') {
+                    this.ui.selectionComp = 'projects.versionSimulationSelection'
+                    this.ui.citationComp = 'projects.versionCitation'
+                    this.ui.placeholder = 'Simulation'
+                    this.matchingGroupKey = 'simulations'
+                    this.publishedKeyNames = ['simulation']
+                    this.subEntities = ['simulation', 'models',  'inputs', 'outputs', 'analysiss', 'reports'];
                 } else if (prjType === 'field_recon') {
                     this.ui.selectionComp = 'projects.versionFieldReconSelection'
                     this.ui.citationComp = 'projects.versionCitation'
@@ -375,6 +383,17 @@ export const VersionExperimentSelectionComponent = {
 
 export const VersionFieldReconSelectionComponent = {
     template: VersionFieldReconSelectionTemplate,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionSimulationSelectionComponent = {
+    template: VersionSimulationSelectionTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
