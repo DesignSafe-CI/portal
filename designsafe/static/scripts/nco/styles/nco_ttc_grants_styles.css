@@ -1,0 +1,50 @@
+.ttc-intro {
+    padding: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.nco-ttc-grants {
+    margin: auto;
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ttc-grant-item {
+    padding: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 1px solid;
+}
+
+.ttc-header {
+    font-weight: bold;
+}
+
+.ttc-search {
+    display: block;
+    padding: 10px;
+}
+
+.ttc-facility-filter, .ttc-sort-filter {
+    display: inline;
+    padding: 10px;
+}
+
+.ttc-row {
+    display: table-row;
+    margin: auto;
+    padding: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.ttc-data-cell {
+    padding: 5px;
+    display: table-cell;
+}
+
+.ttc-data {
+    padding: 5px;
+}
