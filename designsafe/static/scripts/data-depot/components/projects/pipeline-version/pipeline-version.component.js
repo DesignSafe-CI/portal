@@ -69,7 +69,7 @@ class PipelineVersionCtrl {
                     this.ui.placeholder = 'Simulation'
                     this.matchingGroupKey = 'simulations'
                     this.publishedKeyNames = ['simulation']
-                    this.subEntities = ['simulation', 'models',  'inputs', 'outputs', 'analysiss', 'reports'];
+                    this.subEntities = ['simulation_set', 'model_set',  'input_set', 'output_set', 'analysis_set', 'report_set'];
                 } else if (prjType === 'field_recon') {
                     this.ui.selectionComp = 'projects.versionFieldReconSelection'
                     this.ui.citationComp = 'projects.versionCitation'
