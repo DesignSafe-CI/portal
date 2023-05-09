@@ -32,6 +32,7 @@ designsafe/apps/search/templates/designsafe/apps/search/index.html
 designsafe/apps/dashboard/templates/designsafe/apps/dashboard/index.html
 designsafe/apps/notifications/templates/designsafe/apps/notifications/index.html
 designsafe/apps/nco/templates/designsafe/apps/nco/nco_index.html
+designsafe/apps/nco/templates/designsafe/apps/nco/ttc_grants.html
 
 # local config files
 conf/elasticsearch/logging.yml
