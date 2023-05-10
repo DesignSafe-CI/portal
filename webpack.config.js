@@ -183,6 +183,15 @@ module.exports = (env) => {
                     minify: false,
                 }
             ),
+            new HtmlWebpackPlugin(
+                {
+                    chunks: ['nco'],
+                    inject : false,
+                    template : './designsafe/apps/nco/templates/designsafe/apps/nco/ttc_grants.j2',
+                    filename: '../../apps/nco/templates/designsafe/apps/nco/ttc_grants.html',
+                    minify: false,
+                }
+            ),
             new webpack.ProvidePlugin({
                 jQuery: 'jquery',
                 $: 'jquery',

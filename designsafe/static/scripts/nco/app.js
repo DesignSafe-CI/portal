@@ -20,7 +20,7 @@ angular.module('designsafe.portal').requires.push('nco');
 /**
  * @function
  * @param {Object} $httpProvider
- * @param {Object} $locationProvider 
+ * @param {Object} $locationProvider
  * @param {Object} $stateProvider
  * @param {Object} $urlRouterProvider
  * @param {Object} Django
