@@ -79,6 +79,10 @@ class SearchView(View):
 
             return JsonResponse(res_dict)
 
+        # Prevent unauthenticated users from performing a query
+        if not request.user.is_authenticated:
+            return JsonResponse({})
+
         q = request.GET.get('q')
         role = request.GET.get('role')
         user_rs = model.objects.filter()
