@@ -97,9 +97,9 @@ class PipelineVersionChangesCtrl {
                     this.ui.selectionComp = 'projects.versionSimulationSelection'
                     this.ui.citationComp = 'projects.versionCitation'
 
-                    this.pubData['simulationsList'] = [];
+                    this.pubData['simulations'] = [];
                     this.selectedEnts.forEach((entity) => {
-                        this.pubData['simulationsList'].push({uuid: entity.uuid});
+                        this.pubData['simulations'].push({uuid: entity.uuid});
                         this.mainEntityUuids.push(entity.uuid);
                     });
                 }
