@@ -5517,6 +5517,12 @@ a.label:focus {
   display: block;
   font-weight: normal;
 }
+.label-form-desc-error {
+  display: block;
+  font-weight: normal;
+  font-weight: bold;
+  color: #d9534f;
+}
 .label-danger {
   background-color: #d9534f;
   margin-top: 3px;

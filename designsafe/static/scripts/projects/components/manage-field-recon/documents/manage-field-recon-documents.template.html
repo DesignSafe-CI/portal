@@ -259,7 +259,9 @@
                 <textarea class="form-textbox"
                           id="id-description"
                           ng-model="$ctrl.form.description"
-                          ng-required="true">
+                          ng-required="true"
+                          ng-minlength="50"
+                          ng-maxlength="5000">
                     &nbsp;
                 </textarea>
             </div>
