@@ -352,7 +352,6 @@
                 <label>Category Description</label>
                 <div>
                     Summarize the purpose of the category and its files. What is it about? What are its features?
-
                     Description must be between 50 and 5000 characters in length.
                 </div>
                 <div>
@@ -363,7 +362,7 @@
                                 ng-minlength="50"
                                 ng-maxlength="5000">
                     </textarea>
-                    <span ng-if="projForm.$error.minlength[0].$invalid || projForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                    <span ng-if="addForm.$error.minlength[0].$invalid || addForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
                         Description length is invalid 
                     </span>
                 </div>
