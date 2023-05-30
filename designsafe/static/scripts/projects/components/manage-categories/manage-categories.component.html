@@ -177,8 +177,8 @@
                     Summarize the purpose of the category and its files. What is it about? What are its features?
                 </div>
                 <div>
-                    <textarea class="form-textbox" type="text" id="add-exp-desc" ng-model="$ctrl.form.projectTagToAdd.description">
-            </textarea>
+                    <textarea class="form-textbox" type="text" id="add-exp-desc" ng-model="$ctrl.form.projectTagToAdd.description" ng-minlength="50" ng-maxlength="5000"></textarea>
+                    <span ng-if="addForm.$error.minlength[0].$invalid || addForm.$error.maxlength[0].$invalid" class="label-form-desc-error">Description length is invalid </span>
                 </div>
             </div>
             <!-- Add Category Btn -->
@@ -362,7 +362,7 @@
                                 ng-minlength="50"
                                 ng-maxlength="5000">
                     </textarea>
-                    <span ng-if="addForm.$error.minlength[0].$invalid || addForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                    <span ng-if="editForm.$error.minlength[0].$invalid || editForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
                         Description length is invalid 
                     </span>
                 </div>
