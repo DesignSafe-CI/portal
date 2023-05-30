@@ -92,7 +92,7 @@ class PublishedViewCtrl {
                 });
             });
         }
-
+        this.citationCounts = {}
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.versions = this.prepVersions(this.publication);
         this.selectedVersion = this.publication.revision || 1;
@@ -328,6 +328,7 @@ class PublishedViewCtrl {
                 });
                 citations.forEach((cite) => {
                     const doiObj = Object.values(this.doiList).find((x) => x.doi === cite.doi);
+                    this.citationCounts[cite.doi] = cite.citationCount;
                     doiObj.created = cite.created;
                 });
             });
