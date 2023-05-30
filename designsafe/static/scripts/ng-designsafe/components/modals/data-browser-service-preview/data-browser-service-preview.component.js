@@ -25,6 +25,8 @@ class DataBrowserServicePreviewCtrl {
         this.loading = true;
         this.error = false;
 
+        this.readOnly = this.$state.current.name.indexOf('publishedData') === 0;
+
         this.tests = this.FileOperationService.getTests([this.resolve.file]);
 
         this.FileOperationService.getPreviewHref({
@@ -60,10 +62,18 @@ class DataBrowserServicePreviewCtrl {
                                 let hazmapperHref = '';
                                 switch (body.deployment) {
                                     case 'production':
-                                        hazmapperHref = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${body.uuid}`;
+                                        if (this.readOnly) {
+                                            hazmapperHref = `https://hazmapper.tacc.utexas.edu/hazmapper/project-public/${body.uuid}`;
+                                        } else {
+                                            hazmapperHref = `https://hazmapper.tacc.utexas.edu/hazmapper/project/${body.uuid}`;
+                                        }
                                         break;
                                     case 'staging':
-                                        hazmapperHref = `https://hazmapper.tacc.utexas.edu/staging/project/${body.uuid}`;
+                                        if (this.readOnly) {
+                                            hazmapperHref = `https://hazmapper.tacc.utexas.edu/staging/project-public/${body.uuid}`;
+                                        } else {
+                                            hazmapperHref = `https://hazmapper.tacc.utexas.edu/staging/project/${body.uuid}`;
+                                        }
                                         break;
                                     default:
                                         hazmapperHref = `http://hazmapper.local:4200/project/${body.uuid}`;
@@ -129,12 +139,14 @@ class DataBrowserServicePreviewCtrl {
         const files = [this.resolve.file];
         this.FileOperationService.openCopyModal({ api, scheme, system, path, files });
     }
+
     move() {
         const { api, scheme, system, path } = this.FileListingService.listings.main.params;
         const files = [this.resolve.file];
         this.FileOperationService.openMoveModal({ api, scheme, system, path, files });
         this.close();
     }
+
     rename() {
         const { api, scheme, system, path } = this.FileListingService.listings.main.params;
         const file = this.resolve.file;
@@ -152,7 +164,6 @@ class DataBrowserServicePreviewCtrl {
         }
         const fileExtension = this.resolve.file.name.split('.').pop();
         return fileExtension === 'ipynb';
-
     }
 
     openInJupyter() {
