@@ -1,6 +1,6 @@
 <div class="pipeline-nav">
     <a ng-click="$ctrl.goSelection()">
-        <i class="fa fa-arrow-left"></i> Back
+        <i role="none" class="fa fa-arrow-left"></i> Back
     </a>
     <button class="btn btn-small btn-add"
             ng-click="$ctrl.goChanges()"
@@ -15,7 +15,7 @@
         Your citation(s) will be updated to match what is shown in the preview.
         <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
     </div>
@@ -51,7 +51,7 @@
                 </div>
                 <div ng-show="$ctrl.ui.loading">
                     <h3 class="text-center">
-                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                        <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
                     </h3>
                 </div>
                 <!-- Citation Preview -->
@@ -88,8 +88,8 @@
                     </tr>
                     <tr>
                         <td>
-                            <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, primEnt)"></i>
-                            <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, primEnt)"></i>
+                            <i role="none" class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, primEnt)"></i>
+                            <i role="none" class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, primEnt)"></i>
                             <a class="sort-arrows" ng-click="$ctrl.saveAuthors(primEnt, true)">Save</a>
                         </td>
                     </tr>

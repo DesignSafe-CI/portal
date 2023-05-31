@@ -5,7 +5,7 @@
     <div class="dropdown entity-preview-header" id="details-{{simulation.uuid}}">
       <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
               style="width:100%">
-        Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
+        Simulation {{simulation.value.title}} <i role="none" class="fa dropdown-caret"></i>
       </button>
       <div id="data-{{simulation.uuid}}" class="collapse">
 
@@ -167,7 +167,7 @@
               style="width:100%">
         <span ng-if="!analysis.value.simulations.length">Analysis {{analysis.value.title}} </span>
         <span ng-if="analysis.value.simulations.length">Simulation Analysis {{analysis.value.title}} </span>
-        <i class="fa dropdown-caret"></i>
+        <i role="none" class="fa dropdown-caret"></i>
       </button>
           <div id="data-{{analysis.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
@@ -187,7 +187,7 @@
               style="width:100%" class="ds-text-black">
         <span ng-if="!report.value.simulations.length">Report {{report.value.title}} </span>
         <span ng-if="report.value.simulations.length">Simulation Report {{report.value.title}} </span>
-        <i class="fa dropdown-caret"></i>
+        <i role="none" class="fa dropdown-caret"></i>
       </button>
           <div id="data-{{report.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">

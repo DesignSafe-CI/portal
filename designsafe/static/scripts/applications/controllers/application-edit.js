@@ -716,7 +716,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                 {
                                     "key": "deploymentPath",
                                     "type": "template",
-                                    "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.deploymentPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
+                                    "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.deploymentPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i role="none" class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
                                     validate: function(form) {
                                         if (!$scope.model.deploymentPath) {
                                             form.description = 'Missing required'
@@ -768,7 +768,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                 {
                                     "key": "templatePath",
                                     "type": "template",
-                                    "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.templatePath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
+                                    "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.templatePath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i role="none" class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
                                     validate: function(form) {
                                         if (!$scope.model.templatePath) {
                                             form.description = 'Missing required'
@@ -803,7 +803,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                 {
                                     "key": "testPath",
                                     "type": "template",
-                                    "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.testPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
+                                    "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.testPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i role="none" class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
                                     validate: function(form) {
                                         if (!$scope.model.testPath) {
                                             form.description = 'Missing required'

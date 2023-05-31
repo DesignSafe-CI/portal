@@ -9,7 +9,7 @@
             <form class="navbar-form navbar-left" ng-submit="$ctrl.ddSearch()" style="display:flex"
             ng-hide="['Dropbox', 'Box', 'Google Drive', 'NEES Published'].includes($ctrl.placeholder())">
             <input class="form-control" style="width:240px;" placeholder="Find in {{ $ctrl.placeholder() }}" ng-model="$ctrl.search.queryString">
-                <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
+                <button class="btn btn-default" style="clear: right;"> <i role="none" class="fa fa-search"></i> </button>
             </form>
             <div class="btn-toolbar-right">
                 <div class="btn-group-data-depot-toolbar btn-group">
@@ -17,7 +17,7 @@
                             ng-hide="$ctrl.$state.current.name === 'publishedData' || $ctrl.$state.current.name === 'publicDataLegacy'"
                             ng-disabled="!$ctrl.FileOperationService.tests.rename ||
                                         $ctrl.browser.project.publicationStatus === 'publishing'">
-                        <i class="fa fa-pencil"></i><span style="display:block;">Rename</span>
+                        <i role="none" class="fa fa-pencil"></i><span style="display:block;">Rename</span>
                     </button>
                 </div>
                 <div class="btn-group-data-depot-toolbar btn-group">
@@ -25,31 +25,31 @@
                             ng-hide="$ctrl.$state.current.name === 'publishedData' || $ctrl.$state.current.name === 'publicDataLegacy'"
                             ng-disabled="!$ctrl.FileOperationService.tests.move ||
                                         $ctrl.browser.project.publicationStatus === 'publishing'">
-                        <i class="fa fa-arrows"></i><span style="display:block;">Move</span>
+                        <i role="none" class="fa fa-arrows"></i><span style="display:block;">Move</span>
                     </button>
                     <button class="btn btn-sm btn-default" title="Copy" ng-click="$ctrl.copy()" style="text-align: center;"
                             ng-disabled="!$ctrl.FileOperationService.tests.copy||
                                         $ctrl.browser.project.publicationStatus === 'publishing'">
-                        <i class="fa fa-copy"></i><span style="display:block;">Copy</span>
+                        <i role="none" class="fa fa-copy"></i><span style="display:block;">Copy</span>
                     </button>
                     <button class="btn btn-sm btn-default" title="Preview" ng-click="$ctrl.preview()" style="text-align: center;"
                             ng-disabled="!$ctrl.FileOperationService.tests.preview ||
                                         $ctrl.browser.project.publicationStatus === 'publishing'">
-                        <i class="fa fa-binoculars"></i><span style="display:block;">Preview</span>
+                        <i role="none" class="fa fa-binoculars"></i><span style="display:block;">Preview</span>
                     </button>
                     <button class="btn btn-sm btn-default" title="Preview Images" style="text-align: center;"
                             ng-click="$ctrl.previewImages()"
                             ng-disabled="!$ctrl.FileOperationService.tests.previewImages">
-                        <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
+                        <i role="none" class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
                     </button>
                     <!-- <button class="btn btn-sm btn-default" title="Preview Citation" ng-if="$ctrl.browser.listing.system.startsWith('nees')" ng-click="$ctrl.showCitation()" ng-disabled="!$ctrl.browser.tests.canViewCitation || $ctrl.browser.selected[0].name.includes('NEES')">
-                        <i class="fa fa-book" style="color:#5bc0de;"></i><span style="display:block;">Citation</span>
+                        <i role="none" class="fa fa-book" style="color:#5bc0de;"></i><span style="display:block;">Citation</span>
                     </button> -->
                 </div>
                 <div class="btn-group-data-depot-toolbar btn-group">
                     <button class="btn btn-sm btn-default" title="Download" ng-click="$ctrl.download()" style="text-align: center;"
                             ng-disabled="!$ctrl.FileOperationService.tests.download">
-                        <i class="fa fa-cloud-download"></i><span style="display:block;">Download</span>
+                        <i role="none" class="fa fa-cloud-download"></i><span style="display:block;">Download</span>
                     </button>
                 </div>
                 <div class="btn-group-data-depot-toolbar btn-group">
@@ -58,10 +58,10 @@
                             ng-disabled="!$ctrl.FileOperationService.tests.trash ||
                                         $ctrl.browser.project.publicationStatus === 'publishing'"
                             ng-if="!$ctrl.browser.tests.canDelete">
-                        <i class="fa fa-trash"></i><span style="display:block;">Move to Trash</span>
+                        <i role="none" class="fa fa-trash"></i><span style="display:block;">Move to Trash</span>
                     </button>
                     <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="$ctrl.rm()" style="text-align: center;" ng-disabled="!$ctrl.browser.tests.canDelete" ng-if="$ctrl.browser.tests.canDelete">
-                        <i class="fa fa-trash"></i><span style="display:block;">Delete selected files</span>
+                        <i role="none" class="fa fa-trash"></i><span style="display:block;">Delete selected files</span>
                     </button>
                 </div>
             </div>

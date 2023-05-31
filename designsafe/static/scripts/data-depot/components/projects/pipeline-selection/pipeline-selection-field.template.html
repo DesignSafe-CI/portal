@@ -2,7 +2,7 @@
     <!-- progression map -->
     <div class="pull-right" style="padding-bottom: 20px;">
         <a ng-click="$ctrl.goWork()">
-            <i class="fa fa-times"></i> Exit Prepare to Publish
+            <i role="none" class="fa fa-times"></i> Exit Prepare to Publish
         </a>
     </div>
     <table class="tg"
@@ -19,44 +19,44 @@
             <td>
                 <strong>Selection</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Project</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Mission</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Collections</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Order Authors</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Licenses</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
         </tr>
     </table>
     <br>
     <div>
-        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i role="none" class="fa fa-arrow-left"></i> Back to Publication
             Preview</a>
         <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedEnts.length">Continue</button>
     </div>
@@ -86,14 +86,14 @@
         <!-- Missions -->
         <div ng-show="$ctrl.ui.loading">
             <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
         <!-- Reports Collection -->
         <div ng-repeat="mission in $ctrl.orderedPrimary" ng-hide="$ctrl.ui.loading">
             <div ng-if="mission.name == 'designsafe.project.field_recon.report'">
                 <a ng-click="$ctrl.selectEntity(mission)">Select this Report and all of its files</a>
-                <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                <span ng-if="$ctrl.selectedEnts.includes(mission)"><i role="none" class="fa fa-check" style="color: #1CB500;"></i></span>
 
                 <div class="dropdown dropdown-spacer-lg" id="details-{{mission.uuid}}">
                     <button class="btn collapsed tab-gray" data-toggle="collapse"
@@ -171,7 +171,7 @@
             <div ng-if="!$ctrl.ui.fileNav && mission.name == 'designsafe.project.field_recon.mission'">
                 <div class="dropdown dropdown-spacer-lg" id="details-{{experiment.uuid}}">
                     <a ng-click="$ctrl.selectEntity(mission)">Select this Mission and all of its files</a>
-                    <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                    <span ng-if="$ctrl.selectedEnts.includes(mission)"><i role="none" class="fa fa-check" style="color: #1CB500;"></i></span>
                     <button class="btn tab-gray collapsed" data-toggle="collapse"
                             data-target="#data-{{mission.uuid}}" style="width:100%;">
                         <div class="collapse-tab">

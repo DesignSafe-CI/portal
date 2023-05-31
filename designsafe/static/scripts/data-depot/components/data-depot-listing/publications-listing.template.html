@@ -7,7 +7,7 @@
                 <div class="input-group" style="display:inline-flex; flex:1; align-items: center; min-width:200px;">
                     
                     <button class="btn btn-success" ng-click="$ctrl.browse()" style="width:fit-content; white-space: nowrap; text-align: center; height: 34px;">
-                        <i class="fa fa-search">&nbsp;</i>Search
+                        <i role="none" class="fa fa-search">&nbsp;</i>Search
                     </button>
                     <input type="text" placeholder="Author, Title, Keyword, Description, Natural Hazard Event, Project ID, or DOI" 
                     data-toggle="tooltip" data-placement="top" title="Author, Title, Keyword, Description, Natural Hazard Event, Project ID, or DOI"
@@ -84,7 +84,7 @@
                             <tr ng-if="$ctrl.listing.loadingScroll">
                                 <td>
                                     <span class="bg-info text-info">
-                                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                                        <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
                                     </span>
                                 </td>
                             </tr>
@@ -93,7 +93,7 @@
                             <div data-ng-if="$ctrl.listing.loading"
                                  style="padding:10px; font-size:large; width:100%;"
                                  class="bg-info">
-                                <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
+                                <span> <i role="none" class="fa fa-spinner fa-spin"></i> Loading... </span>
                             </div>
             
                             <div ng-if="! $ctrl.listing.loading && $ctrl.listing.error"
@@ -112,7 +112,7 @@
                             >
                                 <p class="lead">
                                     This folder is empty!
-                                    <br /><i class="fa fa-folder-open-o"></i>
+                                    <br /><i role="none" class="fa fa-folder-open-o"></i>
                                 </p>
                             </div>
                         </caption>
