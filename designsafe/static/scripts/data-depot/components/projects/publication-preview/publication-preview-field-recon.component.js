@@ -64,7 +64,6 @@ class PublicationPreviewFieldReconCtrl {
             };
             this.project = project;
             this.createdYear = new Date(this.project.created).getFullYear();
-            this.dateCreated = new Date(this.project.created);
             this.project.appendEntitiesRel(ents);
 
             this.primaryEnts = [].concat(
@@ -83,6 +82,12 @@ class PublicationPreviewFieldReconCtrl {
                     this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
                 }
             });
+
+            this.frEnts = [].concat(
+                this.project.mission_set || [],
+                this.project.report_set || [],
+            );
+            this.dateCreated = this.dateCreated(this.frEnts);
 
             const { pi } = this.project.value;
             this.UserService.get(pi).then((res) => {
@@ -143,6 +148,19 @@ class PublicationPreviewFieldReconCtrl {
             }
             return false;
         }
+    }
+
+    dateCreated(set) {
+        let dateList = [];
+        for (var i = 0; i < set.length; i++) {
+            if (set[i].value.dois.toString() !== '' ){
+                dateList.push({
+                    key:   set[i].value.dois.toString(),
+                    value: set[i].created
+                });
+            }
+        }
+        return dateList;
     }
 
     goWork() {

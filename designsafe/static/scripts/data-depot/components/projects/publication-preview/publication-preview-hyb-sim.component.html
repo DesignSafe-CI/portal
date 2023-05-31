@@ -213,14 +213,19 @@
                     </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Date of Publication</div>
-                        <span class="entity-meta-data"
-                                data-ng-if="!$ctrl.readOnly">
-                            (Appears when published)
-                        </span>
-                        <span class="entity-meta-data"
-                                data-ng-if="$ctrl.readOnly">
-                            {{ $ctrl.dateCreated | date:'MM-dd-yyyy' }}
-                        </span>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && hybsim.value.dois.toString() === ''">
+                            <span>(Appears when published)</span>
+                        </div>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && hybsim.value.dois.toString() !== ''">
+                                <div ng-repeat = "list in $ctrl.dateCreated">
+                                    <div ng-if="list.key === hybsim.value.dois.toString()">
+                                        <span> {{ list.value | date:'MM-dd-yyyy' }}</span>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="entity-meta-data" ng-if="$ctrl.readOnly && hybsim.value.dois.toString() !== ''">
+                            <span>{{ $ctrl.doiList[hybsim.uuid].created | date:'MM-dd-yyyy' }}</span>
+                        </div>
                     </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">

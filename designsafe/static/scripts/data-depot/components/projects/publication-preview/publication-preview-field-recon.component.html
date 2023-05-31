@@ -189,8 +189,15 @@
                                 <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() === ''">
                                     <span>(Appears when published)</span>
                                 </div>
-                                <div class="entity-meta-data" ng-if="$ctrl.readOnly || mission.value.dois.toString() !== ''">
-                                    <span>{{ $ctrl.dateCreated | date:'MM-dd-yyyy' }}</span>
+                                <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() !== ''"> 
+                                    <div ng-repeat = "list in $ctrl.dateCreated">
+                                        <div ng-if="list.key === mission.value.dois.toString()">
+                                            <span> {{ list.value | date:'MM-dd-yyyy' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="entity-meta-data" ng-if="$ctrl.readOnly && mission.value.dois.toString() !== ''">
+                                    <span>{{ $ctrl.doiList[mission.uuid].created | date:'MM-dd-yyyy' }}</span>
                                 </div>
                             </div>
                             <div class="entity-meta-field">
@@ -402,10 +409,15 @@
                             <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() === ''">
                                 <span>(Appears when published)</span>
                             </div>
-                            <div class="entity-meta-data" ng-if="$ctrl.readOnly || mission.value.dois.toString() !== ''">
-                                <span>
-                                    {{ $ctrl.dateCreated | date:'MM-dd-yyyy' }}
-                                </span>
+                            <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() !== ''"> 
+                                <div ng-repeat = "list in $ctrl.dateCreated">
+                                    <div ng-if="list.key === mission.value.dois.toString()">
+                                        <span> {{ list.value | date:'MM-dd-yyyy' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-data" ng-if="$ctrl.readOnly && mission.value.dois.toString() !== ''">
+                                <span>{{ $ctrl.doiList[mission.uuid].created | date:'MM-dd-yyyy' }}</span>
                             </div>
                         </div>
                         <div class="entity-meta-field">
