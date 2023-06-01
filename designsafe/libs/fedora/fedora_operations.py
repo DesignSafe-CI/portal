@@ -76,6 +76,9 @@ FEDORA_CONTEXT = {
     "references": {
         "@id": "http://purl.org/dc/elements/1.1/references"
     },
+    "isReferencedBy": {
+        "@id": "http://purl.org/dc/elements/1.1/isReferencedBy"
+    },
     "relation": {
         "@id": "http://purl.org/dc/elements/1.1/relation"
     },
