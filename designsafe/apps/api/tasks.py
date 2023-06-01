@@ -669,6 +669,7 @@ def amend_publication_data(self, project_id, amendments=None, authors=None, revi
     """
     from designsafe.apps.projects.managers import publication as PublicationManager
     from designsafe.libs.fedora.fedora_operations import amend_project_fedora, ingest_project_experimental
+    from designsafe.libs.fedora.sim_operations import ingest_project_sim
     try:
         amended_pub = PublicationManager.amend_publication(project_id, amendments, authors, revision)
         PublicationManager.amend_datacite_doi(amended_pub)
@@ -677,6 +678,8 @@ def amend_publication_data(self, project_id, amendments=None, authors=None, revi
            amend_project_fedora(project_id, version=revision)
         if amended_pub.project.value.projectType == 'experimental':
             ingest_project_experimental(project_id, version=revision, amend=True)
+        if amended_pub.project.value.projectType == 'simulation':
+            ingest_project_sim(project_id, version=revision, amend=True)
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
@@ -772,6 +775,10 @@ def save_to_fedora(self, project_id, revision=None):
         if pub.project.value.projectType == 'experimental':
             from designsafe.libs.fedora.fedora_operations import ingest_project_experimental
             ingest_project_experimental(project_id, version=revision)
+            return
+        if pub.project.value.projectType == 'simulation':
+            from designsafe.libs.fedora.sim_operations import ingest_project_sim
+            ingest_project_sim(project_id, version=revision)
             return
 
         _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
