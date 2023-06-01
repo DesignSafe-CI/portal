@@ -70,7 +70,7 @@
 
 <div class="alert alert-warning" ng-show="['Google Drive', 'Box'].includes($ctrl.placeholder())">
     <p>Please be aware that {{$ctrl.placeholder()}} has data transfer rate limits. For additional information and questions, please refer to the documentation
-        <a href="https://box.dev/en/guides/api-calls/permissions-and-errors/rate-limits/" target="_blank" ng-if="$ctrl.placeholder() === 'Box'">here. </a>
-        <a href="https://developers.google.com/admin-sdk/data-transfer/v1/limits" ng-if="$ctrl.placeholder() === 'Google Drive'" target="_blank">here.</a>
+        <a href="https://box.dev/en/guides/api-calls/permissions-and-errors/rate-limits/" target="_blank" aria-describedby="msg-open-ext-site-new-window" ng-if="$ctrl.placeholder() === 'Box'">here. </a>
+        <a href="https://developers.google.com/admin-sdk/data-transfer/v1/limits" ng-if="$ctrl.placeholder() === 'Google Drive'" target="_blank" aria-describedby="msg-open-ext-site-new-window">here.</a>
     </p>
 </div>
