@@ -103,26 +103,31 @@
                 <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
                 <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px; line-height: 1.6;"> 
                     {{ $ctrl.listAuthors(hybsim.authors) }}
-                    ({{ $ctrl.createdYear }}) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    ({{ $ctrl.doiList[hybsim.uuid].created | date:'yyyy' }}) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                     <a href="https://doi.org/{{hybsim.value.dois.toString()}}">https://doi.org/{{hybsim.value.dois.toString()}}</a>
                 </div>
                 <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
                     {{ $ctrl.listAuthors(hybsim.authors) }}
-                    ({{ $ctrl.createdYear }}) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    ({{ $ctrl.doiList[hybsim.uuid].created | date:'yyyy' }}) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                     <a href="https://doi.org/{{hybsim.value.dois.toString()}}">https://doi.org/{{hybsim.value.dois.toString()}}</a>
                     v{{$ctrl.version}}
                 </div>
-                <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px; line-height: 1.6;">  
+                <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px; line-height: 1.6;"> 
                     <ds-author-list format="citation" authors="hybsim.value.authors"></ds-author-list>
                     <span ng-if="hybsim.value.dois.toString() === ''">
                         (Year of Publication) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                         (DOI)
                     </span>
-                    <span ng-if="hybsim.value.dois.toString() !== ''">
-                        ({{ $ctrl.createdYear }}) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                        <a href="https://doi.org/{{hybsim.value.dois.toString()}}">https://doi.org/{{hybsim.value.dois.toString()}}</a>
+                    <span ng-repeat = "list in $ctrl.dateCreated">
+                        <span ng-if="list.key === hybsim.value.dois.toString()">
+                            <span ng-if="hybsim.value.dois.toString() !== ''">
+                                ({{ list.value | date:'yyyy' }}) "{{ hybsim.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                <a href="https://doi.org/{{hybsim.value.dois.toString()}}">https://doi.org/{{hybsim.value.dois.toString()}}</a>
+                            </span>
+                        </span>
                     </span>
                 </div>
+                
                 <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
                     <span ng-if="hybsim.value.dois.toString() !== ''">
                         Download Citation: 

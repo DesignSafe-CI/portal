@@ -100,12 +100,12 @@
                 <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
                 <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px; line-height: 1.6;"> 
                     {{ $ctrl.listAuthors(experiment.authors) }}
-                    ({{ $ctrl.createdYear }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    ({{ $ctrl.doiList[experiment.uuid].created | date:'yyyy' }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                     <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
                 </div>
                 <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px; line-height: 1.6;"> 
                     {{ $ctrl.listAuthors(experiment.authors) }}
-                    ({{ $ctrl.createdYear }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    ({{ $ctrl.doiList[experiment.uuid].created | date:'yyyy' }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                     <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
                     v{{$ctrl.version}}
                 </div>
@@ -116,10 +116,15 @@
                         (DOI)
                     </span>
                     <span ng-if="experiment.value.dois.toString() !== ''">
-                        ({{ $ctrl.createdYear }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                        <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
+                        <span ng-repeat = "list in $ctrl.dateCreated">
+                            <span ng-if="list.key === experiment.value.dois.toString()">
+                                ({{ list.value | date:'yyyy' }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
+                            </span>
+                        </span>
                     </span>
                 </div>
+                
                 <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
                     <span ng-if="experiment.value.dois.toString() !== ''">
                         Download Citation: 

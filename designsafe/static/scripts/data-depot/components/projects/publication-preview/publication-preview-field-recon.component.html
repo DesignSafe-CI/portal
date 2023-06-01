@@ -84,12 +84,12 @@
                         <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
                         <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
                             {{ $ctrl.listAuthors(mission.authors) }}
-                            ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                            ({{ $ctrl.doiList[mission.uuid].created | date:'yyyy' }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                             <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
                         </div>
                         <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
                             {{ $ctrl.listAuthors(mission.authors) }}
-                            ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                            ({{ $ctrl.doiList[mission.uuid].created | date:'yyyy' }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                             <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
                             v{{$ctrl.version}}
                         </div>
@@ -99,9 +99,13 @@
                                 (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                                 (DOI)
                             </span>
-                            <span ng-if="mission.value.dois.toString() !== ''">
-                                ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
+                            <span ng-repeat = "list in $ctrl.dateCreated">
+                                <span ng-if="list.key === mission.value.dois.toString()">
+                                    <span ng-if="mission.value.dois.toString() !== ''">
+                                        ({{ list.value | date:'yyyy' }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                        <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
+                                    </span>
+                                </span>
                             </span>
                         </div>
                         <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
@@ -273,12 +277,12 @@
                         <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
                         <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
                             {{ $ctrl.listAuthors(mission.authors) }}
-                            ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                            ({{ $ctrl.doiList[mission.uuid].created | date:'yyyy' }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                             <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
                         </div>
                         <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
                             {{ $ctrl.listAuthors(mission.authors) }}
-                            ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                            ({{ $ctrl.doiList[mission.uuid].created | date:'yyyy' }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                             <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
                             v{{$ctrl.version}}
                         </div>
@@ -288,11 +292,16 @@
                                 (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                                 (DOI)
                             </span>
-                            <span ng-if="mission.value.dois.toString() !== ''">
-                                ({{ $ctrl.createdYear }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
+                            <span ng-repeat = "list in $ctrl.dateCreated">
+                                <span ng-if="list.key === mission.value.dois.toString()">
+                                    <span ng-if="mission.value.dois.toString() !== ''">
+                                        ({{ list.value | date:'yyyy' }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                        <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
+                                    </span>
+                                </span>
                             </span>
                         </div>
+
                         <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
                             <span ng-if="mission.value.dois.toString() !== ''">
                                 Download Citation: 
