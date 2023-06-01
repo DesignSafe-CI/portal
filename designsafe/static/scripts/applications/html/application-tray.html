@@ -67,7 +67,7 @@
                       </span>
                       <ul class="dropdown-menu" role="menu">
                           <li ng-show="appMeta.value.type === 'agave' && appMeta.value.definition.available">
-                              <a href="/rw/workspace/#/{{appMeta.value.definition.id}}" target="_blank" role="button"> <i role="none" class="fa fa-play"></i> Run </a>
+                              <a href="/rw/workspace/#/{{appMeta.value.definition.id}}" target="_blank" aria-describedby="msg-open-new-window" role="button"> <i role="none" class="fa fa-play"></i> Run </a>
                           </li>
                           <hr ng-show="appMeta.value.type === 'agave' && appMeta.value.definition.available">
 

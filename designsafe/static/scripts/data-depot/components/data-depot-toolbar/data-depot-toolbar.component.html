@@ -7,9 +7,9 @@
         </div>
         <div class="btn-toolbar btn-toolbar-left" role="toolbar" aria-label="Data Browser Toolbar">
             <form class="navbar-form navbar-left" ng-submit="$ctrl.ddSearch()" style="display:flex"
-            ng-hide="['Dropbox', 'Box', 'Google Drive', 'NEES Published'].includes($ctrl.placeholder())">
-            <input class="form-control" style="width:240px;" placeholder="Find in {{ $ctrl.placeholder() }}" ng-model="$ctrl.search.queryString">
-                <button class="btn btn-default" style="clear: right;"> <i role="none" class="fa fa-search"></i> </button>
+            ng-hide="['Dropbox', 'Box', 'Google Drive', 'NEES Published'].includes($ctrl.placeholder())" role="search">
+            <input class="form-control" style="width:240px;" placeholder="Find in {{ $ctrl.placeholder() }}" ng-model="$ctrl.search.queryString" aria-label="Find in {{ $ctrl.placeholder() }}">
+                <button class="btn btn-default" style="clear: right;"> <i role="none" class="fa fa-search"></i><span class="sr-only">Search</span></button>
             </form>
             <div class="btn-toolbar-right">
                 <div class="btn-group-data-depot-toolbar btn-group">
@@ -70,7 +70,7 @@
 
 <div class="alert alert-warning" ng-show="['Google Drive', 'Box'].includes($ctrl.placeholder())">
     <p>Please be aware that {{$ctrl.placeholder()}} has data transfer rate limits. For additional information and questions, please refer to the documentation
-        <a href="https://box.dev/en/guides/api-calls/permissions-and-errors/rate-limits/" target="_blank" ng-if="$ctrl.placeholder() === 'Box'">here. </a>
-        <a href="https://developers.google.com/admin-sdk/data-transfer/v1/limits" ng-if="$ctrl.placeholder() === 'Google Drive'" target="_blank">here.</a>
+        <a href="https://box.dev/en/guides/api-calls/permissions-and-errors/rate-limits/" target="_blank" aria-describedby="msg-open-ext-site-new-window" ng-if="$ctrl.placeholder() === 'Box'">here. </a>
+        <a href="https://developers.google.com/admin-sdk/data-transfer/v1/limits" ng-if="$ctrl.placeholder() === 'Google Drive'" target="_blank" aria-describedby="msg-open-ext-site-new-window">here.</a>
     </p>
 </div>

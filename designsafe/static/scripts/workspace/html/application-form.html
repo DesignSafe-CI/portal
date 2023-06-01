@@ -31,7 +31,7 @@
             <h2>Academic License Eligibility Verification Required</h2>
             <p>
                 The DesignSafe MATLAB license requires verification that you are an academic user.
-                Please visit the <a href="/account/licenses/" target="_blank">manage software licenses</a>
+                Please visit the <a href="/account/licenses/" target="_blank" aria-describedby="msg-open-new-window">manage software licenses</a>
                 section on the Manage Account page to request activation of this license for your
                 DesignSafe user account.
             </p>
@@ -60,7 +60,7 @@
     <h2>Run <em>{{data.app.label}} <small class="version-label">ver. {{data.app.version}}</small></em></h2>
     <p ng-bind-html="data.app.longDescription"></p>
     <p ng-if="data.app.helpURI">
-        <a href="{{data.app.helpURI}}" target="_blank">
+        <a href="{{data.app.helpURI}}" target="_blank" aria-describedby="msg-open-new-window">
             <i role="none" class="fa fa-book"></i> <span><em>{{data.app.label}}</em> Documentation</span>
         </a>
     </p>

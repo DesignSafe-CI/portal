@@ -1,7 +1,7 @@
 <div ng-repeat="map in $ctrl.filteredHazmapperMaps($ctrl.readOnly)">
   <span><b>{{ map.name }}</b></span>
-  <i ng-if="$ctrl.onBrowse && !$ctrl.readOnly" role="none" class="fa fa-folder" data-ng-click="$ctrl.browse($event, map.path)" uib-tooltip="Open Linked Path"></i>
-  <a href="{{ map.href }}" rel="noopener noreferrer" target="_blank" uib-tooltip="Open in Hazmapper">
+  <i ng-if="$ctrl.onBrowse && !$ctrl.readOnly" class="fa fa-folder" data-ng-click="$ctrl.browse($event, map.path)" uib-tooltip="Open Linked Path"></i>
+  <a href="{{ map.href }}" rel="noopener noreferrer" target="_blank" aria-describedby="msg-open-new-window" uib-tooltip="Open in Hazmapper">
     <i role="none" class="fa fa-external-link"></i>
   </a>
 </div>

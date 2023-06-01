@@ -80,7 +80,7 @@
         <p>
             <h3 style="text-align: center">Order the Authors of the {{$ctrl.placeholder}}</h3>
             <li>In order to add or remove authors, go back to Proofread {{$ctrl.placeholder}} and click Edit.</li>
-            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">Curation office hours</a> for help with publishing.</li>
+            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
     <div ng-repeat="primEnt in $ctrl.primaryEntities | orderBy: primEnt.value.title" style="margin-bottom: 40px;">

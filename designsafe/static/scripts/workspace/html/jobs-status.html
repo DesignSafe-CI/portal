@@ -75,7 +75,7 @@
 
             <dt ng-if="job.archiveSystem">Output</dt>
             <dd ng-if="jobFinished && job.archiveSystem">
-                <a href="{{job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View</a>
+                <a href="{{job.archiveUrl}}" target="_blank" aria-describedby="msg-open-new-window" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View</a>
             </dd>
             <dd ng-if="!jobFinished">
                 <button class="btn btn-default disabled" type="button">Output pending</button>
@@ -86,7 +86,7 @@
                 <button class="btn btn-danger" type="button" ng-click="deleteJob()">Delete</button>
             </dd>
             <dd ng-if="!jobFinished">
-                <a href="{{data.connection_address}}" ng-if="data.interactive" class="btn btn-primary" title="Connect to Interactive Session" target="_blank">Connect</a>
+                <a href="{{data.connection_address}}" ng-if="data.interactive" class="btn btn-primary" title="Connect to Interactive Session" target="_blank" aria-describedby="msg-open-new-window">Connect</a>
                 <button class="btn btn-warning" type="button" ng-click="cancelJob()">Cancel</button>
                 <button class="btn btn-danger" type="button" ng-click="deleteJob()">Delete</button>
             </dd>
@@ -109,7 +109,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a href="{{msg.action_link}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
+        <a href="{{msg.action_link}}" target="_blank" aria-describedby="msg-open-new-window" class="btn btn-primary pull-left">Connect!</a>
         <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
     </div>
 </script>
@@ -124,7 +124,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a href="{{msg.action_link}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
+        <a href="{{msg.action_link}}" target="_blank" aria-describedby="msg-open-new-window" class="btn btn-primary pull-left">Connect!</a>
         <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
     </div>
 </script>
