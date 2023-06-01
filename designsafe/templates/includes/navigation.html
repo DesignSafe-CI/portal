@@ -32,8 +32,14 @@
          {% show_menu 1 2 100 100 "includes/cms_menu.html" %}
       </ul>
       <form class="navbar-form navbar-right">
-        <input class="form-control" id="searchfield" placeholder="Search DesignSafe">
         <button class="btn btn-default" id="search_button"> <i class="fa fa-search"></i> </button>
+        <input class="form-control" id="searchfield" placeholder="Search DesignSafe" style="margin-right:1rem">
+
+        <input type="radio" name="search-radio" id="search-radio-website" value="website" checked="checked" style="display:table-cell; vertical-align: middle; margin-top:0px;margin-right:0.25rem;">
+        <label for="search-radio-website" style="color:white; margin-bottom:0px; margin-right:1rem; vertical-align: middle;">Website</label>
+        <input type="radio" name="search-radio" id="search-radio-datasets" value="datasets" style="display:table-cell; vertical-align: middle; margin-top:0px; margin-right:0.25rem;">
+        <label for="search-radio-datasets" style="color:white; margin-bottom:0px; vertical-align: middle;">Datasets</label>
+
       </form>
     </div>
   </div>
