@@ -397,15 +397,21 @@
                             <span style="display:block; font-weight:normal;">
                                 Summarized the purpose of the collection and its files.
                                 What is it about? What are its features?
+                                Description must be between 50 and 5000 characters in length.
                             </span>
                         </div>
                     </label>
                     <textarea class="form-textbox"
                             id="id-description"
                             data-ng-model="$ctrl.form.description"
-                            data-ng-required="true">
+                            data-ng-required="true"
+                            ng-minlength="50"
+                            ng-maxlength="5000">
                         &nbsp;
                     </textarea>
+                    <span ng-if="projForm.$error.minlength[0].$invalid || projForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                        Description length is invalid 
+                    </span>
                 </div>
             </div>
             <div ng-if="$ctrl.form.collectionType">

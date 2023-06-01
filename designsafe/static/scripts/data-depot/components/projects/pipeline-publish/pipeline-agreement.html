@@ -20,7 +20,7 @@
         <p class="pad-content">
             This submission represents my original work. The submission meets the requirements
             established by DesignSafe-CI available at the
-            <a href="/rw/user-guides/data-publication-guidelines/" target="_blank">
+            <a href="/rw/user-guides/data-publication-guidelines/" target="_blank" aria-describedby="msg-open-new-window">
                 Curation and Publication Guidelines.
             </a>
             I understand the type of license I choose to distribute my data and guarantee that
@@ -46,7 +46,7 @@
             for revision.
             <strong>Do not attempt to publish your project again.</strong> Please
             <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Failure+to+publish:+{{$ctrl.project.value.projectId}}"
-            target="_blank">submit a ticket</a> and we will assist you with this issue.
+            target="_blank" aria-describedby="msg-open-new-window">submit a ticket</a> and we will assist you with this issue.
         </div>
         <div ng-if="$ctrl.ui.submitted && !$ctrl.ui.error">
             <div class="alert alert-warning">
@@ -68,7 +68,7 @@
                 If you would like to update your existing publication or
                 if you are having trouble viewing your publication please
                 <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+update+to+existing+publication:+{{$ctrl.project.value.projectId}}"
-                target="_blank">submit a ticket</a>.
+                target="_blank" aria-describedby="msg-open-new-window">submit a ticket</a>.
             </div>
             <div style="text-align: center">
                     <button class="btn btn-add"

@@ -875,7 +875,7 @@
                     </label>
                     <div>
                         <input  class="project-form-input"
-                                type="text"
+                                type="text" 
                                 id="id_keywords"
                                 ng-model="$ctrl.form.keywords"
                                 ng-required="$ctrl.project && $ctrl.ui.hasType"><br>
@@ -887,11 +887,12 @@
                         <div class="label-form">
                             <div>
                                 <span class="label-form-name">Project Description</span>
-                                <span class="label label-danger">Required</span>
+                                <span class="label label-danger">Required </span>
                             </div>
                             <span class="label-form-desc">
                                 What is this project about? How can data in this project be reused?
-                                How is this project unique? Who is the audience?
+                                How is this project unique? Who is the audience? 
+                                Description must be between 50 and 5000 characters in length.
                             </span>
                         </div>
                     </label>
@@ -899,8 +900,15 @@
                         <textarea   type="text"
                                     class="form-textbox"
                                     id="id_description"
+                                    name="form-description"
                                     ng-model="$ctrl.form.description"
-                                    ng-required="$ctrl.project && $ctrl.ui.hasType"></textarea>
+                                    ng-required="$ctrl.project && $ctrl.ui.hasType"
+                                    ng-minlength="50"
+                                    ng-maxlength="5000"
+                        ></textarea>
+                        <span ng-if="projForm.$error.minlength[0].$invalid || projForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                            Description length is invalid 
+                        </span>
                     </div>
                 </div>
             </div>
