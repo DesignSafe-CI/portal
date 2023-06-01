@@ -45,7 +45,10 @@ class PipelineStartCtrl {
                 }
                 case 'simulation': {
                     this.ui.publicationComp = 'projects.pipelineSelectSim'
+                    this.ui.amendComp = 'projects.amendSimulation'
+                    this.ui.versionComp = 'projects.versionSimulationSelection'
                     this.ui.previewComp = 'projects.previewSim'
+                    this.ui.showAmendVersion = true;
                     break;
                 }
                 case 'hybrid_simulation': {

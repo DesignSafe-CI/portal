@@ -16,7 +16,7 @@
             </button>
             <div style="flex-grow: 1"></div>
             <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
-                Publish
+                Publish / Version / Amend
             </button>
         </span>
     </div>
@@ -157,7 +157,7 @@
                     </span>
                 </div>
             </div> 
-            <button ng-init="toggle = true" ng-click="$ctrl.logEntity(simulation, 'simulationsList'); toggle = !toggle" class="btn-view tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
+            <button ng-init="toggle = true" ng-click="$ctrl.logEntity(simulation, 'simulations'); toggle = !toggle" class="btn-view tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
                 <table style="width:100%" id="anchor-{{ simulation.uuid }}">
                     <tr>
                         <td style="text-align: center;">  
