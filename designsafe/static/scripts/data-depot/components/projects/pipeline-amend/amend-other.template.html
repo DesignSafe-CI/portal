@@ -14,7 +14,7 @@
 <div class="pipeline-page">
     <div class="pipeline-header">
         <h3>Amend Metadata</h3>
-        If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">curation office hours</a>.
+        If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">curation office hours</a>.
         <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
                 <i class="fa fa-spinner fa-spin"></i> Loading...
@@ -45,7 +45,7 @@
                 There was an issue when attempting to amend your publication.
                 <strong>Do not attempt to amend your publication again.</strong> Please
                 <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+amendments+to+existing+publication:+{{$ctrl.project.value.projectId}}"
-                target="_blank">submit a ticket</a> and we will assist you with this issue.
+                target="_blank" aria-describedby="msg-open-new-window">submit a ticket</a> and we will assist you with this issue.
             </div>
         </div>
         <button class="btn btn-small btn-add"

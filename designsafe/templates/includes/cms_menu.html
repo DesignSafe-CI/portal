@@ -3,7 +3,7 @@
 {% for child in children %}
 <li class="{% if child.ancestor or child.selected or request.get_full_path == child.url %}active{% endif %} {% if child.children %}dropdown{% endif %} {{child.attr.class}}">
     {% if child.children %}
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ child.get_menu_title | safe }} <span class="caret" role="presentation"></span></a>
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">{{ child.get_menu_title | safe }} <span class="caret" role="presentation"></span></a>
       <ul class="dropdown-menu">
         <!--
         <li {%if child.selected %}class="active"{% endif %}>
