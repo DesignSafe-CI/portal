@@ -9,7 +9,7 @@
             <form class="navbar-form navbar-left" ng-submit="$ctrl.ddSearch()" style="display:flex"
             ng-hide="['Dropbox', 'Box', 'Google Drive', 'NEES Published'].includes($ctrl.placeholder())" role="search">
             <input class="form-control" style="width:240px;" placeholder="Find in {{ $ctrl.placeholder() }}" ng-model="$ctrl.search.queryString" aria-label="Find in {{ $ctrl.placeholder() }}">
-                <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i><span class="sr-only">Search</span></button>
+                <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search" role="none"></i><span class="sr-only">Search</span></button>
             </form>
             <div class="btn-toolbar-right">
                 <div class="btn-group-data-depot-toolbar btn-group">
