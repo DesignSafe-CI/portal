@@ -34,7 +34,7 @@
                 &ensp;
                 <strong>Open Data Commons Attribution</strong>
                 &ensp;
-                (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+                (<a href="https://opendatacommons.org/licenses/by/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
             </div>
             <ul>
                 <li>You may freely share, reuse, and adapt this data/database.</li>
@@ -49,10 +49,10 @@
                 <strong>{{$ctrl.publication.licenses.datasets}}</strong>
                 &ensp;
                 <span ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Attribution' ">
-                    (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+                    (<a href="https://opendatacommons.org/licenses/by/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
                 </span>
                 <span ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Public Domain Dedication' ">
-                    (<a href="https://opendatacommons.org/licenses/pddl/1-0/" target="_blank">License Website</a>)
+                    (<a href="https://opendatacommons.org/licenses/pddl/1-0/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
                 </span>
             </div>
             <ul ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Attribution' ">
@@ -79,10 +79,10 @@
                 <strong>{{$ctrl.publication.licenses.works}}</strong>
                 &ensp;
                 <span ng-if="$ctrl.publication.licenses.works.includes('Creative Commons Attribution')">
-                    (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">License Website</a>)
+                    (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
                 </span>
                 <span ng-if="$ctrl.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
-                    (<a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">License Website</a>)
+                    (<a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
                 </span>
             </div>
             <ul ng-if="$ctrl.publication.licenses.works.includes('Creative Commons Attribution')">
@@ -101,7 +101,7 @@
                 &ensp;
                 <strong>{{$ctrl.publication.licenses.software}}</strong>
                 &ensp;
-                (<a href="http://www.gnu.org/licenses/gpl.html" target="_blank">License Website</a>)
+                (<a href="http://www.gnu.org/licenses/gpl.html" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
             </div>
             <ul>
                 <li>You may modify, copy, and redistribute this work or any derivative version.</li>
@@ -109,7 +109,7 @@
                 <li>They cannot impose further restrictions on the rights imposed by this license.</li>
             </ul>
         </div>
-        <a href="/rw/user-guides/curating-publishing-projects/policies/publication/" target="_blank">Data Usage Agreement</a>
+        <a href="/rw/user-guides/curating-publishing-projects/policies/publication/" target="_blank" aria-describedby="msg-open-new-window">Data Usage Agreement</a>
     </p>
     <br>
     <div class="text-right" ng-if="!$ctrl.error">

@@ -1,6 +1,6 @@
 {% load cms_tags staticfiles sekizai_tags menu_tags%}
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 
   <head>
     <meta charset="utf-8">
@@ -48,17 +48,16 @@
         </div>
         <div class="site-banner-right logo">
           <a href="https://www.designsafe-ci.org/">
-            <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Community</h1>
             <img alt="DesignSafe-CI" src="{% static 'images/org_logos/Horizontal-DS.jpg' %}" width="100%">
           </a>
         </div>
       </header>
       {% include 'includes/ef_navigation.html' %}
     </div>
-    <div class="o-site__body">
+    <main class="o-site__body">
       {% include 'includes/messages.html' %}
       {% block content %}{% endblock %}
-    </div>
+    </main>
     {% include 'includes/footer.html' %}
     <!-- scripts -->
     <script src="{% static 'vendor/modernizr/modernizr.js' %}"></script>
