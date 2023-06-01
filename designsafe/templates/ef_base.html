@@ -55,10 +55,10 @@
       </header>
       {% include 'includes/ef_navigation.html' %}
     </div>
-    <div class="o-site__body">
+    <main class="o-site__body">
       {% include 'includes/messages.html' %}
       {% block content %}{% endblock %}
-    </div>
+    </main>
     {% include 'includes/footer.html' %}
     <!-- scripts -->
     <script src="{% static 'vendor/modernizr/modernizr.js' %}"></script>

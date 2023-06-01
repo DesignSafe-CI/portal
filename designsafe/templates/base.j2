@@ -70,11 +70,11 @@
         {% include 'includes/header.html' %}
         {% include 'includes/navigation.html' %}
     </div>
-    <div class="o-site__body">
+    <main class="o-site__body">
         {% include 'includes/messages.html' %}
         {% block breadcrumb %}{% endblock %}
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
     {% block footer %}{% endblock %}
     <div id="toast-container"></div>
