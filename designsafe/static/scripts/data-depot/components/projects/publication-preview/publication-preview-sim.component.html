@@ -119,13 +119,9 @@
                         (Year of Publication) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                         (DOI)
                     </span>
-                    <span ng-repeat = "list in $ctrl.dateCreated">
-                        <span ng-if="list.key === simulation.value.dois.toString()">
-                            <span ng-if="simulation.value.dois.toString() !== ''">
-                                ({{ list.value | date:'yyyy' }}) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                <a href="https://doi.org/{{simulation.value.dois.toString()}}">https://doi.org/{{simulation.value.dois.toString()}}</a>
-                            </span>
-                        </span>
+                    <span ng-if="simulation.value.dois.toString() !== ''">
+                        (Year appears in Published) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                        <a href="https://doi.org/{{simulation.value.dois.toString()}}">https://doi.org/{{simulation.value.dois.toString()}}</a>
                     </span>
                 </div>
                 
@@ -223,11 +219,7 @@
                             <span>(Appears when published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="!$ctrl.readOnly && simulation.value.dois.toString() !== ''">  
-                            <div ng-repeat = "list in $ctrl.dateCreated">
-                                <div ng-if="list.key === simulation.value.dois.toString()">
-                                    <span> {{ list.value | date:'MM-dd-yyyy' }}</span>
-                                </div>
-                            </div>
+                            <span>(Appears in Published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly && simulation.value.dois.toString() !== ''">
                             <span>{{ $ctrl.doiList[simulation.uuid].created | date:'MM-dd-yyyy' }}</span>

@@ -99,13 +99,9 @@
                                 (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                                 (DOI)
                             </span>
-                            <span ng-repeat = "list in $ctrl.dateCreated">
-                                <span ng-if="list.key === mission.value.dois.toString()">
-                                    <span ng-if="mission.value.dois.toString() !== ''">
-                                        ({{ list.value | date:'yyyy' }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                        <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
-                                    </span>
-                                </span>
+                            <span ng-if="mission.value.dois.toString() !== ''">
+                                (Year appears in Published) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
                             </span>
                         </div>
                         <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
@@ -194,11 +190,7 @@
                                     <span>(Appears when published)</span>
                                 </div>
                                 <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() !== ''"> 
-                                    <div ng-repeat = "list in $ctrl.dateCreated">
-                                        <div ng-if="list.key === mission.value.dois.toString()">
-                                            <span> {{ list.value | date:'MM-dd-yyyy' }}</span>
-                                        </div>
-                                    </div>
+                                    <span>(Appears in Published)</span>
                                 </div>
                                 <div class="entity-meta-data" ng-if="$ctrl.readOnly && mission.value.dois.toString() !== ''">
                                     <span>{{ $ctrl.doiList[mission.uuid].created | date:'MM-dd-yyyy' }}</span>
@@ -292,13 +284,9 @@
                                 (Year of Publication) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                                 (DOI)
                             </span>
-                            <span ng-repeat = "list in $ctrl.dateCreated">
-                                <span ng-if="list.key === mission.value.dois.toString()">
-                                    <span ng-if="mission.value.dois.toString() !== ''">
-                                        ({{ list.value | date:'yyyy' }}) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                        <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
-                                    </span>
-                                </span>
+                            <span ng-if="mission.value.dois.toString() !== ''">
+                                (Year appears in Published) "{{ mission.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                                <a href="https://doi.org/{{mission.value.dois.toString()}}">https://doi.org/{{mission.value.dois.toString()}}</a>
                             </span>
                         </div>
 
@@ -419,11 +407,7 @@
                                 <span>(Appears when published)</span>
                             </div>
                             <div class="entity-meta-data" ng-if="!$ctrl.readOnly && mission.value.dois.toString() !== ''"> 
-                                <div ng-repeat = "list in $ctrl.dateCreated">
-                                    <div ng-if="list.key === mission.value.dois.toString()">
-                                        <span> {{ list.value | date:'MM-dd-yyyy' }}</span>
-                                    </div>
-                                </div>
+                                <span>(Appears in Published)</span>
                             </div>
                             <div class="entity-meta-data" ng-if="$ctrl.readOnly && mission.value.dois.toString() !== ''">
                                 <span>{{ $ctrl.doiList[mission.uuid].created | date:'MM-dd-yyyy' }}</span>

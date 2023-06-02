@@ -116,12 +116,8 @@
                         (DOI)
                     </span>
                     <span ng-if="experiment.value.dois.toString() !== ''">
-                        <span ng-repeat = "list in $ctrl.dateCreated">
-                            <span ng-if="list.key === experiment.value.dois.toString()">
-                                ({{ list.value | date:'yyyy' }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
-                                <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
-                            </span>
-                        </span>
+                        (Year appears in Published) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                        <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
                     </span>
                 </div>
                 
@@ -246,11 +242,7 @@
                             <span>(Appears when published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() !== ''">
-                            <div ng-repeat = "list in $ctrl.dateCreated">
-                                <div ng-if="list.key === experiment.value.dois.toString()">
-                                    <span> {{ list.value | date:'MM-dd-yyyy' }}</span>
-                                </div>
-                            </div>
+                            <span>(Appears in Published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly && experiment.value.dois.toString() !== ''">
                             <span>{{ $ctrl.doiList[experiment.uuid].created | date:'MM-dd-yyyy' }}</span>
