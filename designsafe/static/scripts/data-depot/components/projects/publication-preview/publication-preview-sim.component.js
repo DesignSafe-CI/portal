@@ -65,7 +65,6 @@ class PublicationPreviewSimCtrl {
                 skipRoot: false
             };
             this.project = project;
-            this.createdYear = new Date(this.project.created).getFullYear();
             this.project.appendEntitiesRel(ents);
 
             this.simEnts = [].concat(

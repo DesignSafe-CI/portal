@@ -68,7 +68,6 @@ class PublicationPreviewCtrl {
 
                 this.breadcrumbParams.root.label = project.value.projectId
                 this.project = project;
-                this.createdYear = new Date(this.project.created).getFullYear();
                 this.project.appendEntitiesRel(ents);
 
                 this.expEnts = [].concat(
