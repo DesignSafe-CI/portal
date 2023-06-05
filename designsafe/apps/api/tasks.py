@@ -7,7 +7,7 @@ import json
 import urllib.request, urllib.parse, urllib.error
 from datetime import datetime
 from celery import shared_task
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from pytas.models import User as TASUser
 from django.conf import settings

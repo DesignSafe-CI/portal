@@ -14,6 +14,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import json
+from django.urls import reverse_lazy
+from django.utils.text import format_lazy
 
 
 gettext = lambda s: s
@@ -37,11 +39,9 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
-    'djangocms_admin_style',
-    'djangocms_text_ckeditor',
-    'cmsplugin_cascade',
-    'cmsplugin_cascade.extra_fields',
 
+    # 
+    'djangocms_admin_style',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,6 +51,12 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
+    
+    'cmsplugin_cascade',
+    'cmsplugin_cascade.extra_fields',
+    
+    'djangocms_text_ckeditor',
+    'django_select2',
 
     'cms',
     'treebeard',
@@ -70,7 +76,6 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
 
-    'oauth2client.contrib.django_util',
 
     #websockets
     'ws4redis',
@@ -123,13 +128,12 @@ CACHES = {
   },
 }
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'designsafe.middleware.RequestProfilingMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
@@ -156,6 +160,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -293,10 +298,7 @@ CMSPLUGIN_CASCADE = {
         'ResponsiveEmbedPlugin',
     )
 }
-CMSPLUGIN_CASCADE_PLUGINS = [
-    'cmsplugin_cascade.bootstrap3',
-    'cmsplugin_cascade.link',
-]
+CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap4', 'cmsplugin_cascade.link']
 
 # These settings enable iFrames in the CMS cktext-editor.
 TEXT_ADDITIONAL_TAGS = ('iframe',)
@@ -311,7 +313,10 @@ THUMBNAIL_PROCESSORS = (
 )
 
 CKEDITOR_SETTINGS = {
-    'allowedContent': True
+'language': '{{ language }}',
+'skin': 'moono-lisa',
+'toolbar': 'CMS',
+'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texteditor_config')),
 }
 
 #MIGRATION_MODULES = {
@@ -329,6 +334,7 @@ DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
 DJANGOCMS_FORMS_TEMPLATES = (
     ('djangocms_forms/form_template/default.html', 'Default'),
 )
+DJANGOCMS_FORMS_FORMAT_CHOICES = ()
 DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
     'text': ('form-control', ),
