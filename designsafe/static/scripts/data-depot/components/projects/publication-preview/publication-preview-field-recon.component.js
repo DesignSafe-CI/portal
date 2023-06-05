@@ -82,12 +82,6 @@ class PublicationPreviewFieldReconCtrl {
                 }
             });
 
-            this.frEnts = [].concat(
-                this.project.mission_set || [],
-                this.project.report_set || [],
-            );
-            this.dateCreated = this.dateCreated(this.frEnts);
-
             const { pi } = this.project.value;
             this.UserService.get(pi).then((res) => {
                 this.authorData.pi = {
@@ -147,19 +141,6 @@ class PublicationPreviewFieldReconCtrl {
             }
             return false;
         }
-    }
-
-    dateCreated(set) {
-        let dateList = [];
-        for (var i = 0; i < set.length; i++) {
-            if (set[i].value.dois.toString() !== '' ){
-                dateList.push({
-                    key:   set[i].value.dois.toString(),
-                    value: set[i].created
-                });
-            }
-        }
-        return dateList;
     }
 
     goWork() {

@@ -67,11 +67,6 @@ class PublicationPreviewHybSimCtrl {
                 this.project = project;
                 this.project.appendEntitiesRel(ents);
 
-                this.hybSimEnts = [].concat(
-                    this.project.hybridsimulation_set || []
-                );
-                this.dateCreated = this.dateCreated(this.hybSimEnts);
-
                 this.listing = this.FileListingService.listings.main.listing;
                 this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
                     this.ui.loading = false;
@@ -120,19 +115,6 @@ class PublicationPreviewHybSimCtrl {
             }
             return false;
         }
-    }
-
-    dateCreated(set) {
-        let dateList = [];
-        for (var i = 0; i < set.length; i++) {
-            if (set[i].value.dois.toString() !== '' ){
-                dateList.push({
-                    key:   set[i].value.dois.toString(),
-                    value: set[i].created
-                });
-            }
-        }
-        return dateList;
     }
 
     isValid(ent) {

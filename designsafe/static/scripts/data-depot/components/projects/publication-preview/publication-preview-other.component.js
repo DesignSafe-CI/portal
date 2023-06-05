@@ -28,13 +28,11 @@ class PublicationPreviewOtherCtrl {
                 this.ProjectService.get({ uuid: this.projectId }).then((project) => {
                 this.project = project;
                 this.createdYear = new Date(this.project.created).getFullYear();
-                this.dateCreated = new Date(this.project.created);
                 this.ui.loading = false;
             });
         } else {
             this.project = this.data;
             this.createdYear = new Date(this.project.created).getFullYear();
-            this.dateCreated = new Date(this.project.created);
             this.ui.loading = false;
         }    
     }
