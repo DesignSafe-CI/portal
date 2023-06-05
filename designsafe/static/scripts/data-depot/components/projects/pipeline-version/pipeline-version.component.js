@@ -1,5 +1,6 @@
 import VersionExperimentSelectionTemplate from './version-experiment-selection.template.html';
 import VersionFieldReconSelectionTemplate from './version-field-recon-selection.template.html';
+import VersionSimulationSelectionTemplate from './version-simulation-selection.template.html';
 import VersionCitationTemplate from './version-citation.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
@@ -54,20 +55,27 @@ class PipelineVersionCtrl {
                 this.project = project;
                 this.project.appendEntitiesRel(entities);
                 const prjType = this.project.value.projectType;
-                this.doiList = {}
+                this.doiList = {};
                 if (prjType === 'experimental') {
-                    this.ui.selectionComp = 'projects.versionExperimentSelection'
-                    this.ui.citationComp = 'projects.versionCitation'
-                    this.ui.placeholder = 'Experiment'
-                    this.matchingGroupKey = 'experiments'
-                    this.publishedKeyNames = ['experimentsList']
+                    this.ui.selectionComp = 'projects.versionExperimentSelection';
+                    this.ui.citationComp = 'projects.versionCitation';
+                    this.ui.placeholder = 'Experiment';
+                    this.matchingGroupKey = 'experiments';
+                    this.publishedKeyNames = ['experimentsList'];
                     this.subEntities = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
+                } else if (prjType === 'simulation') {
+                    this.ui.selectionComp = 'projects.versionSimulationSelection';
+                    this.ui.citationComp = 'projects.versionCitation';
+                    this.ui.placeholder = 'Simulation';
+                    this.matchingGroupKey = 'simulations';
+                    this.publishedKeyNames = ['simulation'];
+                    this.subEntities = ['simulation_set', 'model_set',  'input_set', 'output_set', 'analysis_set', 'report_set'];
                 } else if (prjType === 'field_recon') {
-                    this.ui.selectionComp = 'projects.versionFieldReconSelection'
-                    this.ui.citationComp = 'projects.versionCitation'
-                    this.ui.placeholder = 'Mission'
-                    this.matchingGroupKey = 'missions'
-                    this.publishedKeyNames = ['missions', 'reports']
+                    this.ui.selectionComp = 'projects.versionFieldReconSelection';
+                    this.ui.citationComp = 'projects.versionCitation';
+                    this.ui.placeholder = 'Mission';
+                    this.matchingGroupKey = 'missions';
+                    this.publishedKeyNames = ['missions', 'reports'];
                     this.subEntities = ['planning_set', 'socialscience_set', 'geoscience_set'];
 
                     this.primaryEnts = [].concat(
@@ -375,6 +383,17 @@ export const VersionExperimentSelectionComponent = {
 
 export const VersionFieldReconSelectionComponent = {
     template: VersionFieldReconSelectionTemplate,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionSimulationSelectionComponent = {
+    template: VersionSimulationSelectionTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
