@@ -23,7 +23,7 @@ class PublishedDataModalCtrl {
         if (type === 'hybrid_simulation') this.entName = 'Hybrid Simulation';
         if (type === 'field_recon') this.entName = 'Mission';
 
-        this.versionDate = `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`;
+        this.versionDate = `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}`;
         this.version = this.publication.revision;
         this.versionedTitles = this.publication.revisionTitles;
         this.versionDescription = this.publication.revisionText;
