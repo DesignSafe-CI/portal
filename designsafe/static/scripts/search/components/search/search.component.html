@@ -38,15 +38,16 @@
             </div>
         </div>
         <div class="col-sm-9">
-            <form ng-submit='$ctrl.search_browse()'>
+            <form ng-submit='$ctrl.search_browse()' role="search">
                 <div class="input-group input-group-lg">
                     <span class="input-group-addon">
-                    <span ng-show="!$ctrl.searching"><i class="fa fa-search" ng-show="!$ctrl.searching"> </i></span>
+                    <span ng-show="!$ctrl.searching"><i class="fa fa-search" role="none" ng-show="!$ctrl.searching"> </i></span>
                     <span ng-show="$ctrl.searching"><i class="fa fa-spinner fa-spin" > </i></span>
                     </span>
     
                     <input ng-model="$ctrl.data.search_text"
                            placeholder="Search Designsafe"
+                           aria-label="Search Designsafe"
                            class="form-control"
                            id="main_search_input"
                           >

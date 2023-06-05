@@ -145,6 +145,10 @@
                             {{ $ctrl.cumDoiMetrics[hybsim.value.dois].filePreviews || 0}} Views
                         </span>
                         &nbsp;&nbsp;
+                        <span style="background-color: #ECE4BF;">        
+                            {{ $ctrl.citationCounts[hybsim.value.dois] || 0}} Citations
+                        </span>
+                        &nbsp;&nbsp;
                         <span>
                             <a ng-click="$ctrl.entityMetrics(hybsim.doi, 'Hybrid Simulation')">
                                 <strong>Details</strong>

@@ -258,15 +258,21 @@
                         <span style="display: block; font-weight:normal;">
                             What was under investigation? How was it tested? What was the outcome?
                             How can the data be reused?
+                            Description must be between 50 and 5000 characters in length.
                         </span>
                     </div>
                 </label>
                 <textarea class="form-textbox"
                           id="id-description"
                           ng-model="$ctrl.form.description"
-                          ng-required="true">
+                          ng-required="true"
+                          ng-minlength="50"
+                          ng-maxlength="5000">
                     &nbsp;
                 </textarea>
+                <span ng-if="addForm.$error.minlength[0].$invalid || addForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                    Description length is invalid 
+                </span>
             </div>
             <!-- Authors -->
             <div class="form-group">

@@ -146,6 +146,10 @@
                             {{ $ctrl.cumDoiMetrics[simulation.value.dois].filePreviews || 0}} Views
                         </span>
                         &nbsp;&nbsp;
+                        <span style="background-color: #ECE4BF;">        
+                            {{ $ctrl.citationCounts[simulation.value.dois] || 0}} Citations
+                        </span>
+                        &nbsp;&nbsp;
                         <span>
                             <a ng-click="$ctrl.entityMetrics(simulation.doi, 'Simulation')">
                                 <strong>Details</strong>

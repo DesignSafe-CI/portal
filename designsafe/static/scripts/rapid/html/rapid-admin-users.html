@@ -35,10 +35,11 @@
       <div class="row">
         <h2> Add RAPID Admins </h2>
         <div class="input-group input-group-lg">
-          <span class="input-group-addon"> <i class="fa fa-search"></i></span>
+          <span class="input-group-addon"><i class="fa fa-search" role="none"></i><span class="sr-only">Search</span></span>
           <input type="text"
                  class="form-control"
                  id="rapid_admin_user"
+                 aria-label="Search for a user"
                  placeholder="Search for a user"
                  ng-model="vm.search_text"
                  ng-change="vm.search_users(vm.search_text)"

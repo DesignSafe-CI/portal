@@ -90,9 +90,14 @@
                 <textarea class="form-textbox"
                           id="id-description"
                           ng-model="$ctrl.form.description"
-                          ng-required="false">
+                          ng-required="false"
+                          ng-minlength="50"
+                          ng-maxlength="5000">
                     &nbsp;
                 </textarea>
+                <span ng-if="projForm.$error.minlength[0].$invalid || projForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                    Description length should be between 50 and 5000 characters.
+                </span>
             </div>
             <div class="text-right">
                 <button class="btn btn-add"
