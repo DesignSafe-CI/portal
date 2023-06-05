@@ -88,6 +88,10 @@
                 {{ $ctrl.cumMetrics.filePreviews || 0}} Views
             </span>
             &nbsp;&nbsp;
+            <span style="background-color: #ECE4BF;">        
+                {{ $ctrl.citationCounts[experiment.value.dois] || 0}} Citations
+            </span>
+            &nbsp;&nbsp;
             <span ng-if="$ctrl.readOnly">
                 <a ng-click="$ctrl.metrics()">
                     <strong>Details</strong>

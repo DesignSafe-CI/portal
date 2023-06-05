@@ -1,5 +1,6 @@
 import AmendExperimentTemplate from './amend-experimental.template.html';
 import AmendFieldReconTemplate from './amend-field-recon.template.html';
+import AmendSimulationTemplate from './amend-simulation.template.html'
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineAmendCtrl {
@@ -60,6 +61,7 @@ class PipelineAmendCtrl {
             'experimentEntity': ['project', 'experiments', 'modelConfigs', 'sensorLists', 'files'],
             'reportEntity': ['project','files','authors','dois'],
             'missionEntity': ['project','files','authors','dois'],
+            'simulationEntity': ['project','files','authors','dois'],
         }
         let prjEnts = this.project.getAllRelatedObjects();
 
@@ -83,7 +85,17 @@ class PipelineAmendCtrl {
                 'socialscience'
             ]
         }
-        // else if (prj_type == 'simulation') ...
+        else if (prj_type == 'simulation') {
+            primaryEntNames = ['simulations']
+            secondaryEntNames = [
+                'simulation',
+                'models',
+                'inputs',
+                'outputs',
+                'analysiss',
+                'reports'
+            ]
+        }
 
         if (update === 'all') {
             this.amendment = JSON.parse(JSON.stringify(this.publication));
@@ -125,9 +137,11 @@ class PipelineAmendCtrl {
                             Object.keys(amendEntity.value).forEach((entKey) => {
                                 if (!unamendableFields.experimentEntity.includes(entKey)) {
                                     amendEntity.value[entKey] = prjEntity.value[entKey];
+                                } else if (!unamendableFields.simulationEntity.includes(entKey)) {
+                                    amendEntity.value[entKey] = prjEntity.value[entKey];
                                 }
                             });
-                        }
+                        } 
                     });
                 }
             });
@@ -373,6 +387,17 @@ export const AmendExperimentComponent = {
 
 export const AmendFieldReconComponent = {
     template: AmendFieldReconTemplate,
+    controller: PipelineAmendCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const AmendSimulationComponent = {
+    template: AmendSimulationTemplate,
     controller: PipelineAmendCtrl,
     controllerAs: '$ctrl',
     bindings: {
