@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('token', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('nickname', models.CharField(max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

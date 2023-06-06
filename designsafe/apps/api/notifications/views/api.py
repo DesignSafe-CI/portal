@@ -1,7 +1,7 @@
 import logging
 from django.http.response import HttpResponseBadRequest
 from django.http import HttpResponse
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
 from designsafe.apps.api.notifications.models import Notification

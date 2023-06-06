@@ -8,7 +8,7 @@ class BoxUserToken(models.Model):
     """
     Represents an OAuth Token for a Box.com user
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='box_user_token', on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='box_user_token')
     box_user_id = models.CharField(max_length=48)
     access_token = models.CharField(max_length=255)
     refresh_token = models.CharField(max_length=255)

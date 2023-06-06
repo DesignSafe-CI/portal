@@ -1,6 +1,6 @@
 from dropbox import DropboxOAuth2Flow, Dropbox
 from django.conf import settings
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.db import models
 import json
 
@@ -9,7 +9,7 @@ class DropboxUserToken(models.Model):
     """
     Represents an OAuth Token for a dropbox.com user
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='dropbox_user_token', on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='dropbox_user_token')
     dropbox_user_id = models.CharField(max_length=48)
     access_token = models.CharField(max_length=255)
     account_id = models.CharField(max_length=255)

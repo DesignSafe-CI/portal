@@ -3,7 +3,7 @@ from boxsdk.exception import BoxOAuthException, BoxException
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.http import (HttpResponseRedirect, HttpResponseBadRequest)
 from django.shortcuts import render
 from designsafe.apps.box_integration.models import BoxUserToken

@@ -1,9 +1,8 @@
 from django.http import HttpResponseForbidden
 from .models import Token
-from django.utils.deprecation import MiddlewareMixin
 
 
-class TokenAuthenticationMiddleware(MiddlewareMixin):
+class TokenAuthenticationMiddleware(object):
     """
     Middleware that checks the HTTP Authorization Header for Token authorization. If the
     Authorization header exists and the authorization type is 'Token', looks up the token

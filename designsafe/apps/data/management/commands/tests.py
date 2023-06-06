@@ -23,7 +23,6 @@ class TestSwapReindex(TestCase):
 
     @patch('designsafe.apps.data.management.commands.swap_reindex.Command.handle')
     def test_working(self, mock_handle):
-        mock_handle.return_value='OK'
         opts = {'index': 'files'}
         call_command('swap_reindex', **opts)
         self.assertEqual(mock_handle.call_count, 1)

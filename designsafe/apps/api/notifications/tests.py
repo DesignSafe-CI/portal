@@ -10,7 +10,7 @@ from designsafe.apps.auth.models import AgaveOAuthToken
 from urllib.parse import urlencode
 from unittest import skip
 from django.dispatch import receiver
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from designsafe.apps.api.notifications.models import Notification
 from .receivers import send_notification_ws
 

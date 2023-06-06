@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='boxusertoken',
             name='user',
-            field=models.OneToOneField(related_name='box_user_token', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
+            field=models.OneToOneField(related_name='box_user_token', to=settings.AUTH_USER_MODEL),
         ),
     ]

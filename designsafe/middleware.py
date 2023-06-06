@@ -13,13 +13,11 @@ from django.core.exceptions import MiddlewareNotUsed
 from termsandconditions.middleware import (TermsAndConditionsRedirectMiddleware,
                                            is_path_protected)
 from termsandconditions.models import TermsAndConditions
-from django.shortcuts import redirect
-from django.urls import reverse
-from django.utils.deprecation import MiddlewareMixin
+from django.shortcuts import redirect, reverse
 
 logger = logging.getLogger(__name__)
 
-class DesignsafeProfileUpdateMiddleware(MiddlewareMixin):
+class DesignsafeProfileUpdateMiddleware:
 
     """
     Middleware to check if a user's profile has the update_required flag set to
@@ -64,7 +62,7 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
                              'resources.' % accept_url)
         return None
 
-class RequestProfilingMiddleware(MiddlewareMixin):
+class RequestProfilingMiddleware(object):
     """Middleware to run cProfiler on each request"""
 
     def __init__(self, get_response=None):

@@ -5,7 +5,7 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator

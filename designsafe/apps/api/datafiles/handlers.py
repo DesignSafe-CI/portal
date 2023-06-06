@@ -7,7 +7,7 @@ from designsafe.apps.api.datafiles.operations import box_operations
 from designsafe.apps.api.datafiles.operations import shared_operations
 from designsafe.apps.api.exceptions import ApiException
 from django.core.exceptions import PermissionDenied
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 
 logger = logging.getLogger(__name__)
 

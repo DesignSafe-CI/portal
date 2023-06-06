@@ -1,5 +1,5 @@
 from django.conf.urls import include, url
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from designsafe.apps.rapid import views
 
 urlpatterns = [

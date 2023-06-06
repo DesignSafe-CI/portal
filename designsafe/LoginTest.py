@@ -1,7 +1,7 @@
 #python manage.py test designsafe.LoginTest --settings=designsafe.settings.test_settings
 from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 import mock
 from designsafe.apps.auth.models import AgaveOAuthToken
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir

@@ -3,7 +3,7 @@ import copy
 import logging
 import json
 from celery import group, chain
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http.response import HttpResponseForbidden
 from django.http import JsonResponse, HttpResponseBadRequest

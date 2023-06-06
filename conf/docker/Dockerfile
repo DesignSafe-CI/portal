@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
-RUN pip install poetry==1.4.0
+RUN pip install poetry
 COPY poetry.lock pyproject.toml /srv/www/
 WORKDIR /srv/www
 RUN poetry config virtualenvs.create false && \
