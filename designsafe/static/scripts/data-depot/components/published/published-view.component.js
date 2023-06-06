@@ -106,9 +106,7 @@ class PublishedViewCtrl {
             path: this.prjBasePath,
             skipRoot: true,
         };
-
         this.createdYear = new Date(this.publication.created).getFullYear();
-        this.dateCreated = new Date(this.publication.created);
         this.projectGen = this.publication.version || 1;
         if (this.projectGen === 1) {
             // early publications - other & experimental

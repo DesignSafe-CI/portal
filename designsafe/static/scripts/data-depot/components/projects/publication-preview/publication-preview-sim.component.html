@@ -16,7 +16,7 @@
             </button>
             <div style="flex-grow: 1"></div>
             <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
-                Publish
+                Publish / Version / Amend
             </button>
         </span>
     </div>
@@ -104,12 +104,12 @@
                 <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
                 <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px; line-height: 1.6;"> 
                     {{ $ctrl.listAuthors(simulation.authors) }}
-                    ({{ $ctrl.createdYear }}) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    ({{ $ctrl.doiList[simulation.uuid].created | date:'yyyy' }}) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                     <a href="https://doi.org/{{simulation.value.dois.toString()}}">https://doi.org/{{simulation.value.dois.toString()}}</a>
                 </div>
                 <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px;  line-height: 1.6;"> 
                     {{ $ctrl.listAuthors(simulation.authors) }}
-                    ({{ $ctrl.createdYear }}) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    ({{ $ctrl.doiList[simulation.uuid].created | date:'yyyy' }}) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                     <a href="https://doi.org/{{simulation.value.dois.toString()}}">https://doi.org/{{simulation.value.dois.toString()}}</a>
                     v{{$ctrl.version}}
                 </div>
@@ -120,10 +120,11 @@
                         (DOI)
                     </span>
                     <span ng-if="simulation.value.dois.toString() !== ''">
-                        ({{ $ctrl.createdYear }}) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                        (Year appears in Published) "{{ simulation.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                         <a href="https://doi.org/{{simulation.value.dois.toString()}}">https://doi.org/{{simulation.value.dois.toString()}}</a>
                     </span>
                 </div>
+                
                 <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
                     <span ng-if="simulation.value.dois.toString() !== ''">
                         Download Citation: 
@@ -157,7 +158,7 @@
                     </span>
                 </div>
             </div> 
-            <button ng-init="toggle = true" ng-click="$ctrl.logEntity(simulation, 'simulationsList'); toggle = !toggle" class="btn-view tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
+            <button ng-init="toggle = true" ng-click="$ctrl.logEntity(simulation, 'simulations'); toggle = !toggle" class="btn-view tab-gray collapsed" data-toggle="collapse" data-target="#data-{{simulation.uuid}}" style="width:100%;">
                 <table style="width:100%" id="anchor-{{ simulation.uuid }}">
                     <tr>
                         <td style="text-align: center;">  
@@ -221,8 +222,11 @@
                         <div class="entity-meta-data" ng-if="!$ctrl.readOnly && simulation.value.dois.toString() === ''">
                             <span>(Appears when published)</span>
                         </div>
-                        <div class="entity-meta-data" ng-if="$ctrl.readOnly || simulation.value.dois.toString() !== ''">
-                            <span>{{ $ctrl.dateCreated | date:'MM-dd-yyyy' }}</span>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && simulation.value.dois.toString() !== ''">  
+                            <span>(Appears in Published)</span>
+                        </div>
+                        <div class="entity-meta-data" ng-if="$ctrl.readOnly && simulation.value.dois.toString() !== ''">
+                            <span>{{ $ctrl.doiList[simulation.uuid].created | date:'MM-dd-yyyy' }}</span>
                         </div>
                     </div>
                     <div class="entity-meta-field">
