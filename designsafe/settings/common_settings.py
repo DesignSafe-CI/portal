@@ -328,7 +328,6 @@ CKEDITOR_SETTINGS = {
 #}
 
 LOGIN_URL = os.environ.get('LOGIN_URL', '/login/')
-LOGOUT_REDIRECT_URL = '/auth/logged-out/'
 
 DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
 DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'

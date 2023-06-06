@@ -126,7 +126,7 @@ urlpatterns = [
     url(r'^auth/', include(('designsafe.apps.auth.urls', 'designsafe.apps.auth'), namespace='designsafe_auth')),
 
     url(r'^login/$', des_login_options, name='login'),
-    url(r'^logout/$', des_logout.as_view(),
+    url(r'^logout/$', des_logout,
             {'next_page': '/auth/logged-out/'}, name='logout'),
 
     # help
