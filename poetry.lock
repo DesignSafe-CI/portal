@@ -833,21 +833,6 @@ django-treebeard = ">=4.3"
 djangocms-admin-style = ">=1.2"
 
 [[package]]
-name = "django-entangled"
-version = "0.5.4"
-description = "Edit JSON field using Django Model Form"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "django-entangled-0.5.4.tar.gz", hash = "sha256:6cc787ee8c7bc8ac17abba4d59cded47bdd8da606628a3f6883b244a1f6c8605"},
-    {file = "django_entangled-0.5.4-py3-none-any.whl", hash = "sha256:5aa0e2bef5a64ddc06778847a3915d5b05563590afea444be0e524e0ec9c2c28"},
-]
-
-[package.dependencies]
-django = ">=2.1"
-
-[[package]]
 name = "django-filer"
 version = "1.7.1"
 description = "A file management application for django that makes handling of files and images a breeze."
@@ -1111,24 +1096,25 @@ django-cms = ">=3.7"
 
 [[package]]
 name = "djangocms-cascade"
-version = "1.3.7"
-description = "Build Single Page Applications using the Django-CMS plugin system"
+version = "0.16.3"
+description = "Collection of extendible plugins for django-CMS to create and edit widgets in a simple manner"
 category = "main"
 optional = false
 python-versions = "*"
-files = [
-    {file = "djangocms-cascade-1.3.7.tar.gz", hash = "sha256:52be5bba7f89f3c4adcc6a7bc973905e1adf56c38d76815800bde34b76de53b3"},
-    {file = "djangocms_cascade-1.3.7-py3-none-any.whl", hash = "sha256:be20b4914596144e79bbcc6acba145620bd49febf6675777c975bb7f9c265dbd"},
-]
+files = []
+develop = false
 
 [package.dependencies]
-django = ">=2.1,<3.1"
-django-classy-tags = ">=1.0"
-django-cms = ">=3.5,<4"
-django-entangled = ">=0.4"
-djangocms-text-ckeditor = ">=3.7"
+django-classy-tags = ">=0.8"
+django-cms = ">=3.4,<4"
+djangocms-text-ckeditor = ">=3.4"
 jsonfield = "*"
-requests = "*"
+
+[package.source]
+type = "git"
+url = "https://github.com/jarosenb/djangocms-cascade-ds-compat"
+reference = "04d52dca46312b24ded3aa1d4cf3955a88ebc147"
+resolved_reference = "04d52dca46312b24ded3aa1d4cf3955a88ebc147"
 
 [[package]]
 name = "djangocms-file"
@@ -1236,19 +1222,18 @@ djangocms-attributes-field = ">=0.4.0"
 
 [[package]]
 name = "djangocms-text-ckeditor"
-version = "4.0.0"
+version = "3.10.0"
 description = "Text Plugin for django CMS with CKEditor support"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "djangocms-text-ckeditor-4.0.0.tar.gz", hash = "sha256:fdae918b267baec66811bdd9cd49d961016449d2e6d148823586b99dc595e072"},
-    {file = "djangocms_text_ckeditor-4.0.0-py3-none-any.whl", hash = "sha256:3af9ffecd1ecce3b632bc9121385aaa6183c1afcd9e668439c3990d3bd1e1771"},
+    {file = "djangocms-text-ckeditor-3.10.0.tar.gz", hash = "sha256:905fa0cfbd244fb3a12657f89b083bfb57554ba35f4358972eebc6d78f8d8c3d"},
 ]
 
 [package.dependencies]
-django-cms = ">=3.6"
-html5lib = ">=1"
+django-cms = ">=3.4.5"
+html5lib = ">=0.999999999"
 Pillow = "*"
 
 [[package]]
@@ -3527,4 +3512,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.12"
-content-hash = "46881ac088ea83ab1b1ee96259d6f852ee3aa3c38f2e2941d33cc01c7cf659c4"
+content-hash = "82154c8e36a0de34a0f7386d4cf5cf5b3c3a473535d645935224d19d5ff2dc3f"

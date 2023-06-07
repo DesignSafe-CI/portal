@@ -75,6 +75,7 @@ INSTALLED_APPS = (
     'bootstrap3',
     'termsandconditions',
     'impersonate',
+    'captcha',
 
 
     #websockets
@@ -298,7 +299,10 @@ CMSPLUGIN_CASCADE = {
         'ResponsiveEmbedPlugin',
     )
 }
-CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap4', 'cmsplugin_cascade.link']
+CMSPLUGIN_CASCADE_PLUGINS = [
+    'cmsplugin_cascade.bootstrap3',
+    'cmsplugin_cascade.link',
+]
 
 # These settings enable iFrames in the CMS cktext-editor.
 TEXT_ADDITIONAL_TAGS = ('iframe',)
@@ -312,11 +316,9 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters',
 )
 
+
 CKEDITOR_SETTINGS = {
-'language': '{{ language }}',
-'skin': 'moono-lisa',
-'toolbar': 'CMS',
-'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texteditor_config')),
+    'allowedContent': True
 }
 
 #MIGRATION_MODULES = {
