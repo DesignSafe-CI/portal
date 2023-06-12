@@ -65,9 +65,8 @@ class PublicationPreviewSimCtrl {
                 skipRoot: false
             };
             this.project = project;
-            this.createdYear = new Date(this.project.created).getFullYear();
-            this.dateCreated = new Date(this.project.created);
             this.project.appendEntitiesRel(ents);
+
             this.listing = this.FileListingService.listings.main.listing;
             this.FileListingService.abstractListing(ents, project.uuid).then((_) => {
                 this.ui.loading = false;

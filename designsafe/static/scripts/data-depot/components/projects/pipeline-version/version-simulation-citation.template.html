@@ -1,6 +1,6 @@
 <div class="pipeline-nav">
     <a ng-click="$ctrl.goSelection()">
-        <i role="none" class="fa fa-arrow-left"></i> Back
+        <i class="fa fa-arrow-left"></i> Back
     </a>
     <button class="btn btn-small btn-add"
             ng-click="$ctrl.goChanges()"
@@ -12,11 +12,10 @@
     <div class="pipeline-header">
         <h3>Confirm Author Order</h3>
         <strong>You are required to confirm the list of Authors on your Citation(s) before continuing.</strong>
-        Click Save to confirm.
         Your citation(s) will be updated to match what is shown in the preview.
         <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
-                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
+                <i class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
     </div>
@@ -25,40 +24,26 @@
             <!-- Order Authors -->
             <div class="well">
                 <div class="prj-head-title" style="padding-bottom:20px">
-                    <div ng-if="primEnt.name.includes('field_recon')" ng-init = "fr_placeholder = primEnt.name.endsWith('report') ? 'Document' : $ctrl.ui.placeholder">
-                        {{fr_placeholder}} | <strong>{{ primEnt.value.title }}</strong>
-                    </div>
-                    <div ng-if="!primEnt.name.includes('field_recon')">
-                        {{$ctrl.ui.placeholder}} | <strong>{{ primEnt.value.title }}</strong>
-                    </div>
+                    {{$ctrl.ui.placeholder}} | <strong>{{ primEnt.value.title }}</strong>
                 </div>
                 <!-- Success Alert -->
                 <div class="alert alert-success text-center" ng-if="$ctrl.ui.savedStatus[primEnt.uuid]">
                     <h4>Success</h4>
-                    <div ng-if="primEnt.name.includes('field_recon')" ng-init = "fr_placeholder = primEnt.name.endsWith('report') ? 'Document' : $ctrl.ui.placeholder">
-                        The author order for this {{fr_placeholder}} has been saved.
-                    </div>
-                    <div ng-if="!primEnt.name.includes('field_recon')">
-                        The author order for this {{$ctrl.ui.placeholder}} has been saved.
-                    </div>
+                    The author order for this {{$ctrl.ui.placeholder}} has been saved.
                 </div>
                 <div ng-hide="$ctrl.validAuths">
-                    <div ng-if="primEnt.name.includes('field_recon')" ng-init = "fr_placeholder = primEnt.name.endsWith('report') ? 'Document' : $ctrl.ui.placeholder">
-                        Your authors need to be updated. Edit your {{fr_placeholder}} and select which users are authors for the {{fr_placeholder}}.
-                    </div>
-                    <div ng-if="!primEnt.name.includes('field_recon')">
-                        Your authors need to be updated. Edit your {{$ctrl.ui.placeholder}} and select which users are authors for the {{$ctrl.ui.placeholder}}.
-                    </div>
+                    Your authors need to be updated. Edit your {{$ctrl.ui.placeholder}} and select which users are authors for the {{$ctrl.ui.placeholder}}.
                 </div>
                 <div ng-show="$ctrl.ui.loading">
                     <h3 class="text-center">
-                        <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
                     </h3>
                 </div>
                 <!-- Citation Preview -->
                 <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
-                <div class="well" style="margin-bottom:20px; background-color: white;" ng-show="!$ctrl.ui.loading">
+                <div class="well" style="margin-bottom:20px; background-color: white;">
                     <div>
+                        <!-- <ds-author-list format="hname" authors="primEnt.value.authors"></ds-author-list> -->
                         <ds-author-list format="hname" authors="$ctrl.revisionAuthors[primEnt.uuid]"></ds-author-list>
                         <span style="background: #f5f5f5;">
                             ({{ $ctrl.curDate }}) “{{ primEnt.value.title }}”, in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI. <a>https://doi.org/10.12345/ABCDEF</a>.
@@ -89,8 +74,8 @@
                     </tr>
                     <tr>
                         <td>
-                            <i role="none" class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, primEnt)"></i>
-                            <i role="none" class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, primEnt)"></i>
+                            <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, primEnt)"></i>
+                            <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, primEnt)"></i>
                             <a class="sort-arrows" ng-click="$ctrl.saveAuthors(primEnt, true)">Save</a>
                         </td>
                     </tr>

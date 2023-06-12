@@ -63,8 +63,6 @@ class PublicationPreviewFieldReconCtrl {
                 skipRoot: false
             };
             this.project = project;
-            this.createdYear = new Date(this.project.created).getFullYear();
-            this.dateCreated = new Date(this.project.created);
             this.project.appendEntitiesRel(ents);
 
             this.primaryEnts = [].concat(
