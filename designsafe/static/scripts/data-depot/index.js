@@ -372,6 +372,23 @@ function config(
                 }]
             }
         })
+        .state('projects.amendHybSim', {
+            url: '/projects/{projectId}/curation/amend/hybsim',
+            component: 'amendHybSim',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
         .state('projects.amendCitation', {
             url: '/projects/{projectId}/curation/amend/citation',
             component: 'amendCitation',
@@ -466,6 +483,25 @@ function config(
         .state('projects.versionSimulationSelection', {
             url: '/projects/{projectId}/curation/version/{filePath:any}',
             component: 'versionSimulationSelection',
+            params: {
+                project: null,
+                publication: null,
+                selectedEnts: [],
+                selectedListings: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                }]
+            }
+        })
+        .state('projects.versionHybSimSelection', {
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            component: 'versionHybSimSelection',
             params: {
                 project: null,
                 publication: null,

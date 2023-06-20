@@ -1,6 +1,7 @@
 import VersionExperimentSelectionTemplate from './version-experiment-selection.template.html';
 import VersionFieldReconSelectionTemplate from './version-field-recon-selection.template.html';
 import VersionSimulationSelectionTemplate from './version-simulation-selection.template.html';
+import VersionHybSimSelectionTemplate from './version-hyb-sim-selection.template.html';
 import VersionCitationTemplate from './version-citation.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
@@ -394,6 +395,17 @@ export const VersionFieldReconSelectionComponent = {
 
 export const VersionSimulationSelectionComponent = {
     template: VersionSimulationSelectionTemplate,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionHybSimSelectionComponent = {
+    template: VersionHybSimSelectionTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
