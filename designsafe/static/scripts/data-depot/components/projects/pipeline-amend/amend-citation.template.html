@@ -70,7 +70,7 @@
                 <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
                 <div class="well" style="margin-bottom:20px; background-color: white;"  ng-show="!$ctrl.ui.loading">
                     <div>
-                        <ds-author-list format="hname" authors="$ctrl.authors[pubEnt.uuid]"></ds-author-list>
+                        <ds-author-list format="citation" authors="$ctrl.authors[pubEnt.uuid]"></ds-author-list>
                         <span>
                             ({{ $ctrl.publishedDate }}) “{{ pubEnt.value.title }}”, in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
                             <a href="{{'https://doi.org/' + $ctrl.pubEnt.value.dois[0]}}">{{'https://doi.org/' + $ctrl.pubEnt.value.dois[0]}}</a>.

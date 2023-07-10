@@ -59,7 +59,7 @@
                 <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
                 <div class="well" style="margin-bottom:20px; background-color: white;" ng-show="!$ctrl.ui.loading">
                     <div>
-                        <ds-author-list format="hname" authors="$ctrl.revisionAuthors[primEnt.uuid]"></ds-author-list>
+                        <ds-author-list format="citation" authors="$ctrl.revisionAuthors[primEnt.uuid]"></ds-author-list>
                         <span style="background: #f5f5f5;">
                             ({{ $ctrl.curDate }}) “{{ primEnt.value.title }}”, in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI. <a>https://doi.org/10.12345/ABCDEF</a>.
                         </span>
