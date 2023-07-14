@@ -127,10 +127,10 @@
                         <div class="entity-meta-field">
                             <div class="entity-meta-label">Simulation Type</div>
                             <span ng-if="!$ctrl.isValid(simulation.value.experimentalFacilityOther)" class="entity-meta-data-cap">
-                                {{ simulation.value.experimentType.replace('_', ' ') }}
+                                {{ simulation.value.simulationType.replace('_', ' ') }}
                             </span>
                             <span ng-if="$ctrl.isValid(simulation.value.experimentalFacilityOther)" class="entity-meta-data-cap">
-                                {{ simulation.value.experimentTypeOther }}
+                                {{ simulation.value.simulationTypeOther }}
                             </span>
                         </div>
                         <div class="entity-meta-field">
