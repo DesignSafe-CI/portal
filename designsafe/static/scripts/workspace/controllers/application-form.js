@@ -76,19 +76,19 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
                     $scope.data.app = resp.data;
 
-                    Systems.getSystemStatus(resp.data.executionSystem)
-                        .then((response) => {
-                            let heartbeatStatus = response.heartbeat.status;
-                            $scope.data.systemDown = (heartbeatStatus == false);
-                        }, (err) => {
-                            $scope.data.messages.push({
-                                type: 'warning',
-                                header: 'System status unknown',
-                                body: `Could not access system status for system ${resp.data.executionSystem}.
-                                Jobs may fail.`,
-                            });
-                            $scope.data.systemDown = null;
-                        })
+                    Systems.getSystemStatus(resp.data.exec_sys.login.host)
+                        .then(
+                            (response) => {
+                                $scope.data.systemDown = !(
+                                    response.online &&
+                                    response.reachable &&
+                                    !(response.queues_down || response.in_maintenance)
+                                );
+                            },
+                            (err) => {
+                                $scope.data.systemDown = null;
+                            }
+                        )
                         .finally(() => {
                             $scope.resetForm();
                         });
@@ -117,7 +117,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         // reset formValid, var is used for invalid form msg
         $scope.data.formValid = [];
 
-        let readOnly = $scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown;
+        let readOnly = $scope.data.needsLicense || $scope.data.unavailable;
 
         /* inputs */
         let items = [];

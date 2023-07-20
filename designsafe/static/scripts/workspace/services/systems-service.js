@@ -3,7 +3,7 @@
  * lookup right now, but it will be nicer to go ahead and code against this service
  * rather than having stubs all over the place.
  */
-export function workspaceSystemsService($q, $http) {
+export default function workspaceSystemsService($q, $http) {
     'ngInject';
     let service = {};
 
@@ -87,49 +87,22 @@ export function workspaceSystemsService($q, $http) {
     };
 
     /**
-   *
-   * @param {string} system: The system to monitor.
-   *
-   * Returns a promise which resolves to the response from the TACC monitoring
-   * API if the execution system has monitoring set up, or a dummy that lets us grab
-   * data.heartbeat.status from the response (default to true).
-   */
-    service.getSystemStatus = function(system) {
-        switch (system) {
-            case 'designsafe.community.exec.stampede2.nores':
-            case 'designsafe.community.exec.stampede2':
-                return $http.get('https://portal.tacc.utexas.edu/commnq/stampede2.tacc.utexas.edu/summary.json',
-                    { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
-                    .then((resp) => {
-                        return resp.data;
-                    }, (err) => {
-                        return $q.reject(err);
-                    });
-
-            case 'designsafe.community.exec.maverick2':
-                return $http.get('https://portal.tacc.utexas.edu/commnq/maverick2.tacc.utexas.edu/summary.json',
-                    { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
-                    .then((resp) => {
-                        return resp.data;
-                    }, (err) => {
-                        return $q.reject(err);
-                    });
-
-            case 'designsafe.community.exec.ls5':
-                return $http.get('https://portal.tacc.utexas.edu/commnq/lonestar5.tacc.utexas.edu/summary.json',
-                    { headers: { 'X-Requested-With': undefined, Authorization: undefined } })
-                    .then((resp) => {
-                        return resp.data;
-                    }, (err) => {
-                        return $q.reject(err);
-                    });
-
-            default: {
-                let deferred = $q.defer();
-                deferred.resolve({ heartbeat: { status: true } });
-                return deferred.promise;
+     *
+     * @param {string} system: The system to monitor.
+     *
+     * Returns a promise which resolves to the response from the TACC monitoring
+     * API if the execution system has monitoring set up.
+     */
+    service.getSystemStatus = (hostname) => {
+        return $http.get('https://tap.tacc.utexas.edu/status/').then(
+            (resp) => {
+                const system = Object.values(resp.data).find((s) => s.hostname === hostname);
+                return system;
+            },
+            (err) => {
+                return $q.reject(err);
             }
-        }
+        );
     };
     return service;
 }
