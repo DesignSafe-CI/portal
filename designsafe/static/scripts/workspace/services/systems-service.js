@@ -3,7 +3,7 @@
  * lookup right now, but it will be nicer to go ahead and code against this service
  * rather than having stubs all over the place.
  */
-export default function workspaceSystemsService($q, $http) {
+export function workspaceSystemsService($q, $http) {
     'ngInject';
     let service = {};
 
