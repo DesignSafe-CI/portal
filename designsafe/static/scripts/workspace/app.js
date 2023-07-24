@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
+import dndlists from 'angular-drag-and-drop-lists';
 
 
 import { agaveFilePicker } from '../workspace/directives/agave-file-picker';

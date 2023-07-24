@@ -755,7 +755,7 @@ a[ng-click]:hover {
 
 @font-face {
 font-family: 'DesignSafe-Apps';
-    src: url('/static/fonts/DesignSafe-App-Icons.ttf') format('truetype');
+    src: url('/static/fonts/Tools-and-Applications-Icons.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
