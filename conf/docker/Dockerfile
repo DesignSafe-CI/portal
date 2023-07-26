@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y \
     git \
     vim
 
-# install node 12.x
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+# install node 16.x
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
 RUN pip install poetry
@@ -49,3 +49,6 @@ USER tg458981
 RUN echo "prefix=~/.npm-global" >> ~/.npmrc
 
 WORKDIR /srv/www/designsafe
+
+RUN npm ci
+RUN npm run build
