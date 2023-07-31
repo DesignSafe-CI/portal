@@ -101,7 +101,7 @@ class PipelineAmendCtrl {
         else if (prj_type == 'hybrid_simulation') {
             primaryEntNames = ['hybidsimulations']
             secondaryEntNames = [
-                'hyrbid_simulations',
+                'hybrid_simulations',
                 'global_models',
                 'coordinators',
                 'sim_substructures',
