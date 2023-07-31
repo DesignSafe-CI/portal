@@ -86,7 +86,7 @@ class PipelineVersionCtrl {
                     this.ui.placeholder = 'HybSim';
                     this.matchingGroupKey = 'hybrid_simulations';
                     this.publishedKeyNames = ['hybrid_simulation'];
-                    this.subEntities = ['hyrdidsimulation_set', 
+                    this.subEntities = ['hybridsimulation_set', 
                                         'globalmodel_set',  
                                         'coordinator_set', 
                                         'simsubstructure_set', 
