@@ -106,7 +106,7 @@ class PipelineAmendCitationCtrl {
             this.amendComp = 'projects.amendHybSim';
             this.ui.placeholder = 'HybSim';
             this.amendFields = [
-                'hyrbid_simulations',
+                'hybrid_simulations',
                 'global_models',
                 'coordinators',
                 'sim_substructures',

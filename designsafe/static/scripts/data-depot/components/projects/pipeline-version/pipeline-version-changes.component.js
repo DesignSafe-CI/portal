@@ -103,13 +103,13 @@ class PipelineVersionChangesCtrl {
                         this.mainEntityUuids.push(entity.uuid);
                     });
                 }
-                if (this.prjType === 'hyrid_simulation') {
+                if (this.prjType === 'hybrid_simulation') {
                     this.ui.selectionComp = 'projects.versionHybSimSelection'
                     this.ui.citationComp = 'projects.versionCitation'
 
                     this.pubData['hybrid_simulations'] = [];
                     this.selectedEnts.forEach((entity) => {
-                        this.pubData['hyrid_simulations'].push({uuid: entity.uuid});
+                        this.pubData['hybrid_simulations'].push({uuid: entity.uuid});
                         this.mainEntityUuids.push(entity.uuid);
                     });
                 }
