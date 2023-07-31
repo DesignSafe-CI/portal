@@ -103,7 +103,7 @@ class PipelineVersionChangesCtrl {
                         this.mainEntityUuids.push(entity.uuid);
                     });
                 }
-                if (this.prjType === 'hyrid_simulation') {
+                if (this.prjType === 'hybrid_simulation') {
                     this.ui.selectionComp = 'projects.versionHybSimSelection'
                     this.ui.citationComp = 'projects.versionCitation'
 
