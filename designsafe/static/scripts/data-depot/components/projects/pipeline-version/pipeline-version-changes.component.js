@@ -109,7 +109,7 @@ class PipelineVersionChangesCtrl {
 
                     this.pubData['hybrid_simulations'] = [];
                     this.selectedEnts.forEach((entity) => {
-                        this.pubData['hyrid_simulations'].push({uuid: entity.uuid});
+                        this.pubData['hybrid_simulations'].push({uuid: entity.uuid});
                         this.mainEntityUuids.push(entity.uuid);
                     });
                 }
