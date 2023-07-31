@@ -9,10 +9,20 @@ from django.views.generic.base import View
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
 
-from designsafe.apps.data.models.elasticsearch import IndexedFile
+from designsafe.apps.data.models.elasticsearch import IndexedFile, IndexedPublication
+from designsafe.libs.elasticsearch.utils import new_es_client
 from elasticsearch_dsl import Q, Search
 
 logger = logging.getLogger(__name__)
+
+def check_public_availability(username):
+    es_client = new_es_client()
+    query = Q({'multi_match': {'fields': ['project.value.teamMembers', 
+                                          'project.value.coPis', 
+                                          'project.value.pi'], 
+                               'query': username}})
+    res = IndexedPublication.search(using=es_client).filter(query).execute()
+    return res.hits.total.value > 0
 
 
 class UsageView(SecureMixin, View):
@@ -56,6 +66,11 @@ class SearchView(View):
         resp_fields = ['first_name', 'last_name', 'email', 'username']
         model = get_user_model()
         q = request.GET.get('username')
+
+        # Do not return user details if the user is not part of a public project.
+        if not request.user.is_authenticated and not check_public_availability(q):
+            return JsonResponse({})
+
         if q:
             try:
                 user = model.objects.get(username=q)
@@ -113,6 +128,9 @@ class PublicView(View):
         try:
             users = []
             for username in nl:
+                # Do not return user details if the user is not part of a public project.
+                if not request.user.is_authenticated and not check_public_availability(username):
+                    continue
                 try:
                     users.append(model.objects.get(username=username))
                 except model.DoesNotExist:

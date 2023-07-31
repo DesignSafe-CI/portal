@@ -42,12 +42,15 @@
     <div ng-if="!$ctrl.ui.loading">
         <div class="pipeline-section">
             <ul>
-                <li>Please review the preview of your amended publication carefully.</li>
-                <li>Any acceptable changes you make from the project workspace are automatically imported to this preview.</li>
-                <li>This preview shows what your publication will look like once it is amended.</li>
-                <li>Categories may not be added or removed.</li>
-                <li>Files related to any categories may not be modified.</li>
-                <li>When you have finished proofreading your amended publication, click continue to move onto the next step.</li>
+                <li>Please review the amendable metadata carefully and make changes if necessary.</li>
+                <li>Any changes made in the project workspace are reflected in this preview.</li>
+                <li>Categories may not be added or removed and files related to any categories may not be modified.</li>
+                <li>When you have finished proofreading your amended publication, click "Continue to Authors".</li>
+                <li>If you need help, attend 
+                    <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">
+                        curation office hours
+                    </a>.
+                </li>
             </ul>
         </div>
         <!-- Project Header Start -->
@@ -189,7 +192,7 @@
                                     </div>
                                 </div>
                                 <div class="entity-meta-field" ng-if="mainEntity.value.referencedData.length">
-                                    <div class="entity-meta-label-multi">Referenced Data</div>
+                                    <div class="entity-meta-label-multi">Referenced Data and Software</div>
                                     <div class="entity-meta-data">
                                         <div ng-repeat="reference in mainEntity.value.referencedData track by $index">
                                             <referenced-data></referenced-data>
@@ -311,7 +314,7 @@
                                     </div>
                                 </div>
                                 <div class="entity-meta-field" ng-if="mainEntity.value.referencedData.length">
-                                    <div class="entity-meta-label-multi">Referenced Data</div>
+                                    <div class="entity-meta-label-multi">Referenced Data and Software</div>
                                     <div class="entity-meta-data">
                                         <div ng-repeat="reference in mainEntity.value.referencedData track by $index">
                                             <referenced-data></referenced-data>
@@ -465,7 +468,7 @@
                                                     </div>
                                                     <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                                         <div class="entity-meta-label-multi">
-                                                            Referenced Data
+                                                            Referenced Data and Software
                                                         </div>
                                                         <div class="entity-meta-data">
                                                             <ul class="collection-list">
@@ -561,7 +564,7 @@
                                                     </div>
                                                     <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                                         <div class="entity-meta-label-multi">
-                                                            Referenced Data
+                                                            Referenced Data and Software
                                                         </div>
                                                         <div class="entity-meta-data">
                                                             <ul class="collection-list">
@@ -603,7 +606,7 @@
                                                     </div>
                                                     <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                                         <div class="entity-meta-label-multi">
-                                                            Referenced Data
+                                                            Referenced Data and Software
                                                         </div>
                                                         <div class="entity-meta-data">
                                                             <ul class="collection-list">

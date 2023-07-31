@@ -31,8 +31,13 @@
             <h3>Publishing</h3>
             <hr>
             <ul>
-                <li>Publish a new project.</li>
-                <li>The project will recieve a new citation and DOI to include any new authors.</li>
+                <li>Publish new dataset(s) in your project.</li>
+                <li>If you need to publish subsequent dataset(s), 
+                    <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Request+to+Update+or+Remove+Authors+for+{{$ctrl.project.value.projectId}}" target="_blank" aria-describedby="msg-open-new-window">
+                        submit a ticket
+                    </a>
+                    with your project number and the name of the dataset(s).</li>
+                <li>The project will receive a new citation and DOI to include any new authors.</li>
                 <li>The updated project will display as a new version.</li>
                 <li ng-if="!$ctrl.ui.showAmendVersion">
                     If you already published and would like to publish additional data in this same project,
@@ -51,10 +56,8 @@
                 <h3>Amend Metadata</h3>
                 <hr>
                 <ul>
-                    <li>
-                        You can add related work, awards, keywords, and referenced data, or change author
-                        order and descriptions in published metadata without adding a new version
-                    </li>
+                    <li>Amend published metadata without creating a new version.</li>
+                    <li>Amendable metadata: Related work, referenced data, awards, keywords, author order, descriptions, natural hazard type, and natural hazard event.</li>
                 </ul>
                 <button class="btn btn-small btn-add"
                         ng-click="$ctrl.goAmend()"

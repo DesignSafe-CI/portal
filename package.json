@@ -21,7 +21,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.0",
     "elasticdump": "^3.3.7",
-    "eslint": "^7.2.0",
+    "eslint": "^6.0.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-prettier": "^6.7.0",
     "eslint-config-standard": "^14.1.0",

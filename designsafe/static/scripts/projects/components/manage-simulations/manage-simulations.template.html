@@ -74,7 +74,7 @@
                         <label for="id-project-referenced-data">
                             <div class="label-form">
                                 <div>
-                                    <span class="label-form-name">Referenced Data</span>
+                                    <span class="label-form-name">Referenced Data and Software</span>
                                 </div>
                                 <span class="label-form-desc">
                                     Published data used in the creation of this dataset.
@@ -139,13 +139,13 @@
                 <div>
                     <button class="btn-project-add-rm"
                             ng-click="$ctrl.addObjField('referencedData')">
-                            &#x2b; Add <span ng-if="$ctrl.ui.require.referencedData">another</span> Referenced Data
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.referencedData">another</span> Referenced Data/Software
                     </button>
                     |
                     <button class="btn-project-add-rm"
                             ng-click="$ctrl.dropObjField('referencedData')"
                             ng-disabled="!$ctrl.ui.require.referencedData">
-                            &#x2212; Remove Referenced Data
+                            &#x2212; Remove Referenced Data/Software
                     </button>
                 </div>
             </div>
@@ -390,7 +390,7 @@
                                 </div>
                             </div>
                             <div class="entity-meta-field" ng-if="simulation.value.referencedData.length">
-                                <div class="entity-meta-label-multi">Referenced Data</div>
+                                <div class="entity-meta-label-multi">Referenced Data and Software</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="reference in simulation.value.referencedData track by $index">
                                         <referenced-data></referenced-data>
