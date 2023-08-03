@@ -16,6 +16,7 @@ class DataDepotToolbarCtrl {
     placeholder() {
         var stateNames = {
             'myData': 'My Data',
+            'myDataWork': 'My Data (Work)',
             'projects.list': 'My Projects',
             'sharedData': 'Shared Data',
             'boxData': 'Box',

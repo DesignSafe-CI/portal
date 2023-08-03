@@ -49,7 +49,7 @@ export class FileOperationService {
 
     getTests(files) {
         const externalDataStates = ['boxData', 'dropboxData', 'googledriveData'];
-        const agaveDataStates = ['myData', 'projects.view', 'projects.curation'];
+        const agaveDataStates = ['myData', 'myDataWork', 'projects.view', 'projects.curation'];
         let isHazmapper = files.length > 0 ? files.some((e) => e.name.endsWith('hazmapper')) : false;
         const tests = {
             copy: this.Django.context.authenticated && !isHazmapper && files.length > 0,

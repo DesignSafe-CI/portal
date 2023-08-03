@@ -46,6 +46,12 @@ class DataDepotNavCtrl {
           description: 'Private directory for your data'
         },
         {
+          name: 'My Data (Work)',
+          collapsible: false,
+          state: 'myDataWork',
+          description: 'Working directory for use with JupyterHub'
+        },
+        {
           name: 'My Projects',
           collapsible: false,
           state: 'projects.list',
