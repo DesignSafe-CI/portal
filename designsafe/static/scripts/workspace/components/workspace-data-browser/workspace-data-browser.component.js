@@ -17,7 +17,7 @@ class WorkspaceDataBrowserCtrl {
 
         this.options = [
             { name: 'myData', label: 'My Data' },
-            { name: 'myDataWork', label: 'My Working Data' },
+            { name: 'myDataWork', label: 'My Working Files' },
             { name: 'myProjects', label: 'My Projects' },
             { name: 'publications', label: 'Published' },
             { name: 'nees', label: 'Published (NEES)' },
