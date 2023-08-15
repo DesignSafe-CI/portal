@@ -27,10 +27,9 @@
         <h3>Version Selection</h3>
         <ul>
             <li>A new version of your publication will be created with the information shown below.</li>
-            <li>The selected Missions and Reports will be included the the new version.</li>
-            <li>You may select additional Missions and Reports to publish with the new version.</li>
-            <li>Previously published Missions and Reports can not be excluded.</li>
-            <li>Selected Missions and Reports will not recieve a DOI.</li>
+            <li>The selected datasets will be included the the new version.</li>
+            <li>You may select additional datasets to publish with the new version.</li>
+            <li>Previously published datasets can not be excluded.</li>
             <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">curation office hours</a>.</li>
         </ul>
     </div>
@@ -99,7 +98,7 @@
                                 </div>
                             </div>
                             <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
-                                <div class="entity-meta-label-multi">Referenced Data</div>
+                                <div class="entity-meta-label-multi">Referenced Data and Software</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="reference in mission.value.referencedData track by $index">
                                         <referenced-data></referenced-data>
@@ -186,7 +185,7 @@
                                 </div>
                             </div>
                             <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
-                                <div class="entity-meta-label-multi">Referenced Data</div>
+                                <div class="entity-meta-label-multi">Referenced Data and Software</div>
                                 <div class="entity-meta-data">
                                     <div ng-repeat="reference in mission.value.referencedData track by $index">
                                         <referenced-data></referenced-data>
@@ -261,7 +260,7 @@
                                             </div>
                                             <div ng-if="$ctrl.emptyCheck(collection.value.referencedDatas)">
                                                 <div style="display: inline-block; width:20%; vertical-align: top;">
-                                                    Referenced Data
+                                                    Referenced Data and Software
                                                 </div>
                                                 <div style="display: inline-block; width: 78%; font-weight:bold;">
                                                     <ul style="list-style:none; padding-left:0;">
@@ -380,7 +379,7 @@
                                                 </div>
                                                 <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                                     <div class="entity-meta-label-multi">
-                                                        Referenced Data
+                                                        Referenced Data and Software
                                                     </div>
                                                     <div class="entity-meta-data">
                                                         <ul class="collection-list">
@@ -469,7 +468,7 @@
                                                 </div>
                                                 <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                                     <div class="entity-meta-label-multi">
-                                                        Referenced Data
+                                                        Referenced Data and Software
                                                     </div>
                                                     <div class="entity-meta-data">
                                                         <ul class="collection-list">
@@ -513,7 +512,7 @@
                                                 </div>
                                                 <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                                     <div class="entity-meta-label-multi">
-                                                        Referenced Data
+                                                        Referenced Data and Software
                                                     </div>
                                                     <div class="entity-meta-data">
                                                         <ul class="collection-list">

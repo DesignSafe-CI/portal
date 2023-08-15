@@ -12,7 +12,7 @@ from requests.packages.urllib3.util.retry import Retry
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from django.contrib.auth import get_user_model
 from designsafe.apps.api.publications.operations import _get_user_by_username
-from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest
+from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest, generate_report_experimental
 import logging
 logger = logging.getLogger(__name__)
 
@@ -303,3 +303,21 @@ def ingest_project_sim(project_id, version=None, amend=False):
 
     if not amend:
         upload_manifest_sim(project_id, version=version)
+
+
+def generate_package_sim(project_id):
+    from zipfile import ZipFile
+    archive_path = '/corral-repl/tacc/NHERI/published/archives/{}.zip'.format(project_id)
+    walk_res = walk_sim(project_id)
+    manifest = generate_manifest(walk_res, project_id)
+    manifest_json = json.dumps(manifest, indent=4)
+    print(manifest_json)
+    report = generate_report_experimental(project_id)
+    report_json = json.dumps(report, indent=4)
+
+    with ZipFile(archive_path, 'w') as zf:
+        for file in manifest:
+            print(file['project_path'])
+            zf.write(file['corral_path'], file['project_path'])
+        zf.writestr('{}/manifest.json'.format(project_id), manifest_json)
+        zf.writestr('{}/metadata.json'.format(project_id), report_json)
