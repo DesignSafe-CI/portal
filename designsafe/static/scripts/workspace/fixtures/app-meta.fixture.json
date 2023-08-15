@@ -13,7 +13,7 @@
             "defaultProcessorsPerNode": 64,
             "defaultQueue": "normal",
             "deploymentPath": "/applications/OpenseesSp-3.0.0.6709u7.zip",
-            "deploymentSystem": "designsafe.storage.default",
+            "deploymentSystem": "designsafe.storage.working",
             "executionSystem": "designsafe.community.exec.stampede2.nores",
             "executionType": "HPC",
             "helpURI": "https: //www.designsafe-ci.org/rw/user-guide/workspace/opensees/",

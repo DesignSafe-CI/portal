@@ -49,16 +49,16 @@ class LoginTestClass(TestCase):
 
     agave_client.files.list.return_value = {
         "name": "test",
-        "system": "designsafe.storage.default",
-        "trail": [{"path": "/", "name": "/", "system": "designsafe.storage.default"}, 
-                  {"path": "/test", "name": "test", "system": "designsafe.storage.default"}],
+        "system": "designsafe.storage.working",
+        "trail": [{"path": "/", "name": "/", "system": "designsafe.storage.working"}, 
+                  {"path": "/test", "name": "test", "system": "designsafe.storage.working"}],
         "path": "test",
         "type": "dir",
         "children": [],
         "permissions": "READ"
       } 
 
-    resp = self.client.get('/api/agave/files/listing/agave/designsafe.storage.default/test', follow=True)
+    resp = self.client.get('/api/agave/files/listing/agave/designsafe.storage.working/test', follow=True)
 
     self.assertEqual(resp.status_code, 200)
     self.assertJSONEqual(resp.content, agave_client.files.list.return_value, msg='Agave homedir listing has unexpected values') """

@@ -43,7 +43,7 @@
         "executionType": "HPC",
         "executionSystem": "designsafe.community.exec.stampede2.nores",
         "deploymentPath": "/applications/adcirc_netcdf_51.33-51.33u4.zip",
-        "deploymentSystem": "designsafe.storage.default",
+        "deploymentSystem": "designsafe.storage.working",
         "templatePath": "wrapper.sh",
         "testPath": "test/test.sh",
         "checkpointable": false,
@@ -95,7 +95,7 @@
                 "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.community.exec.stampede2.nores"
             },
             "storageSystem": {
-                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
             },
             "history": {
                 "href": "https://agave.designsafe-ci.org/apps/v2/adcirc_netcdf_51.33-51.33u4/history"

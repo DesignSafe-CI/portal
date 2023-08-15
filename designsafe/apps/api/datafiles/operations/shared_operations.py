@@ -52,7 +52,7 @@ def listing(client, system, path, username, offset=0, limit=100, *args, **kwargs
 
     file_path = '/'
     home_filter = Q('prefix', **{'path._exact': '/' + username})
-    system_filter = Q('term', **{'system._exact': 'designsafe.storage.default'})
+    system_filter = Q('term', **{'system._exact': 'designsafe.storage.working'})
     query = Q('bool', must_not=home_filter, filter=[nested_filter, system_filter])
 
     search = IndexedFile.search().filter(query).sort('name._exact').extra(from_=int(offset), size=int(limit))
@@ -113,7 +113,7 @@ def search(client, system, path, username, offset=0, limit=100, query_string='',
     nested_filter.query = pems_filter
 
     home_filter = Q('prefix', **{'path._exact': '/' + username})
-    system_filter = Q('term', **{'system._exact': 'designsafe.storage.default'})
+    system_filter = Q('term', **{'system._exact': 'designsafe.storage.working'})
     query = Q('bool', must_not=home_filter, filter=[nested_filter, system_filter])
 
     search = IndexedFile.search().filter(query)

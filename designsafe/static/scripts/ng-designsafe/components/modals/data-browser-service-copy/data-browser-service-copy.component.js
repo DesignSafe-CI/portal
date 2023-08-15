@@ -42,7 +42,7 @@ class DataBrowserCopyCtrl {
         ];
 
         this.initialParams = {
-            agave: { api: 'agave', scheme: 'private', system: 'designsafe.storage.default', path: this.Django.user },
+            agave: { api: 'agave', scheme: 'private', system: 'designsafe.storage.working', path: this.Django.user },
             googledrive: { api: 'googledrive', scheme: 'private', system: 'googledrive', path: '' },
             box: { api: 'box', scheme: 'private', system: 'box', path: '' },
             dropbox: { api: 'dropbox', scheme: 'private', system: 'dropbox', path: '' },

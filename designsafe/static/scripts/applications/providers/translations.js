@@ -25,7 +25,7 @@ export function appTranslateProvider(angular) {
             error_tab_delete: "An error ocurred deleting your tray",
             error_tab_edit: "An error ocurred editing your app tray",
 
-            storage_default: "designsafe.storage.default",
+            storage_default: "designsafe.storage.working",
             execution_default: "designsafe.community.exec.stampede",
             admin_username: 'ds_admin',
             apps_metadata_custom: "html",

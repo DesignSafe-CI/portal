@@ -88,7 +88,7 @@ describe('filesListing', () => {
             listing: [
                 {
                     name: "testfile",
-                    system: 'designsafe.storage.default',
+                    system: 'designsafe.storage.working',
                     path: '/path/to/file',
                     type: 'dir',
                     format: 'folder',
@@ -111,7 +111,7 @@ describe('filesListing', () => {
             listing: [
                 {
                     name: "testfile",
-                    system: 'designsafe.storage.default',
+                    system: 'designsafe.storage.working',
                     path: '/path/to/file',
                     type: 'dir',
                     format: 'folder',
@@ -132,7 +132,7 @@ describe('filesListing', () => {
         opButton.triggerHandler('click');
         expect(mockOperation).toHaveBeenCalledWith({
             name: "testfile",
-            system: 'designsafe.storage.default',
+            system: 'designsafe.storage.working',
             path: '/path/to/file',
             type: 'dir',
             format: 'folder',
@@ -150,7 +150,7 @@ describe('filesListing', () => {
             listing: [
                 {
                     name: "testfile",
-                    system: 'designsafe.storage.default',
+                    system: 'designsafe.storage.working',
                     path: '/path/to/file',
                     type: 'dir',
                     format: 'folder',
@@ -169,7 +169,7 @@ describe('filesListing', () => {
         fileHref.triggerHandler('click');
         expect(mockBrowse).toHaveBeenCalledWith({
             name: "testfile",
-            system: 'designsafe.storage.default',
+            system: 'designsafe.storage.working',
             path: '/path/to/file',
             type: 'dir',
             format: 'folder',
@@ -182,7 +182,7 @@ describe('filesListing', () => {
     it('calls browseScroll on scroll to bottom', (done) => {
         const fileMeta = {
             name: "testfile",
-            system: 'designsafe.storage.default',
+            system: 'designsafe.storage.working',
             path: '/path/to/file',
             type: 'dir',
             format: 'folder',
@@ -217,7 +217,7 @@ describe('filesListing', () => {
         $rootScope.listing = {
             ...initialListing,
             params: {
-                system: 'designsafe.storage.default',
+                system: 'designsafe.storage.working',
                 path: 'test/.Trash/',
             },
         };

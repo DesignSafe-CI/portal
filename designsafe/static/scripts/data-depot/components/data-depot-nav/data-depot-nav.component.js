@@ -13,8 +13,8 @@ class DataDepotNavCtrl {
   $onInit() {
     this.routerItems = [];
 
-    this.myDataFileId = 'designsafe.storage.default/' + this.Django.user + '/';
-    this.sharedFileId = 'designsafe.storage.default/$SHARE/';
+    this.myDataFileId = 'designsafe.storage.working/' + this.Django.user + '/';
+    this.sharedFileId = 'designsafe.storage.working/$SHARE/';
 
     this.routerItems.push(
       {

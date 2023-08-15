@@ -28,7 +28,7 @@ class WorkspaceDataBrowserCtrl {
             section: 'main',
             api: 'agave',
             scheme: 'private',
-            system: 'designsafe.storage.default',
+            system: 'designsafe.storage.working',
             path: this.Django.user,
         };
 
@@ -53,7 +53,7 @@ class WorkspaceDataBrowserCtrl {
                     section: 'main',
                     api: 'agave',
                     scheme: 'private',
-                    system: 'designsafe.storage.default',
+                    system: 'designsafe.storage.working',
                     path: this.Django.user,
                 });
                 this.breadcrumbParams = this.FileListingService.fileMgrMappings.agave.breadcrumbParams;

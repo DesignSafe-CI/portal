@@ -9,7 +9,7 @@ export function workspaceSystemsService($q, $http) {
 
     const systemsList = [
         {
-            id: 'designsafe.storage.default',
+            id: 'designsafe.storage.working',
             name: 'My Data',
             storage: {
                 homeDir: '/',

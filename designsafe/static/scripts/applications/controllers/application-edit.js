@@ -750,7 +750,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                                 },
                                 {
                                     "key": "deploymentSystem",
-                                    "placeholder": "designsafe.storage.default",
+                                    "placeholder": "designsafe.storage.working",
                                     "type": "select",
                                     "titleMap": [],
                                     ngModelOptions: {

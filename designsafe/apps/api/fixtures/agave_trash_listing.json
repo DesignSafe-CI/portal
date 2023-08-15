@@ -2,16 +2,16 @@
 	{
 		"_links": {
 			"history": {
-				"href": "https://agave.designsafe-ci.org/files/v2/history/system/designsafe.storage.default/ds_user/.Trash"
+				"href": "https://agave.designsafe-ci.org/files/v2/history/system/designsafe.storage.working/ds_user/.Trash"
 			},
 			"metadata": {
 				"href": "https://agave.designsafe-ci.org/meta/v2/data?q=%7B%22associationIds%22%3A%221708405430344216090-242ac112-0001-002%22%7D"
 			},
 			"self": {
-				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/.Trash"
+				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user/.Trash"
 			},
 			"system": {
-				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
 			}
 		},
 		"format": "folder",
@@ -21,16 +21,16 @@
 		"name": ".",
 		"path": "ds_user/.Trash",
 		"permissions": "ALL",
-		"system": "designsafe.storage.default",
+		"system": "designsafe.storage.working",
 		"type": "dir"
 	},
 	{
 		"_links": {
 			"self": {
-				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/.Trash/index-test-8631525543437069850-242ac113-0001-007.err"
+				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user/.Trash/index-test-8631525543437069850-242ac113-0001-007.err"
 			},
 			"system": {
-				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
 			}
 		},
 		"format": "raw",
@@ -40,16 +40,16 @@
 		"name": "index-test-8631525543437069850-242ac113-0001-007.err",
 		"path": "ds_user/.Trash/index-test-8631525543437069850-242ac113-0001-007.err",
 		"permissions": "ALL",
-		"system": "designsafe.storage.default",
+		"system": "designsafe.storage.working",
 		"type": "file"
 	},
 	{
 		"_links": {
 			"self": {
-				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/.Trash/index-test-8631525543437069850-242ac113-0001-007.out"
+				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user/.Trash/index-test-8631525543437069850-242ac113-0001-007.out"
 			},
 			"system": {
-				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
 			}
 		},
 		"format": "raw",
@@ -59,7 +59,7 @@
 		"name": "index-test-8631525543437069850-242ac113-0001-007.out",
 		"path": "ds_user/.Trash/index-test-8631525543437069850-242ac113-0001-007.out",
 		"permissions": "ALL",
-		"system": "designsafe.storage.default",
+		"system": "designsafe.storage.working",
 		"type": "file"
 	}
 ]

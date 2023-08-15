@@ -2,16 +2,16 @@
     {
         "_links": {
             "history": {
-                "href": "https://agave.designsafe-ci.org/files/v2/history/system/designsafe.storage.default/ds_user/agavefs"
+                "href": "https://agave.designsafe-ci.org/files/v2/history/system/designsafe.storage.working/ds_user/agavefs"
             },
             "metadata": {
                 "href": "https://agave.designsafe-ci.org/meta/v2/data?q=%7B%22associationIds%22%3A%221780892864709062170-242ac112-0001-002%22%7D"
             },
             "self": {
-                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/agavefs"
+                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user/agavefs"
             },
             "system": {
-                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
             }
         },
         "format": "folder",
@@ -21,16 +21,16 @@
         "name": ".",
         "path": "ds_user/agavefs",
         "permissions": "ALL",
-        "system": "designsafe.storage.default",
+        "system": "designsafe.storage.working",
         "type": "dir"
     },
     {
         "_links": {
             "self": {
-                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/agavefs/1elem.tcl"
+                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user/agavefs/1elem.tcl"
             },
             "system": {
-                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
             }
         },
         "format": "raw",
@@ -40,16 +40,16 @@
         "name": "1elem.tcl",
         "path": "ds_user/agavefs/1elem.tcl",
         "permissions": "ALL",
-        "system": "designsafe.storage.default",
+        "system": "designsafe.storage.working",
         "type": "file"
     },
     {
         "_links": {
             "self": {
-                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/agavefs/DOC19_copy.jpg"
+                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user/agavefs/DOC19_copy.jpg"
             },
             "system": {
-                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
             }
         },
         "format": "raw",
@@ -59,16 +59,16 @@
         "name": "DOC19_copy.jpg",
         "path": "ds_user/agavefs/DOC19_copy.jpg",
         "permissions": "ALL",
-        "system": "designsafe.storage.default",
+        "system": "designsafe.storage.working",
         "type": "file"
     },
     {
         "_links": {
             "self": {
-                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/agavefs/first_try_blastn-1446839548963.txt"
+                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user/agavefs/first_try_blastn-1446839548963.txt"
             },
             "system": {
-                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
             }
         },
         "format": "raw",
@@ -78,16 +78,16 @@
         "name": "first_try_blastn-1446839548963.txt",
         "path": "ds_user/agavefs/first_try_blastn-1446839548963.txt",
         "permissions": "ALL",
-        "system": "designsafe.storage.default",
+        "system": "designsafe.storage.working",
         "type": "file"
     },
     {
         "_links": {
             "self": {
-                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/agavefs/LSA_Intro_AI_Seminar.ppt"
+                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user/agavefs/LSA_Intro_AI_Seminar.ppt"
             },
             "system": {
-                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
             }
         },
         "format": "raw",
@@ -97,16 +97,16 @@
         "name": "LSA_Intro_AI_Seminar.ppt",
         "path": "ds_user/agavefs/LSA_Intro_AI_Seminar.ppt",
         "permissions": "ALL",
-        "system": "designsafe.storage.default",
+        "system": "designsafe.storage.working",
         "type": "file"
     },
     {
         "_links": {
             "self": {
-                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/agavefs/s07-plsa.ppt"
+                "href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user/agavefs/s07-plsa.ppt"
             },
             "system": {
-                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+                "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
             }
         },
         "format": "raw",
@@ -116,7 +116,7 @@
         "name": "s07-plsa.ppt",
         "path": "ds_user/agavefs/s07-plsa.ppt",
         "permissions": "ALL",
-        "system": "designsafe.storage.default",
+        "system": "designsafe.storage.working",
         "type": "file"
     }
 ]

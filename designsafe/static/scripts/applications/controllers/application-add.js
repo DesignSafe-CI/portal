@@ -773,7 +773,7 @@ export function applicationAddCtrl(window, angular, $, _) {
                                 },
                                 {
                                     'key': 'deploymentSystem',
-                                    'placeholder': 'designsafe.storage.default',
+                                    'placeholder': 'designsafe.storage.working',
                                     'type': 'select',
                                     'titleMap': [],
                                     ngModelOptions: {
@@ -1486,7 +1486,7 @@ export function applicationAddCtrl(window, angular, $, _) {
                 'executionType': 'CLI',
                 'parallelism': 'SERIAL',
                 'deploymentPath': Django.user + '/apps/shell-runner-0.1.0',
-                'deploymentSystem': 'designsafe.storage.default',
+                'deploymentSystem': 'designsafe.storage.working',
                 'templatePath': 'wrapper.sh',
                 'testPath': 'test/test.sh',
                 'tags': [

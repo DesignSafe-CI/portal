@@ -54,7 +54,7 @@ function config(
             url: '/agave/{systemId}/{filePath:any}/?query_string&offset&limit',
             component: 'dataDepotBrowser',
             params: {
-                systemId: 'designsafe.storage.default',
+                systemId: 'designsafe.storage.working',
                 filePath: Django.user,
             },
             resolve: {
@@ -87,7 +87,7 @@ function config(
             url: '/shared/{systemId}/{filePath:any}?query_string',
             component: 'dataDepotBrowser',
             params: {
-                systemId: 'designsafe.storage.default',
+                systemId: 'designsafe.storage.working',
                 filePath: '',
             },
             resolve: {
@@ -1115,7 +1115,7 @@ function config(
         /* Default to MyData for authenticated users, PublicData for anonymous */
         if (Django.context.authenticated) {
             $state.go('myData', {
-                systemId: 'designsafe.storage.default',
+                systemId: 'designsafe.storage.working',
                 filePath: Django.user,
             });
         } else {

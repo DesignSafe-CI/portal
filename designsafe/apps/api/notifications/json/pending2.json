@@ -15,7 +15,7 @@
     "created": "2018-03-26T09:20:38.000-05:00",
     "lastUpdated": "2018-03-26T09:20:58.000-05:00",
     "archivePath": "jarosenb/archive/jobs/2018-03-26/jar_test_032618_2-2950421117375868440-242ac11b-0001-007",
-    "archiveSystem": "designsafe.storage.default",
+    "archiveSystem": "designsafe.storage.working",
     "outputPath": "/scratch/00849/tg458981/designsafe-scratch/jarosenb/job-2950421117375868440-242ac11b-0001-007-jar_test_032618_2",
     "status": "PENDING",
     "submitTime": "2018-03-26T09:20:34.000-05:00",
@@ -23,7 +23,7 @@
     "endTime": null,
     "inputs": {
         "inputDirectory": [
-            "agave://designsafe.storage.default/mock/examples/adcirc/adcirc_inputs"
+            "agave://designsafe.storage.working/mock/examples/adcirc/adcirc_inputs"
         ]
     },
     "parameters": {},
@@ -38,7 +38,7 @@
             "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.community.exec.stampede"
         },
         "archiveSystem": {
-            "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+            "href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.working"
         },
         "archiveData": {
             "href": "https://agave.designsafe-ci.org/jobs/v2/2950421117375868440-242ac11b-0001-007/outputs/listings"

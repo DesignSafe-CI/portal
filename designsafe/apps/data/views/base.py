@@ -149,7 +149,7 @@ class DataBrowserTestView(BasePublicTemplate):
 
 class FileMediaView(View):
     systems_mappings = {
-        'designsafe.storage.default': 'shared',
+        'designsafe.storage.working': 'shared',
         'designsafe.storage.published': 'published',
         'designsafe.storage.community': 'community',
         'nees.public': 'public/projects'

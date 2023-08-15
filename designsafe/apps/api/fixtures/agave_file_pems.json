@@ -9,10 +9,10 @@
     "recursive" : true,
     "_links" : {
       "self" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/ds_user"
+        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.working/ds_user"
       },
       "file" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user"
+        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user"
       },
       "profile" : {
         "href" : "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
@@ -29,10 +29,10 @@
     "recursive" : false,
     "_links" : {
       "self" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/ds_user"
+        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.working/ds_user"
       },
       "file" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user"
+        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user"
       },
       "profile" : {
         "href" : "https://agave.designsafe-ci.org/profiles/v2/envision"
@@ -49,10 +49,10 @@
     "recursive" : true,
     "_links" : {
       "self" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/ds_user"
+        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.working/ds_user"
       },
       "file" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user"
+        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.working/ds_user"
       },
       "profile" : {
         "href" : "https://agave.designsafe-ci.org/profiles/v2/ds_user"
