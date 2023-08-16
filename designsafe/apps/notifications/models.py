@@ -52,3 +52,10 @@ def receive_notification(sender, **kwargs):
         notification.save()
 
     Event.send_event(event_type, event_users, event_data)
+
+
+#pylint: enable=invalid-name
+class SiteMessage(models.Model):
+    """Warning message to display on all pages."""
+    message = models.TextField(help_text='Text for the alert message')
+    display = models.BooleanField()
