@@ -156,6 +156,7 @@ class PublishedViewCtrl {
                 system: 'designsafe.storage.published',
                 path: this.$stateParams.filePath,
                 query_string: this.$stateParams.query_string,
+                doi: this.$stateParams.doi
             });
         } else {
             this.getProjectListings();
@@ -622,11 +623,11 @@ class PublishedViewCtrl {
         return arr.filter(Boolean);
     }
 
-    onBrowse(file) {
+    onBrowse(file, doi) {
         if (file.type === 'dir') {
-            this.$state.go(this.$state.current.name, { filePath: file.path, query_string: null });
+            this.$state.go(this.$state.current.name, { filePath: file.path, query_string: null, doi: doi });
         } else {
-            this.FileOperationService.openPreviewModal({ api: 'agave', scheme: 'private', file });
+            this.FileOperationService.openPreviewModal({ api: 'agave', scheme: 'private', file, doi: doi });
         }
     }
 

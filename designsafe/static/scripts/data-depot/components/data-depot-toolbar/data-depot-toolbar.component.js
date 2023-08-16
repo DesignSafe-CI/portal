@@ -49,12 +49,12 @@ class DataDepotToolbarCtrl {
             const projectId = this.PublicationService.current.projectId;
             this.FileOperationService.microsurvey({projectId})
         }
-        this.FileOperationService.download({api, scheme, files});
+        this.FileOperationService.download({api, scheme, files, doi: this.FileListingService.currentDOI});
     }
     preview() {
         const { api, scheme } = this.FileListingService.listings.main.params;
         const file = this.getAllSelected()[0];
-        this.FileOperationService.openPreviewModal({api, scheme, file});
+        this.FileOperationService.openPreviewModal({api, scheme, file, doi: this.FileListingService.currentDOI});
     }
     previewImages() {
         const { api, scheme, system } = this.FileListingService.listings.main.params;

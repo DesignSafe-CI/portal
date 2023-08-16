@@ -279,7 +279,8 @@
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[report.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       doi="simulation.doi"
+                                                       on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>
@@ -307,7 +308,8 @@
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[model.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       doi="simulation.doi"
+                                                       on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>
@@ -347,7 +349,8 @@
                                                                    published="true"
                                                                    on-scroll="$ctrl.scrollToBottom()"
                                                                    listing="$ctrl.FileListingService.listings[input.uuid]"
-                                                                   on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                   doi="simulation.doi"
+                                                                   on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                                     </files-listing>
                                                 </div>
                                             </div>
@@ -389,7 +392,8 @@
                                                                                published="true"
                                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                                listing="$ctrl.FileListingService.listings[output.uuid]"
-                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                               doi="simulation.doi"
+                                                                               on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                                                 </files-listing>
                                                             </div>
                                                         </div>
@@ -437,7 +441,8 @@
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[analysis.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       doi="simulation.doi"
+                                                       on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                         </files-listing>
                                     </div>
                                   </div>

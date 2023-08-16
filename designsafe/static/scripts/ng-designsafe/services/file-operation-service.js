@@ -340,13 +340,14 @@ export class FileOperationService {
      * @param {string} params.scheme Scheme (private, published, community) of files to preview.
      * @param {Object} params.file File object {name, system, path} to preview.
      */
-    openPreviewModal({ api, scheme, file }) {
+    openPreviewModal({ api, scheme, file, doi }) {
         var modal = this.$uibModal.open({
             component: 'preview',
             resolve: {
                 file: () => file,
                 api: () => api,
                 scheme: () => scheme,
+                doi: () => doi,
             },
             size: 'lg',
         });
@@ -359,9 +360,9 @@ export class FileOperationService {
      * @param {string} params.api API of current listing.
      * @param {string} params.scheme Scheme (private, published, community) of files to preview.
      */
-    getPreviewHref({ file, api, scheme }) {
+    getPreviewHref({ file, api, scheme, doi }) {
         const previewUrl = this.removeDuplicateSlashes(
-            `/api/datafiles/${api}/${scheme}/preview/${file.system}/${encodeURIComponent(file.path)}/`
+            `/api/datafiles/${api}/${scheme}/preview/${file.system}/${encodeURIComponent(file.path)}/?doi=${doi}`
         );
         switch (api) {
             case 'shared':
@@ -693,13 +694,13 @@ export class FileOperationService {
      * @param {string} params.scheme Scheme (private, published, community) of current listing.
      * @param {Object} params.files File objects ({name, system, path}) to download.
      */
-    download({ api, scheme, files }) {
+    download({ api, scheme, files, doi }) {
         if (!Array.isArray(files)) {
             files = [files];
         }
         if (api === 'agave') {
             const system = files[0].system;
-            const zipUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/download/${system}/`);
+            const zipUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/download/${system}/?doi=${doi}`);
             const request = this.$http
                 .put(zipUrl, { paths: files.map((f) => f.path) })
                 .then((resp) => {

@@ -25,6 +25,7 @@ export class FileListingService {
         this.ProjectService = ProjectService;
         this.FileOperationService = FileOperationService;
         this.from = from; // bind rxjs method for mocking
+        this.currentDOI = null;
 
         this.modalCloseSubject = new Subject();
         this.listingStartSubject = new Subject();
@@ -277,8 +278,8 @@ export class FileListingService {
      * @param {number} params.limit Number of results to return.
      * @param {string} params.query_string Optional query string for search.
      */
-    browse({ section, api, scheme, system, path, offset, limit, query_string }) {
-        const params = { section, api, scheme, system, path, offset: offset || 0, limit: limit || 100, query_string };
+    browse({ section, api, scheme, system, path, offset, limit, query_string, doi }) {
+        const params = { section, api, scheme, system, path, offset: offset || 0, limit: limit || 100, query_string, doi };
         this.updateParams(section, params);
         // Deselect any selected files and update permissions on operations.
         if (section === 'main') {

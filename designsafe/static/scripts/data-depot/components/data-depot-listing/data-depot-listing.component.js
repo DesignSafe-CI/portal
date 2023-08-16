@@ -249,6 +249,7 @@ class FilesListingCtrl {
 
     onSelect(idx) {
         this.FileListingService.select(this.listing.params.section, idx)
+        this.FileListingService.currentDOI = this.doi;
     }
 
     icon(name, type) {
@@ -354,7 +355,8 @@ export const FilesListingComponent = {
         operation: '&', // Callback for move/copy operation.
         showTags: '<',
         editTags: '<', 
-        published: '<'
+        published: '<',
+        doi: '<'
     },
 };
 
