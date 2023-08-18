@@ -143,6 +143,7 @@ MIDDLEWARE_CLASSES = (
     'impersonate.middleware.ImpersonateMiddleware',
     'designsafe.middleware.DesignSafeTermsMiddleware',
     'designsafe.middleware.DesignsafeProfileUpdateMiddleware',
+    'designsafe.middleware.SiteMessageMiddleware',
 )
 
 ROOT_URLCONF = 'designsafe.urls'
