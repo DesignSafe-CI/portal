@@ -110,9 +110,11 @@ class SearchView(View):
         if role:
             logger.info(role)
             user_rs = user_rs.filter(groups__name=role)
-        
-        # Throw error if no filtering is specified.
-        return HttpResponseNotFound()
+        resp = [model_to_dict(u, fields=resp_fields) for u in user_rs]
+        if len(resp):
+            return JsonResponse(resp, safe=False)
+        else:
+            return HttpResponseNotFound()
 
 
 class PublicView(View):
