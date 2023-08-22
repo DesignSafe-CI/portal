@@ -67,7 +67,8 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
 class SiteMessageMiddleware:
     def process_request(self, request):
         for message in SiteMessage.objects.filter(display=True):
-            messages.warning(request, message.message)
+            if settings.SITE_ID == 1:
+                messages.warning(request, message.message)
 
 
 class RequestProfilingMiddleware(object):
