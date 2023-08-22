@@ -110,6 +110,11 @@ class SearchView(View):
         if role:
             logger.info(role)
             user_rs = user_rs.filter(groups__name=role)
+
+        # Prevent endpoint from returning unfiltered user list.
+        if not q and not role:
+            return HttpResponseNotFound()
+
         resp = [model_to_dict(u, fields=resp_fields) for u in user_rs]
         if len(resp):
             return JsonResponse(resp, safe=False)
