@@ -30,15 +30,15 @@ class PipelineProjectCtrl {
                 this.projType = project.value.projectType;
                 this.uuid = project.uuid;
                 if (this.projType === 'experimental') {
-                    this.$state.go('projects.pipelineSelectExp', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectExp', { projectId: this.uuid }, { reload: true });
                 } else if (this.projType === 'simulation') {
-                    this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectSim', { projectId: this.uuid }, { reload: true });
                 } else if (this.projType === 'hybrid_simulation') {
-                    this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectHybSim', { projectId: this.uuid }, { reload: true });
                 } else if (this.projType === 'field_recon') {
-                    this.$state.go('projects.pipelineSelectField', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectField', { projectId: this.uuid }, { reload: true });
                 } else if (this.projType === 'other') {
-                    this.$state.go('projects.pipelineStart', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineStart', { projectId: this.uuid }, { reload: true });
                 }
             });
         } else {
