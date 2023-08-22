@@ -1043,3 +1043,7 @@ i[class^="icon-ls-pre/post"]:before,
     width: 50%;
     padding: 10px;
 }
+
+.cms-messages {
+    display: none !important;
+}
