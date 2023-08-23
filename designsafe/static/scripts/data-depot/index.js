@@ -83,11 +83,11 @@ function config(
                 },
             },
         })
-        .state('myDataWork', {
+        .state('myDataScratch', {
             url: '/agave/{systemId}/{filePath:any}/?query_string&offset&limit',
             component: 'dataDepotBrowser',
             params: {
-                systemId: 'designsafe.storage.working',
+                systemId: 'designsafe.storage.frontera.scratch',
                 filePath: Django.user,
             },
             resolve: {
