@@ -16,6 +16,7 @@ from termsandconditions.models import TermsAndConditions
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
+from designsafe.apps.notifications.models import SiteMessage
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +64,14 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
                              'Use is required for continued use of DesignSafe '
                              'resources.' % accept_url)
         return None
+    
+
+class SiteMessageMiddleware:
+    def process_request(self, request):
+        for message in SiteMessage.objects.filter(display=True):
+            if settings.SITE_ID == 1:
+                messages.warning(request, message.message)
+
 
 class RequestProfilingMiddleware(MiddlewareMixin):
     """Middleware to run cProfiler on each request"""

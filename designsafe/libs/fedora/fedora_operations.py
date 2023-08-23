@@ -686,7 +686,7 @@ def generate_manifest(walk_result, project_id, version=None):
                 manifest.append({
                     'parent_entity': entity['uuid'],
                     'corral_path': file_path,
-                    'rel_path': rel_path,
+                    'project_path': rel_path,
                     'checksum': get_sha1_hash(file_path),
                     'ffi': get_fido_output(fido_client, file_path)
                 })
@@ -751,8 +751,8 @@ def generate_package(project_id):
 
     with ZipFile(archive_path, 'w') as zf:
         for file in manifest:
-            print(file['rel_path'])
-            zf.write(file['corral_path'], file['rel_path'])
+            print(file['project_path'])
+            zf.write(file['corral_path'], file['project_path'])
         zf.writestr('{}/manifest.json'.format(project_id), manifest_json)
         zf.writestr('{}/metadata.json'.format(project_id), report_json)
 

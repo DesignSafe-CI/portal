@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
+import dndlists from 'angular-drag-and-drop-lists';
 
 import './services/apps-wizard-service';
 

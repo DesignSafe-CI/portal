@@ -45,9 +45,9 @@
         </p>
     </div>
     <div class="lead alert alert-warning" ng-if="data.systemDown">
-        <h2>Application Unavailable</h2>
         <p>
-            This application's execution system ({{data.app.executionSystem}}) is not currently accepting requests. Please try again later,
+            This application's execution system host ({{data.app.exec_sys.login.host}}) is not reachable and may be down for maintenance. Check
+            <a href="https://tacc.utexas.edu/portal/dashboard" target="_blank">System Status</a> for updates,
             or submit a ticket for assistance.
         </p>
     </div>

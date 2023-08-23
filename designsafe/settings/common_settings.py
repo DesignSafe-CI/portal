@@ -30,6 +30,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__CHANGE_ME_!__')
 
 # SESSIONS
 SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
+SESSION_COOKIE_SECURE = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -148,6 +149,7 @@ MIDDLEWARE = (
     'impersonate.middleware.ImpersonateMiddleware',
     'designsafe.middleware.DesignSafeTermsMiddleware',
     'designsafe.middleware.DesignsafeProfileUpdateMiddleware',
+    'designsafe.middleware.SiteMessageMiddleware',
 )
 
 ROOT_URLCONF = 'designsafe.urls'
@@ -254,7 +256,6 @@ STATICFILES_DIRS = [
     ('vendor/font-awesome', os.path.join(BASE_DIR, 'node_modules', 'font-awesome')),
     ('vendor/angular-toastr', os.path.join(BASE_DIR, 'node_modules', 'angular-toastr')),
     ('vendor/slick-carousel', os.path.join(BASE_DIR, 'node_modules', 'slick-carousel')),
-    ('vendor/angular-drag-and-drop-lists', os.path.join(BASE_DIR, 'node_modules', 'angular-drag-and-drop-lists')),
     ('vendor/angular-xeditable', os.path.join(BASE_DIR, 'node_modules', 'angular-xeditable')),
     ('vendor/leaflet-measure', os.path.join(BASE_DIR, 'node_modules', 'leaflet-measure')),
     ('vendor/exif-js', os.path.join(BASE_DIR, 'node_modules', 'exif-js')),

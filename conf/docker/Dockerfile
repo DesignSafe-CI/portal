@@ -1,3 +1,12 @@
+FROM node:16 as node_build
+COPY package.json package-lock.json /designsafe/
+WORKDIR /designsafe
+RUN npm ci
+
+COPY . /designsafe/
+RUN npm run build
+
+
 FROM python:3.7-buster
 
 LABEL MAINTAINER="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
@@ -27,11 +36,7 @@ RUN apt-get update && apt-get install -y \
     git \
     vim
 
-# install node 12.x
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get install -y nodejs
-
-RUN pip install poetry==1.4.0
+RUN pip install poetry
 COPY poetry.lock pyproject.toml /srv/www/
 WORKDIR /srv/www
 RUN poetry config virtualenvs.create false && \
@@ -41,11 +46,10 @@ RUN poetry config virtualenvs.create false && \
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
 
-COPY . /srv/www/designsafe
-RUN chown -R tg458981:G-816877 /srv/www/designsafe
+COPY --from=node_build /designsafe/ /srv/www/designsafe
+RUN chown tg458981:G-816877 /srv/www/designsafe /srv/www/designsafe/*
+RUN chown -R tg458981:G-816877 /srv/www/designsafe/designsafe
 
 USER tg458981
-
-RUN echo "prefix=~/.npm-global" >> ~/.npmrc
 
 WORKDIR /srv/www/designsafe
