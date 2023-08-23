@@ -46,6 +46,12 @@ class DataDepotNavCtrl {
           description: 'Private directory for your data'
         },
         {
+          name: 'Scratch (Frontera)',
+          collapsible: false,
+          state: 'myDataScratch',
+          description: 'Scratch directory on Frontera for use with JupyterHub'
+        },
+        {
           name: 'My Projects',
           collapsible: false,
           state: 'projects.list',
