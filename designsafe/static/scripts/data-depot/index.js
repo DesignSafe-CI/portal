@@ -1083,7 +1083,7 @@ function config(
             },
         })
         .state('publishedData',  {
-            url: '/public/designsafe.storage.published/{filePath:any}?query_string',
+            url: '/public/designsafe.storage.published/{filePath:any}?query_string&doi',
             component: 'publishedParent',
             resolve: {
                 version: ($stateParams) => {
