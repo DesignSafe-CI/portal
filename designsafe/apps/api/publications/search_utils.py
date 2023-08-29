@@ -177,4 +177,4 @@ def search_string_query(search_string):
                                                           'project.value.projectType',
                                                           'project.value.dataType'])
     q2 = Q({'term': {'projectId._exact': search_string}})
-    return q1 | q2 | author_query(search_string)
+    return q1 | q2 | author_query(f"\"{search_string}\"")
