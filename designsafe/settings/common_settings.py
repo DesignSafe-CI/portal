@@ -494,6 +494,7 @@ AGAVE_SANDBOX_SUPER_TOKEN = os.environ.get('AGAVE_SANDBOX_SUPER_TOKEN', '')
 
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
+AGAVE_WORKING_SYSTEM = os.environ.get('AGAVE_WORKING_SYSTEM', 'designsafe.storage.frontera.scratch')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
