@@ -272,7 +272,7 @@ class PublishedViewCtrl {
             this.browser.project.coordinator_set = this.browser.publication.coordinators;
             this.browser.project.simsubstructure_set = this.browser.publication.sim_substructures;
             this.browser.project.expsubstructure_set = this.browser.publication.exp_substructures;
-            this.browser.project.coordinatoroutput_set = this.browser.publication.coordintaor_outputs;
+            this.browser.project.coordinatoroutput_set = this.browser.publication.coordinator_outputs;
             this.browser.project.simoutput_set = this.browser.publication.sim_outputs;
             this.browser.project.expoutput_set = this.browser.publication.exp_outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
