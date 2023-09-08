@@ -19,7 +19,7 @@ class PublicationListingCtrl {
         this.experimentOptions = exptJson;
         this.experimentFacilityOptions = [
             { name: '', label: 'All Types' },
-            ...exptJson.experimentalFacility.experimental.map(({ label }) => ({ name: label, label: label })),
+            ...exptJson.facility.experimental.map(({ label }) => ({ name: label, label: label })),
         ];
         this.simulationTypes = [{ name: '', label: 'All Types' }, ...simulationTypes];
 
@@ -113,7 +113,7 @@ class PublicationListingCtrl {
         if (reset) this.params.advancedFilters.experimental.experimentType = '';
         const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
         const facilityName = (
-            this.experimentOptions.experimentalFacility.experimental.filter((x) => x.label === facilityLabel)[0] || {}
+            this.experimentOptions.facility.experimental.filter((x) => x.label === facilityLabel)[0] || {}
         ).name;
 
         if (facilityName) {
