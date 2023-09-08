@@ -1,6 +1,7 @@
 import ManageSimulationTemplate from './manage-simulations.template.html';
 const SimulationDefaults = require('./simulation-form-defaults.json');
 const SimulationTypes = require('./simulation-types.json');
+const ExperimentalData = require('../facility-data.json');
 
 class ManageSimulationCtrl {
 
@@ -23,7 +24,8 @@ class ManageSimulationCtrl {
                 referencedData: false,
             },
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
-            simulationTypes: SimulationTypes.simulationTypes
+            simulationTypes: SimulationTypes.simulationTypes,
+            facilities: ExperimentalData.facility.experimental,
         };
         this.configureForm(this.edit);
         this.form.authors = this.configureAuthors(this.edit, false);
@@ -158,6 +160,16 @@ class ManageSimulationCtrl {
             this.form[fieldName].splice(index,1);
         } else {
             this.form[fieldName].pop();
+        }
+    }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
         }
     }
 

@@ -2,7 +2,7 @@ import VersionExperimentSelectionTemplate from './version-experiment-selection.t
 import VersionFieldReconSelectionTemplate from './version-field-recon-selection.template.html';
 import VersionSimulationSelectionTemplate from './version-simulation-selection.template.html';
 import VersionCitationTemplate from './version-citation.template.html';
-import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
+import experimentalData from '../../../../projects/components/facility-data.json';
 
 class PipelineVersionCtrl {
     constructor(
@@ -32,7 +32,7 @@ class PipelineVersionCtrl {
             citationComp: '',
             placeholder: '',
             savedStatus: {},
-            efs: experimentalData.experimentalFacility,
+            efs: experimentalData.facility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes
         };

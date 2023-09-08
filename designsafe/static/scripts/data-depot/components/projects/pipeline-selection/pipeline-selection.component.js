@@ -2,7 +2,7 @@ import PipelineSelectionExpTemplate from './pipeline-selection-exp.template.html
 import PipelineSelectionSimTemplate from './pipeline-selection-sim.template.html';
 import PipelineSelectionHybSimTemplate from './pipeline-selection-hyb-sim.template.html';
 import PipelineSelectionFieldTemplate from './pipeline-selection-field.template.html';
-import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
+import experimentalData from '../../../../projects/components/facility-data.json';
 
 class PipelineSelectionCtrl {
     constructor(
@@ -30,7 +30,7 @@ class PipelineSelectionCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.selectedEnts = [];
         this.ui = {
-            efs: experimentalData.experimentalFacility,
+            efs: experimentalData.facility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
             loading: true,

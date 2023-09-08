@@ -1,6 +1,6 @@
 import ManageExperimentsTemplate from './manage-experiments.template.html';
 const ExperimentDefaults = require('./experiment-form-defaults.json');
-const ExperimentalData = require('./experimental-data.json');
+const ExperimentalData = require('../facility-data.json');
 
 class ManageExperimentsCtrl {
 
@@ -23,7 +23,7 @@ class ManageExperimentsCtrl {
                 referencedData: false,
             },
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
-            experimentalFacilities: ExperimentalData.experimentalFacility.experimental,
+            experimentalFacilities: ExperimentalData.facility.experimental,
             equipmentTypes: ExperimentalData.equipmentTypes,
             experimentTypes: ExperimentalData.experimentTypes,
         };
@@ -166,11 +166,13 @@ class ManageExperimentsCtrl {
     }
 
     getEF(str) {
-        let efs = this.ui.experimentalFacilities;
-        let ef = efs.find((ef) => {
-            return ef.name === str;
-        });
-        return ef.label;
+        if (str !='' && str !='None') {
+            let efs = this.ui.experimentalFacilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }   
     }
 
     getET(exp) {

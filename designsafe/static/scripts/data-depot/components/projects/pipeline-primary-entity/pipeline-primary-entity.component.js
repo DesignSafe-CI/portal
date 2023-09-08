@@ -2,7 +2,7 @@ import PipelineExperimentTemplate from './pipeline-experiment.template.html';
 import PipelineSimulationTemplate from './pipeline-simulation.template.html';
 import PipelineHybridTemplate from './pipeline-hybrid.template.html';
 import PipelineFieldReconTemplate from './pipeline-field-recon.template.html';
-import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
+import experimentalData from '../../../../projects/components/facility-data.json';
 
 class PipelinePrimaryEntityCtrl {
 
@@ -20,7 +20,7 @@ class PipelinePrimaryEntityCtrl {
         this.secondaryEntities = this.ProjectService.resolveParams.secondaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.ui = {
-            efs: experimentalData.experimentalFacility,
+            efs: experimentalData.facility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
             loading: true

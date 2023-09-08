@@ -19,9 +19,9 @@
             { "name": "niche", "label": "National Full-Scale Testing Infrastructure for Community Hardening in Extreme Wind, Surge, and Wave Events (NICHE)" },
             { "name": "pfsml-florida", "label": "Boundary Layer Wind Tunnel - University of Florida" },
             { "name": "rtmd-lehigh", "label": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities - LeHigh University" },
-            { "name": "simcntr", "label": "SimCenter" },
+            { "name": "simcntr", "label": "SimCenter" },                                
             { "name": "nco-purdue", "label": "Network Coordination Office - Purdue University" },
-            { "name": "crbcrp", "label": "Center for Risk-Based Community Resilience Planning" },            
+            { "name": "crbcrp", "label": "Center for Risk-Based Community Resilience Planning" },
             { "name": "other", "label": "Other" }
         ],
         "other": [

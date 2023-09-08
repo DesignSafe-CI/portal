@@ -1,7 +1,7 @@
 import AmendExperimentTemplate from './amend-experimental.template.html';
 import AmendFieldReconTemplate from './amend-field-recon.template.html';
 import AmendSimulationTemplate from './amend-simulation.template.html'
-import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
+import experimentalData from '../../../../projects/components/facility-data.json';
 
 class PipelineAmendCtrl {
     constructor(
@@ -25,7 +25,7 @@ class PipelineAmendCtrl {
         this.ui = {
             loading: true,
             missing: {},
-            efs: experimentalData.experimentalFacility,
+            efs: experimentalData.facility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
         };

@@ -1,6 +1,6 @@
 import PublicationPreviewTemplate from './publication-preview.component.html';
 import PublicationPopupTemplate from './publication-popup.html';
-import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
+import experimentalData from '../../../../projects/components/facility-data.json';
 
 class PublicationPreviewCtrl {
 
@@ -30,7 +30,7 @@ class PublicationPreviewCtrl {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.ui = {
-            efs: experimentalData.experimentalFacility,
+            efs: experimentalData.facility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
             fileNav: true,
