@@ -2,7 +2,7 @@ import _ from 'underscore';
 import FilesListingTemplate from './files-listing.template.html';
 import PublicationsListingTemplate from './publications-listing.template.html';
 import PublicationsLegacyListingTemplate from './publications-legacy-listing.template.html';
-const exptJson = require('../../../projects/components/manage-experiments/experimental-data.json');
+const exptJson = require('../../../projects/components/facility-data.json');
 const { simulationTypes } = require('../../../projects/components/manage-simulations/simulation-types.json');
 const { nhTypes, frTypes } = require('../../../projects/components/manage-project/project-form-options.json');
 const { otherTypes } = require('../../../projects/components/manage-project/project-form-options.json');
@@ -19,7 +19,7 @@ class PublicationListingCtrl {
         this.experimentOptions = exptJson;
         this.experimentFacilityOptions = [
             { name: '', label: 'All Types' },
-            ...exptJson.facility.experimental.map(({ label }) => ({ name: label, label: label })),
+            ...exptJson.facility.facilities_list.map(({ label }) => ({ name: label, label: label })),
         ];
         this.simulationTypes = [{ name: '', label: 'All Types' }, ...simulationTypes];
 
@@ -113,7 +113,7 @@ class PublicationListingCtrl {
         if (reset) this.params.advancedFilters.experimental.experimentType = '';
         const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
         const facilityName = (
-            this.experimentOptions.facility.experimental.filter((x) => x.label === facilityLabel)[0] || {}
+            this.experimentOptions.facility.facilities_list.filter((x) => x.label === facilityLabel)[0] || {}
         ).name;
 
         if (facilityName) {

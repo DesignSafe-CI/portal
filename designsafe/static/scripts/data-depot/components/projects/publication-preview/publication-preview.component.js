@@ -128,7 +128,7 @@ class PublicationPreviewCtrl {
     }
 
     getEF(str) {
-        let efs = this.ui.efs[this.project.value.projectType];
+        let efs = this.ui.efs.facilities_list;
         let ef = efs.find((ef) => {
             return ef.name === str;
         });

@@ -74,7 +74,7 @@
                 <div class="prj-head-title" style="padding-bottom:20px">
                     Experiment | <strong>{{ primEnt.value.title }}</strong>
                 </div>
-                <span ng-if="primEnt.value.experimentType.length">
+                <span ng-if="primEnt.value.experimentType.length ">
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Experiment Type</div>
                         <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
@@ -93,7 +93,7 @@
                         <ds-author-list authors="primEnt.value.authors"></ds-author-list>
                     </div>
                 </div>
-                <span ng-if="primEnt.value.experimentalFacility.length">
+                <span ng-if="primEnt.value.experimentalFacility.length && primEnt.value.experimentalFacility !=='None'">
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Experimental Facility</div>
                         <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"

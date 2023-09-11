@@ -23,7 +23,7 @@ class ManageExperimentsCtrl {
                 referencedData: false,
             },
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
-            experimentalFacilities: ExperimentalData.facility.experimental,
+            experimentalFacilities: ExperimentalData.facility.facilities_list,
             equipmentTypes: ExperimentalData.equipmentTypes,
             experimentTypes: ExperimentalData.experimentTypes,
         };
@@ -179,8 +179,7 @@ class ManageExperimentsCtrl {
         if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
             exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
             exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
-            exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other' || 
-            experimentalFacilityOther) 
+            exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
             {
                 let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
                 let et = ets.find((x) => {
@@ -197,8 +196,7 @@ class ManageExperimentsCtrl {
         if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
         exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
         exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
-        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other' ||
-        experimentalFacilityOther) 
+        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
         {
             let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
             let eqt = eqts.find((x) => {

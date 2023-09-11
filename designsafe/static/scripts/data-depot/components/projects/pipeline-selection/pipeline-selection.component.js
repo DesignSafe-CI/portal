@@ -30,7 +30,7 @@ class PipelineSelectionCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.selectedEnts = [];
         this.ui = {
-            efs: experimentalData.facility,
+            facilities: experimentalData.facility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes,
             loading: true,
@@ -111,27 +111,41 @@ class PipelineSelectionCtrl {
     }
 
     getEF(str) {
-        let efs = this.ui.efs[this.browser.project.value.projectType];
-        let ef = efs.find((ef) => {
-            return ef.name === str;
-        });
-        return ef.label;
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities.facilities_list;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
     }
 
     getET(exp) {
-        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
-        let et = ets.find((x) => {
-            return x.name === exp.value.experimentType;
-        });
-        return et.label;
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+        exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+        exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+            {
+            let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+            let et = ets.find((x) => {
+                return x.name === exp.value.experimentType;
+            });
+            return et.label;
+        }
     }
 
     getEQ(exp) {
-        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
-        let eqt = eqts.find((x) => {
-            return x.name === exp.value.equipmentType;
-        });
-        return eqt.label;
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+        exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+        exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+            {
+            let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+            let eqt = eqts.find((x) => {
+                return x.name === exp.value.equipmentType;
+            });
+            return eqt.label;
+        }
     }
 
     matchingGroup(primaryEnt, subEnt) {

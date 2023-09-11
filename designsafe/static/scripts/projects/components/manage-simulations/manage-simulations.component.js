@@ -1,7 +1,7 @@
 import ManageSimulationTemplate from './manage-simulations.template.html';
 const SimulationDefaults = require('./simulation-form-defaults.json');
 const SimulationTypes = require('./simulation-types.json');
-const ExperimentalData = require('../facility-data.json');
+const FacilityData = require('../facility-data.json');
 
 class ManageSimulationCtrl {
 
@@ -25,7 +25,7 @@ class ManageSimulationCtrl {
             },
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
             simulationTypes: SimulationTypes.simulationTypes,
-            facilities: ExperimentalData.facility.experimental,
+            facilities: FacilityData.facility.facilities_list,
         };
         this.configureForm(this.edit);
         this.form.authors = this.configureAuthors(this.edit, false);

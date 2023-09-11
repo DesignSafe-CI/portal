@@ -381,7 +381,7 @@ class PublishedViewCtrl {
     }
 
     getEF(str) {
-        const efs = this.ui.efs[this.browser.project.value.projectType];
+        const efs = this.ui.efs.facilities_list;
         const ef = efs.find((ef) => {
             return ef.name === str;
         });

@@ -180,7 +180,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <span ng-if="experiment.value.experimentalFacility.length">
+                            <span ng-if="experiment.value.experimentalFacility.length && experiment.value.experimentalFacility !=='None'">
                                 <div class="entity-meta-field">
                                     <div class="entity-meta-label">Experimental Facility</div>
                                     <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">

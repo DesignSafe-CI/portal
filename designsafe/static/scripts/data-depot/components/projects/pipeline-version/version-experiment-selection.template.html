@@ -71,7 +71,7 @@
                 </button>
                 <div id="data-{{experiment.uuid}}" class="collapse dropdown-spacer-lg">
                     <div class="well">
-                        <span ng-if="experiment.value.equipmentType.length">
+                        <span ng-if="experiment.value.equipmentType.length && experiment.value.experimentalFacility !== 'None'">
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Experiment Type</div>
                                 <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
@@ -88,7 +88,7 @@
                                 <ds-author-list authors="experiment.value.authors"></ds-author-list>
                             </div>
                         </div>
-                        <span ng-if="experiment.value.experimentalFacility.length">
+                        <span ng-if="experiment.value.experimentalFacility.length && experiment.value.experimentalFacility !== 'None'">
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Experimental Facility</div>
                                 <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
@@ -99,7 +99,7 @@
                                 </span>
                             </div>
                         </span>
-                        <span ng-if="experiment.value.experimentType.length">
+                        <span ng-if="experiment.value.experimentType.length && experiment.value.experimentalFacility !== 'None'">
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Equipment Type</div>
                                 <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">

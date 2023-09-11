@@ -1,6 +1,6 @@
 {
     "facility": {
-        "experimental": [
+        "facilities_list": [
             { "name": "rapid-uw", "label": "RAPID - Natural Hazard and Disasters Reconnaissance Facility - University of Washington" },
             { "name": "converge-boulder", "label": "CONVERGE - Social Science/Interdisciplinary Resources and Extreme Events Coordination - University of Colorado Boulder" },
             { "name": "geer", "label": "GEER - Geotechnical Extreme Event Reconnaissance" },
