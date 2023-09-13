@@ -381,27 +381,45 @@ class PublishedViewCtrl {
     }
 
     getEF(str) {
-        const efs = this.ui.efs.facilities_list;
-        const ef = efs.find((ef) => {
-            return ef.name === str;
-        });
-        return ef.label;
+        if (str !='' && str !='None') {
+            const efs = this.ui.efs.facilities_list;
+            const ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
     }
 
     getET(exp) {
-        const ets = this.ui.experimentTypes[exp.value.experimentalFacility];
-        const et = ets.find((x) => {
-            return x.name === exp.value.experimentType;
-        });
-        return et.label;
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+            exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+            exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+            exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+            {
+            const ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+            const et = ets.find((x) => {
+                return x.name === exp.value.experimentType;
+            });
+            return et.label;
+        } else {
+            return exp.value.experimentType = null;
+        }
     }
 
     getEQ(exp) {
-        const eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
-        const eqt = eqts.find((x) => {
-            return x.name === exp.value.equipmentType;
-        });
-        return eqt.label;
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+            exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+            exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+            exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+            {
+            const eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+            const eqt = eqts.find((x) => {
+                return x.name === exp.value.equipmentType;
+            });
+            return eqt.label;
+        } else {
+            return exp.value.equipmentType = null;
+        }
     }
 
     isValid(ent) {

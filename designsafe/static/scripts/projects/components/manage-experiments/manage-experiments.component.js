@@ -186,8 +186,7 @@ class ManageExperimentsCtrl {
                     return x.name === exp.value.experimentType;
                 });
                 return et.label; 
-        }
-        else {
+        } else {
             return exp.value.experimentType = null;
         }
     }
@@ -203,8 +202,7 @@ class ManageExperimentsCtrl {
                 return x.name === exp.value.equipmentType;
             });
             return eqt.label;
-        }
-        else {
+        } else {
             return exp.value.equipmentType = null;
         }
     }
