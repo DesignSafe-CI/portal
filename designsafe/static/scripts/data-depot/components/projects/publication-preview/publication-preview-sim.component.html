@@ -139,15 +139,15 @@
                 <div style="padding-bottom: 5px;"> 
                     <span ng-if="$ctrl.readOnly">
                         <span style="background-color: #ECE4BF;">
-                            {{ $ctrl.cumDoiMetrics[simulation.value.dois].fileDownloads || 0 }} Downloads
+                            {{ $ctrl.metricDisplay($ctrl.downloadCounts[simulation.value.dois]) }} Downloads
                         </span>
                         &nbsp;&nbsp;
                         <span style="background-color: #ECE4BF;">        
-                            {{ $ctrl.cumDoiMetrics[simulation.value.dois].filePreviews || 0}} Views
+                            {{ $ctrl.metricDisplay($ctrl.viewCounts[simulation.value.dois])}} Views
                         </span>
                         &nbsp;&nbsp;
                         <span style="background-color: #ECE4BF;">        
-                            {{ $ctrl.citationCounts[simulation.value.dois] || 0}} Citations
+                            {{ $ctrl.metricDisplay($ctrl.citationCounts[simulation.value.dois])}} Citations
                         </span>
                         &nbsp;&nbsp;
                         <span>
