@@ -441,7 +441,9 @@ def email_confirmation(request, code=None):
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
                     logger.info('TAS Account activation succeeded.')
-                    check_or_create_agave_home_dir.apply(args=(user["username"],))
+                    from django.conf import settings
+                    check_or_create_agave_home_dir.apply_async(args=(user.username, settings.AGAVE_STORAGE_SYSTEM))
+                    check_or_create_agave_home_dir.apply_async(args=(user.username, settings.AGAVE_WORKING_SYSTEM))
                     return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
                 else:
                     messages.error(request,
