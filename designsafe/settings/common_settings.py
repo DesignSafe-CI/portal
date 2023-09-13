@@ -28,6 +28,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__CHANGE_ME_!__')
 
 # SESSIONS
 SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
+SESSION_COOKIE_SECURE = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -485,6 +486,7 @@ AGAVE_SANDBOX_SUPER_TOKEN = os.environ.get('AGAVE_SANDBOX_SUPER_TOKEN', '')
 
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
+AGAVE_WORKING_SYSTEM = os.environ.get('AGAVE_WORKING_SYSTEM', 'designsafe.storage.frontera.scratch')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')

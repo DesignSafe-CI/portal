@@ -32,6 +32,8 @@ def get_client(user, api):
 
 class DataFilesView(BaseApiView):
     def get(self, request, api, operation=None, scheme='private', system=None, path=''):
+
+        doi = request.GET.get('doi', None)
         
         metrics.info('Data Depot',
                      extra={
@@ -44,6 +46,7 @@ class DataFilesView(BaseApiView):
                              'api': api,
                              'systemId': system,
                              'filePath': path,
+                             'doi': doi,
                              'query': request.GET.dict()}
                      })
 
@@ -69,6 +72,7 @@ class DataFilesView(BaseApiView):
     def put(self, request, api, operation=None, scheme='private', system=None, path='/'):
 
         body = json.loads(request.body)
+        doi = request.GET.get('doi', None)
 
         metrics.info('Data Depot',
                      extra={
@@ -82,7 +86,8 @@ class DataFilesView(BaseApiView):
                              'scheme': scheme,
                              'system': system,
                              'path': path,
-                             'body': body
+                             'body': body,
+                             'doi': doi
                          }
                      })
 
