@@ -131,7 +131,7 @@ def walk_hyb_sim(project_id, version=None):
                 getattr(doc, 'coordinators', []))
             for coordinator in coordinator_list:
                 # Do stuff with coordinator.
-                coordinator_container_path = "{}/{}".format(hyb_sim_container_path, parse.quote(coordinator.value.title))
+                coordinator_container_path = "{}/{}".format(global_model_container_path, parse.quote(coordinator.value.title))
                 print('\t\tCoordinator ' + coordinator.value.title)
                 hyb_sim_map['fedora_mapping']['generated'].append('Coordinator: {}'.format(coordinator.value.title))
 
