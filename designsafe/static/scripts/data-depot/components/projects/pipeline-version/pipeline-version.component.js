@@ -1,6 +1,7 @@
 import VersionExperimentSelectionTemplate from './version-experiment-selection.template.html';
 import VersionFieldReconSelectionTemplate from './version-field-recon-selection.template.html';
 import VersionSimulationSelectionTemplate from './version-simulation-selection.template.html';
+import VersionHybSimSelectionTemplate from './version-hyb-sim-selection.template.html';
 import VersionCitationTemplate from './version-citation.template.html';
 import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
@@ -62,21 +63,48 @@ class PipelineVersionCtrl {
                     this.ui.placeholder = 'Experiment';
                     this.matchingGroupKey = 'experiments';
                     this.publishedKeyNames = ['experimentsList'];
-                    this.subEntities = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
+                    this.subEntities = ['modelconfig_set', 
+                                        'sensorlist_set', 
+                                        'event_set', 
+                                        'report_set', 
+                                        'analysis_set'];
                 } else if (prjType === 'simulation') {
                     this.ui.selectionComp = 'projects.versionSimulationSelection';
                     this.ui.citationComp = 'projects.versionCitation';
                     this.ui.placeholder = 'Simulation';
                     this.matchingGroupKey = 'simulations';
                     this.publishedKeyNames = ['simulation'];
-                    this.subEntities = ['simulation_set', 'model_set',  'input_set', 'output_set', 'analysis_set', 'report_set'];
+                    this.subEntities = ['simulation_set', 
+                                        'model_set',  
+                                        'input_set', 
+                                        'output_set', 
+                                        'analysis_set', 
+                                        'report_set'];
+                } else if (prjType === 'hybrid_simulation') {
+                    this.ui.selectionComp = 'projects.versionHybSimSelection';
+                    this.ui.citationComp = 'projects.versionCitation';
+                    this.ui.placeholder = 'HybSim';
+                    this.matchingGroupKey = 'hybrid_simulations';
+                    this.publishedKeyNames = ['hybrid_simulation'];
+                    this.subEntities = ['hybridsimulation_set', 
+                                        'globalmodel_set',  
+                                        'coordinator_set', 
+                                        'simsubstructure_set', 
+                                        'expsubstructure_set', 
+                                        'coordinatoroutput_set', 
+                                        'simoutput_set', 
+                                        'expoutput_set', 
+                                        'analysis_set', 
+                                        'report_set'];
                 } else if (prjType === 'field_recon') {
                     this.ui.selectionComp = 'projects.versionFieldReconSelection';
                     this.ui.citationComp = 'projects.versionCitation';
                     this.ui.placeholder = 'Mission';
                     this.matchingGroupKey = 'missions';
                     this.publishedKeyNames = ['missions', 'reports'];
-                    this.subEntities = ['planning_set', 'socialscience_set', 'geoscience_set'];
+                    this.subEntities = ['planning_set', 
+                                        'socialscience_set', 
+                                        'geoscience_set'];
 
                     this.primaryEnts = [].concat(
                         this.project.mission_set || [],
@@ -394,6 +422,17 @@ export const VersionFieldReconSelectionComponent = {
 
 export const VersionSimulationSelectionComponent = {
     template: VersionSimulationSelectionTemplate,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionHybSimSelectionComponent = {
+    template: VersionHybSimSelectionTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {

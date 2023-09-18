@@ -114,6 +114,9 @@ FEDORA_CONTEXT = {
     },
     "influenced": {
         "@id": "https://www.w3.org/TR/2013/REC-prov-o-20130430/#influenced"
+    },
+    "Influence": {
+        "@id": "https://www.w3.org/TR/2013/REC-prov-o-20130430/#Influence"
     }
 }
 
@@ -297,8 +300,10 @@ def format_metadata_for_fedora(project_id, version=None):
 
 
 def generate_manifest_other(project_id, version=None):
+    fido_client = Fido()
     doc = IndexedPublication.from_id(project_id, revision=version)
     uuid = doc.project.uuid
+    file_tags = getattr(doc.project.value, 'fileTags', [])
 
     if version:
         project_id = '{}v{}'.format(project_id, str(version))
@@ -306,10 +311,15 @@ def generate_manifest_other(project_id, version=None):
     archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
 
     for path in get_child_paths(archive_path):
+        rel_path = os.path.relpath(path, archive_path)
+
+        tags = filter(lambda t: t['path'].strip('/') == rel_path.strip('/'), file_tags)
         manifest.append({
             'parent_entity': uuid,
             'corral_path': path,
-            'checksum': get_sha1_hash(path)
+            'checksum': get_sha1_hash(path),
+            'tags': [t['tagName'] for t in tags],
+            'ffi': get_fido_output(fido_client, path)
         })
 
     return manifest
@@ -411,7 +421,8 @@ def walk_experimental(project_id, version=None):
         'uuid': doc.project.uuid,
         'container_path': project_id,
         'fedora_mapping': {**project_meta, 'generated': [], 'license': None},
-        'fileObjs': []
+        'fileObjs': [],
+        'fileTags': []
     }
 
     experiments_list = doc.experimentsList
@@ -426,7 +437,8 @@ def walk_experimental(project_id, version=None):
             'uuid': expt.uuid,
             'container_path': expt_container_path,
             'fedora_mapping': {**format_experiment(expt), 'license': license, 'wasGeneratedBy': project_id, 'generated': []},
-            'fileObjs': expt.fileObjs
+            'fileObjs': expt.fileObjs,
+            'fileTags': getattr(expt.value, 'fileTags', []),
         }
 
         full_author_list += experiment_map['fedora_mapping']['creator']
@@ -443,6 +455,7 @@ def walk_experimental(project_id, version=None):
             report_map = {
                 'uuid': report.uuid,
                 'fileObjs': report.fileObjs,
+                'fileTags': getattr(report.value, 'fileTags', []),
                 'container_path': report_container_path,
                 'fedora_mapping': {**format_report(report), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
             }
@@ -460,6 +473,7 @@ def walk_experimental(project_id, version=None):
             analysis_map = {
                 'uuid': analysis.uuid,
                 'fileObjs': analysis.fileObjs,
+                'fileTags': getattr(analysis.value, 'fileTags', []),
                 'container_path': analysis_container_path,
                 'fedora_mapping': {**format_analysis(analysis), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
 
@@ -478,6 +492,7 @@ def walk_experimental(project_id, version=None):
             mc_map = {
                 'uuid': mc.uuid,
                 'fileObjs': mc.fileObjs,
+                'fileTags': getattr(mc.value, 'fileTags', []),
                 'container_path': configs_container_path,
                 'fedora_mapping': {**format_model_config(mc), 'wasGeneratedBy': exp_doi}
             }
@@ -494,6 +509,7 @@ def walk_experimental(project_id, version=None):
                 sl_map = {
                     'uuid': sl.uuid,
                     'fileObjs': sl.fileObjs,
+                    'fileTags': getattr(sl.value, 'fileTags', []),
                     'container_path': sl_container_path,
                     'fedora_mapping': {**format_sensor_info(sl),
                                        'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
@@ -514,6 +530,7 @@ def walk_experimental(project_id, version=None):
                     event_map = {
                         'uuid': event.uuid,
                         'fileObjs': event.fileObjs,
+                        'fileTags': getattr(event.value, 'fileTags', []),
                         'container_path': evt_container_path,
                         'fedora_mapping': {**format_event(event),
                                            'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
@@ -667,27 +684,36 @@ def generate_manifest(walk_result, project_id, version=None):
     archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
     for entity in walk_result:
         file_objs = entity['fileObjs']
+        file_tags = entity.get('fileTags', [])
         for file in file_objs:
+
+            
 
             file_path = os.path.join(archive_path, file['path'].strip('/'))
             rel_path = os.path.join(parse.unquote(entity['container_path']), file['path'].strip('/'))
 
             if file['type'] == 'dir':
                 for path in get_child_paths(file_path):
+                    tag_path = os.path.relpath(path, archive_path)
+                    tags = filter(lambda t: t['path'].strip('/') == tag_path.strip('/'), file_tags)
+
                     manifest.append({
                         'parent_entity': entity['uuid'],
                         'corral_path': path,
                         'project_path': path.replace(file_path, rel_path, 1),
                         'checksum': get_sha1_hash(path),
+                        'tags': [t['tagName'] for t in tags],
                         'ffi': get_fido_output(fido_client, path)
                     })
 
             else:
+                tags = filter(lambda t: t['path'] == file['path'], file_tags)
                 manifest.append({
                     'parent_entity': entity['uuid'],
                     'corral_path': file_path,
                     'project_path': rel_path,
                     'checksum': get_sha1_hash(file_path),
+                    'tags': [t['tagName'] for t in tags],
                     'ffi': get_fido_output(fido_client, file_path)
                 })
 

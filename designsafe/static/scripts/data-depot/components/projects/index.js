@@ -17,10 +17,16 @@ import {
     VersionExperimentSelectionComponent,
     VersionFieldReconSelectionComponent,
     VersionSimulationSelectionComponent,
+    VersionHybSimSelectionComponent,
     VersionCitationComponent
 } from './pipeline-version/pipeline-version.component';
 import { VersionChangesComponent } from './pipeline-version/pipeline-version-changes.component';
-import { AmendExperimentComponent, AmendFieldReconComponent, AmendSimulationComponent } from './pipeline-amend/pipeline-amend.component';
+import { 
+    AmendExperimentComponent, 
+    AmendFieldReconComponent, 
+    AmendSimulationComponent,
+    AmendHybSimComponent
+} from './pipeline-amend/pipeline-amend.component';
 import { AmendOtherComponent } from './pipeline-amend/pipeline-amend-other.component';
 import { AmendCitationComponent } from './pipeline-amend/pipeline-amend-citation.component';
 import {
@@ -93,12 +99,14 @@ ddProjectsComponents.component('amendOther', AmendOtherComponent);
 ddProjectsComponents.component('amendExperiment', AmendExperimentComponent);
 ddProjectsComponents.component('amendFieldRecon', AmendFieldReconComponent);
 ddProjectsComponents.component('amendSimulation', AmendSimulationComponent);
+ddProjectsComponents.component('amendHybSim', AmendHybSimComponent);
 ddProjectsComponents.component('amendCitation', AmendCitationComponent);
 ddProjectsComponents.component('versionOtherSelection', VersionOtherSelectionComponent);
 ddProjectsComponents.component('versionOtherCitation', VersionOtherCitationComponent);
 ddProjectsComponents.component('versionExperimentSelection', VersionExperimentSelectionComponent);
 ddProjectsComponents.component('versionFieldReconSelection', VersionFieldReconSelectionComponent);
 ddProjectsComponents.component('versionSimulationSelection', VersionSimulationSelectionComponent);
+ddProjectsComponents.component('versionHybSimSelection', VersionHybSimSelectionComponent);
 ddProjectsComponents.component('versionCitation', VersionCitationComponent);
 ddProjectsComponents.component('versionChanges', VersionChangesComponent);
 ddProjectsComponents.component('pipelineSelectExp', PipelineSelectionExpComponent);
