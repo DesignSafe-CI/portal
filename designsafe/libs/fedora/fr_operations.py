@@ -45,7 +45,8 @@ def walk_fr(project_id, version=None):
         'uuid': doc.project.uuid,
         'container_path': project_id,
         'fedora_mapping': {**project_meta, 'generated': [], 'license': None},
-        'fileObjs': []
+        'fileObjs': [],
+        'fileTags': []
     }
 
     docs_list = getattr(doc, 'reports', [])
@@ -60,7 +61,8 @@ def walk_fr(project_id, version=None):
             'uuid': document.uuid,
             'container_path': doc_container_path,
             'fedora_mapping': {**format_docs(document), 'license': license, 'wasGeneratedBy': project_id, 'generated': [], 'hasVersion': version},
-            'fileObjs': document.fileObjs
+            'fileObjs': document.fileObjs,
+            'fileTags': getattr(document.value, 'fileTags', []),
         }
 
         relation_map.append(doc_map)
@@ -77,7 +79,8 @@ def walk_fr(project_id, version=None):
             'uuid': mission.uuid,
             'container_path': mission_container_path,
             'fedora_mapping': {**format_mission(mission), 'license': license, 'wasGeneratedBy': project_id, 'generated': [], 'hasVersion': version},
-            'fileObjs': []
+            'fileObjs': [],
+            'fileTags': getattr(mission.value, 'fileTags', []),
         }
 
 
@@ -93,6 +96,7 @@ def walk_fr(project_id, version=None):
             collection_map = {
                 'uuid': collection.uuid,
                 'fileObjs': collection.fileObjs,
+                'fileTags': getattr(collection.value, 'fileTags', []),
                 'container_path': collection_container_path,
                 'fedora_mapping': {**format_geo(collection), 'wasGeneratedBy': 'Mission: {}'.format(mission_doi)}
             }
@@ -110,6 +114,7 @@ def walk_fr(project_id, version=None):
             collection_map = {
                 'uuid': geo_collection.uuid,
                 'fileObjs': geo_collection.fileObjs,
+                'fileTags': getattr(geo_collection.value, 'fileTags', []),
                 'container_path': geo_container_path,
                 'fedora_mapping': {**format_geo(geo_collection), 'wasGeneratedBy': 'Mission: {}'.format(mission_doi)}
             }
@@ -127,6 +132,7 @@ def walk_fr(project_id, version=None):
             collection_map = {
                 'uuid': soc_collection.uuid,
                 'fileObjs': soc_collection.fileObjs,
+                'fileTags': getattr(soc_collection.value, 'fileTags', []),
                 'container_path': soc_container_path,
                 'fedora_mapping': {**format_soc(soc_collection), 'wasGeneratedBy': 'Mission: {}'.format(mission_doi)}
             }
@@ -144,6 +150,7 @@ def walk_fr(project_id, version=None):
             collection_map = {
                 'uuid': planning_coll.uuid,
                 'fileObjs': planning_coll.fileObjs,
+                'fileTags': getattr(planning_coll.value, 'fileTags', []),
                 'container_path': planning_container_path,
                 'fedora_mapping': {**format_planning(planning_coll), 'wasGeneratedBy': 'Mission: {}'.format(mission_doi)}
             }

@@ -16,7 +16,7 @@
             </button>
             <div style="flex-grow: 1"></div>
             <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
-                Publish / Version / Amend
+                Publish / Amend / Version
             </button>
         </span>
     </div>
@@ -118,15 +118,15 @@
                         <div style="padding-bottom: 5px;"> 
                             <span ng-if="$ctrl.readOnly">
                                 <span style="background-color: #ECE4BF;">
-                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].fileDownloads || 0 }} Downloads
+                                    {{ $ctrl.metricDisplay($ctrl.downloadCounts[mission.value.dois]) }} Downloads
                                 </span>
                                 &nbsp;&nbsp;
                                 <span style="background-color: #ECE4BF;">        
-                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].filePreviews || 0}} Views
+                                    {{ $ctrl.metricDisplay($ctrl.viewCounts[mission.value.dois]) }} Views
                                 </span>
                                 &nbsp;&nbsp;
                                 <span style="background-color: #ECE4BF;">        
-                                    {{ $ctrl.citationCounts[mission.value.dois] || 0}} Citations
+                                    {{ $ctrl.metricDisplay($ctrl.citationCounts[mission.value.dois]) }} Citations
                                 </span>
                                 &nbsp;&nbsp;
                                 <span>
@@ -310,15 +310,15 @@
                         <div style="padding-bottom: 5px;"> 
                             <span ng-if="$ctrl.readOnly">
                                 <span style="background-color: #ECE4BF;">
-                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].fileDownloads || 0 }} Downloads
+                                    {{ $ctrl.metricDisplay($ctrl.downloadCounts[mission.value.dois]) }} Downloads
                                 </span>
                                 &nbsp;&nbsp;
                                 <span style="background-color: #ECE4BF;">        
-                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].filePreviews || 0}} Views
+                                    {{ $ctrl.metricDisplay($ctrl.viewCounts[mission.value.dois]) }} Views
                                 </span>
                                 &nbsp;&nbsp;
                                 <span style="background-color: #ECE4BF;">        
-                                    {{ $ctrl.citationCounts[mission.value.dois] || 0}} Citations
+                                    {{ $ctrl.metricDisplay($ctrl.citationCounts[mission.value.dois]) }} Citations
                                 </span>
                                 &nbsp;&nbsp;
                                 <span>
