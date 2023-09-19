@@ -79,7 +79,7 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         self.prepared_data['text'] = text
         self.prepared_data["body"] = text
         self.prepared_data["slug"] = obj.slug
-        self.prepared_data["url"] = "https://" + obj.page.site.domain + '/' + obj.path
+        self.prepared_data["url"] = "https://designsafe-ci.org" + '/' + obj.path
         self.prepared_data["title"] = obj.title
 
         # self.prepared_data['language'] = self._language
