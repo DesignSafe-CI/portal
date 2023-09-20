@@ -188,6 +188,10 @@ class ManageSimulationCtrl {
 
     prepareData() {
         // drop or reformat inputs before for submission
+        const field = 'facility'
+        if(this.form[field] != 'other') {
+            this.form[field+'Other'] = '';
+        }
         if(this.form.simulationType != 'other') {
             this.form.simulationTypeOther = '';
         }

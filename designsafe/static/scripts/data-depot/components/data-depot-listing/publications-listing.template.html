@@ -179,6 +179,18 @@
                                 ></select
                             >
                         </div>
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="sim-facility-select">Facility</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                id="sim-facility-select"
+                                ng-model="$ctrl.params.advancedFilters.simulation.facility"
+                                ng-change="$ctrl.getValidSimulationTypes(true, true)"
+                                ng-options="ef.name as ef.label for ef in $ctrl.simulationFacilityOptions"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
                     </td>
                 </tr>
                 <tr class="solid"></tr>

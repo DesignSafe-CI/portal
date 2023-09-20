@@ -10,7 +10,7 @@ import SimPublicationTemplate from '../projects/publication-preview/publication-
 import HybSimPublicationTemplate from '../projects/publication-preview/publication-preview-hyb-sim.component.html';
 import FieldReconPublicationTemplate from '../projects/publication-preview/publication-preview-field-recon.component.html';
 import OtherPublicationTemplate from '../projects/publication-preview/publication-preview-other.component.html';
-import experimentalData from '../../../projects/components/facility-data.json';
+import facilityData from '../../../projects/components/facility-data.json';
 
 class PublishedViewCtrl {
     constructor(
@@ -52,9 +52,9 @@ class PublishedViewCtrl {
     $onInit() {
         this.readOnly = true;
         this.ui = {
-            efs: experimentalData.facility,
-            equipmentTypes: experimentalData.equipmentTypes,
-            experimentTypes: experimentalData.experimentTypes,
+            efs: facilityData.facility,
+            equipmentTypes: facilityData.equipmentTypes,
+            experimentTypes: facilityData.experimentTypes,
             license: '',
             licenseType: '',
             fileNav: true,

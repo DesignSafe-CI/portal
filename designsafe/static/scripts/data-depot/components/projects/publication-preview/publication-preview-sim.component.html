@@ -205,7 +205,7 @@
                         <div class="entity-meta-field">
                             <div class="entity-meta-label">Facility</div>
                             <span ng-if="!$ctrl.isValid(simulation.value.facilityOther)" class="entity-meta-data">
-                                {{ $ctrl.getFAC(simulation.value.facility) }}
+                                {{ $ctrl.getEF(simulation.value.facility) }}
                             </span>
                             <span ng-if="$ctrl.isValid(simulation.value.facilityOther)" class="entity-meta-data">
                                 {{ simulation.value.facilityOther }}

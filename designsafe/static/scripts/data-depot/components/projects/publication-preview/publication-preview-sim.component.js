@@ -126,7 +126,7 @@ class PublicationPreviewSimCtrl {
         return false;
     }
 
-    getFAC(str) {
+    getEF(str) {
         if (str !='' && str !='None') {
             let efs = this.ui.facilities.facilities_list;
             let ef = efs.find((ef) => {

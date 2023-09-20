@@ -60,6 +60,18 @@ class PublicationsSearchManager(BaseSearchManager):
                      {'match':
                       {'experimentsList.value.experimentType': experiment_type}}}}}})
 
+    def simulation_facility_query(self, facility_name):
+
+        return Q({'nested':
+                  {'path': 'simulations',
+                    'query':
+                      {'nested':
+                        {'path': 'simulations.value',
+                        'query':
+                          {'term':
+                            {'simulations.value.facility._exact': facility_name }}}}}})
+
+
     def simulation_type_query(self, simulation_type):
         return Q({'term': {'simulations.value.simulationType.keyword': simulation_type}})
 
@@ -98,6 +110,9 @@ class PublicationsSearchManager(BaseSearchManager):
 
     def simulation_query(self):
         simulation_type = self.query_dict['advancedFilters']['simulation']['simulationType']
+        facility_name = self.query_dict['advancedFilters']['simulation']['facility']
+        if facility_name:
+            expt_query = expt_query & self.facility_query(facility_name)
         if not self.query_dict['typeFilters']['simulation'] and not simulation_type:
             return None
         sim_query = Q('term', **{'project.value.projectType._exact': 'simulation'}) 

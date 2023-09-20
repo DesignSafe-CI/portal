@@ -69,6 +69,16 @@ class Simulation(RelatedEntity):
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type.title()
             )
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -95,6 +105,16 @@ class Simulation(RelatedEntity):
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
         attributes = super(Simulation, self).to_dataset_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         if self.simulation_type_other:
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type_other.title()

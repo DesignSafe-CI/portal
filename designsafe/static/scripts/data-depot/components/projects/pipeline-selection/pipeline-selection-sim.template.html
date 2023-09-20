@@ -139,14 +139,14 @@
                                 <ds-author-list authors="simulation.value.authors"></ds-author-list>
                             </div>
                         </div>
-                        <span ng-if="simulation.value.experimentalFacility.length">
+                        <span ng-if="simulation.value.facility.length">
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Facility</div>
                                 <span ng-if="!$ctrl.isValid(simulation.value.facilityOther)" class="entity-meta-data">
                                     {{ $ctrl.getEF(simulation.value.facility) }}
                                 </span>
-                                <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
-                                    {{ experiment.value.experimentalFacilityOther }}
+                                <span ng-if="$ctrl.isValid(experiment.value.facilityOther)" class="entity-meta-data">
+                                    {{ experiment.value.facilityOther }}
                                 </span>
                             </div>
                         </span>

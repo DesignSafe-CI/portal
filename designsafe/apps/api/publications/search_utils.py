@@ -37,6 +37,29 @@ def experiment_type_query(experiment_type):
                  {'match':
                   {'experimentsList.value.experimentType': experiment_type}}}}}})
 
+def simulation_facility_query(facility):
+    if facility['name'] == 'Other':
+        facility['name'] = 'other'
+
+    name_query =  Q({'nested':
+              {'path': 'simulations',
+               'query':
+               {'nested':
+                {'path': 'simulations.value',
+                 'query':
+                 {'term':
+                  {'simulations.value.facility._exact': facility['name']}}}}}})
+
+    label_query =  Q({'nested':
+              {'path': 'simulations',
+               'query':
+               {'nested':
+                {'path': 'simulations.value',
+                 'query':
+                 {'term':
+                  {'simulations.value.facility._exact': facility['label']}}}}}})
+
+    return name_query | label_query
 
 def simulation_type_query(simulation_type):
     return Q({'term': {'simulations.value.simulationType.keyword': simulation_type}})
