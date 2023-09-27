@@ -12,9 +12,10 @@ from requests.packages.urllib3.util.retry import Retry
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from django.contrib.auth import get_user_model
 from designsafe.apps.api.publications.operations import _get_user_by_username
-from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest
+from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest, has_associations
 import logging
 logger = logging.getLogger(__name__)
+
 
 def walk_hyb_sim(project_id, version=None):
     """
@@ -127,7 +128,7 @@ def walk_hyb_sim(project_id, version=None):
 
 
             coordinator_list = filter(
-                lambda coordinator: global_model.uuid in coordinator.value.globalModels,
+                lambda coordinator: global_model.uuid in coordinator.value.globalModels and has_associations(coordinator, [global_model, hyb_sim]),
                 getattr(doc, 'coordinators', []))
             for coordinator in coordinator_list:
                 # Do stuff with coordinator.
@@ -145,7 +146,7 @@ def walk_hyb_sim(project_id, version=None):
                 }
 
                 coordinator_output_list = filter(
-                    lambda coordinator_output: coordinator.uuid in coordinator_output.value.coordinators,
+                    lambda coordinator_output: coordinator.uuid in coordinator_output.value.coordinators and has_associations(coordinator_output, [hyb_sim, global_model, coordinator]),
                     getattr(doc, 'coordinator_outputs', []))
                 for coordinator_output in coordinator_output_list:
                     # Do stuff with coordinator output.
@@ -166,7 +167,7 @@ def walk_hyb_sim(project_id, version=None):
 
 
                 sim_sub_list = filter(
-                    lambda sim_sub: coordinator.uuid in sim_sub.value.coordinators,
+                    lambda sim_sub: coordinator.uuid in sim_sub.value.coordinators and has_associations(sim_sub, [hyb_sim, global_model, coordinator]),
                     getattr(doc, 'sim_substructures', []))
                 for sim_sub in sim_sub_list:
                     # Do stuff with sim substructure.
@@ -185,7 +186,7 @@ def walk_hyb_sim(project_id, version=None):
                     }
 
                     sim_out_list = filter(
-                        lambda sim_out: sim_sub.uuid in sim_out.value.simSubstructures,
+                        lambda sim_out: sim_sub.uuid in sim_out.value.simSubstructures and has_associations(sim_out, [hyb_sim, global_model]),
                         getattr(doc, 'sim_outputs', []))
                     for sim_out in sim_out_list:
                         # Do stuff with sim output.
@@ -205,7 +206,7 @@ def walk_hyb_sim(project_id, version=None):
                     relation_map.append(sim_sub_map)
 
                 exp_sub_list = filter(
-                    lambda exp_sub: coordinator.uuid in exp_sub.value.coordinators,
+                    lambda exp_sub: coordinator.uuid in exp_sub.value.coordinators and has_associations(exp_sub, [hyb_sim, global_model]),
                     getattr(doc, 'exp_substructures', []))
                 for exp_sub in exp_sub_list:
                     # Do stuff with experimental substructure.
@@ -224,7 +225,7 @@ def walk_hyb_sim(project_id, version=None):
                     }
 
                     exp_out_list = filter(
-                        lambda exp_out: exp_sub.uuid in exp_out.value.expSubstructures,
+                        lambda exp_out: exp_sub.uuid in exp_out.value.expSubstructures and has_associations(exp_out, [hyb_sim, global_model]),
                         getattr(doc, 'exp_outputs', []))
                     for exp_out in exp_out_list:
                         # Do stuff with experimental output.
