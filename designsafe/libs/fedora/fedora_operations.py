@@ -392,6 +392,13 @@ def amend_project_fedora(project_id, version=None):
     return res
 
 
+def has_associations(child, parents):
+    for parent in parents:
+        if parent.uuid not in child.associationIds:
+            return False
+    return True
+
+
 def walk_experimental(project_id, version=None):
     """
     Walk an experimental project and reconstruct parent/child relationships
