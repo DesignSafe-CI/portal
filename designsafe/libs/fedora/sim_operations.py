@@ -12,7 +12,7 @@ from requests.packages.urllib3.util.retry import Retry
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from django.contrib.auth import get_user_model
 from designsafe.apps.api.publications.operations import _get_user_by_username
-from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest, generate_report_experimental
+from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest, generate_report_experimental, has_associations
 import logging
 logger = logging.getLogger(__name__)
 
@@ -113,7 +113,7 @@ def walk_sim(project_id, version=None):
             }
 
             inputs = filter(
-            lambda input: model.uuid in input.value.modelConfigs,
+            lambda input: model.uuid in input.value.modelConfigs and has_associations(input, [model, sim]),
             getattr(doc, 'inputs', [])
             )
 
@@ -133,7 +133,7 @@ def walk_sim(project_id, version=None):
                 }
 
                 outputs = filter(
-                lambda output: input.uuid in output.value.simInputs,
+                lambda output: input.uuid in output.value.simInputs and has_associations(output, [input, model, sim]),
                 getattr(doc, 'outputs', [])
                 ) 
 

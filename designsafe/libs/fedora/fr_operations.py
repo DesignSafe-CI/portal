@@ -11,7 +11,7 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from django.contrib.auth import get_user_model
-from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest
+from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest, has_associations
 import logging
 logger = logging.getLogger(__name__)
 
