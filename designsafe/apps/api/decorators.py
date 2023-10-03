@@ -103,8 +103,7 @@ def agave_jwt_login(func):
             user = None
 
         if user is not None:
-            user.backend = 'django.contrib.auth.backends.ModelBackend',
-            login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
 
         return func(request, *args, **kwargs)
 
