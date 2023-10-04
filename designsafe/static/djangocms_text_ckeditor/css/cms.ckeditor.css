@@ -1,0 +1,5 @@
+@import url("../cms.ckeditor.original.css");
+
+/* To stretch source editor textarea height */
+/* https://github.com/django-cms/djangocms-text-ckeditor/pull/590 */
+textarea.cke_source { max-height: inherit; }
