@@ -8,6 +8,7 @@ from designsafe.apps.api.datafiles.operations.transfer_operations import transfe
 from designsafe.apps.api.datafiles.notifications import notify
 from designsafe.apps.api.datafiles.models import DataFilesSurveyResult, DataFilesSurveyCounter
 from designsafe.apps.api.views import BaseApiView
+from designsafe.apps.api.agave import service_account
 from dropbox.exceptions import AuthError as DropboxAuthError
 from google.auth.exceptions import GoogleAuthError
 from requests.exceptions import HTTPError
@@ -56,7 +57,7 @@ class DataFilesView(BaseApiView):
             except AttributeError:
                 raise resource_unconnected_handler(api)
         elif api == 'agave':
-            client = get_user_model().objects.get(username='envision').agave_oauth.client
+            client = service_account()
         else:
             return JsonResponse({'message': 'Please log in to access this feature.'}, status=403)
 
