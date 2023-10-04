@@ -88,8 +88,8 @@
                 <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
-        <!-- Simulation Reports -->
-        <div ng-hide="$ctrl.ui.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
+        <!-- Simulation Reports --> <!-- this shouldn't be showing outside of the Simulation itself -->
+        <!-- <div ng-hide="$ctrl.ui.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'"
              ng-if="$ctrl.matchingGroup(simulation, report)"
         >
             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
@@ -110,7 +110,8 @@
                     on-browse="$ctrl.onBrowse(file)"
                 >&nbsp;</files-listing>                 </div>
             </div>
-        </div>
+        </div> -->
+
         <div ng-hide="$ctrl.ui.loading" ng-repeat="simulation in $ctrl.browser.project.simulation_set">
             <div class="dropdown dropdown-spacer-lg" id="details-{{simulation.uuid}}" style="margin-top: 15px">
                 <a ng-click="$ctrl.selectEntity(simulation)">Select this Simulation and all of its files</a>

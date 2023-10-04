@@ -1,11 +1,11 @@
-from menus.menu_pool import menu_pool
+from menus.menu_pool import MenuPool
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 def cms_section(request):
-    nodes = menu_pool.get_nodes(request)
+    nodes = MenuPool().get_renderer(request).get_nodes()
     if nodes:
         menu_root = nodes[0]
         if 'soft_root' in menu_root.attr:

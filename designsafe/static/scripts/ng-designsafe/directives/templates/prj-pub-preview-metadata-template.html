@@ -81,15 +81,15 @@
     <div style="padding-bottom: 5px;"> 
         <span ng-if="$ctrl.readOnly">
             <span style="background-color: #ECE4BF;">
-                {{ $ctrl.cumMetrics.otherTotal || 0 }} Downloads
+                {{ $ctrl.metricDisplay($ctrl.downloadCounts[$ctrl.project.value.dois[0]]) }} Downloads
             </span>
             &nbsp;&nbsp;
-            <span style="background-color: #ECE4BF;">        
-                {{ $ctrl.cumMetrics.filePreviews || 0}} Views
+            <span style="background-color: #ECE4BF;">      
+                {{ $ctrl.metricDisplay($ctrl.viewCounts[$ctrl.project.value.dois[0]]) }} Views
             </span>
             &nbsp;&nbsp;
-            <span style="background-color: #ECE4BF;">        
-                {{ $ctrl.citationCounts[experiment.value.dois] || 0}} Citations
+            <span style="background-color: #ECE4BF;">
+                {{ $ctrl.metricDisplay($ctrl.citationCounts[$ctrl.project.value.dois[0]]) }} Citations
             </span>
             &nbsp;&nbsp;
             <span ng-if="$ctrl.readOnly">
@@ -151,9 +151,7 @@
     <tr class="prj-row" ng-if="$ctrl.project.value.coPis.length && $ctrl.project.value.projectType === 'other' && !$ctrl.readOnly">
         <td>Co-PIs</td>
         <td class="prj-data">
-            <span ng-repeat="coPi in $ctrl.authorData.coPis track by $index" ng-if="!$ctrl.loadingUserData.coPis">
-                <a href="javascript:;" ng-click="$ctrl.showAuthor(coPi)">{{ coPi.lname }}, {{ coPi.fname }}</a><span ng-if="!$last">, </span>
-            </span>
+            <ds-user-list usernames="$ctrl.project.value.coPis"></ds-user-list>
         </td>
     </tr>
     <!-- end Co-PI listings -->

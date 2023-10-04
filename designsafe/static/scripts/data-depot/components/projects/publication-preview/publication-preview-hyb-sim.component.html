@@ -16,7 +16,7 @@
             </button>
             <div style="flex-grow: 1"></div>
             <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
-                Publish
+                Publish / Amend / Version
             </button>
         </span>
     </div>
@@ -138,15 +138,15 @@
                 <div style="padding-bottom: 5px;"> 
                     <span ng-if="$ctrl.readOnly">
                         <span style="background-color: #ECE4BF;">
-                            {{ $ctrl.cumDoiMetrics[hybsim.value.dois].fileDownloads || 0 }} Downloads
+                            {{ $ctrl.metricDisplay($ctrl.downloadCounts[hybsim.value.dois])}} Downloads
                         </span>
                         &nbsp;&nbsp;
                         <span style="background-color: #ECE4BF;">        
-                            {{ $ctrl.cumDoiMetrics[hybsim.value.dois].filePreviews || 0}} Views
+                            {{ $ctrl.metricDisplay($ctrl.viewCounts[hybsim.value.dois])}} Views
                         </span>
                         &nbsp;&nbsp;
                         <span style="background-color: #ECE4BF;">        
-                            {{ $ctrl.citationCounts[hybsim.value.dois] || 0}} Citations
+                            {{ $ctrl.metricDisplay($ctrl.citationCounts[hybsim.value.dois])}} Citations
                         </span>
                         &nbsp;&nbsp;
                         <span>
@@ -240,7 +240,7 @@
                         </span>
                     </div>
                     <div class="entity-meta-field">
-                        <div class="entity-meta-label-multi" ng-if="(!$ctrl.readOnly && mission.value.dois.toString() === '') || $ctrl.readOnly">License(s)</div>
+                        <div class="entity-meta-label-multi" ng-if="(!$ctrl.readOnly && hybsim.value.dois.toString() === '') || $ctrl.readOnly">License(s)</div>
                         <div class="entity-meta-data" ng-if="!$ctrl.readOnly && hybsim.value.dois.toString() === ''">
                             <span>(Appears when published)</span>
                         </div>
@@ -277,8 +277,9 @@
                                                        show-tags="true"
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                       doi="hybsim.value.dois.toString()"
                                                        listing="$ctrl.FileListingService.listings[report.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString()")">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>
@@ -343,8 +344,9 @@
                                                                    show-tags="true"
                                                                    published="true"
                                                                    on-scroll="$ctrl.scrollToBottom()"
+                                                                   doi="hybsim.value.dois.toString()"
                                                                    listing="$ctrl.FileListingService.listings[coordinator.uuid]"
-                                                                   on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                   on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString())">&nbsp;
                                                     </files-listing>
                                                 </div>
                                             </div>
@@ -381,9 +383,10 @@
                                                                 <files-listing show-select="true"
                                                                                show-tags="true"
                                                                                published="true"
+                                                                               doi="hybsim.value.dois.toString()"
                                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                                listing="$ctrl.FileListingService.listings[cout.uuid]"
-                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                               on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString())">&nbsp;
                                                                 </files-listing>
                                                             </div>
                                                         </div>
@@ -427,9 +430,10 @@
                                                                 <files-listing show-select="true"
                                                                                show-tags="true"
                                                                                published="true"
+                                                                               doi="hybsim.value.dois.toString()"
                                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                                listing="$ctrl.FileListingService.listings[simsub.uuid]"
-                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                               on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString())">&nbsp;
                                                                 </files-listing>
                                                             </div>
                                                         </div>
@@ -474,8 +478,9 @@
                                                                                        show-tags="true"
                                                                                        published="true"
                                                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                                                       doi="hybsim.value.dois.toString()"
                                                                                        listing="$ctrl.FileListingService.listings[sout.uuid]"
-                                                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                                       on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString())">&nbsp;
                                                                         </files-listing>
                                                                     </div>
                                                                 </div>
@@ -523,8 +528,9 @@
                                                                                show-tags="true"
                                                                                published="true"
                                                                                on-scroll="$ctrl.scrollToBottom()"
+                                                                               doi="hybsim.value.dois.toString()"
                                                                                listing="$ctrl.FileListingService.listings[expsub.uuid]"
-                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                               on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString())">&nbsp;
                                                                 </files-listing>
                                                             </div>
                                                         </div>
@@ -569,8 +575,9 @@
                                                                                        show-tags="true"
                                                                                        published="true"
                                                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                                                       doi="hybsim.value.dois.toString()"
                                                                                        listing="$ctrl.FileListingService.listings[eout.uuid]"
-                                                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                                       on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString())">&nbsp;
                                                                         </files-listing>
                                                                     </div>
                                                                 </div>
@@ -619,9 +626,10 @@
                                         <files-listing show-select="true"
                                                        show-tags="true"
                                                        published="true"
+                                                       doi="hybsim.value.dois.toString()"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[analysis.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString())">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>

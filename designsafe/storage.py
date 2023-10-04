@@ -1,7 +1,7 @@
-from django.contrib.staticfiles.storage import CachedStaticFilesStorage, StaticFilesStorage
+from django.contrib.staticfiles.storage import StaticFilesStorage
 from django.core.files.storage import FileSystemStorage
 
-class CustomPipelineCachedStorage(CachedStaticFilesStorage):
+class CustomPipelineCachedStorage(StaticFilesStorage):
     def url(self, name, force=False):
         """
         Return the non-hashed URL when detecting cms paths in order to work
@@ -10,4 +10,4 @@ class CustomPipelineCachedStorage(CachedStaticFilesStorage):
 
         if name.startswith('cms/'):
             return FileSystemStorage.url(self, name)
-        return super(CustomPipelineCachedStorage, self).url(name, force)
+        return super(CustomPipelineCachedStorage, self).url(name)

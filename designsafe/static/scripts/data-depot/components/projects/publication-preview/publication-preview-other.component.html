@@ -16,7 +16,7 @@
             </button>
             <div style="flex-grow: 1"></div>
             <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
-                Publish / Version / Amend
+                Publish / Amend / Version
             </button>
         </span>
     </div>
@@ -46,7 +46,8 @@
                 skip-root="$ctrl.breadcrumbParams.skipRoot"
             ></breadcrumb>
             <files-listing listing="$ctrl.FileListingService.listings.main"
-                           on-browse="$ctrl.onBrowse(file)"
+                           on-browse="$ctrl.onBrowse(file, $ctrl.project.value.dois[0])"
+                           doi="$ctrl.project.value.dois[0]"
                            show-tags="true"
                            show-select="true"
                            published="true">

@@ -16,7 +16,7 @@
             </button>
             <div style="flex-grow: 1"></div>
             <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
-                Publish / Version / Amend
+                Publish / Amend / Version
             </button>
         </span>
     </div>
@@ -135,15 +135,15 @@
                 <div style="padding-bottom: 5px;"> 
                     <span ng-if="$ctrl.readOnly">
                         <span style="background-color: #ECE4BF;">
-                            {{ $ctrl.cumDoiMetrics[experiment.value.dois].fileDownloads || 0 }} Downloads
+                            {{ $ctrl.metricDisplay($ctrl.downloadCounts[experiment.value.dois]) }} Downloads
                         </span>
                         &nbsp;&nbsp;
                         <span style="background-color: #ECE4BF;">        
-                            {{ $ctrl.cumDoiMetrics[experiment.value.dois].filePreviews || 0}} Views
+                            {{ $ctrl.metricDisplay($ctrl.viewCounts[experiment.value.dois]) }} Views
                         </span>
                         &nbsp;&nbsp;
                         <span style="background-color: #ECE4BF;">        
-                            {{ $ctrl.citationCounts[experiment.value.dois] || 0}} Citations
+                            {{ $ctrl.metricDisplay($ctrl.citationCounts[experiment.value.dois]) }} Citations
                         </span>
                         &nbsp;&nbsp;
                         <span>
@@ -264,7 +264,7 @@
                         </div>
                     </div>
                     <div class="entity-meta-field">
-                        <div class="entity-meta-label-multi" ng-if="(!$ctrl.readOnly && mission.value.dois.toString() === '') || $ctrl.readOnly">License(s)</div>
+                        <div class="entity-meta-label-multi" ng-if="(!$ctrl.readOnly && experiment.value.dois.toString() === '') || $ctrl.readOnly">License(s)</div>
                         <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() === ''">
                             <span>(Appears when published)</span>
                         </div>
@@ -306,7 +306,8 @@
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[report.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       on-browse="$ctrl.onBrowse(file, experiment.doi)"
+                                                       doi="experiment.doi">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>
@@ -336,7 +337,8 @@
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[modelConfig.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       doi="experiment.doi"
+                                                       on-browse="$ctrl.onBrowse(file, experiment.doi)">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>
@@ -377,7 +379,8 @@
                                                                    published="true"
                                                                    on-scroll="$ctrl.scrollToBottom()"
                                                                    listing="$ctrl.FileListingService.listings[sensorList.uuid]"
-                                                                   on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                   doi="experiment.doi"
+                                                                   on-browse="$ctrl.onBrowse(file, experiment.doi)">&nbsp;
                                                     </files-listing>
                                                 </div>
                                             </div>
@@ -419,7 +422,8 @@
                                                                                published="true"
                                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                                listing="$ctrl.FileListingService.listings[event.uuid]"
-                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                               doi="experiment.doi"
+                                                                               on-browse="$ctrl.onBrowse(file, experiment.doi)">&nbsp;
                                                                 </files-listing>
                                                             </div>
                                                         </div>
@@ -464,7 +468,8 @@
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[analysis.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       doi="experiment.doi"
+                                                       on-browse="$ctrl.onBrowse(file, experiment.doi)">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>

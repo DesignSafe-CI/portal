@@ -101,6 +101,29 @@ class PipelineAmendCitationCtrl {
                     this.ui.savedStatus[simulation.uuid] = false;
                 }
             });
+        } 
+        else if (prj_type == 'hybrid_simulation'){
+            this.amendComp = 'projects.amendHybSim';
+            this.ui.placeholder = 'HybSim';
+            this.amendFields = [
+                'hybrid_simulations',
+                'global_models',
+                'coordinators',
+                'sim_substructures',
+                'exp_substructures',
+                'coordinator_outputs',
+                'sim_outputs',
+                'exp_outputs',
+                'analysiss',
+                'reports'
+            ]
+            this.amendment.hybrid_simulations.forEach((hybsim) => {
+                if (hybsim.value.dois.length) {
+                    this.publishedEntities.push(hybsim);
+                    this.authors[hybsim.uuid] = hybsim.authors;
+                    this.ui.savedStatus[hybsim.uuid] = false;
+                }
+            });
         } else {
             this.goStart();
         }

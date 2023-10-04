@@ -92,7 +92,9 @@ class PublishedViewCtrl {
                 });
             });
         }
-        this.citationCounts = {}
+        this.citationCounts = {};
+        this.viewCounts = {};
+        this.downloadCounts = {};
         this.projId = this.$stateParams.filePath.replace(/^\/+/, '').split('/')[0];
         this.versions = this.prepVersions(this.publication);
         this.selectedVersion = this.publication.revision || 1;
@@ -156,6 +158,7 @@ class PublishedViewCtrl {
                 system: 'designsafe.storage.published',
                 path: this.$stateParams.filePath,
                 query_string: this.$stateParams.query_string,
+                doi: this.$stateParams.doi
             });
         } else {
             this.getProjectListings();
@@ -271,7 +274,7 @@ class PublishedViewCtrl {
             this.browser.project.coordinator_set = this.browser.publication.coordinators;
             this.browser.project.simsubstructure_set = this.browser.publication.sim_substructures;
             this.browser.project.expsubstructure_set = this.browser.publication.exp_substructures;
-            this.browser.project.coordinatoroutput_set = this.browser.publication.coordintaor_outputs;
+            this.browser.project.coordinatoroutput_set = this.browser.publication.coordinator_outputs;
             this.browser.project.simoutput_set = this.browser.publication.sim_outputs;
             this.browser.project.expoutput_set = this.browser.publication.exp_outputs;
             this.browser.project.analysis_set = this.browser.publication.analysiss;
@@ -314,6 +317,9 @@ class PublishedViewCtrl {
                 this.doi = this.doiList[ent.uuid];
             });
         }
+        if (this.project.value.projectType === 'other') {
+            this.doiList[this.project.uuid] = {doi: this.project.value.dois[0]};
+        }
         if (this.doiList) {
             const dataciteRequests = Object.values(this.doiList).map(({ doi }) => {
                 return this.$http.get(`/api/publications/data-cite/${doi}`);
@@ -327,6 +333,8 @@ class PublishedViewCtrl {
                 citations.forEach((cite) => {
                     const doiObj = Object.values(this.doiList).find((x) => x.doi === cite.doi);
                     this.citationCounts[cite.doi] = cite.citationCount;
+                    this.downloadCounts[cite.doi] = cite.downloadCount;
+                    this.viewCounts[cite.doi] = cite.viewCount;
                     doiObj.created = cite.created;
                 });
             });
@@ -345,6 +353,12 @@ class PublishedViewCtrl {
             },
             { reload: true }
         );
+    }
+
+    metricDisplay(metric) {
+        if (metric === 0) return 0;
+        if (metric) return metric;
+        return "--";
     }
 
     prepVersions(publication) {
@@ -622,11 +636,11 @@ class PublishedViewCtrl {
         return arr.filter(Boolean);
     }
 
-    onBrowse(file) {
+    onBrowse(file, doi) {
         if (file.type === 'dir') {
-            this.$state.go(this.$state.current.name, { filePath: file.path, query_string: null });
+            this.$state.go(this.$state.current.name, { filePath: file.path, query_string: null, doi: doi });
         } else {
-            this.FileOperationService.openPreviewModal({ api: 'agave', scheme: 'private', file });
+            this.FileOperationService.openPreviewModal({ api: 'agave', scheme: 'private', file, doi: doi });
         }
     }
 
