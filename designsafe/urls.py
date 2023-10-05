@@ -29,6 +29,7 @@ from django.contrib import admin
 from django.views.generic import RedirectView, TemplateView
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect
 from designsafe.apps.auth.views import login_options as des_login_options
 from django.contrib.auth.views import LogoutView as des_logout
 from designsafe.views import project_version as des_version, redirect_old_nees
@@ -49,6 +50,7 @@ sitemaps = {
 
 urlpatterns = [
         # admin
+        url(r'^admin/login/', lambda _: redirect("/login/?next=/admin/")),
         url(r'^admin/', admin.site.urls),
         url(r'^admin/impersonate/', include('impersonate.urls')),
 

@@ -16,6 +16,7 @@ import os
 import json
 from django.urls import reverse_lazy
 from django.utils.text import format_lazy
+from django.utils.translation import gettext_lazy as _
 
 
 gettext = lambda s: s
@@ -337,7 +338,12 @@ DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
 DJANGOCMS_FORMS_TEMPLATES = (
     ('djangocms_forms/form_template/default.html', 'Default'),
 )
-DJANGOCMS_FORMS_FORMAT_CHOICES = ()
+DJANGOCMS_FORMS_FORMAT_CHOICES = (
+    ("csv", _("CSV")),
+    ("json", _("JSON")),
+    ("yaml", _("YAML")),
+    ("xlsx", _("Microsoft Excel")),
+)
 DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
     'text': ('form-control', ),

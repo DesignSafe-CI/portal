@@ -814,24 +814,23 @@ django = ">=2.2"
 
 [[package]]
 name = "django-cms"
-version = "3.7.4"
-description = "An Advanced Django CMS"
+version = "3.8.2"
+description = "Lean enterprise content management powered by Django."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "django-cms-3.7.4.tar.gz", hash = "sha256:9374af5a35bac590f1891031fb0878a0e6c2dc5309a6907929c6a036493694f6"},
-    {file = "django_cms-3.7.4-py2.py3-none-any.whl", hash = "sha256:9302f0e21153fc9afca55d9c3424ca3654b51d274a1af6ec39f4fbb05059fe46"},
+    {file = "django-cms-3.8.2.tar.gz", hash = "sha256:b32a979a3ce9516a907cd9b481a3291f158e797c2b92c157561bcff2c43f36ae"},
+    {file = "django_cms-3.8.2-py2.py3-none-any.whl", hash = "sha256:af80688c5e1a2a1151f122746482d7a40a43c2537c91220347e4272b1a5a627d"},
 ]
 
 [package.dependencies]
-Django = ">=1.11,<4"
+Django = ">=2.2"
 django-classy-tags = ">=0.7.2"
 django-formtools = ">=2.1"
 django-sekizai = ">=0.7"
-django-treebeard = ">=4.3"
+django-treebeard = ">=4.3,<4.5"
 djangocms-admin-style = ">=1.2"
-six = "*"
 
 [[package]]
 name = "django-filer"
@@ -1069,14 +1068,14 @@ wsaccel = ["wsaccel (>=0.6.2)"]
 
 [[package]]
 name = "djangocms-admin-style"
-version = "3.2.5"
+version = "2.0.0"
 description = "Adds pretty CSS styles for the django CMS admin interface."
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = "*"
 files = [
-    {file = "djangocms-admin-style-3.2.5.tar.gz", hash = "sha256:abbe89d369c0779f7e5f839887a77bdb21660b547e83605d6a4a6df958ace7a5"},
-    {file = "djangocms_admin_style-3.2.5-py3-none-any.whl", hash = "sha256:fc51677f12dbec6996590c430c90c9fe8efa32ceadfee383a576ed092be07526"},
+    {file = "djangocms-admin-style-2.0.0.tar.gz", hash = "sha256:080f55fe2b643cf608ee8feeb1407bf20e1e76c0f2c058a1bf360b4aa0c90cf4"},
+    {file = "djangocms_admin_style-2.0.0-py3-none-any.whl", hash = "sha256:78c64b4e2adba59a7c2e4d5b34e68dc32ab3e2d677f8a94403a2ae9d211aa212"},
 ]
 
 [[package]]
@@ -3529,4 +3528,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.12"
-content-hash = "92b39fa1042f98ce79752aad3d0abf7e62da11410e515c524b3a46caa86ff774"
+content-hash = "9cfa2e07d0ceb7e4c250783d7365ef9ac541471222fd053b36bfebbcf1c3b804"
