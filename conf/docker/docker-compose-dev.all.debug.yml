@@ -58,6 +58,20 @@ services:
     container_name: des_mysql
     hostname: des_mysql
 
+  postgres:
+    image: postgres:14.9
+    environment:
+      - POSTGRES_PASSWORD=taccforever
+      - POSTGRES_USER=postgresadmin
+      - POSTGRES_DB=taccsite
+      - PGDATA=/var/lib/postgresql/data/taccsite
+    volumes:
+      - des_postgres_data:/var/lib/postgresql/data
+    hostname: des_postgres
+    ports:
+      -   127.0.0.1:5433:5432
+    container_name: des_postgres
+
   nginx:
     image: nginx
     volumes:
@@ -126,6 +140,7 @@ services:
 
 volumes:
   redis_data:
+  des_postgres_data:
   mysql_data:
   es_data:
   rabbitmq_data:
