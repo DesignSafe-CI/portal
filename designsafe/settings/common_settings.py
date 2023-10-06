@@ -123,6 +123,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
+LOGOUT_REDIRECT_URL = os.environ.get('LOGOUT_REDIRECT_URL', '/auth/logged-out/')
 
 CACHES = {
   'default': {
