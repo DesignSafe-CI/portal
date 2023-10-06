@@ -27,7 +27,7 @@ class BaseNotify(models.Model):
     ERROR = RED = 'ERROR'
     WARNING = ORANGE = 'WARNING'
     EVENT_TYPE = 'event_type'
-    JOB_ID = 'jobId'
+    JOB_ID = 'jobid'
     STATUS = 'status'
     USER = USERNAME = 'user'
     EXTRA = CONTENT = 'extra'

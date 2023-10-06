@@ -14,12 +14,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='broadcast',
-            name='jobId',
+            name='jobid',
             field=models.CharField(blank=True, max_length=255),
         ),
         migrations.AddField(
             model_name='notification',
-            name='jobId',
+            name='jobid',
             field=models.CharField(blank=True, max_length=255),
         ),
     ]
