@@ -1139,9 +1139,9 @@ unidecode = "*"
 
 [package.source]
 type = "git"
-url = "https://github.com/avryhof/djangocms-forms"
-reference = "d8a69efd2f447ee2f940c7b6f5b8b088c9cb79ed"
-resolved_reference = "d8a69efd2f447ee2f940c7b6f5b8b088c9cb79ed"
+url = "https://github.com/TACC/djangocms-forms"
+reference = "2098b39ca0aa8e8cf286cba6ec2492d322a47338"
+resolved_reference = "2098b39ca0aa8e8cf286cba6ec2492d322a47338"
 
 [[package]]
 name = "djangocms-googlemap"
@@ -3481,4 +3481,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11.2"
-content-hash = "139631a56ee4212a557dea7c43da74deb434889456025023f9a9bff48c885ed0"
+content-hash = "83e9fd6f9d9acda6befb351abac9b758ac7c6fa25637ac3751d0a3fc1d6765a4"

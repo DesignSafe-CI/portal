@@ -45,7 +45,7 @@ djangocms-style = "^2.3.0"
 djangocms-video = "^2.3.0"
 djangocms-picture = "^2.4.0"
 djangocms-file = "^2.4.0"
-djangocms-forms-maintained = { git = "https://github.com/avryhof/djangocms-forms", rev = "d8a69efd2f447ee2f940c7b6f5b8b088c9cb79ed" }
+djangocms-forms-maintained = { git = "https://github.com/TACC/djangocms-forms", rev = "2098b39ca0aa8e8cf286cba6ec2492d322a47338" }
 djangocms-googlemap = "^1.4.0"
 oauth2client = "^4.1.2"
 mysqlclient = "^1.4.6"
