@@ -127,7 +127,7 @@ LOGOUT_REDIRECT_URL = os.environ.get('LOGOUT_REDIRECT_URL', '/auth/logged-out/')
 
 CACHES = {
   'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+      'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
       'LOCATION': 'memcached:11211',
   },
 }

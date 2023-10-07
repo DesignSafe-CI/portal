@@ -7,7 +7,7 @@ COPY . /designsafe/
 RUN npm run build
 
 
-FROM python:3.8-buster
+FROM python:3.11-buster
 
 LABEL MAINTAINER="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
 

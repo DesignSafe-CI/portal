@@ -116,12 +116,12 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
 
-CACHES = {
-  'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-      'LOCATION': 'memcached:11211',
-  },
-}
+#CACHES = {
+#  'default': {
+#      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#      'LOCATION': 'memcached:11211',
+#  },
+#}
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
