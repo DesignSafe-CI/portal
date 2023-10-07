@@ -1150,8 +1150,8 @@ jsonfield = "*"
 [package.source]
 type = "git"
 url = "https://github.com/DesignSafe-CI/djangocms-cascade"
-reference = "ab9cf3f6babdc498979c304a801fcef70932adde"
-resolved_reference = "ab9cf3f6babdc498979c304a801fcef70932adde"
+reference = "65087452d39cfeec50c4df33090bc430a5ab7d45"
+resolved_reference = "65087452d39cfeec50c4df33090bc430a5ab7d45"
 
 [[package]]
 name = "djangocms-file"
@@ -3719,4 +3719,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "755b72b2b9beb2830a55e803023c4493942346e861c3f51fe87360e9ec7362a4"
+content-hash = "0550e9d8a8169d46ad95d61feb27468d783ac07c68860c8d29a01d7cb2f3c102"

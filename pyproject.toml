@@ -40,7 +40,7 @@ django-recaptcha2 = "1.4.1"
 djangocms-snippet = "3.0.0"
 django-bootstrap3 = "^23.4"
 djangocms-text-ckeditor = "^5.1"
-djangocms-cascade = { git = "https://github.com/DesignSafe-CI/djangocms-cascade", rev = "ab9cf3f6babdc498979c304a801fcef70932adde" }
+djangocms-cascade = { git = "https://github.com/DesignSafe-CI/djangocms-cascade", rev = "65087452d39cfeec50c4df33090bc430a5ab7d45" }
 djangocms-style = "3.0.0"
 djangocms-video = "3.0.0"
 djangocms-picture = "^3.0.0"
