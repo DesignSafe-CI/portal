@@ -164,8 +164,6 @@ def format_sim(sim):
     Map experiment to Datacite fields for Fedora.
     """
     meta = sim.value
-    print('here')
-    print(meta)
     sim_type = meta.simulationType
     if sim_type == 'other':
         sim_type = getattr(meta, 'simulationTypeOther', 'other')
