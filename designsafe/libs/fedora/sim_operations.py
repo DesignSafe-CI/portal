@@ -39,9 +39,8 @@ def walk_sim(project_id, version=None):
 
     sims_list = doc.simulations
     for sim in sims_list:
-        # Do stuff with experiment.
+        # Do stuff with simulation.
         sim_container_path = "{}/{}".format(project_id, parse.quote(sim.value.title))
-        print('simulation ' + sim.value.title)
         sim_doi = sim.doi
         project_map['fedora_mapping']['generated'].append('Experiment: {}'.format(sim_doi))
 
