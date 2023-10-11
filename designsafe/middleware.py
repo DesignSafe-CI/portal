@@ -13,12 +13,14 @@ from django.core.exceptions import MiddlewareNotUsed
 from termsandconditions.middleware import (TermsAndConditionsRedirectMiddleware,
                                            is_path_protected)
 from termsandconditions.models import TermsAndConditions
-from django.shortcuts import redirect, reverse
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils.deprecation import MiddlewareMixin
 from designsafe.apps.notifications.models import SiteMessage
 
 logger = logging.getLogger(__name__)
 
-class DesignsafeProfileUpdateMiddleware:
+class DesignsafeProfileUpdateMiddleware(MiddlewareMixin):
 
     """
     Middleware to check if a user's profile has the update_required flag set to
@@ -64,13 +66,14 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
         return None
     
 
-class SiteMessageMiddleware:
+class SiteMessageMiddleware(MiddlewareMixin):
     def process_request(self, request):
         for message in SiteMessage.objects.filter(display=True):
-            messages.warning(request, message.message)
+            if settings.SITE_ID == 1:
+                messages.warning(request, message.message)
 
 
-class RequestProfilingMiddleware(object):
+class RequestProfilingMiddleware(MiddlewareMixin):
     """Middleware to run cProfiler on each request"""
 
     def __init__(self, get_response=None):

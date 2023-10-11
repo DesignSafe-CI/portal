@@ -13,20 +13,20 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(default_retry_delay=1*30, max_retries=3)
-def check_or_create_agave_home_dir(username):
+def check_or_create_agave_home_dir(username, systemId):
     try:
         # TODO should use OS calls to create directory.
         logger.info(
             "Checking home directory for user=%s on "
             "default storage systemId=%s",
             username,
-            settings.AGAVE_STORAGE_SYSTEM
+            systemId
         )
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                    token=settings.AGAVE_SUPER_TOKEN)
         try:
             listing_response = ag.files.list(
-                systemId=settings.AGAVE_STORAGE_SYSTEM,
+                systemId=systemId,
                 filePath=username)
             logger.info('check home dir response: {}'.format(listing_response))
 
@@ -34,7 +34,7 @@ def check_or_create_agave_home_dir(username):
             if e.response.status_code == 404:
                 logger.info("Creating the home directory for user=%s then going to run setfacl", username)
                 body = {'action': 'mkdir', 'path': username}
-                fm_response = ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
+                fm_response = ag.files.manage(systemId=systemId,
                                 filePath='',
                                 body=body)
                 logger.info('mkdir response: {}'.format(fm_response))
@@ -62,13 +62,13 @@ def check_or_create_agave_home_dir(username):
 
                 # add dir to index
                 logger.info("Indexing the home directory for user=%s", username)
-                agave_indexer.apply_async(kwargs={'username': username, 'systemId': settings.AGAVE_STORAGE_SYSTEM, 'filePath': username}, queue='indexing')
+                agave_indexer.apply_async(kwargs={'username': username, 'systemId': systemId, 'filePath': username}, queue='indexing')
 
     except(AgaveException):
     #except (HTTPError, AgaveException):
         logger.exception('Failed to create home directory.',
                          extra={'user': username,
-                                'systemId': settings.AGAVE_STORAGE_SYSTEM})
+                                'systemId': systemId})
 
 
 @shared_task(default_retry_delay=1*30, max_retries=3)

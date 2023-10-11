@@ -16,7 +16,7 @@
             </button>
             <div style="flex-grow: 1"></div>
             <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
-                Publish / Version / Amend
+                Publish / Amend / Version
             </button>
         </span>
     </div>
@@ -37,7 +37,7 @@
         </h3>
     </div>
     <!-- Project Reports -->
-    <div ng-if="$ctrl.matchingGroup(simulation, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading"
+    <!-- <div ng-if="$ctrl.matchingGroup(simulation, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading"
          ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'"
     >
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
@@ -72,7 +72,8 @@
             listing="$ctrl.FileListingService.listings.main"
             on-browse="$ctrl.onBrowse(file)"
         >&nbsp;</files-listing>
-    </div>
+    </div> -->
+
     <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="simulation in $ctrl.project.simulation_set" style="margin-bottom:20px">
         <div class="dropdown dropdown-spacer-sm" id="details-{{simulation.uuid}}">
             <div class="citation-gray" id="anchor-{{simulation.uuid}}">    
@@ -139,15 +140,15 @@
                 <div style="padding-bottom: 5px;"> 
                     <span ng-if="$ctrl.readOnly">
                         <span style="background-color: #ECE4BF;">
-                            {{ $ctrl.cumDoiMetrics[simulation.value.dois].fileDownloads || 0 }} Downloads
+                            {{ $ctrl.metricDisplay($ctrl.downloadCounts[simulation.value.dois]) }} Downloads
                         </span>
                         &nbsp;&nbsp;
                         <span style="background-color: #ECE4BF;">        
-                            {{ $ctrl.cumDoiMetrics[simulation.value.dois].filePreviews || 0}} Views
+                            {{ $ctrl.metricDisplay($ctrl.viewCounts[simulation.value.dois])}} Views
                         </span>
                         &nbsp;&nbsp;
                         <span style="background-color: #ECE4BF;">        
-                            {{ $ctrl.citationCounts[simulation.value.dois] || 0}} Citations
+                            {{ $ctrl.metricDisplay($ctrl.citationCounts[simulation.value.dois])}} Citations
                         </span>
                         &nbsp;&nbsp;
                         <span>
@@ -279,7 +280,8 @@
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[report.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       doi="simulation.doi"
+                                                       on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>
@@ -307,7 +309,8 @@
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[model.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       doi="simulation.doi"
+                                                       on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>
@@ -347,7 +350,8 @@
                                                                    published="true"
                                                                    on-scroll="$ctrl.scrollToBottom()"
                                                                    listing="$ctrl.FileListingService.listings[input.uuid]"
-                                                                   on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                   doi="simulation.doi"
+                                                                   on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                                     </files-listing>
                                                 </div>
                                             </div>
@@ -389,7 +393,8 @@
                                                                                published="true"
                                                                                on-scroll="$ctrl.scrollToBottom()"
                                                                                listing="$ctrl.FileListingService.listings[output.uuid]"
-                                                                               on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                                               doi="simulation.doi"
+                                                                               on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                                                 </files-listing>
                                                             </div>
                                                         </div>
@@ -437,7 +442,8 @@
                                                        published="true"
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        listing="$ctrl.FileListingService.listings[analysis.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                                       doi="simulation.doi"
+                                                       on-browse="$ctrl.onBrowse(file, simulation.doi)">&nbsp;
                                         </files-listing>
                                     </div>
                                   </div>

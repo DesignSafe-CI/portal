@@ -16,6 +16,7 @@ class DataDepotToolbarCtrl {
     placeholder() {
         var stateNames = {
             'myData': 'My Data',
+            'myDataScratch': 'Working Files (scratch Frontera)',
             'projects.list': 'My Projects',
             'sharedData': 'Shared Data',
             'boxData': 'Box',
@@ -49,12 +50,12 @@ class DataDepotToolbarCtrl {
             const projectId = this.PublicationService.current.projectId;
             this.FileOperationService.microsurvey({projectId})
         }
-        this.FileOperationService.download({api, scheme, files});
+        this.FileOperationService.download({api, scheme, files, doi: this.FileListingService.currentDOI});
     }
     preview() {
         const { api, scheme } = this.FileListingService.listings.main.params;
         const file = this.getAllSelected()[0];
-        this.FileOperationService.openPreviewModal({api, scheme, file});
+        this.FileOperationService.openPreviewModal({api, scheme, file, doi: this.FileListingService.currentDOI});
     }
     previewImages() {
         const { api, scheme, system } = this.FileListingService.listings.main.params;

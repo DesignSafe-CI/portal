@@ -217,9 +217,10 @@ export class ProjectService {
             sensor_list: 'Sensor Information',
             event: 'Event',
             simulation: 'Simulation',
-            model: 'Model',
+            model: 'Model',      
             input: 'Input',
             output: 'Output',
+            report: 'Report',
             hybrid_simulation: 'Hybrid Simulation',
             global_model: 'Global Model',
             coordinator: 'Coordinator',
@@ -311,13 +312,18 @@ export class ProjectService {
             Simulation Requirements:
             Condition 1)
                 + If a Simulation is published it must have:
-                    - Model Set
+                    - Model Set (no files required)
                     - Input Set
                     - Output Set
+                    - Report Set
                 + Sets must include categorized files
             */
-            let requirements = ['model', 'input', 'output'];
-            let subentities = [].concat(project.model_set || [], project.input_set || [], project.output_set || []);
+            let requirements = ['model', 'input', 'output', 'report'];
+            let subentities = [].concat(
+                project.model_set || [], 
+                project.input_set || [], 
+                project.output_set || [], 
+                project.report_set || []);
             let simulations = selPrimEnts.filter((ent) => ent.name.endsWith('simulation'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (simulations.length) {
