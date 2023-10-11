@@ -33,6 +33,7 @@ class DataBrowserServicePreviewCtrl {
             file: this.resolve.file,
             api: this.resolve.api,
             scheme: this.resolve.scheme,
+            doi: this.resolve.doi
         }).then(
             (resp) => {
                 this.fileType = resp.data.fileType;
@@ -127,7 +128,7 @@ class DataBrowserServicePreviewCtrl {
     download() {
         const { api, scheme, system, path } = this.FileListingService.listings.main.params;
         const files = [this.resolve.file];
-        this.FileOperationService.download({ api, scheme, files });
+        this.FileOperationService.download({ api, scheme, files, doi: this.resolve.doi });
         if (system === 'designsafe.storage.published') {
             const projectId = this.PublicationService.current.projectId;
             this.FileOperationService.microsurvey({projectId})

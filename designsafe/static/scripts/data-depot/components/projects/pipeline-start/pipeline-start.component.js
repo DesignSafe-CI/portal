@@ -53,7 +53,10 @@ class PipelineStartCtrl {
                 }
                 case 'hybrid_simulation': {
                     this.ui.publicationComp = 'projects.pipelineSelectHybSim'
+                    this.ui.amendComp = 'projects.amendHybSim'
+                    this.ui.versionComp = 'projects.versionHybSimSelection'
                     this.ui.previewComp = 'projects.previewHybSim'
+                    this.ui.showAmendVersion = true;
                     break;
                 }
                 case 'field_recon': {

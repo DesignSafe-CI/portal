@@ -7,7 +7,7 @@ import json
 import urllib.request, urllib.parse, urllib.error
 from datetime import datetime
 from celery import shared_task
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from pytas.models import User as TASUser
 from django.conf import settings
@@ -670,6 +670,8 @@ def amend_publication_data(self, project_id, amendments=None, authors=None, revi
     from designsafe.apps.projects.managers import publication as PublicationManager
     from designsafe.libs.fedora.fedora_operations import amend_project_fedora, ingest_project_experimental
     from designsafe.libs.fedora.sim_operations import ingest_project_sim
+    from designsafe.libs.fedora.fr_operations import ingest_project_fr
+    from designsafe.libs.fedora.hyb_sim_operations import ingest_project_hyb_sim
     try:
         amended_pub = PublicationManager.amend_publication(project_id, amendments, authors, revision)
         PublicationManager.amend_datacite_doi(amended_pub)
@@ -680,6 +682,10 @@ def amend_publication_data(self, project_id, amendments=None, authors=None, revi
             ingest_project_experimental(project_id, version=revision, amend=True)
         if amended_pub.project.value.projectType == 'simulation':
             ingest_project_sim(project_id, version=revision, amend=True)
+        if amended_pub.project.value.projectType == 'hybrid_simulation':
+            ingest_project_hyb_sim(project_id, version=revision, amend=True)
+        if amended_pub.project.value.projectType == 'field_recon':
+            ingest_project_fr(project_id, version=revision, amend=True)
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
@@ -780,41 +786,14 @@ def save_to_fedora(self, project_id, revision=None):
             from designsafe.libs.fedora.sim_operations import ingest_project_sim
             ingest_project_sim(project_id, version=revision)
             return
-
-        _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
-        fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'
-        res = requests.get(fedora_base)
-        if res.status_code == 404 or res.status_code == 410:
-            requests.put(fedora_base)
-
-        fedora_project_base = ''.join([fedora_base, '/', project_id])
-        res = requests.get(fedora_project_base)
-        if res.status_code == 404 or res.status_code == 410:
-            requests.put(fedora_project_base)
-
-        headers = {'Content-Type': 'text/plain'}
-        #logger.debug('walking: %s', _root)
-        for root, dirs, files in os.walk(_root):
-            for name in files:
-                mime = magic.Magic(mime=True)
-                headers['Content-Type'] = mime.from_file(os.path.join(root, name))
-                #files
-                full_path = os.path.join(root, name)
-                _path = full_path.replace(_root, '', 1)
-                _path = _path.replace('[', '-')
-                _path = _path.replace(']', '-')
-                url = ''.join([fedora_project_base, urllib.parse.quote(_path)])
-                #logger.debug('uploading: %s', url)
-                with open(os.path.join(root, name), 'rb') as _file:
-                    requests.put(url, data=_file, headers=headers)
-
-            for name in dirs:
-                #dirs
-                full_path = os.path.join(root, name)
-                _path = full_path.replace(_root, '', 1)
-                url = ''.join([fedora_project_base, _path])
-                #logger.debug('creating: %s', _path)
-                requests.put(url)
+        if pub.project.value.projectType == 'hybrid_simulation':
+            from designsafe.libs.fedora.hyb_sim_operations import ingest_project_hyb_sim
+            ingest_project_hyb_sim(project_id, version=revision)
+            return
+        if pub.project.value.projectType == 'field_recon':
+            from designsafe.libs.fedora.fr_operations import ingest_project_fr
+            ingest_project_fr(project_id, version=revision)
+            return
 
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc)

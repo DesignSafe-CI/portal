@@ -2,11 +2,12 @@ from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from requests.exceptions import RequestException, HTTPError
 import logging
+from django.utils.deprecation import MiddlewareMixin
 
 logger = logging.getLogger(__name__)
 
 
-class AgaveTokenRefreshMiddleware(object):
+class AgaveTokenRefreshMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         if request.path != '/logout/' and request.user.is_authenticated:

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.db import migrations
 from django.conf import settings
 from google.oauth2.credentials import Credentials
-from oauth2client.contrib.django_util.models import CredentialsField
+from designsafe.apps.googledrive_integration.models import CredentialsField
 import os
 import json
 

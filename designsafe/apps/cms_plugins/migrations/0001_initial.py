@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ResponsiveEmbedPlugin',
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
+                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin', on_delete=models.CASCADE)),
                 ('url', models.CharField(max_length=255)),
                 ('aspect', models.CharField(max_length=255, choices=[(b'16by9', b'16by9'), (b'4by3', b'4by3'), (b'podcast', b'podcast')])),
             ],

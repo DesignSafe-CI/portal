@@ -103,6 +103,16 @@ class PipelineVersionChangesCtrl {
                         this.mainEntityUuids.push(entity.uuid);
                     });
                 }
+                if (this.prjType === 'hybrid_simulation') {
+                    this.ui.selectionComp = 'projects.versionHybSimSelection'
+                    this.ui.citationComp = 'projects.versionCitation'
+
+                    this.pubData['hybrid_simulations'] = [];
+                    this.selectedEnts.forEach((entity) => {
+                        this.pubData['hybrid_simulations'].push({uuid: entity.uuid});
+                        this.mainEntityUuids.push(entity.uuid);
+                    });
+                }
             } else {
                 this.revisionAuthors = this.publication.project.value.teamOrder
                 this.ui.selectionComp = 'projects.versionOtherSelection'
