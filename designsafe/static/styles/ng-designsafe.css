@@ -1047,3 +1047,7 @@ i[class^="icon-ls-pre/post"]:before,
 .cms-messages {
     display: none !important;
 }
+
+.gsc-selected-option-container {
+    max-width: 100% !important;
+}
