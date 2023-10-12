@@ -267,7 +267,14 @@ STATICFILES_DIRS = [
     ('vendor/angular-native-dragdrop', os.path.join(BASE_DIR, 'node_modules', 'angular-native-dragdrop')),
     ('vendor/d3plus', os.path.join(BASE_DIR, 'node_modules', 'd3plus')),
 ]
-STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
