@@ -47,24 +47,13 @@ services:
     container_name: des_elasticsearch
     hostname: des_elasticsearch
 
-  mysql:
-    image: mysql:5.6
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ../mysql.cnf:/etc/mysql/conf.d/mysql.cnf
-    env_file: ../env_files/mysql.env
-    ports:
-      -   127.0.0.1:3306:3306
-    container_name: des_mysql
-    hostname: des_mysql
-
   postgres:
     image: postgres:14.9
     environment:
       - POSTGRES_PASSWORD=taccforever
-      - POSTGRES_USER=postgresadmin
-      - POSTGRES_DB=taccsite
-      - PGDATA=/var/lib/postgresql/data/taccsite
+      - POSTGRES_USER=ds_user
+      - POSTGRES_DB=ds_database
+      - PGDATA=/var/lib/postgresql/data/ds_database
     volumes:
       - des_postgres_data:/var/lib/postgresql/data
     hostname: des_postgres
@@ -97,7 +86,6 @@ services:
     env_file: ../env_files/designsafe.env
     links:
       - memcached:memcached
-      - mysql:mysql
       - rabbitmq:rabbitmq
       - redis:redis
       - elasticsearch:elasticsearch
@@ -122,7 +110,6 @@ services:
     env_file: ../env_files/designsafe.env
     links:
       - memcached:memcached
-      - mysql:mysql
       - rabbitmq:rabbitmq
       - redis:redis
       - elasticsearch:elasticsearch
@@ -141,7 +128,6 @@ services:
 volumes:
   redis_data:
   des_postgres_data:
-  mysql_data:
   es_data:
   rabbitmq_data:
   sockets:

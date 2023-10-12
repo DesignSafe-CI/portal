@@ -49,6 +49,7 @@ sitemaps = {
 
 urlpatterns = [
         # admin
+        url(r'^admin/impersonate/impersonationlog', admin.site.urls),
         url(r'^admin/impersonate/', include('impersonate.urls')),
         url(r'^admin/', admin.site.urls),
 
