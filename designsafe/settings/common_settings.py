@@ -268,7 +268,7 @@ STATICFILES_DIRS = [
     ('vendor/d3plus', os.path.join(BASE_DIR, 'node_modules', 'd3plus')),
 ]
 
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
