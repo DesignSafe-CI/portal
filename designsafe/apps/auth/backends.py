@@ -50,7 +50,7 @@ class TASBackend(ModelBackend):
 
     # Create an authentication method
     # This is called by the standard Django login procedure
-    def authenticate(self, username=None, password=None, request=None, **kwargs):
+    def authenticate(self, request, username=None, password=None, **kwargs):
         user = None
         if username is not None and password is not None:
             tas_user = None

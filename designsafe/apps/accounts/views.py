@@ -3,10 +3,9 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
 from django.utils.translation import ugettext_lazy as _
 from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
@@ -441,7 +440,9 @@ def email_confirmation(request, code=None):
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
                     logger.info('TAS Account activation succeeded.')
-                    check_or_create_agave_home_dir.apply(args=(user["username"],))
+                    from django.conf import settings
+                    check_or_create_agave_home_dir.apply_async(args=(user.username, settings.AGAVE_STORAGE_SYSTEM))
+                    check_or_create_agave_home_dir.apply_async(args=(user.username, settings.AGAVE_WORKING_SYSTEM))
                     return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
                 else:
                     messages.error(request,

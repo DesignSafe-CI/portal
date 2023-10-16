@@ -81,15 +81,15 @@
     <div style="padding-bottom: 5px;"> 
         <span ng-if="$ctrl.readOnly">
             <span style="background-color: #ECE4BF;">
-                {{ $ctrl.cumMetrics.otherTotal || 0 }} Downloads
+                {{ $ctrl.metricDisplay($ctrl.downloadCounts[$ctrl.project.value.dois[0]]) }} Downloads
             </span>
             &nbsp;&nbsp;
-            <span style="background-color: #ECE4BF;">        
-                {{ $ctrl.cumMetrics.filePreviews || 0}} Views
+            <span style="background-color: #ECE4BF;">      
+                {{ $ctrl.metricDisplay($ctrl.viewCounts[$ctrl.project.value.dois[0]]) }} Views
             </span>
             &nbsp;&nbsp;
-            <span style="background-color: #ECE4BF;">        
-                {{ $ctrl.citationCounts[experiment.value.dois] || 0}} Citations
+            <span style="background-color: #ECE4BF;">
+                {{ $ctrl.metricDisplay($ctrl.citationCounts[$ctrl.project.value.dois[0]]) }} Citations
             </span>
             &nbsp;&nbsp;
             <span ng-if="$ctrl.readOnly">

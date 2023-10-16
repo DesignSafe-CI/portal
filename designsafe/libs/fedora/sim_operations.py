@@ -12,7 +12,7 @@ from requests.packages.urllib3.util.retry import Retry
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from django.contrib.auth import get_user_model
 from designsafe.apps.api.publications.operations import _get_user_by_username
-from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest, generate_report_experimental
+from designsafe.libs.fedora.fedora_operations import format_metadata_for_fedora, fedora_post, fedora_update, create_fc_version, upload_manifest, generate_manifest, generate_report_experimental, has_associations
 import logging
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,8 @@ def walk_sim(project_id, version=None):
             'uuid': sim.uuid,
             'container_path': sim_container_path,
             'fedora_mapping': {**format_sim(sim), 'license': license, 'wasGeneratedBy': project_id, 'generated': []},
-            'fileObjs': getattr(sim, 'fileObjs', [])
+            'fileObjs': getattr(sim, 'fileObjs', []),
+            'fileTags': getattr(sim.value, 'fileTags', [])
         }
 
         full_author_list += sim_map['fedora_mapping']['creator']
@@ -66,6 +67,7 @@ def walk_sim(project_id, version=None):
             report_map = {
                 'uuid': report.uuid,
                 'fileObjs': report.fileObjs,
+                'fileTags': getattr(report.value, 'fileTags', []),
                 'container_path': report_container_path,
                 'fedora_mapping': {**format_report(report), 'wasGeneratedBy': 'Simulation: {}'.format(sim_doi)}
             }
@@ -84,6 +86,7 @@ def walk_sim(project_id, version=None):
             analysis_map = {
                 'uuid': analysis.uuid,
                 'fileObjs': analysis.fileObjs,
+                'fileTags': getattr(analysis.value, 'fileTags', []),
                 'container_path': analysis_container_path,
                 'fedora_mapping': {**format_analysis(analysis), 'wasGeneratedBy': 'Simulation: {}'.format(sim_doi)}
             }
@@ -103,12 +106,13 @@ def walk_sim(project_id, version=None):
             model_map = {
                 'uuid': model.uuid,
                 'fileObjs': model.fileObjs,
+                'fileTags': getattr(model.value, 'fileTags', []),
                 'container_path': model_container_path,
                 'fedora_mapping': {**format_model(model), 'wasGeneratedBy': 'Simulation: {}'.format(sim_doi)}
             }
 
             inputs = filter(
-            lambda input: model.uuid in input.value.modelConfigs,
+            lambda input: model.uuid in input.value.modelConfigs and has_associations(input, [model, sim]),
             getattr(doc, 'inputs', [])
             )
 
@@ -119,15 +123,16 @@ def walk_sim(project_id, version=None):
                 input_map = {
                     'uuid': input.uuid,
                     'fileObjs': input.fileObjs,
+                    'fileTags': getattr(input.value, 'fileTags', []),
                     'container_path': input_container_path,
                     'fedora_mapping': {**format_input(input), 
                                        'wasGeneratedBy': 'Simulation: {}'.format(sim_doi), 
                                        'wasDerivedFrom': 'Simulation Model: {}'.format(model.value.title),
-                                       'wasInfluencedBy': []}
+                                       'Influence': []}
                 }
 
                 outputs = filter(
-                lambda output: input.uuid in output.value.simInputs,
+                lambda output: input.uuid in output.value.simInputs and has_associations(output, [input, model, sim]),
                 getattr(doc, 'outputs', [])
                 ) 
 
@@ -135,10 +140,11 @@ def walk_sim(project_id, version=None):
                     output_container_path = "{}/{}".format(input_container_path, parse.quote(output.value.title))
                     print('\t\t\toutput ' + output.value.title)
                     sim_map['fedora_mapping']['generated'].append('Simulation Input: {}'.format(output.value.title))
-                    input_map['fedora_mapping']['wasInfluencedBy'].append('Simulation Output: {}'.format(output.value.title))
+                    input_map['fedora_mapping']['Influence'].append('Simulation Output: {}'.format(output.value.title))
                     output_map = {
                         'uuid': output.uuid,
                         'fileObjs': output.fileObjs,
+                        'fileTags': getattr(output.value, 'fileTags', []),
                         'container_path': output_container_path,
                         'fedora_mapping': {**format_output(output), 
                                         'wasGeneratedBy': 'Simulation: {}'.format(sim_doi), 

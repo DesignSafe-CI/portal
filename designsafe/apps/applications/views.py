@@ -47,7 +47,7 @@ def call_api(request, service):
         :param request: http request from angular service
         :returns: JSON response for agave call
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         try:
             token = request.user.agave_oauth
             agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL,

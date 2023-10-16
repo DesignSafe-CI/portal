@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
@@ -110,7 +110,7 @@ def agave_oauth_callback(request):
     http://agaveapi.co/documentation/authorization-guide/#authorization_code_flow
     """
     state = request.GET.get('state')
-    
+
     if request.session['auth_state'] != state:
         msg = (
             'OAuth Authorization State mismatch!? auth_state=%s '
@@ -152,7 +152,7 @@ def agave_oauth_callback(request):
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
-        
+
         if user:
             try:
                 token = user.agave_oauth
@@ -172,8 +172,15 @@ def agave_oauth_callback(request):
                               filePath=user.username)
             except HTTPError as e:
                 if e.response.status_code == 404:
-                    check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')
-                    
+                    check_or_create_agave_home_dir.apply_async(args=(user.username, settings.AGAVE_STORAGE_SYSTEM),queue='files')
+
+            try:
+                ag.files.list(systemId=settings.AGAVE_WORKING_SYSTEM,
+                              filePath=user.username)
+            except HTTPError as e:
+                if e.response.status_code == 404:
+                    check_or_create_agave_home_dir.apply_async(args=(user.username, settings.AGAVE_WORKING_SYSTEM),queue='files')
+
         else:
             messages.error(
                 request,

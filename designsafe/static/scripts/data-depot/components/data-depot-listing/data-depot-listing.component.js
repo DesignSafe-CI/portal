@@ -224,6 +224,7 @@ class FilesListingCtrl {
         this.FileOperationService = FileOperationService;
         this.PublicationService = PublicationService;
         this.handleScroll = this.handleScroll.bind(this);
+        this.filterTrash = this.filterTrash.bind(this);
     }
 
     $onInit() {
@@ -234,6 +235,12 @@ class FilesListingCtrl {
             const { section, api, scheme, system, path } = this.listing.params;
             this.FileListingService.browseScroll({ section, api, scheme, system, path });
         }
+    }
+
+    filterTrash(f) {
+        // Don't display the trash folder in Community listings.
+        return !(['designsafe.storage.community', 'designsafe.storage.published'].includes(this.listing.params.system) 
+            && f.name.toLowerCase() === '.trash')
     }
 
     browse($event, file) {
@@ -249,6 +256,7 @@ class FilesListingCtrl {
 
     onSelect(idx) {
         this.FileListingService.select(this.listing.params.section, idx)
+        this.FileListingService.currentDOI = this.doi;
     }
 
     icon(name, type) {
@@ -354,7 +362,8 @@ export const FilesListingComponent = {
         operation: '&', // Callback for move/copy operation.
         showTags: '<',
         editTags: '<', 
-        published: '<'
+        published: '<',
+        doi: '<'
     },
 };
 

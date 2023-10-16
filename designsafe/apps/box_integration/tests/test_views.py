@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model, signals
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from boxsdk.object.user import User
 from designsafe.apps.box_integration.models import BoxUserToken
 from designsafe.apps.auth.signals import on_user_logged_in
