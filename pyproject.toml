@@ -22,7 +22,6 @@ django-impersonate = "1.9.1"
 django-treebeard = "4.3.1"
 django-sekizai = "2.0.0"
 django-termsandconditions = "^1.2.15"
-django-websocket-redis = { git = "https://github.com/jarosenb/django-websocket-redis", rev = "1e429c1334a2719a6c4195d6151f4db84eece591" }
 google-api-python-client = "^2.33.0"
 google-auth-httplib2 = "^0.1.0"
 google-auth-oauthlib = "^0.4.6"
