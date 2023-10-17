@@ -78,9 +78,6 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
 
-    #websockets
-    'ws4redis',
-
     # custom
     'designsafe.apps.auth',
     'designsafe.apps.api',
@@ -163,7 +160,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
-                'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
@@ -420,18 +416,6 @@ NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@
 # Terms and Conditions
 #
 DEFAULT_TERMS_SLUG = 'terms'
-
-##
-# django-websockets-redis
-#
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-WEBSOCKET_URL = '/ws/'
-WS4REDIS_CONNECTION = {
-    'host': os.environ.get('WS_BACKEND_HOST'),
-    'port': os.environ.get('WS_BACKEND_PORT'),
-    'db': os.environ.get('WS_BACKEND_DB'),
-}
-WS4REDIS_EXPIRE = 0
 
 # Analytics
 #
