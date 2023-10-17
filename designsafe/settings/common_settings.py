@@ -42,7 +42,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (
 
-    # 
+    'daphne', 
     'djangocms_admin_style',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -78,10 +78,6 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
     'captcha',
-
-
-    #websockets
-    'ws4redis',
 
     # custom
     'designsafe.apps.auth',
@@ -175,7 +171,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
-                'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
@@ -188,6 +183,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'designsafe.wsgi.application'
+ASGI_APPLICATION = 'designsafe.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.environ.get('WS_BACKEND_HOST'), 
+                       os.environ.get('WS_BACKEND_PORT'))],
+        },
+    },
+}
 
 
 # Database
@@ -268,7 +273,7 @@ STATICFILES_DIRS = [
     ('vendor/d3plus', os.path.join(BASE_DIR, 'node_modules', 'd3plus')),
 ]
 
-STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -458,18 +463,6 @@ DEV_PROJECT_ADMINS_EMAIL = ['tbrown@tacc.utexas.edu', 'sgray@tacc.utexas.edu', '
 # Terms and Conditions
 #
 DEFAULT_TERMS_SLUG = 'terms'
-
-##
-# django-websockets-redis
-#
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-WEBSOCKET_URL = '/ws/'
-WS4REDIS_CONNECTION = {
-    'host': os.environ.get('WS_BACKEND_HOST'),
-    'port': os.environ.get('WS_BACKEND_PORT'),
-    'db': os.environ.get('WS_BACKEND_DB'),
-}
-WS4REDIS_EXPIRE = 0
 
 # Analytics
 #

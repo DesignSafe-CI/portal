@@ -3,7 +3,7 @@
 version: "3"
 services:
   redis:
-    image: redis:4.0
+    image: redis:7
     volumes:
       - redis_data:/data
       - ../redis.conf:/usr/local/etc/redis/redis.conf
