@@ -59,6 +59,26 @@
                             required/>
                 </div>
             </div>
+            <!-- Facilities -->
+            <div class="form-group">
+                <label for="id-facility">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Facility</span>
+                        </div>
+                    </div>
+                </label>
+                <select class="form-control"
+                        ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
+                        ng-model="$ctrl.form.facility">
+                <option value="">-- Select a Facility --</option>
+            </select>
+            <input  class="form-control"
+                    type="text"
+                    placeholder="Custom Facility"
+                    ng-model="$ctrl.form.facilityOther"
+                    ng-if="$ctrl.form.facility == 'other'"/>
+            </div>
             <!-- Referenced Data -->
             <div class="form-group">
                 <table class="manage-prj-table">
@@ -378,6 +398,15 @@
                                     </div>
                                 </div>
                             </div>
+                            <span ng-if="simulation.value.facility.length && simulation.value.facility != 'None' ">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Facility</div>
+                                    <span ng-if="!$ctrl.isValid(simulation.value.facilityOther)"
+                                            class="entity-meta-data-cap">{{ $ctrl.getEF(simulation.value.facility) }}</span>
+                                    <span ng-if="$ctrl.isValid(simulation.value.facilityOther)"
+                                            class="entity-meta-data-cap">{{ simulation.value.facilityOther }}</span>
+                                </div>
+                            </span>
                             <div class="entity-meta-field" ng-if="simulation.value.relatedWork.length">
                                 <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">

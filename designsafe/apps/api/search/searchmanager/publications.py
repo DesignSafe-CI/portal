@@ -61,7 +61,6 @@ class PublicationsSearchManager(BaseSearchManager):
                       {'experimentsList.value.experimentType': experiment_type}}}}}})
 
     def simulation_facility_query(self, facility_name):
-
         return Q({'nested':
                   {'path': 'simulations',
                     'query':
@@ -70,7 +69,6 @@ class PublicationsSearchManager(BaseSearchManager):
                         'query':
                           {'term':
                             {'simulations.value.facility._exact': facility_name }}}}}})
-
 
     def simulation_type_query(self, simulation_type):
         return Q({'term': {'simulations.value.simulationType.keyword': simulation_type}})
@@ -81,13 +79,21 @@ class PublicationsSearchManager(BaseSearchManager):
     def nh_event_query(self, nh_event):
         return Q({'match': {'project.value.nhEvent': nh_event}})
 
-
     def other_type_query(self, data_type):
         return Q({'term': {'project.value.dataType.keyword': data_type}})
 
+    def simulation_facility_query(self, facility_name):
+        return Q({'nested':
+                  {'path': 'hybrid_simulations',
+                    'query':
+                      {'nested':
+                        {'path': 'hybrid_simulations.value',
+                        'query':
+                          {'term':
+                            {'hybrid_simulations.value.facility._exact': facility_name }}}}}})
+
     def hybrid_sim_type_query(self, sim_type):
         return Q({'term': {'hybrid_simulations.value.simulationType.keyword': sim_type}})
-
 
     
     def experiment_query(self):

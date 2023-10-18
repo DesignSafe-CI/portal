@@ -178,6 +178,21 @@
                                     </span>
                                 </div>
                             </div>
+                            <div>Here
+                                <span>{{ hybsim.value }} </span>
+                            </div>
+                            
+                            <span ng-if="hybsim.value.facility.length && hybsim.value.facility !=='None'">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Facility</div>
+                                    <span ng-if="!$ctrl.isValid(hybsim.value.facilityOther)" class="entity-meta-data">
+                                        {{ $ctrl.getEF(hybsim.value.facility) }}
+                                    </span>
+                                    <span ng-if="$ctrl.isValid(hybsim.value.facilityOther)" class="entity-meta-data">
+                                        {{ hybsim.value.facilityOther }}
+                                    </span>
+                                </div>
+                            </span>
                             <div class="entity-meta-field" ng-if="hybsim.value.relatedWork.length">
                                 <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">

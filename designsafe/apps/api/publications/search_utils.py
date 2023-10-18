@@ -118,6 +118,29 @@ def other_type_query(data_type):
         return ~Q({'terms': {'project.value.dataType.keyword': data_types}}) # | ~Q({'exists', {'field': 'project.value.dataType.keyword'}})
     return Q({'term': {'project.value.dataType.keyword': data_type}})
 
+def hybrid_sim_facility_query(facility):
+    if facility['name'] == 'Other':
+        facility['name'] = 'other'
+
+    name_query =  Q({'nested':
+              {'path': 'hybrid_simulations',
+               'query':
+               {'nested':
+                {'path': 'hybrid_simulations.value',
+                 'query':
+                 {'term':
+                  {'hybrid_simulations.value.facility._exact': facility['name']}}}}}})
+
+    label_query =  Q({'nested':
+              {'path': 'hybrid_simulations',
+               'query':
+               {'nested':
+                {'path': 'hybrid_simulations.value',
+                 'query':
+                 {'term':
+                  {'hybrid_simulations.value.facility._exact': facility['label']}}}}}})
+
+    return name_query | label_query
 
 def hybrid_sim_type_query(sim_type):
     return Q({'term': {'hybrid_simulations.value.simulationType.keyword': sim_type}})

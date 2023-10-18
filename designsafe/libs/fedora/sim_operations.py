@@ -167,7 +167,7 @@ def walk_sim(project_id, version=None):
 
 def format_sim(sim):
     """
-    Map experiment to Datacite fields for Fedora.
+    Map simulation to Datacite fields for Fedora.
     """
     meta = sim.value
     sim_type = meta.simulationType
