@@ -70,7 +70,7 @@ class DjangoRt:
         :return: The newly created ticket ID
         """
         return self.tracker.create_ticket(
-            Subject=ticket.subject, Requestors=ticket.requestor, Cc=",".join(ticket.cc),
+            Subject=ticket.subject, Requestor=ticket.requestor, Cc=",".join(ticket.cc),
             Text=ticket.problem_description.replace('\n', '\n '))
 
     def replyToTicket(self, ticket_id, text='', files=[]):
