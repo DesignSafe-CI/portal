@@ -241,7 +241,7 @@ def call_api(request, service):
         elif service == 'description':
             app_id = request.GET.get('app_id')
             try:
-                data = AppDescription.objects.get(appId=app_id).desc_to_dict()
+                data = AppDescription.objects.get(appid=app_id).desc_to_dict()
             except ObjectDoesNotExist:
                 return HttpResponse('No description found for {}'.format(app_id), status=200)
         else:

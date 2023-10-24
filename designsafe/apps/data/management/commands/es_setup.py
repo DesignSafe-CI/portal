@@ -1,6 +1,6 @@
 import logging
 from django.core.management import BaseCommand, CommandError
-from django.utils.six.moves import input
+from six.moves import input
 from django.conf import settings
 import elasticsearch
 import getpass
