@@ -82,7 +82,7 @@ class PublicationsSearchManager(BaseSearchManager):
     def other_type_query(self, data_type):
         return Q({'term': {'project.value.dataType.keyword': data_type}})
 
-    def simulation_facility_query(self, facility_name):
+    def hybrid_sim_facility_query(self, facility_name):
         return Q({'nested':
                   {'path': 'hybrid_simulations',
                     'query':
@@ -95,7 +95,6 @@ class PublicationsSearchManager(BaseSearchManager):
     def hybrid_sim_type_query(self, sim_type):
         return Q({'term': {'hybrid_simulations.value.simulationType.keyword': sim_type}})
 
-    
     def experiment_query(self):
         facility_name = self.query_dict['advancedFilters']['experimental']['experimentalFacility']
         experiment_type = self.query_dict['advancedFilters']['experimental']['experimentType'] 
@@ -155,7 +154,10 @@ class PublicationsSearchManager(BaseSearchManager):
         return q
 
     def hybrid_sim_query(self):
-        sim_type = data_type = self.query_dict['advancedFilters']['hybrid_simulation']['hybridSimulationType'] 
+        sim_type = data_type = self.query_dict['advancedFilters']['hybrid_simulation']['hybridSimulationType']
+        facility_name = self.query_dict['advancedFilters']['hybrid_simulation']['facility'] 
+        if facility_name:
+            expt_query = expt_query & self.facility_query(facility_name)
         if not self.query_dict['typeFilters']['hybrid_simulation'] and not sim_type:
             return None 
         q = Q('term', **{'project.value.projectType._exact': 'hybrid_simulation'}) 

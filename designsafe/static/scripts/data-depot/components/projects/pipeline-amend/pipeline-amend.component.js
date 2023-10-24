@@ -99,7 +99,7 @@ class PipelineAmendCtrl {
             ]
         }
         else if (prj_type == 'hybrid_simulation') {
-            primaryEntNames = ['hybidsimulations']
+            primaryEntNames = ['hybrid_simulations']
             secondaryEntNames = [
                 'hybrid_simulations',
                 'global_models',
