@@ -3,7 +3,7 @@
 version: "3"
 services:
   redis:
-    image: redis:4.0
+    image: redis:7
     volumes:
       - redis_data:/data
       - ../redis.conf:/usr/local/etc/redis/redis.conf
@@ -47,16 +47,19 @@ services:
     container_name: des_elasticsearch
     hostname: des_elasticsearch
 
-  mysql:
-    image: mysql:5.6
+  postgres:
+    image: postgres:14.9
+    environment:
+      - POSTGRES_PASSWORD=taccforever
+      - POSTGRES_USER=ds_user
+      - POSTGRES_DB=ds_database
+      - PGDATA=/var/lib/postgresql/data/ds_database
     volumes:
-      - mysql_data:/var/lib/mysql
-      - ../mysql.cnf:/etc/mysql/conf.d/mysql.cnf
-    env_file: ../env_files/mysql.env
+      - des_postgres_data:/var/lib/postgresql/data
+    hostname: des_postgres
     ports:
-      -   127.0.0.1:3306:3306
-    container_name: des_mysql
-    hostname: des_mysql
+      -   127.0.0.1:5432:5432
+    container_name: des_postgres
 
   nginx:
     image: nginx
@@ -83,7 +86,6 @@ services:
     env_file: ../env_files/designsafe.env
     links:
       - memcached:memcached
-      - mysql:mysql
       - rabbitmq:rabbitmq
       - redis:redis
       - elasticsearch:elasticsearch
@@ -94,7 +96,7 @@ services:
       - ../../data/media:/var/www/designsafe-ci.org/media
     ports:
       - 127.0.0.1:8000:8000
-      - 127.0.0.1:5555:5555
+      - 127.0.0.1:5678:5678
       - 127.0.0.1:9000:9000
     dns:
       - 8.8.8.8
@@ -108,7 +110,6 @@ services:
     env_file: ../env_files/designsafe.env
     links:
       - memcached:memcached
-      - mysql:mysql
       - rabbitmq:rabbitmq
       - redis:redis
       - elasticsearch:elasticsearch
@@ -126,7 +127,7 @@ services:
 
 volumes:
   redis_data:
-  mysql_data:
+  des_postgres_data:
   es_data:
   rabbitmq_data:
   sockets:

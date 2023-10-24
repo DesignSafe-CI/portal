@@ -62,5 +62,5 @@ urlpatterns = [
     url(r'^(?P<project_uuid>[a-z0-9\-]+)/notification/$',
         ProjectNotificationView.as_view(), name='project_notification'),
 
-    url(r'^/?', ProjectCollectionView.as_view(), name='index'),
+    url("", ProjectCollectionView.as_view(), name='index'),
 ]
