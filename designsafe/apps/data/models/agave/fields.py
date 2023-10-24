@@ -38,7 +38,7 @@ class BaseField(object):
         self.related_name = related_name
         self.list_cls = list_cls
         
-        if not isinstance(self.choices, collections.Iterator):
+        if not isinstance(self.choices, collections.abc.Iterator):
             self.choices = []
         else:
             self.choices = list( self.choices)
