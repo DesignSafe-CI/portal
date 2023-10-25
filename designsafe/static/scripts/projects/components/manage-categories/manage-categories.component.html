@@ -2,13 +2,13 @@
     <h4 class="modal-title" style="border:none;">
         <span>Add Categories</span>
         <span class="pull-right" ng-click="$ctrl.cancel()">
-            <i class="fa fa-times"></i>
+            <i role="none" class="fa fa-times"></i>
         </span>
     </h4>
 </div>
 <div class="modal-body" ng-show="$ctrl.ui.loading">
     <h3 class="text-center">
-        <i class="fa fa-spinner fa-spin"></i> Loading...
+        <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
     </h3>
 </div>
 <div class="modal-body" ng-hide="$ctrl.ui.loading">
@@ -186,7 +186,7 @@
             <!-- Add Category Btn -->
             <div class="text-right">
                 <button class="btn btn-add" type="submit" ng-click="addForm.$valid && $ctrl.addCategory($event)">
-                    <i class="fa fa-plus"></i> Add Category
+                    <i role="none" class="fa fa-plus"></i> Add Category
                 </button>
             </div>
         </form>

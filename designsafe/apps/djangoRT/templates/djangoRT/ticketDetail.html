@@ -20,12 +20,12 @@
     <div>
         <b>Actions:</b>
         <a class="btn btn-info" href="{% url 'djangoRT:ticketreply' ticket.id %}">
-            <i class="fa fa-reply"></i>
+            <i role="none" class="fa fa-reply"></i>
             {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}Reopen this ticket{% else %}Reply to this ticket{% endif %}
         </a>
         {% if ticket.Status != 'resolved' and ticket.Status != 'closed' %}
         <a class="btn btn-danger" href="{% url 'djangoRT:ticketclose' ticket.id %}">
-            <i class="fa fa-times"></i> Close this ticket
+            <i role="none" class="fa fa-times"></i> Close this ticket
         </a>
         {% endif %}
     </div>
@@ -36,7 +36,7 @@
             {% if history.Type == "Correspond" or history.Type == "Create" %}
             <div class="history-item history-item-{{history.Type|lower}}">
                 <h4>
-                    <i class="fa fa-{% if history.Type == "Correspond" %}comment{% elif history.Type == 'Create' %}plus-circle{% endif %}"></i>
+                    <i role="none" class="fa fa-{% if history.Type == "Correspond" %}comment{% elif history.Type == 'Create' %}plus-circle{% endif %}"></i>
                     {% localtime off %}
                         {{history.Created|date:"M j Y P"}}
                     {% endlocaltime %}
@@ -55,7 +55,7 @@
             {% elif history.Type == "Status" %}
             <div class="history-item history-item-{{history.Type|lower}}">
                 <blockquote>
-                    <i class="fa fa-bell"></i>
+                    <i role="none" class="fa fa-bell"></i>
                     {{history.Description }}<br>
                     {% localtime off %}
                         {{history.Created|date:"M j Y P"}}
@@ -70,12 +70,12 @@
     <div>
         <b>Actions:</b>
         <a class="btn btn-info" href="{% url 'djangoRT:ticketreply' ticket.id %}">
-            <i class="fa fa-reply"></i>
+            <i role="none" class="fa fa-reply"></i>
             {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}Reopen this ticket{% else %}Reply to this ticket{% endif %}
         </a>
         {% if ticket.Status != 'resolved' and ticket.Status != 'closed' %}
         <a class="btn btn-danger" href="{% url 'djangoRT:ticketclose' ticket.id %}">
-            <i class="fa fa-times"></i> Close this ticket
+            <i role="none" class="fa fa-times"></i> Close this ticket
         </a>
         {% endif %}
     </div>

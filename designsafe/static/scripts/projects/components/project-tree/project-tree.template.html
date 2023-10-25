@@ -3,13 +3,13 @@
         <span ng-if="!$ctrl.readOnly">Relate Data</span>
         <span ng-if="$ctrl.readOnly">Data Diagram</span>
         <span class="pull-right" data-ng-click="$ctrl.close()">
-            <i class="fa fa-times">&nbsp;</i>
+            <i role="none" class="fa fa-times">&nbsp;</i>
         </span>
     </h4>
 </div>
 <div class="modal-body project-tree">
     <div class="loading bg-info" data-ng-if="$ctrl._ui.loading">
-        <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+        <i role="none" class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </div>
     <div class="loading bg-danger" data-ng-if="$ctrl._ui.error">
         <p>{{$ctrl._ui.error}}</p>
@@ -24,14 +24,14 @@
                         data-ng-click="$ctrl.moveNodeUp(node)"
                         data-ng-disabled="$ctrl._ui.loading"
                         data-ng-if="node.parent">
-                    <i class="fa fa-arrow-up">&nbsp;</i><span class="sr-only">Move Up</span>
+                    <i role="none" class="fa fa-arrow-up">&nbsp;</i><span class="sr-only">Move Up</span>
                 </button>
                 <button type="button"
                         class="btn btn-link btn-sm"
                         data-ng-click="$ctrl.moveNodeDown(node)"
                         data-ng-disabled="$ctrl._ui.loading"
                         data-ng-if="node.parent">
-                    <i class="fa fa-arrow-down">&nbsp;</i><span class="sr-only">Move Down</span>
+                    <i role="none" class="fa fa-arrow-down">&nbsp;</i><span class="sr-only">Move Down</span>
                 </button>
                 <button type="button"
                         class="btn btn-link"

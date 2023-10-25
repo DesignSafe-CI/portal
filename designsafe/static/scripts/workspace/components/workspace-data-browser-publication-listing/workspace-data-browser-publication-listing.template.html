@@ -24,17 +24,17 @@
                             ds-data-draggable
                             data-ds-data="agave://designsafe.storage.published/{{publication.projectId}}"
                         >
-                            <i class="fa fa-folder"></i>
+                            <i role="none" class="fa fa-folder"></i>
                             <span>{{publication.projectId}}</span>
                         </a>
                     </td>
                     <td>{{publication.project.value.title}}</td>
                 </tr>
-                <tr ng-if="$ctrl.listing.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
+                <tr ng-if="$ctrl.listing.loading"><td colspan="3"><p class="lead"><i role="none" class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
                 <tr ng-if="$ctrl.listing.loadingScroll">
                     <td>
                             <span class="bg-info text-info">
-                            <i class="fa fa-spinner fa-spin"></i> Loading...
+                            <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
                             </span>
                     </td>
                 </tr>

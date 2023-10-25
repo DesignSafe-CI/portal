@@ -2,7 +2,7 @@
         <!-- progression map -->
         <div class="pull-right" style="padding-bottom: 20px;">
             <a ng-click="$ctrl.goWork()">
-                <i class="fa fa-times"></i> Exit Prepare to Publish
+                <i role="none" class="fa fa-times"></i> Exit Prepare to Publish
             </a>
         </div>
         <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
@@ -10,19 +10,19 @@
                 <td class="tg-0lax">
                     <strong>Selection</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax">
                     <strong>Proofread Project</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax" ng-hide="$ctrl.project.value.projectType === 'other'">
                     <strong>Proofread {{$ctrl.placeholder}}</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax">
@@ -30,19 +30,19 @@
                         <strong ng-if="$ctrl.project.value.projectType === 'field_recon'">Proofread Collections</strong>
                         <strong ng-if="$ctrl.project.value.projectType != 'other' && $ctrl.project.value.projectType != 'field_recon'">Proofread Categories</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax">
                     <strong>Order Authors</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax">
                     <strong>Licenses</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
             </tr>
@@ -50,13 +50,13 @@
         <br>
         <div>
             <a class="pull-left" ng-click="$ctrl.goAuthors()" ng-if="$ctrl.project.value.projectType !== 'other'">
-                <i class="fa fa-arrow-left"></i> Back to Order Authors
+                <i role="none" class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
             <a class="pull-left" ng-click="$ctrl.goTeam()" ng-if="$ctrl.project.value.projectType === 'other'">
-                <i class="fa fa-arrow-left"></i> Back to Order Authors
+                <i role="none" class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
             <button class="btn btn-small btn-add pull-right" ng-click="$ctrl.prepareModal()" ng-disabled="!$ctrl.validSelection()">
-                <i class="fa fa-globe"></i> Request DOI & Publish
+                <i role="none" class="fa fa-globe"></i> Request DOI & Publish
             </button>
         </div>
         <!-- progression map -->

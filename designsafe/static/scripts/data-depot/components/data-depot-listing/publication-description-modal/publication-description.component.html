@@ -5,7 +5,7 @@
         <div data-ng-if="$ctrl.PublicationService.description.loading"
                      style="padding:10px; font-size:large; width:100%;"
                      class="bg-info">
-                    <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
+                    <span> <i role="none" class="fa fa-spinner fa-spin"></i> Loading... </span>
                 </div>
         <div data-ng-if="!$ctrl.PublicationService.description.loading" ng-bind-html="$ctrl.PublicationService.description.value"></div>
     </div>

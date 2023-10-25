@@ -1,10 +1,10 @@
 <div class="modal-header" style="background-color: #c6c6c6; display: flex; justify-content: space-between;">
     <strong>{{ $ctrl.last }}, {{ $ctrl.first }}</strong>
-    <strong ng-click="$ctrl.close()" class="fa fa-times"></strong>
+    <strong ng-click="$ctrl.close()" role="none" class="fa fa-times"></strong>
 </div>
 <div class="modal-body">
     <div data-ng-if="$ctrl.loading">
-        <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading ...
+        <i role="none" class="fa fa-spinner fa-spin">&nbsp;</i> Loading ...
     </div>
     <table ng-if="!$ctrl.loading" style="width: 95%">
         <tbody>

@@ -1,6 +1,6 @@
 <div class="pipeline-nav">
     <a ng-click="$ctrl.goAmend()">
-        <i class="fa fa-arrow-left"></i> Back
+        <i role="none" class="fa fa-arrow-left"></i> Back
     </a>
     <button class="btn btn-small btn-add"
             ng-click="$ctrl.submitAmend()"
@@ -14,14 +14,14 @@
         Before proceeding, please review the list of authors and their order on your citation(s) and click "Save" to confirm. Your citation(s) will be updated accordingly.
         <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
     </div>
     <!-- Notifications -->
     <div class="pipeline-notification">
         <div class="alert alert-success flex-container" ng-if="$ctrl.ui.success">
-            <i class="fa fa-check notification-icon"></i>
+            <i role="none" class="fa fa-check notification-icon"></i>
             <div>
                 Your publication amendment has been submitted.
                 <strong>Do not attempt to amend your publication again.</strong>
@@ -37,7 +37,7 @@
             Return to Project
         </button>
         <div class="alert alert-danger flex-container" ng-if="$ctrl.ui.error">
-            <i class="fa fa-times notification-icon"></i>
+            <i role="none" class="fa fa-times notification-icon"></i>
             <div>
                 There was an issue when attempting to submit your project
                 for revision.
@@ -61,7 +61,7 @@
                 </div>
                 <div ng-show="$ctrl.ui.loading">
                     <h3 class="text-center">
-                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                        <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
                     </h3>
                 </div>
                 <!-- Citation Preview -->
@@ -99,8 +99,8 @@
                     </tr>
                     <tr>
                         <td>
-                            <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, pubEnt)"></i>
-                            <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, pubEnt)"></i>
+                            <i role="none" class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, pubEnt)"></i>
+                            <i role="none" class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, pubEnt)"></i>
                             <a class="sort-arrows" ng-click="$ctrl.saveAuthors(pubEnt, true)">Save</a>
                         </td>
                     </tr>
