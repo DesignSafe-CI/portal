@@ -348,7 +348,7 @@
 <!-- tombstone banners can be displayed over publishable metadata -->
 <div class="alert alert-warning flex-container"
         ng-if="$ctrl.publication.tombstone.includes($ctrl.project.uuid) && $ctrl.project.projectType === 'other'">
-    <i class="fa fa-warning notification-icon"></i>
+    <i role="none" class="fa fa-warning notification-icon"></i>
     <div>
         <strong>The following Dataset does not exist anymore</strong><br>
         The Dataset with DOI:

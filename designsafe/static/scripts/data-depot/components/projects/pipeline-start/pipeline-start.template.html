@@ -1,6 +1,6 @@
 <div class="pipeline-nav">
     <a ng-click="$ctrl.goBack()">
-        <i class="fa fa-arrow-left"></i> Back
+        <i role="none" class="fa fa-arrow-left"></i> Back
     </a>
 </div>
 <div class="pipeline-page">
@@ -9,14 +9,14 @@
         If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">curation office hours</a>.
         <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
     </div>
     <!-- Notifications -->
     <div class="pipeline-notification">
         <div class="alert alert-warning flex-container" ng-if="$ctrl.ui.isProcessing">
-            <i class="fa fa-exclamation-triangle notification-icon"></i>
+            <i role="none" class="fa fa-exclamation-triangle notification-icon"></i>
             <div>
                 Your publication request is processing. Please allow 24 hours for this process to complete.
                 If your publication does not appear in the "Published" section of the Data Depot or if you

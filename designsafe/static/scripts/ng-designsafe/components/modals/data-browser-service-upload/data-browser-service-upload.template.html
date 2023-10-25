@@ -3,11 +3,11 @@
 </div>
 <div class="modal-body">
     <p ng-if="$ctrl.directory && ! $ctrl.directoryUploadSupported" class="alert alert-warning">
-        <i class="fa fa-warning"></i>
+        <i role="none" class="fa fa-warning"></i>
         This browser does not support folder upload. You can still upload multiple files.
     </p>
     <p>
-        Uploading to <code><i class="fa fa-folder"></i> {{ $ctrl.resolve.path }}</code>:
+        Uploading to <code><i role="none" class="fa fa-folder"></i> {{ $ctrl.resolve.path }}</code>:
     </p>
     <form>
         <div class="form-group">
@@ -28,17 +28,17 @@
                         <div class="col-sm-3 hidden-xs">({{ upload.size|bytes }})</div>
                         <div class="col-sm-3 col-xs-3">
                             <span ng-if="$ctrl.FileOperationService.operations.upload.status[upload.key] === 'pending'" class="text-muted">
-                                <i class="fa fa-clock-o"></i> <span class="sr-only">Pending</span>
+                                <i role="none" class="fa fa-clock-o"></i> <span class="sr-only">Pending</span>
                                 <button ng-click="$ctrl.removeUpload($index)" class="btn btn-default btn-xs">Remove</button>
                             </span>
                             <span ng-if="$ctrl.FileOperationService.operations.upload.status[upload.key] === 'uploading'" class="text-info">
-                                <i class="fa fa-refresh fa-spin"></i> <span class="sr-only">Upload in progress</span>
+                                <i role="none" class="fa fa-refresh fa-spin"></i> <span class="sr-only">Upload in progress</span>
                             </span>
                             <span ng-if="$ctrl.FileOperationService.operations.upload.status[upload.key] === 'success'" class="text-success">
-                                <i class="fa fa-check-circle"></i> <span class="sr-only">Uploaded</span>
+                                <i role="none" class="fa fa-check-circle"></i> <span class="sr-only">Uploaded</span>
                             </span>
                             <span ng-if="$ctrl.FileOperationService.operations.upload.status[upload.key] === 'error'" class="text-danger">
-                                <i class="fa fa-times-circle"></i> <span>{{ upload.error }}</span>
+                                <i role="none" class="fa fa-times-circle"></i> <span>{{ upload.error }}</span>
                             </span>
                         </div>
                     </div>
@@ -52,7 +52,7 @@
             <div class="pull-right">
                 <button class="btn btn-primary" ng-disabled="($ctrl.uploadInProgress() || state.retry || ($ctrl.uploads|length) === 0 ) || state.ui.tagFiles" type="button" ng-click="$ctrl.upload()">
                     <span ng-if="! $ctrl.uploadInProgress()">{{$ctrl.hasFailedUploads() ? 'Retry' : 'Begin upload'}}</span>
-                    <span ng-if="$ctrl.uploadInProgress()"><i class="fa fa-refresh fa-spin"></i> Uploading</span>
+                    <span ng-if="$ctrl.uploadInProgress()"><i role="none" class="fa fa-refresh fa-spin"></i> Uploading</span>
                 </button>
                 <button class="btn btn-default" ng-disabled="$ctrl.uploadInProgress()" type="button" ng-click="$ctrl.cancel()">Close</button>
             </div>

@@ -2,7 +2,7 @@
     <div class="col-sm-3">
         <div class="dashboard-stat blue">
             <div class="visual">
-                <i class="fa fa-rocket"></i>
+                <i role="none" class="fa fa-rocket"></i>
             </div>
             <div class="details">
                 <div class="number"> {{$ctrl.jobs.length}} </div>
@@ -13,7 +13,7 @@
     <div class="col-sm-3">
         <div class="dashboard-stat green">
             <div class="visual">
-                <i class="fa fa-cogs"></i>
+                <i role="none" class="fa fa-cogs"></i>
             </div>
             <div class="details">
                 <div class="number"> {{$ctrl.apps.length}} </div>
@@ -24,7 +24,7 @@
     <div class="col-sm-3">
         <div class="dashboard-stat red">
             <div class="visual">
-                <i class="fa fa-database"></i>
+                <i role="none" class="fa fa-database"></i>
             </div>
             <div class="details">
                 <div class="number"> {{$ctrl.usage.total_storage_bytes | bytes}} </div>
@@ -58,7 +58,7 @@
                     <a href="/rw/workspace"> Tools & Applications </a>
                 </h3>
                 <div class="text-center" ng-show="$ctrl.loading_jobs">
-                    <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
+                    <i role="none" class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
                 </div>
             </div>
             <div id="ds_jobs_chart" class="ds-chart" ng-show="$ctrl.jobs.length"></div>
@@ -116,7 +116,7 @@
             </ul>
 
             <div ng-show="$ctrl.loading_tickets" class="text-center">
-                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
+                <i role="none" class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
             </div>
         </div>
 
