@@ -966,73 +966,79 @@ i[class^="icon-ls-pre/post"]:before,
 
 @font-face {
     font-family: 'Curation-Icons';
-        src: url('/static/fonts/Curation_Icons.ttf') format('truetype');
-        font-weight: normal;
-        font-style: normal;
-    }
+    src: url('/static/fonts/Curation_Icons.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 
-    [class^="curation-"]:before,
-    [class*=" curation-"]:before {
-        font-family: 'Curation-Icons';
-        font-style: normal;
-        /* font-size: 32px; */
-        /* speak: none; */
-        font-weight: normal;
-        -webkit-font-smoothing: antialiased;
-        text-rendering: optimizeLegibility;
-    }
+[class^="curation-"]:before,
+[class*=" curation-"]:before {
+    font-family: 'Curation-Icons';
+    font-style: normal;
+    /* font-size: 32px; */
+    /* speak: none; */
+    font-weight: normal;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
 
-    .curation-hybrid:before {
-        content: "\e907";
-    }
-    .curation-cc-zero:before {
-        content: "\e900";
-        font-size: 32px;
-    }
-    .dropdown button.collapsed .curation-chevron:before {
-        content: "\e901";
-    }
-    .dropdown button .curation-chevron:before {
-        content: "\e902";
-    }
-    .curation-close-window:before {
-        content: "\e903";
-    }
-    .curation-cc-share:before {
-        content: "\e904";
-        font-size: 32px;
-    }
-    .curation-experiment:before {
-        content: "\e905";
-    }
-    .curation-simulation:before {
-        content: "\e911";
-    }
-    .curation-gpl:before {
-        content: "\e906";
-        font-size: 32px;
-    }
-    .curation-odc:before {
-        content: "\e90e";
-        font-size: 32px;
-    }
-    .curation-other:before {
-        content: "\e90f";
-    }
-    .curation-req-doi:before {
-        content: "\e910";
-    }
-    .curation-recon:before {
-        content: "\e912";
-    }
-    .curation-download:before {
-        content: "\e913";
-        font-size: 14px;
-    }
+.curation-hybrid:before {
+    content: "\e907";
+}
+.curation-cc-zero:before {
+    content: "\e900";
+    font-size: 32px;
+}
+.dropdown button.collapsed .curation-chevron:before {
+    content: "\e901";
+}
+.dropdown button .curation-chevron:before {
+    content: "\e902";
+}
+.curation-close-window:before {
+    content: "\e903";
+}
+.curation-cc-share:before {
+    content: "\e904";
+    font-size: 32px;
+}
+.curation-experiment:before {
+    content: "\e905";
+}
+.curation-simulation:before {
+    content: "\e911";
+}
+.curation-gpl:before {
+    content: "\e906";
+    font-size: 32px;
+}
+.curation-odc:before {
+    content: "\e90e";
+    font-size: 32px;
+}
+.curation-3bsd {
+    background-image: url('/static/images/licenses/3-clause-bsd.svg');
+    width: 33px;
+    height: 33px;
+    display: inline-block;
+}
+.curation-other:before {
+    content: "\e90f";
+}
+.curation-req-doi:before {
+    content: "\e910";
+}
+.curation-recon:before {
+    content: "\e912";
+}
+.curation-download:before {
+    content: "\e913";
+    font-size: 14px;
+}
 
 .ds-icon-metrics {
     background-image: url('/static/images/ds-icons/icon-metrics.svg');
-    }
+}
 
 .feedback-container {
     display: flex;
