@@ -12,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@shared_task(default_retry_delay=1*30, max_retries=3)
+@shared_task(default_retry_delay=30, max_retries=3)
 def check_or_create_agave_home_dir(username, systemId):
     try:
         # TODO should use OS calls to create directory.
@@ -35,8 +35,8 @@ def check_or_create_agave_home_dir(username, systemId):
                 logger.info("Creating the home directory for user=%s then going to run setfacl", username)
                 body = {'action': 'mkdir', 'path': username}
                 fm_response = ag.files.manage(systemId=systemId,
-                                filePath='',
-                                body=body)
+                                              filePath='',
+                                              body=body)
                 logger.info('mkdir response: {}'.format(fm_response))
 
                 ds_admin_client = Agave(
@@ -49,14 +49,28 @@ def check_or_create_agave_home_dir(username, systemId):
                         'AGAVE_SUPER_TOKEN'
                     ),
                 )
-                job_body = {
-                    'parameters': {
-                        'username': username,
-                        'directory': 'shared/{}'.format(username)
-                    },
-                    'name': 'setfacl',
-                    'appId': 'setfacl_corral3-0.1'
-                }
+
+                if systemId == settings.AGAVE_STORAGE_SYSTEM:
+                    job_body = {
+                        'parameters': {
+                            'username': username,
+                            'directory': 'shared/{}'.format(username)
+                        },
+                        'name': f'setfacl mydata for user {username}',
+                        'appId': 'setfacl_corral3-0.1'
+                    }
+                elif systemId == settings.AGAVE_WORKING_SYSTEM:
+                    job_body = {
+                        'parameters': {
+                            'username': username,
+                        },
+                        'name': f'setfacl scratch for user {username}',
+                        'appId': 'setfacl_frontera_scratch-0.1'
+                    }
+                else:
+                    logger.error('Attempting to set permissions on unsupported system: {}'.format(systemId))
+                    return
+
                 jobs_response = ds_admin_client.jobs.submit(body=job_body)
                 logger.info('setfacl response: {}'.format(jobs_response))
 
@@ -64,14 +78,13 @@ def check_or_create_agave_home_dir(username, systemId):
                 logger.info("Indexing the home directory for user=%s", username)
                 agave_indexer.apply_async(kwargs={'username': username, 'systemId': systemId, 'filePath': username}, queue='indexing')
 
-    except(AgaveException):
-    #except (HTTPError, AgaveException):
+    except AgaveException:
         logger.exception('Failed to create home directory.',
                          extra={'user': username,
                                 'systemId': systemId})
 
 
-@shared_task(default_retry_delay=1*30, max_retries=3)
+@shared_task(default_retry_delay=30, max_retries=3)
 def new_user_alert(username):
     user = get_user_model().objects.get(username=username)
     send_mail('New User in DesignSafe, need Slack', 'Username: ' + user.username + '\n' +
