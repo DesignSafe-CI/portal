@@ -101,4 +101,3 @@ def clear_old_notifications(self):
     """Delete notifications older than 30 days to prevent them cluttering the db."""
     time_cutoff = datetime.now() - timedelta(days=30)
     Notification.objects.filter(datetime__lte=time_cutoff).delete()
-    
