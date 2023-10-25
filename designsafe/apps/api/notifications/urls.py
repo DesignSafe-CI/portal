@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import re_path as url
 
 from designsafe.apps.api.notifications.views.api import ManageNotificationsView, NotificationsBadgeView
 from designsafe.apps.api.notifications.views.webhooks import JobsWebhookView, FilesWebhookView
