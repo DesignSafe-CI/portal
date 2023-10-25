@@ -17,7 +17,7 @@ class WorkspaceDataBrowserCtrl {
 
         this.options = [
             { name: 'myData', label: 'My Data' },
-            { name: 'myDataScratch', label: 'Working Files (scratch Frontera)' },
+            { name: 'myDataScratch', label: 'HPC Scratch' },
             { name: 'myProjects', label: 'My Projects' },
             { name: 'publications', label: 'Published' },
             { name: 'nees', label: 'Published (NEES)' },
