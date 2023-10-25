@@ -16,6 +16,7 @@ import os
 import json
 from django.urls import reverse_lazy
 from django.utils.text import format_lazy
+from django.utils.translation import gettext_lazy as _
 
 
 gettext = lambda s: s
@@ -41,7 +42,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (
 
-    # 
+    'daphne', 
     'djangocms_admin_style',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -77,10 +78,6 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
     'captcha',
-
-
-    #websockets
-    'ws4redis',
 
     # custom
     'designsafe.apps.auth',
@@ -122,10 +119,11 @@ AUTHENTICATION_BACKENDS = (
 )
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
+LOGOUT_REDIRECT_URL = os.environ.get('LOGOUT_REDIRECT_URL', '/auth/logged-out/')
 
 CACHES = {
   'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+      'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
       'LOCATION': 'memcached:11211',
   },
 }
@@ -173,7 +171,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
-                'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
@@ -186,6 +183,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'designsafe.wsgi.application'
+ASGI_APPLICATION = 'designsafe.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.environ.get('WS_BACKEND_HOST'), 
+                       os.environ.get('WS_BACKEND_PORT'))],
+        },
+    },
+}
 
 
 # Database
@@ -195,7 +202,7 @@ if os.environ.get('DATABASE_HOST'):
     # mysql connection
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ.get('DATABASE_NAME'),
             'HOST': os.environ.get('DATABASE_HOST'),
             'PORT': os.environ.get('DATABASE_PORT'),
@@ -211,6 +218,9 @@ else:
         }
     }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
@@ -262,7 +272,8 @@ STATICFILES_DIRS = [
     ('vendor/angular-native-dragdrop', os.path.join(BASE_DIR, 'node_modules', 'angular-native-dragdrop')),
     ('vendor/d3plus', os.path.join(BASE_DIR, 'node_modules', 'd3plus')),
 ]
-STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
+
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -337,7 +348,12 @@ DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
 DJANGOCMS_FORMS_TEMPLATES = (
     ('djangocms_forms/form_template/default.html', 'Default'),
 )
-DJANGOCMS_FORMS_FORMAT_CHOICES = ()
+DJANGOCMS_FORMS_FORMAT_CHOICES = (
+    ("csv", _("CSV")),
+    ("json", _("JSON")),
+    ("yaml", _("YAML")),
+    ("xlsx", _("Microsoft Excel")),
+)
 DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
     'text': ('form-control', ),
@@ -447,18 +463,6 @@ DEV_PROJECT_ADMINS_EMAIL = ['tbrown@tacc.utexas.edu', 'sgray@tacc.utexas.edu', '
 # Terms and Conditions
 #
 DEFAULT_TERMS_SLUG = 'terms'
-
-##
-# django-websockets-redis
-#
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-WEBSOCKET_URL = '/ws/'
-WS4REDIS_CONNECTION = {
-    'host': os.environ.get('WS_BACKEND_HOST'),
-    'port': os.environ.get('WS_BACKEND_PORT'),
-    'db': os.environ.get('WS_BACKEND_DB'),
-}
-WS4REDIS_EXPIRE = 0
 
 # Analytics
 #
