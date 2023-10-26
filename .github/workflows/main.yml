@@ -16,10 +16,9 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
 
-    - run: |
+    - name: Fetch base and install Poetry
+      run: | 
         git fetch origin ${{github.base_ref}}
-
-    - name: Install Poetry
         pipx install poetry
 
     - name: Setup Python
