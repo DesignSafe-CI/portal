@@ -40,7 +40,7 @@ ipdb = "^0.13.13"
 elasticsearch = "^7.5.1"
 elasticsearch-dsl = "^7.1.0"
 dropbox = "10.6.0"
-django-recaptcha2 = { git = "https://github.com/jarosenb/django-recaptcha2", rev = "1b7942af0032f1e6ba368e0028c48e3c7cfa0588" }
+django-recaptcha2 = { git = "https://github.com/DesignSafe-CI/django-recaptcha2", tag = "v1.4.1--compat-django4" }
 djangocms-snippet = "3.0.0"
 django-bootstrap3 = "^23.4"
 djangocms-text-ckeditor = "^5.1"

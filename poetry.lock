@@ -1172,7 +1172,7 @@ django = "*"
 [[package]]
 name = "django-recaptcha2"
 version = "1.4.1"
-description = ""
+description = "Django reCaptcha v2 field/widget"
 category = "main"
 optional = false
 python-versions = "*"
@@ -1184,8 +1184,8 @@ requests = "*"
 
 [package.source]
 type = "git"
-url = "https://github.com/jarosenb/django-recaptcha2"
-reference = "1b7942af0032f1e6ba368e0028c48e3c7cfa0588"
+url = "https://github.com/DesignSafe-CI/django-recaptcha2"
+reference = "v1.4.1--compat-django4"
 resolved_reference = "1b7942af0032f1e6ba368e0028c48e3c7cfa0588"
 
 [[package]]
@@ -3975,4 +3975,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "fb7a6dfe3e39ebf6f5b7525c5f42ffe038c370b350feb46ecc7fb05ab0655c06"
+content-hash = "60b43dbfed421051de15db6adf90e052f4a8f7d31544c4b0913bebffe53537a2"
