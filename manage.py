@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# pylint:disable=missing-module-docstring
 import os
 import sys
 
@@ -10,7 +11,7 @@ if __name__ == "__main__":
 
     # This will make sure the app is always imported when
     # Django starts so that shared_task will use this app.
-    from designsafe.celery import app as celery_app #pylint:disable=unused-import
+    from designsafe.celery import app as celery_app  # pylint:disable=unused-import
 
     if settings.DEBUG:
         if os.environ.get("RUN_MAIN"):

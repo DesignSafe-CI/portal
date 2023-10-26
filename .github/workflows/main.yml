@@ -14,27 +14,20 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.11
+    - uses: actions/checkout@v3
 
     - name: Install Poetry
-      run: |
-        pip3 install poetry
+      run: pipx install poetry
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'poetry'
 
     - name: Copy base.html for use in unit tests
       run: |
         cp --force designsafe/templates/base.j2 designsafe/templates/base.html
-
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
 
     - run: |
         poetry config virtualenvs.create false
@@ -44,6 +37,14 @@ jobs:
     - name: Run Server-side unit tests and generate coverage report
       run: |
         pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
+
+    - name: Run Server-side linting with pytest
+      run: |
+        pylint $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)")
+
+    - name: Run Server-side formatting with black
+      run: |
+        black $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)") --check
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04
