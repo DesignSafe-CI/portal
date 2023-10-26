@@ -73,6 +73,16 @@ class PublicationsSearchManager(BaseSearchManager):
     def simulation_type_query(self, simulation_type):
         return Q({'term': {'simulations.value.simulationType.keyword': simulation_type}})
 
+    def fr_facility_query(self, facility_name):
+        return Q({'nested':
+                  {'path': 'project',
+                    'query':
+                      {'nested':
+                        {'path': 'project.value',
+                        'query':
+                          {'term':
+                            {'project.value.facility._exact': facility_name }}}}}})
+
     def nh_type_query(self, nh_type):
         return Q({'term': {'project.value.nhTypes.keyword': nh_type}})
     
@@ -129,7 +139,9 @@ class PublicationsSearchManager(BaseSearchManager):
     def field_recon_query(self):
         nh_type = self.query_dict['advancedFilters']['field_recon']['naturalHazardType']
         nh_event = self.query_dict['advancedFilters']['field_recon']['naturalHazardEvent']
-
+        facility_name = self.query_dict['advancedFilters']['field_recon']['facility']
+        if facility_name:
+            expt_query = expt_query & self.facility_query(facility_name)
         if not self.query_dict['typeFilters']['field_recon'] and not (nh_type or nh_event):
             return None
         fr_query = Q('term', **{'project.value.projectType._exact': 'field_recon'}) 
@@ -137,7 +149,6 @@ class PublicationsSearchManager(BaseSearchManager):
         if nh_type:
             fr_query = fr_query & self.nh_type_query(nh_type)
 
-        
         if nh_event:
             fr_query = fr_query & self.nh_event_query(nh_event) 
 

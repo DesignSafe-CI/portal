@@ -1,5 +1,6 @@
 import ManageFieldReconMissionsTemplate from './manage-field-recon-missions.template.html';
 const MissionDefaults = require('./mission-form-defaults.json');
+const FacilityData = require('../../facility-data.json');
 
 class ManageFieldReconMissionsCtrl {
 
@@ -18,6 +19,7 @@ class ManageFieldReconMissionsCtrl {
             loading: false,
             editing: false,
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
+            facilities: FacilityData.facility.facilities_list,
             require: {
                 relatedWork: false,
                 referencedData: false,
@@ -50,6 +52,16 @@ class ManageFieldReconMissionsCtrl {
             this.form[fieldName].splice(index, 1);
         } else {
             this.form[fieldName].pop();
+        }
+    }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
         }
     }
     
@@ -169,6 +181,10 @@ class ManageFieldReconMissionsCtrl {
 
     prepareData() {
         // drop or reformat inputs before for submission
+        const field = 'facility'
+        if(this.form[field] != 'other') {
+            this.form[field+'Other'] = '';
+        }
         if (isNaN(Date.parse(this.form.dateEnd))) {
             this.form.dateEnd = new Date(this.form.dateStart);
         }

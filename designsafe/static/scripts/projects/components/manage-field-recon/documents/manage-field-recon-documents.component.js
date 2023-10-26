@@ -1,5 +1,6 @@
 import ManageFieldReconDocumentsTemplate from './manage-field-recon-documents.template.html';
 const DocumentsDefaults = require('./documents-form-defaults.json');
+const FacilityData = require('../../facility-data.json');
 
 class ManageFieldReconDocumentsCtrl {
 
@@ -18,6 +19,7 @@ class ManageFieldReconDocumentsCtrl {
             loading: false,
             editing: false,
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
+            facilities: FacilityData.facility.facilities_list,
             require: {
                 relatedWork: false,
                 referencedData: false,
@@ -50,6 +52,16 @@ class ManageFieldReconDocumentsCtrl {
             this.form[fieldName].splice(index, 1);
         } else {
             this.form[fieldName].pop();
+        }
+    }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
         }
     }
 
@@ -169,6 +181,10 @@ class ManageFieldReconDocumentsCtrl {
 
     prepareData() {
         // drop or reformat inputs before for submission
+        const field = 'facility'
+        if(this.form[field] != 'other') {
+            this.form[field+'Other'] = '';
+        }
         if (isNaN(Date.parse(this.form.dateEnd))) {
             this.form.dateEnd = new Date(this.form.dateStart);
         }

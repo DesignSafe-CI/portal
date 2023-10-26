@@ -1,5 +1,6 @@
 import PublicationPreviewFieldReconTemplate from './publication-preview-field-recon.component.html';
 import PublicationPopupTemplate from './publication-popup.html';
+import facilityData from '../../../../projects/components/facility-data.json';
 
 class PublicationPreviewFieldReconCtrl {
 
@@ -31,7 +32,8 @@ class PublicationPreviewFieldReconCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.ui = {
             fileNav: true,
-            loading: true
+            loading: true,
+            facilities: facilityData.facility,
         };
         this.fl = {
             showSelect: false,
@@ -143,6 +145,16 @@ class PublicationPreviewFieldReconCtrl {
         }
     }
 
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities.facilities_list;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }   
+    }
+    
     goWork() {
         this.$state.go('projects.view', {projectId: this.project.uuid, data: this.project});
     }

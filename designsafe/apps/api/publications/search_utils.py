@@ -195,6 +195,30 @@ def pub_date_query(year):
         'format': 'yyyy'}
     }})
 
+def fr_facility_query(facility):
+    if facility['name'] == 'Other':
+        facility['name'] = 'other'
+
+    name_query =  Q({'nested':
+              {'path': 'project',
+               'query':
+               {'nested':
+                {'path': 'project.value',
+                 'query':
+                 {'term':
+                  {'project.value.facility._exact': facility['name']}}}}}})
+
+    label_query =  Q({'nested':
+              {'path': 'project',
+               'query':
+               {'nested':
+                {'path': 'project.value',
+                 'query':
+                 {'term':
+                  {'project.value.facility._exact': facility['label']}}}}}})
+
+    return name_query | label_query
+
 def fr_type_query(fr_type):
     if not fr_type:
         return None

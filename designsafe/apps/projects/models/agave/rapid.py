@@ -67,6 +67,8 @@ class Mission(RelatedEntity):
     date_end = fields.CharField('Date End', max_length=1024, default='')
     referenced_data = fields.ListField('Referenced Data')
     related_work = fields.ListField('Related Work')
+    facility = fields.CharField('Facility', max_length=1024)
+    facility_other = fields.CharField('Facility Other', max_length=1024)
     location = fields.CharField('Site Location', max_length=1024)
     latitude = fields.CharField('Location Latitude', max_length=1024)
     longitude = fields.CharField('Location Longitude', max_length=1024)
@@ -82,6 +84,16 @@ class Mission(RelatedEntity):
         attributes['types']['resourceType'] = "Mission/{location}".format(
             location=self.location.title()
         )
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -108,6 +120,16 @@ class Mission(RelatedEntity):
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
         attributes = super(Mission, self).to_dataset_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         attributes['types']['resourceType'] = "Mission/{location}".format(
             location=self.location.title()
         )
@@ -208,6 +230,8 @@ class Report(RelatedEntity):
     authors = fields.ListField('Authors')
     referenced_data = fields.ListField('Referenced Data')
     related_work = fields.ListField('Related Work')
+    facility = fields.CharField('Facility', max_length=1024)
+    facility_other = fields.CharField('Facility Other', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(FieldReconProject)
     files = fields.RelatedObjectField(FileModel, multiple=True)
@@ -218,6 +242,16 @@ class Report(RelatedEntity):
         """Serialize object to datacite JSON."""
         attributes = super(Report, self).to_datacite_json()
         attributes['types']['resourceType'] = "Project/Report"
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -244,5 +278,15 @@ class Report(RelatedEntity):
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
         attributes = super(Report, self).to_dataset_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         attributes['types']['resourceType'] = "Project/Report"
         return attributes

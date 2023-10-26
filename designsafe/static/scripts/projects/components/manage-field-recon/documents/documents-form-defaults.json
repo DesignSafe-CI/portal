@@ -2,6 +2,7 @@
     "title": "",
     "dois": [],
     "authors": [],
+    "facility": null,
     "relatedWork": [{"type": null, "title": "", "href": "" , "hrefType": null}],
     "referencedData": [{"title": "", "doi": "" , "hrefType": null}],
     "description": ""

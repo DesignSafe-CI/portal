@@ -101,6 +101,7 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     nh_type = query_dict['advancedFilters']['field_recon']['naturalHazardType']
     fr_type = query_dict['advancedFilters']['field_recon']['frType']
     fr_date = query_dict['advancedFilters']['field_recon']['frDate']
+    facility = query_dict['advancedFilters']['field_recon']['facility']
 
     if nh_type:
         query_filters.append(search_utils.nh_type_query(nh_type))

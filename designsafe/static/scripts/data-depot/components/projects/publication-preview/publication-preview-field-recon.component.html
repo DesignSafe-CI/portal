@@ -173,6 +173,17 @@
                                     </span>
                                 </div>
                             </div>
+                            <span ng-if="mission.value.facility.length && mission.value.facility !== 'None'">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Facility</div>
+                                    <span ng-if="!$ctrl.isValid(mission.value.facilityOther)" class="entity-meta-data">
+                                        {{ $ctrl.getEF(mission.value.facility) }}
+                                    </span>
+                                    <span ng-if="$ctrl.isValid(mission.value.facilityOther)" class="entity-meta-data">
+                                        {{ mission.value.facilityOther }}
+                                    </span>
+                                </div>
+                            </span>
                             <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
                                 <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">
@@ -383,6 +394,17 @@
                                 </span>
                             </div>
                         </div>
+                        <span ng-if="mission.value.facility.length && mission.value.facility !== 'None'">
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">Facility</div>
+                                <span ng-if="!$ctrl.isValid(mission.value.facilityOther)" class="entity-meta-data">
+                                    {{ $ctrl.getEF(mission.value.facility) }}
+                                </span>
+                                <span ng-if="$ctrl.isValid(mission.value.facilityOther)" class="entity-meta-data">
+                                    {{ mission.value.facilityOther }}
+                                </span>
+                            </div>
+                        </span>
                         <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
                             <div class="entity-meta-label-multi">Related Work</div>
                             <div class="entity-meta-data">

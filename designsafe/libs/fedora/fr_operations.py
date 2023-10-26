@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def walk_fr(project_id, version=None):
     """
-    Walk an experimental project and reconstruct parent/child relationships
+    Walk an FR project and reconstruct parent/child relationships
 
     Params
     ------
@@ -51,7 +51,7 @@ def walk_fr(project_id, version=None):
 
     docs_list = getattr(doc, 'reports', [])
     for document in docs_list:
-        # Do stuff with experiment.
+        # Do stuff with FR Documents.
         doc_container_path = "{}/{}".format(project_id, parse.quote(document.value.title))
         print('doc ' + document.value.title)
         doc_doi = document.doi
@@ -69,7 +69,7 @@ def walk_fr(project_id, version=None):
 
     missions_list = getattr(doc, 'missions', [])
     for mission in missions_list:
-        # Do stuff with experiment.
+        # Do stuff with FR Missions.
         mission_container_path = "{}/{}".format(project_id, parse.quote(mission.value.title))
         print('mission ' + mission.value.title)
         mission_doi = mission.doi
@@ -176,10 +176,11 @@ def format_mission(mission):
     if nh_location:
         coverage.append(nh_location)
 
+    facility = mission.value.facility
+    if facility == 'other':
+        facility = getattr(mission.value, 'facilityOther', 'other')
 
-    author_list = list(map(lambda member: "{}, {}".format(member.lname,
-                                                        member.fname),
-                        mission.authors))
+    author_list = list(map(lambda member: "{}, {}".format(member.lname, member.fname), mission.authors))
 
     return {
         'title': mission.value.title,
@@ -188,17 +189,22 @@ def format_mission(mission):
         'coverage': coverage,
         'subject': getattr(mission.value, 'event', None),
         'identifier': getattr(mission, 'doi', None),
+        'contributor': facility,
         'creator': author_list,
         'available': mission.lastUpdated
     }
 
 def format_docs(docs):
-    author_list = list(map(lambda member: "{}, {}".format(member.lname,
-                                                        member.fname),
-                        docs.authors))
+    facility = docs.value.facility
+    if facility == 'other':
+        facility = getattr(docs.value, 'facilityOther', 'other')
+    
+    author_list = list(map(lambda member: "{}, {}".format(member.lname, member.fname), docs.authors))
+    
     res =  {
         'title': docs.value.title,
         'description': docs.value.description,
+        'contributor': facility,
         'creator': author_list,
         'available': docs.created,
         'date': docs.lastUpdated

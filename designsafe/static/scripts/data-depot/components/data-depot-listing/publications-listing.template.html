@@ -211,6 +211,18 @@
                                 class="form-control"
                             ></select>
                             <div style="padding-bottom: 5px;"></div>
+                            <div style="padding-bottom: 5px; font-weight: normal;">
+                                <label-nb for="fr-facility-select">Facility</label-nb>
+                                <select
+                                    style="border-radius: 5px;"
+                                    id="fr-facility-select"
+                                    ng-model="$ctrl.params.advancedFilters.field_recon.facility"
+                                    ng-change="$ctrl.getValidFrTypes(true, true)"
+                                    ng-options="ef.name as ef.label for ef in $ctrl.frFacilityOptions"
+                                    class="form-control"
+                                    ></select
+                                >
+                            </div>
                             <label-nb style="width:100%;" for="fr-year-select">Natural Hazard Year</label>
                             <select
                                 style="border-radius: 5px; width: 100%"
