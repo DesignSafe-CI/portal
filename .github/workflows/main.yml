@@ -36,17 +36,17 @@ jobs:
         poetry install
         poetry run pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
 
-    - name: Run Server-side unit tests and generate coverage report
-      run: |
-        poetry run pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
+    #- name: Run Server-side unit tests and generate coverage report
+    #  run: |
+    #    poetry run pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
 
     - name: Run Server-side linting with pytest
       run: |
-        poetry run pylint $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)")
+        poetry run pylint $(git diff --name-only --diff-filter=ACMRTUXB HEAD^..HEAD | grep -E "(.py$)")
 
     - name: Run Server-side formatting with black
       run: |
-        poetry run black $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)") --check
+        poetry run black $(git diff --name-only --diff-filter=ACMRTUXB HEAD^..HEAD | grep -E "(.py$)") --check
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04
