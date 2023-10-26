@@ -16,7 +16,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        fetch-depth: 2
 
     - name: Install Poetry
       run: | 
@@ -42,11 +42,11 @@ jobs:
 
     - name: Run Server-side linting with pytest
       run: |
-        poetry run pylint $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)")
+        poetry run pylint $(git diff --name-only --diff-filter=ACMRTUXB origin/${{github.base_ref}} | grep -E "(.py$)")
 
     - name: Run Server-side formatting with black
       run: |
-        poetry run black $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)") --check
+        poetry run black $(git diff --name-only --diff-filter=ACMRTUXB origin${{github.base_ref}} | grep -E "(.py$)") --check
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04
