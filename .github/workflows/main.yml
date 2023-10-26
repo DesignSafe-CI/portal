@@ -50,20 +50,12 @@ jobs:
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup Node.js for use with actions
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: 16.x
+        cache: npm
 
-    - uses: actions/cache@v1
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-
-    - name: Client Side Unit Tests
-      run: |
-        npm ci
-        npm run test
+    - run: npm ci
+    - run: npm run test
