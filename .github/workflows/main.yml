@@ -36,15 +36,15 @@ jobs:
 
     - name: Run Server-side unit tests and generate coverage report
       run: |
-        pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
+        poetry run pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
 
     - name: Run Server-side linting with pytest
       run: |
-        pylint $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)")
+        poetry run pylint $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)")
 
     - name: Run Server-side formatting with black
       run: |
-        black $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)") --check
+        poetry run black $(git diff --name-only --diff-filter=ACMRTUXB ${{github.base_ref}} | grep -E "(.py$)") --check
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04
