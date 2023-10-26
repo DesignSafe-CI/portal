@@ -19,7 +19,6 @@ jobs:
     - name: Install Poetry
       run: | 
         pipx install poetry
-        poetry config virtualenvs.create false
 
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -33,7 +32,7 @@ jobs:
 
     - run: |
         poetry install
-        pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
+        poetry run pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
 
     - name: Run Server-side unit tests and generate coverage report
       run: |
