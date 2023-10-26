@@ -36,12 +36,13 @@ jobs:
 
     - name: Run Server-side linting with pytest
       # Only run on new files for now-- for all changes, filter is ACMRTUXB
+      # Check manage.py to prevent a crash if no files are selected.
       run: |
-        poetry run pylint $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)")
+        poetry run pylint $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") manage.py
 
     - name: Run Server-side formatting with black
       run: |
-        poetry run black $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") --check
+        poetry run black $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") manage.py --check
 
     - name: Run Server-side unit tests and generate coverage report
       run: |
