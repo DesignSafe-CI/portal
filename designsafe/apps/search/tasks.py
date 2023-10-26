@@ -18,7 +18,7 @@ def update_search_index():
 def clear_expired_sessions():
     logger.info("Clearing expired sessions.")
     if not settings.DEBUG:
-        call_command("clearsessions", interactive=False)
+        call_command("clearsessions")
 
 
 @shared_task(bind=True)
