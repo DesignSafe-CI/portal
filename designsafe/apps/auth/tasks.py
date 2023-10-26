@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.mail import send_mail
 from agavepy.agave import Agave, AgaveException
 from designsafe.apps.api.tasks import agave_indexer
+from designsafe.apps.api.notifications.models import Notification
 from celery import shared_task
 
 from requests import HTTPError
@@ -92,3 +94,10 @@ def new_user_alert(username):
                                                     'Name: ' + user.first_name + ' ' + user.last_name + '\n' +
                                                     'Id: ' + str(user.id) + '\n',
               settings.DEFAULT_FROM_EMAIL, settings.NEW_ACCOUNT_ALERT_EMAILS.split(','),)
+    
+
+@shared_task()
+def clear_old_notifications(self):
+    """Delete notifications older than 30 days to prevent them cluttering the db."""
+    time_cutoff = datetime.now() - timedelta(days=30)
+    Notification.objects.filter(datetime__lte=time_cutoff).delete()
