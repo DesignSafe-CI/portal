@@ -3,7 +3,7 @@ from cms.menu_bases import CMSAttachMenu
 from menus.menu_pool import menu_pool
 from django.conf import settings
 from importlib import import_module
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 import logging
 
 logger = logging.getLogger(__name__)

@@ -8,7 +8,7 @@ def mock_agave_client(mocker):
 
 
 @pytest.fixture
-def regular_user(django_user_model, django_db_reset_sequences, mock_agave_client):
+def regular_user(django_user_model, mock_agave_client):
     django_user_model.objects.create_user(username="username",
                                           password="password",
                                           first_name="Firstname",
