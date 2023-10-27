@@ -1057,3 +1057,10 @@ i[class^="icon-ls-pre/post"]:before,
 .gsc-selected-option-container {
     max-width: 100% !important;
 }
+
+.gsc-input {
+    background: none !important;
+}
+.gcsc-more-maybe-branding-root {
+    display: none !important;
+}
