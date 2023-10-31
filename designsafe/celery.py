@@ -35,7 +35,7 @@ app.conf.update(
             'schedule': crontab(hour=0, minute=0)
         },
         'clear_old_notifications': {
-            'task': 'designsafe.auth.tasks.clear_old_notifications',
+            'task': 'designsafe.apps.auth.tasks.clear_old_notifications',
             'schedule': crontab(hour=0, minute=1)
         }
     }
