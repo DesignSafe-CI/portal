@@ -251,6 +251,26 @@
                         />
                     </div>
                 </div>
+                <!-- Project Other Facilities -->
+                <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
+                    <label for="id-facility">
+                        <div style="display: flex; flex-direction: column">
+                            <div>
+                                <span class="pull-left" style="margin-right: 5px">Facility</span>
+                            </div>
+                        </div>
+                    </label>
+                    <select class="form-control"
+                            ng-options="ef.name as ef.label for ef in $ctrl.facilities"
+                            ng-model="$ctrl.form.facility">
+                        <option value="">-- Select a Facility --</option>
+                    </select>
+                    <input  class="form-control"
+                        type="text"
+                        placeholder="Custom Facility"
+                        ng-model="$ctrl.form.facilityOther"
+                        ng-if="$ctrl.form.facility == 'other'"/>
+                </div>
             </div>
             <!-- Add user Errors -->
             <div class="form-group" ng-if="$ctrl.ui.invalidUserError">

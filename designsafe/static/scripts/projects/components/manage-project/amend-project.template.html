@@ -89,6 +89,24 @@
                     />
                 </div>
             </div>
+            <!-- Project Other Facility -->
+            <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
+                <label class="label-form">
+                    <div>
+                        <span class="pull-left" style="margin-right: 5px">Facility</span>
+                    </div>
+                </label>
+                <select class="form-control"
+                ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
+                ng-model="$ctrl.form.facility">
+                <option value="">-- Select a Facility --</option>
+                </select>
+                <input  class="form-control"
+                        type="text"
+                        placeholder="Custom Facility"
+                        ng-model="$ctrl.form.facilityOther"
+                        ng-if="$ctrl.form.facility == 'other'"/>
+            </div>
             <!-- Project Referenced Data -->
             <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
                 <table class="manage-prj-table">

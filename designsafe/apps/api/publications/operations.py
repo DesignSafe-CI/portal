@@ -112,6 +112,7 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
 
     # Other advanced filters
     data_type = query_dict['advancedFilters']['other']['dataType']
+    facility = query_dict['advancedFilters']['other']['facility']
     if data_type:
         query_filters.append(search_utils.other_type_query(data_type))
 

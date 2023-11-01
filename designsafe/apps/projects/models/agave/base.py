@@ -90,6 +90,8 @@ class Project(MetadataModel):
     associated_projects = fields.ListField('Associated Project') #AKA Related Work
     referenced_data = fields.ListField('Referenced Data')
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
+    facility = fields.CharField('Facility', max_length=1024)
+    facility_other = fields.CharField('Facility Other', max_length=1024)
     keywords = fields.CharField('Keywords', default='')
     nh_event = fields.CharField('Natural Hazard Event', default='')
     nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
@@ -461,6 +463,16 @@ class Project(MetadataModel):
         ]
         attributes['subjects'] = [
             {'subject': keyword} for keyword in self.keywords.split(',')
+        ]
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
         ]
         attributes['language'] = 'English'
         attributes['identifiers'] = [

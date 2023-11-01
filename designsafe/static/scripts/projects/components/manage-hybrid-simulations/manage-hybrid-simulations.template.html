@@ -72,12 +72,12 @@
                         ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
                         ng-model="$ctrl.form.facility">
                 <option value="">-- Select a Facility --</option>
-            </select>
-            <input  class="form-control"
-                    type="text"
-                    placeholder="Custom Facility"
-                    ng-model="$ctrl.form.facilityOther"
-                    ng-if="$ctrl.form.facility == 'other'"/>
+                </select>
+                <input  class="form-control"
+                        type="text"
+                        placeholder="Custom Facility"
+                        ng-model="$ctrl.form.facilityOther"
+                        ng-if="$ctrl.form.facility == 'other'"/>
             </div>
             <!-- Referenced Data -->
             <div class="form-group">

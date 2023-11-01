@@ -193,6 +193,22 @@
     </tr>
     <!-- end Natural Hazard Type -->
 
+    <!-- type Other Facilities -->
+    <tr class="prj-row" ng-if="$ctrl.project.value.projectType === 'other' && 
+                               $ctrl.project.value.facility.length && 
+                               $ctrl.project.value.facility != 'None'">
+        <td>Facility</td>
+        <td>
+            <div class="entity-meta-field">
+                <span ng-if="!$ctrl.isValid($ctrl.Sproject.value.facilityOther)"
+                        class="entity-meta-data-cap">{{ $ctrl.getEF($ctrl.project.value.facility) }}</span>
+                <!-- <span ng-if="$ctrl.isValid(project.value.facilityOther)"
+                        class="entity-meta-data-cap">{{ $ctrl.project.value.facilityOther }}</span> -->
+            </div>
+          </td>
+    </tr>
+    <!-- end type Other Facilities -->
+
     <!-- FR events -->
     <tr class="prj-row" ng-if="$ctrl.project.value.nhEvent">
         <td>Event</td>

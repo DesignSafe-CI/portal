@@ -1,4 +1,5 @@
 import PipelineProjectTemplate from './pipeline-project.component.html';
+const FacilityData = require('../../../../projects/components/facility-data.json');
 
 class PipelineProjectCtrl {
 
@@ -13,6 +14,7 @@ class PipelineProjectCtrl {
         this.ui = {
             showEdit: true,
             showOverview: false,
+            facilities: FacilityData.facility.facilities_list,
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
@@ -59,6 +61,23 @@ class PipelineProjectCtrl {
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view', {projectId: this.project.uuid}, {reload: true});
+    }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
+    }
+    
+    isValid(ent) {
+      if (ent && ent != '' && ent != 'None') {
+          return true;
+      }
+      return false;
     }
 
     goSelection() {

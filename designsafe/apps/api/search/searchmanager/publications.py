@@ -89,6 +89,16 @@ class PublicationsSearchManager(BaseSearchManager):
     def nh_event_query(self, nh_event):
         return Q({'match': {'project.value.nhEvent': nh_event}})
 
+    def other_facility_query(self, facility_name):
+        return Q({'nested':
+                  {'path': 'project',
+                    'query':
+                      {'nested':
+                        {'path': 'project.value',
+                        'query':
+                          {'term':
+                            {'project.value.facility._exact': facility_name }}}}}})
+    
     def other_type_query(self, data_type):
         return Q({'term': {'project.value.dataType.keyword': data_type}})
 

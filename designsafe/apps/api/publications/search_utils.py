@@ -88,6 +88,29 @@ def nh_type_query(nh_type):
 def nh_event_query(nh_event):
     return Q({'match': {'project.value.nhEvent': nh_event}})
 
+def other_facility_query(facility):
+    if facility['name'] == 'Other':
+        facility['name'] = 'other'
+
+    name_query =  Q({'nested':
+              {'path': 'project',
+               'query':
+               {'nested':
+                {'path': 'project.value',
+                 'query':
+                 {'term':
+                  {'project.value.facility._exact': facility['name']}}}}}})
+
+    label_query =  Q({'nested':
+              {'path': 'project',
+               'query':
+               {'nested':
+                {'path': 'project.value',
+                 'query':
+                 {'term':
+                  {'project.value.facility._exact': facility['label']}}}}}})
+
+    return name_query | label_query
 
 def other_type_query(data_type):
     data_types = [
