@@ -20,7 +20,7 @@ from designsafe.apps.signals.websocket_consumers import DesignsafeWebsocketConsu
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "designsafe.settings")
 websocket_urlpatterns = [
-    re_path(r'ws/websockets/$', DesignsafeWebsocketConsumer.as_asgi()),
+    re_path(r'ws/websockets/*$', DesignsafeWebsocketConsumer.as_asgi()),
 ]
 
 application = ProtocolTypeRouter(
