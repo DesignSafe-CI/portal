@@ -641,6 +641,7 @@ class PublishedViewCtrl {
     }
 
     onBrowse(file, doi) {
+        if (!doi) {doi = this.$stateParams.doi}
         if (file.type === 'dir') {
             this.$state.go(this.$state.current.name, { filePath: file.path, query_string: null, doi: doi });
         } else {

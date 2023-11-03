@@ -1,9 +1,10 @@
 import dataDepotToolbarTemplate from './data-depot-toolbar.component.html'
 
 class DataDepotToolbarCtrl {
-    constructor($state, $uibModal, Django, UserService, FileListingService, FileOperationService, PublicationService) {
+    constructor($state, $stateParams, $uibModal, Django, UserService, FileListingService, FileOperationService, PublicationService) {
         'ngInject';
         this.$state = $state;
+        this.$stateParams = $stateParams
         this.search = { queryString: '' };
         this.UserService = UserService;
         this.FileListingService = FileListingService
@@ -50,12 +51,14 @@ class DataDepotToolbarCtrl {
             const projectId = this.PublicationService.current.projectId;
             this.FileOperationService.microsurvey({projectId})
         }
-        this.FileOperationService.download({api, scheme, files, doi: this.FileListingService.currentDOI});
+        const doi = this.FileListingService.currentDOI || this.$stateParams.doi
+        this.FileOperationService.download({api, scheme, files, doi});
     }
     preview() {
         const { api, scheme } = this.FileListingService.listings.main.params;
         const file = this.getAllSelected()[0];
-        this.FileOperationService.openPreviewModal({api, scheme, file, doi: this.FileListingService.currentDOI});
+        const doi = this.FileListingService.currentDOI || this.$stateParams.doi
+        this.FileOperationService.openPreviewModal({api, scheme, file, doi});
     }
     previewImages() {
         const { api, scheme, system } = this.FileListingService.listings.main.params;
