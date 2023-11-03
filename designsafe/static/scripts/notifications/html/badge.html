@@ -1,6 +1,6 @@
 <div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick">
   <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle ng-click="list()">
-    <i id="notification_bell" class="fa fa-bell fa-2x"></i>
+    <i id="notification_bell" role="none" class="fa fa-bell fa-2x"></i>
     <span id="notification_badge" class="label label-as-badge" ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
       {{data.unread}}
     </span>

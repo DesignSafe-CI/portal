@@ -27,11 +27,12 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView, TemplateView
-from django.urls import reverse
+from django.urls import reverse, path
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.auth.views import login_options as des_login_options
 from django.contrib.auth.views import LogoutView as des_logout
 from designsafe.views import project_version as des_version, redirect_old_nees
+from impersonate import views as impersonate_views
 
 # sitemap - classes must be imported and added to sitemap dictionary
 from django.contrib.sitemaps.views import sitemap
@@ -49,8 +50,29 @@ sitemaps = {
 
 urlpatterns = [
         # admin
-        url(r'^admin/', admin.site.urls),
-        url(r'^admin/impersonate/', include('impersonate.urls')),
+        path(
+            "admin/impersonate/stop/",
+            impersonate_views.stop_impersonate,
+            name="impersonate-stop",
+        ),
+        path(
+            "admin/impersonate/list/",
+            impersonate_views.list_users,
+            {"template": "impersonate/list_users.html"},
+            name="impersonate-list",
+        ),
+        path(
+            "admin/impersonate/search/",
+            impersonate_views.search_users,
+            {"template": "impersonate/search_users.html"},
+            name="impersonate-search",
+        ),
+        path(
+            "admin/impersonate/<int:uid>/",
+            impersonate_views.impersonate,
+            name="impersonate-start",
+        ),
+        path("admin/", admin.site.urls),
 
         # sitemap
         url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),

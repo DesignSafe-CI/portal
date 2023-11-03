@@ -631,6 +631,14 @@ def generate_licenses(pub):
             "description": pub.project.value.description,
             "license": pub.licenses.software
         })
+    if pub.licenses.software == "3-Clause BSD License":
+        license_details.append({
+            "@type": "CreativeWork",
+            "name": pub.project.value.title,
+            "url": "https://opensource.org/license/bsd-3-clause/",
+            "description": pub.project.value.description,
+            "license": pub.licenses.software
+        })
     return license_details
 
 def _process_authors(authors):

@@ -78,9 +78,6 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
 
-    #websockets
-    'ws4redis',
-
     # custom
     'designsafe.apps.auth',
     'designsafe.apps.api',
@@ -116,12 +113,12 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
 
-CACHES = {
-  'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-      'LOCATION': 'memcached:11211',
-  },
-}
+#CACHES = {
+#  'default': {
+#      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#      'LOCATION': 'memcached:11211',
+#  },
+#}
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -163,7 +160,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
-                'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
@@ -187,6 +183,10 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
@@ -416,18 +416,6 @@ NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@
 # Terms and Conditions
 #
 DEFAULT_TERMS_SLUG = 'terms'
-
-##
-# django-websockets-redis
-#
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-WEBSOCKET_URL = '/ws/'
-WS4REDIS_CONNECTION = {
-    'host': os.environ.get('WS_BACKEND_HOST'),
-    'port': os.environ.get('WS_BACKEND_PORT'),
-    'db': os.environ.get('WS_BACKEND_DB'),
-}
-WS4REDIS_EXPIRE = 0
 
 # Analytics
 #

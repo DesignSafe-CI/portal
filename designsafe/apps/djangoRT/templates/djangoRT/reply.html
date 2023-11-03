@@ -1,5 +1,5 @@
 <a class="btn btn-default btn-sm" href="{% url 'djangoRT:ticketreply' ticket.id %}">
-  <i class="fa fa-reply"></i>
+  <i role="none" class="fa fa-reply"></i>
   {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}
     Reopen this ticket
   {% else %}
@@ -8,11 +8,11 @@
 </a>
 {% if ticket.Status != 'resolved' and ticket.Status != 'closed' %}
 <a class="btn btn-default btn-sm" href="{% url 'djangoRT:ticketclose' ticket.id %}">
-  <i class="fa fa-times"></i>
+  <i role="none" class="fa fa-times"></i>
     Close this ticket
 </a>
  {% endif %}
 <a class="btn btn-default btn-sm" href="{% url 'djangoRT:mytickets' %}">
-  <i class="fa fa-home"></i>
+  <i role="none" class="fa fa-home"></i>
   Return to ticket listing
 </a>

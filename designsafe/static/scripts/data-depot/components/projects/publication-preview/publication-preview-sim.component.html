@@ -33,7 +33,7 @@
     <!-- Simulations -->
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
-            <i class="fa fa-spinner fa-spin"></i> Loading...
+            <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
     <!-- Project Reports -->
@@ -58,7 +58,7 @@
                 >&nbsp;</files-listing>
             </div>
         </div>
-    </div>
+    </div>-->
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
         <breadcrumb
         path="$ctrl.breadcrumbParams.path"
@@ -72,7 +72,7 @@
             listing="$ctrl.FileListingService.listings.main"
             on-browse="$ctrl.onBrowse(file)"
         >&nbsp;</files-listing>
-    </div> -->
+    </div> 
 
     <div ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="simulation in $ctrl.project.simulation_set" style="margin-bottom:20px">
         <div class="dropdown dropdown-spacer-sm" id="details-{{simulation.uuid}}">
@@ -172,7 +172,7 @@
                 <div class="well">
                     <!-- Tombstone Banner -->
                     <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(simulation.uuid)">
-                        <i class="fa fa-warning notification-icon"></i>
+                        <i role="none" class="fa fa-warning notification-icon"></i>
                         <div>
                             <strong>The following Dataset does not exist anymore</strong><br>
                             The Dataset with DOI:
@@ -338,7 +338,7 @@
                                         <tr>
                                             <td style="padding-right: 10px;" valign="top">
                                                 <span style="font-size: 20px; color: #1568C9">
-                                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                                    <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
@@ -381,7 +381,7 @@
                                                 <tr>
                                                     <td style="padding-right: 10px" valign="top">
                                                         <span style="font-size: 20px; color: #43A59D">
-                                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                                            <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">

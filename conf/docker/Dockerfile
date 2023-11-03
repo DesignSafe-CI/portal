@@ -7,7 +7,7 @@ COPY . /designsafe/
 RUN npm run build
 
 
-FROM python:3.7-buster
+FROM python:3.11-buster
 
 LABEL MAINTAINER="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
 
@@ -40,8 +40,7 @@ RUN pip install poetry
 COPY poetry.lock pyproject.toml /srv/www/
 WORKDIR /srv/www
 RUN poetry config virtualenvs.create false && \
-    poetry install && \
-    pip install -e git+https://bitbucket.org/taccaci/pytas.git@1e6e488716fd42437c568acad161ae54d0077446#egg=pytas
+    poetry install
 
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981

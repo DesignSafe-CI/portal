@@ -168,7 +168,11 @@ class PipelineAmendCtrl {
                 if (key === 'datasets') {
                     this.ui.licenseType = 'curation-odc';
                 } else if (key === 'software') {
-                    this.ui.licenseType = 'curation-gpl';
+                    if (this.ui.license.includes('3-Clause BSD')) {
+                        this.ui.licenseType = 'curation-3bsd';
+                    } else {
+                        this.ui.licenseType = 'curation-gpl';
+                    }
                 } else if (key === 'works') {
                     let subtype = (this.ui.license.includes('Attribution') ? 'share' : 'zero');
                     this.ui.licenseType = `curation-cc-${subtype}`;

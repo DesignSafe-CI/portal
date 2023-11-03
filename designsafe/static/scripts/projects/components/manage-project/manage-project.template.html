@@ -10,14 +10,14 @@
         <span ng-if="!$ctrl.project">Add New Project</span>
         <span ng-if="$ctrl.project">Edit Project</span>
         <span class="pull-right" ng-click="$ctrl.close()">
-            <i class="fa fa-times"></i>
+            <i role="none" class="fa fa-times"></i>
         </span>
     </h4>
 </div>
 <div class="modal-body" style="padding: 30px;">
     <div ng-if="$ctrl.ui.loading">
         <h3 class="text-center">
-            <i class="fa fa-spinner fa-spin"></i> Loading...
+            <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
     <form name="projForm" autocomplete="off" ng-if="!$ctrl.ui.loading">
@@ -275,7 +275,7 @@
             <!-- Add user Errors -->
             <div class="form-group" ng-if="$ctrl.ui.invalidUserError">
                 <div class="alert alert-danger flex-container">
-                    <i class="fa fa-exclamation notification-icon"></i>
+                    <i role="none" class="fa fa-exclamation notification-icon"></i>
                     <div>
                         The name: <strong>{{$ctrl.ui.invalidUser}}</strong> could not be found.
                         Please make sure that you select each user from the dropdown listing
@@ -344,7 +344,7 @@
                             <button class="btn btn-danger btn-xs"
                                     ng-if="$ctrl.ui.require.coPis"
                                     ng-click="$ctrl.dropUserField('coPis', $index)">
-                                <i class="fa fa-times"></i>
+                                <i role="none" class="fa fa-times"></i>
                             </button>
                         </td>
                     </tr>
@@ -402,7 +402,7 @@
                             <button class="btn btn-danger btn-xs"
                                     ng-if="$ctrl.ui.require.teamMembers"
                                     ng-click="$ctrl.dropUserField('teamMembers', $index)">
-                                <i class="fa fa-times"></i>
+                                <i role="none" class="fa fa-times"></i>
                             </button>
                         </td>
                     </tr>
@@ -494,7 +494,7 @@
                             <button class="btn btn-danger btn-xs"
                                     ng-if="$ctrl.ui.require.guestMembers"
                                     ng-click="$ctrl.dropObjField('guestMembers', $index)">
-                                <i class="fa fa-times"></i>
+                                <i role="none" class="fa fa-times"></i>
                             </button>
                         </td>
                     </tr>
@@ -566,7 +566,7 @@
                                 <button class="btn btn-danger btn-xs"
                                         ng-if="$ctrl.ui.require.awardNumber"
                                         ng-click="$ctrl.dropObjField('awardNumber', $index)">
-                                    <i class="fa fa-times"></i>
+                                    <i role="none" class="fa fa-times"></i>
                                 </button>
                             </td>
                         </tr>
@@ -653,7 +653,7 @@
                                 <button class="btn btn-danger btn-xs"
                                         ng-if="$ctrl.ui.require.referencedData"
                                         ng-click="$ctrl.dropObjField('referencedData', $index)">
-                                    <i class="fa fa-times"></i>
+                                    <i role="none" class="fa fa-times"></i>
                                 </button>
                             </td>
                         </tr>
@@ -754,7 +754,7 @@
                                 <button class="btn btn-danger btn-xs"
                                         ng-if="$ctrl.ui.require.associatedProjects"
                                         ng-click="$ctrl.dropObjField('associatedProjects', $index)">
-                                    <i class="fa fa-times"></i>
+                                    <i role="none" class="fa fa-times"></i>
                                 </button>
                             </td>
                         </tr>
@@ -949,7 +949,7 @@
                                     ng-if="!$ctrl.project"
                             >
                                 <span ng-if="$ctrl.ui.submitting">
-                                    <i class="fa fa-spinner fa-spin"></i>
+                                    <i role="none" class="fa fa-spinner fa-spin"></i>
                                     Creating Project...
                                 </span>
                                 <span ng-if="!$ctrl.ui.submitting">
@@ -962,7 +962,7 @@
                                     ng-if="$ctrl.project"
                             >
                                 <span ng-if="$ctrl.ui.submitting">
-                                    <i class="fa fa-spinner fa-spin"></i>
+                                    <i role="none" class="fa fa-spinner fa-spin"></i>
                                     Saving Project...
                                 </span>
                                 <span ng-if="!$ctrl.ui.submitting">

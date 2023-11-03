@@ -32,7 +32,7 @@
           <tr ng-if="$ctrl.getListing().loadingScroll">
               <td colspan="4" class="text-center">
                   <span class="bg-info text-info">
-                      <i class="fa fa-spinner fa-spin"></i> Loading...
+                      <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
                   </span>
               </td>
           </tr>
@@ -42,7 +42,7 @@
                  style="padding:10px; font-size:large; width:100%;"
                  class="bg-info">
               <span>
-                <i class="fa fa-spinner fa-spin"></i> Loading...
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
              </span>
             </div>
           <div ng-if="! browser.busy && browser.error" class="text-center">
@@ -55,7 +55,7 @@
   </div>
   <div ng-if="! $ctrl.getListing().projects" class="jumbotron">
       <p class="text-center">
-          <i class="fa fa-spinner fa-spin"></i> Loading projects...
+          <i role="none" class="fa fa-spinner fa-spin"></i> Loading projects...
       </p>
     </div>
   </div>
