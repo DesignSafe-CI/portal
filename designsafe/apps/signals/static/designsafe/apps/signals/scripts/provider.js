@@ -10,7 +10,8 @@ export function wsBusService(){
 
         return service;
 
-        function init(url){
+        function init(url, retry){
+            if (!retry) retry=1000 * Math.random()
             ws = new WebSocket(url);
             logger.log('wss : ', ws)
             ws.onopen = function(){
@@ -25,8 +26,8 @@ export function wsBusService(){
                 logger.log('WS error: ', e);
             };
             ws.onclose = function(e){
-                logger.log('connection closed; reopening');
-                init(url);
+                console.log(`Websocket connection closed, retrying in ${Math.floor(retry/1000.0)}s`)
+                if (retry < 60000) setTimeout(() => init(url, retry * 2), retry);
             };
             service.ws = ws;
         }
