@@ -1,9 +1,9 @@
 import PipelineLicensesTemplate from './pipeline-licenses.component.html';
 
 class PipelineLicensesCtrl {
-
     constructor(ProjectService, $uibModal, $state) {
         'ngInject';
+
         this.ProjectService = ProjectService;
         this.$uibModal = $uibModal;
         this.$state = $state;
@@ -17,7 +17,7 @@ class PipelineLicensesCtrl {
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.selectedLicense = '';
         this.ui = {
-            loading: true
+            loading: true,
         };
 
         if (!this.project) {
@@ -75,29 +75,41 @@ class PipelineLicensesCtrl {
     }
 
     goAuthors() {
-        this.$state.go('projects.pipelineAuthors', {
-            projectId: this.projectId,
-            project: this.project,
-            primaryEntities: this.primaryEntities,
-            secondaryEntities: this.secondaryEntities,
-            selectedListings: this.selectedListings,
-        }, { reload: true });
+        this.$state.go(
+            'projects.pipelineAuthors',
+            {
+                projectId: this.projectId,
+                project: this.project,
+                primaryEntities: this.primaryEntities,
+                secondaryEntities: this.secondaryEntities,
+                selectedListings: this.selectedListings,
+            },
+            { reload: true }
+        );
     }
 
     goData() {
-        this.$state.go('projects.pipelineOther', {
-            projectId: this.projectId,
-            project: this.project,
-            selectedListings: this.selectedListings,
-        }, { reload: true });
+        this.$state.go(
+            'projects.pipelineOther',
+            {
+                projectId: this.projectId,
+                project: this.project,
+                selectedListings: this.selectedListings,
+            },
+            { reload: true }
+        );
     }
 
     goTeam() {
-        this.$state.go('projects.pipelineTeam', {
-            projectId: this.projectId,
-            project: this.project,
-            selectedListings: this.selectedListings,
-        }, { reload: true });
+        this.$state.go(
+            'projects.pipelineTeam',
+            {
+                projectId: this.projectId,
+                project: this.project,
+                selectedListings: this.selectedListings,
+            },
+            { reload: true }
+        );
     }
 
     // Modal for accept and publish...
@@ -106,7 +118,7 @@ class PipelineLicensesCtrl {
         this.license = {
             datasets: ['Open Data Commons Attribution', 'Open Data Commons Public Domain Dedication'],
             works: ['Creative Commons Attribution', 'Creative Commons Public Domain Dedication'],
-            software: ['GNU General Public License'],
+            software: ['3-Clause BSD License'],
         };
         Object.keys(this.license).forEach((key) => {
             this.license[key] = (this.license[key].includes(this.selectedLicense)

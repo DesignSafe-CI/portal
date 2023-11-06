@@ -40,7 +40,7 @@
                 <tr ng-if="$ctrl.listing.loadingScroll">
                     <td>
                         <span class="bg-info text-info">
-                            <i class="fa fa-spinner fa-spin"></i> Loading...
+                            <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
                         </span>
                     </td>
                 </tr>
@@ -49,7 +49,7 @@
                 <div data-ng-if="$ctrl.listing.loading"
                      style="padding:10px; font-size:large; width:100%;"
                      class="bg-info">
-                    <span> <i class="fa fa-spinner fa-spin"></i> Loading... </span>
+                    <span> <i role="none" class="fa fa-spinner fa-spin"></i> Loading... </span>
                 </div>
 
                 <div ng-if="! $ctrl.listing.loading && $ctrl.listing.error"

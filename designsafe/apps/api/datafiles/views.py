@@ -8,6 +8,7 @@ from designsafe.apps.api.datafiles.operations.transfer_operations import transfe
 from designsafe.apps.api.datafiles.notifications import notify
 from designsafe.apps.api.datafiles.models import DataFilesSurveyResult, DataFilesSurveyCounter
 from designsafe.apps.api.views import BaseApiView
+from designsafe.apps.api.agave import service_account
 from dropbox.exceptions import AuthError as DropboxAuthError
 from google.auth.exceptions import GoogleAuthError
 from requests.exceptions import HTTPError
@@ -32,6 +33,8 @@ def get_client(user, api):
 
 class DataFilesView(BaseApiView):
     def get(self, request, api, operation=None, scheme='private', system=None, path=''):
+
+        doi = request.GET.get('doi', None)
         
         metrics.info('Data Depot',
                      extra={
@@ -44,6 +47,7 @@ class DataFilesView(BaseApiView):
                              'api': api,
                              'systemId': system,
                              'filePath': path,
+                             'doi': doi,
                              'query': request.GET.dict()}
                      })
 
@@ -53,7 +57,7 @@ class DataFilesView(BaseApiView):
             except AttributeError:
                 raise resource_unconnected_handler(api)
         elif api == 'agave':
-            client = get_user_model().objects.get(username='envision').agave_oauth.client
+            client = service_account()
         else:
             return JsonResponse({'message': 'Please log in to access this feature.'}, status=403)
 
@@ -69,6 +73,7 @@ class DataFilesView(BaseApiView):
     def put(self, request, api, operation=None, scheme='private', system=None, path='/'):
 
         body = json.loads(request.body)
+        doi = request.GET.get('doi', None)
 
         metrics.info('Data Depot',
                      extra={
@@ -82,7 +87,8 @@ class DataFilesView(BaseApiView):
                              'scheme': scheme,
                              'system': system,
                              'path': path,
-                             'body': body
+                             'body': body,
+                             'doi': doi
                          }
                      })
 

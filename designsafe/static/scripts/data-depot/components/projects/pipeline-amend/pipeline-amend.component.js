@@ -1,7 +1,8 @@
 import AmendExperimentTemplate from './amend-experimental.template.html';
 import AmendFieldReconTemplate from './amend-field-recon.template.html';
-import AmendSimulationTemplate from './amend-simulation.template.html'
-import facilityData from '../../../../projects/components/facility-data.json';
+import AmendSimulationTemplate from './amend-simulation.template.html';
+import AmendHybridSimTemplate from './amend-hybrid-sim.template.html';
+import facilityData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineAmendCtrl {
     constructor(
@@ -62,6 +63,7 @@ class PipelineAmendCtrl {
             'reportEntity': ['project','files','authors','dois'],
             'missionEntity': ['project','files','authors','dois'],
             'simulationEntity': ['project','files','authors','dois'],
+            'hybsimEntity': ['project','files','authors','dois'],
         }
         let prjEnts = this.project.getAllRelatedObjects();
 
@@ -96,7 +98,21 @@ class PipelineAmendCtrl {
                 'reports'
             ]
         }
-
+        else if (prj_type == 'hybrid_simulation') {
+            primaryEntNames = ['hybidsimulations']
+            secondaryEntNames = [
+                'hybrid_simulations',
+                'global_models',
+                'coordinators',
+                'sim_substructures',
+                'exp_substructures',
+                'coordinator_outputs',
+                'sim_outputs',
+                'exp_outputs',
+                'analysiss',
+                'reports'
+            ]
+        }
         if (update === 'all') {
             this.amendment = JSON.parse(JSON.stringify(this.publication));
         }
@@ -152,7 +168,11 @@ class PipelineAmendCtrl {
                 if (key === 'datasets') {
                     this.ui.licenseType = 'curation-odc';
                 } else if (key === 'software') {
-                    this.ui.licenseType = 'curation-gpl';
+                    if (this.ui.license.includes('3-Clause BSD')) {
+                        this.ui.licenseType = 'curation-3bsd';
+                    } else {
+                        this.ui.licenseType = 'curation-gpl';
+                    }
                 } else if (key === 'works') {
                     let subtype = (this.ui.license.includes('Attribution') ? 'share' : 'zero');
                     this.ui.licenseType = `curation-cc-${subtype}`;
@@ -420,3 +440,14 @@ export const AmendSimulationComponent = {
         dismiss: '&'
     },
 };
+
+export const AmendHybSimComponent = {
+    template: AmendHybridSimTemplate,
+    controller: PipelineAmendCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+}; 

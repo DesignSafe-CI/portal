@@ -5,7 +5,7 @@
     <div class="modal-body">
       <p ng-show="error" class="alert alert-danger">{{error}}</p>
       <p class="text-center" ng-show="requesting">
-        <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
+        <i role="none" class="fa fa-circle-o-notch fa-spin fa-3x"></i>
       </p>
       <p ng-show="!requesting">
         Are you sure you want to {{action}} <strong>{{appMeta.value.definition.id}}</strong>?

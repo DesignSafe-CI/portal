@@ -83,6 +83,39 @@ function config(
                 },
             },
         })
+        .state('myDataScratch', {
+            url: '/agave/{systemId}/{filePath:any}/?query_string&offset&limit',
+            component: 'dataDepotBrowser',
+            params: {
+                systemId: 'designsafe.storage.frontera.scratch',
+                filePath: Django.user,
+            },
+            resolve: {
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'agave',
+                    };
+                },
+                path: ($stateParams, Django) => {
+                    'ngInject';
+                    if ($stateParams.filePath.replace(/^\/+/, '') === '') {
+                        return Django.user;
+                    }
+                    return $stateParams.filePath;
+                },
+                auth: ($q, Django) => {
+                    'ngInject';
+                    if (Django.context.authenticated) {
+                        return true;
+                    }
+
+                    return $q.reject({
+                        type: 'authn',
+                        context: Django.context,
+                    });
+                },
+            },
+        })
         .state('sharedData', {
             url: '/shared/{systemId}/{filePath:any}?query_string',
             component: 'dataDepotBrowser',
@@ -372,6 +405,23 @@ function config(
                 }]
             }
         })
+        .state('projects.amendHybSim', {
+            url: '/projects/{projectId}/curation/amend/hybsim',
+            component: 'amendHybSim',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
         .state('projects.amendCitation', {
             url: '/projects/{projectId}/curation/amend/citation',
             component: 'amendCitation',
@@ -466,6 +516,25 @@ function config(
         .state('projects.versionSimulationSelection', {
             url: '/projects/{projectId}/curation/version/{filePath:any}',
             component: 'versionSimulationSelection',
+            params: {
+                project: null,
+                publication: null,
+                selectedEnts: [],
+                selectedListings: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                }]
+            }
+        })
+        .state('projects.versionHybSimSelection', {
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            component: 'versionHybSimSelection',
             params: {
                 project: null,
                 publication: null,
@@ -1050,7 +1119,7 @@ function config(
             },
         })
         .state('publishedData',  {
-            url: '/public/designsafe.storage.published/{filePath:any}?query_string',
+            url: '/public/designsafe.storage.published/{filePath:any}?query_string&doi',
             component: 'publishedParent',
             resolve: {
                 version: ($stateParams) => {
@@ -1171,7 +1240,7 @@ ddModule.config([
             (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
                 window.location.hostname +
                 (window.location.port ? ':' + window.location.port : '') +
-                '/ws/websockets?subscribe-broadcast&subscribe-user'
+                '/ws/websockets/?subscribe-broadcast&subscribe-user'
         );
     },
 ]);

@@ -15,8 +15,8 @@
     <div class="well">
         <div class="pipeline-authors">
             <div class="pipeline-authors-item">
-                <i class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderMembers(true)"></i>
-                <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderMembers(false)"></i>
+                <i role="none" class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderMembers(true)"></i>
+                <i role="none" class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderMembers(false)"></i>
             </div>
             <div class="pipeline-authors-item">
                 <div ng-repeat="member in $ctrl.authors | orderBy: 'order'">
@@ -49,8 +49,8 @@
                     {{ member.lname }}, {{ member.fname }}
                 </td>
                 <td class="order-col">
-                    <i class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderMembers(true)"></i>
-                    <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderMembers(false)"></i>
+                    <i role="none" class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderMembers(true)"></i>
+                    <i role="none" class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderMembers(false)"></i>
                 </td>
             </tr>
         </tbody>

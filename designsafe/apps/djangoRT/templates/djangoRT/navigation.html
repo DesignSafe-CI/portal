@@ -1,9 +1,9 @@
 <a class="btn btn-default btn-sm" href="{% url 'djangoRT:mytickets' %}">
-  <i class="fa fa-long-arrow-left"></i> Back to ticket listing
+  <i role="none" class="fa fa-long-arrow-left"></i> Back to ticket listing
 </a>
 
 {% if ticket_id %}
   <a class="btn btn-default btn-sm" href="{% url 'djangoRT:ticketdetail' ticket_id %}">
-    <i class="fa fa-long-arrow-left"></i> Back to ticket
+    <i role="none" class="fa fa-long-arrow-left"></i> Back to ticket
   </a>
 {% endif %}

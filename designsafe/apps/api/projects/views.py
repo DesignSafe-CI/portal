@@ -3,7 +3,7 @@ import copy
 import logging
 import json
 from celery import group, chain
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.http.response import HttpResponseForbidden
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -96,7 +96,7 @@ class PublicationView(BaseApiView):
         """
         Publish a project or version a publication
         """
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             data = json.loads(request.body)
         else:
             data = request.POST
@@ -173,7 +173,7 @@ class AmendPublicationView(BaseApiView):
         """
         Amend a Publication
         """
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             data = json.loads(request.body)
         else:
             data = request.PUT
@@ -289,7 +289,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         # portal service account needs to create the objects on behalf of the user
         sa_client = get_service_account_client()
 
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
@@ -449,7 +449,7 @@ class ProjectInstanceView(BaseApiView):
         should be prevented anyways). Once that data is deleted, then we should update
         the type of project.
         """
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
@@ -606,7 +606,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         """
         sa_client = get_service_account_client()
 
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
@@ -658,7 +658,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         """
         client = request.user.agave_oauth.client
 
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()

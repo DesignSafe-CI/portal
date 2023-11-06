@@ -16,7 +16,7 @@
             </button>
             <div style="flex-grow: 1"></div>
             <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
-                Publish / Version / Amend
+                Publish / Amend / Version
             </button>
         </span>
     </div>
@@ -32,7 +32,7 @@
     </div>
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
-            <i class="fa fa-spinner fa-spin"></i> Loading...
+            <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
     <div ng-if="$ctrl.ui.fileNav && !$ctrl.ui.loading">
@@ -118,15 +118,15 @@
                         <div style="padding-bottom: 5px;"> 
                             <span ng-if="$ctrl.readOnly">
                                 <span style="background-color: #ECE4BF;">
-                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].fileDownloads || 0 }} Downloads
+                                    {{ $ctrl.metricDisplay($ctrl.downloadCounts[mission.value.dois]) }} Downloads
                                 </span>
                                 &nbsp;&nbsp;
                                 <span style="background-color: #ECE4BF;">        
-                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].filePreviews || 0}} Views
+                                    {{ $ctrl.metricDisplay($ctrl.viewCounts[mission.value.dois]) }} Views
                                 </span>
                                 &nbsp;&nbsp;
                                 <span style="background-color: #ECE4BF;">        
-                                    {{ $ctrl.citationCounts[mission.value.dois] || 0}} Citations
+                                    {{ $ctrl.metricDisplay($ctrl.citationCounts[mission.value.dois]) }} Citations
                                 </span>
                                 &nbsp;&nbsp;
                                 <span>
@@ -150,7 +150,7 @@
                         <div class="well">
                             <!-- Tombstone Banner -->
                             <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mission.uuid)">
-                                <i class="fa fa-warning notification-icon"></i>
+                                <i role="none" class="fa fa-warning notification-icon"></i>
                                 <div>
                                     <strong>The following Dataset does not exist anymore</strong><br>
                                     The Dataset with DOI:
@@ -235,7 +235,8 @@
                                             published="true"
                                             on-scroll="$ctrl.scrollToBottom()"
                                             listing="$ctrl.FileListingService.listings[mission.uuid]"
-                                            on-browse="$ctrl.onBrowse(file)">&nbsp;
+                                            doi="mission.doi"
+                                            on-browse="$ctrl.onBrowse(file, mission.doi)">&nbsp;
                                 </files-listing>
                             </div>
                         </div>
@@ -309,15 +310,15 @@
                         <div style="padding-bottom: 5px;"> 
                             <span ng-if="$ctrl.readOnly">
                                 <span style="background-color: #ECE4BF;">
-                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].fileDownloads || 0 }} Downloads
+                                    {{ $ctrl.metricDisplay($ctrl.downloadCounts[mission.value.dois]) }} Downloads
                                 </span>
                                 &nbsp;&nbsp;
                                 <span style="background-color: #ECE4BF;">        
-                                    {{ $ctrl.cumDoiMetrics[mission.value.dois].filePreviews || 0}} Views
+                                    {{ $ctrl.metricDisplay($ctrl.viewCounts[mission.value.dois]) }} Views
                                 </span>
                                 &nbsp;&nbsp;
                                 <span style="background-color: #ECE4BF;">        
-                                    {{ $ctrl.citationCounts[mission.value.dois] || 0}} Citations
+                                    {{ $ctrl.metricDisplay($ctrl.citationCounts[mission.value.dois]) }} Citations
                                 </span>
                                 &nbsp;&nbsp;
                                 <span>
@@ -342,7 +343,7 @@
                         <div class="well">
                         <!-- Tombstone Banner -->
                         <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(mission.uuid)">
-                            <i class="fa fa-warning notification-icon"></i>
+                            <i role="none" class="fa fa-warning notification-icon"></i>
                             <div>
                                 <strong>The following Dataset does not exist anymore</strong><br>
                                 The Dataset with DOI:

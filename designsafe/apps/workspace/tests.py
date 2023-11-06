@@ -3,7 +3,7 @@ import os
 from mock import patch
 from django.test import TestCase
 from .models.app_descriptions import AppDescription
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 
@@ -17,11 +17,11 @@ class AppDescriptionModelTest(TestCase):
         user.save()
 
     def test_string_representation(self):
-        descriptionModel = AppDescription(appId='TestApp0.1', appDescription='Test description')
-        self.assertEqual(str(descriptionModel), descriptionModel.appId)
+        descriptionModel = AppDescription(appid='TestApp0.1', appdescription='Test description')
+        self.assertEqual(str(descriptionModel), descriptionModel.appid)
 
     def test_get_app_description(self):
-        AppDescription.objects.create(appId='TestApp0.1', appDescription='Test description')
+        AppDescription.objects.create(appid='TestApp0.1', appdescription='Test description')
         self.client.login(username='ds_user', password='user/password')
         url = reverse('designsafe_workspace:call_api', args=('description',))
         response = self.client.get(url, {'app_id': 'TestApp0.1'})

@@ -2,13 +2,13 @@
     <h4 class="modal-title" style="border:none;">
         <span>Add Categories</span>
         <span class="pull-right" ng-click="$ctrl.cancel()">
-            <i class="fa fa-times"></i>
+            <i role="none" class="fa fa-times"></i>
         </span>
     </h4>
 </div>
 <div class="modal-body" ng-show="$ctrl.ui.loading">
     <h3 class="text-center">
-        <i class="fa fa-spinner fa-spin"></i> Loading...
+        <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
     </h3>
 </div>
 <div class="modal-body" ng-hide="$ctrl.ui.loading">
@@ -47,21 +47,22 @@
                 <!-- Simulation Categories -->
                 <div ng-if="$ctrl.ui.simulation">
                     <div>
-                        <span class="category-blue">Simulation Model</span> Files and/or information describing the design, geometry, and/or code of a simulation.
+                        <span class="category-blue">Simulation Model</span> Information and/or files describing the design, geometry, workflow, 
+                        runtime environment and/or code of a simulation. This includes referencing research software or a community model and version when applicable.
                     </div>
                     <div>
-                        <span class="category-teal">Simulation Input</span> Files containing the parameters of the simulation.
+                        <span class="category-teal">Simulation Input</span> Files and references to the files containing the parameters of the simulation.
                     </div>
                     <div>
                         <span class="category-yellow">Simulation Output</span> Files containing the results of a simulation.
                     </div>
                     <div>
-                        <span class="category-light-blue">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
-                        or other representations of the results.
+                        <span class="category-light-blue">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks, or other representations of the results.
                     </div>
                     <div>
-                        <span class="category-gray">Report</span> Written accounts made to convey information about an
-                        entire project or simulation.
+                        <span class="category-gray">Report</span> Detailed written account/s to convey information about the way in which the simulation was organized, 
+                        how to run it, about the file contents and the file naming convention used. It could be one or a group of files including a readme file and 
+                        a data dictionary, depending on the complexity and components of the simulation.
                     </div>
                 </div>
                 <!-- Hybrid Simulation Categories -->
@@ -177,14 +178,15 @@
                     Summarize the purpose of the category and its files. What is it about? What are its features?
                 </div>
                 <div>
-                    <textarea class="form-textbox" type="text" id="add-exp-desc" ng-model="$ctrl.form.projectTagToAdd.description" ng-minlength="50" ng-maxlength="5000"></textarea>
+                    <textarea ng-required="$ctrl.form.projectTagToAdd.name === 'designsafe.project.simulation.model'" 
+                              class="form-textbox" type="text" id="add-exp-desc" ng-model="$ctrl.form.projectTagToAdd.description" ng-minlength="50" ng-maxlength="5000"></textarea>
                     <span ng-if="addForm.$error.minlength[0].$invalid || addForm.$error.maxlength[0].$invalid" class="label-form-desc-error">Description length is invalid </span>
                 </div>
             </div>
             <!-- Add Category Btn -->
             <div class="text-right">
                 <button class="btn btn-add" type="submit" ng-click="addForm.$valid && $ctrl.addCategory($event)">
-                    <i class="fa fa-plus"></i> Add Category
+                    <i role="none" class="fa fa-plus"></i> Add Category
                 </button>
             </div>
         </form>

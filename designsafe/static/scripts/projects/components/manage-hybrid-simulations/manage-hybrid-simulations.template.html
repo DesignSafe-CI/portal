@@ -2,7 +2,7 @@
     <h4 class="modal-title" style="border:none;">
         <span>Add Hybrid Simulations</span>
         <span class="pull-right" ng-click="$ctrl.close()">
-            <i class="fa fa-times">&nbsp;</i>
+            <i role="none" class="fa fa-times">&nbsp;</i>
         </span>
     </h4>
 </div>
@@ -128,7 +128,7 @@
                             <button class="btn btn-danger btn-xs"
                                     ng-if="$ctrl.ui.require.referencedData"
                                     ng-click="$ctrl.dropObjField('referencedData', $index)">
-                                <i class="fa fa-times"></i>
+                                <i role="none" class="fa fa-times"></i>
                             </button>
                         </td>
                     </tr>
@@ -229,7 +229,7 @@
                             <button class="btn btn-danger btn-xs"
                                     ng-if="$ctrl.ui.require.relatedWork"
                                     ng-click="$ctrl.dropObjField('relatedWork', $index)">
-                                <i class="fa fa-times"></i>
+                                <i role="none" class="fa fa-times"></i>
                             </button>
                         </td>
                     </tr>
@@ -303,7 +303,7 @@
             </div>
             <!-- Notifications -->
             <div class="alert alert-danger flex-container" ng-if="$ctrl.ui.error">
-                <i class="fa fa-exclamation notification-icon"></i>
+                <i role="none" class="fa fa-exclamation notification-icon"></i>
                 <div>
                     An error has occurred when attempting to save.
                 </div>
@@ -329,7 +329,7 @@
                         ng-if="!$ctrl.ui.editing"
                         type="submit"
                 >
-                    <i class="fa fa-plus">&nbsp;</i>
+                    <i role="none" class="fa fa-plus">&nbsp;</i>
                     Add Hybrid Sim
                 </button>
             </div>

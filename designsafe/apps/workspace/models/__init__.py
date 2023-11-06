@@ -2,8 +2,6 @@ from django.db import models
 from django.dispatch import receiver
 from designsafe.apps.signals.signals import generic_event
 from designsafe.apps.notifications.models import Notification
-from ws4redis.publisher import RedisPublisher
-from ws4redis.redis_store import RedisMessage
 
 import json
 import logging
@@ -27,7 +25,3 @@ def _interactive_job_callback(sender, **kwargs):
         notification = Notification(
             event_type=event_type, user=job_owner, body=json.dumps(event_data))
         notification.save()
-
-        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=users)
-        msg = RedisMessage(json.dumps(event_data))
-        rp.publish_message(msg)

@@ -1,4 +1,4 @@
-{% load staticfiles sekizai_tags %}
+{% load static sekizai_tags %}
 
 <!doctype html>
 <html lang="en-US">
@@ -32,7 +32,7 @@
     {% if image_preview %}
         <div class="text-center">
             <img src="{{ image_preview }}" id="preview" style="max-width:100%;">
-            <div><i class="fa fa-spinner fa-spin" style="font-size: 150px" id="loading_ind"></i></div>
+            <div><i role="none" class="fa fa-spinner fa-spin" style="font-size: 150px" id="loading_ind"></i></div>
         </div>
         {% addtoblock 'js' %}
         <script type="text/javascript">

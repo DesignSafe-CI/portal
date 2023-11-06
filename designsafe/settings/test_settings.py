@@ -14,6 +14,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import json
+from django.urls import reverse_lazy
+from django.utils.text import format_lazy
 
 
 gettext = lambda s: s
@@ -39,10 +41,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
-    'djangocms_admin_style',
-    'djangocms_text_ckeditor',
-    'cmsplugin_cascade',
-    'cmsplugin_cascade.extra_fields',
+
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,6 +52,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
+    'djangocms_admin_style',
+    'djangocms_text_ckeditor',
+    'django_select2',
+    'cmsplugin_cascade',
+    'cmsplugin_cascade.extra_fields',
 
     'cms',
     'treebeard',
@@ -73,11 +77,6 @@ INSTALLED_APPS = (
     'bootstrap3',
     'termsandconditions',
     'impersonate',
-
-    'oauth2client.contrib.django_util',
-
-    #websockets
-    'ws4redis',
 
     # custom
     'designsafe.apps.auth',
@@ -108,26 +107,25 @@ INSTALLED_APPS = (
     'designsafe.apps.rapid',
 
     #haystack integration
-    'haystack'
+    # 'haystack'
 )
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
 
-CACHES = {
-  'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-      'LOCATION': 'memcached:11211',
-  },
-}
+#CACHES = {
+#  'default': {
+#      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#      'LOCATION': 'memcached:11211',
+#  },
+#}
 
-MIDDLEWARE_CLASSES = (
-    'designsafe.middleware.RequestProfilingMiddleware',
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
@@ -162,7 +160,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
-                'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
@@ -186,6 +183,10 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
@@ -260,7 +261,7 @@ CMSPLUGIN_CASCADE = {
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = (
-    'cmsplugin_cascade.bootstrap3',
+    # 'cmsplugin_cascade.bootstrap3',
     'cmsplugin_cascade.link',
 )
 CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
@@ -285,7 +286,10 @@ THUMBNAIL_PROCESSORS = (
 )
 
 CKEDITOR_SETTINGS = {
-    'allowedContent': True
+'language': '{{ language }}',
+'skin': 'moono-lisa',
+'toolbar': 'CMS',
+'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texteditor_config')),
 }
 
 MIGRATION_MODULES = {
@@ -318,6 +322,8 @@ DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
     'password': ('form-control', ),
 }
 DJANGOCMS_FORMS_DATETIME_FORMAT = '%d-%b-%Y %H:%M'
+
+DJANGOCMS_FORMS_FORMAT_CHOICES = ()
 
 #####
 #
@@ -411,18 +417,6 @@ NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@
 #
 DEFAULT_TERMS_SLUG = 'terms'
 
-##
-# django-websockets-redis
-#
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-WEBSOCKET_URL = '/ws/'
-WS4REDIS_CONNECTION = {
-    'host': os.environ.get('WS_BACKEND_HOST'),
-    'port': os.environ.get('WS_BACKEND_PORT'),
-    'db': os.environ.get('WS_BACKEND_DB'),
-}
-WS4REDIS_EXPIRE = 0
-
 # Analytics
 #
 GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', False)
@@ -483,8 +477,8 @@ PUBLISHED_SYSTEM = 'designsafe.storage.published'
 # RECAPTCHA SETTINGS FOR LESS SPAMMO
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
-RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY', '')
+RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY', '')
 NOCAPTCHA = True
 
 #FOR RAPID UPLOADS
@@ -529,7 +523,7 @@ CELERY_ALWAYS_EAGER = True
 BROKER_BACKEND = 'memory'
 
 # No token refreshes during testing
-MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c !=
+MIDDLEWARE= [c for c in MIDDLEWARE if c !=
                       'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

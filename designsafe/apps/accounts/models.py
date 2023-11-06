@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.db import connections, DatabaseError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
 import logging
 import six
@@ -61,7 +61,7 @@ class DesignSafeProfileResearchActivities(models.Model):
 
 
 class DesignSafeProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile', on_delete=models.CASCADE)
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
     agree_to_account_limit = models.DateTimeField(auto_now_add=True, null=True)
@@ -69,7 +69,7 @@ class DesignSafeProfile(models.Model):
     website = models.CharField(max_length=256, default=None, null=True, blank=True)
     orcid_id = models.CharField(max_length=256, default=None, null=True, blank=True)
     nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
-    nh_interests_primary = models.ForeignKey(DesignSafeProfileNHInterests, related_name='nh_interests_primary', null=True)
+    nh_interests_primary = models.ForeignKey(DesignSafeProfileNHInterests, related_name='nh_interests_primary', null=True, on_delete=models.CASCADE)
     nh_technical_domains = models.ManyToManyField(DesignSafeProfileNHTechnicalDomains)
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
@@ -86,7 +86,7 @@ class DesignSafeProfile(models.Model):
 
 class NotificationPreferences(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                related_name='notification_preferences')
+                                related_name='notification_preferences', on_delete=models.CASCADE)
     announcements = models.BooleanField(
         default=True,
         verbose_name=_('Announcements: to communicate EF Workshops, NHERI Newsletter, Student Opportunities, etc.'))

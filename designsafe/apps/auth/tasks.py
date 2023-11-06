@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.mail import send_mail
 from agavepy.agave import Agave, AgaveException
 from designsafe.apps.api.tasks import agave_indexer
+from designsafe.apps.api.notifications.models import Notification
 from celery import shared_task
 
 from requests import HTTPError
@@ -12,21 +14,21 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@shared_task(default_retry_delay=1*30, max_retries=3)
-def check_or_create_agave_home_dir(username):
+@shared_task(default_retry_delay=30, max_retries=3)
+def check_or_create_agave_home_dir(username, systemId):
     try:
         # TODO should use OS calls to create directory.
         logger.info(
             "Checking home directory for user=%s on "
             "default storage systemId=%s",
             username,
-            settings.AGAVE_STORAGE_SYSTEM
+            systemId
         )
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                    token=settings.AGAVE_SUPER_TOKEN)
         try:
             listing_response = ag.files.list(
-                systemId=settings.AGAVE_STORAGE_SYSTEM,
+                systemId=systemId,
                 filePath=username)
             logger.info('check home dir response: {}'.format(listing_response))
 
@@ -34,9 +36,9 @@ def check_or_create_agave_home_dir(username):
             if e.response.status_code == 404:
                 logger.info("Creating the home directory for user=%s then going to run setfacl", username)
                 body = {'action': 'mkdir', 'path': username}
-                fm_response = ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
-                                filePath='',
-                                body=body)
+                fm_response = ag.files.manage(systemId=systemId,
+                                              filePath='',
+                                              body=body)
                 logger.info('mkdir response: {}'.format(fm_response))
 
                 ds_admin_client = Agave(
@@ -49,29 +51,42 @@ def check_or_create_agave_home_dir(username):
                         'AGAVE_SUPER_TOKEN'
                     ),
                 )
-                job_body = {
-                    'parameters': {
-                        'username': username,
-                        'directory': 'shared/{}'.format(username)
-                    },
-                    'name': 'setfacl',
-                    'appId': 'setfacl_corral3-0.1'
-                }
+
+                if systemId == settings.AGAVE_STORAGE_SYSTEM:
+                    job_body = {
+                        'parameters': {
+                            'username': username,
+                            'directory': 'shared/{}'.format(username)
+                        },
+                        'name': f'setfacl mydata for user {username}',
+                        'appId': 'setfacl_corral3-0.1'
+                    }
+                elif systemId == settings.AGAVE_WORKING_SYSTEM:
+                    job_body = {
+                        'parameters': {
+                            'username': username,
+                        },
+                        'name': f'setfacl scratch for user {username}',
+                        'appId': 'setfacl_frontera_scratch-0.1'
+                    }
+                else:
+                    logger.error('Attempting to set permissions on unsupported system: {}'.format(systemId))
+                    return
+
                 jobs_response = ds_admin_client.jobs.submit(body=job_body)
                 logger.info('setfacl response: {}'.format(jobs_response))
 
                 # add dir to index
                 logger.info("Indexing the home directory for user=%s", username)
-                agave_indexer.apply_async(kwargs={'username': username, 'systemId': settings.AGAVE_STORAGE_SYSTEM, 'filePath': username}, queue='indexing')
+                agave_indexer.apply_async(kwargs={'username': username, 'systemId': systemId, 'filePath': username}, queue='indexing')
 
-    except(AgaveException):
-    #except (HTTPError, AgaveException):
+    except AgaveException:
         logger.exception('Failed to create home directory.',
                          extra={'user': username,
-                                'systemId': settings.AGAVE_STORAGE_SYSTEM})
+                                'systemId': systemId})
 
 
-@shared_task(default_retry_delay=1*30, max_retries=3)
+@shared_task(default_retry_delay=30, max_retries=3)
 def new_user_alert(username):
     user = get_user_model().objects.get(username=username)
     send_mail('New User in DesignSafe, need Slack', 'Username: ' + user.username + '\n' +
@@ -79,3 +94,10 @@ def new_user_alert(username):
                                                     'Name: ' + user.first_name + ' ' + user.last_name + '\n' +
                                                     'Id: ' + str(user.id) + '\n',
               settings.DEFAULT_FROM_EMAIL, settings.NEW_ACCOUNT_ALERT_EMAILS.split(','),)
+    
+
+@shared_task()
+def clear_old_notifications(self):
+    """Delete notifications older than 30 days to prevent them cluttering the db."""
+    time_cutoff = datetime.now() - timedelta(days=30)
+    Notification.objects.filter(datetime__lte=time_cutoff).delete()

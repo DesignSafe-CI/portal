@@ -93,7 +93,7 @@
 
 					dropdownTemplate =
 					'<a class="dropdown-toggle btn btn-secondary btn-default" data-toggle="dropdown" href ng-class="{ disabled: disabled }">' +
-						'<span>{{displayText}}</span>' + ' <i class="fa fa-caret-down"></i>' + 
+						'<span>{{displayText}}</span>' + ' <i role="none" class="fa fa-caret-down"></i>' + 
 						'<b></b>' +
 					'</a>' +
 					'<div class="dropdown-menu">' +

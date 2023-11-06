@@ -17,6 +17,7 @@ class WorkspaceDataBrowserCtrl {
 
         this.options = [
             { name: 'myData', label: 'My Data' },
+            { name: 'myDataScratch', label: 'HPC Scratch' },
             { name: 'myProjects', label: 'My Projects' },
             { name: 'publications', label: 'Published' },
             { name: 'nees', label: 'Published (NEES)' },
@@ -54,6 +55,17 @@ class WorkspaceDataBrowserCtrl {
                     api: 'agave',
                     scheme: 'private',
                     system: 'designsafe.storage.default',
+                    path: this.Django.user,
+                });
+                this.breadcrumbParams = this.FileListingService.fileMgrMappings.agave.breadcrumbParams;
+                break;
+            case 'myDataScratch':
+                this.listingType = 'files';
+                this.FileListingService.browse({
+                    section: 'main',
+                    api: 'agave',
+                    scheme: 'private',
+                    system: 'designsafe.storage.frontera.scratch',
                     path: this.Django.user,
                 });
                 this.breadcrumbParams = this.FileListingService.fileMgrMappings.agave.breadcrumbParams;

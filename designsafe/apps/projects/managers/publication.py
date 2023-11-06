@@ -252,10 +252,9 @@ def draft_publication(
 def amend_publication(project_id, amendments=None, authors=None, revision=None):
     """Amend a Publication
     
-    Update Amendable fields on a publication and the corrosponding DataCite
+    Update Amendable fields on a publication and the corresponding DataCite
     records. These changes do not produce a new version of a publication, but
-    they do allow for limited changes to a published project. This is currently
-    configured to support "Other" publications only.
+    they do allow for limited changes to a published project. 
     
     :param str project_id: Project uuid to amend
     :param int revision: Revision number to amend

@@ -2,7 +2,7 @@
     <!-- progression map -->
     <div class="pull-right" style="padding-bottom: 20px;">
         <a ng-click="$ctrl.goWork()">
-            <i class="fa fa-times"></i> Exit Prepare to Publish
+            <i role="none" class="fa fa-times"></i> Exit Prepare to Publish
         </a>
     </div>
     <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
@@ -18,44 +18,44 @@
             <td>
                 <strong>Selection</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Project</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Experiment</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Categories</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Order Authors</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Licenses</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
         </tr>
     </table>
     <br>
     <div>
-        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i role="none" class="fa fa-arrow-left"></i> Back to Publication
             Preview</a>
         <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="$ctrl.ui.loading || !$ctrl.selectedEnts.length">Continue</button>
     </div>
@@ -84,7 +84,7 @@
     </div>
         <div ng-show="$ctrl.ui.loading">
             <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
         <!-- Reports -->
@@ -115,7 +115,7 @@
         <div ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
             <div class="dropdown dropdown-spacer-lg" id="details-{{experiment.uuid}}">
                 <a ng-click="$ctrl.selectEntity(experiment)">Select this Experiment and all of its files</a>
-                <span ng-if="$ctrl.selectedEnts.includes(experiment)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                <span ng-if="$ctrl.selectedEnts.includes(experiment)"><i role="none" class="fa fa-check" style="color: #1CB500;"></i></span>
                 <button class="btn tab-gray collapsed" data-toggle="collapse"
                         data-target="#data-{{experiment.uuid}}" style="width:100%;">
                     <div class="collapse-tab">
@@ -276,7 +276,7 @@
                                         <tr>
                                             <td style="padding-right: 10px;" valign="top">
                                                 <span style="font-size: 20px; color: #1568C9">
-                                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                                    <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
@@ -311,7 +311,7 @@
                                                 <tr>
                                                     <td style="padding-right: 10px" valign="top">
                                                         <span style="font-size: 20px; color: #43A59D">
-                                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                                            <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
