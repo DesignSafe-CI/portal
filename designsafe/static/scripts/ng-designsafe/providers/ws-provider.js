@@ -14,7 +14,8 @@ function WSBusService($rootScope, logger, configURL) {
      * @function
      * @param {string} url
      */
-    function init(url) {
+    function init(url, retry) {
+        if (!retry) retry=1000 * Math.random()
         ws = new WebSocket(url);
         ws.onopen = function() {};
         ws.onmessage = function(e) {
@@ -25,7 +26,8 @@ function WSBusService($rootScope, logger, configURL) {
             logger.log('WS error: ', e);
         };
         ws.onclose = function(e) {
-            init(url);
+            console.log(`Websocket connection closed, retrying in ${Math.floor(retry/1000.0)}s`)
+            if (retry < 60000) setTimeout(() => init(url, retry * 2), retry);
         };
         service.ws = ws;
     }

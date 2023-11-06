@@ -138,6 +138,53 @@
         }
     </script>
 
+    <script type="module" id="js-open-pdfs-ext-links-new-window">
+    import findLinksAndSetTargets from 'https://cdn.jsdelivr.net/gh/TACC/Core-CMS@v3.11.0-alpha.1/taccsite_cms/static/site_cms/js/modules/setTargetForExternalLinks.js';
+
+    const pathsToRedirectsToExternal = [
+        '/facilities/simcenter/',
+        '/facilities/rapid-facility/',
+        '/rw/simcenter-research-tools/',
+        '/learning-center/simcenter-learning-tools/',
+        '/community/mechs/',
+        '/rw/user-guides/',
+        '/help/user-guides/',
+        '/rw/use-cases/',
+    ];
+    const pathsToPDFs = [
+        /\.pdf/
+    ];
+    // NOTE: Some links have `target="_blank"` even though they should not
+    const pathsOfManualNewTabLinks = document.querySelectorAll(
+        '[target="_blank"]:not([aria-describedby])'
+    );
+
+    /** Adds accessibility attribute to links that open in new tab */
+    function supportA11y( link ) {
+        const hasA11yNote = link.querySelector('span.sr-only');
+        const hasA11yDesc = link.hasAttribute('aria-describedby');
+
+        if ( ! hasA11yNote && ! hasA11yDesc ) {
+            link.setAttribute('aria-describedby', 'msg-open-new-window');
+            if (window.DEBUG) {
+                console.debug(`Link ${link} now has "aria-describedby"`);
+            }
+        }
+    }
+
+    /* To make certain links open in new window, and apply a11y attribute */
+    findLinksAndSetTargets({
+        pathsToForceSetTarget: [
+            ...pathsToRedirectsToExternal,
+            ...pathsToPDFs
+        ],
+        setTargetCallback: supportA11y,
+    });
+
+    /* To apply a11y attribute to manual new tab links */
+    [ ...pathsOfManualNewTabLinks ].forEach( supportA11y );
+</script><!-- https://medium.com/@svinkle/why-let-someone-know-when-a-link-opens-a-new-window-8699d20ed3b1#79b2 -->
+
     {% include 'includes/analytics.html' %}
   </body>
 </html>
