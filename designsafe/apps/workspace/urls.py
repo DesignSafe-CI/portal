@@ -1,6 +1,6 @@
-from django.conf.urls import url
+from django.urls import re_path as url
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from designsafe.apps.workspace import views
 
 # TODO look at linking directly into an app in the workspace

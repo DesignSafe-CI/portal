@@ -56,7 +56,7 @@ class CredentialsField(models.Field):
         if value is None:
             return None
         else:
-            return encoding.smart_text(
+            return encoding.smart_str(
                 base64.b64encode(jsonpickle.encode(value).encode()))
 
     def value_to_string(self, obj):
