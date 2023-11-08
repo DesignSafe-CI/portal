@@ -159,7 +159,7 @@
                     </button>
                     <div id="data-{{experiment.uuid}}" class="collapse in dropdown-spacer-lg">
                         <div class="well">
-                            <span ng-if="experiment.value.equipmentType.length">
+                            <span ng-if="experiment.value.length && experiment.value.equipmentType !=='None'">
                                 <div class="entity-meta-field">
                                     <div class="entity-meta-label">Experiment Type</div>
                                     <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
@@ -191,7 +191,7 @@
                                     </span>
                                 </div>
                             </span>
-                            <span ng-if="experiment.value.equipmentType.length">
+                            <span ng-if="experiment.value.equipmentType.length && experiment.value.equipmentType !=='None'">
                                 <div class="entity-meta-field">
                                     <div class="entity-meta-label">Equipment Type</div>
                                     <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
