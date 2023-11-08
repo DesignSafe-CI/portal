@@ -206,21 +206,21 @@ export function appsService($http, $q, $translate, Django) {
             return regStr;
         }
 
-        let maxQueueRunTime = app.defaultQueue ? app.exec_sys.queues.find((q) => q.name === app.defaultQueue).maxRequestedTime : app.exec_sys.queues.find((q) => q.default === true).maxRequestedTime;
+        let defaultQueue = app.defaultQueue ? app.exec_sys.queues.find((q) => q.name === app.defaultQueue) : app.exec_sys.queues.find((q) => q.default === true);
 
         schema.properties.maxRunTime = {
             title: 'Maximum job runtime',
-            description: `In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is ${maxQueueRunTime} (hrs:min:sec).`,
+            description: `In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is ${defaultQueue.maxRequestedTime} (hrs:min:sec).`,
             type: 'string',
-            pattern: createMaxRunTimeRegex(maxQueueRunTime),
-            validationMessage: `Must be in format HH:MM:SS and be less than ${maxQueueRunTime} (hrs:min:sec).`,
+            pattern: createMaxRunTimeRegex(defaultQueue.maxRequestedTime),
+            validationMessage: `Must be in format HH:MM:SS and be less than ${defaultQueue.maxRequestedTime} (hrs:min:sec).`,
             required: true,
-            'x-schema-form': { placeholder: app.defaultMaxRunTime || '06:00:00' },
+            default: app.defaultMaxRunTime || '02:00:00'
         };
 
         schema.properties.name = {
             title: 'Job name',
-            description: 'A recognizable name for this job.',
+            description: 'A recognizable name for this job. Make this descriptive if you submit many jobs.',
             type: 'string',
             required: true,
             default: app.id + '_' + this.getDateString(),
@@ -228,35 +228,28 @@ export function appsService($http, $q, $translate, Django) {
         };
 
         schema.properties.nodeCount = {
-            title: 'Node Count',
-            description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.`,
+            title: 'Number of Nodes',
+            description: `Number of requested process nodes.`,
             type: 'integer',
-            enum: Array.from(Array(12).keys()).map((i) => i + 1),
             default: app.defaultNodeCount,
-            'x-schema-form': {
-                type: 'select',
-                titleMap: _.map(Array.from(Array(12).keys()).map((i) => i + 1), function(val) {
-                    return {
-                        value: val,
-                        name: val,
-                    };
-                }),
-            },
+            minimum: 1,
+            maximum: defaultQueue.maxNodes,
+            required: true
         };
 
         schema.properties.processorsPerNode = {
             title: 'Processors Per Node',
-            description: `Number of processors (cores) per node for the job. e.g. A selection of 16 processors per node along with 4 nodes
-            will result in 4 nodes with 16 processors each, 64 processors total. Default number of processors per node is ${Math.floor(app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)}.`,
+            description: `Number of processors (cores) per node.`,
             type: 'integer',
-            default: Math.floor((app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)),
+            default: app.defaultProcessorsOnEachNode || Math.floor((app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)),
             minimum: 1,
-            maximum: Math.floor(app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1),
+            maximum: defaultQueue.maxProcessorsPerNode / defaultQueue.maxNodes,
+            required: true
         };
 
         schema.properties.archivePath = {
-            title: 'Job output archive location (optional)',
-            description: `Specify a location where the job output should be archived. By default, job output will be archived at: <code>${Django.user}/archive/jobs/\${YYYY-MM-DD}/\${JOB_NAME}-\${JOB_ID}</code>.`,
+            title: 'Job output archive location',
+            description: `All job output data will be archived here after job completion. If no path is specifed, job output will be archived to your My Data directory at <code>${Django.user}/archive/jobs/\${YYYY-MM-DD}/\${JOB_NAME}-\${JOB_ID}</code>.`,
             type: 'string',
             format: 'agaveFile',
             'x-schema-form': { placeholder: `${Django.user}/archive/jobs/\${YYYY-MM-DD}/\${JOB_NAME}-\${JOB_ID}` },
