@@ -241,9 +241,9 @@ export function appsService($http, $q, $translate, Django) {
             title: 'Processors Per Node',
             description: `Number of processors (cores) per node.`,
             type: 'integer',
-            default: app.defaultProcessorsOnEachNode || Math.floor((app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)),
+            default: Math.floor((app.defaultProcessorsPerNode || 1) / (app.defaultNodeCount || 1)),
             minimum: 1,
-            maximum: defaultQueue.maxProcessorsPerNode / defaultQueue.maxNodes,
+            maximum: Math.floor(defaultQueue.maxProcessorsPerNode / defaultQueue.maxNodes),
             required: true
         };
 
