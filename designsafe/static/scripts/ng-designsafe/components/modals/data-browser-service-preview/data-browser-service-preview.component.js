@@ -138,7 +138,7 @@ class DataBrowserServicePreviewCtrl {
     copy() {
         const { api, scheme, system, path } = this.FileListingService.listings.main.params;
         const files = [this.resolve.file];
-        this.FileOperationService.openCopyModal({ api, scheme, system, path, files });
+        this.FileOperationService.openCopyModal({ api, scheme, system, path, files, doi: this.resolve.doi });
     }
 
     move() {
