@@ -270,7 +270,7 @@ export function applicationAddCtrl(window, angular, $, _) {
                     },
                     'defaultProcessorsPerNode': {
                         'type': 'integer',
-                        'description': 'Default number of processors per node to be used when running this app if no processor count is given in the job request',
+                        'description': 'Total number of processors across all nodes to be used when running this app if no processor count is given in the job request',
                         'maxLength': 12,
                         'title': 'Default processor count',
                         'x-schema-form': {
