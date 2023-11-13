@@ -118,6 +118,7 @@ class DataBrowserCopyCtrl {
             destSystem: dest.system,
             destPath: dest.path,
             successCallback: this.successCallback,
+            doi: this.resolve.doi
         });
     }
 
