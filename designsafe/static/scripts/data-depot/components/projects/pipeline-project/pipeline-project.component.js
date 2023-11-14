@@ -80,11 +80,13 @@ class PipelineProjectCtrl {
         return missing_fields;
     }
 
+    //exit prepare to publish
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view', {projectId: this.project.uuid}, {reload: true});
     }
 
+    //aka go back one setep
     goSelection() {
         if (this.projType === 'experimental') {
             this.$state.go('projects.pipelineSelectExp', {projectId: this.project.uuid}, {reload: true});
@@ -99,6 +101,7 @@ class PipelineProjectCtrl {
         }
     }
 
+    //aka go to next step
     goExperiment() {
         //check for missing required project metadata
         this.missingMetadata = this.checkProjectMetadata(this.project);
@@ -144,6 +147,7 @@ class PipelineProjectCtrl {
         }
     }
 
+    //edit project modal
     manageProject() {
         return this.$uibModal.open({
             component: 'manageProject',
