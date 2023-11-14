@@ -1,3 +1,4 @@
+import { missing } from 'tv4';
 import PipelineProjectTemplate from './pipeline-project.component.html';
 
 class PipelineProjectCtrl {
@@ -56,6 +57,29 @@ class PipelineProjectCtrl {
 
     }
 
+    checkProjectMetadata(project){
+        let required = {
+            'title' : 'Title',
+            'projectType': 'Project Type',
+            'nhTypes': 'Natural Hazard Type',
+            'frTypes': 'Field Research Type',
+            'dataType': 'Data Type',
+            'keywords': 'Keywords',
+            'description': 'Description'
+        }
+        let missing_fields = [];
+
+        for (var field in project.value) {
+            if (required[field]) {
+                if (project.value[field] === '' || !project.value[field].length) {
+                    missing_fields.push(required[field]);
+                }
+            }
+        }
+
+        return missing_fields;
+    }
+
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view', {projectId: this.project.uuid}, {reload: true});
@@ -76,6 +100,12 @@ class PipelineProjectCtrl {
     }
 
     goExperiment() {
+        //check for missing required project metadata
+        this.missingMetadata = this.checkProjectMetadata(this.project);
+        if(this.missingMetadata.length) {
+            return;
+        }
+
         if (this.projType === 'experimental') {
             this.$state.go('projects.pipelineExperiment', {
                 projectId: this.projectId,
