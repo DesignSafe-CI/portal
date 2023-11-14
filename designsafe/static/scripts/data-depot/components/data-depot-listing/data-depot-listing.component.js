@@ -246,6 +246,7 @@ class FilesListingCtrl {
     browse($event, file) {
         $event.preventDefault();
         $event.stopPropagation();
+        if (this.doi) file.doi = this.doi;
         this.onBrowse({ file });
     }
 
