@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path as url
 from designsafe.apps.api.datafiles.views import DataFilesView, TransferFilesView, MicrosurveyView
 
 urlpatterns = [

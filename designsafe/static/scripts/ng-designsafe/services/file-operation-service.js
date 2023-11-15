@@ -3,7 +3,7 @@ import { map, tap, catchError } from 'rxjs/operators';
 import { takeLatestSubscriber } from './_rxjs-utils';
 
 export class FileOperationService {
-    constructor($http, $state, $rootScope, $uibModal, $q, ProjectService, Django, toastr) {
+    constructor($http, $state, $stateParams, $rootScope, $uibModal, $q, ProjectService, Django, toastr) {
         'ngInject';
         this.$state = $state;
         this.$uibModal = $uibModal;
@@ -12,6 +12,7 @@ export class FileOperationService {
         this.toastr = toastr;
         this.$rootScope = $rootScope;
         this.$http = $http;
+        this.$stateParams = $stateParams;
         this.ProjectService = ProjectService;
         this.from = from; // bind rxjs method for mocking
 
@@ -125,7 +126,7 @@ export class FileOperationService {
      * @param {string} params.system System to copy files from.
      * @param {Object[]} params.files Array of file objects {name, system, path} to copy.
      */
-    openCopyModal({ api, scheme, system, files }) {
+    openCopyModal({ api, scheme, system, files, doi }) {
         this.operations.copy.status = {};
         var modal = this.$uibModal.open({
             component: 'copyModal',
@@ -134,6 +135,7 @@ export class FileOperationService {
                 scheme: () => scheme,
                 system: () => system,
                 files: () => files,
+                doi: () => doi,
             },
             size: 'lg',
         });
@@ -154,7 +156,7 @@ export class FileOperationService {
      * @param {string} params.destPath Path of directory to copy files into.
      * @param {function} params.successCallback Callback on successful copy of all files.
      */
-    handleCopy({ srcApi, srcFiles, destApi, destSystem, destPath, successCallback }) {
+    handleCopy({ srcApi, srcFiles, destApi, destSystem, destPath, successCallback, doi}) {
         const copyParams = {
             srcApi,
             srcFiles,
@@ -162,6 +164,7 @@ export class FileOperationService {
             destSystem,
             destPath,
             successCallback,
+            doi,
         };
 
         const copyMapping = () => this.mapParamsToCopy(copyParams);
@@ -180,7 +183,7 @@ export class FileOperationService {
      * @param {Object[]} params.files Array of file objects {name, system, path} to copy.
      * @param {function} params.successCallback Callback on successful copy of all files.
      */
-    mapParamsToCopy({ srcApi, destApi, destSystem, destPath, srcFiles, successCallback }) {
+    mapParamsToCopy({ srcApi, destApi, destSystem, destPath, srcFiles, successCallback, doi }) {
         // Treat Shared Data as Agave for the purpose of copying files.
         if (srcApi === 'shared') {
             srcApi = 'agave';
@@ -193,7 +196,7 @@ export class FileOperationService {
             // Copying files between APIs requires the transfer endpoint.
             if (srcApi === destApi) {
                 const copyUrl = this.removeDuplicateSlashes(
-                    `/api/datafiles/${srcApi}/private/copy/${f.system}/${f.path}/`
+                    `/api/datafiles/${srcApi}/private/copy/${f.system}/${f.path}/?doi=${doi}`
                 );
                 copyRequest = this.$http.put(copyUrl, {
                     dest_system: destSystem,

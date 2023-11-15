@@ -12,7 +12,7 @@
 <div ng-if="data.bin" class="app-dropdown">
     <p compile="data.bin.description" class="app-form-wrapper" ng-if="data.bin.description"></p>
     <div>Select a version of <b>{{data.bin.value.definition.label}}</b> from the dropdown:</div>
-    <select ng-model="data.selectedApp" ng-options="app.value.definition.label for app in data.bin.applications | orderBy: 'value.definition.label'">
+    <select ng-model="data.selectedApp" ng-options="app.value.definition.label for app in data.bin.applications | orderBy: 'value.definition.label'" style="color:initial;">
         <option value=''disabled selected>-- Please Select --</option>
     </select>
 </div>
