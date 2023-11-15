@@ -9,7 +9,7 @@
       <div class="col-md-12">
         <h1> Recon Admin </h1>
         <a class="btn btn-success" href="{% url 'designsafe_rapid:admin_create_event' %}" target="_self">
-          <i class="fa fa-plus"> Create New Recon Event </i>
+          <i role="none" class="fa fa-plus"> Create New Recon Event </i>
         </a>
         <a class="btn btn-default pull-right" href="{% url 'designsafe_rapid:admin_users' %}" target="_self"> Recon User Admin </a>
         <hr>
@@ -37,18 +37,18 @@
               <td> {{event.created_date}} </td>
               <td>
                 <a href="{% url 'designsafe_rapid:admin_edit_event' event.meta|private:'id' %}" class="btn btn-sm btn-info" target="_self">
-                  <i class="fa fa-file"> </i> Edit
+                  <i role="none" class="fa fa-file"> </i> Edit
                 </a>
               </td>
               <td>
                 <a href="{% url 'designsafe_rapid:admin_event_datasets' event.meta|private:'id' %}" class="btn btn-sm btn-info" target="_self">
-                  <i class="fa fa-database"> </i> Datasets
+                  <i role="none" class="fa fa-database"> </i> Datasets
                 </a>
               </td>
               <td>
                 <form action="{% url 'designsafe_rapid:admin_delete_event' event.meta|private:'id'  %}" method="POST">
                   {% csrf_token %}
-                  <button class="btn btn-sm btn-danger"> <i class="fa fa-trash"> </i> Delete Event </button>
+                  <button class="btn btn-sm btn-danger"> <i role="none" class="fa fa-trash"> </i> Delete Event </button>
               </td>
 
             </tr>

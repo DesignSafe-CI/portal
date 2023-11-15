@@ -1,5 +1,5 @@
 # pylint: disable=missing-docstring
-from django.conf.urls import url, include
+from django.urls import re_path as url, include
 from designsafe.apps.api.views import LoggerApi
 from django.http import JsonResponse
 

@@ -10,7 +10,7 @@ operation: Can be any of these:
                                  More specific action should live in the body.
 
 """
-from django.conf.urls import url, include
+from django.urls import re_path as url
 from designsafe.apps.api.projects.views import (ProjectListingView,
                                                 ProjectCollectionView,
                                                 ProjectDataView,
@@ -62,5 +62,5 @@ urlpatterns = [
     url(r'^(?P<project_uuid>[a-z0-9\-]+)/notification/$',
         ProjectNotificationView.as_view(), name='project_notification'),
 
-    url(r'^/?', ProjectCollectionView.as_view(), name='index'),
+    url("", ProjectCollectionView.as_view(), name='index'),
 ]

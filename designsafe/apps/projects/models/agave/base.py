@@ -487,7 +487,7 @@ class Project(MetadataModel):
         # remember, related works are not required, so they can be missing...
         for a_proj in self.associated_projects: #relatedwork
             identifier = {}
-            mapping = {'Linked Project': 'IsSupplementTo', 'Linked Dataset': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
+            mapping = {'Linked Project': 'IsPartOf', 'Linked Dataset': 'IsPartOf', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
             if {'type', 'href', 'hrefType'} <= a_proj.keys():
                 identifier['relationType'] = mapping[a_proj['type']]
                 identifier['relatedIdentifierType'] = a_proj['hrefType']
@@ -616,6 +616,14 @@ def generate_licenses(pub):
             "@type": "CreativeWork",
             "name": pub.project.value.title,
             "url": "http://www.gnu.org/licenses/gpl.html",
+            "description": pub.project.value.description,
+            "license": pub.licenses.software
+        })
+    if pub.licenses.software == "3-Clause BSD License":
+        license_details.append({
+            "@type": "CreativeWork",
+            "name": pub.project.value.title,
+            "url": "https://opensource.org/license/bsd-3-clause/",
             "description": pub.project.value.description,
             "license": pub.licenses.software
         })

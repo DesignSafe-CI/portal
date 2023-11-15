@@ -15,7 +15,7 @@
     <a class="btn btn-info"
        title="{% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}Reopen this ticket{% else %}Reply to this ticket{% endif %}"
        href="{% url 'djangoRT:ticketreply' ticket.id %}">
-      <i class="fa fa-reply"></i>
+      <i role="none" class="fa fa-reply"></i>
       <span class="sr-only">
         {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}Reopen this ticket{% else %}Reply to this ticket{% endif %}
       </span>
@@ -24,7 +24,7 @@
       <a class="btn btn-danger"
          title="Close this ticket"
          href="{% url 'djangoRT:ticketclose' ticket.id %}">
-        <i class="fa fa-times"></i>
+        <i role="none" class="fa fa-times"></i>
         <span class="sr-only">Close this ticket</span>
       </a>
     {% endif %}

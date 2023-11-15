@@ -2,14 +2,14 @@
     <h4 class="modal-title">
         Leave Feedback
         <span class="pull-right" ng-click="$ctrl.close()">
-            <i class="fa fa-times">&nbsp;</i>
+            <i role="none" class="fa fa-times">&nbsp;</i>
         </span>
     </h4>
 </div>
 <div class="modal-body feedback-container">
     <div class="feedback-item">
         <div class="loading bg-info" ng-if="$ctrl._ui.loading">
-            <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+            <i role="none" class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
         </div>
         <div class="alert alert-error" ng-if="$ctrl.error">
             <p>There was a problem submitting your feedback.</p>
@@ -53,7 +53,7 @@
 <div class="modal-footer">
     <button class="btn btn-primary" ng-disabled="feedback.$invalid || $ctrl.submitting" ng-click="$ctrl.onSubmit()">
         <span ng-if="$ctrl.submitting">
-            <i class="fa fa-spinner fa-spin"></i>
+            <i role="none" class="fa fa-spinner fa-spin"></i>
         </span>
         Submit
     </button>

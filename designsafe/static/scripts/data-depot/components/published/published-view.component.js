@@ -170,7 +170,11 @@ class PublishedViewCtrl {
                 if (key === 'datasets') {
                     this.ui.licenseType = 'curation-odc';
                 } else if (key === 'software') {
-                    this.ui.licenseType = 'curation-gpl';
+                    if (this.ui.license.includes('3-Clause BSD')) {
+                        this.ui.licenseType = 'curation-3bsd';
+                    } else if (this.ui.license.includes('GNU General Public')) {
+                        this.ui.licenseType = 'curation-gpl';
+                    }
                 } else if (key === 'works') {
                     const subtype = this.ui.license.includes('Attribution') ? 'share' : 'zero';
                     this.ui.licenseType = `curation-cc-${subtype}`;
@@ -637,6 +641,8 @@ class PublishedViewCtrl {
     }
 
     onBrowse(file, doi) {
+        if (!doi) {doi = file.doi}
+        if (!doi) {doi = this.$stateParams.doi}
         if (file.type === 'dir') {
             this.$state.go(this.$state.current.name, { filePath: file.path, query_string: null, doi: doi });
         } else {

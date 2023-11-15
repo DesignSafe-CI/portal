@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import re
+import copy
 import exifread
 from designsafe.apps.api.agave import service_account
 from PIL import Image
@@ -124,10 +125,11 @@ def copy_meta(src_system, src_path, dest_system, dest_path):
     meta_listing = query_file_meta(system=src_system, path=src_path)
     if meta_listing:
         for meta in meta_listing:
+            meta_dict = copy.deepcopy(dict(meta))
             meta_copy = file_meta_obj(
-                path=meta.value['path'].replace(src_path, dest_path),
+                path=meta_dict['value']['path'].replace(src_path, dest_path),
                 system=dest_system,
-                meta=meta['value']
+                meta=meta_dict['value']
             )
             copies.append(meta_copy)
         sa_client.meta.bulkCreate(body=json.dumps(copies))

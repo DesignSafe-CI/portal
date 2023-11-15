@@ -1,6 +1,6 @@
 <div class="pipeline-nav">
     <a ng-click="$ctrl.goStart()">
-        <i class="fa fa-arrow-left"></i> Back
+        <i role="none" class="fa fa-arrow-left"></i> Back
     </a>
     <button class="btn btn-small btn-add"
             ng-click="$ctrl.goCitation()"
@@ -35,7 +35,7 @@
     </div>
     <div ng-if="$ctrl.ui.loading">
         <h3 class="text-center">
-            <i class="fa fa-spinner fa-spin"></i> Loading...
+            <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
     <div ng-if="!$ctrl.ui.loading">
@@ -50,11 +50,11 @@
                 <div class="pipeline-selection">
                     <div ng-if="!experiment.value.dois.length">
                         <a ng-click="$ctrl.selectEntity(experiment)">Select this Experiment and all of its files</a>
-                        <span ng-if="$ctrl.selectedEnts.includes(experiment)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                        <span ng-if="$ctrl.selectedEnts.includes(experiment)"><i role="none" class="fa fa-check" style="color: #1CB500;"></i></span>
                     </div>
                     <div ng-if="experiment.value.dois.length">
                         <span>This Experiment is Required</span>
-                        <span><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                        <span><i role="none" class="fa fa-check" style="color: #1CB500;"></i></span>
                     </div>
                 </div>
                 <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
@@ -199,7 +199,7 @@
                                             <tr>
                                                 <td style="padding-right: 10px;" valign="top">
                                                     <span style="font-size: 20px; color: #1568C9">
-                                                        <i class="fa fa-level-up fa-rotate-90"></i>
+                                                        <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                     </span>
                                                 </td>
                                                 <td style="width: 100%;">
@@ -239,7 +239,7 @@
                                                     <tr>
                                                         <td style="padding-right: 10px" valign="top">
                                                             <span style="font-size: 20px; color: #43A59D">
-                                                                <i class="fa fa-level-up fa-rotate-90"></i>
+                                                                <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                             </span>
                                                         </td>
                                                         <td style="width: 100%;">
