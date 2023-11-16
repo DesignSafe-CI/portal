@@ -44,6 +44,15 @@ class DataTag(MetadataModel):
     tag_name = fields.CharField('Tag Name', max_length=512, default='')
     value = fields.CharField('Value', max_length=512, default='')
 
+class FileObjModel(MetadataModel):
+    _is_nested = True
+    path = fields.CharField('File path', max_length=1024, default='')
+    name = fields.CharField('File name', max_length=1024, default='')
+    system = fields.CharField('System', max_length=512, default='')
+    type = fields.CharField('File type', max_length=512, default='')
+    last_modified = fields.CharField('Last Modified', max_length=512, default='')
+    length = fields.IntField('File Size', default=0)
+
 
 class Simulation(RelatedEntity):
     model_name = 'designsafe.project.simulation'
@@ -119,6 +128,7 @@ class Model(RelatedEntity):
     simulations = fields.RelatedObjectField(Simulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Input(RelatedEntity):
@@ -130,6 +140,7 @@ class Input(RelatedEntity):
     model_configs = fields.RelatedObjectField(Model)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Output(RelatedEntity):
@@ -142,6 +153,7 @@ class Output(RelatedEntity):
     sim_inputs = fields.RelatedObjectField(Input)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Analysis(RelatedEntity):
@@ -154,6 +166,7 @@ class Analysis(RelatedEntity):
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Report(RelatedEntity):
@@ -165,3 +178,4 @@ class Report(RelatedEntity):
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)

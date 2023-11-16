@@ -44,6 +44,15 @@ class DataTag(MetadataModel):
     tag_name = fields.CharField('Tag Name', max_length=512, default='')
     value = fields.CharField('Value', max_length=512, default='')
 
+class FileObjModel(MetadataModel):
+    _is_nested = True
+    path = fields.CharField('File path', max_length=1024, default='')
+    name = fields.CharField('File name', max_length=1024, default='')
+    system = fields.CharField('System', max_length=512, default='')
+    type = fields.CharField('File type', max_length=512, default='')
+    length = fields.IntField('File Size', default=0)
+    last_modified = fields.CharField('Last Modified', max_length=512, default='')
+
 class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'
     experiment_type = fields.CharField('Experiment Type', max_length=255, default='other')
@@ -132,6 +141,7 @@ class Analysis(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class ModelConfig(RelatedEntity):
     model_name = 'designsafe.project.model_config'
@@ -141,6 +151,7 @@ class ModelConfig(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class SensorList(RelatedEntity):
     model_name = 'designsafe.project.sensor_list'
@@ -152,6 +163,7 @@ class SensorList(RelatedEntity):
     model_configs = fields.RelatedObjectField(ModelConfig)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Event(RelatedEntity):
     model_name = 'designsafe.project.event'
@@ -165,6 +177,7 @@ class Event(RelatedEntity):
     sensor_lists = fields.RelatedObjectField(SensorList)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Report(RelatedEntity):
     model_name = 'designsafe.project.report'
@@ -174,3 +187,4 @@ class Report(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)

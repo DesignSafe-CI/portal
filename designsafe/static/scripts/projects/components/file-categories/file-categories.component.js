@@ -93,6 +93,7 @@ class FileCategoriesCtrl {
                 }
                 this.rmUuid(entity.associationIds, file.uuid);
                 this.rmUuid(entity.value.files, file.uuid);
+                entity.value.fileObjs = (entity.value.fileObjs ?? []).filter(f => f.path !== this.file.path)
                 this.updateEntity(entity, this.file);
             });
         } else {
