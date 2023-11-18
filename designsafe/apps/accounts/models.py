@@ -73,6 +73,7 @@ class DesignSafeProfile(models.Model):
     nh_technical_domains = models.ManyToManyField(DesignSafeProfileNHTechnicalDomains)
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
+    institution = models.CharField(max_length=256, default=None, null=True)
     update_required = models.BooleanField(default=True)
     last_updated = models.DateTimeField(auto_now=True, null=True)
 
