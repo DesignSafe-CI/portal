@@ -3,7 +3,7 @@ import logging
 import json
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, get_user_info
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +75,16 @@ class Mission(RelatedEntity):
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(FieldReconProject)
     dois = fields.ListField('Dois')
+
+    def save(self, agave_client):
+        _authors = []
+        for author in sorted(self.authors, key=lambda u: u["order"]):
+            if author.get("guest", False):
+                _authors.append({**author, "role": "guest", "username": author["name"]})
+            else:
+                _authors.append({**author, **get_user_info(author["name"], "team_member")})
+        self.authors = _authors
+        return super().save(agave_client)
 
     def to_datacite_json(self):
         """Serialize object to datacite JSON."""
@@ -151,6 +161,16 @@ class Collection(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
 
+    def save(self, agave_client):
+        _data_collectors = []
+        for author in sorted(self.data_collectors, key=lambda u: u["order"]):
+            if author.get("guest", False):
+                _data_collectors.append({**author, "role": "guest", "username": author["name"]})
+            else:
+                _data_collectors.append({**author, **get_user_info(author["name"], "team_member")})
+        self.data_collectors = _data_collectors
+        return super().save(agave_client)
+
 class SocialScience(RelatedEntity):
     model_name = 'designsafe.project.field_recon.social_science'
     title = fields.CharField('Title', max_length=1024)
@@ -173,6 +193,16 @@ class SocialScience(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
 
+    def save(self, agave_client):
+        _data_collectors = []
+        for author in sorted(self.data_collectors, key=lambda u: u["order"]):
+            if author.get("guest", False):
+                _data_collectors.append({**author, "role": "guest", "username": author["name"]})
+            else:
+                _data_collectors.append({**author, **get_user_info(author["name"], "team_member")})
+        self.data_collectors = _data_collectors
+        return super().save(agave_client)
+
 class Planning(RelatedEntity):
     model_name = 'designsafe.project.field_recon.planning'
     title = fields.CharField('Title', max_length=1024)
@@ -183,6 +213,16 @@ class Planning(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+
+    def save(self, agave_client):
+        _data_collectors = []
+        for author in sorted(self.data_collectors, key=lambda u: u["order"]):
+            if author.get("guest", False):
+                _data_collectors.append({**author, "role": "guest", "username": author["name"]})
+            else:
+                _data_collectors.append({**author, **get_user_info(author["name"], "team_member")})
+        self.data_collectors = _data_collectors
+        return super().save(agave_client)
 
 class Geoscience(RelatedEntity):
     model_name = 'designsafe.project.field_recon.geoscience'
@@ -202,6 +242,16 @@ class Geoscience(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
 
+    def save(self, agave_client):
+        _data_collectors = []
+        for author in sorted(self.data_collectors, key=lambda u: u["order"]):
+            if author.get("guest", False):
+                _data_collectors.append({**author, "role": "guest", "username": author["name"]})
+            else:
+                _data_collectors.append({**author, **get_user_info(author["name"], "team_member")})
+        self.data_collectors = _data_collectors
+        return super().save(agave_client)
+
 class Report(RelatedEntity):
     model_name = 'designsafe.project.field_recon.report'
     title = fields.CharField('Title', max_length=1024)
@@ -213,6 +263,16 @@ class Report(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
     dois = fields.ListField('Dois')
+
+    def save(self, agave_client):
+        _authors = []
+        for author in sorted(self.authors, key=lambda u: u["order"]):
+            if author.get("guest", False):
+                _authors.append({**author, "role": "guest", "username": author["name"]})
+            else:
+                _authors.append({**author, **get_user_info(author["name"], "team_member")})
+        self.authors = _authors
+        return super().save(agave_client)
 
     def to_datacite_json(self):
         """Serialize object to datacite JSON."""

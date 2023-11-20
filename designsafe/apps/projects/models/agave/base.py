@@ -13,6 +13,20 @@ from designsafe.apps.data.models.agave import fields
 from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 logger = logging.getLogger(__name__)
+user_model = get_user_model()
+
+def get_user_info(username, role=None):
+    user_obj = user_model.objects.get(username=username)
+    user_info =  {
+        "username": username,
+        "fname": user_obj.first_name,
+        "lname": user_obj.last_name,
+        "email": user_obj.email,
+        "inst": user_obj.profile.institution,
+    }
+    if role:
+        user_info["role"] = role
+    return user_info
 
 
 class RelatedEntity(MetadataModel):
@@ -78,9 +92,11 @@ class Project(MetadataModel):
     team_members = fields.ListField('Team Members')
     guest_members = fields.ListField('Guest Members')
     co_pis = fields.ListField('Co PIs')
+    users = fields.ListField('Users')
     project_type = fields.CharField('Project Type', max_length=255, default=None)
     data_type = fields.CharField('Data Type', max_length=255, default='')
     team_order = fields.ListField('Team Order')
+    authors = fields.ListField('Authors')
     project_id = fields.CharField('Project Id')
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=255, default='')
@@ -199,12 +215,35 @@ class Project(MetadataModel):
             systemId=self.system,
             body={'username': username, 'role': 'USER'})
 
-    def save(self, ag):
+    def save(self, agave_client):
         if self.uuid:
-            prj = self.manager().get(ag, self.uuid)
+            prj = self.manager().get(agave_client, self.uuid)
             if prj.project_id and prj.project_id != 'None':
                 self.project_id = prj.project_id
-        super(Project, self).save(ag)
+        
+        _users = []
+        _users.append(get_user_info(self.pi, "pi"))
+        for co_pi in self.co_pis:
+            _users.append(get_user_info(co_pi, "co_pi"))
+        for team_member in self.team_members:
+            _users.append(get_user_info(team_member, "team_member"))
+        for guest_member in self.guest_members:
+            _users.append({**guest_member, "username": guest_member["user"], "role": "guest"})
+
+        _team_order = getattr(self, 'team_order', [])
+        _authors = []
+        for author in sorted(_team_order, key=lambda u: u["order"]):
+            if author.get("guest", False):
+                _authors.append({**author, "role": "guest", "username": author["user"]})
+            else:
+                _authors.append({**author, **get_user_info(author["name"], "team_member")})
+
+        self.users = _users
+        if len(_authors):
+            self.authors = _authors
+
+
+        return super(Project, self).save(agave_client)
 
     def related_entities(self, offset=0, limit=100):
         from designsafe.apps.projects.models.utils import lookup_model

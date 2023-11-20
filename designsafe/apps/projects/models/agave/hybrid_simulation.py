@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, get_user_info
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +72,16 @@ class HybridSimulation(RelatedEntity):
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(HybridSimulationProject)
     dois = fields.ListField('Dois')
+
+    def save(self, agave_client):
+        _authors = []
+        for author in sorted(self.authors, key=lambda u: u["order"]):
+            if author.get("guest", False):
+                _authors.append({**author, "role": "guest", "username": author["name"]})
+            else:
+                _authors.append({**author, **get_user_info(author["name"], "team_member")})
+        self.authors = _authors
+        return super().save(agave_client)
 
     def to_datacite_json(self):
         """Serialize object to datacite JSON."""
