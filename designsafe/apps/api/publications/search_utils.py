@@ -36,7 +36,6 @@ def experiment_type_query(experiment_type):
                  'query':
                  {'match':
                   {'experimentsList.value.experimentType': experiment_type}}}}}})
-                  
 
 def simulation_type_query(simulation_type):
     return Q({'term': {'simulations.value.simulationType.keyword': simulation_type}})

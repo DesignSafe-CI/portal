@@ -171,9 +171,11 @@ def format_sim(sim):
     Map experiment to Datacite fields for Fedora.
     """
     meta = sim.value
+
     sim_type = meta.simulationType
     if sim_type == 'other':
         sim_type = getattr(meta, 'simulationTypeOther', 'other')
+
 
     publication_date = str(sim.created)
 
@@ -206,7 +208,7 @@ def format_sim(sim):
     for work in related_work:
         if work['hrefType'] == 'URL':
             work_val = f"{work['title']} ({work['href']})"
-        elif work['hrefType'] == 'DOI': 
+        elif work['hrefType'] == 'DOI':
             work_val = work['href']
 
         if work['type'] == 'Linked Project':
@@ -220,6 +222,8 @@ def format_sim(sim):
 
         if work['type'] == 'Cited By':
             referenced_by.append(work_val)
+
+
 
 
     return {

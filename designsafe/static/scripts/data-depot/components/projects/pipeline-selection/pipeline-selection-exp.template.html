@@ -125,13 +125,13 @@
                 </button>
                 <div id="data-{{experiment.uuid}}" class="collapse">
                     <div class="well">
-                        <div class="entity-meta-field">
-                            <div class="entity-meta-label">Experiment Type</div>
-                            <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
-                                {{ $ctrl.getET(experiment) }}
-                            </span>
-                            <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
-                                {{ experiment.value.experimentTypeOther }}
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Experiment Type</div>
+                        <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                            {{ $ctrl.getET(experiment) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                            {{ experiment.value.experimentTypeOther }}
                         </span>
                     </div>
                     <div class="entity-meta-field">

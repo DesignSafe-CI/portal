@@ -23,6 +23,7 @@ class ManageSimulationCtrl {
                 referencedData: false,
             },
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
+            simulationTypes: SimulationTypes.simulationTypes
         };
         this.configureForm(this.edit);
         this.form.authors = this.configureAuthors(this.edit, false);

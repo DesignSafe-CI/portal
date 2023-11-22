@@ -170,7 +170,7 @@ class ManageExperimentsCtrl {
         let ef = efs.find((ef) => {
             return ef.name === str;
         });
-        return ef.label;   
+        return ef.label;
     }
 
     getET(exp) {
