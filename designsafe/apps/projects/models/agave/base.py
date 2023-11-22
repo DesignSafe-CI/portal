@@ -421,7 +421,7 @@ class Project(MetadataModel):
 
         return dataset_json
 
-    def to_datacite_json(self):
+    def to_datacite_json(self,project={}):
         """Serialize project to datacite json."""
         attributes = {}
         if getattr(self, 'team_order', False):
@@ -478,7 +478,7 @@ class Project(MetadataModel):
         attributes['fundingReferences'] = []
         for award in awards:
             attributes['fundingReferences'].append({
-                'funderName': award['name'],
+                'awardTitle': award['name'],
                 'awardNumber': award['number']
                 })
 
