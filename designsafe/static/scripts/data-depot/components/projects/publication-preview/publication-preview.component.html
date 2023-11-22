@@ -176,6 +176,15 @@
                         </div>
                     </div>
                     <div class="entity-meta-field">
+                        <div class="entity-meta-label">Experiment Type</div>
+                        <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                            {{ $ctrl.getET(experiment) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                            {{ experiment.value.experimentTypeOther }}
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
                         <div class="entity-meta-label-multi">Author(s)</div>
                         <div class="entity-meta-data">
                             <span ng-if="$ctrl.readOnly">
@@ -188,39 +197,24 @@
                             </span>
                         </div>
                     </div>
-                    <span ng-if="experiment.value.experimentalFacility.length && experiment.value.experimentalFacility !=='None'"> 
-                        <div class="entity-meta-field">
-                            <div class="entity-meta-label">Experimental Facility</div>
-                            <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
-                                {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
-                            </span>
-                            <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
-                                {{ experiment.value.experimentalFacilityOther }}
-                            </span>
-                        </div>
-                    </span>
-                    <span ng-if="experiment.value.experimentType.length">
-                        <div class="entity-meta-field">
-                            <div class="entity-meta-label">Experiment Type</div>
-                            <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
-                                {{ $ctrl.getET(experiment) }}
-                            </span>
-                            <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
-                                {{ experiment.value.experimentTypeOther }}
-                            </span>
-                        </div>
-                    </span>
-                    <span ng-if="experiment.value.equipmentType.length">
-                        <div class="entity-meta-field">
-                            <div class="entity-meta-label">Equipment Type</div>
-                            <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
-                                {{ $ctrl.getEQ(experiment) }}
-                            </span>
-                            <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
-                                {{ experiment.value.equipmentTypeOther }}
-                            </span>
-                        </div>
-                    </span>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Experimental Facility</div>
+                        <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                            {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                            {{ experiment.value.experimentalFacilityOther }}
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Equipment Type</div>
+                        <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                            {{ $ctrl.getEQ(experiment) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                            {{ experiment.value.equipmentTypeOther }}
+                        </span>
+                    </div>
                     <div class="entity-meta-field" ng-if="experiment.value.relatedWork.length">
                         <div class="entity-meta-label-multi">Related Work</div>
                         <div class="entity-meta-data">

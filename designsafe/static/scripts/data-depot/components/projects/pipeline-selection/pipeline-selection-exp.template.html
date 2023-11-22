@@ -125,97 +125,91 @@
                 </button>
                 <div id="data-{{experiment.uuid}}" class="collapse">
                     <div class="well">
-                        <span ng-if="experiment.value.equipmentType.length">
-                            <div class="entity-meta-field">
-                                <div class="entity-meta-label">Experiment Type</div>
-                                <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
-                                    {{ $ctrl.getET(experiment) }}
-                                </span>
-                                <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
-                                    {{ experiment.value.experimentTypeOther }}
-                                </span>
-                            </div>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Experiment Type</div>
+                            <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                                {{ $ctrl.getET(experiment) }}
+                            </span>
+                            <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                                {{ experiment.value.experimentTypeOther }}
                         </span>
-                        <div class="entity-meta-field">
-                            <div class="entity-meta-label-multi">Author(s)</div>
-                            <div class="entity-meta-data">
-                                <span ng-if="!$ctrl.readOnly">
-                                    <ds-author-list authors="experiment.value.authors"></ds-author-list>
-                                </span>
-                            </div>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label-multi">Author(s)</div>
+                        <div class="entity-meta-data">
+                            <span ng-if="!$ctrl.readOnly">
+                                <ds-author-list authors="experiment.value.authors"></ds-author-list>
+                            </span>
                         </div>
-                        <span ng-if="experiment.value.experimentalFacility.length && experiment.value.experimentalFacility !=='None'">
-                            <div class="entity-meta-field">
-                                <div class="entity-meta-label">Experimental Facility</div>
-                                <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
-                                    {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
-                                </span>
-                                <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
-                                    {{ experiment.value.experimentalFacilityOther }}
-                                </span>
-                            </div>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Experimental Facility</div>
+                        <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                            {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
                         </span>
-                        <span ng-if="experiment.value.experimentType.length">
-                            <div class="entity-meta-field">
-                                <div class="entity-meta-label">Equipment Type</div>
-                                <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
-                                    {{ $ctrl.getEQ(experiment) }}
-                                </span>
-                                <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
-                                    {{ experiment.value.equipmentTypeOther }}
-                                </span>
-                            </div>
+                        <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                            {{ experiment.value.experimentalFacilityOther }}
                         </span>
-                        <div class="entity-meta-field" ng-if="experiment.value.relatedWork.length">
-                            <div class="entity-meta-label-multi">Related Work</div>
-                            <div class="entity-meta-data">
-                                <div ng-repeat="work in experiment.value.relatedWork track by $index">
-                                    <related-work></related-work>
-                                </div>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Equipment Type</div>
+                        <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                            {{ $ctrl.getEQ(experiment) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                            {{ experiment.value.equipmentTypeOther }}
+                        </span>
+                    </div>
+                    <div class="entity-meta-field" ng-if="experiment.value.relatedWork.length">
+                        <div class="entity-meta-label-multi">Related Work</div>
+                        <div class="entity-meta-data">
+                            <div ng-repeat="work in experiment.value.relatedWork track by $index">
+                                <related-work></related-work>
                             </div>
                         </div>
-                        <div class="entity-meta-field" ng-if="experiment.value.referencedData.length">
-                            <div class="entity-meta-label-multi">Referenced Data and Software</div>
-                            <div class="entity-meta-data">
-                                <div ng-repeat="reference in experiment.value.referencedData track by $index">
-                                    <referenced-data></referenced-data>
-                                </div>
+                    </div>
+                    <div class="entity-meta-field" ng-if="experiment.value.referencedData.length">
+                        <div class="entity-meta-label-multi">Referenced Data and Software</div>
+                        <div class="entity-meta-data">
+                            <div ng-repeat="reference in experiment.value.referencedData track by $index">
+                                <referenced-data></referenced-data>
                             </div>
                         </div>
-                        <div class="entity-meta-field" ng-show="experiment.value.procedureStart">
-                            <div class="entity-meta-label">Date of Experiment</div>
-                            <span class="entity-meta-data" ng-if="experiment.value.procedureEnd && experiment.value.procedureStart !== experiment.value.procedureEnd">
-                                {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
-                            </span>
-                            <span class="entity-meta-data" ng-if="!experiment.value.procedureEnd || experiment.value.procedureStart === experiment.value.procedureEnd">
-                                {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }}
-                            </span>
+                    </div>
+                    <div class="entity-meta-field" ng-show="experiment.value.procedureStart">
+                        <div class="entity-meta-label">Date of Experiment</div>
+                        <span class="entity-meta-data" ng-if="experiment.value.procedureEnd && experiment.value.procedureStart !== experiment.value.procedureEnd">
+                            {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
+                        </span>
+                        <span class="entity-meta-data" ng-if="!experiment.value.procedureEnd || experiment.value.procedureStart === experiment.value.procedureEnd">
+                            {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }}
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Date of Publication</div>
+                        <span class="entity-meta-data"
+                                data-ng-if="!$ctrl.readOnly">
+                            (Appears when published)
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">
+                            DOI
+                            <button class="btn btn-info btn-sm btn-cite"
+                                    data-ng-click="$ctrl.showCitation(experiment)">
+                                Citation
+                            </button>
                         </div>
-                        <div class="entity-meta-field">
-                            <div class="entity-meta-label">Date of Publication</div>
-                            <span class="entity-meta-data"
-                                    data-ng-if="!$ctrl.readOnly">
-                                (Appears when published)
-                            </span>
-                        </div>
-                        <div class="entity-meta-field">
-                            <div class="entity-meta-label">
-                                DOI
-                                <button class="btn btn-info btn-sm btn-cite"
-                                        data-ng-click="$ctrl.showCitation(experiment)">
-                                    Citation
-                                </button>
-                            </div>
-                            <span class="entity-meta-data">
-                                (Appears when published)
-                            </span>
-                        </div>
-                        <div class="entity-meta-field">
-                            <div class="entity-meta-label">License(s)</div>
-                            <span class="entity-meta-data">
-                                (Appears when published)
-                            </span>
-                        </div>
+                        <span class="entity-meta-data">
+                            (Appears when published)
+                        </span>
+                    </div>
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">License(s)</div>
+                        <span class="entity-meta-data">
+                            (Appears when published)
+                        </span>
+                    </div>
                         <p>
                             <br>{{ experiment.value.description }}
                         </p>

@@ -1,6 +1,5 @@
 import PublicationPreviewSimTemplate from './publication-preview-sim.component.html';
 import PublicationPopupTemplate from './publication-popup.html';
-import facilityData from '../../../../projects/components/facility-data.json';
 
 class PublicationPreviewSimCtrl {
 
@@ -32,8 +31,7 @@ class PublicationPreviewSimCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.ui = {
             fileNav: true,
-            loading: true,
-            facilities: facilityData.facility,
+            loading: true
         };
         this.fl = {
             showSelect: false,
@@ -124,16 +122,6 @@ class PublicationPreviewSimCtrl {
             return true;
         }
         return false;
-    }
-
-    getEF(str) {
-        if (str !='' && str !='None') {
-            let efs = this.ui.facilities.facilities_list;
-            let ef = efs.find((ef) => {
-                return ef.name === str;
-            });
-            return ef.label;
-        }   
     }
 
     goWork() {

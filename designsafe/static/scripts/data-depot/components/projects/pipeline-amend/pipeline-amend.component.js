@@ -2,7 +2,7 @@ import AmendExperimentTemplate from './amend-experimental.template.html';
 import AmendFieldReconTemplate from './amend-field-recon.template.html';
 import AmendSimulationTemplate from './amend-simulation.template.html';
 import AmendHybridSimTemplate from './amend-hybrid-sim.template.html';
-import facilityData from '../../../../projects/components/manage-experiments/experimental-data.json';
+import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
 
 class PipelineAmendCtrl {
     constructor(
@@ -26,9 +26,9 @@ class PipelineAmendCtrl {
         this.ui = {
             loading: true,
             missing: {},
-            efs: facilityData.facility,
-            equipmentTypes: facilityData.equipmentTypes,
-            experimentTypes: facilityData.experimentTypes,
+            efs: experimentalData.experimentalFacility,
+            equipmentTypes: experimentalData.equipmentTypes,
+            experimentTypes: experimentalData.experimentTypes,
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.publication = this.ProjectService.resolveParams.publication;
@@ -309,41 +309,27 @@ class PipelineAmendCtrl {
     }
 
     getEF(str) {
-        if (str !='' && str !='None') {
-            let efs = this.ui.efs.facilities_list;
-            let ef = efs.find((ef) => {
-                return ef.name === str;
-            });
-            return ef.label;
-        }
+        let efs = this.ui.efs[this.publication.project.value.projectType];
+        let ef = efs.find((ef) => {
+            return ef.name === str;
+        });
+        return ef.label;
     }
 
     getET(exp) {
-        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
-            exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
-            exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
-            exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
-            {
-            let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
-            let et = ets.find((x) => {
-                return x.name === exp.value.experimentType;
-            });
-            return et.label;
-        }
+        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+        let et = ets.find((x) => {
+            return x.name === exp.value.experimentType;
+        });
+        return et.label;
     }
 
     getEQ(exp) {
-        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
-            exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
-            exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
-            exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
-            {
-            let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
-            let eqt = eqts.find((x) => {
-                return x.name === exp.value.equipmentType;
-            });
-            return eqt.label;
-        }
+        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+        let eqt = eqts.find((x) => {
+            return x.name === exp.value.equipmentType;
+        });
+        return eqt.label;
     }
 
     sortAuthors(authors) {

@@ -722,7 +722,6 @@ def freeze_project_and_entity_metadata(project_id, entity_uuids=None, revision=N
     pub_doc = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     original_pub = BaseESPublication(project_id=project_id) if revised_authors else None
     publication = pub_doc.to_dict()
-    print(publication)
 
     if entity_uuids:
         # clear any existing sub entities in publication and keep updated fileObjs

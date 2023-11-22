@@ -1,6 +1,6 @@
 import ManageExperimentsTemplate from './manage-experiments.template.html';
 const ExperimentDefaults = require('./experiment-form-defaults.json');
-const ExperimentalData = require('../facility-data.json');
+const ExperimentalData = require('./experimental-data.json');
 
 class ManageExperimentsCtrl {
 
@@ -23,7 +23,7 @@ class ManageExperimentsCtrl {
                 referencedData: false,
             },
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
-            experimentalFacilities: ExperimentalData.facility.facilities_list,
+            experimentalFacilities: ExperimentalData.experimentalFacility.experimental,
             equipmentTypes: ExperimentalData.equipmentTypes,
             experimentTypes: ExperimentalData.experimentTypes,
         };
@@ -166,45 +166,27 @@ class ManageExperimentsCtrl {
     }
 
     getEF(str) {
-        if (str !='' && str !='None') {
-            let efs = this.ui.experimentalFacilities;
-            let ef = efs.find((ef) => {
-                return ef.name === str;
-            });
-            return ef.label;
-        }   
+        let efs = this.ui.experimentalFacilities;
+        let ef = efs.find((ef) => {
+            return ef.name === str;
+        });
+        return ef.label;   
     }
 
     getET(exp) {
-        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
-            exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
-            exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
-            exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
-            {
-                let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
-                let et = ets.find((x) => {
-                    return x.name === exp.value.experimentType;
-                });
-                return et.label; 
-        } else {
-            return exp.value.experimentType = null;
-        }
+        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+        let et = ets.find((x) => {
+            return x.name === exp.value.experimentType;
+        });
+        return et.label;
     }
 
     getEQ(exp) {
-        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
-        exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
-        exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
-        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
-        {
-            let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
-            let eqt = eqts.find((x) => {
-                return x.name === exp.value.equipmentType;
-            });
-            return eqt.label;
-        } else {
-            return exp.value.equipmentType = null;
-        }
+        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+        let eqt = eqts.find((x) => {
+            return x.name === exp.value.equipmentType;
+        });
+        return eqt.label;
     }
 
     isValid(ent) {

@@ -1,7 +1,7 @@
 import { from } from 'rxjs';
 import { map, tap, concatMap, take } from 'rxjs/operators';
 import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
-import facilityData from '../../projects/components/facility-data.json';
+import experimentalData from '../../projects/components/manage-experiments/experimental-data.json';
 
 export class ProjectService {
     constructor(
@@ -24,9 +24,9 @@ export class ProjectService {
         this.ProjectModel = ProjectModel;
         this.UserService = UserService;
 
-        this.efs = facilityData.facility;
-        this.equipmentTypes = facilityData.equipmentTypes;
-        this.experimentTypes = facilityData.experimentTypes;
+        this.efs = experimentalData.experimentalFacility;
+        this.equipmentTypes = experimentalData.equipmentTypes;
+        this.experimentTypes = experimentalData.experimentTypes;
 
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
         this.dataResource = this.httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
