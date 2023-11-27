@@ -1,4 +1,3 @@
-import { missing } from 'tv4';
 import PipelineProjectTemplate from './pipeline-project.component.html';
 
 class PipelineProjectCtrl {
