@@ -73,7 +73,9 @@ class HybridSimulation(RelatedEntity):
     project = fields.RelatedObjectField(HybridSimulationProject)
     dois = fields.ListField('Dois')
 
-    def to_datacite_json(self, project={}):
+    def to_datacite_json(self, project=None):
+        if project is None:
+            project={}
         """Serialize object to datacite JSON."""
         attributes = super(HybridSimulation, self).to_datacite_json()
         if self.simulation_type_other:

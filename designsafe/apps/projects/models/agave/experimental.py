@@ -62,10 +62,12 @@ class Experiment(RelatedEntity):
     project = fields.RelatedObjectField(ExperimentalProject)
     dois = fields.ListField('Dois')
 
-    def to_datacite_json(self, project={}):
+    def to_datacite_json(self, project=None):
+        if project is None:
+            project={}
         """Serialize object to datacite JSON."""
         attributes = super(Experiment, self).to_datacite_json()
-        if hasattr(self, 'facility') and len(self.experimental_facility) and ('None' not in self.experimental_facility):
+        if hasattr(self, 'experimental_facility') and len(self.experimental_facility) and ('None' not in self.experimental_facility):
             attributes["subjects"] = attributes.get("subjects", []) + [
                 {"subject": self.experimental_facility.title(), }
             ]

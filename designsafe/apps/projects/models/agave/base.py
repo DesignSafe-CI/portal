@@ -421,7 +421,9 @@ class Project(MetadataModel):
 
         return dataset_json
 
-    def to_datacite_json(self,project={}):
+    def to_datacite_json(self,project=None):
+        if project is None:
+            project={}
         """Serialize project to datacite json."""
         attributes = {}
         if getattr(self, 'team_order', False):

@@ -76,7 +76,9 @@ class Mission(RelatedEntity):
     project = fields.RelatedObjectField(FieldReconProject)
     dois = fields.ListField('Dois')
 
-    def to_datacite_json(self, project={}):
+    def to_datacite_json(self, project=None):
+        if project is None:
+            project={}
         """Serialize object to datacite JSON."""
         attributes = super(Mission, self).to_datacite_json()
         attributes['types']['resourceType'] = "Mission/{location}".format(
@@ -249,7 +251,9 @@ class Report(RelatedEntity):
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
     dois = fields.ListField('Dois')
 
-    def to_datacite_json(self, project={}):
+    def to_datacite_json(self, project=None):
+        if project is None:
+            project={}
         """Serialize object to datacite JSON."""
         attributes = super(Report, self).to_datacite_json()
         attributes['types']['resourceType'] = "Project/Report"

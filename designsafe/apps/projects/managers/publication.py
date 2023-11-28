@@ -328,7 +328,9 @@ def amend_datacite_doi(publication):
     if project_type == 'other':
         prj_class = lookup_model(pub_dict['project'])
         project = prj_class(value=pub_dict['project']['value'], uuid=pub_dict['project']['uuid'])
-        prj_datacite_json = project.to_datacite_json(project={})
+        prj_datacite_json = project.to_datacite_json(project=None)
+        if project is None:
+            project={}
         prj_doi = project.dois[0]
         DataciteManager.create_or_update_doi(prj_datacite_json, prj_doi)
     else:

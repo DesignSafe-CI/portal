@@ -57,7 +57,9 @@ class Simulation(RelatedEntity):
     project = fields.RelatedObjectField(SimulationProject)
     dois = fields.ListField('Dois')
 
-    def to_datacite_json(self, project={}):
+    def to_datacite_json(self, project=None):
+        if project is None:
+            project={}
         """Serialize object to datacite JSON."""
         attributes = super(Simulation, self).to_datacite_json()
         if self.simulation_type_other:
