@@ -1,13 +1,31 @@
 """Data app config."""
 import logging
+import socket
+from urllib3.connection import HTTPConnection
 from django.apps import AppConfig
 from django.conf import settings
 from elasticsearch_dsl.connections import connections
+from elasticsearch import Urllib3HttpConnection
 
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
+
+
+class KeepAliveConnection(Urllib3HttpConnection):
+    """
+    TCP Keepalive connection.
+    Solution from Github issue: https://github.com/elastic/elasticsearch-py/issues/966#issuecomment-819823632
+    """
+    def __init__(self, *args, **kwargs):
+        super(KeepAliveConnection, self).__init__(*args, **kwargs)
+        self.pool.conn_kw['socket_options'] = HTTPConnection.default_socket_options + [
+            (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
+            (socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60),
+            (socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 30),
+            (socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3),
+        ]
 
 
 class DataConfig(AppConfig):
@@ -25,6 +43,7 @@ class DataConfig(AppConfig):
                                           http_auth=settings.ES_AUTH,
                                           max_retries=3,
                                           retry_on_timeout=True,
+                                          connection_class=KeepAliveConnection,
                                           use_ssl=enable_sniffing,
                                           # sniff_on_start=enable_sniffing,
                                           # refresh nodes after a node fails to respond

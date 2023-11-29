@@ -68,7 +68,8 @@ class DataDepotToolbarCtrl {
     copy() {
         const { api, scheme, system, path } = this.FileListingService.listings.main.params;
         const files = this.getAllSelected();
-        this.FileOperationService.openCopyModal({api, scheme, system, path, files});
+        const doi = this.FileListingService.currentDOI || this.$stateParams.doi;
+        this.FileOperationService.openCopyModal({api, scheme, system, path, files, doi});
     }
     move() {
         const { api, scheme, system, path } = this.FileListingService.listings.main.params;

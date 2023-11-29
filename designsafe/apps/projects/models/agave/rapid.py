@@ -98,7 +98,7 @@ class Mission(RelatedEntity):
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
             identifier = {}
-            mapping = {'Linked Project': 'IsSupplementTo', 'Linked Dataset': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
+            mapping = {'Linked Project': 'IsPartOf', 'Linked Dataset': 'IsPartOf', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
             if {'type', 'href', 'hrefType'} <= r_work.keys():
                 identifier['relationType'] = mapping[r_work['type']]
                 identifier['relatedIdentifierType'] = r_work['hrefType']
@@ -256,7 +256,7 @@ class Report(RelatedEntity):
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
             identifier = {}
-            mapping = {'Linked Project': 'IsSupplementTo', 'Linked Dataset': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
+            mapping = {'Linked Project': 'IsPartOf', 'Linked Dataset': 'IsPartOf', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
             if {'type', 'href', 'hrefType'} <= r_work.keys():
                 identifier['relationType'] = mapping[r_work['type']]
                 identifier['relatedIdentifierType'] = r_work['hrefType']
