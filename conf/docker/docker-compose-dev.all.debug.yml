@@ -131,3 +131,4 @@ volumes:
   es_data:
   rabbitmq_data:
   sockets:
+  
