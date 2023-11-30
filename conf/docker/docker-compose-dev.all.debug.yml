@@ -4,7 +4,6 @@ version: "3"
 services:
   redis:
     image: redis:7
-    platform: "linux/amd64"
     volumes:
       - redis_data:/data
       - ../redis.conf:/usr/local/etc/redis/redis.conf
@@ -15,7 +14,7 @@ services:
     hostname: des_redis
 
   rabbitmq:
-    image: arm64v8/rabbitmq:3.6.14-management
+    image: rabbitmq:3.6.10-management
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
       - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
@@ -30,13 +29,11 @@ services:
 
   memcached:
     image: memcached:latest
-    platform: "linux/amd64"
     container_name: des_memcached
     hostname: des_memcached
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
-    platform: "linux/amd64"
     ulimits:
       memlock: -1
     environment:
@@ -66,7 +63,6 @@ services:
 
   nginx:
     image: nginx
-    platform: "linux/amd64"
     volumes:
       - ../nginx/nginx.debug.conf:/etc/nginx/nginx.conf
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
@@ -75,8 +71,8 @@ services:
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/var/www/designsafe-ci.org/media
+      - ../../data/static:/srv/www/designsafe/static
+      - ../../data/media:/srv/www/designsafe/media
     links:
       - django:django
     ports:
@@ -97,7 +93,7 @@ services:
       - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
       - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/var/www/designsafe-ci.org/media
+      - ../../data/media:/srv/www/designsafe/media
     ports:
       - 127.0.0.1:8000:8000
       - 127.0.0.1:5678:5678
@@ -120,8 +116,8 @@ services:
     volumes:
       - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/var/www/designsafe-ci.org/media
+      - ../../data/static:/srv/www/designsafe/static
+      - ../../data/media:/srv/www/designsafe/media
     dns:
       - 8.8.8.8
       - 8.8.4.4
