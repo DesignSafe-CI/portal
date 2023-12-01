@@ -76,6 +76,17 @@
                         ng-model="$ctrl.form.experimentalFacilityOther"
                         ng-if="$ctrl.form.experimentalFacility == 'other'"/>
             </div>
+            <span ng-if="$ctrl.form.experimentalFacility != 'rtmd-lehigh' ||
+                        $ctrl.form.experimentalFacility != 'cgm-ucdavis' ||
+                        $ctrl.form.experimentalFacility != 'eqss-utaustin' ||
+                        $ctrl.form.experimentalFacility != 'pfsml-florida' ||
+                        $ctrl.form.experimentalFacility != 'wwhr-florida' ||
+                        $ctrl.form.experimentalFacility != 'hpost-sandiego' ||
+                        $ctrl.form.experimentalFacility != 'ohhwrl-oregon' ||
+                        $ctrl.form.experimentalFacility != 'other'"> 
+                            {{ $ctrl.form.experimentType == '' }}
+                            {{ $ctrl.form.equipmentType == '' }}     
+            </span>
             <div ng-if="$ctrl.form.experimentalFacility == 'rtmd-lehigh' ||
                         $ctrl.form.experimentalFacility == 'cgm-ucdavis' ||
                         $ctrl.form.experimentalFacility == 'eqss-utaustin' ||
@@ -435,6 +446,17 @@
                                     <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)"
                                             class="entity-meta-data-cap">{{ experiment.value.experimentalFacilityOther }}</span>
                                 </div>
+                            </span>
+                            <span ng-if="experiment.value.experimentalFacility != 'rtmd-lehigh' ||
+                                        experiment.value.experimentalFacility != 'cgm-ucdavis' ||
+                                        experiment.value.experimentalFacility != 'eqss-utaustin' ||
+                                        experiment.value.experimentalFacility != 'pfsml-florida' ||
+                                        experiment.value.experimentalFacility != 'wwhr-florida' ||
+                                        experiment.value.experimentalFacility != 'hpost-sandiego' ||
+                                        experiment.value.experimentalFacility != 'ohhwrl-oregon' ||
+                                        experiment.value.experimentalFacility != 'other'"> 
+                                            {{ experiment.value.experimentType = '' }}
+                                            {{ experiment.value.equipmentType = '' }}  
                             </span>
                             <span ng-if="experiment.value.experimentType.length">
                                 <div class="entity-meta-field">

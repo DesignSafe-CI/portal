@@ -187,7 +187,7 @@ class ManageExperimentsCtrl {
                 });
                 return et.label; 
         } else {
-            return exp.value.experimentType = null;
+            return exp.value.experimentType = "";
         }
     }
 
@@ -203,7 +203,7 @@ class ManageExperimentsCtrl {
             });
             return eqt.label;
         } else {
-            return exp.value.equipmentType = null;
+            return exp.value.equipmentType = "";
         }
     }
 
