@@ -65,6 +65,13 @@ class ManageFieldReconDocumentsCtrl {
         }
     }
 
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+      }
+
     configureForm(doc) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         let form = structuredClone(this.DocumentsDefaults)

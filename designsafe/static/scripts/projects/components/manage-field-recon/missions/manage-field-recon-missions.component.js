@@ -64,6 +64,13 @@ class ManageFieldReconMissionsCtrl {
             return ef.label;
         }
     }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+      }
     
     configureForm(mission) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
