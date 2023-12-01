@@ -69,12 +69,12 @@
                         ng-options="ef.name as ef.label for ef in $ctrl.ui.experimentalFacilities"
                         ng-model="$ctrl.form.experimentalFacility">
                 <option value="">-- Select an Experimental Facility --</option>
-            </select>
-            <input  class="form-control"
-                    type="text"
-                    placeholder="Custom Experimental Facility"
-                    ng-model="$ctrl.form.experimentalFacilityOther"
-                    ng-if="$ctrl.form.experimentalFacility == 'other'"/>
+                </select>
+                <input  class="form-control"
+                        type="text"
+                        placeholder="Custom Experimental Facility"
+                        ng-model="$ctrl.form.experimentalFacilityOther"
+                        ng-if="$ctrl.form.experimentalFacility == 'other'"/>
             </div>
             <div ng-if="$ctrl.form.experimentalFacility == 'rtmd-lehigh' ||
                         $ctrl.form.experimentalFacility == 'cgm-ucdavis' ||

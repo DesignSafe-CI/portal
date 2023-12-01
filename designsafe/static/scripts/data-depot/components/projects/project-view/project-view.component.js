@@ -137,11 +137,11 @@ class ProjectViewCtrl {
     }
   }
 
-isValid(ent) {
-  if (ent && ent != '' && ent != 'None') {
-      return true;
-  }
-  return false;
+  isValid(ent) {
+    if (ent && ent != '' && ent != 'None') {
+        return true;
+    }
+    return false;
   }
 
   workingDirectory() {

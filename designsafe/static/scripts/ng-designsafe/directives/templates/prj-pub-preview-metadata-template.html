@@ -200,10 +200,10 @@
         <td>Facility</td>
         <td>
             <div class="entity-meta-field">
-                <span ng-if="!$ctrl.isValid($ctrl.Sproject.value.facilityOther)"
+                <span ng-if="!$ctrl.isValid($ctrl.project.value.facilityOther)"
                         class="entity-meta-data-cap">{{ $ctrl.getEF($ctrl.project.value.facility) }}</span>
-                <!-- <span ng-if="$ctrl.isValid(project.value.facilityOther)"
-                        class="entity-meta-data-cap">{{ $ctrl.project.value.facilityOther }}</span> -->
+                <span ng-if="$ctrl.isValid($ctrl.project.value.facilityOther)"
+                        class="entity-meta-data-cap">{{ $ctrl.project.value.facilityOther }}</span>
             </div>
           </td>
     </tr>

@@ -213,17 +213,13 @@ class ManageProjectCtrl {
         projectData.pi = this.form.pi.username;
         projectData.coPis = this.validInputs(this.form.coPis, ['username'], 'username');
         projectData.teamMembers = this.validInputs(this.form.teamMembers, ['username'], 'username');
+        if (projectData['facility'] != 'other') {
+            projectData['facilityOther'] = '';
+        }
         if (hasPrjType) {
             projectData.guestMembers = this.validInputs(this.form.guestMembers, ['fname', 'lname']);
             projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number']);
             if (this.form.projectType === 'other') {
-                const field = 'facility'
-                if(this.form[field] != 'other') {
-                    this.form[field+'Other'] = '';
-                }
-                if(this.form.simulationType != 'other') {
-                    this.form.simulationTypeOther = '';
-                }
                 projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
                 projectData.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
             } else {
