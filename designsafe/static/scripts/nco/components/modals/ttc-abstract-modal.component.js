@@ -5,7 +5,7 @@ class TtcAbstractModalCtrl {
     }
 
     $onInit() {
-        this.abstract = this.resolve.abstract;
+        this.grant = this.resolve.grant;
     }
 
     close() {
