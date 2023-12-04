@@ -121,12 +121,13 @@ class Ref(MetadataModel):
     reference: str = ""
 
 
-def handle_award_number(award):
+def handle_award_number(award: list[dict] | str) -> list[dict]:
     """Handle the case where awards are saved as strings."""
     if isinstance(award, list):
         return award
     if isinstance(award, str):
         return [{"name": award}]
+    return award
 
 
 def handle_array_of_none(field):
