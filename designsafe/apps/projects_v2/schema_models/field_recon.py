@@ -1,5 +1,5 @@
 """Pydantic schema models for Field Recon entities"""
-from typing import Annotated
+from typing import Annotated, Optional
 from pydantic import BeforeValidator, Field, AliasChoices
 from designsafe.apps.projects_v2.schema_models.base import (
     MetadataModel,
@@ -46,8 +46,8 @@ class Mission(MetadataModel):
     dois: list[str] = []
 
     # Deprecate these later
-    facility: str = ""
-    facility_other: str = ""
+    facility: Optional[str] = None
+    facility_other: Optional[str] = None
 
 
 class FieldReconReport(MetadataModel):
@@ -72,8 +72,8 @@ class FieldReconReport(MetadataModel):
     dois: list[str] = []
 
     # deprecated, only appears in test projects
-    facility: str = ""
-    facility_other: str = ""
+    facility: Optional[str] = None
+    facility_other: Optional[str] = None
     missions: list[str] = Field(default=[], exclude=True)
     referenced_datas: list[ReferencedWork] = Field(default=[], exclude=True)
 

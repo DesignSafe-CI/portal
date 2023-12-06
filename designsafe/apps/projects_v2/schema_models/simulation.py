@@ -27,8 +27,8 @@ class Simulation(MetadataModel):
     project: list[str] = []
     dois: list[str] = []
 
-    facility: str = ""
-    facility_other: str = ""
+    facility: Optional[str] = None
+    facility_other: Optional[str] = None
 
 
 class SimulationModel(MetadataModel):
