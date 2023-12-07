@@ -58,6 +58,13 @@ class PipelineAmendOtherCtrl {
         }
     }
 
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+
     saveAuthors() {
         this.ui.confirmed = true;
         window.scrollTo({ top: 0, behavior: 'smooth' });

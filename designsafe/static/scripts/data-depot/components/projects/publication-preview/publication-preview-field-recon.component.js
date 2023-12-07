@@ -154,6 +154,13 @@ class PublicationPreviewFieldReconCtrl {
             return ef.label;
         }   
     }
+
+    isValid(ent) {
+        if (ent && ent !== '' && ent !== 'None') {
+            return true;
+        }
+        return false;
+    }
     
     goWork() {
         this.$state.go('projects.view', {projectId: this.project.uuid, data: this.project});
