@@ -67,6 +67,12 @@ class ManageHybridSimCtrl {
         this.ui.editing = false;
     }
 
+    clearFacilityIfOther() {
+        if (this.form.facility.id === "other") {
+            this.form.facility.name = ""
+        }
+    }
+
     configureAuthors(hybridSim, amending) {
         /*  Configure Authors for Hybrid Simulation Editing
             - check and remove authors from hybrid sims that don't exist on the project

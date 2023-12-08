@@ -82,6 +82,7 @@
                 <select class="form-control"
                         id="id-facility"
                         ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
+                        ng-change="$ctrl.clearFacilityIfOther()"
                         ng-model="$ctrl.form.facility.id">
                 <option value="" selected>-- Select a Facility --</option>
             </select>
@@ -89,7 +90,7 @@
                     type="text"
                     placeholder="Custom Facility"
                     ng-model="$ctrl.form.facility.name"
-                    ng-if="$ctrl.form.facility.name == 'other'"/>
+                    ng-if="$ctrl.form.facility.id == 'other'"/>
             </div>
             <!-- Referenced Data -->
             <div class="form-group">

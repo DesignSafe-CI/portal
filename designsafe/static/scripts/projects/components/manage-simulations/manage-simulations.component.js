@@ -249,6 +249,12 @@ class ManageSimulationCtrl {
         });
     }
 
+    clearFacilityIfOther() {
+        if (this.form.facility.id === "other") {
+            this.form.facility.name = ""
+        }
+    }
+
     deleteSimulation(simulation) {
         let confirmDelete = (msg) => {
             let modalInstance = this.$uibModal.open({

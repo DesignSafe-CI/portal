@@ -107,6 +107,12 @@ class ManageFieldReconMissionsCtrl {
         this.form.authors = this.configureAuthors(null, false);
         this.ui.editing = false;
     }
+    
+    clearFacilityIfOther() {
+        if (this.form.facility.id === "other") {
+            this.form.facility.name = ""
+        }
+    }
 
     configureAuthors(mission, amending) {
         /*  Configure Authors for Mission Editing

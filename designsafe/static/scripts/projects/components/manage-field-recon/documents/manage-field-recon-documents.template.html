@@ -40,6 +40,7 @@
                 </label>
                 <select class="form-control"
                         ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
+                        ng-change="$ctrl.clearFacilityIfOther()"
                         ng-model="$ctrl.form.facility.id">
                 <option value="">-- Select a Facility --</option>
             </select>

@@ -107,6 +107,12 @@ class ManageFieldReconDocumentsCtrl {
         this.ui.editing = false;
     }
 
+    clearFacilityIfOther() {
+        if (this.form.facility.id === "other") {
+            this.form.facility.name = ""
+        }
+    }
+
     configureAuthors(doc, amending) {
         /*  Configure Authors for Document Editing
             - check and remove authors from documentss that don't exist on the project
