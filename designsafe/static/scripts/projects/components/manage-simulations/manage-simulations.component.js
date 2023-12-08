@@ -47,6 +47,11 @@ class ManageSimulationCtrl {
                     form[key] = simulation.value[key];
                 }
             }
+            if (simulation.value.facility && typeof simulation.value.facility === 'object') {
+                form.facility = simulation.value.facility
+            } else {
+                form.facility = {}
+            }
         }
         this.ui.require.relatedWork = this.requireField(form.relatedWork);
         this.ui.require.referencedData = this.requireField(form.referencedData);
@@ -188,10 +193,19 @@ class ManageSimulationCtrl {
 
     prepareData() {
         // drop or reformat inputs before for submission
-        const field = 'facility'
-        if(this.form[field] != 'other') {
-            this.form[field+'Other'] = '';
+
+        const facilityId = this.form.facility.id;
+        if (!facilityId) {
+            delete this.form.facility;
+        } else if (facilityId === 'other') {
+            this.form.facility = { id: 'other', name: this.form.facility.label };
+        } else {
+            this.form.facility = {
+                id: facilityId,
+                name: this.ui.facilities.find((f) => f.name === facilityId).label,
+            };
         }
+        
         if(this.form.simulationType != 'other') {
             this.form.simulationTypeOther = '';
         }

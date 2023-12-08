@@ -398,13 +398,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <span ng-if="simulation.value.facility.length && simulation.value.facility != 'None' ">
+                            <span ng-if="simulation.value.facility"> 
                                 <div class="entity-meta-field">
                                     <div class="entity-meta-label">Facility</div>
-                                    <span ng-if="!$ctrl.isValid(simulation.value.facilityOther)"
-                                            class="entity-meta-data-cap">{{ $ctrl.getEF(simulation.value.facility) }}</span>
-                                    <span ng-if="$ctrl.isValid(simulation.value.facilityOther)"
-                                            class="entity-meta-data-cap">{{ simulation.value.facilityOther }}</span>
+                                    <span class="entity-meta-data">
+                                        {{ $ctrl.getEF(simulation.value.facility) }}
+                                    </span>
                                 </div>
                             </span>
                             <div class="entity-meta-field" ng-if="simulation.value.relatedWork.length">

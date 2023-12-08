@@ -93,9 +93,11 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
 
     # Simulation advanced filters
     simulation_type = query_dict['advancedFilters']['simulation']['simulationType']
-    facility = query_dict['advancedFilters']['simulation']['facility']
     if simulation_type:
         query_filters.append(search_utils.simulation_type_query(simulation_type))
+    facility = query_dict['advancedFilters']['simulation']['facility']
+    if facility:
+        query_filters.append(search_utils.simulation_facility_query(facility))
 
     # Field recon advanced filters
     nh_type = query_dict['advancedFilters']['field_recon']['naturalHazardType']

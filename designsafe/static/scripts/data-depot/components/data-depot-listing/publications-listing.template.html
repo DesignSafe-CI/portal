@@ -185,8 +185,8 @@
                                 style="border-radius: 5px;"
                                 id="sim-facility-select"
                                 ng-model="$ctrl.params.advancedFilters.simulation.facility"
-                                ng-change="$ctrl.getValidSimulationTypes(true, true)"
-                                ng-options="ef.name as ef.label for ef in $ctrl.simulationFacilityOptions"
+                                ng-change="$ctrl.browse()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.facilityOptions"
                                 class="form-control"
                                 ></select
                             >

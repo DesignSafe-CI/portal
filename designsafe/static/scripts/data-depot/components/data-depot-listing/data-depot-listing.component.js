@@ -21,6 +21,7 @@ class PublicationListingCtrl {
             { name: '', label: 'All Types' },
             ...exptJson.facility.facilities_list.map(({ label }) => ({ name: label, label: label })),
         ];
+        this.facilityOptions = [{name: '', label: 'All Facilities'}, ...exptJson.facility.facilities_list]
         this.simulationTypes = [{ name: '', label: 'All Types' }, ...simulationTypes];
 
         this.rapidEventTypes = nhTypes.map((type) => ({ name: type, label: type }));
@@ -82,18 +83,23 @@ class PublicationListingCtrl {
                 },
                 simulation: {
                     simulationType: '',
+                    facility: ''
+
                 },
                 field_recon: {
                     naturalHazardType: '',
                     naturalHazardEvent: '',
                     frType: '',
-                    frDate: ''
+                    frDate: '',
+                    facility: ''
                 },
                 other: {
                     dataType: '',
+                    facility: ''
                 },
                 hybrid_simulation: {
                     hybridSimulationType: '',
+                    facility: ''
                 },
             },
         };
@@ -119,7 +125,7 @@ class PublicationListingCtrl {
         if (facilityName) {
             this.validExperimentTypes = [
                 { name: '', label: 'All Types' },
-                ...this.experimentOptions.experimentTypes[facilityName],
+                ...this.experimentOptions.experimentTypes[facilityName] ?? [],
             ];
         } else {
             this.validExperimentTypes = [{ name: '', label: 'All Types' }];
@@ -143,9 +149,10 @@ class PublicationListingCtrl {
         this.browse();
     }
     constructQueryString() {
+       
         const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
         const facilityName = (
-            this.experimentOptions.experimentalFacility.experimental.filter((x) => x.label === facilityLabel)[0] || {}
+            this.experimentOptions.facility.facilities_list.filter((x) => x.label === facilityLabel)[0] || {}
         ).name;
         const queryParams = { ...this.params };
         queryParams.advancedFilters.experimental.experimentalFacility = {

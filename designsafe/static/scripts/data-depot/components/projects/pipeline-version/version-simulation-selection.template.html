@@ -86,14 +86,11 @@
                                 <ds-author-list authors="sim.value.authors"></ds-author-list>
                             </div>
                         </div>
-                        <span ng-if="sim.value.facility.length && sim.value.facility !== 'None'">
+                        <span ng-if="simulation.value.facility"> 
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Facility</div>
-                                <span ng-if="!$ctrl.isValid(sim.value.facilityOther)" class="entity-meta-data">
-                                    {{ $ctrl.getEF(sim.value.facility) }}
-                                </span>
-                                <span ng-if="$ctrl.isValid(sim.value.facilityOther)" class="entity-meta-data">
-                                    {{ sim.value.facilityOther }}
+                                <span class="entity-meta-data">
+                                    {{ simulation.value.facility.name }}
                                 </span>
                             </div>
                         </span>

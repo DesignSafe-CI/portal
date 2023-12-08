@@ -174,9 +174,7 @@ def format_sim(sim):
     if sim_type == 'other':
         sim_type = getattr(meta, 'simulationTypeOther', 'other')
 
-    facility = meta.facility
-    if facility == 'other':
-        facility = getattr(meta, 'facilityOther', 'other')
+    facility = getattr(meta, 'facility', {}).get('name', None)
 
     publication_date = str(sim.created)
 
