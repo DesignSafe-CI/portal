@@ -189,7 +189,7 @@ def author_query(author):
                            "authors.fname",
                            "authors.lname", ]
 
-    aq2 = Q('query_string', query=author, fields=other_author_fields)
+    aq2 = Q('multi_match', query=author, fields=other_author_fields, operator="AND", type="cross_fields")
 
     return aq1 | aq2
 
@@ -270,4 +270,4 @@ def search_string_query(search_string):
                                                           'project.value.projectType',
                                                           'project.value.dataType'])
     q2 = Q({'term': {'projectId._exact': search_string}})
-    return q1 | q2 | author_query(f"\"{search_string}\"")
+    return q1 | q2 | author_query(search_string)

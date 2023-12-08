@@ -32,15 +32,15 @@ class PipelineProjectCtrl {
                 this.projType = project.value.projectType;
                 this.uuid = project.uuid;
                 if (this.projType === 'experimental') {
-                    this.$state.go('projects.pipelineSelectExp', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectExp', { projectId: this.uuid }, { reload: true });
                 } else if (this.projType === 'simulation') {
-                    this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectSim', { projectId: this.uuid }, { reload: true });
                 } else if (this.projType === 'hybrid_simulation') {
-                    this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectHybSim', { projectId: this.uuid }, { reload: true });
                 } else if (this.projType === 'field_recon') {
-                    this.$state.go('projects.pipelineSelectField', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineSelectField', { projectId: this.uuid }, { reload: true });
                 } else if (this.projType === 'other') {
-                    this.$state.go('projects.pipelineStart', {projectId: this.uuid}, {reload: true});
+                    this.$state.go('projects.pipelineStart', { projectId: this.uuid }, { reload: true });
                 }
             });
         } else {
@@ -58,6 +58,30 @@ class PipelineProjectCtrl {
 
     }
 
+    checkProjectMetadata(project){
+        let required = {
+            'title' : 'Title',
+            'projectType': 'Project Type',
+            'nhTypes': 'Natural Hazard Type',
+            'frTypes': 'Field Research Type',
+            'dataType': 'Data Type',
+            'keywords': 'Keywords',
+            'description': 'Description'
+        }
+        let missing_fields = [];
+
+        for (var field in project.value) {
+            if (required[field]) {
+                if (project.value[field] === '' || !project.value[field].length) {
+                    missing_fields.push(required[field]);
+                }
+            }
+        }
+
+        return missing_fields;
+    }
+
+    //exit prepare to publish
     goWork() {
         window.sessionStorage.clear();
         this.$state.go('projects.view', {projectId: this.project.uuid}, {reload: true});
@@ -80,6 +104,7 @@ class PipelineProjectCtrl {
       return false;
     }
 
+    //aka go back one setep
     goSelection() {
         if (this.projType === 'experimental') {
             this.$state.go('projects.pipelineSelectExp', {projectId: this.project.uuid}, {reload: true});
@@ -94,7 +119,14 @@ class PipelineProjectCtrl {
         }
     }
 
+    //aka go to next step
     goExperiment() {
+        //check for missing required project metadata
+        this.missingMetadata = this.checkProjectMetadata(this.project);
+        if(this.missingMetadata.length) {
+            return;
+        }
+
         if (this.projType === 'experimental') {
             this.$state.go('projects.pipelineExperiment', {
                 projectId: this.projectId,
@@ -133,6 +165,7 @@ class PipelineProjectCtrl {
         }
     }
 
+    //edit project modal
     manageProject() {
         return this.$uibModal.open({
             component: 'manageProject',
