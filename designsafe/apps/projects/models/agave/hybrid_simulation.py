@@ -69,8 +69,7 @@ class HybridSimulation(RelatedEntity):
     )
     referenced_data = fields.ListField('Referenced Data')
     related_work = fields.ListField('Related Work')
-    facility = fields.CharField('Facility', max_length=1024)
-    facility_other = fields.CharField('Facility Other', max_length=1024)
+    facility = fields.BaseField()
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(HybridSimulationProject)
     dois = fields.ListField('Dois')
@@ -86,16 +85,17 @@ class HybridSimulation(RelatedEntity):
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type.title()
             )
-        attributes["subjects"] = attributes.get("subjects", []) + [
-            {"subject": self.facility.title(), }
-        ]
-        attributes["contributors"] = attributes.get("contributors", []) + [
-            {
-                "contributorType": "HostingInstitution",
-                "nameType": "Organizational",
-                "name": self.facility,
-            }
-        ]
+        if self.facility:
+            attributes["subjects"] = attributes.get("subjects", []) + [
+                {"subject": self.facility["name"], }
+            ]
+            attributes["contributors"] = attributes.get("contributors", []) + [
+                {
+                    "contributorType": "HostingInstitution",
+                    "nameType": "Organizational",
+                    "name": self.facility["name"],
+                }
+            ]
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:

@@ -69,15 +69,16 @@
                     </div>
                 </label>
                 <select class="form-control"
+                        id="id-facility"
                         ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
-                        ng-model="$ctrl.form.facility">
-                <option value="">-- Select a Facility --</option>
-                </select>
-                <input  class="form-control"
-                        type="text"
-                        placeholder="Custom Facility"
-                        ng-model="$ctrl.form.facilityOther"
-                        ng-if="$ctrl.form.facility == 'other'"/>
+                        ng-model="$ctrl.form.facility.id">
+                <option value="" selected>-- Select a Facility --</option>
+            </select>
+            <input  class="form-control"
+                    type="text"
+                    placeholder="Custom Facility"
+                    ng-model="$ctrl.form.facility.name"
+                    ng-if="$ctrl.form.facility.name == 'other'"/>
             </div>
             <!-- Referenced Data -->
             <div class="form-group">
@@ -398,11 +399,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <span ng-if="simulation.value.facility"> 
+                            <span ng-if="simulation.value.facility.name"> 
                                 <div class="entity-meta-field">
                                     <div class="entity-meta-label">Facility</div>
                                     <span class="entity-meta-data">
-                                        {{ $ctrl.getEF(simulation.value.facility) }}
+                                        {{ simulation.value.facility.name }}
                                     </span>
                                 </div>
                             </span>

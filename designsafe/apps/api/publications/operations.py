@@ -123,6 +123,8 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     facility = query_dict['advancedFilters']['hybrid_simulation']['facility']
     if sim_type:
         query_filters.append(search_utils.hybrid_sim_type_query(sim_type))
+    if facility:
+        query_filters.append(search_utils.hybrid_sim_facility_query(facility))
 
     search = search.filter('bool', must=query_filters)
     search = search.filter(Q('term', status='published'))

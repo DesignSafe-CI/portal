@@ -281,8 +281,8 @@
                                 style="border-radius: 5px;"
                                 id="hybrid-sim-facility-select"
                                 ng-model="$ctrl.params.advancedFilters.hybrid_simulation.facility"
-                                ng-change="$ctrl.getValidHybridSimulationTypes(true, true)"
-                                ng-options="ef.name as ef.label for ef in $ctrl.hybridSimulationFacilityOptions"
+                                ng-change="$ctrl.browse()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.facilityOptions"
                                 class="form-control"
                                 ></select
                             >

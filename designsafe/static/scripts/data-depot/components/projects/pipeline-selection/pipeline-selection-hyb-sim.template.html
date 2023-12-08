@@ -140,14 +140,11 @@
                                 <ds-author-list authors="hybsim.value.authors"></ds-author-list>
                             </div>
                         </div>
-                        <span ng-if="hybsim.value.facility.length">
+                        <span ng-if="hybsim.value.facility.name"> 
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label">Facility</div>
-                                <span ng-if="!$ctrl.isValid(hybsim.value.facilityOther)" class="entity-meta-data">
-                                    {{ $ctrl.getEF(hybsim.value.facility) }}
-                                </span>
-                                <span ng-if="$ctrl.isValid(hybsim.value.facilityOther)" class="entity-meta-data">
-                                    {{ hybsim.value.facilityOther }}
+                                <span class="entity-meta-data">
+                                    {{ hybsim.value.facility.name }}
                                 </span>
                             </div>
                         </span>

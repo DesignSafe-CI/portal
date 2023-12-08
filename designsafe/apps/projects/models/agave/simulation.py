@@ -73,13 +73,13 @@ class Simulation(RelatedEntity):
             attributes["subjects"] = attributes.get("subjects", []) + [
                 {"subject": self.facility["name"], }
             ]
-        attributes["contributors"] = attributes.get("contributors", []) + [
-            {
-                "contributorType": "HostingInstitution",
-                "nameType": "Organizational",
-                "name": self.facility,
-            }
-        ]
+            attributes["contributors"] = attributes.get("contributors", []) + [
+                {
+                    "contributorType": "HostingInstitution",
+                    "nameType": "Organizational",
+                    "name": self.facility["name"],
+                }
+            ]
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
