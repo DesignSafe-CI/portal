@@ -99,15 +99,10 @@
                     </span>
                 </div>
             </div>
-            <span ng-if="primEnt.value.facility.length && primEnt.value.facility !=='None'">
+            <span ng-if="primEnt.value.facility.name">
                 <div class="entity-meta-field">
                     <div class="entity-meta-label">Facility</div>
-                    <span ng-if="!$ctrl.isValid(primEnt.value.facilityOther)" class="entity-meta-data">
-                        {{ $ctrl.getEF(primEnt.value.facility) }}
-                    </span>
-                    <span ng-if="$ctrl.isValid(primEnt.value.facilityOther)" class="entity-meta-data">
-                        {{ primEnt.value.facilityOther }}
-                    </span>
+                    <span class="entity-meta-data-cap">{{ primEnt.value.facility.name }}</span>
                 </div>
             </span>
             <div class="entity-meta-field" ng-if="primEnt.value.relatedWork.length">

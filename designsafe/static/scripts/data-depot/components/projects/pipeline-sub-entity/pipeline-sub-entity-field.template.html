@@ -85,15 +85,10 @@
                     <ds-author-list authors="mission.value.authors"></ds-author-list>
                 </div>
             </div>
-            <span ng-if="mission.value.facility.length && mission.value.facility !== 'None'">
+            <span ng-if="mission.value.facility.name">
                 <div class="entity-meta-field">
                     <div class="entity-meta-label">Facility</div>
-                    <span ng-if="!$ctrl.isValid(mission.value.facilityOther)" class="entity-meta-data">
-                        {{ $ctrl.getEF(mission.value.facility) }}
-                    </span>
-                    <span ng-if="$ctrl.isValid(mission.value.facilityOther)" class="entity-meta-data">
-                        {{ mission.value.facilityOther }}
-                    </span>
+                    <span class="entity-meta-data-cap">{{ mission.value.facility.name }}</span>
                 </div>
             </span>
             <div class="entity-meta-field" ng-if="mission.value.referencedData.length">

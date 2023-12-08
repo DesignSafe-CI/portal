@@ -176,9 +176,7 @@ def format_mission(mission):
     if nh_location:
         coverage.append(nh_location)
 
-    facility = mission.value.facility
-    if facility == 'other':
-        facility = getattr(mission.value, 'facilityOther', 'other')
+    facility = getattr(mission.value, 'facility', {}).get('name', None)
 
     author_list = list(map(lambda member: "{}, {}".format(member.lname, member.fname), mission.authors))
 
@@ -195,9 +193,7 @@ def format_mission(mission):
     }
 
 def format_docs(docs):
-    facility = docs.value.facility
-    if facility == 'other':
-        facility = getattr(docs.value, 'facilityOther', 'other')
+    facility = getattr(docs.value, 'facility', {}).get('name', None)
     
     author_list = list(map(lambda member: "{}, {}".format(member.lname, member.fname), docs.authors))
     

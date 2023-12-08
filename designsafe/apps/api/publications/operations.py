@@ -111,6 +111,8 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
         query_filters.append(search_utils.fr_date_query(fr_date))
     if fr_type:
         query_filters.append(search_utils.fr_type_query(fr_type))
+    if facility:
+        query_filters.append(search_utils.fr_facility_query(facility))
 
     # Other advanced filters
     data_type = query_dict['advancedFilters']['other']['dataType']
