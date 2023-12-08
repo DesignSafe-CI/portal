@@ -255,9 +255,7 @@ def format_hyb_sim(hyb_sim):
     """
     meta = hyb_sim.value
 
-    facility = meta.facility
-    if facility == 'other':
-        facility = getattr(meta, 'facilityOther', 'other')
+    facility = getattr(meta, 'facility', {}).get('name', None)
 
     try:
         authors = hyb_sim.authors
