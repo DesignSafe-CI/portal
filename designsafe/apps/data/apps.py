@@ -20,7 +20,7 @@ class KeepAliveConnection(Urllib3HttpConnection):
     """
     def __init__(self, *args, **kwargs):
         super(KeepAliveConnection, self).__init__(*args, **kwargs)
-        if not (settings.DEBUG or settings.TEST):
+        if not (settings.DEBUG or getattr(settings, "TEST", False)):
             self.pool.conn_kw['socket_options'] = HTTPConnection.default_socket_options + [
                 (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
                 (socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60),
