@@ -20,6 +20,7 @@
         "associatedProjects": [{"type": null, "title": "", "href": "" , "hrefType": null}],
         "referencedData": [{"title": "", "doi": "", "hrefType": null}],
         "fileTags": [],
+        "facilities": [{"id": null, "name": null}],
         "dataType": null,
         "facility": "",
         "facilityOther": "",

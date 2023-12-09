@@ -254,6 +254,18 @@
                                 ></select
                             >
                         </div>
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="hybrid-sim-facility-select">Facility</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                id="other-facility-select"
+                                ng-model="$ctrl.params.advancedFilters.other.facility"
+                                ng-change="$ctrl.browse()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.facilityOptions"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
                     </td>
                 </tr>
                 <tr class="solid"></tr>

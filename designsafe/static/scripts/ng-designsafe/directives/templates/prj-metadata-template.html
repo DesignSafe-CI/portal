@@ -83,15 +83,15 @@
         </span>
     </td>
   </tr>   
-  <tr class="prj-row" ng-if="$ctrl.project.value.facility.length && $ctrl.project.value.facility != 'None' ">  
-      <td>Facility</td>
+  <tr class="prj-row" ng-if="$ctrl.project.value.facilities && $ctrl.project.value.facilities.length">  
+      <td ng-if="$ctrl.project.value.facilities.length === 1">Facility</td>
+      <td ng-if="$ctrl.project.value.facilities.length > 1">Facilities</td>
       <td class="entity-meta-field"> 
-        <span ng-if="!$ctrl.isValid($ctrl.project.value.facilityOther)"
-                class="entity-meta-data-cap">{{ $ctrl.getEF($ctrl.project.value.facility) }}</span>
-        <span ng-if="$ctrl.isValid($ctrl.project.value.facilityOther)"
-                class="entity-meta-data-cap">{{ $ctrl.project.value.facilityOther }}</span>
+        <span ng-repeat="facility in $ctrl.project.value.facilities" class="entity-meta-data-cap">{{facility.name}}
+        </span>
+
       </td>  
-    </tr>  
+    </tr>
   <!-- end Project Type -->
 
   <!-- FR NH Event -->

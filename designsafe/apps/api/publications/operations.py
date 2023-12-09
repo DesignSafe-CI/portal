@@ -119,6 +119,8 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     facility = query_dict['advancedFilters']['other']['facility']
     if data_type:
         query_filters.append(search_utils.other_type_query(data_type))
+    if facility:
+        query_filters.append(search_utils.other_facility_query(facility))
 
     # Hybrid sim advanced filters
     sim_type = data_type = query_dict['advancedFilters']['hybrid_simulation']['hybridSimulationType'] 
