@@ -202,16 +202,16 @@ class ManageHybridSimCtrl {
 
     prepareData() {
         // drop or reformat inputs before for submission
-
+        console.log(this.form.facility)
         const facilityId = this.form.facility.id;
         if (!facilityId) {
             delete this.form.facility;
         } else if (facilityId === 'other') {
-            this.form.facility = { id: 'other', name: this.form.facility.label };
+            this.form.facility = { id: 'other', name: this.form.facility.name };
         } else {
             this.form.facility = {
                 id: facilityId,
-                name: this.ui.facilities.find((f) => f.name === facilityId).label,
+                name: this.ui.facilities.find((f) => f.name === facilityId)?.label,
             };
         }
         if(this.form.simulationType != 'Other') {

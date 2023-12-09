@@ -79,17 +79,15 @@
                         </div>
                     </div>
                 </label>
-                <select class="form-control"
-                        ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
-                        ng-change="$ctrl.clearFacilityIfOther()"
-                        ng-model="$ctrl.form.facility.id">
-                <option value="">-- Select a Facility --</option>
-            </select>
-            <input  class="form-control"
-                    type="text"
-                    placeholder="Custom Facility"
-                    ng-model="$ctrl.form.facility.name"
-                    ng-if="$ctrl.form.facility.id == 'other'"/>
+                <div style="display:flex;flex-direction: row;">
+                    <select class="form-control" ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
+                        ng-change="$ctrl.clearFacilityIfOther()" ng-model="$ctrl.form.facility.id"
+                        style="flex: 1; min-width: 150px">
+                        <option value="">-- Select a Facility --</option>
+                    </select>
+                    <input class="form-control" type="text" placeholder="Custom Facility" ng-model="$ctrl.form.facility.name"
+                        ng-if="$ctrl.form.facility.id == 'other'" style="margin-left: 5px;" />
+                </div>
             </div>
             <!-- Referenced Data -->
             <div class="form-group">
