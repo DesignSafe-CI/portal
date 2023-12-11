@@ -79,7 +79,7 @@ class HybridSimulation(RelatedEntity):
             if author.get("guest", False):
                 _authors.append({**author, "role": "guest", "username": author["name"]})
             else:
-                _authors.append({**author, **get_user_info(author["name"], "team_member")})
+                _authors.append({**author, **get_user_info(author["name"], role="team_member")})
         self.authors = _authors
         return super().save(agave_client)
 

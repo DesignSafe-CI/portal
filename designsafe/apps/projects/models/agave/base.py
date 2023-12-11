@@ -16,7 +16,17 @@ logger = logging.getLogger(__name__)
 user_model = get_user_model()
 
 def get_user_info(username, role=None):
-    user_obj = user_model.objects.get(username=username)
+    try:
+        user_obj = user_model.objects.get(username=username)
+    except user_model.DoesNotExist:
+        return {
+        "username": username,
+        "fname": "N/A",
+        "lname": "N/A",
+        "email": "N/A",
+        "inst": "N/A",
+        "role": None
+    }
     user_info =  {
         "username": username,
         "fname": user_obj.first_name,
@@ -222,21 +232,21 @@ class Project(MetadataModel):
                 self.project_id = prj.project_id
         
         _users = []
-        _users.append(get_user_info(self.pi, "pi"))
+        _users.append(get_user_info(self.pi, role="pi"))
         for co_pi in self.co_pis:
-            _users.append(get_user_info(co_pi, "co_pi"))
+            _users.append(get_user_info(co_pi, role="co_pi"))
         for team_member in self.team_members:
-            _users.append(get_user_info(team_member, "team_member"))
+            _users.append(get_user_info(team_member, role="team_member"))
         for guest_member in self.guest_members:
-            _users.append({**guest_member, "username": guest_member["user"], "role": "guest"})
+            _users.append({**guest_member, "username": None, "role": "guest"})
 
         _team_order = getattr(self, 'team_order', [])
         _authors = []
         for author in sorted(_team_order, key=lambda u: u["order"]):
             if author.get("guest", False):
-                _authors.append({**author, "role": "guest", "username": author["user"]})
+                _authors.append({**author, "role": "guest", "username": None})
             else:
-                _authors.append({**author, **get_user_info(author["name"], "team_member")})
+                _authors.append({**author, **get_user_info(author["name"], role="team_member")})
 
         self.users = _users
         if len(_authors):

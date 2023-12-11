@@ -105,9 +105,9 @@ class Experiment(RelatedEntity):
         _authors = []
         for author in sorted(self.authors, key=lambda u: u["order"]):
             if author.get("guest", False):
-                _authors.append({**author, "role": "guest", "username": author["name"]})
+                _authors.append({**author, "role": "guest", "username": None})
             else:
-                _authors.append({**author, **get_user_info(author["name"], "team_member")})
+                _authors.append({**author, **get_user_info(author["name"], role="team_member")})
         self.authors = _authors
         return super(Experiment, self).save(agave_client)
 

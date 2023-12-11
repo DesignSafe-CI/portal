@@ -80,9 +80,9 @@ class Mission(RelatedEntity):
         _authors = []
         for author in sorted(self.authors, key=lambda u: u["order"]):
             if author.get("guest", False):
-                _authors.append({**author, "role": "guest", "username": author["name"]})
+                _authors.append({**author, "role": "guest", "username": None})
             else:
-                _authors.append({**author, **get_user_info(author["name"], "team_member")})
+                _authors.append({**author, **get_user_info(author["name"], role="team_member")})
         self.authors = _authors
         return super().save(agave_client)
 
@@ -165,9 +165,9 @@ class Collection(RelatedEntity):
         _data_collectors = []
         for author in sorted(self.data_collectors, key=lambda u: u["order"]):
             if author.get("guest", False):
-                _data_collectors.append({**author, "role": "guest", "username": author["name"]})
+                _data_collectors.append({**author, "role": "guest", "username": None})
             else:
-                _data_collectors.append({**author, **get_user_info(author["name"], "team_member")})
+                _data_collectors.append({**author, **get_user_info(author["name"], role="team_member")})
         self.data_collectors = _data_collectors
         return super().save(agave_client)
 
@@ -197,9 +197,9 @@ class SocialScience(RelatedEntity):
         _data_collectors = []
         for author in sorted(self.data_collectors, key=lambda u: u["order"]):
             if author.get("guest", False):
-                _data_collectors.append({**author, "role": "guest", "username": author["name"]})
+                _data_collectors.append({**author, "role": "guest", "username": None})
             else:
-                _data_collectors.append({**author, **get_user_info(author["name"], "team_member")})
+                _data_collectors.append({**author, **get_user_info(author["name"], role="team_member")})
         self.data_collectors = _data_collectors
         return super().save(agave_client)
 
@@ -218,9 +218,9 @@ class Planning(RelatedEntity):
         _data_collectors = []
         for author in sorted(self.data_collectors, key=lambda u: u["order"]):
             if author.get("guest", False):
-                _data_collectors.append({**author, "role": "guest", "username": author["name"]})
+                _data_collectors.append({**author, "role": "guest", "username": None})
             else:
-                _data_collectors.append({**author, **get_user_info(author["name"], "team_member")})
+                _data_collectors.append({**author, **get_user_info(author["name"], role="team_member")})
         self.data_collectors = _data_collectors
         return super().save(agave_client)
 
@@ -246,9 +246,9 @@ class Geoscience(RelatedEntity):
         _data_collectors = []
         for author in sorted(self.data_collectors, key=lambda u: u["order"]):
             if author.get("guest", False):
-                _data_collectors.append({**author, "role": "guest", "username": author["name"]})
+                _data_collectors.append({**author, "role": "guest", "username": None})
             else:
-                _data_collectors.append({**author, **get_user_info(author["name"], "team_member")})
+                _data_collectors.append({**author, **get_user_info(author["name"], role="team_member")})
         self.data_collectors = _data_collectors
         return super().save(agave_client)
 
@@ -268,9 +268,9 @@ class Report(RelatedEntity):
         _authors = []
         for author in sorted(self.authors, key=lambda u: u["order"]):
             if author.get("guest", False):
-                _authors.append({**author, "role": "guest", "username": author["name"]})
+                _authors.append({**author, "role": "guest", "username": None})
             else:
-                _authors.append({**author, **get_user_info(author["name"], "team_member")})
+                _authors.append({**author, **get_user_info(author["name"], role="team_member")})
         self.authors = _authors
         return super().save(agave_client)
 
