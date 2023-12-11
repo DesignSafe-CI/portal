@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
 
 logger = logging.getLogger(__name__)
 
@@ -44,14 +44,6 @@ class DataTag(MetadataModel):
     tag_name = fields.CharField('Tag Name', max_length=512, default='')
     value = fields.CharField('Value', max_length=512, default='')
 
-class FileObjModel(MetadataModel):
-    _is_nested = True
-    path = fields.CharField('File path', max_length=1024, default='')
-    name = fields.CharField('File name', max_length=1024, default='')
-    system = fields.CharField('System', max_length=512, default='')
-    type = fields.CharField('File type', max_length=512, default='')
-    length = fields.IntField('File Size', default=0)
-    last_modified = fields.CharField('Last Modified', max_length=512, default='')
 
 class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'

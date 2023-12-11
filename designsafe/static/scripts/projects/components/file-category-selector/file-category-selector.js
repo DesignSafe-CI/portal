@@ -77,8 +77,8 @@ class FileCategorySelectorCtrl {
                                                          type: f.type, 
                                                          name: f.name, 
                                                          length: f.length,
+                                                         uuid: f.uuid,
                                                          lastModified: f.lastModified}))]
-            console.log(entity)
             if (!entity) {
                 return undefined;
             }
