@@ -1,62 +1,58 @@
 """Utils for constructing project trees from legacy association IDs."""
 import json
+from typing import TypedDict
 from uuid import uuid4
 import networkx as nx
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers.publication import FIELD_MAP
 from designsafe.apps.projects.models.categories import Category
+from designsafe.apps.projects_v2 import constants as names
 
 # map metadata 'name' field to allowed (direct) children
 ALLOWED_RELATIONS = {
-    "designsafe.project": [
-        "designsafe.project.experiment",
-        "designsafe.project.simulation",
-        "designsafe.project.hybrid_simulation",
-        "designsafe.project.field_recon.mission",
-        "designsafe.project.field_recon.report",
+    names.PROJECT: [
+        names.EXPERIMENT,
+        names.SIMULATION,
+        names.HYBRID_SIM,
+        names.FIELD_RECON_MISSION,
+        names.FIELD_RECON_REPORT,
     ],
     # Experimental
-    "designsafe.project.experiment": [
-        "designsafe.project.analysis",
-        "designsafe.project.report",
-        "designsafe.project.model_config",
+    names.EXPERIMENT: [
+        names.EXPERIMENT_ANALYSIS,
+        names.EXPERIMENT_REPORT,
+        names.EXPERIMENT_MODEL_CONFIG,
     ],
-    "designsafe.project.model_config": ["designsafe.project.sensor_list"],
-    "designsafe.project.sensor_list": ["designsafe.project.event"],
+    names.EXPERIMENT_MODEL_CONFIG: [names.EXPERIMENT_SENSOR],
+    names.EXPERIMENT_SENSOR: [names.EXPERIMENT_EVENT],
     # Simulation
-    "designsafe.project.simulation": [
-        "designsafe.project.simulation.analysis",
-        "designsafe.project.simulation.report",
-        "designsafe.project.simulation.model",
+    names.SIMULATION: [
+        names.SIMULATION_ANALYSIS,
+        names.SIMULATION_REPORT,
+        names.SIMULATION_MODEL,
     ],
-    "designsafe.project.simulation.model": ["designsafe.project.simulation.input"],
-    "designsafe.project.simulation.input": ["designsafe.project.simulation.output"],
+    names.SIMULATION_MODEL: [names.SIMULATION_INPUT],
+    names.SIMULATION_INPUT: [names.SIMULATION_OUTPUT],
     # Hybrid sim
-    "designsafe.project.hybrid_simulation": [
-        "designsafe.project.hybrid_simulation.report",
-        "designsafe.project.hybrid_simulation.global_model",
-        "designsafe.project.hybrid_simulation.analysis",
+    names.HYBRID_SIM: [
+        names.HYBRID_SIM_REPORT,
+        names.HYBRID_SIM_GLOBAL_MODEL,
+        names.HYBRID_SIM_ANALYSIS,
     ],
-    "designsafe.project.hybrid_simulation.global_model": [
-        "designsafe.project.hybrid_simulation.coordinator"
+    names.HYBRID_SIM_GLOBAL_MODEL: [names.HYBRID_SIM_COORDINATOR],
+    names.HYBRID_SIM_COORDINATOR: [
+        names.HYBRID_SIM_COORDINATOR_OUTPUT,
+        names.HYBRID_SIM_SIM_SUBSTRUCTURE,
+        names.HYBRID_SIM_EXP_SUBSTRUCTURE,
     ],
-    "designsafe.project.hybrid_simulation.coordinator": [
-        "designsafe.project.hybrid_simulation.coordinator_output",
-        "designsafe.project.hybrid_simulation.sim_substructure",
-        "designsafe.project.hybrid_simulation.exp_substructure",
-    ],
-    "designsafe.project.hybrid_simulation.sim_substructure": [
-        "designsafe.project.hybrid_simulation.sim_output"
-    ],
-    "designsafe.project.hybrid_simulation.exp_substructure": [
-        "designsafe.project.hybrid_simulation.exp_output"
-    ],
+    names.HYBRID_SIM_SIM_SUBSTRUCTURE: [names.HYBRID_SIM_SIM_OUTPUT],
+    names.HYBRID_SIM_EXP_SUBSTRUCTURE: [names.HYBRID_SIM_EXP_OUTPUT],
     # Field Recon
-    "designsafe.project.field_recon.mission": [
-        "designsafe.project.field_recon.planning",
-        "designsafe.project.field_recon.social_science",
-        "designsafe.project.field_recon.geoscience",
+    names.FIELD_RECON_MISSION: [
+        names.FIELD_RECON_PLANNING,
+        names.FIELD_RECON_SOCIAL_SCIENCE,
+        names.FIELD_RECON_GEOSCIENCE,
     ],
 }
 
@@ -172,7 +168,6 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
     root_node_data = {
         "uuid": root_entity["uuid"],
         "name": root_entity["name"],
-        "title": root_entity["value"]["title"],
     }
 
     project_graph.add_node(root_node_id, **root_node_data)
@@ -181,9 +176,16 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
     return project_graph
 
 
+class EntityOrder(TypedDict):
+    """Representation for UI orders stored in legacy metadata."""
+
+    value: int
+    parent: str
+
+
 def get_entity_orders(
     entity: dict,
-) -> list[dict]:
+) -> list[EntityOrder]:
     """extract ordering metadata for a project or pub."""
     pub_orders = entity.get("_ui", None)
     if pub_orders:
