@@ -137,6 +137,7 @@ class AccountsTests(TestCase):
 
         # pass test for duplicate email check
         mock_tas().get_user.side_effect = mock_user_side_effect
+        mock_tas().save_user.side_effect = mock_user_side_effect
 
         edit_url = reverse('designsafe_accounts:profile_edit')
         self.client.login(username='ds_admin', password='admin/password')
