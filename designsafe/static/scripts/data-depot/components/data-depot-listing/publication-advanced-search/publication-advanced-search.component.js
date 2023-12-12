@@ -1,5 +1,5 @@
 import publicationAdvancedSearchTemplate from './publication-advanced-search.template.html';
-const exptJson = require('../../../../projects/components/manage-experiments/experimental-data.json');
+const facilityJson = require('../../../../projects/components/facility-data.json');
 const { simulationTypes } = require('../../../../projects/components/manage-simulations/simulation-types.json');
 const { nhTypes } = require('../../../../projects/components/manage-project/project-form-options.json');
 const { otherTypes } = require('../../../../projects/components/manage-project/project-form-options.json');
@@ -11,10 +11,10 @@ class PublicationAdvancedSearchCtrl {
         this.$stateParams = $stateParams;
     }
     $onInit() {
-        this.experimentOptions = exptJson;
+        this.experimentOptions = facilityJson;
         this.experimentFacilityOptions = [
             { name: '', label: 'All Types' },
-            ...exptJson.experimentalFacility.experimental.map(({ label }) => ({ name: label, label: label })),
+            ...facilityJson.experimentalFacility.experimental.map(({ label }) => ({ name: label, label: label })),
         ];
         this.simulationTypes = [{ name: '', label: 'All Types' }, ...simulationTypes];
 

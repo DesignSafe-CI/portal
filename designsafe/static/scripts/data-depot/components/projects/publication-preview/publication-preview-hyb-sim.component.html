@@ -200,6 +200,14 @@
                             </span>
                         </div>
                     </div>
+                    <span ng-if="hybsim.value.facility.name"> 
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Facility</div>
+                            <span class="entity-meta-data">
+                                {{ hybsim.value.facility.name }}
+                            </span>
+                        </div>
+                    </span>
                     <div class="entity-meta-field" ng-if="hybsim.value.relatedWork.length">
                         <div class="entity-meta-label-multi">Related Work</div>
                         <div class="entity-meta-data">
@@ -279,7 +287,7 @@
                                                        on-scroll="$ctrl.scrollToBottom()"
                                                        doi="hybsim.value.dois.toString()"
                                                        listing="$ctrl.FileListingService.listings[report.uuid]"
-                                                       on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString()")">&nbsp;
+                                                       on-browse="$ctrl.onBrowse(file, hybsim.value.dois.toString())">&nbsp;
                                         </files-listing>
                                     </div>
                                 </div>

@@ -1064,3 +1064,7 @@ i[class^="icon-ls-pre/post"]:before,
 .gcsc-more-maybe-branding-root {
     display: none !important;
 }
+
+:root {
+    color-scheme: only light !important;
+}

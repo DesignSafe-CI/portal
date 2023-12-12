@@ -56,71 +56,89 @@
                             ng-required="false">
                 </div>
             </div>
+            <!-- Facilities -->
             <div class="form-group">
                 <label for="id-facility">
                     <div style="display: flex; flex-direction: column">
                         <div>
                             <span class="pull-left" style="margin-right: 5px">Experimental Facility</span>
-                            <span class="label label-danger">Required</span>
                         </div>
                     </div>
                 </label>
                 <select class="form-control"
                         ng-options="ef.name as ef.label for ef in $ctrl.ui.experimentalFacilities"
-                        ng-model="$ctrl.form.experimentalFacility"
-                        ng-required="true">
+                        ng-model="$ctrl.form.experimentalFacility">
                 <option value="">-- Select an Experimental Facility --</option>
-            </select>
-            <input  class="form-control"
-                    type="text"
-                    placeholder="Custom Experimental Facility"
-                    ng-model="$ctrl.form.experimentalFacilityOther"
-                    ng-if="$ctrl.form.experimentalFacility == 'other'"
-                    ng-required="true" />
+                </select>
+                <input  class="form-control"
+                        type="text"
+                        placeholder="Custom Experimental Facility"
+                        ng-model="$ctrl.form.experimentalFacilityOther"
+                        ng-if="$ctrl.form.experimentalFacility == 'other'"/>
             </div>
-            <div class="form-group">
-                <label for="id-type">
-                    <div style="display: flex; flex-direction: column">
-                        <div>
-                            <span class="pull-left" style="margin-right: 5px">Experiment Type</span>
-                            <span class="label label-danger">Required</span>
-                        </div>
-                    </div>
-                </label>
-                <select class="form-control"
-                        ng-options="type.name as type.label for type in $ctrl.ui.experimentTypes[$ctrl.form.experimentalFacility]"
-                        ng-model="$ctrl.form.experimentType"
-                        ng-required="true">
-                <option value="">-- Select an Experiment Type --</option>
-            </select>
-            <input  class="form-control"
-                    type="text"
-                    placeholder="Custom Experiment Type"
-                    ng-model="$ctrl.form.experimentTypeOther"
-                    ng-if="$ctrl.form.experimentType == 'other'"
-                    ng-required="true" />
+            <div ng-if="$ctrl.form.experimentalFacility == 'rapid-uw' ||
+                        $ctrl.form.experimentalFacility == 'converge-boulder' ||
+                        $ctrl.form.experimentalFacility == 'geer' ||
+                        $ctrl.form.experimentalFacility == 'iseeer' ||
+                        $ctrl.form.experimentalFacility == 'neer' ||
+                        $ctrl.form.experimentalFacility == 'oseer' ||
+                        $ctrl.form.experimentalFacility == 'pheer' ||
+                        $ctrl.form.experimentalFacility == 'summeer' ||
+                        $ctrl.form.experimentalFacility == 'sseer' ||
+                        $ctrl.form.experimentalFacility == 'steer' ||
+                        $ctrl.form.experimentalFacility == 'niche' ||
+                        $ctrl.form.experimentalFacility == 'simcntr' ||
+                        $ctrl.form.experimentalFacility == 'nco-purdue' ||
+                        $ctrl.form.experimentalFacility == 'crbcrp'"> 
+                            {{ $ctrl.form.experimentType = '' }}
+                            {{ $ctrl.form.equipmentType = '' }}     
             </div>
-            <div class="form-group">
-                <label for="id-equipment">
-                    <div style="display: flex; flex-direction: column">
-                        <div>
-                            <span class="pull-left" style="margin-right: 5px">Equipment Type</span>
-                            <span class="label label-danger">Required</span>
+            <div ng-if="$ctrl.form.experimentalFacility == 'rtmd-lehigh' ||
+                        $ctrl.form.experimentalFacility == 'cgm-ucdavis' ||
+                        $ctrl.form.experimentalFacility == 'eqss-utaustin' ||
+                        $ctrl.form.experimentalFacility == 'pfsml-florida' ||
+                        $ctrl.form.experimentalFacility == 'wwhr-florida' ||
+                        $ctrl.form.experimentalFacility == 'hpost-sandiego' ||
+                        $ctrl.form.experimentalFacility == 'ohhwrl-oregon' ||
+                        $ctrl.form.experimentalFacility == 'other'"> 
+                <div class="form-group">
+                    <label for="id-type">
+                        <div style="display: flex; flex-direction: column">
+                            <div>
+                                <span class="pull-left" style="margin-right: 5px">Experiment Type</span>
+                            </div>
                         </div>
-                    </div>
-                </label>
-                <select class="form-control"
-                        ng-options="et.name as et.label for et in $ctrl.ui.equipmentTypes[$ctrl.form.experimentalFacility]"
-                        ng-model="$ctrl.form.equipmentType"
-                        ng-required="true">
-                <option value="">-- Select an Equipment Type --</option>
-            </select>
-            <input  class="form-control"
-                    type="text"
-                    placeholder="Custom Equipment Type"
-                    ng-model="$ctrl.form.equipmentTypeOther"
-                    ng-if="$ctrl.form.equipmentType == 'other'"
-                    ng-required="true" />
+                    </label>
+                    <select class="form-control"
+                            ng-options="type.name as type.label for type in $ctrl.ui.experimentTypes[$ctrl.form.experimentalFacility]"
+                            ng-model="$ctrl.form.experimentType">
+                    <option value="">-- Select an Experiment Type --</option>
+                </select>
+                <input  class="form-control"
+                        type="text"
+                        placeholder="Custom Experiment Type"
+                        ng-model="$ctrl.form.experimentTypeOther"
+                        ng-if="$ctrl.form.experimentType == 'other'"/>
+                </div>
+                <div class="form-group">
+                    <label for="id-equipment">
+                        <div style="display: flex; flex-direction: column">
+                            <div>
+                                <span class="pull-left" style="margin-right: 5px">Equipment Type</span>
+                            </div>
+                        </div>
+                    </label>
+                    <select class="form-control"
+                            ng-options="et.name as et.label for et in $ctrl.ui.equipmentTypes[$ctrl.form.experimentalFacility]"
+                            ng-model="$ctrl.form.equipmentType">
+                    <option value="">-- Select an Equipment Type --</option>
+                </select>
+                <input  class="form-control"
+                        type="text"
+                        placeholder="Custom Equipment Type"
+                        ng-model="$ctrl.form.equipmentTypeOther"
+                        ng-if="$ctrl.form.equipmentType == 'other'"/>
+                </div>
             </div>
             <div class="form-group">
                 <table class="manage-prj-table">
@@ -421,32 +439,38 @@
                     <div id="files-{{experiment.uuid}}" class="collapse dropdown-spacer-lg">
                         <div class="well">
                             <div class="entity-meta-field">
-                                <div class="entity-meta-label">Experiment Type</div>
-                                <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)"
-                                        class="entity-meta-data-cap">{{ $ctrl.getET(experiment) }}</span>
-                                <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)"
-                                        class="entity-meta-data-cap">{{ experiment.value.experimentTypeOther }}</span>
-                            </div>
-                            <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi">Author(s)</div>
                                 <div class="entity-meta-data">
                                     <ds-author-list authors="experiment.value.authors"></ds-author-list>
                                 </div>
                             </div>
-                            <div class="entity-meta-field">
-                                <div class="entity-meta-label">Experimental Facility</div>
-                                <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)"
-                                        class="entity-meta-data-cap">{{ $ctrl.getEF(experiment.value.experimentalFacility) }}</span>
-                                <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)"
-                                        class="entity-meta-data-cap">{{ experiment.value.experimentalFacilityOther }}</span>
-                            </div>
-                            <div class="entity-meta-field">
-                                <div class="entity-meta-label">Equipment Type</div>
-                                <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)"
-                                        class="entity-meta-data-cap">{{ $ctrl.getEQ(experiment) }}</span>
-                                <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)"
-                                        class="entity-meta-data-cap">{{ experiment.value.equipmentTypeOther }}</span>
-                            </div>
+                            <span ng-if="experiment.value.experimentalFacility.length && experiment.value.experimentalFacility !== 'None'">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Experimental Facility</div>
+                                    <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)"
+                                            class="entity-meta-data-cap">{{ $ctrl.getEF(experiment.value.experimentalFacility) }}</span>
+                                    <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)"
+                                            class="entity-meta-data-cap">{{ experiment.value.experimentalFacilityOther }}</span>
+                                </div>
+                            </span>
+                            <span ng-if="experiment.value.experimentType.length">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Experiment Type</div>
+                                    <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)"
+                                            class="entity-meta-data-cap">{{ $ctrl.getET(experiment) }}</span>
+                                    <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)"
+                                            class="entity-meta-data-cap">{{ experiment.value.experimentTypeOther }}</span>
+                                </div>
+                            </span>
+                            <span ng-if="experiment.value.equipmentType.length">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Equipment Type</div>
+                                    <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)"
+                                            class="entity-meta-data-cap">{{ $ctrl.getEQ(experiment) }}</span>
+                                    <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)"
+                                            class="entity-meta-data-cap">{{ experiment.value.equipmentTypeOther }}</span>
+                                </div>
+                            </span>
                             <div class="entity-meta-field" ng-if="experiment.value.relatedWork.length">
                                 <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">

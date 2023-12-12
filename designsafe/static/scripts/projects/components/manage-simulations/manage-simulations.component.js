@@ -1,6 +1,7 @@
 import ManageSimulationTemplate from './manage-simulations.template.html';
 const SimulationDefaults = require('./simulation-form-defaults.json');
 const SimulationTypes = require('./simulation-types.json');
+const FacilityData = require('../facility-data.json');
 
 class ManageSimulationCtrl {
 
@@ -23,7 +24,8 @@ class ManageSimulationCtrl {
                 referencedData: false,
             },
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
-            simulationTypes: SimulationTypes.simulationTypes
+            simulationTypes: SimulationTypes.simulationTypes,
+            facilities: FacilityData.facility.facilities_list,
         };
         this.configureForm(this.edit);
         this.form.authors = this.configureAuthors(this.edit, false);
@@ -44,6 +46,11 @@ class ManageSimulationCtrl {
                 } else if (typeof simulation.value[key] === 'string' && simulation.value[key]) {
                     form[key] = simulation.value[key];
                 }
+            }
+            if (simulation.value.facility && typeof simulation.value.facility === 'object') {
+                form.facility = simulation.value.facility
+            } else {
+                form.facility = {}
             }
         }
         this.ui.require.relatedWork = this.requireField(form.relatedWork);
@@ -161,6 +168,16 @@ class ManageSimulationCtrl {
         }
     }
 
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
+    }
+
     isValid(ent) {
         if (ent && ent != '' && ent != 'None') {
             return true;
@@ -176,6 +193,19 @@ class ManageSimulationCtrl {
 
     prepareData() {
         // drop or reformat inputs before for submission
+
+        const facilityId = this.form.facility.id;
+        if (!facilityId) {
+            delete this.form.facility;
+        } else if (facilityId === 'other') {
+            this.form.facility = { id: 'other', name: this.form.facility.name };
+        } else {
+            this.form.facility = {
+                id: facilityId,
+                name: this.ui.facilities.find((f) => f.name === facilityId)?.label,
+            };
+        }
+        
         if(this.form.simulationType != 'other') {
             this.form.simulationTypeOther = '';
         }
@@ -217,6 +247,12 @@ class ManageSimulationCtrl {
         .catch((err) => {
             this.ui.error = true;
         });
+    }
+
+    clearFacilityIfOther() {
+        if (this.form.facility.id === "other") {
+            this.form.facility.name = ""
+        }
     }
 
     deleteSimulation(simulation) {
