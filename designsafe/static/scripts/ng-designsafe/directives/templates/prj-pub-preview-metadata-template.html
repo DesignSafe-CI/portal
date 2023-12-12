@@ -193,6 +193,18 @@
     </tr>
     <!-- end Natural Hazard Type -->
 
+    <!-- type Other Facilities -->
+    <tr class="prj-row" ng-if="$ctrl.project.value.facilities && $ctrl.project.value.facilities.length">  
+        <td ng-if="$ctrl.project.value.facilities.length === 1">Facility</td>
+        <td ng-if="$ctrl.project.value.facilities.length > 1">Facilities</td>
+        <td class="entity-meta-field"> 
+          <span ng-repeat="facility in $ctrl.project.value.facilities" class="entity-meta-data-cap">{{facility.name}}
+          </span>
+  
+        </td>  
+      </tr> 
+    <!-- end type Other Facilities -->
+
     <!-- FR events -->
     <tr class="prj-row" ng-if="$ctrl.project.value.nhEvent">
         <td>Event</td>

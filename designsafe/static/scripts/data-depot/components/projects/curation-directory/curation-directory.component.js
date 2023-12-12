@@ -1,4 +1,5 @@
 import CurationDirectoryTemplate from './curation-directory.component.html';
+const FacilityData = require('../../../../projects/components/facility-data.json');
 
 class CurationDirectoryCtrl {
 
@@ -24,6 +25,7 @@ class CurationDirectoryCtrl {
         this.ui = {
             showEdit: true,
             showOverview: true,
+            facilities: FacilityData.facility.facilities_list,
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.current;
@@ -161,6 +163,23 @@ class CurationDirectoryCtrl {
             backdrop: 'static',
             size: 'lg',
         });
+    }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
     }
 
     manageExperiments() {

@@ -39,9 +39,8 @@ def walk_sim(project_id, version=None):
 
     sims_list = doc.simulations
     for sim in sims_list:
-        # Do stuff with experiment.
+        # Do stuff with simulation.
         sim_container_path = "{}/{}".format(project_id, parse.quote(sim.value.title))
-        print('simulation ' + sim.value.title)
         sim_doi = sim.doi
         project_map['fedora_mapping']['generated'].append('Experiment: {}'.format(sim_doi))
 
@@ -168,14 +167,14 @@ def walk_sim(project_id, version=None):
 
 def format_sim(sim):
     """
-    Map experiment to Datacite fields for Fedora.
+    Map simulation to Datacite fields for Fedora.
     """
     meta = sim.value
-
     sim_type = meta.simulationType
     if sim_type == 'other':
         sim_type = getattr(meta, 'simulationTypeOther', 'other')
 
+    facility = getattr(meta, 'facility', {}).get('name', None)
 
     publication_date = str(sim.created)
 
@@ -224,11 +223,10 @@ def format_sim(sim):
             referenced_by.append(work_val)
 
 
-
-
     return {
         'type': sim_type,
         'identifier': dois + [sim.uuid],
+        'contributor': facility,
         'creator': creator,
         'title': meta.title,
         'description': meta.description,

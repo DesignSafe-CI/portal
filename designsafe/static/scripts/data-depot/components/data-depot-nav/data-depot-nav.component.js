@@ -46,10 +46,10 @@ class DataDepotNavCtrl {
           description: 'Private directory for your data'
         },
         {
-          name: 'HPC Scratch',
+          name: 'HPC Work',
           collapsible: false,
-          state: 'myDataScratch',
-          description: 'Scratch directory on Frontera for use with JupyterHub'
+          state: 'myDataWork',
+          description: 'Work directory on TACC HPC machines for use with Jupyter'
         },
         {
           name: 'My Projects',

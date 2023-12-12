@@ -258,6 +258,41 @@
                         />
                     </div>
                 </div>
+                <!-- Project Other Facilities -->
+                <div class="form-group"
+                style="width:100%;"
+                ng-if="$ctrl.project && $ctrl.form.projectType === 'other'"
+            >
+                <label for="id-facilities">
+                    <div style="font-weight:normal; display:inline-block;">
+                        Specify the facilities involved in this research.
+                    </div>
+                </label>
+                <div ng-repeat="frType in $ctrl.form.facilities track by $index" style="display:flex;flex-direction: row;">
+                    <select class="form-control"
+                            id="id-fr-type"
+                            style="margin-bottom: 5px; flex:1; min-width: 150px"
+                            ng-options="ef.name as ef.label for ef in $ctrl.facilities"
+                            ng-model="$ctrl.form.facilities[$index].id">
+                        <option value="">-- Select Facility --</option>
+                    </select>
+                    <input  class="form-control"
+                    type="text"
+                    style="margin-left: 5px"
+                    placeholder="Custom Facility"
+                    ng-model="$ctrl.form.facilities[$index].name"
+                    ng-if="$ctrl.form.facilities[$index].id == 'other'"/>
+                </div>
+                <button class="btn-project-add-rm"
+                        ng-click="$ctrl.addField($ctrl.form.facilities)">
+                        &#x2b; Add another Facility
+                </button>
+                |
+                <button class="btn-project-add-rm"
+                        ng-click="$ctrl.form.facilities.pop()"
+                        ng-disabled="$ctrl.checkEmpty($ctrl.form.facilities)">
+                        &#x2212; Remove Facility
+                </button>
             </div>
             <!-- Add user Errors -->
             <div class="form-group" ng-if="$ctrl.ui.invalidUserError">
