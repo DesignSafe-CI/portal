@@ -179,6 +179,18 @@
                                 ></select
                             >
                         </div>
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="sim-facility-select">Facility</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                id="sim-facility-select"
+                                ng-model="$ctrl.params.advancedFilters.simulation.facility"
+                                ng-change="$ctrl.browse()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.facilityOptions"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
                     </td>
                 </tr>
                 <tr class="solid"></tr>
@@ -199,6 +211,18 @@
                                 class="form-control"
                             ></select>
                             <div style="padding-bottom: 5px;"></div>
+                            <div style="padding-bottom: 5px; font-weight: normal;">
+                                <label-nb for="fr-facility-select">Facility</label-nb>
+                                <select
+                                    style="border-radius: 5px;"
+                                    id="fr-facility-select"
+                                    ng-model="$ctrl.params.advancedFilters.field_recon.facility"
+                                    ng-change="$ctrl.browse()"
+                                    ng-options="ef.name as ef.label for ef in $ctrl.facilityOptions"
+                                    class="form-control"
+                                    ></select
+                                >
+                            </div>
                             <label-nb style="width:100%;" for="fr-year-select">Natural Hazard Year</label>
                             <select
                                 style="border-radius: 5px; width: 100%"
@@ -230,6 +254,18 @@
                                 ></select
                             >
                         </div>
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="hybrid-sim-facility-select">Facility</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                id="other-facility-select"
+                                ng-model="$ctrl.params.advancedFilters.other.facility"
+                                ng-change="$ctrl.browse()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.facilityOptions"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
                     </td>
                 </tr>
                 <tr class="solid"></tr>
@@ -247,6 +283,18 @@
                                 ng-change="$ctrl.browse()"
                                 ng-model="$ctrl.params.advancedFilters.hybrid_simulation.hybridSimulationType"
                                 ng-options="opt.name as opt.label for opt in $ctrl.hybridSimulationTypes"
+                                class="form-control"
+                                ></select
+                            >
+                        </div>
+                        <div style="padding-bottom: 5px; font-weight: normal;">
+                            <label-nb for="hybrid-sim-facility-select">Facility</label-nb>
+                            <select
+                                style="border-radius: 5px;"
+                                id="hybrid-sim-facility-select"
+                                ng-model="$ctrl.params.advancedFilters.hybrid_simulation.facility"
+                                ng-change="$ctrl.browse()"
+                                ng-options="ef.name as ef.label for ef in $ctrl.facilityOptions"
                                 class="form-control"
                                 ></select
                             >
