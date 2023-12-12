@@ -54,7 +54,7 @@
                         <span ng-if="$ctrl.selectedEnts.includes(hybsim)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
                     </div>
                     <div ng-if="hybsim.value.dois.length">
-                        <span>This Hyrbid Simulation is Required</span>
+                        <span>This Hybrid Simulation is Required</span>
                         <span><i class="fa fa-check" style="color: #1CB500;"></i></span>
                     </div>
                 </div>
@@ -87,6 +87,14 @@
                                 <ds-author-list authors="hybsim.value.authors"></ds-author-list>
                             </div>
                         </div>
+                        <span ng-if="hybsim.value.facility.name"> 
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">Facility</div>
+                                <span class="entity-meta-data">
+                                    {{ hybsim.value.facility.name }}
+                                </span>
+                            </div>
+                        </span>
                         <div class="entity-meta-field" ng-if="hybsim.value.relatedWork.length">
                             <div class="entity-meta-label-multi">Related Work</div>
                             <div class="entity-meta-data">
@@ -115,7 +123,7 @@
                         </p>
                         <br>
                         <div>
-                            <!-- Hyrbid Simulation Reports -->
+                            <!-- Hybrid Simulation Reports -->
                             <div ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(hybsim, report)">
                                 <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                                     <button

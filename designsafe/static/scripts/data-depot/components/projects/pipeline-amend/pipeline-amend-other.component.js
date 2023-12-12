@@ -1,4 +1,5 @@
 import AmendOtherTemplate from './amend-other.template.html';
+import facilityData from '../../../../projects/components/facility-data.json';
 
 class PipelineAmendOtherCtrl {
     constructor(
@@ -23,6 +24,7 @@ class PipelineAmendOtherCtrl {
             confirmed: false,
             showEdit: false,
             showOverview: false,
+            facilities: facilityData.facility,
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.publication = this.ProjectService.resolveParams.publication;
@@ -44,6 +46,23 @@ class PipelineAmendOtherCtrl {
             backdrop: 'static',
             size: 'lg',
         });
+    }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities.facilities_list;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
     }
 
     saveAuthors() {

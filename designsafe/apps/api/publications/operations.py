@@ -95,11 +95,15 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     simulation_type = query_dict['advancedFilters']['simulation']['simulationType']
     if simulation_type:
         query_filters.append(search_utils.simulation_type_query(simulation_type))
+    facility = query_dict['advancedFilters']['simulation']['facility']
+    if facility:
+        query_filters.append(search_utils.simulation_facility_query(facility))
 
     # Field recon advanced filters
     nh_type = query_dict['advancedFilters']['field_recon']['naturalHazardType']
     fr_type = query_dict['advancedFilters']['field_recon']['frType']
     fr_date = query_dict['advancedFilters']['field_recon']['frDate']
+    facility = query_dict['advancedFilters']['field_recon']['facility']
 
     if nh_type:
         query_filters.append(search_utils.nh_type_query(nh_type))
@@ -107,16 +111,24 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
         query_filters.append(search_utils.fr_date_query(fr_date))
     if fr_type:
         query_filters.append(search_utils.fr_type_query(fr_type))
+    if facility:
+        query_filters.append(search_utils.fr_facility_query(facility))
 
     # Other advanced filters
     data_type = query_dict['advancedFilters']['other']['dataType']
+    facility = query_dict['advancedFilters']['other']['facility']
     if data_type:
         query_filters.append(search_utils.other_type_query(data_type))
+    if facility:
+        query_filters.append(search_utils.other_facility_query(facility))
 
     # Hybrid sim advanced filters
     sim_type = data_type = query_dict['advancedFilters']['hybrid_simulation']['hybridSimulationType'] 
+    facility = query_dict['advancedFilters']['hybrid_simulation']['facility']
     if sim_type:
         query_filters.append(search_utils.hybrid_sim_type_query(sim_type))
+    if facility:
+        query_filters.append(search_utils.hybrid_sim_facility_query(facility))
 
     search = search.filter('bool', must=query_filters)
     search = search.filter(Q('term', status='published'))
