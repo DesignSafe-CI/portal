@@ -71,7 +71,14 @@ class FileCategorySelectorCtrl {
                 entity.associationIds.push(file.uuid);
                 entity.value.files.push(file.uuid);
             });
-
+            entity.value.fileObjs = [...(entity.value.fileObjs ?? []), 
+                                     ...files.map(f => ({path: f.path, 
+                                                         system: f.system, 
+                                                         type: f.type, 
+                                                         name: f.name, 
+                                                         length: f.length,
+                                                         uuid: f.uuid,
+                                                         lastModified: f.lastModified}))]
             if (!entity) {
                 return undefined;
             }
