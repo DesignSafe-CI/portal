@@ -51,8 +51,6 @@ def walk_hyb_sim(project_id, version=None):
         'fileTags': []
     }
 
-    
-
     hybrid_sim_list = getattr(doc, 'hybrid_simulations', [])
     for hyb_sim in hybrid_sim_list:
         # Do stuff with hyb sim.
@@ -88,7 +86,6 @@ def walk_hyb_sim(project_id, version=None):
 
             relation_map.append(report_map)
 
-
         analysis_list = filter(
                 lambda analysis: hyb_sim.uuid in analysis.value.hybridSimulations,
                 getattr(doc, 'analysiss', []))
@@ -108,7 +105,6 @@ def walk_hyb_sim(project_id, version=None):
 
             relation_map.append(analysis_map)
 
-
         global_model_list = filter(
             lambda global_model: hyb_sim.uuid in global_model.value.hybridSimulations,
             getattr(doc, 'global_models', []))
@@ -125,7 +121,6 @@ def walk_hyb_sim(project_id, version=None):
                 'container_path': global_model_container_path,
                 'fedora_mapping': {**format_global_modal(global_model), 'wasGeneratedBy': 'Hybrid Simulation: {}'.format(hyb_sim_doi)}
             }
-
 
             coordinator_list = filter(
                 lambda coordinator: global_model.uuid in coordinator.value.globalModels and has_associations(coordinator, [global_model, hyb_sim]),
@@ -254,9 +249,13 @@ def walk_hyb_sim(project_id, version=None):
     return relation_map[::-1]
 
 
-
 def format_hyb_sim(hyb_sim):
+    """
+    Map hybrid sim to Datacite fields for Fedora.
+    """
     meta = hyb_sim.value
+
+    facility = getattr(meta, 'facility', {}).get('name', None)
 
     try:
         authors = hyb_sim.authors
@@ -307,6 +306,7 @@ def format_hyb_sim(hyb_sim):
         "type": meta.simulationType,
         "creator": creator,
         "identifier": dois,
+        'contributor': facility,
         "available": publication_date,
         "publisher": "DesignSafe",
         "description": meta.description,

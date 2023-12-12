@@ -74,47 +74,51 @@
                 <div class="prj-head-title" style="padding-bottom:20px">
                     Experiment | <strong>{{ primEnt.value.title }}</strong>
                 </div>
-                <div class="entity-meta-field">
-                    <div class="entity-meta-label">Experiment Type</div>
-                    <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                            class="entity-meta-data-cap"
-                    >
-                        {{ $ctrl.getET(primEnt) }}
-                    </span>
-                    <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                            class="entity-meta-data-cap"
-                    >
-                        {{ primEnt.value.experimentTypeOther }}
-                    </span>
-                </div>
+                <span ng-if="primEnt.value.experimentType.length ">
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Experiment Type</div>
+                        <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                                class="entity-meta-data-cap"> 
+                                {{ $ctrl.getET(primEnt) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                                class="entity-meta-data-cap" >
+                                {{ primEnt.value.experimentTypeOther }}
+                        </span>
+                    </div>
+                </span>
                 <div class="entity-meta-field">
                     <div class="entity-meta-label-multi">Author(s)</div>
                     <div class="entity-meta-data">
                         <ds-author-list authors="primEnt.value.authors"></ds-author-list>
                     </div>
                 </div>
-                <div class="entity-meta-field">
-                    <div class="entity-meta-label">Experimental Facility</div>
-                    <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                            class="entity-meta-data-cap">
-                            {{ $ctrl.getEF(primEnt.value.experimentalFacility) }}
-                    </span>
-                    <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                            class="entity-meta-data-cap">
-                        {{ primEnt.value.experimentalFacilityOther }}
-                    </span>
-                </div>
-                <div class="entity-meta-field">
-                    <div class="entity-meta-label">Equipment Type</div>
-                    <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                            class="entity-meta-data-cap">
-                        {{ $ctrl.getEQ(primEnt) }}
-                    </span>
-                    <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
-                            class="entity-meta-data-cap">
-                        {{ primEnt.value.equipmentTypeOther }}
-                    </span>
-                </div>
+                <span ng-if="primEnt.value.experimentalFacility.length && primEnt.value.experimentalFacility !=='None'">
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Experimental Facility</div>
+                        <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                                class="entity-meta-data-cap">
+                                {{ $ctrl.getEF(primEnt.value.experimentalFacility) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                                class="entity-meta-data-cap">
+                            {{ primEnt.value.experimentalFacilityOther }}
+                        </span>
+                    </div>
+                </span>
+                <span ng-if="primEnt.value.equipmentType.length">
+                    <div class="entity-meta-field">
+                        <div class="entity-meta-label">Equipment Type</div>
+                        <span ng-if="!$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                                class="entity-meta-data-cap">
+                            {{ $ctrl.getEQ(primEnt) }}
+                        </span>
+                        <span ng-if="$ctrl.isValid(primEnt.value.experimentalFacilityOther)"
+                                class="entity-meta-data-cap">
+                            {{ primEnt.value.equipmentTypeOther }}
+                        </span>
+                    </div>
+                </span>
                 <div class="entity-meta-field" ng-if="primEnt.value.relatedWork.length">
                     <div class="entity-meta-label-multi">Related Work</div>
                     <div class="entity-meta-data">
