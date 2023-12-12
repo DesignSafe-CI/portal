@@ -9,10 +9,11 @@
         "Cited By"
     ],
     "nhTypes": [
-        "Other",
+        "Drought",
         "Earthquake",
         "Extreme Temperatures",
         "Fire",
+        "Wildfire",
         "Flood",
         "Hurricane/Tropical Storm",
         "Landslide",
@@ -21,26 +22,33 @@
         "Thunderstorm",
         "Storm Surge",
         "Pandemic",
-        "Wind"
+        "Wind",
+        "Other"
     ],
     "frTypes": [
         "Engineering",
-        "Field Experiment",
         "Geosciences",
+        "Public Health",
+        "Social Sciences",
         "Interdisciplinary",
+        "Field Experiment",
+        "Cross-Sectional Study",
         "Longitudinal Study",
         "Reconnaissance",
-        "Something Else",
-        "Social Sciences"
+        "Other"
+        
     ],
     "otherTypes": [
+        "Archival Materials",
+        "Audio",
         "Benchmark Dataset",
         "Check Sheet",
         "Code",
         "Database",
         "Dataset",
-        "Field Survery",
+        "Engineering",
         "Image",
+        "Interdisciplinary",
         "Jupyter Notebook",
         "Learning Object",
         "Model",
@@ -55,7 +63,6 @@
         "Survey Instrument",
         "Testbed",
         "Video",
-        "White Paper",
         "Other"
     ]
 }
