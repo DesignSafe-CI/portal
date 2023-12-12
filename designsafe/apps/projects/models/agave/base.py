@@ -36,16 +36,17 @@ class RelatedEntity(MetadataModel):
             body_dict['_relatedFields'].append(attrname)
         return body_dict
     
-    def save(self, ac):
-        """Remove file tags if the file has been un-associated from the entity."""
-        file_objs = getattr(self, 'file_objs', [])
-        file_tags = getattr(self, 'file_tags', [])
-
-        if file_objs and file_tags:
-            filtered_tags = filter(lambda tag: bool([file for file in file_objs if tag["path"].startswith(file["path"])]), file_tags)
-            self.file_tags = list(filtered_tags)
-        
-        return super().save(ac)
+    # TODO: uncomment when file_objs are synced.
+    #def save(self, ac):
+    #    """Remove file tags if the file has been un-associated from the entity."""
+    #    file_objs = getattr(self, 'file_objs', [])
+    #    file_tags = getattr(self, 'file_tags', [])
+    #
+    #    if file_objs and file_tags:
+    #        filtered_tags = filter(lambda tag: bool([file for file in file_objs if tag["path"].startswith(file["path"])]), file_tags)
+    #        self.file_tags = list(filtered_tags)
+    #    
+    #    return super().save(ac)
 
     def to_datacite_json(self):
         """Serialize object to datacite JSON.
