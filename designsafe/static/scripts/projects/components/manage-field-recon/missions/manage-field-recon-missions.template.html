@@ -70,6 +70,25 @@
                             ng-required="false">
                 </div>
             </div>
+            <!-- Facilities -->
+            <div class="form-group">
+                <label for="id-facility">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Facility</span>
+                        </div>
+                    </div>
+                </label>
+                <div style="display:flex;flex-direction: row;">
+                    <select class="form-control" ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
+                        ng-change="$ctrl.clearFacilityIfOther()" ng-model="$ctrl.form.facility.id"
+                        style="flex: 1; min-width: 150px">
+                        <option value="">-- Select a Facility --</option>
+                    </select>
+                    <input class="form-control" type="text" placeholder="Custom Facility" ng-model="$ctrl.form.facility.name"
+                        ng-if="$ctrl.form.facility.id == 'other'" style="margin-left: 5px;" />
+                </div>
+            </div>
             <!-- Referenced Data -->
             <div class="form-group">
                 <table class="manage-prj-table">
@@ -443,6 +462,12 @@
                                     </span>
                                 </div>
                             </div>
+                            <span ng-if="mission.value.facility.name">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Facility</div>
+                                    <span class="entity-meta-data-cap">{{ mission.value.facility.name }}</span>
+                                </div>
+                            </span>
                             <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
                                 <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">

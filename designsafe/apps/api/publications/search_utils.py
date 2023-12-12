@@ -37,6 +37,13 @@ def experiment_type_query(experiment_type):
                  {'match':
                   {'experimentsList.value.experimentType': experiment_type}}}}}})
 
+def simulation_facility_query(facility):
+    #if facility['name'] == 'Other':
+    #    facility['name'] = 'other'
+    id_query =  Q({'match':
+                  {'simulations.value.facility.id': facility}})
+
+    return  id_query
 
 def simulation_type_query(simulation_type):
     return Q({'term': {'simulations.value.simulationType.keyword': simulation_type}})
@@ -65,6 +72,10 @@ def nh_type_query(nh_type):
 def nh_event_query(nh_event):
     return Q({'match': {'project.value.nhEvent': nh_event}})
 
+def other_facility_query(facility):
+    id_query =  Q({'term':
+                  {'project.value.facilities.id.keyword': facility}})
+    return id_query
 
 def other_type_query(data_type):
     data_types = [
@@ -95,6 +106,10 @@ def other_type_query(data_type):
         return ~Q({'terms': {'project.value.dataType.keyword': data_types}}) # | ~Q({'exists', {'field': 'project.value.dataType.keyword'}})
     return Q({'term': {'project.value.dataType.keyword': data_type}})
 
+def hybrid_sim_facility_query(facility):
+    id_query =  Q({'term': {'hybrid_simulations.value.facility.id.keyword': facility}})
+
+    return id_query
 
 def hybrid_sim_type_query(sim_type):
     return Q({'term': {'hybrid_simulations.value.simulationType.keyword': sim_type}})
@@ -148,6 +163,12 @@ def pub_date_query(year):
         "lte": f"{year}||/y", 
         'format': 'yyyy'}
     }})
+
+def fr_facility_query(facility):
+    mission_query =  Q({'term': {'missions.value.facility.id.keyword': facility}})
+    doc_query =  Q({'term': {'reports.value.facility.id.keyword': facility}})
+
+    return mission_query | doc_query
 
 def fr_type_query(fr_type):
     if not fr_type:

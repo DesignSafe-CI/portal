@@ -52,6 +52,7 @@ class Simulation(RelatedEntity):
     simulation_type_other = fields.CharField('Simulation Type Other', max_length=1024)
     referenced_data = fields.ListField('Referenced Data')
     related_work = fields.ListField('Related Work')
+    facility = fields.BaseField()
     description = fields.CharField('Description', max_length=1024, default='')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(SimulationProject)
@@ -68,6 +69,17 @@ class Simulation(RelatedEntity):
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type.title()
             )
+        if self.facility:
+            attributes["subjects"] = attributes.get("subjects", []) + [
+                {"subject": self.facility["name"], }
+            ]
+            attributes["contributors"] = attributes.get("contributors", []) + [
+                {
+                    "contributorType": "HostingInstitution",
+                    "nameType": "Organizational",
+                    "name": self.facility["name"],
+                }
+            ]
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -94,6 +106,16 @@ class Simulation(RelatedEntity):
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
         attributes = super(Simulation, self).to_dataset_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         if self.simulation_type_other:
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type_other.title()
