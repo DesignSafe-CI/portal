@@ -2,6 +2,7 @@ import ManageProjectTemplate from './manage-project.template.html';
 import AmendProjectTemplate from './amend-project.template.html';
 const FormOptions = require('./project-form-options.json');
 const FormDefaults = require('./project-form-defaults.json');
+const FacilityData = require('../facility-data.json');
 
 class ManageProjectCtrl {
     constructor(UserService, ProjectModel, PublicationService, $http, $q, $uibModal, $state) {
@@ -33,7 +34,8 @@ class ManageProjectCtrl {
             },
             requireWorks: true,
             invalidUserError: false,
-            invalidUser: ''
+            invalidUser: '',
+            facilities: FacilityData.facility.facilities_list,
         };
         this.project = this.resolve.project;
         this.FormDefaults = FormDefaults;
@@ -44,6 +46,7 @@ class ManageProjectCtrl {
             this.fieldResearchTypes = FormOptions.frTypes;
             this.otherTypes = FormOptions.otherTypes;
             this.relatedWorkTypes = (projectCopy.projectType != 'other' ? FormOptions.rwTypes : FormOptions.rwTypesOther);
+            this.facilities= FacilityData.facility.facilities_list;
 
             if (projectCopy.projectType in this.FormDefaults) {
                 this.form = structuredClone(this.FormDefaults[projectCopy.projectType]);
@@ -210,12 +213,26 @@ class ManageProjectCtrl {
         projectData.pi = this.form.pi.username;
         projectData.coPis = this.validInputs(this.form.coPis, ['username'], 'username');
         projectData.teamMembers = this.validInputs(this.form.teamMembers, ['username'], 'username');
+        if (projectData['facility'] != 'other') {
+            projectData['facilityOther'] = '';
+        }
         if (hasPrjType) {
             projectData.guestMembers = this.validInputs(this.form.guestMembers, ['fname', 'lname']);
             projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number']);
             if (this.form.projectType === 'other') {
                 projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
                 projectData.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
+
+                const facilities = this.form.facilities.filter((fac) => fac && !!fac.id).map((fac) => {
+                    if (fac.id === 'other') {
+                        return {id: 'other', name: fac.name}
+                    } else {
+                        return {id: fac.id, name: this.ui.facilities.find((f) => f.name === fac.id).label}
+                    }
+                });
+
+                projectData.facilities = facilities
+
             } else {
                 if ('associatedProjects' in projectData) {
                     projectData.associatedProjects = [];
@@ -364,6 +381,24 @@ class ManageProjectCtrl {
         } else {
             this.form[fieldName].pop();
         }
+    }
+
+    getEF(str) {
+        console.log(this.ui.facilities)
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
     }
 
     addUserField(userType) {

@@ -14,6 +14,16 @@ from designsafe.apps.data.models.elasticsearch import IndexedPublication, Indexe
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 logger = logging.getLogger(__name__)
 
+class FileObjModel(MetadataModel):
+    _is_nested = True
+    path = fields.CharField('File path', max_length=1024, default='')
+    name = fields.CharField('File name', max_length=1024, default='')
+    system = fields.CharField('System', max_length=512, default='')
+    type = fields.CharField('File type', max_length=512, default='')
+    last_modified = fields.CharField('Last Modified', max_length=512, default='')
+    uuid = fields.CharField('UUID', max_length=512, default='')
+    length = fields.IntField('File Size', default=0)
+
 
 class RelatedEntity(MetadataModel):
     """Model for entities related to projects."""
@@ -25,6 +35,18 @@ class RelatedEntity(MetadataModel):
         for attrname, field in six.iteritems(self._meta._related_fields):
             body_dict['_relatedFields'].append(attrname)
         return body_dict
+    
+    # TODO: uncomment when file_objs are synced.
+    #def save(self, ac):
+    #    """Remove file tags if the file has been un-associated from the entity."""
+    #    file_objs = getattr(self, 'file_objs', [])
+    #    file_tags = getattr(self, 'file_tags', [])
+    #
+    #    if file_objs and file_tags:
+    #        filtered_tags = filter(lambda tag: bool([file for file in file_objs if tag["path"].startswith(file["path"])]), file_tags)
+    #        self.file_tags = list(filtered_tags)
+    #    
+    #    return super().save(ac)
 
     def to_datacite_json(self):
         """Serialize object to datacite JSON.
@@ -90,6 +112,7 @@ class Project(MetadataModel):
     associated_projects = fields.ListField('Associated Project') #AKA Related Work
     referenced_data = fields.ListField('Referenced Data')
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
+    facilities = fields.ListField('Facilities')
     keywords = fields.CharField('Keywords', default='')
     nh_event = fields.CharField('Natural Hazard Event', default='')
     nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
@@ -462,6 +485,21 @@ class Project(MetadataModel):
         attributes['subjects'] = [
             {'subject': keyword} for keyword in self.keywords.split(',')
         ]
+
+        subjects = attributes.get("subjects", [])
+        contributors = attributes.get("contributors", [])
+
+        for facility in getattr(self, "facilities", []):
+            subjects.append(facility["name"])
+            contributors.append({
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": facility["name"],
+            })
+
+        attributes["subjects"] = subjects
+        attributes["contributors"] = contributors
+
         attributes['language'] = 'English'
         attributes['identifiers'] = [
             {

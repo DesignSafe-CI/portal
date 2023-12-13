@@ -76,3 +76,11 @@ class MongoTTCHelper(object):
         results = list(cursor)
         for facility in results:
             yield facility
+
+    def get_ttc_categories(self):
+        """Get ttc categories in the ttc grants filters table"""
+        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
+        cursor = mongo_db.ttc_grant_categories.find()
+        results = list(cursor)
+        for category in results:
+            yield category['name']
