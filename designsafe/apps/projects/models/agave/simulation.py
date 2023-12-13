@@ -59,8 +59,6 @@ class Simulation(RelatedEntity):
     dois = fields.ListField('Dois')
 
     def to_datacite_json(self, project=None):
-        if project is None:
-            project={}
         """Serialize object to datacite JSON."""
         attributes = super(Simulation, self).to_datacite_json()
         if self.simulation_type_other:
@@ -83,29 +81,30 @@ class Simulation(RelatedEntity):
                 }
             ]
         # Metadata from project level
-        attributes["titles"] = attributes.get("titles", []) + [
-            {   "titleType": 'Subtitle',
-                "title": project.title }
-        ]
-        attributes["descriptions"] = attributes.get("descriptions", []) + [
-            {
-                'descriptionType': 'Abstract',
-                'description': project.description,
-                'lang': 'en-Us',
-            }
-        ]
-        if len(project.award_number) and type(project.award_number[0]) is not dict:
-            project.award_number = [{'order': 0, 'name': ''.join(project.award_number)}]
-        awards = sorted(
-            project.award_number,
-            key=lambda x: (x.get('order', 0), x.get('name', ''))
-        )
-        attributes['fundingReferences'] = []
-        for award in awards:
-            attributes['fundingReferences'].append({
-                'awardTitle': award['name'],
-                'awardNumber': award['number']
-                })
+        if project:
+            attributes["titles"] = attributes.get("titles", []) + [
+                {   "titleType": 'Subtitle',
+                    "title": project.title }
+            ]
+            attributes["descriptions"] = attributes.get("descriptions", []) + [
+                {
+                    'descriptionType': 'Abstract',
+                    'description': project.description,
+                    'lang': 'en-Us',
+                }
+            ]
+            if len(project.award_number) and type(project.award_number[0]) is not dict:
+                project.award_number = [{'order': 0, 'name': ''.join(project.award_number)}]
+            awards = sorted(
+                project.award_number,
+                key=lambda x: (x.get('order', 0), x.get('name', ''))
+            )
+            attributes['fundingReferences'] = []
+            for award in awards:
+                attributes['fundingReferences'].append({
+                    'awardTitle': award['name'],
+                    'awardNumber': award['number']
+                    })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
