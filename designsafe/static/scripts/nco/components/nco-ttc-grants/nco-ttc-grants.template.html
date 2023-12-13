@@ -19,7 +19,7 @@
             <label for="ttc-category-options">Select a Category:</label>
             <select name="ttc-category-options" ng-model="$ctrl.selectedCategory">
                 <option value="">All</option>
-                <option ng-repeat="category in $ctrl.categoriesList" value="{{category}}">{{category}}</option>
+                <option ng-repeat="category in $ctrl.categoriesList" value="{{category}}">{{category.slice(0,1).toUpperCase() + category.slice(1)}}</option>
             </select>
         </form>
         <div class="btn btn-default ttc-search-button" ng-click="$ctrl.filterSearch()">Search</div>
