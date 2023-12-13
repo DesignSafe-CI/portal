@@ -1,10 +1,32 @@
 <div class="modal-header">
-    <h4 class="modal-title">Abstract</h4>
+    <h4 class="modal-title">Grant Details</h4>
 </div>
 <div class="modal-body">
-    <p>
-        {{ $ctrl.abstract }}
-    </p>
+    <div class="ttc-data">Title: {{$ctrl.grant.Title}}</div>
+    <div class="ttc-data">
+        Award Number:
+        <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID={{grant.AwardNumber}}">
+            {{$ctrl.grant.AwardNumber}}
+        </a>
+    </div>
+    <div class="ttc-data">Start Date: {{$ctrl.grant.StartDate.$date | date}}</div>
+    <div class="ttc-data">End Date: {{$ctrl.grant.EndDate.$date | date}}</div>
+    <div class="ttc-data">
+        PI: {{$ctrl.grant.PiName}}
+        <span ng-if="$ctrl.grant.CoPiNames">
+            <br/>
+            Co-PI(s): {{$ctrl.grant.CoPiNames}}
+        </span>
+    </div>
+    <div class="ttc-data">Grant Org: {{$ctrl.grant.Org}}</div>
+    <div class="ttc-data" ng-if="$ctrl.grant.NheriFacility">NHERI Facility: {{grant.NheriFacility}}</div>
+    <div class="ttc-data" ng-if="!$ctrl.grant.NheriFacility">NHERI Facility: No Facility Listed</div>
+    <hr />
+    <div>
+        Abstract:
+        <br />
+        {{ $ctrl.grant.Abstract }}
+    </div>
 </div>
 <div class="modal-footer">
     <button class="btn btn-info btn-sm pull-right" ng-click="$ctrl.close()">
