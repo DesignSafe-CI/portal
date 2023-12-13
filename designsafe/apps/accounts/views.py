@@ -286,7 +286,7 @@ def profile_edit(request):
 
             # retain original account source
             data['source'] = tas_user['source']
-            tas.save_user(tas_user['id'], data)
+            saved_user = tas.save_user(tas_user['id'], data)
             messages.success(request, 'Your profile has been updated!')
 
             try:
@@ -298,6 +298,7 @@ def profile_edit(request):
                 ds_profile.orcid_id = pro_data['orcid_id']
                 ds_profile.professional_level = pro_data['professional_level']
                 ds_profile.nh_interests_primary = pro_data['nh_interests_primary']
+                ds_profile.institution = saved_user.get('institution', None)
 
             except ObjectDoesNotExist as e:
                 logger.info('exception e: {} {}'.format(type(e), e ))
@@ -309,7 +310,8 @@ def profile_edit(request):
                     website=pro_data['website'],
                     orcid_id=pro_data['orcid_id'],
                     professional_level=pro_data['professional_level'],
-                    nh_interests_primary=pro_data['nh_interests_primary']
+                    nh_interests_primary=pro_data['nh_interests_primary'],
+                    institution=saved_user.get('institution', None)
                     )
 
             ds_profile.update_required = False

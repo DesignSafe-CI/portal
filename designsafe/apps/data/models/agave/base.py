@@ -463,7 +463,8 @@ class Model(object, metaclass=BaseModel):
         else:
             logger.debug('Updating Metadata: %s, with: %s', self.uuid, body)
             ret = agave_client.meta.updateMetadata(uuid=self.uuid, body=body)
-            tasks.index_or_update_project.apply_async(args=[self.uuid], queue='api')
+            if self.name == "designsafe.project":
+                tasks.index_or_update_project.apply_async(args=[self.uuid], queue='api')
         
         self.update(**ret)
         return ret

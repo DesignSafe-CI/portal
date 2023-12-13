@@ -27,7 +27,7 @@
     padding: 10px;
 }
 
-.ttc-facility-filter, .ttc-sort-filter {
+.ttc-facility-filter, .ttc-sort-filter, .ttc-category-filter {
     display: inline;
     padding: 10px;
 }

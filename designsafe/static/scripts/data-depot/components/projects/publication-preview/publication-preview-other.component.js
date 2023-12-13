@@ -1,6 +1,6 @@
 import PublicationPreviewOtherTemplate from './publication-preview-other.component.html';
 import PublicationPopupTemplate from './publication-popup.html';
-
+const FacilityData = require('../../../../projects/components/facility-data.json');
 class PublicationPreviewOtherCtrl {
 
     constructor(ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
@@ -21,6 +21,7 @@ class PublicationPreviewOtherCtrl {
         this.data = this.ProjectService.resolveParams.data;
         this.ui = {
             loading: true,
+            facilities: FacilityData.facility.facilities_list,
         };
 
         if (!this.data) {
@@ -41,6 +42,23 @@ class PublicationPreviewOtherCtrl {
 
     goWork() {
         this.$state.go('projects.view', {projectId: this.project.uuid, data: this.project}, {reload: true});
+    }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
     }
 
     goCuration() {

@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from designsafe.apps.accounts.models import DesignSafeProfile, NotificationPreferences
 from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.auth.tasks import update_institution_from_tas
 from pytas.http import TASClient
 import logging
 import re
@@ -93,8 +94,11 @@ class TASBackend(ModelBackend):
                         )
                 try:
                     profile = DesignSafeProfile.objects.get(user=user)
+                    profile.institution = tas_user.get('institution', None)
+                    profile.save()
                 except DesignSafeProfile.DoesNotExist:
                     profile = DesignSafeProfile(user=user)
+                    profile.institution = tas_user.get('institution', None)
                     profile.save()
 
                 try:
@@ -155,6 +159,7 @@ class AgaveOAuthBackend(ModelBackend):
                 except DesignSafeProfile.DoesNotExist:
                     profile = DesignSafeProfile(user=user)
                     profile.save()
+                update_institution_from_tas.apply_async(args=[username], queue='api')
 
                 try:
                     prefs = NotificationPreferences.objects.get(user=user)

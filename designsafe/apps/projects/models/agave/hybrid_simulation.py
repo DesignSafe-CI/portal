@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +69,7 @@ class HybridSimulation(RelatedEntity):
     )
     referenced_data = fields.ListField('Referenced Data')
     related_work = fields.ListField('Related Work')
+    facility = fields.BaseField()
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(HybridSimulationProject)
     dois = fields.ListField('Dois')
@@ -86,15 +87,15 @@ class HybridSimulation(RelatedEntity):
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type.title()
             )
-        if hasattr(self, 'facility') and len(self.facility) and ('None' not in self.facility):
+        if self.facility:
             attributes["subjects"] = attributes.get("subjects", []) + [
-                {"subject": self.facility.title() }
+                {"subject": self.facility["name"], }
             ]
             attributes["contributors"] = attributes.get("contributors", []) + [
                 {
                     "contributorType": "HostingInstitution",
                     "nameType": "Organizational",
-                    "name": self.facility,
+                    "name": self.facility["name"],
                 }
             ]
         # Metadata from project level
@@ -125,7 +126,7 @@ class HybridSimulation(RelatedEntity):
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
             identifier = {}
-            mapping = {'Linked Project': 'IsSupplementTo', 'Linked Dataset': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
+            mapping = {'Linked Project': 'IsPartOf', 'Linked Dataset': 'IsPartOf', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
             if {'type', 'href', 'hrefType'} <= r_work.keys():
                 identifier['relationType'] = mapping[r_work['type']]
                 identifier['relatedIdentifierType'] = r_work['hrefType']
@@ -147,6 +148,16 @@ class HybridSimulation(RelatedEntity):
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
         attributes = super(HybridSimulation, self).to_dataset_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         if self.simulation_type_other:
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type_other.title()
@@ -170,6 +181,7 @@ class GlobalModel(RelatedEntity):
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Coordinator(RelatedEntity):
@@ -186,6 +198,7 @@ class Coordinator(RelatedEntity):
     global_models = fields.RelatedObjectField(GlobalModel)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class SimSubstructure(RelatedEntity):
@@ -203,6 +216,7 @@ class SimSubstructure(RelatedEntity):
     coordinators = fields.RelatedObjectField(Coordinator)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class ExpSubstructure(RelatedEntity):
@@ -215,6 +229,7 @@ class ExpSubstructure(RelatedEntity):
     coordinators = fields.RelatedObjectField(Coordinator)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class CoordinatorOutput(RelatedEntity):
@@ -227,6 +242,7 @@ class CoordinatorOutput(RelatedEntity):
     coordinators = fields.RelatedObjectField(Coordinator)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class SimOutput(RelatedEntity):
@@ -239,6 +255,7 @@ class SimOutput(RelatedEntity):
     sim_substructures = fields.RelatedObjectField(SimSubstructure)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    
 
 
 class ExpOutput(RelatedEntity):
@@ -251,6 +268,7 @@ class ExpOutput(RelatedEntity):
     exp_substructures = fields.RelatedObjectField(ExpSubstructure)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Analysis(RelatedEntity):
@@ -262,6 +280,7 @@ class Analysis(RelatedEntity):
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Report(RelatedEntity):
@@ -272,3 +291,4 @@ class Report(RelatedEntity):
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)

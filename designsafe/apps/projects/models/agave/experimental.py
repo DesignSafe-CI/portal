@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ class DataTag(MetadataModel):
     file_uuid = fields.CharField('File Uuid', max_length=1024, default='')
     tag_name = fields.CharField('Tag Name', max_length=512, default='')
     value = fields.CharField('Value', max_length=512, default='')
+
 
 class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'
@@ -109,7 +110,7 @@ class Experiment(RelatedEntity):
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
             identifier = {}
-            mapping = {'Linked Project': 'IsSupplementTo', 'Linked Dataset': 'IsSupplementTo', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
+            mapping = {'Linked Project': 'IsPartOf', 'Linked Dataset': 'IsPartOf', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
             if {'type', 'href', 'hrefType'} <= r_work.keys():
                 identifier['relationType'] = mapping[r_work['type']]
                 identifier['relatedIdentifierType'] = r_work['hrefType']
@@ -159,6 +160,7 @@ class Analysis(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class ModelConfig(RelatedEntity):
     model_name = 'designsafe.project.model_config'
@@ -168,6 +170,7 @@ class ModelConfig(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class SensorList(RelatedEntity):
     model_name = 'designsafe.project.sensor_list'
@@ -179,6 +182,7 @@ class SensorList(RelatedEntity):
     model_configs = fields.RelatedObjectField(ModelConfig)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Event(RelatedEntity):
     model_name = 'designsafe.project.event'
@@ -192,6 +196,7 @@ class Event(RelatedEntity):
     sensor_lists = fields.RelatedObjectField(SensorList)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Report(RelatedEntity):
     model_name = 'designsafe.project.report'
@@ -201,3 +206,4 @@ class Report(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)

@@ -3,17 +3,23 @@
     <div>Please make your selections and click the Search button to change the listing.</div>
     <div class="ttc-search">
         <form class="filter-group ttc-facility-filter">
-            <label for="ttc-facility-options">Filter by Facility:</label>
+            <label for="ttc-facility-options">Filter by Facility/Group:</label>
             <select name="ttc-facility-options" ng-model="$ctrl.selectedFacility">
-                <option value="">--Filter by Facility--</option>
+                <option value="">All</option>
                 <option ng-repeat="facility in $ctrl.facilitiesList" value="{{facility}}">{{facility}}</option>
             </select>
         </form>
         <form class="filter-group ttc-sort-filter">
             <label for="ttc-sort-options">Sort by:</label>
             <select name="ttc-sort-options" ng-model="$ctrl.selectedSort">
-                <option value="">--Sort Options--</option>
                 <option ng-repeat="sort in $ctrl.sortOptions" value="{{sort}}">{{sort}}</option>
+            </select>
+        </form>
+        <form class="filter-group ttc-category-filter">
+            <label for="ttc-category-options">Select a Category:</label>
+            <select name="ttc-category-options" ng-model="$ctrl.selectedCategory">
+                <option value="">All</option>
+                <option ng-repeat="category in $ctrl.categoriesList" value="{{category}}">{{category.slice(0,1).toUpperCase() + category.slice(1)}}</option>
             </select>
         </form>
         <div class="btn btn-default ttc-search-button" ng-click="$ctrl.filterSearch()">Search</div>
@@ -35,16 +41,18 @@
             <th class="ttc-data">End Date</th>
             <th class="ttc-data">PI / Co-PI</th>
             <th class="ttc-data">Grant Org</th>
-            <th class="ttc-data">Org State</th>
             <th class="ttc-data">NHERI Facility</th>
-            <th class="ttc-data">Abstract</th>
-            <th class="ttc-data">Category/Labels</th>
+            <th class="ttc-data">Details</th>
         </tr>
         <!-- end header labels-->
 
         <!-- list of grants -->
         <tr class="ttc-row ttc-grant-item" ng-repeat="grant in $ctrl.grantList">
-            <td class="ttc-data">{{grant.AwardNumber}}</td>
+            <td class="ttc-data">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID={{grant.AwardNumber}}">
+                    {{grant.AwardNumber}}
+                </a>
+            </td>
             <td class="ttc-title ttc-data">{{grant.Title}}</td>
             <td class="ttc-data">{{grant.StartDate.$date | date}}</td>
             <td class="ttc-data">{{grant.EndDate.$date | date}}</td>
@@ -52,13 +60,9 @@
                 {{grant.PiName}} <span ng-if="grant.CoPiNames"> / {{grant.CoPiNames}}</span>
             </td>
             <td class="ttc-data">{{grant.Org}}</td>
-            <td class="ttc-data ttc-org-state">{{grant.OrgState}}</td>
             <td class="ttc-data" ng-if="grant.NheriFacility">{{grant.NheriFacility}}</td>
             <td class="ttc-data" ng-if="!grant.NheriFacility">No Facility Listed</td>
-            <td class="ttc-abstract ttc-data btn btn-default" ng-click="$ctrl.showAbstract(grant.Abstract)">View</td>
-
-            <!-- this last one doesn't exist in the db yet so putting filler info for now -->
-            <td class="ttc-data">None</td>
+            <td class="ttc-abstract ttc-data btn btn-default" ng-click="$ctrl.showAbstract(grant)">View Details</td>
         </tr>
     </table>
 </div>

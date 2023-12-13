@@ -8,3 +8,4 @@ coverage
 .docs
 .github
 .pytest_cache
+data
