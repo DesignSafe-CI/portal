@@ -9,12 +9,18 @@ class NcoTtcGrantsCtrl {
     }
 
     $onInit() {
+        this.initialParams = {
+            sort: 'Start Date Descending',
+        };
+        // default intitial sorting
+        this.selectedSort = 'Start Date Descending';
         this._ui = {
             grantsLoading: true,
             facilitiesLoading: false,
+            categoriesLoading: false,
         };
 
-        this.loadGrants()
+        this.loadGrants(this.initialParams)
             .then((resp) => {
                 return resp;
             }, (err) => {
@@ -32,6 +38,15 @@ class NcoTtcGrantsCtrl {
             }).finally( () => {
                 this._ui.facilitiesLoading = false;
             });
+
+        this.loadCategories({})
+        .then((resp) => {
+            return resp;
+        }, (err) => {
+            this._ui.categoriesError = err.message;
+        }).finally( () => {
+            this._ui.categoriesLoading = false;
+        });
 
         this.sortOptions = [
             "Start Date Descending",
@@ -71,11 +86,28 @@ class NcoTtcGrantsCtrl {
             });
     }
 
-    showAbstract(abstract) {
+    loadCategories(){
+        this._ui.categoriesLoading = true;
+        return this.$http.get('/nco/api/ttc_categories')
+        .then((resp) => {
+            this.categoriesList = _.map(
+                resp.data.response,
+            );
+            console.log(this.categoriesList);
+            return this.categoriesList;
+        }, (err) => {
+            this._ui.categoriesError = err.message;
+        }).finally ( () => {
+            this._ui.categoriesLoading = false;
+        });
+    }
+
+    //view details
+    showAbstract(grant) {
         this.$uibModal.open({
             component: 'ncoTtcAbstract',
             resolve: {
-                abstract: () => abstract
+                grant: () => grant
             },
             size: 'lg',
         });
@@ -84,6 +116,7 @@ class NcoTtcGrantsCtrl {
     filterSearch(){
         var params = {
             facility: this.selectedFacility,
+            category: this.selectedCategory,
             sort: this.selectedSort,
         };
         this.loadGrants(params);
