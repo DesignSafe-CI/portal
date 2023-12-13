@@ -159,7 +159,7 @@ def draft_publication(
                         project_id=project_id,
                         entity_uuid=ent_uuid
                     )
-                ent_datacite_json = entity.to_datacite_json()
+                ent_datacite_json = entity.to_datacite_json(prj)
                 ent_datacite_json['url'] = entity_url
                 # ent_datacite_json['version'] = str(revision) # omitting version number per Maria
 
@@ -198,7 +198,7 @@ def draft_publication(
             prj.team_order = pub.project.value.teamOrder
             if revised_authors:
                 prj.team_order = revised_authors
-            prj_datacite_json = prj.to_datacite_json()
+            prj_datacite_json = prj.to_datacite_json(prj)
             prj_datacite_json['url'] = prj_url
             prj_datacite_json['version'] = str(revision)
             # append links to previous versions in DOI...
@@ -216,7 +216,7 @@ def draft_publication(
         else:
             # format project for publication
             prj_url = TARGET_BASE.format(project_id=project_id)
-            prj_datacite_json = prj.to_datacite_json()
+            prj_datacite_json = prj.to_datacite_json(prj)
             prj_datacite_json['url'] = prj_url
 
 
@@ -322,11 +322,15 @@ def amend_datacite_doi(publication):
     """
     pub_dict = publication.to_dict()
     project_type = pub_dict['project']['value']['projectType']
+    mgr = ProjectsManager(service_account())
+    prj = mgr.get_project_by_id(pub_dict['project_id'])
 
     if project_type == 'other':
         prj_class = lookup_model(pub_dict['project'])
         project = prj_class(value=pub_dict['project']['value'], uuid=pub_dict['project']['uuid'])
-        prj_datacite_json = project.to_datacite_json()
+        prj_datacite_json = project.to_datacite_json(project=None)
+        if project is None:
+            project={}
         prj_doi = project.dois[0]
         DataciteManager.create_or_update_doi(prj_datacite_json, prj_doi)
     else:
@@ -335,7 +339,7 @@ def amend_datacite_doi(publication):
                 ent_class = lookup_model(ent)
                 entity = ent_class(value=ent['value'], uuid=ent['uuid'])
                 entity.authors = ent['authors'] # swap author formats before creating json
-                ent_datacite_json = entity.to_datacite_json()
+                ent_datacite_json = entity.to_datacite_json(prj)
                 ent_doi = entity.dois[0]
                 DataciteManager.create_or_update_doi(ent_datacite_json, ent_doi)
 
@@ -649,6 +653,7 @@ def archive(project_id, revision=None):
     def create_metadata():
         mgr = ProjectsManager(service_account())
         pub_dict = pub._wrapped.to_dict()
+        prj = mgr.get_project_by_id(pub_dict['project_id'])
         meta_dict = {}
 
         entity_type_map = {
@@ -666,12 +671,12 @@ def archive(project_id, revision=None):
                 entity_uuids = []
                 if ent_type in pub_dict.keys():
                     entity_uuids = [x['uuid'] for x in pub_dict[ent_type]]
-                meta_dict = mgr.get_entity_by_uuid(project_uuid).to_datacite_json()
+                meta_dict = mgr.get_entity_by_uuid(project_uuid).to_datacite_json(prj)
                 meta_dict['published_resources'] = []
                 meta_dict['url'] = TARGET_BASE.format(project_id=pub_dict['project_id'])
                 for uuid in entity_uuids:
                     entity = mgr.get_entity_by_uuid(uuid)
-                    ent_json = entity.to_datacite_json()
+                    ent_json = entity.to_datacite_json(prj)
                     ent_json['doi'] = entity.dois[0]
                     ent_json['url'] = ENTITY_TARGET_BASE.format(
                         project_id=pub_dict['project_id'],
@@ -680,7 +685,7 @@ def archive(project_id, revision=None):
                     meta_dict['published_resources'].append(ent_json)
             else:
                 project = mgr.get_entity_by_uuid(project_uuid)
-                meta_dict = project.to_datacite_json()
+                meta_dict = project.to_datacite_json(prj)
                 meta_dict['doi'] = project.dois[0]
                 meta_dict['url'] = TARGET_BASE.format(project_id=pub_dict['project_id'])
 
