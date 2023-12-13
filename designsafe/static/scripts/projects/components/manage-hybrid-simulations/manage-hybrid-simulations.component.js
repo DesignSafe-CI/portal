@@ -1,6 +1,7 @@
 import ManageHybridSimTemplate from './manage-hybrid-simulations.template.html';
 const HybridSimDefaults = require('./hybrid-sim-form-defaults.json');
 const HybridSimTypes = require('./hybrid-simulation-types.json');
+const FacilityData = require('../facility-data.json');
 
 class ManageHybridSimCtrl {
 
@@ -23,7 +24,8 @@ class ManageHybridSimCtrl {
                 referencedData: false,
             },
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
-            hybridSimTypes: HybridSimTypes
+            hybridSimTypes: HybridSimTypes,
+            facilities: FacilityData.facility.facilities_list,
         };
         this.configureForm(this.edit);
         this.form.authors = this.configureAuthors(this.edit, false);
@@ -47,6 +49,12 @@ class ManageHybridSimCtrl {
                     form[key] = hybridSim.value[key];
                 }
             }
+
+            if (hybridSim.value.facility && typeof hybridSim.value.facility === 'object') {
+                form.facility = hybridSim.value.facility
+            } else {
+                form.facility = {}
+            }
         }
         this.ui.require.relatedWork = this.requireField(form.relatedWork);
         this.ui.require.referencedData = this.requireField(form.referencedData);
@@ -57,6 +65,12 @@ class ManageHybridSimCtrl {
         this.configureForm();
         this.form.authors = this.configureAuthors(null, false);
         this.ui.editing = false;
+    }
+
+    clearFacilityIfOther() {
+        if (this.form.facility.id === "other") {
+            this.form.facility.name = ""
+        }
     }
 
     configureAuthors(hybridSim, amending) {
@@ -163,6 +177,16 @@ class ManageHybridSimCtrl {
         }
     }
 
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
+    }
+
     isValid(ent) {
         if (ent && ent != '' && ent != 'None') {
             return true;
@@ -178,6 +202,18 @@ class ManageHybridSimCtrl {
 
     prepareData() {
         // drop or reformat inputs before for submission
+        console.log(this.form.facility)
+        const facilityId = this.form.facility.id;
+        if (!facilityId) {
+            delete this.form.facility;
+        } else if (facilityId === 'other') {
+            this.form.facility = { id: 'other', name: this.form.facility.name };
+        } else {
+            this.form.facility = {
+                id: facilityId,
+                name: this.ui.facilities.find((f) => f.name === facilityId)?.label,
+            };
+        }
         if(this.form.simulationType != 'Other') {
             this.form.simulationTypeOther = '';
         }

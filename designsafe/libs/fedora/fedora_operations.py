@@ -233,6 +233,11 @@ def format_metadata_for_fedora(project_id, version=None):
     for award in award_numbers:
         contributors.append(award['name'] or None)
         contributors.append(award['number'] or None)
+    
+
+    facilities = getattr(pub_meta, "facilities", [])
+    for facility in facilities:
+        contributors.append(facility["name"])
 
     identifiers = [pub_meta.projectId,
                    'https://www.designsafe-ci.org/'
