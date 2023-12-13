@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +141,7 @@ class Model(RelatedEntity):
     simulations = fields.RelatedObjectField(Simulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Input(RelatedEntity):
@@ -152,6 +153,7 @@ class Input(RelatedEntity):
     model_configs = fields.RelatedObjectField(Model)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Output(RelatedEntity):
@@ -164,6 +166,7 @@ class Output(RelatedEntity):
     sim_inputs = fields.RelatedObjectField(Input)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Analysis(RelatedEntity):
@@ -176,6 +179,7 @@ class Analysis(RelatedEntity):
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Report(RelatedEntity):
@@ -187,3 +191,4 @@ class Report(RelatedEntity):
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)

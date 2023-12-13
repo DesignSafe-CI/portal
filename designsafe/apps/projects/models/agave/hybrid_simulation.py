@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
 
 logger = logging.getLogger(__name__)
 
@@ -155,6 +155,7 @@ class GlobalModel(RelatedEntity):
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Coordinator(RelatedEntity):
@@ -171,6 +172,7 @@ class Coordinator(RelatedEntity):
     global_models = fields.RelatedObjectField(GlobalModel)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class SimSubstructure(RelatedEntity):
@@ -188,6 +190,7 @@ class SimSubstructure(RelatedEntity):
     coordinators = fields.RelatedObjectField(Coordinator)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class ExpSubstructure(RelatedEntity):
@@ -200,6 +203,7 @@ class ExpSubstructure(RelatedEntity):
     coordinators = fields.RelatedObjectField(Coordinator)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class CoordinatorOutput(RelatedEntity):
@@ -212,6 +216,7 @@ class CoordinatorOutput(RelatedEntity):
     coordinators = fields.RelatedObjectField(Coordinator)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class SimOutput(RelatedEntity):
@@ -224,6 +229,7 @@ class SimOutput(RelatedEntity):
     sim_substructures = fields.RelatedObjectField(SimSubstructure)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    
 
 
 class ExpOutput(RelatedEntity):
@@ -236,6 +242,7 @@ class ExpOutput(RelatedEntity):
     exp_substructures = fields.RelatedObjectField(ExpSubstructure)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Analysis(RelatedEntity):
@@ -247,6 +254,7 @@ class Analysis(RelatedEntity):
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Report(RelatedEntity):
@@ -257,3 +265,4 @@ class Report(RelatedEntity):
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)

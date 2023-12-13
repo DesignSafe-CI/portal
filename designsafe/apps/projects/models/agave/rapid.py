@@ -3,7 +3,7 @@ import logging
 import json
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
 
 logger = logging.getLogger(__name__)
 
@@ -172,6 +172,7 @@ class Collection(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class SocialScience(RelatedEntity):
     model_name = 'designsafe.project.field_recon.social_science'
@@ -194,6 +195,7 @@ class SocialScience(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Planning(RelatedEntity):
     model_name = 'designsafe.project.field_recon.planning'
@@ -205,6 +207,7 @@ class Planning(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Geoscience(RelatedEntity):
     model_name = 'designsafe.project.field_recon.geoscience'
@@ -223,6 +226,7 @@ class Geoscience(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Report(RelatedEntity):
     model_name = 'designsafe.project.field_recon.report'
@@ -235,6 +239,7 @@ class Report(RelatedEntity):
     project = fields.RelatedObjectField(FieldReconProject)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
     dois = fields.ListField('Dois')
 
     def to_datacite_json(self):
