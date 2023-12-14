@@ -226,16 +226,22 @@ class Project(MetadataModel):
         dataset_json = {
             "@context": "http://schema.org",
             "@type": "Dataset",
-            "@id": "",
-            "identifier": "",
-            "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
+            "url": "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/" + self.project_id,
+            "identifier":  {
+                "@id": "",
+                "@type": "PropertyValue",
+                "propertyID": "https://registry.identifiers.org/registry/doi",
+                "value": "",
+                "url": ""
+            },
             "name": self.title,
             "creator": [
                 {
                     "name": "",
                     "affiliation": "",
                     "@id": "",
-                    "identifier": ""
+                    "identifier": "",
+                    "@type":"Person",
                 }
             ],
             "author": [
@@ -258,16 +264,19 @@ class Project(MetadataModel):
             "publisher": {
                 "@type": "Organization",
                 "name": "Designsafe-CI",
-                "url": "https://designsafe-ci.org"
-            },
-            "provider": {
-                "@type": "Organization",
-                "name": "Designsafe-CI"
+                "description": "DesignSafe is a comprehensive cyberinfrastructure that is part of the NSF-funded Natural Hazard Engineering Research Infrastructure (NHERI) and provides cloud-based tools to manage, analyze, understand, and publish critical data for research to understand the impacts of natural hazards",
+                "url": "https://designsafe-ci.org",
+                "@id": "https://designsafe-ci.org",
+                "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
             },
             "includedInDataCatalog": {
                 "@type": "DataCatalog",
                 "name": "Designsafe-CI",
                 "url": "https://designsafe-ci.org"
+            },
+            "funding": {
+                "@type": "Grant",
+                "name": self.award_number[0],
             },
             "hasPart": {}
         }
@@ -286,57 +295,9 @@ class Project(MetadataModel):
             pass
 
         if self.dois:
-            dataset_json['@id'] = self.dois[0]
-            dataset_json['identifier'] = self.dois[0]
-
-            dataset_json["distribution"] = {
-                    "@context": "http://schema.org",
-                    "@type": "Dataset",
-                    "@id": "",
-                    "identifier": "",
-                    "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
-                    "name": self.title,
-                    "creator": [
-                        {
-                            "name": "",
-                            "affiliation": "",
-                            "@id": "",
-                            "identifier": ""
-                        }
-                    ],
-                    "author": [
-                        {
-                            "name": "",
-                            "affiliation": "",
-                            "@id": "",
-                            "identifier": ""
-                        }
-                    ],
-                    "datePublished": self.created,
-                    "dateModified": self.to_body_dict()['lastUpdated'],
-                    "description": self.description,
-                    "keywords": self.keywords.split(','),
-                    "license": {
-                        "@type": "CreativeWork",
-                        "license": "",
-                        "url":""
-                    },
-                    "publisher": {
-                        "@type": "Organization",
-                        "name": "Designsafe-CI",
-                        "url": "https://designsafe-ci.org"
-                    },
-                    "provider": {
-                        "@type": "Organization",
-                        "name": "Designsafe-CI"
-                    },
-                    "includedInDataCatalog": {
-                        "@type": "DataCatalog",
-                        "name": "Designsafe-CI",
-                        "url": "https://designsafe-ci.org"
-                    },
-            }
-
+            dataset_json['identifier']['@id'] = "https://doi.org/" + self.dois[0]
+            dataset_json['identifier']['url'] = "https://doi.org/" + self.dois[0]
+            dataset_json['identifier']['value'] = "doi:" + related_ents[i].dois[0]
 
         else:
             related_ents = self.related_entities()
@@ -345,16 +306,22 @@ class Project(MetadataModel):
                     dataset_json['hasPart']['relatedIdentifier_' + str(i)] = {
                         "@context": "http://schema.org",
                         "@type": "Dataset",
-                        "@id" : "",
-                        "identifier" : "",
-                        "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
+                        "url": "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/" + self.project_id,
+                        "identifier":  {
+                            "@id": "",
+                            "@type": "PropertyValue",
+                            "propertyID": "https://registry.identifiers.org/registry/doi",
+                            "value": "",
+                            "url": ""
+                        },
                         "name": related_ents[i].title,
                         "creator": [
                             {
                                 "name": "",
                                 "affiliation": "",
                                 "@id": "",
-                                "identifier": ""
+                                "identifier": "",
+                                "@type":"Person",
                             }
                         ],
                         "author": [
@@ -375,22 +342,27 @@ class Project(MetadataModel):
                         },
                         "publisher": {
                             "@type": "Organization",
-                            "name": "Designsafe-CI"
-                        },
-                        "provider": {
-                            "@type": "Organization",
-                            "name": "Designsafe-CI"
+                            "name": "Designsafe-CI",
+                            "description": "DesignSafe is a comprehensive cyberinfrastructure that is part of the NSF-funded Natural Hazard Engineering Research Infrastructure (NHERI) and provides cloud-based tools to manage, analyze, understand, and publish critical data for research to understand the impacts of natural hazards",
+                            "url": "https://designsafe-ci.org",
+                            "@id": "https://designsafe-ci.org",
+                            "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
                         },
                         "includedInDataCatalog": {
                             "@type": "DataCatalog",
                             "name": "Designsafe-CI",
-                            "url": "https://designsafe-ci.org"
+                            "description": "DesignSafe is a comprehensive cyberinfrastructure that is part of the NSF-funded Natural Hazard Engineering Research Infrastructure (NHERI) and provides cloud-based tools to manage, analyze, understand, and publish critical data for research to understand the impacts of natural hazards",
+                            "url": "https://designsafe-ci.org",
+                            "funder": {
+                                "@type": "Organization",
+                                "name": "U.S. National Science Foundation"
+                            }
                         },
-                        "funding": ""
+                        "funding": {},
                     }
-                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['@id'] = related_ents[i].dois[0]
-                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['identifier'] = related_ents[i].dois[0]
-
+                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['identifier']['@id'] = "https://doi.org/" + related_ents[i].dois[0]
+                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['identifier']['url'] = "https://doi.org/" + related_ents[i].dois[0]
+                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['identifier']['value'] = "doi:" + related_ents[i].dois[0]
                     if len(self.award_number) and type(self.award_number[0]) is not dict:
                         self.award_number = [{'order': 0, 'name': ''.join(self.award_number)}]
                     awards = sorted(
@@ -400,6 +372,7 @@ class Project(MetadataModel):
                     dataset_json['hasPart']['relatedIdentifier_' + str(i)]['funding'] = []
                     for award in awards:
                         dataset_json['hasPart']['relatedIdentifier_' + str(i)]['funding'].append({
+                            "@type": "Grant",
                             'name': award['name'],
                             'identifier': '' if 'number' not in award else award['number']
                         })
@@ -414,12 +387,8 @@ class Project(MetadataModel):
                         dataset_json['hasPart']['relatedIdentifier_' + str(i)]['license'] = dataset_json['license']
                     except (DocumentNotFound, AttributeError):
                         pass
-                    # logger.info('***'*999)
-                    # logger.info(dataset_json['relatedIdentifier_' + str(i)])
-                    # logger.info('***'*999)
-                    #dataset_json['hasPart'].append(dataset_json['relatedIdentifier_' + str(i)])
 
-        return dataset_json
+        return dataset_json 
 
     def to_datacite_json(self):
         """Serialize project to datacite json."""
