@@ -2,10 +2,13 @@
 import json
 from typing import TypedDict
 from uuid import uuid4
+from pathlib import Path
 import networkx as nx
+from django.utils.text import slugify
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers.publication import FIELD_MAP
+from designsafe.apps.projects_v2.schema_models import PATH_SLUGS
 from designsafe.apps.projects.models.categories import Category
 from designsafe.apps.projects_v2 import constants as names
 
@@ -50,6 +53,7 @@ ALLOWED_RELATIONS = {
     names.HYBRID_SIM_EXP_SUBSTRUCTURE: [names.HYBRID_SIM_EXP_OUTPUT],
     # Field Recon
     names.FIELD_RECON_MISSION: [
+        names.FIELD_RECON_COLLECTION,
         names.FIELD_RECON_PLANNING,
         names.FIELD_RECON_SOCIAL_SCIENCE,
         names.FIELD_RECON_GEOSCIENCE,
@@ -95,6 +99,13 @@ def construct_graph(project_id) -> nx.DiGraph:
     project_graph.add_node(root_node_id, **root_node_data)
 
     construct_graph_recurse(project_graph, entity_listing, root_entity, root_node_id)
+
+    deprecated_mission_nodes = (
+        node
+        for (node, data) in project_graph.nodes.data()
+        if data["name"] == names.FIELD_RECON_COLLECTION
+    )
+    project_graph.remove_nodes_from(deprecated_mission_nodes)
 
     return project_graph
 
@@ -163,17 +174,37 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
     entity_listing = get_entities_from_publication(project_id, version=version)
     root_entity = entity_listing[0]
 
-    project_graph = nx.DiGraph()
+    pub_graph = nx.DiGraph()
     root_node_id = "NODE_ROOT"
     root_node_data = {
         "uuid": root_entity["uuid"],
         "name": root_entity["name"],
     }
 
-    project_graph.add_node(root_node_id, **root_node_data)
-    construct_graph_recurse(project_graph, entity_listing, root_entity, root_node_id)
+    pub_graph.add_node(root_node_id, **root_node_data)
+    construct_graph_recurse(pub_graph, entity_listing, root_entity, root_node_id)
 
-    return project_graph
+    pub_graph.nodes["NODE_ROOT"]["basePath"] = f"/{project_id}"
+    for parent_node, child_node in nx.bfs_edges(pub_graph, "NODE_ROOT"):
+        # Construct paths based on the entity hierarchy
+        parent_base_path = pub_graph.nodes[parent_node]["basePath"]
+        entity_name_slug = PATH_SLUGS.get(pub_graph.nodes[child_node]["name"])
+        entity_title = next(
+            e["value"]["title"]
+            for e in entity_listing
+            if e["uuid"] == pub_graph.nodes[child_node]["uuid"]
+        )
+        entity_dirname = f"{entity_name_slug}--{slugify(entity_title)}"
+
+        if parent_node in pub_graph.successors("NODE_ROOT"):
+            # Publishable entities have a "data" folder in Bagit semantics.
+            child_path = Path(parent_base_path) / "data" / entity_dirname
+        else:
+            child_path = Path(parent_base_path) / entity_dirname
+
+        pub_graph.nodes[child_node]["basePath"] = str(child_path)
+
+    return pub_graph
 
 
 class EntityOrder(TypedDict):
@@ -189,7 +220,6 @@ def get_entity_orders(
     """extract ordering metadata for a project or pub."""
     pub_orders = entity.get("_ui", None)
     if pub_orders:
-        print(pub_orders)
         return entity["_ui"].get("orders", [])
 
     prj_orders = Category.objects.filter(uuid=entity["uuid"]).first()

@@ -43,3 +43,39 @@ SCHEMA_MAPPING = {
     constants.HYBRID_SIM_EXP_SUBSTRUCTURE: hybrid_sim.HybridSimExpSubstructure,
     constants.HYBRID_SIM_EXP_OUTPUT: hybrid_sim.HybridSimExpOutput,
 }
+
+PATH_SLUGS = {
+    constants.PROJECT: "Project",
+    # Experimental
+    constants.EXPERIMENT: "Experiment",
+    constants.EXPERIMENT_ANALYSIS: "Analysis",
+    constants.EXPERIMENT_REPORT: "Report",
+    constants.EXPERIMENT_MODEL_CONFIG: "Model-config",
+    constants.EXPERIMENT_SENSOR: "Sensor",
+    constants.EXPERIMENT_EVENT: "Event",
+    # Simulation
+    constants.SIMULATION: "Simulation",
+    constants.SIMULATION_REPORT: "Report",
+    constants.SIMULATION_ANALYSIS: "Analysis",
+    constants.SIMULATION_MODEL: "Model",
+    constants.SIMULATION_INPUT: "Input",
+    constants.SIMULATION_OUTPUT: "Output",
+    # Field Research
+    constants.FIELD_RECON_MISSION: "Mission",
+    constants.FIELD_RECON_COLLECTION: "Collection",
+    constants.FIELD_RECON_PLANNING: "Planning-collection",
+    constants.FIELD_RECON_GEOSCIENCE: "Geoscience-collection",
+    constants.FIELD_RECON_SOCIAL_SCIENCE: "Social-science-collection",
+    constants.FIELD_RECON_REPORT: "Report",
+    # Hybrid Sim
+    constants.HYBRID_SIM: "Hybrid-simulation",
+    constants.HYBRID_SIM_ANALYSIS: "Analysis",
+    constants.HYBRID_SIM_REPORT: "Report",
+    constants.HYBRID_SIM_GLOBAL_MODEL: "Global-model",
+    constants.HYBRID_SIM_COORDINATOR: "Coordinator",
+    constants.HYBRID_SIM_COORDINATOR_OUTPUT: "Coordinator-output",
+    constants.HYBRID_SIM_SIM_SUBSTRUCTURE: "Simulation-substructure",
+    constants.HYBRID_SIM_SIM_OUTPUT: "Simulation-output",
+    constants.HYBRID_SIM_EXP_SUBSTRUCTURE: "Experimental-substructure",
+    constants.HYBRID_SIM_EXP_OUTPUT: "Experimental-output",
+}
