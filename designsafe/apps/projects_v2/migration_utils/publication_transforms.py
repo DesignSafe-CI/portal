@@ -80,15 +80,13 @@ def update_file_tag_paths(entity, base_path) -> list[FileTag]:
         tags = convert_legacy_tags(entity)
 
     updated_tags = []
-
-    pub_mapping = {}
-    file_objs = entity["fileObjs"]
-    for file_obj in file_objs:
-        fo_filename = Path(file_obj["path"]).name
-        pub_mapping[file_obj["path"]] = str(Path(base_path) / fo_filename)
+    pub_mapping = {
+        file_obj["path"]: str(Path(base_path) / Path(file_obj["path"]).name)
+        for file_obj in entity["fileObjs"]
+    }
 
     for tag in tags:
-        tag_path_prefixes = [p for p in pub_mapping if tag["path"].startswith(p)]
+        tag_path_prefixes = (p for p in pub_mapping if tag["path"].startswith(p))
 
         for prefix in tag_path_prefixes:
             updated_tags.append(
