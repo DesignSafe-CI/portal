@@ -121,6 +121,13 @@ class Ref(MetadataModel):
     reference: str = ""
 
 
+class DropdownValue(MetadataModel):
+    """Model for a dropdown option with an ID and name"""
+
+    id: str
+    name: Optional[str] = None
+
+
 def handle_award_number(award: list[dict] | str) -> list[dict]:
     """Handle the case where awards are saved as strings."""
     if isinstance(award, list):
@@ -202,6 +209,4 @@ class BaseProject(MetadataModel):
     file_tags: list[FileTag] = []
     hazmapper_maps: list[HazmapperMap] = []
 
-    # Facility values for dev projects
-    facility: Optional[str] = None
-    facility_other: Optional[str] = None
+    facilities: list[DropdownValue] = []
