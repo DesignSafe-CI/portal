@@ -25,7 +25,7 @@ def get_user_info(username, role=None):
         "lname": "N/A",
         "email": "N/A",
         "inst": "N/A",
-        "role": None
+        "role": role
     }
     user_info =  {
         "username": username,
