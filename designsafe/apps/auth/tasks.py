@@ -99,7 +99,7 @@ def new_user_alert(username):
 
 
 @shared_task()
-def clear_old_notifications(self):
+def clear_old_notifications():
     """Delete notifications older than 30 days to prevent them cluttering the db."""
     time_cutoff = datetime.now() - timedelta(days=30)
     Notification.objects.filter(datetime__lte=time_cutoff).delete()
