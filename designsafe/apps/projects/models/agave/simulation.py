@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel, get_user_info
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel, get_user_info, NaturalHazardEvent
 
 logger = logging.getLogger(__name__)
 
@@ -11,6 +11,7 @@ class SimulationProject(Project):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
     co_pis = fields.ListField('Co PIs')
+    users = fields.ListField('Users')
     guest_members = fields.ListField('Guest Members')
     project_type = fields.CharField('Project Type', max_length=255, default='simulation')
     project_id = fields.CharField('Project Id')
@@ -23,12 +24,15 @@ class SimulationProject(Project):
     referenced_data = fields.ListField('Referenced Data')
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
     keywords = fields.CharField('Keywords', default='')
+
     nh_event = fields.CharField('Natural Hazard Event', default='')
     nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
     nh_event_end = fields.CharField('Date End', max_length=1024, default='')
     nh_location = fields.CharField('Natural Hazard Location', default='')
     nh_latitude = fields.CharField('Natural Hazard Latitude', default='')
     nh_longitude = fields.CharField('Natural Hazard Longitude', default='')
+
+    nh_events = fields.ListField('Natural Hazard Events', list_cls=NaturalHazardEvent)
     nh_types = fields.ListField('Natural Hazard Type')
     dois = fields.ListField('Dois')
     hazmapper_maps = fields.ListField('Hazmapper Maps')
