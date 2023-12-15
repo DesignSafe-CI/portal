@@ -3,7 +3,7 @@ import VersionFieldReconSelectionTemplate from './version-field-recon-selection.
 import VersionSimulationSelectionTemplate from './version-simulation-selection.template.html';
 import VersionHybSimSelectionTemplate from './version-hyb-sim-selection.template.html';
 import VersionCitationTemplate from './version-citation.template.html';
-import experimentalData from '../../../../projects/components/manage-experiments/experimental-data.json';
+import experimentalData from '../../../../projects/components/facility-data.json';
 
 class PipelineVersionCtrl {
     constructor(
@@ -33,7 +33,7 @@ class PipelineVersionCtrl {
             citationComp: '',
             placeholder: '',
             savedStatus: {},
-            efs: experimentalData.experimentalFacility,
+            efs: experimentalData.facility,
             equipmentTypes: experimentalData.equipmentTypes,
             experimentTypes: experimentalData.experimentTypes
         };
@@ -244,27 +244,41 @@ class PipelineVersionCtrl {
     }
 
     getEF(str) {
-        let efs = this.ui.efs[this.project.value.projectType];
-        let ef = efs.find((ef) => {
-            return ef.name === str;
-        });
-        return ef.label;
+        if (str !='' && str !='None') {
+            let efs = this.ui.efs.facilities_list;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
     }
 
     getET(exp) {
-        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
-        let et = ets.find((x) => {
-            return x.name === exp.value.experimentType;
-        });
-        return et.label;
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+        exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+        exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+        {
+            let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+            let et = ets.find((x) => {
+                return x.name === exp.value.experimentType;
+            });
+            return et.label;
+        }
     }
 
     getEQ(exp) {
-        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
-        let eqt = eqts.find((x) => {
-            return x.name === exp.value.equipmentType;
-        });
-        return eqt.label;
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+        exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+        exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+        {
+            let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+            let eqt = eqts.find((x) => {
+                return x.name === exp.value.equipmentType;
+            });
+            return eqt.label;
+        }
     }
 
     matchingGroup(primaryEnt, subEnt) {

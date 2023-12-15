@@ -68,8 +68,8 @@ def check_or_create_agave_home_dir(username, systemId):
                         'parameters': {
                             'username': username,
                         },
-                        'name': f'setfacl scratch for user {username}',
-                        'appId': 'setfacl_frontera_scratch-0.1'
+                        'name': f'setfacl work for user {username}',
+                        'appId': 'setfacl_frontera_work-0.1'
                     }
                 else:
                     logger.error('Attempting to set permissions on unsupported system: {}'.format(systemId))
@@ -96,10 +96,10 @@ def new_user_alert(username):
                                                     'Name: ' + user.first_name + ' ' + user.last_name + '\n' +
                                                     'Id: ' + str(user.id) + '\n',
               settings.DEFAULT_FROM_EMAIL, settings.NEW_ACCOUNT_ALERT_EMAILS.split(','),)
-    
+
 
 @shared_task()
-def clear_old_notifications(self):
+def clear_old_notifications():
     """Delete notifications older than 30 days to prevent them cluttering the db."""
     time_cutoff = datetime.now() - timedelta(days=30)
     Notification.objects.filter(datetime__lte=time_cutoff).delete()

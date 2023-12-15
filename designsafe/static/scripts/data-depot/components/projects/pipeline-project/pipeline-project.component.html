@@ -67,6 +67,17 @@
     </div>
     <!-- Project Header Start -->
     <div>
+        <!-- Error Messages -->
+        <div class="alert alert-danger" ng-if="$ctrl.missingMetadata.length">
+            <p class="lead" style="text-align:center;">Your Project Metadata is Incomplete!</p>
+            <p>
+                Your project has missing data or incomplete requirements.
+                Please review the following fields:
+            </p>
+            <div ng-repeat="entity in $ctrl.missingMetadata">
+                {{entity}}
+            </div>
+        </div>
         <!-- Project Metadata -->
         <prj-metadata></prj-metadata>
     </div>

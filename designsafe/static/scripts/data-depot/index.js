@@ -83,11 +83,11 @@ function config(
                 },
             },
         })
-        .state('myDataScratch', {
+        .state('myDataWork', {
             url: '/agave/{systemId}/{filePath:any}/?query_string&offset&limit',
             component: 'dataDepotBrowser',
             params: {
-                systemId: 'designsafe.storage.frontera.scratch',
+                systemId: 'designsafe.storage.frontera.work',
                 filePath: Django.user,
             },
             resolve: {
@@ -1154,7 +1154,7 @@ function config(
                             // citation_doi is also an entity tag
                             while(el[1]) el[1].parentNode.removeChild(el[1]);
                         }
-                        
+
                     }
                 );
                 const entityTags = [
@@ -1171,12 +1171,12 @@ function config(
                 });
             },
         })
-       
+
         .state('trainingMaterials', {
             url: '/training/',
             template: '<pre>local/trainingMaterials.html</pre>',
         });
-        
+
 
     $urlRouterProvider.otherwise(function($injector) {
         var $state = $injector.get('$state');

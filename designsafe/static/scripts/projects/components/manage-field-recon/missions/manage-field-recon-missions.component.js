@@ -1,5 +1,6 @@
 import ManageFieldReconMissionsTemplate from './manage-field-recon-missions.template.html';
 const MissionDefaults = require('./mission-form-defaults.json');
+const FacilityData = require('../../facility-data.json');
 
 class ManageFieldReconMissionsCtrl {
 
@@ -18,6 +19,7 @@ class ManageFieldReconMissionsCtrl {
             loading: false,
             editing: false,
             relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
+            facilities: FacilityData.facility.facilities_list,
             require: {
                 relatedWork: false,
                 referencedData: false,
@@ -52,6 +54,23 @@ class ManageFieldReconMissionsCtrl {
             this.form[fieldName].pop();
         }
     }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+      }
     
     configureForm(mission) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
@@ -71,6 +90,12 @@ class ManageFieldReconMissionsCtrl {
                     form[key] = mission.value[key];
                 }
             }
+            if (mission.value.facility && typeof mission.value.facility === 'object') {
+                form.facility = mission.value.facility
+            } else {
+                form.facility = {}
+            }
+
         }
         this.ui.require.relatedWork = this.requireField(form.relatedWork);
         this.ui.require.referencedData = this.requireField(form.referencedData);
@@ -81,6 +106,12 @@ class ManageFieldReconMissionsCtrl {
         this.configureForm();
         this.form.authors = this.configureAuthors(null, false);
         this.ui.editing = false;
+    }
+    
+    clearFacilityIfOther() {
+        if (this.form.facility.id === "other") {
+            this.form.facility.name = ""
+        }
     }
 
     configureAuthors(mission, amending) {
@@ -169,6 +200,18 @@ class ManageFieldReconMissionsCtrl {
 
     prepareData() {
         // drop or reformat inputs before for submission
+        const facilityId = this.form.facility.id;
+        if (!facilityId) {
+            delete this.form.facility;
+        } else if (facilityId === 'other') {
+            this.form.facility = { id: 'other', name: this.form.facility.name };
+        } else {
+            this.form.facility = {
+                id: facilityId,
+                name: this.ui.facilities.find((f) => f.name === facilityId)?.label,
+            };
+        }
+
         if (isNaN(Date.parse(this.form.dateEnd))) {
             this.form.dateEnd = new Date(this.form.dateStart);
         }

@@ -85,6 +85,12 @@
                     <ds-author-list authors="mission.value.authors"></ds-author-list>
                 </div>
             </div>
+            <span ng-if="mission.value.facility.name">
+                <div class="entity-meta-field">
+                    <div class="entity-meta-label">Facility</div>
+                    <span class="entity-meta-data-cap">{{ mission.value.facility.name }}</span>
+                </div>
+            </span>
             <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
                 <div class="entity-meta-label-multi">
                     Referenced Data and Software

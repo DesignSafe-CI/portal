@@ -3,7 +3,7 @@ import logging
 import json
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, get_user_info
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel, get_user_info
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +67,7 @@ class Mission(RelatedEntity):
     date_end = fields.CharField('Date End', max_length=1024, default='')
     referenced_data = fields.ListField('Referenced Data')
     related_work = fields.ListField('Related Work')
+    facility = fields.BaseField()
     location = fields.CharField('Site Location', max_length=1024)
     latitude = fields.CharField('Location Latitude', max_length=1024)
     longitude = fields.CharField('Location Longitude', max_length=1024)
@@ -86,12 +87,49 @@ class Mission(RelatedEntity):
         self.authors = _authors
         return super().save(agave_client)
 
-    def to_datacite_json(self):
+
+    def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
         attributes = super(Mission, self).to_datacite_json()
         attributes['types']['resourceType'] = "Mission/{location}".format(
             location=self.location.title()
         )
+        if self.facility:
+            attributes["subjects"] = attributes.get("subjects", []) + [
+                {"subject": self.facility["name"], }
+            ]
+            attributes["contributors"] = attributes.get("contributors", []) + [
+                {
+                    "contributorType": "HostingInstitution",
+                    "nameType": "Organizational",
+                    "name": self.facility["name"],
+                }
+            ]
+        # Metadata from project level
+        if project:
+            attributes["titles"] = attributes.get("titles", []) + [
+                {   "titleType": 'Subtitle',
+                    "title": project.title }
+            ]
+            attributes["descriptions"] = attributes.get("descriptions", []) + [
+                {
+                    'descriptionType': 'Abstract',
+                    'description': project.description,
+                    'lang': 'en-Us',
+                }
+            ]
+            if len(project.award_number) and type(project.award_number[0]) is not dict:
+                project.award_number = [{'order': 0, 'name': ''.join(project.award_number)}]
+            awards = sorted(
+                project.award_number,
+                key=lambda x: (x.get('order', 0), x.get('name', ''))
+            )
+            attributes['fundingReferences'] = []
+            for award in awards:
+                attributes['fundingReferences'].append({
+                    'awardTitle': award['name'],
+                    'awardNumber': award['number']
+                    })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -118,6 +156,16 @@ class Mission(RelatedEntity):
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
         attributes = super(Mission, self).to_dataset_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         attributes['types']['resourceType'] = "Mission/{location}".format(
             location=self.location.title()
         )
@@ -160,6 +208,7 @@ class Collection(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
     def save(self, agave_client):
         _data_collectors = []
@@ -192,6 +241,7 @@ class SocialScience(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
     def save(self, agave_client):
         _data_collectors = []
@@ -213,6 +263,7 @@ class Planning(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
     def save(self, agave_client):
         _data_collectors = []
@@ -241,6 +292,7 @@ class Geoscience(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
     def save(self, agave_client):
         _data_collectors = []
@@ -258,10 +310,12 @@ class Report(RelatedEntity):
     authors = fields.ListField('Authors')
     referenced_data = fields.ListField('Referenced Data')
     related_work = fields.ListField('Related Work')
+    facility = fields.BaseField()
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(FieldReconProject)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
     dois = fields.ListField('Dois')
 
     def save(self, agave_client):
@@ -274,10 +328,47 @@ class Report(RelatedEntity):
         self.authors = _authors
         return super().save(agave_client)
 
-    def to_datacite_json(self):
+
+    def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
         attributes = super(Report, self).to_datacite_json()
         attributes['types']['resourceType'] = "Project/Report"
+        if self.facility:
+            attributes["subjects"] = attributes.get("subjects", []) + [
+                {"subject": self.facility["name"], }
+            ]
+            attributes["contributors"] = attributes.get("contributors", []) + [
+                {
+                    "contributorType": "HostingInstitution",
+                    "nameType": "Organizational",
+                    "name": self.facility["name"],
+                }
+            ]
+        # Metadata from project level
+        if project:
+            attributes["titles"] = attributes.get("titles", []) + [
+                {   "titleType": 'Subtitle',
+                    "title": project.title }
+            ]
+            attributes["descriptions"] = attributes.get("descriptions", []) + [
+                {
+                    'descriptionType': 'Abstract',
+                    'description': project.description,
+                    'lang': 'en-Us',
+                }
+            ]
+            if len(project.award_number) and type(project.award_number[0]) is not dict:
+                project.award_number = [{'order': 0, 'name': ''.join(project.award_number)}]
+            awards = sorted(
+                project.award_number,
+                key=lambda x: (x.get('order', 0), x.get('name', ''))
+            )
+            attributes['fundingReferences'] = []
+            for award in awards:
+                attributes['fundingReferences'].append({
+                    'awardTitle': award['name'],
+                    'awardNumber': award['number']
+                    })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -304,5 +395,15 @@ class Report(RelatedEntity):
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
         attributes = super(Report, self).to_dataset_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         attributes['types']['resourceType'] = "Project/Report"
         return attributes

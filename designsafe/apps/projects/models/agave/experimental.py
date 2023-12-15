@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, get_user_info
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel, get_user_info
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,7 @@ class DataTag(MetadataModel):
     tag_name = fields.CharField('Tag Name', max_length=512, default='')
     value = fields.CharField('Value', max_length=512, default='')
 
+
 class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'
     experiment_type = fields.CharField('Experiment Type', max_length=255, default='other')
@@ -62,19 +63,45 @@ class Experiment(RelatedEntity):
     project = fields.RelatedObjectField(ExperimentalProject)
     dois = fields.ListField('Dois')
 
-    def to_datacite_json(self):
+    def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
         attributes = super(Experiment, self).to_datacite_json()
-        attributes["subjects"] = attributes.get("subjects", []) + [
-            {"subject": self.experimental_facility.title(), }
-        ]
-        attributes["contributors"] = attributes.get("contributors", []) + [
-            {
-                "contributorType": "HostingInstitution",
-                "nameType": "Organizational",
-                "name": self.experimental_facility,
-            }
-        ]
+        if hasattr(self, 'experimental_facility') and len(self.experimental_facility) and ('None' not in self.experimental_facility):
+            attributes["subjects"] = attributes.get("subjects", []) + [
+                {"subject": self.experimental_facility.title(), }
+            ]
+            attributes["contributors"] = attributes.get("contributors", []) + [
+                {
+                    "contributorType": "HostingInstitution",
+                    "nameType": "Organizational",
+                    "name": self.experimental_facility,
+                }
+            ]
+        # Metadata from project level
+        if project:
+            attributes["titles"] = attributes.get("titles", []) + [
+                {   "titleType": 'Subtitle',
+                    "title": project.title }
+            ]
+            attributes["descriptions"] = attributes.get("descriptions", []) + [
+                {
+                    'descriptionType': 'Abstract',
+                    'description': project.description,
+                    'lang': 'en-Us',
+                }
+            ]
+            if len(project.award_number) and type(project.award_number[0]) is not dict:
+                project.award_number = [{'order': 0, 'name': ''.join(project.award_number)}]
+            awards = sorted(
+                project.award_number,
+                key=lambda x: (x.get('order', 0), x.get('name', ''))
+            )
+            attributes['fundingReferences'] = []
+            for award in awards:
+                attributes['fundingReferences'].append({
+                    'awardTitle': award['name'],
+                    'awardNumber': award['number']
+                    })
         attributes['types']['resourceType'] = "Experiment/{experiment_type}".format(
             experiment_type=self.experiment_type.title()
         )
@@ -142,6 +169,7 @@ class Analysis(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class ModelConfig(RelatedEntity):
     model_name = 'designsafe.project.model_config'
@@ -151,6 +179,7 @@ class ModelConfig(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class SensorList(RelatedEntity):
     model_name = 'designsafe.project.sensor_list'
@@ -162,6 +191,7 @@ class SensorList(RelatedEntity):
     model_configs = fields.RelatedObjectField(ModelConfig)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Event(RelatedEntity):
     model_name = 'designsafe.project.event'
@@ -175,6 +205,7 @@ class Event(RelatedEntity):
     sensor_lists = fields.RelatedObjectField(SensorList)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Report(RelatedEntity):
     model_name = 'designsafe.project.report'
@@ -184,3 +215,4 @@ class Report(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)

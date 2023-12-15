@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, get_user_info
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel, get_user_info
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +52,7 @@ class Simulation(RelatedEntity):
     simulation_type_other = fields.CharField('Simulation Type Other', max_length=1024)
     referenced_data = fields.ListField('Referenced Data')
     related_work = fields.ListField('Related Work')
+    facility = fields.BaseField()
     description = fields.CharField('Description', max_length=1024, default='')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(SimulationProject)
@@ -67,7 +68,8 @@ class Simulation(RelatedEntity):
         self.authors = _authors
         return super().save(agave_client)
 
-    def to_datacite_json(self):
+
+    def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
         attributes = super(Simulation, self).to_datacite_json()
         if self.simulation_type_other:
@@ -78,6 +80,42 @@ class Simulation(RelatedEntity):
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type.title()
             )
+        if self.facility:
+            attributes["subjects"] = attributes.get("subjects", []) + [
+                {"subject": self.facility["name"], }
+            ]
+            attributes["contributors"] = attributes.get("contributors", []) + [
+                {
+                    "contributorType": "HostingInstitution",
+                    "nameType": "Organizational",
+                    "name": self.facility["name"],
+                }
+            ]
+        # Metadata from project level
+        if project:
+            attributes["titles"] = attributes.get("titles", []) + [
+                {   "titleType": 'Subtitle',
+                    "title": project.title }
+            ]
+            attributes["descriptions"] = attributes.get("descriptions", []) + [
+                {
+                    'descriptionType': 'Abstract',
+                    'description': project.description,
+                    'lang': 'en-Us',
+                }
+            ]
+            if len(project.award_number) and type(project.award_number[0]) is not dict:
+                project.award_number = [{'order': 0, 'name': ''.join(project.award_number)}]
+            awards = sorted(
+                project.award_number,
+                key=lambda x: (x.get('order', 0), x.get('name', ''))
+            )
+            attributes['fundingReferences'] = []
+            for award in awards:
+                attributes['fundingReferences'].append({
+                    'awardTitle': award['name'],
+                    'awardNumber': award['number']
+                    })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -104,6 +142,16 @@ class Simulation(RelatedEntity):
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
         attributes = super(Simulation, self).to_dataset_json()
+        attributes["subjects"] = attributes.get("subjects", []) + [
+            {"subject": self.facility.title(), }
+        ]
+        attributes["contributors"] = attributes.get("contributors", []) + [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": self.facility,
+            }
+        ]
         if self.simulation_type_other:
             attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
                 simulation_type=self.simulation_type_other.title()
@@ -129,6 +177,7 @@ class Model(RelatedEntity):
     simulations = fields.RelatedObjectField(Simulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Input(RelatedEntity):
@@ -140,6 +189,7 @@ class Input(RelatedEntity):
     model_configs = fields.RelatedObjectField(Model)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Output(RelatedEntity):
@@ -152,6 +202,7 @@ class Output(RelatedEntity):
     sim_inputs = fields.RelatedObjectField(Input)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Analysis(RelatedEntity):
@@ -164,6 +215,7 @@ class Analysis(RelatedEntity):
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Report(RelatedEntity):
@@ -175,3 +227,4 @@ class Report(RelatedEntity):
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
