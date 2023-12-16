@@ -48,6 +48,46 @@ class DataTag(MetadataModel):
     tag_name = fields.CharField('Tag Name', max_length=512, default='')
     value = fields.CharField('Value', max_length=512, default='')
 
+facility_options = [
+    { "id": "rapid-uw", "name": "RAPID - Natural Hazard and Disasters Reconnaissance Facility - University of Washington" },
+    { "id": "converge-boulder", "name": "CONVERGE - Social Science/Interdisciplinary Resources and Extreme Events Coordination - University of Colorado Boulder" },
+    { "id": "geer", "name": "GEER - Geotechnical Extreme Event Reconnaissance" },
+    { "id": "iseeer", "name": "ISEEER - Interdisciplinary Science and Engineering Extreme Events Research" },
+    { "id": "neer", "name": "NEER - Nearshore Extreme Event Reconnaissance" },
+    { "id": "oseer", "name": "OSEER - Operations and Systems Engineering Extreme Events Research" },
+    { "id": "pheer", "name": "PHEER - Public Health Extreme Events Research" },
+    { "id": "summeer", "name": "SUMMEER - Sustainable Material Management Extreme Events Reconnaissance" },
+    { "id": "sseer", "name": "SSEER - Social Science Extreme Events Research" },
+    { "id": "steer", "name": "StEER - Structural Engineering Extreme Event Reconnaissance" },
+    { "id": "ohhwrl-oregon", "name": "Large Wave Flume and Directional Wave Basin - Oregon State University" },
+    { "id": "eqss-utaustin", "name": "Mobile Field Shakers - University of Texas at Austin" },
+    { "id": "cgm-ucdavis", "name": "Center for Geotechnical Modeling - University of California, Davis" },
+    { "id": "cgm-ucdavis", "name": "Center for Geotechnical Modeling, UC Davis" },
+    { "id": "lhpost-sandiego", "name": "Six Degree of Freedom Large High-Performance Outdoor Shake Table (LHPOST6) - University of California, San Diego" },
+    { "id": "wwhr-florida", "name": "Wall of Wind - Florida International University" },
+    { "id": "niche", "name": "National Full-Scale Testing Infrastructure for Community Hardening in Extreme Wind, Surge, and Wave Events (NICHE)" },
+    { "id": "pfsml-florida", "name": "Boundary Layer Wind Tunnel - University of Florida" },
+    { "id": "rtmd-lehigh", "name": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities - LeHigh University" },
+    { "id": "simcntr", "name": "SimCenter" },
+    { "id": "nco-purdue", "name": "Network Coordination Office - Purdue University" },
+    { "id": "crbcrp", "name": "Center for Risk-Based Community Resilience Planning" },
+    { "id": "uc-berkeley", "name": "UC Berkeley" },
+    { "id": "ut-austin", "name": "University of Texas at Austin" },
+    { "id": "oh-hinsdale-osu", "name": "O.H. Hinsdale Wave Research Laboratory, Oregon State University" },
+    { "id": "seel-ucla", "name":  "University of California, Los Angeles, Structural/Earthquake Engineering Laboratory" },
+]
+
+def handle_facility(facility, facility_other):
+    if facility == "other" or (facility_other and facility_other != "None"):
+        return {"id": "other", "name": facility_other}
+    facility_by_id = next((fac for fac in facility_options if fac["id"] == facility), None)
+    if facility_by_id:
+        return facility_by_id
+    facility_by_name = next((fac for fac in facility_options if fac["name"] == facility), None)
+    if facility_by_name:
+        return facility_by_name
+    return {"id": "other", "name": "Other"}
+
 
 class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'
@@ -59,6 +99,7 @@ class Experiment(RelatedEntity):
     related_work = fields.ListField('Related Work')
     experimental_facility = fields.CharField('Experimental Facility', max_length=1024)
     experimental_facility_other = fields.CharField('Experimental Facility Other', max_length=1024)
+    facility = fields.BaseField()
     equipment_type = fields.CharField('Equipment Type')
     equipment_type_other = fields.CharField('Equipment Type Other')
     procedure_start = fields.CharField('Procedure Start', max_length=1024, default='')
@@ -140,6 +181,12 @@ class Experiment(RelatedEntity):
             else:
                 _authors.append({**author, **get_user_info(author["name"], role="team_member")})
         self.authors = _authors
+
+        if getattr(self, "experimental_facility", None):
+            facility = getattr(self, "experimental_facility", None)
+            facility_other = getattr(self, "experimental_facility_other", "")
+            self.facility = handle_facility(facility, facility_other)
+
         return super(Experiment, self).save(agave_client)
 
     def to_dataset_json(self):
