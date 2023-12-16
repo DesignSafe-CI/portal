@@ -1,6 +1,7 @@
 """Pydantic models for Experimental entities"""
+import itertools
 from typing import Optional, Annotated
-from pydantic import BeforeValidator, Field, ConfigDict
+from pydantic import BeforeValidator, Field, ConfigDict, model_validator
 from designsafe.apps.projects_v2.schema_models.base import (
     MetadataModel,
     AssociatedProject,
@@ -8,10 +9,44 @@ from designsafe.apps.projects_v2.schema_models.base import (
     ProjectUser,
     FileTag,
     FileObj,
+    DropdownValue,
     Ref,
     handle_legacy_authors,
     handle_array_of_none,
 )
+from designsafe.apps.projects_v2.constants import (
+    FACILITY_OPTIONS,
+    EQUIPMENT_TYPES,
+    EXPERIMENT_TYPES,
+)
+
+equipment_type_options = list(itertools.chain(*EQUIPMENT_TYPES.values()))
+experiment_type_options = list(itertools.chain(*EXPERIMENT_TYPES.values()))
+
+
+def handle_dropdown_value(options):
+    """Look up value if a string id/value is passed."""
+
+    def inner_validator(dropdown_value) -> Optional[dict]:
+        if not dropdown_value:
+            return None
+
+        if isinstance(dropdown_value, str):
+            if dropdown_value.lower() == "other":
+                return {"id": "other", "name": ""}
+
+            return next(
+                (
+                    option
+                    for option in options
+                    if dropdown_value in (option["id"], option["name"])
+                ),
+                None,
+            )
+
+        return dropdown_value
+
+    return inner_validator
 
 
 class Experiment(MetadataModel):
@@ -23,14 +58,25 @@ class Experiment(MetadataModel):
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
 
-    experiment_type: str = ""
-    experiment_type_other: str = ""
+    experimental_facility: Annotated[
+        Optional[DropdownValue],
+        BeforeValidator(handle_dropdown_value(FACILITY_OPTIONS)),
+        Field(exclude=True),  # shadowed by the "facility" attribute
+    ] = None
+    experimental_facility_other: str = Field(default="", exclude=True)
+    facility: Optional[DropdownValue] = None
 
-    experimental_facility: str = ""
-    experimental_facility_other: str = ""
+    experiment_type: Annotated[
+        Optional[DropdownValue],
+        BeforeValidator(handle_dropdown_value(experiment_type_options)),
+    ] = None
+    experiment_type_other: str = Field(default="", exclude=True)
 
-    equipment_type: str = ""
-    equipment_type_other: str = ""
+    equipment_type: Annotated[
+        Optional[DropdownValue],
+        BeforeValidator(handle_dropdown_value(equipment_type_options)),
+    ] = None
+    equipment_type_other: str = Field(default="", exclude=True)
 
     procedure_start: str = ""
     procedure_end: str = ""
@@ -38,6 +84,32 @@ class Experiment(MetadataModel):
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []
     project: list[str] = []
     dois: list[str] = []
+
+    @model_validator(mode="after")
+    def handle_other(self):
+        """Use values of XXX_other fields to fill in dropdown values."""
+        if (
+            self.equipment_type_other
+            and self.equipment_type
+            and not self.equipment_type.name
+        ):
+            self.equipment_type.name = self.equipment_type_other
+        if (
+            self.experiment_type_other
+            and self.experiment_type
+            and not self.experiment_type.name
+        ):
+            self.experiment_type.name = self.experiment_type_other
+        if (
+            self.experimental_facility_other
+            and self.experimental_facility
+            and not self.experimental_facility.name
+        ):
+            self.experimental_facility.name = self.experimental_facility_other
+
+        if self.experimental_facility and not self.facility:
+            self.facility = self.experimental_facility
+        return self
 
 
 class ExperimentModelConfig(MetadataModel):

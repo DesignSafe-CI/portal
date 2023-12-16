@@ -37,6 +37,8 @@ class ProjectUser(MetadataModel):
     email: Optional[str] = None
     inst: Optional[str] = None
     user: Optional[str] = None
+    username: Optional[str] = None
+    role: Optional[Literal["pi", "co_pi", "team_member", "guest"]] = None
 
     authorship: Optional[bool] = None
 
@@ -257,6 +259,8 @@ data_type_options_map = {
 
 def handle_data_type(data_type):
     """Convert data_type from string to id/name pair"""
+    if not data_type:
+        return None
     if isinstance(data_type, str):
         return data_type_options_map.get(data_type, {"id": "other", "name": data_type})
     return data_type
@@ -285,7 +289,9 @@ class BaseProject(MetadataModel):
     ] = []
     pi: str
     co_pis: list[str] = []
-    data_type: str = Annotated(DropdownValue, BeforeValidator(handle_data_type))
+    data_type: Annotated[
+        Optional[DropdownValue], BeforeValidator(handle_data_type)
+    ] = None
     team_order: list[ProjectUser] = []
     award_number: Annotated[
         list[ProjectAward], BeforeValidator(handle_award_number)
