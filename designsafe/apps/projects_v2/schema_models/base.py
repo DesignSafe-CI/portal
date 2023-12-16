@@ -9,6 +9,11 @@ from pydantic import (
     Field,
 )
 from pydantic.alias_generators import to_camel
+from designsafe.apps.projects_v2.constants import (
+    NATURAL_HAZARD_TYPES,
+    FIELD_RESEARCH_TYPES,
+    OTHER_DATA_TYPES,
+)
 
 
 class MetadataModel(BaseModel):
@@ -127,7 +132,18 @@ class DropdownValue(MetadataModel):
     """Model for a dropdown option with an ID and name"""
 
     id: str
-    name: Optional[str] = None
+    name: str
+
+
+class NaturalHazardEvent(MetadataModel):
+    """Model for natural hazard events"""
+
+    event_name: str
+    event_start: str
+    event_end: Optional[str] = None
+    location: str
+    latitude: str
+    longitude: str
 
 
 def handle_award_number(award: list[dict] | str) -> list[dict]:
@@ -159,111 +175,37 @@ def handle_legacy_authors(author_list: list):
     return author_list
 
 
-nh_options = [
-    "Drought",
-    "Earthquake",
-    "Extreme Temperatures",
-    "Wildfire",
-    "Flood",
-    "Hurricane/Tropical Storm",
-    "Landslide",
-    "Tornado",
-    "Tsunami",
-    "Thunderstorm",
-    "Storm Surge",
-    "Pandemic",
-    "Wind",
-]
-nh_options_map = {val: {"id": val.lower(), "name": val} for val in nh_options}
-nh_options_map["Fire"] = {"id": "Fire".lower(), "name": "Wildfire"}
-nh_options_map["Wildfire"] = {"id": "Fire".lower(), "name": "Wildfire"}
-nh_options_map["Hurricane"] = {
-    "id": "Hurricane/Tropical Storm".lower(),
-    "name": "Hurricane/Tropical Storm",
-}
-nh_options_map["Tropical Storm"] = {
-    "id": "Hurricane/Tropical Storm".lower(),
-    "name": "Hurricane/Tropical Storm",
-}
-
-
-def handle_nh_types(nh_types: list):
-    """Convert nh_types from list of strings to list of id/name pairs"""
-    nh_types_validated = []
-    for name in nh_types:
-        if isinstance(name, str):
-            nh_value = nh_options_map.get(name, {"id": "other", "name": name})
-            nh_types_validated.append(nh_value)
-        else:
-            nh_types_validated.append(name)
-    return nh_types_validated
-
-
-fr_type_options = [
-    "Engineering",
-    "Geosciences",
-    "Public Health",
-    "Social Sciences",
-    "Interdisciplinary",
-    "Field Experiment",
-    "Cross-Sectional Study",
-    "Longitudinal Study",
-    "Reconnaissance",
-    "Other",
-]
-fr_type_options_map = {val: {"id": val.lower(), "name": val} for val in fr_type_options}
-
-
-def handle_fr_types(fr_types: list):
-    """Convert nh_types from list of strings to list of id/name pairs"""
-    fr_types_validated = []
-    for name in fr_types:
-        if isinstance(name, str):
-            fr_value = fr_type_options_map.get(name, {"id": "other", "name": name})
-            fr_types_validated.append(fr_value)
-        else:
-            fr_types_validated.append(name)
-    return fr_types_validated
-
-
-data_type_options = [
-    "Archival Materials",
-    "Audio",
-    "Benchmark Dataset",
-    "Check Sheet",
-    "Code",
-    "Database",
-    "Dataset",
-    "Engineering",
-    "Image",
-    "Interdisciplinary",
-    "Jupyter Notebook",
-    "Learning Object",
-    "Model",
-    "Paper",
-    "Proceeding",
-    "Poster",
-    "Presentation",
-    "Report",
-    "Research Experience for Undergraduates",
-    "SimCenter Testbed",
-    "Social Sciences",
-    "Survey Instrument",
-    "Testbed",
-    "Video",
-]
-data_type_options_map = {
-    val: {"id": val.lower(), "name": val} for val in data_type_options
-}
-
-
-def handle_data_type(data_type):
-    """Convert data_type from string to id/name pair"""
-    if not data_type:
+def handle_dropdown_value(dropdown_value, options, fallback=None) -> Optional[dict]:
+    """Look up value if a string id/value is passed."""
+    if not dropdown_value:
         return None
-    if isinstance(data_type, str):
-        return data_type_options_map.get(data_type, {"id": "other", "name": data_type})
-    return data_type
+
+    if isinstance(dropdown_value, str):
+        if dropdown_value.lower() == "other":
+            return fallback or {"id": "other", "name": ""}
+        return next(
+            (
+                option
+                for option in options
+                if dropdown_value in (option["id"], option["name"])
+            ),
+            fallback,
+        )
+    return dropdown_value
+
+
+def handle_dropdown_values(dropdown_values: list, options):
+    """Handle an array of dropdown values."""
+    dropdown_values_validated = []
+    for value in dropdown_values:
+        if isinstance(value, str):
+            dropdown_value = handle_dropdown_value(
+                value, options, fallback={"id": "other", "name": value}
+            )
+            dropdown_values_validated.append(dropdown_value)
+        else:
+            dropdown_values_validated.append(value)
+    return dropdown_values_validated
 
 
 class BaseProject(MetadataModel):
@@ -284,14 +226,22 @@ class BaseProject(MetadataModel):
     team_members: list[str] = Field(
         default=[], validation_alias=AliasChoices("teamMembers", "teamMember")
     )
+    users: list[ProjectUser] = []
+    authors: list[ProjectUser] = []
     guest_members: Annotated[
         list[GuestMember], BeforeValidator(handle_array_of_none)
     ] = []
     pi: str
     co_pis: list[str] = []
     data_type: Annotated[
-        Optional[DropdownValue], BeforeValidator(handle_data_type)
+        Optional[DropdownValue],
+        BeforeValidator(
+            lambda v: handle_dropdown_value(
+                v, OTHER_DATA_TYPES, fallback={"id": "other", "name": v}
+            )
+        ),
     ] = None
+    data_types: list[DropdownValue] = []
     team_order: list[ProjectUser] = []
     award_number: Annotated[
         list[ProjectAward], BeforeValidator(handle_award_number)
@@ -308,10 +258,17 @@ class BaseProject(MetadataModel):
     nh_location: str = ""
     nh_latitude: str = ""
     nh_longitude: str = ""
+    nh_events: list[NaturalHazardEvent] = []
 
-    nh_types: Annotated[list[DropdownValue], BeforeValidator(handle_nh_types)] = []
+    nh_types: Annotated[
+        list[DropdownValue],
+        BeforeValidator(lambda v: handle_dropdown_values(v, NATURAL_HAZARD_TYPES)),
+    ] = []
 
-    fr_types: Annotated[list[DropdownValue], BeforeValidator(handle_fr_types)] = []
+    fr_types: Annotated[
+        list[DropdownValue],
+        BeforeValidator(lambda v: handle_dropdown_values(v, FIELD_RESEARCH_TYPES)),
+    ] = []
     dois: list[str] = []
 
     file_tags: list[FileTag] = []

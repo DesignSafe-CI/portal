@@ -13,6 +13,7 @@ from designsafe.apps.projects_v2.schema_models.base import (
     Ref,
     handle_legacy_authors,
     handle_array_of_none,
+    handle_dropdown_value,
 )
 from designsafe.apps.projects_v2.constants import (
     FACILITY_OPTIONS,
@@ -22,31 +23,6 @@ from designsafe.apps.projects_v2.constants import (
 
 equipment_type_options = list(itertools.chain(*EQUIPMENT_TYPES.values()))
 experiment_type_options = list(itertools.chain(*EXPERIMENT_TYPES.values()))
-
-
-def handle_dropdown_value(options):
-    """Look up value if a string id/value is passed."""
-
-    def inner_validator(dropdown_value) -> Optional[dict]:
-        if not dropdown_value:
-            return None
-
-        if isinstance(dropdown_value, str):
-            if dropdown_value.lower() == "other":
-                return {"id": "other", "name": ""}
-
-            return next(
-                (
-                    option
-                    for option in options
-                    if dropdown_value in (option["id"], option["name"])
-                ),
-                None,
-            )
-
-        return dropdown_value
-
-    return inner_validator
 
 
 class Experiment(MetadataModel):
@@ -60,7 +36,7 @@ class Experiment(MetadataModel):
 
     experimental_facility: Annotated[
         Optional[DropdownValue],
-        BeforeValidator(handle_dropdown_value(FACILITY_OPTIONS)),
+        BeforeValidator(lambda v: handle_dropdown_value(v, FACILITY_OPTIONS)),
         Field(exclude=True),  # shadowed by the "facility" attribute
     ] = None
     experimental_facility_other: str = Field(default="", exclude=True)
@@ -68,13 +44,13 @@ class Experiment(MetadataModel):
 
     experiment_type: Annotated[
         Optional[DropdownValue],
-        BeforeValidator(handle_dropdown_value(experiment_type_options)),
+        BeforeValidator(lambda v: handle_dropdown_value(v, experiment_type_options)),
     ] = None
     experiment_type_other: str = Field(default="", exclude=True)
 
     equipment_type: Annotated[
         Optional[DropdownValue],
-        BeforeValidator(handle_dropdown_value(equipment_type_options)),
+        BeforeValidator(lambda v: handle_dropdown_value(v, equipment_type_options)),
     ] = None
     equipment_type_other: str = Field(default="", exclude=True)
 
