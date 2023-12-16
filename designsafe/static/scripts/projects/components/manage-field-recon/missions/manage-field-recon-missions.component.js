@@ -204,7 +204,7 @@ class ManageFieldReconMissionsCtrl {
         if (!facilityId) {
             delete this.form.facility;
         } else if (facilityId === 'other') {
-            this.form.facility = { id: 'other', name: this.form.facility.name };
+            this.form.facility = { id: 'other', name: this.form.facility.name ?? ''};
         } else {
             this.form.facility = {
                 id: facilityId,
