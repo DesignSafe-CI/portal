@@ -13,6 +13,7 @@ class HybridSimulationProject(Project):
     team_members = fields.ListField('Team Members')
     co_pis = fields.ListField('Co PIs')
     guest_members = fields.ListField('Guest Members')
+    users = fields.ListField('Users')
     project_type = fields.CharField(
         'Project Type',
         max_length=255,

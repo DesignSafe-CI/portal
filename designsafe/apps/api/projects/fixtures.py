@@ -73,6 +73,7 @@ exp_instance_resp =\
                    "order": 0, "title": "Huge Datasets for Experiments"}],
                    'referencedData': [],
                    "ef": '', 
+                   "users": [],
                    "keywords": "project, experiment, walk, presentations", 
                    "nhEvent": '',
                    "nhEventEnd": '',

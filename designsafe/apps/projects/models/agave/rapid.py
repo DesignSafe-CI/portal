@@ -25,6 +25,7 @@ class FieldReconProject(Project):
     team_members = fields.ListField('Team Members')
     co_pis = fields.ListField('Co PIs')
     guest_members = fields.ListField('Guest Members')
+    users = fields.ListField('Users')
     project_type = fields.CharField('Project Type', max_length=255, default='other')
     project_id = fields.CharField('Project Id')
     description = fields.CharField('Description', max_length=1024, default='')

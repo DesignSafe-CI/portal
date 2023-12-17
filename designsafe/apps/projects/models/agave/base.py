@@ -128,7 +128,6 @@ class Project(MetadataModel):
     project_type = fields.CharField('Project Type', max_length=255, default=None)
     data_type = fields.CharField('Data Type', max_length=255, default='')
     team_order = fields.ListField('Team Order')
-    authors = fields.ListField('Authors')
     project_id = fields.CharField('Project Id')
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=255, default='')
@@ -273,7 +272,7 @@ class Project(MetadataModel):
 
         self.users = _users
         if len(_authors):
-            self.authors = _authors
+            self.team_order = _authors
 
 
         return super(Project, self).save(agave_client)
