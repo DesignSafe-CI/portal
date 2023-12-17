@@ -15,43 +15,6 @@ from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 logger = logging.getLogger(__name__)
 user_model = get_user_model()
 
-data_type_options = [
-    "Archival Materials",
-    "Audio",
-    "Benchmark Dataset",
-    "Check Sheet",
-    "Code",
-    "Database",
-    "Dataset",
-    "Engineering",
-    "Image",
-    "Interdisciplinary",
-    "Jupyter Notebook",
-    "Learning Object",
-    "Model",
-    "Paper",
-    "Proceeding",
-    "Poster",
-    "Presentation",
-    "Report",
-    "Research Experience for Undergraduates",
-    "SimCenter Testbed",
-    "Social Sciences",
-    "Survey Instrument",
-    "Testbed",
-    "Video",
-]
-data_type_options_map = {
-    val: {"id": val.lower(), "name": val} for val in data_type_options
-}
-
-
-def handle_data_type(data_type):
-    """Convert data_type from string to id/name pair"""
-    if isinstance(data_type, str):
-        return data_type_options_map.get(data_type, {"id": "other", "name": data_type})
-    return data_type
-
 def get_user_info(username, role=None):
     try:
         user_obj = user_model.objects.get(username=username)
@@ -173,10 +136,7 @@ class Project(MetadataModel):
     co_pis = fields.ListField('Co PIs')
     users = fields.ListField('Users')
     project_type = fields.CharField('Project Type', max_length=255, default=None)
-
     data_type = fields.CharField('Data Type', max_length=255, default='')
-    data_types = fields.ListField('Data Types')
-
     team_order = fields.ListField('Team Order')
     authors = fields.ListField('Authors')
     project_id = fields.CharField('Project Id')
@@ -340,11 +300,6 @@ class Project(MetadataModel):
             nh_event_obj.latitude = getattr(self, 'nh_latitude', '')
             nh_event_obj.longitude = getattr(self, 'nh_longitude', '')
             self.nh_events = [nh_event_obj]
-
-        # Convert string data type to array of id/value pairs
-        if getattr(self, 'data_type', None):
-            data_type_value = handle_data_type(self.data_type)
-            self.data_types = [data_type_value]
 
         return super(Project, self).save(agave_client)
 
