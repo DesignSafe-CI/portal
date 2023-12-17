@@ -1,11 +1,12 @@
 """Pydantic schema models for base-level project entities."""
 from functools import partial
-from typing import Literal, Optional, Annotated
+from typing import Literal, Optional, Annotated, TypedDict
 from pydantic import (
     BaseModel,
     ConfigDict,
     BeforeValidator,
     AliasChoices,
+    model_validator,
     Field,
 )
 from pydantic.alias_generators import to_camel
@@ -175,7 +176,18 @@ def handle_legacy_authors(author_list: list):
     return author_list
 
 
-def handle_dropdown_value(dropdown_value, options, fallback=None) -> Optional[dict]:
+class DropdownValueDict(TypedDict):
+    """{"id": "X", "name": "Y"}"""
+
+    id: str
+    name: str
+
+
+def handle_dropdown_value(
+    dropdown_value: Optional[str | DropdownValueDict],
+    options: list[DropdownValueDict],
+    fallback: Optional[DropdownValueDict] = None,
+) -> Optional[DropdownValueDict]:
     """Look up value if a string id/value is passed."""
     if not dropdown_value:
         return None
@@ -194,7 +206,10 @@ def handle_dropdown_value(dropdown_value, options, fallback=None) -> Optional[di
     return dropdown_value
 
 
-def handle_dropdown_values(dropdown_values: list, options):
+def handle_dropdown_values(
+    dropdown_values: list[str | DropdownValueDict | None],
+    options: list[DropdownValueDict],
+) -> list[DropdownValueDict]:
     """Handle an array of dropdown values."""
     dropdown_values_validated = []
     for value in dropdown_values:
@@ -205,7 +220,7 @@ def handle_dropdown_values(dropdown_values: list, options):
             dropdown_values_validated.append(dropdown_value)
         else:
             dropdown_values_validated.append(value)
-    return dropdown_values_validated
+    return list(filter(bool, dropdown_values_validated))
 
 
 class BaseProject(MetadataModel):
@@ -227,7 +242,7 @@ class BaseProject(MetadataModel):
         default=[], validation_alias=AliasChoices("teamMembers", "teamMember")
     )
     users: list[ProjectUser] = []
-    authors: list[ProjectUser] = []
+
     guest_members: Annotated[
         list[GuestMember], BeforeValidator(handle_array_of_none)
     ] = []
@@ -242,7 +257,10 @@ class BaseProject(MetadataModel):
         ),
     ] = None
     data_types: list[DropdownValue] = []
+
     team_order: list[ProjectUser] = []
+    authors: list[ProjectUser] = []
+
     award_number: Annotated[
         list[ProjectAward], BeforeValidator(handle_award_number)
     ] = []
@@ -275,3 +293,23 @@ class BaseProject(MetadataModel):
     hazmapper_maps: list[HazmapperMap] = []
 
     facilities: list[DropdownValue] = []
+
+    @model_validator(mode="after")
+    def post_validate(self):
+        """Populate derived fields if they don't exist yet."""
+        if self.team_order and not self.authors:
+            self.authors = sorted(self.team_order, key=lambda a: getattr(a, "order", 0))
+        if self.data_type and not self.data_types:
+            self.data_types = [self.data_type]
+        if self.nh_event and not self.nh_events:
+            self.nh_events = [
+                NaturalHazardEvent(
+                    event_name=self.nh_event,
+                    event_start=self.nh_event_start,
+                    event_end=self.nh_event_end,
+                    location=self.nh_location,
+                    latitude=self.nh_latitude,
+                    longitude=self.nh_longitude,
+                )
+            ]
+        return self
