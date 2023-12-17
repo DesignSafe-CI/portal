@@ -48,16 +48,6 @@ class FileObjModel(MetadataModel):
     uuid = fields.CharField('UUID', max_length=512, default='')
     length = fields.IntField('File Size', default=0)
 
-class NaturalHazardEvent(MetadataModel):
-    _is_nested = True
-    event_name = fields.CharField('Natural Hazard Event', default='')
-    event_start = fields.CharField('Date Start', max_length=1024, default='')
-    event_end = fields.CharField('Date End', max_length=1024, default='')
-    location = fields.CharField('Natural Hazard Location', default='')
-    latitude = fields.CharField('Natural Hazard Latitude', default='')
-    longitude = fields.CharField('Natural Hazard Longitude', default='')
-
-
 
 class RelatedEntity(MetadataModel):
     """Model for entities related to projects."""
@@ -150,16 +140,12 @@ class Project(MetadataModel):
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
     facilities = fields.ListField('Facilities')
     keywords = fields.CharField('Keywords', default='')
-
     nh_event = fields.CharField('Natural Hazard Event', default='')
     nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
     nh_event_end = fields.CharField('Date End', max_length=1024, default='')
     nh_location = fields.CharField('Natural Hazard Location', default='')
     nh_latitude = fields.CharField('Natural Hazard Latitude', default='')
     nh_longitude = fields.CharField('Natural Hazard Longitude', default='')
-
-    nh_events = fields.ListField('Natural Hazard Events', list_cls=NaturalHazardEvent)
-    
     file_tags = fields.ListField('File Tags')
     nh_types = fields.ListField('Natural Hazard Type')
     dois = fields.ListField('Dois')
@@ -268,7 +254,6 @@ class Project(MetadataModel):
             if prj.project_id and prj.project_id != 'None':
                 self.project_id = prj.project_id
         
-        # Update users and authors from the database.
         _users = []
         _users.append(get_user_info(self.pi, role="pi"))
         for co_pi in self.co_pis:
@@ -290,16 +275,6 @@ class Project(MetadataModel):
         if len(_authors):
             self.authors = _authors
 
-        # Save natural hazard events as an array of objects
-        if getattr(self, 'nh_event', None):
-            nh_event_obj = NaturalHazardEvent()
-            nh_event_obj.event_name = getattr(self, 'nh_event', '')
-            nh_event_obj.event_start = getattr(self, 'nh_event_start', '')
-            nh_event_obj.event_end = getattr(self, 'nh_event_start', '')
-            nh_event_obj.location = getattr(self, 'nh_location', '')
-            nh_event_obj.latitude = getattr(self, 'nh_latitude', '')
-            nh_event_obj.longitude = getattr(self, 'nh_longitude', '')
-            self.nh_events = [nh_event_obj]
 
         return super(Project, self).save(agave_client)
 
