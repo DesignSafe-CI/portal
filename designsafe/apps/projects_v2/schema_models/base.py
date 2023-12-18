@@ -154,7 +154,7 @@ def handle_award_number(award: list[dict] | str) -> list[dict]:
     if isinstance(award, list):
         return award
     if isinstance(award, str):
-        return [{"name": award}]
+        return [{"number": award}]
     return award
 
 
