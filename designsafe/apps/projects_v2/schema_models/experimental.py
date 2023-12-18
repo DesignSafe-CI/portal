@@ -1,7 +1,7 @@
 """Pydantic models for Experimental entities"""
 import itertools
 from typing import Optional, Annotated
-from pydantic import BeforeValidator, Field, ConfigDict, model_validator
+from pydantic import BeforeValidator, Field, ConfigDict, model_validator, AliasChoices
 from designsafe.apps.projects_v2.schema_models.base import (
     MetadataModel,
     AssociatedProject,
@@ -34,13 +34,15 @@ class Experiment(MetadataModel):
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
 
-    experimental_facility: Annotated[
+    facility: Annotated[
         Optional[DropdownValue],
         BeforeValidator(lambda v: handle_dropdown_value(v, FACILITY_OPTIONS)),
-        Field(exclude=True),  # shadowed by the "facility" attribute
+        Field(
+            exclude=True,
+            validation_alias=AliasChoices("facility", "experimentalFacility"),
+        ),
     ] = None
     experimental_facility_other: str = Field(default="", exclude=True)
-    facility: Optional[DropdownValue] = None
 
     experiment_type: Annotated[
         Optional[DropdownValue],
@@ -78,13 +80,10 @@ class Experiment(MetadataModel):
             self.experiment_type.name = self.experiment_type_other
         if (
             self.experimental_facility_other
-            and self.experimental_facility
-            and not self.experimental_facility.name
+            and self.facility
+            and not self.facility.name
         ):
-            self.experimental_facility.name = self.experimental_facility_other
-
-        if self.experimental_facility and not self.facility:
-            self.facility = self.experimental_facility
+            self.facility.name = self.experimental_facility_other
         return self
 
 
@@ -176,7 +175,7 @@ class ExperimentAnalysis(MetadataModel):
     referencedoi: Optional[str] = Field(default=None, exclude=True)
 
 
-class ExperimentReport(MetadataModel):
+class ExperimentReport(MetadataModel):  
     """Model for experimental reports."""
 
     title: str
