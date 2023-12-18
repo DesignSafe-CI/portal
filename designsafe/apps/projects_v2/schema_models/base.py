@@ -109,7 +109,9 @@ class FileObj(MetadataModel):
     name: str
     path: str
     type: str
-    length: int
+    length: Optional[int] = None
+    last_modified: Optional[str] = None
+    uuid: Optional[str] = None
 
 
 class HazmapperMap(MetadataModel):

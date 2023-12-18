@@ -1,7 +1,7 @@
 """Pydantic models for Simulation entities."""
 
 from typing import Optional, Annotated
-from pydantic import BeforeValidator, ConfigDict
+from pydantic import BeforeValidator, ConfigDict, Field, model_validator
 from designsafe.apps.projects_v2.schema_models.base import (
     MetadataModel,
     AssociatedProject,
@@ -9,9 +9,13 @@ from designsafe.apps.projects_v2.schema_models.base import (
     ProjectUser,
     FileTag,
     Ref,
+    DropdownValue,
+    FileObj,
     handle_legacy_authors,
     handle_array_of_none,
+    handle_dropdown_value,
 )
+from designsafe.apps.projects_v2.constants import SIMULATION_TYPES
 
 
 class Simulation(MetadataModel):
@@ -19,16 +23,29 @@ class Simulation(MetadataModel):
 
     title: str
     description: str = ""
-    simulation_type: str
-    simulation_type_other: str
+    simulation_type: Annotated[
+        DropdownValue,
+        BeforeValidator(lambda v: handle_dropdown_value(v, SIMULATION_TYPES)),
+    ]
+    simulation_type_other: str = Field(exclude=True)
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []
     project: list[str] = []
     dois: list[str] = []
 
-    facility: Optional[str] = None
-    facility_other: Optional[str] = None
+    facility: Optional[DropdownValue] = None
+
+    @model_validator(mode="after")
+    def handle_other(self):
+        """Use values of XXX_other fields to fill in dropdown values."""
+        if (
+            self.simulation_type_other
+            and self.simulation_type
+            and not self.simulation_type.name
+        ):
+            self.simulation_type.name = self.simulation_type_other
+        return self
 
 
 class SimulationModel(MetadataModel):
@@ -47,6 +64,7 @@ class SimulationModel(MetadataModel):
     simulations: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
 
 
 class SimulationInput(MetadataModel):
@@ -62,6 +80,7 @@ class SimulationInput(MetadataModel):
     simulations: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
 
 
 class SimulationOutput(MetadataModel):
@@ -78,6 +97,7 @@ class SimulationOutput(MetadataModel):
     simulations: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
 
 
 class SimulationAnalysis(MetadataModel):
@@ -93,6 +113,7 @@ class SimulationAnalysis(MetadataModel):
     simulations: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
 
     reference: Optional[str] = None
     referencedoi: Optional[str] = None
@@ -110,3 +131,4 @@ class SimulationReport(MetadataModel):
     simulations: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []

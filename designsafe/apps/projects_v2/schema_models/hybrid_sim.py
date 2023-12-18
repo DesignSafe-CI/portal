@@ -1,6 +1,6 @@
 """Pydantic schema models for Hybrid Simulation entities"""
 from typing import Annotated, Optional
-from pydantic import BeforeValidator, Field
+from pydantic import BeforeValidator, Field, model_validator
 from designsafe.apps.projects_v2.schema_models.base import (
     MetadataModel,
     AssociatedProject,
@@ -9,9 +9,12 @@ from designsafe.apps.projects_v2.schema_models.base import (
     FileTag,
     FileObj,
     Ref,
+    DropdownValue,
     handle_array_of_none,
     handle_legacy_authors,
+    handle_dropdown_value,
 )
+from designsafe.apps.projects_v2.constants import HYBRID_SIM_TYEPS
 
 
 class HybridSimulation(MetadataModel):
@@ -19,8 +22,11 @@ class HybridSimulation(MetadataModel):
 
     title: str
     description: str = ""
-    simulation_type: str
-    simulation_type_other: str
+    simulation_type: Annotated[
+        DropdownValue,
+        BeforeValidator(lambda v: handle_dropdown_value(v, HYBRID_SIM_TYEPS)),
+    ]
+    simulation_type_other: str = Field(exclude=True)
     procedure_start: str = ""
     procedure_end: str = ""
     referenced_data: list[ReferencedWork] = []
@@ -29,8 +35,18 @@ class HybridSimulation(MetadataModel):
     project: list[str] = []
     dois: list[str] = []
 
-    facility: Optional[str] = None
-    facility_other: Optional[str] = None
+    facility: Optional[DropdownValue] = None
+
+    @model_validator(mode="after")
+    def handle_other(self):
+        """Use values of XXX_other fields to fill in dropdown values."""
+        if (
+            self.simulation_type_other
+            and self.simulation_type
+            and not self.simulation_type.name
+        ):
+            self.simulation_type.name = self.simulation_type_other
+        return self
 
 
 class HybridSimGlobalModel(MetadataModel):
@@ -43,6 +59,7 @@ class HybridSimGlobalModel(MetadataModel):
     hybrid_simulations: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
 
     tags: Optional[dict] = Field(default=None, exclude=True)
 
@@ -59,6 +76,7 @@ class HybridSimCoordinator(MetadataModel):
     global_models: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
 
     tags: Optional[dict] = Field(default=None, exclude=True)
 
@@ -76,6 +94,7 @@ class HybridSimSimSubstructure(MetadataModel):
     coordinators: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
 
     tags: Optional[dict] = Field(default=None, exclude=True)
 

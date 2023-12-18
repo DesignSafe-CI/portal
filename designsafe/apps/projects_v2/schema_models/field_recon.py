@@ -1,5 +1,6 @@
 """Pydantic schema models for Field Recon entities"""
 from typing import Annotated, Optional
+import itertools
 from pydantic import BeforeValidator, Field, AliasChoices
 from designsafe.apps.projects_v2.schema_models.base import (
     MetadataModel,
@@ -7,8 +8,18 @@ from designsafe.apps.projects_v2.schema_models.base import (
     ReferencedWork,
     ProjectUser,
     FileTag,
+    DropdownValue,
+    FileObj,
     handle_array_of_none,
+    handle_dropdown_values,
 )
+
+from designsafe.apps.projects_v2.constants import (
+    FR_EQUIPMENT_TYPES,
+    FR_OBSERVATION_TYPES,
+)
+
+equipment_type_options = list(itertools.chain(*FR_EQUIPMENT_TYPES.values()))
 
 
 def handle_legacy_authors(author_list: list):
@@ -46,8 +57,7 @@ class Mission(MetadataModel):
     dois: list[str] = []
 
     # Deprecate these later
-    facility: Optional[str] = None
-    facility_other: Optional[str] = None
+    facility: Optional[DropdownValue] = None
 
 
 class FieldReconReport(MetadataModel):
@@ -69,11 +79,11 @@ class FieldReconReport(MetadataModel):
     guest_data_collectors: list[str] = []
     project: list[str] = []
     files: list[str] = []
+    file_objs: list[FileObj] = []
     dois: list[str] = []
 
     # deprecated, only appears in test projects
-    facility: Optional[str] = None
-    facility_other: Optional[str] = None
+    facility: Optional[DropdownValue] = None
     missions: list[str] = Field(default=[], exclude=True)
     referenced_datas: list[ReferencedWork] = Field(default=[], exclude=True)
 
@@ -110,6 +120,7 @@ class FieldReconCollection(MetadataModel):
     project: list[str] = []
     missions: list[str] = []
     files: list[str] = []
+    file_objs: list[FileObj] = []
     file_tags: list[FileTag] = []
 
 
@@ -128,7 +139,10 @@ class SocialScienceCollection(MetadataModel):
     location: str = ""
     latitude: str = ""
     longitude: str = ""
-    equipment: list[str] = ""
+    equipment: Annotated[
+        list[DropdownValue],
+        BeforeValidator(lambda v: handle_dropdown_values(v, equipment_type_options)),
+    ] = []
     restriction: str = ""
     referenced_data: Annotated[
         list[ReferencedWork], BeforeValidator(handle_array_of_none)
@@ -136,6 +150,7 @@ class SocialScienceCollection(MetadataModel):
     project: list[str] = []
     missions: list[str] = []
     files: list[str] = []
+    file_objs: list[FileObj] = []
     file_tags: list[FileTag] = []
 
     # Deprecated test fields
@@ -155,6 +170,7 @@ class PlanningCollection(MetadataModel):
     project: list[str] = []
     missions: list[str] = []
     files: list[str] = []
+    file_objs: list[FileObj] = []
     file_tags: list[FileTag] = []
 
 
@@ -168,15 +184,22 @@ class GeoscienceCollection(MetadataModel):
         list[ReferencedWork], BeforeValidator(handle_array_of_none)
     ] = []
 
-    observation_types: list[str] = ""
+    observation_types: Annotated[
+        list[DropdownValue],
+        BeforeValidator(lambda v: handle_dropdown_values(v, FR_OBSERVATION_TYPES)),
+    ] = []
     date_start: str
     date_end: str
     location: str = ""
     latitude: str = ""
     longitude: str = ""
-    equipment: list[str] = ""
+    equipment: Annotated[
+        list[DropdownValue],
+        BeforeValidator(lambda v: handle_dropdown_values(v, equipment_type_options)),
+    ] = []
 
     project: list[str] = []
     missions: list[str] = []
     files: list[str] = []
+    file_objs: list[FileObj] = []
     file_tags: list[FileTag] = []

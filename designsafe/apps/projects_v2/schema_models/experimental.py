@@ -169,6 +169,7 @@ class ExperimentAnalysis(MetadataModel):
     experiments: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
 
     tags: Optional[dict] = Field(default=None, exclude=True)
     reference: Optional[str] = Field(default=None, exclude=True)
@@ -185,3 +186,4 @@ class ExperimentReport(MetadataModel):
     experiments: list[str] = []
     files: list[str] = []
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []

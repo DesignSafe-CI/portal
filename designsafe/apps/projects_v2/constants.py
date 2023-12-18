@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long
 """Mapping of possible metadata names."""
 
 PROJECT = "designsafe.project"
@@ -312,4 +313,288 @@ OTHER_DATA_TYPES = [
     {"id": "survey instrument", "name": "Survey Instrument"},
     {"id": "testbed", "name": "Testbed"},
     {"id": "video", "name": "Video"},
+]
+
+SIMULATION_TYPES = [
+    {"id": "Geotechnical", "name": "Geotechnical"},
+    {"id": "Structural", "name": "Structural"},
+    {"id": "Soil Structure System", "name": "Soil Structure System"},
+    {"id": "Storm Surge", "name": "Storm Surge"},
+    {"id": "Wind", "name": "Wind"},
+    {"id": "Other", "name": "Other"},
+]
+
+HYBRID_SIM_TYEPS = [
+    {"id": "Earthquake", "name": "Earthquake"},
+    {"id": "Wind", "name": "Wind"},
+    {"id": "Other", "name": "Other"},
+]
+
+
+FR_EQUIPMENT_TYPES = {
+    "General": [{"id": "none", "name": "None"}, {"id": "other", "name": "Other"}],
+    "IT/Electronics": [
+        {
+            "id": "ipad pro 10.5 | 256 gb, wifi+cellular ",
+            "name": "iPad Pro 10.5 | 256 GB, WiFi+Cellular ",
+        },
+        {
+            "id": "ipad rugged case w/keyboard | zagg rugged messenger",
+            "name": "iPad Rugged Case w/Keyboard | ZAGG Rugged Messenger",
+        },
+        {
+            "id": "ipad accessories | tripod, hd microphone, external battery, apple pencil",
+            "name": "iPAD accessories | Tripod, HD Microphone, External battery, Apple Pencil",
+        },
+        {
+            "id": "flash drive | for backing up ipad (sandisk wireless stick 256gb)",
+            "name": "Flash Drive | For backing up iPad (SanDisk Wireless Stick 256GB)",
+        },
+        {
+            "id": "external hard drive | 2 tb drive for drone footage, protective bumpers, integrated microsd, usb-c",
+            "name": "External Hard Drive | 2 TB Drive for drone footage, protective bumpers, integrated microSD, USB-C",
+        },
+        {
+            "id": "custom processing desktop pc | 3.3 ghz i9-7900x, 128gb ddr4 ram, nvidia geforce rtx 2080 ti",
+            "name": "Custom Processing Desktop PC | 3.3 GHz i9-7900X, 128GB DDR4 RAM, Nvidia GeForce RTX 2080 Ti",
+        },
+        {
+            "id": "processing laptop | 2.9ghz intel i9-8950hk, 64gb ddr4 ram, nvidia geforce rtx 2070",
+            "name": "Processing Laptop | 2.9GHz Intel i9-8950HK, 64GB DDR4 RAM, NVIDIA GeForce RTX 2070",
+        },
+    ],
+    "Terrestrial Laser Scanning": [
+        {
+            "id": "short range scanner | leica blk360",
+            "name": "Short Range Scanner | Leica BLK360",
+        },
+        {
+            "id": "medium range scanner | leica rtc360 ",
+            "name": "Medium Range Scanner | Leica RTC360 ",
+        },
+        {
+            "id": "medium range scanner | leica scanstation p50",
+            "name": "Medium Range Scanner | Leica Scanstation P50",
+        },
+        {
+            "id": "long range scanner | maptek i-site xr3",
+            "name": "Long Range Scanner | Maptek I-Site XR3",
+        },
+        {
+            "id": "long range scanner | maptek i-site lr3",
+            "name": "Long Range Scanner | Maptek I-Site LR3",
+        },
+    ],
+    "Survey": [
+        {
+            "id": "robotic total station | leica nova ts16i instrument package",
+            "name": "Robotic Total Station | Leica Nova TS16I instrument package",
+        },
+        {
+            "id": "survey (digital level) | leica ls15 digital level package",
+            "name": "Survey (Digital level) | Leica LS15 digital level package",
+        },
+        {
+            "id": "survey (gnss receiver) | leica gs18t smartantenna package",
+            "name": "Survey (GNSS receiver) | Leica GS18T SmartAntenna package",
+        },
+        {
+            "id": "thermometer/digital compass/barometer/humidity sensor | kestrel meter 5500 weather meter",
+            "name": "Thermometer/Digital Compass/Barometer/Humidity Sensor | Kestrel Meter 5500 Weather Meter",
+        },
+    ],
+    "Unmanned Aerial Systems": [
+        {
+            "id": "small portable (backpack-size) drone | dji mavic pro",
+            "name": "Small Portable (backpack-size) Drone | DJI Mavic Pro",
+        },
+        {
+            "id": "small portable (backpack-size) drone | dji mavic pro 2",
+            "name": "Small Portable (backpack-size) Drone | DJI Mavic Pro 2",
+        },
+        {
+            "id": "small to medium-sized drone | dji phantom 4 pro+ ",
+            "name": "Small to Medium-Sized Drone | DJI Phantom 4 Pro+ ",
+        },
+        {
+            "id": "small to medium-sized drone | dji phantom 4 pro+ rtk ",
+            "name": "Small to Medium-Sized Drone | DJI Phantom 4 Pro+ RTK ",
+        },
+        {
+            "id": "medium size drone | dji inspire2",
+            "name": "Medium Size Drone | DJI Inspire2",
+        },
+        {
+            "id": "mid-grade industral weather resistant drone | dji matrice 210 ",
+            "name": "Mid-grade Industral Weather Resistant Drone | DJI Matrice 210 ",
+        },
+        {
+            "id": "high-end industrial weather resistant drone | dji matrice 210 rtk",
+            "name": "High-end Industrial Weather Resistant Drone | DJI Matrice 210 RTK",
+        },
+        {
+            "id": "large fixed wing drone | sense fly ebee with rtk and base station",
+            "name": "Large Fixed Wing Drone | Sense fly Ebee with RTK and base station",
+        },
+        {
+            "id": "kite balloon with tether | skyshot hybrid helikite (already purchased)",
+            "name": "Kite Balloon with Tether | SkyShot Hybrid HeliKite (already purchased)",
+        },
+        {
+            "id": "high-end drone with uas lidar system | dji m600 drone with phoenix aerial mini ranger lidar system",
+            "name": "High-end Drone with UAS LiDAR System | DJI M600 drone with Phoenix Aerial Mini Ranger LiDAR system",
+        },
+        {
+            "id": "drone imaging systems (compatible with all matrice platforms) | zenmuse x4s, x5s, and x30 (zoom) camera. micasense altum multispectral sensor.",
+            "name": "Drone Imaging systems (compatible with all Matrice platforms) | Zenmuse X4S, X5S, and X30 (zoom) camera. MicaSense Altum Multispectral Sensor.",
+        },
+    ],
+    "Imaging": [
+        {
+            "id": "digital slr camera | canon 7d mark ii, with narrow and wide angle lenses",
+            "name": "Digital SLR Camera | Canon 7D Mark II, with narrow and wide angle lenses",
+        },
+        {
+            "id": "robotic camera mount | gigapan epic pro v (for dslr) and tripod",
+            "name": "Robotic Camera Mount | GigaPan Epic Pro V (for DSLR) and Tripod",
+        },
+        {
+            "id": "360 degree camera | insta360 one for apple products",
+            "name": "360 Degree Camera | Insta360 One for Apple Products",
+        },
+        {
+            "id": "car camera system | applied streetview 360 degree panorama gps camera system",
+            "name": "Car Camera System | Applied Streetview 360 degree panorama GPS camera system",
+        },
+        {
+            "id": "car camera system | nctech istar pulsar+ (streetview) 360 degree panorama gps camera system",
+            "name": "Car Camera System | NCTech iSTAR Pulsar+ (streetview) 360 degree Panorama GPS Camera system",
+        },
+        {
+            "id": "thermal camera | flir one pro",
+            "name": "Thermal Camera | Flir One Pro",
+        },
+    ],
+    "3D Visualization": [
+        {
+            "id": "computer automated virtual environment (cave) system | at rapid facility headquarters only. b363d tv, tv stand, computer, tracking camera and accessories. ",
+            "name": "Computer Automated Virtual Environment (CAVE) System | at RAPID Facility Headquarters ONLY. B363D TV, TV stand, computer, tracking camera and accessories. ",
+        }
+    ],
+    "Site Characterization": [
+        {
+            "id": "seismometers | nanometrics triaxial, 20s, trillium seismometer with centaur digital recorder",
+            "name": "Seismometers | Nanometrics triaxial, 20s, Trillium seismometer with Centaur digital recorder",
+        },
+        {
+            "id": "multichannel analysis of surface waves (masw) system | atom wireless seismic system, 24-channel system with gps and wifi",
+            "name": "Multichannel Analysis of Surface Waves (MASW) System | ATOM wireless seismic system, 24-channel system with GPS and WiFi",
+        },
+    ],
+    "Structural": [
+        {
+            "id": "accelerograph system | nanometrics standalone accelerographs with batteries, cases, and data loggers",
+            "name": "Accelerograph system | Nanometrics standalone accelerographs with batteries, cases, and data loggers",
+        }
+    ],
+    "Ground Investigation": [
+        {
+            "id": "hand operated dynamic cone penetrometer (dcp) system | smartdcp digital recording system and hand operated dcp",
+            "name": "Hand Operated Dynamic Cone Penetrometer (DCP) System | SmartDCP digital recording system and hand operated DCP",
+        },
+        {
+            "id": "lightweight, portable dcp | sol'solution panda dcp",
+            "name": "Lightweight, Portable DCP | Sol'Solution Panda DCP",
+        },
+        {
+            "id": "pocket penetrometer | geotester pocket penetrometer",
+            "name": "Pocket Penetrometer | Geotester pocket penetrometer",
+        },
+        {
+            "id": "schmidt hammer | digi-schmidt 2000, digital measuring system",
+            "name": "Schmidt Hammer | Digi-Schmidt 2000, digital measuring system",
+        },
+        {
+            "id": "basic soil sampling kit | ams 3-1/4-inch basic soil sampling kit, hand augers and samplers",
+            "name": "Basic Soil Sampling Kit | AMS 3-1/4-inch basic soil sampling kit, hand augers and samplers",
+        },
+    ],
+    "Coastal": [
+        {
+            "id": "remote-operated hydrographic survey boat | z-boat 1800 with single beam echo sounder",
+            "name": "Remote-Operated Hydrographic Survey Boat | Z-boat 1800 with single beam echo sounder",
+        },
+        {
+            "id": "acousitc beacons | ulb 350/37 underwater acoustic beacon",
+            "name": "Acousitc Beacons | ULB 350/37 underwater acoustic beacon",
+        },
+        {
+            "id": "beacon locator - diver operated pinger receiver system | dpr-275 diver pinger receiver",
+            "name": "Beacon Locator - Diver Operated Pinger Receiver System | DPR-275 Diver Pinger Receiver",
+        },
+        {
+            "id": "water level data logger | trublue 255",
+            "name": "Water Level Data Logger | TruBlue 255",
+        },
+        {
+            "id": "acoustic doppler velocimeter | aquadopp profiler with 90deg angle head",
+            "name": "Acoustic Doppler Velocimeter | AquaDopp profiler with 90deg angle head",
+        },
+        {
+            "id": 'grab sampler | petite ponar 6"x6" w/ 50 ft of rope',
+            "name": 'Grab Sampler | Petite Ponar 6"x6" w/ 50 ft of rope',
+        },
+    ],
+    "Social": [
+        {
+            "id": "eeg headset | emotiv 14-channel headset",
+            "name": "EEG Headset | Emotiv 14-channel headset",
+        },
+        {
+            "id": "eeg headset | emotiv 5-channel headset",
+            "name": "EEG Headset | Emotiv 5-channel headset",
+        },
+        {"id": "pen and paper", "name": "Pen and Paper"},
+    ],
+    "Support": [
+        {
+            "id": "smaller battery | goal zero yeti 150",
+            "name": "Smaller Battery | Goal Zero Yeti 150",
+        },
+        {
+            "id": "high capacity battery | goal zero yeti 400",
+            "name": "High Capacity Battery | Goal Zero Yeti 400",
+        },
+        {
+            "id": "safety vest | custom nheri rapid safety vests with ipad pocket",
+            "name": "Safety Vest | Custom NHERI Rapid safety vests with iPad pocket",
+        },
+        {
+            "id": "safety helmet | rock climbing helmet",
+            "name": "Safety Helmet | Rock climbing helmet",
+        },
+        {
+            "id": "power inverters | 300w dc 12v to 110v car outlet",
+            "name": "Power Inverters | 300W DC 12V to 110V car outlet",
+        },
+        {
+            "id": "walkie talkies (pair) | waterproof, weather proof, long range",
+            "name": "Walkie Talkies (pair) | Waterproof, weather proof, long range",
+        },
+        {
+            "id": "rapp pack | swiss gear scansmart backpack w/plumb bob, measuring tape, digital caliper, safety glasses, hand level, pocket rod, first aid kit, weld gauge, crack gauge, range finder,",
+            "name": "RAPP Pack | Swiss Gear ScanSmart backpack w/Plumb Bob, Measuring tape, Digital Caliper, Safety Glasses, Hand level, Pocket Rod, First Aid Kit, Weld Gauge, Crack Gauge, Range Finder,",
+        },
+    ],
+}
+
+FR_OBSERVATION_TYPES = [
+    {"id": "wind", "name": "Wind"},
+    {"id": "structural", "name": "Structural"},
+    {"id": "storm surge / coastal", "name": "Storm Surge / Coastal"},
+    {"id": "social science", "name": "Social Science"},
+    {"id": "geotechnical", "name": "Geotechnical"},
+    {"id": "field sensors", "name": "Field Sensors"},
+    {"id": "coastal", "name": "Coastal"},
+    {"id": "other", "name": "Other"},
 ]
