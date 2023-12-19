@@ -3,7 +3,11 @@ import json
 from typing import Iterator
 from pydantic import BaseModel, ValidationError
 from designsafe.apps.projects_v2.schema_models.base import BaseProject
+from designsafe.apps.projects_v2.migration_utils.graph_constructor import (
+    transform_pub_entities,
+)
 from designsafe.apps.api.agave import service_account
+from designsafe.apps.api.publications.operations import listing as list_pubs
 
 
 def update_project(uuid, new_value):
@@ -44,4 +48,31 @@ def validate_entities(name: str = "designsafe.project", model: BaseModel = BaseP
         except ValidationError as exc:
             print(entity["uuid"])
             print(entity)
+            print(exc)
+
+
+def iterate_pubs():
+    """Returns an iterator over all publications."""
+    offset = 0
+    limit = 100
+    while True:
+        listing = list_pubs(offset=offset, limit=limit)
+        res = listing["listing"]
+        yield from res
+
+        if len(res) < limit:
+            break
+
+        offset += limit
+
+
+def validate_publications():
+    """Attempt graph construction for all publications."""
+    all_pubs = iterate_pubs()
+    for pub in all_pubs:
+        # print(pub["projectId"])
+        try:
+            transform_pub_entities(pub["projectId"])
+        except ValidationError as exc:
+            print(pub["projectId"])
             print(exc)

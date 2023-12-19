@@ -11,6 +11,9 @@ from designsafe.apps.projects.managers.publication import FIELD_MAP
 from designsafe.apps.projects_v2.schema_models import PATH_SLUGS
 from designsafe.apps.projects.models.categories import Category
 from designsafe.apps.projects_v2 import constants as names
+from designsafe.apps.projects_v2.migration_utils.publication_transforms import (
+    transform_entity,
+)
 
 # map metadata 'name' field to allowed (direct) children
 ALLOWED_RELATIONS = {
@@ -94,7 +97,6 @@ def construct_graph(project_id) -> nx.DiGraph:
     root_node_data = {
         "uuid": root_entity["uuid"],
         "name": root_entity["name"],
-        "title": root_entity["value"]["title"],
     }
     project_graph.add_node(root_node_id, **root_node_data)
 
@@ -196,11 +198,11 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
         )
         entity_dirname = f"{entity_name_slug}--{slugify(entity_title)}"
 
-        if parent_node in pub_graph.successors("NODE_ROOT"):
+        if parent_node == "NODE_ROOT":
             # Publishable entities have a "data" folder in Bagit semantics.
-            child_path = Path(parent_base_path) / "data" / entity_dirname
-        else:
             child_path = Path(parent_base_path) / entity_dirname
+        else:
+            child_path = Path(parent_base_path) / "data" / entity_dirname
 
         pub_graph.nodes[child_node]["basePath"] = str(child_path)
 
@@ -226,3 +228,19 @@ def get_entity_orders(
     if not prj_orders:
         return []
     return prj_orders.to_dict().get("orders", [])
+
+
+def transform_pub_entities(project_id, version=None):
+    """Validate publication entities against their corresponding model."""
+    entity_listing = get_entities_from_publication(project_id, version=version)
+    base_pub_meta = IndexedPublication.from_id(project_id, revision=version).to_dict()
+    pub_graph = construct_publication_graph(project_id, version)
+
+    for _, node_data in pub_graph.nodes.items():
+        node_entity = next(e for e in entity_listing if e["uuid"] == node_data["uuid"])
+        new_entity_value = transform_entity(
+            node_entity, base_pub_meta, node_data["basePath"]
+        )
+        node_data["value"] = new_entity_value
+
+    return pub_graph

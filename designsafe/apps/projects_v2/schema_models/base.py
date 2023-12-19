@@ -1,5 +1,6 @@
 """Pydantic schema models for base-level project entities."""
 from functools import partial
+from datetime import datetime
 from typing import Literal, Optional, Annotated, TypedDict
 from pydantic import (
     BaseModel,
@@ -77,7 +78,7 @@ class AssociatedProject(MetadataModel):
     # only title guaranteed
     type: str = "Linked Dataset"
     title: str
-    href: str = ""
+    href: Optional[str] = ""
     href_type: str = "URL"
     order: Optional[int] = None
     # Some test projects have this weird attribute.
@@ -142,8 +143,8 @@ class NaturalHazardEvent(MetadataModel):
     """Model for natural hazard events"""
 
     event_name: str
-    event_start: str
-    event_end: Optional[str] = None
+    event_start: datetime
+    event_end: Optional[datetime] = None
     location: str
     latitude: str
     longitude: str
@@ -263,18 +264,25 @@ class BaseProject(MetadataModel):
     team_order: list[ProjectUser] = []
     authors: list[ProjectUser] = []
 
+    # This field is stored as awardNumber in projects and awardNumbers in pubs
     award_number: Annotated[
         list[ProjectAward], BeforeValidator(handle_award_number)
+    ] = Field(default=[], exclude=True)
+    award_numbers: Annotated[
+        list[ProjectAward], BeforeValidator(handle_award_number)
     ] = []
-    award_numbers: list[str] = []
     associated_projects: list[AssociatedProject] = []
     referenced_data: list[ReferencedWork] = []
     ef: Optional[str] = None
     keywords: str = ""
 
     nh_event: str = ""
-    nh_event_start: str = ""
-    nh_event_end: str = ""
+    nh_event_start: Annotated[
+        Optional[datetime], BeforeValidator(lambda v: v or None)
+    ] = None
+    nh_event_end: Annotated[
+        Optional[datetime], BeforeValidator(lambda v: v or None)
+    ] = None
     nh_location: str = ""
     nh_latitude: str = ""
     nh_longitude: str = ""
@@ -296,6 +304,12 @@ class BaseProject(MetadataModel):
 
     facilities: list[DropdownValue] = []
 
+    # These fields are ONLY present on publication PRJ-1665
+    natural_hazard_type: Optional[str] = None
+    natural_hazard_event: Optional[str] = None
+    coverage_temporal: Optional[str] = None
+    lat_long_name: Optional[str] = None
+
     @model_validator(mode="after")
     def post_validate(self):
         """Populate derived fields if they don't exist yet."""
@@ -314,4 +328,6 @@ class BaseProject(MetadataModel):
                     longitude=self.nh_longitude,
                 )
             ]
+        if self.award_number and not self.award_numbers:
+            self.award_numbers = self.award_number
         return self

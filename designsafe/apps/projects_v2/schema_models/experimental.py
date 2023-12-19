@@ -126,9 +126,15 @@ class ExperimentSensor(MetadataModel):
     file_objs: list[FileObj] = []
 
     # Deprecated legacy fields
-    sensor_list_type: Optional[str] = Field(default=None, exclude=True)
-    sensor_drawing: Optional[list[str]] = Field(default=None, exclude=True)
+    sensor_list_type: Optional[str] = None
+    sensor_drawing: Optional[list[str]] = None
     tags: Optional[dict] = Field(default=None, exclude=True)
+
+    sensor_lists: Optional[list[str]] = Field(default=None, exclude=True)
+    event_type: Optional[str] = None
+
+    # This field is ONLY present on pub PRJ-1649
+    analysis: Optional[list[str]] = None
 
 
 class ExperimentEvent(MetadataModel):
@@ -175,7 +181,7 @@ class ExperimentAnalysis(MetadataModel):
     referencedoi: Optional[str] = Field(default=None, exclude=True)
 
 
-class ExperimentReport(MetadataModel):  
+class ExperimentReport(MetadataModel):
     """Model for experimental reports."""
 
     title: str
