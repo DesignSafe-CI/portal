@@ -198,11 +198,11 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
         )
         entity_dirname = f"{entity_name_slug}--{slugify(entity_title)}"
 
-        if parent_node == "NODE_ROOT":
-            # Publishable entities have a "data" folder in Bagit semantics.
-            child_path = Path(parent_base_path) / entity_dirname
-        else:
+        if parent_node in pub_graph.successors("NODE_ROOT"):
+            # Publishable entities have a "data" folder in Bagit ontology.
             child_path = Path(parent_base_path) / "data" / entity_dirname
+        else:
+            child_path = Path(parent_base_path) / entity_dirname
 
         pub_graph.nodes[child_node]["basePath"] = str(child_path)
 
@@ -238,8 +238,9 @@ def transform_pub_entities(project_id, version=None):
 
     for _, node_data in pub_graph.nodes.items():
         node_entity = next(e for e in entity_listing if e["uuid"] == node_data["uuid"])
+        data_path = str(Path(node_data["basePath"]) / "data")
         new_entity_value = transform_entity(
-            node_entity, base_pub_meta, node_data["basePath"]
+            node_entity, base_pub_meta, data_path
         )
         node_data["value"] = new_entity_value
 

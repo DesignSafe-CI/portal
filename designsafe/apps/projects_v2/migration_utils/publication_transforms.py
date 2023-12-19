@@ -108,23 +108,23 @@ def update_file_tag_paths(entity: dict, base_path: str) -> list[FileTagDict]:
     updated_tags = []
     is_type_other = entity["value"].get("projectType", None) == "other"
     if is_type_other:
-        pub_mapping = {"/": base_path}
+        # type Other is a special case since all files are associated at the root.
+        path_mapping = {"": base_path}
     else:
-        pub_mapping = {
+        path_mapping = {
             file_obj["path"]: str(Path(base_path) / Path(file_obj["path"]).name)
             for file_obj in entity["fileObjs"]
         }
 
     for tag in tags:
         if not tag.get("path", None):
-            #print(entity)
-            updated_tags.append(tag)
+            # If there is no path, we can't recover the tag.
             continue
-        tag_path_prefixes = (p for p in pub_mapping if tag["path"].startswith(p))
+        tag_path_prefixes = [p for p in path_mapping if tag["path"].startswith(p)]
 
         for prefix in tag_path_prefixes:
             updated_tags.append(
-                {**tag, "path": tag["path"].replace(prefix, pub_mapping[prefix], 1)}
+                {**tag, "path": tag["path"].replace(prefix, path_mapping[prefix], 1)}
             )
 
     return updated_tags
