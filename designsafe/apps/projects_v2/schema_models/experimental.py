@@ -2,17 +2,19 @@
 import itertools
 from typing import Optional, Annotated
 from pydantic import BeforeValidator, Field, ConfigDict, model_validator, AliasChoices
-from designsafe.apps.projects_v2.schema_models.base import (
-    MetadataModel,
+from designsafe.apps.projects_v2.schema_models._field_models import MetadataModel
+from designsafe.apps.projects_v2.schema_models._field_models import (
     AssociatedProject,
-    ReferencedWork,
-    ProjectUser,
-    FileTag,
-    FileObj,
     DropdownValue,
+    FileObj,
+    FileTag,
+    ProjectUser,
     Ref,
-    handle_legacy_authors,
+    ReferencedWork,
+)
+from designsafe.apps.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
+    handle_legacy_authors,
     handle_dropdown_value,
 )
 from designsafe.apps.projects_v2.constants import (

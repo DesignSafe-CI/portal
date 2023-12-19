@@ -2,7 +2,10 @@
 from pathlib import Path
 from typing import TypedDict
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from designsafe.apps.projects_v2.schema_models import SCHEMA_MAPPING
+
+user_model = get_user_model()
 
 
 def convert_v1_user(user):
@@ -19,6 +22,70 @@ def convert_v1_user(user):
         "order": user["_ui"]["order"],
         "guest": False,
         "authorship": True,
+        "role": "team_member",
+    }
+
+
+def get_user_info(username: str, role: str = None) -> dict:
+    """Construct a user object from info in the db."""
+    try:
+        user_obj = user_model.objects.get(username=username)
+    except user_model.DoesNotExist:
+        return {
+            "username": username,
+            "fname": "N/A",
+            "lname": "N/A",
+            "email": "N/A",
+            "inst": "N/A",
+            "role": role,
+        }
+    user_info = {
+        "username": username,
+        "fname": user_obj.first_name,
+        "lname": user_obj.last_name,
+        "email": user_obj.email,
+        "inst": user_obj.profile.institution,
+    }
+    if role:
+        user_info["role"] = role
+    return user_info
+
+
+def construct_users(entity: dict) -> list[dict]:
+    """Get users associated with an entity."""
+    _users = []
+    _users.append(get_user_info(entity["value"].get("pi"), role="pi"))
+    for co_pi in entity["value"].get("coPis", []):
+        _users.append(get_user_info(co_pi, role="co_pi"))
+    for team_member in entity["value"].get("teamMembers", []):
+        _users.append(get_user_info(team_member, role="team_member"))
+    for guest_member in entity["value"].get("guestMembers", []):
+        _users.append({**guest_member, "username": None, "role": "guest"})
+
+    return _users
+
+
+def convert_v2_user(user):
+    """Convert v2 publication user to fill in all fields"""
+    is_guest = user.get("guest", False)
+    if is_guest:
+        role = "guest"
+        username = None
+    else:
+        role = "team_member"
+        username = user["name"]
+
+    return {
+        "fname": user["fname"],
+        "lname": user["lname"],
+        "name": user["name"],
+        "username": username,
+        "role": role,
+        "guest": is_guest,
+        "order": user["order"],
+        "email": user.get("email", None),
+        "inst": user.get("inst", None),
+        "authorship": user["authorship"],
     }
 
 
@@ -149,6 +216,9 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     if authors and schema_version == 1:
         updated_authors = get_v1_authors(entity, base_pub_meta["users"])
         entity["value"]["authors"] = updated_authors
+    if authors and schema_version > 1:
+        fixed_authors = list(map(convert_v2_user, entity["authors"]))
+        entity["value"]["authors"] = sorted(fixed_authors, key=lambda a: a["order"])
 
     old_tags = entity["value"].get("tags", None)
     if old_tags:

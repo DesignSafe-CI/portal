@@ -2,37 +2,26 @@
 from typing import Annotated, Optional
 import itertools
 from pydantic import BeforeValidator, Field, AliasChoices
-from designsafe.apps.projects_v2.schema_models.base import (
-    MetadataModel,
+from designsafe.apps.projects_v2.schema_models._field_models import MetadataModel
+from designsafe.apps.projects_v2.schema_models._field_models import (
     AssociatedProject,
-    ReferencedWork,
-    ProjectUser,
-    FileTag,
     DropdownValue,
     FileObj,
+    FileTag,
+    ProjectUser,
+    ReferencedWork,
+)
+from designsafe.apps.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
+    handle_legacy_authors,
     handle_dropdown_values,
 )
-
 from designsafe.apps.projects_v2.constants import (
     FR_EQUIPMENT_TYPES,
     FR_OBSERVATION_TYPES,
 )
 
 equipment_type_options = list(itertools.chain(*FR_EQUIPMENT_TYPES.values()))
-
-
-def handle_legacy_authors(author_list: list):
-    """Handle the case where the author field is an array of usernames."""
-    if not bool(author_list):
-        return []
-    if isinstance(author_list[0], str):
-        author_map = map(
-            lambda author: {"name": author, "guest": False, "authorship": True},
-            author_list,
-        )
-        return list(author_map)
-    return author_list
 
 
 class Mission(MetadataModel):

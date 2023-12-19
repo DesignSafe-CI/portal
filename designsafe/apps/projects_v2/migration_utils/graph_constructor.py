@@ -13,6 +13,7 @@ from designsafe.apps.projects.models.categories import Category
 from designsafe.apps.projects_v2 import constants as names
 from designsafe.apps.projects_v2.migration_utils.publication_transforms import (
     transform_entity,
+    construct_users
 )
 
 # map metadata 'name' field to allowed (direct) children
@@ -243,5 +244,8 @@ def transform_pub_entities(project_id, version=None):
             node_entity, base_pub_meta, data_path
         )
         node_data["value"] = new_entity_value
+
+    project_users = construct_users(entity_listing[0])
+    pub_graph.nodes["NODE_ROOT"]["value"]["users"] = project_users
 
     return pub_graph

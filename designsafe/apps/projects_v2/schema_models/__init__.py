@@ -7,8 +7,10 @@ from designsafe.apps.projects_v2.schema_models import (
     simulation,
     field_recon,
 )
+from designsafe.apps.projects_v2.schema_models._field_models import MetadataModel
 
-SCHEMA_MAPPING: dict[str, base.MetadataModel] = {
+
+SCHEMA_MAPPING: dict[str, MetadataModel] = {
     constants.PROJECT: base.BaseProject,
     # Experimental
     constants.EXPERIMENT: experimental.Experiment,
