@@ -14,6 +14,7 @@ class MetadataModel(BaseModel):
         populate_by_name=True,
         from_attributes=True,
         extra="forbid",
+        coerce_numbers_to_str=True,
     )
 
     def model_dump(self, *args, **kwargs):

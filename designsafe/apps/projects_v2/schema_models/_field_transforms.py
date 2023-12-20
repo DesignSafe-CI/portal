@@ -31,6 +31,17 @@ def handle_legacy_authors(author_list: list):
     return author_list
 
 
+def handle_keywords(keywords: str | list[str]) -> list[str]:
+    """Split keywords into an array."""
+    if isinstance(keywords, str):
+        return [
+            keyword.strip()
+            for keyword in keywords.split(",")
+            if keyword not in ("", "None")
+        ]
+    return keywords
+
+
 class DropdownValueDict(TypedDict):
     """{"id": "X", "name": "Y"}"""
 

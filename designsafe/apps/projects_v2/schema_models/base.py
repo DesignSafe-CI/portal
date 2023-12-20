@@ -29,6 +29,7 @@ from designsafe.apps.projects_v2.schema_models._field_transforms import (
     handle_award_number,
     handle_dropdown_value,
     handle_dropdown_values,
+    handle_keywords,
 )
 
 
@@ -67,9 +68,9 @@ class BaseProject(MetadataModel):
     ] = None
     data_types: list[DropdownValue] = []
 
-    # investigate using "team_order" as alias for author field
-    team_order: list[ProjectUser] = []
-    authors: list[ProjectUser] = []
+    authors: list[ProjectUser] = Field(
+        default=[], validation_alias=AliasChoices("authors", "teamOrder")
+    )
 
     # This field is stored as awardNumber in projects and awardNumbers in pubs
     award_number: Annotated[
@@ -81,7 +82,7 @@ class BaseProject(MetadataModel):
     associated_projects: list[AssociatedProject] = []
     referenced_data: list[ReferencedWork] = []
     ef: Optional[str] = None
-    keywords: str = ""
+    keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
 
     nh_event: str = ""
     nh_event_start: Annotated[
@@ -120,8 +121,9 @@ class BaseProject(MetadataModel):
     @model_validator(mode="after")
     def post_validate(self):
         """Populate derived fields if they don't exist yet."""
-        if self.team_order and not self.authors:
-            self.authors = sorted(self.team_order, key=lambda a: getattr(a, "order", 0))
+        _authors = sorted(self.authors or [], key=lambda a: getattr(a, "order", 0))
+        if self.authors != _authors:
+            self.authors = _authors
         if self.data_type and not self.data_types:
             self.data_types = [self.data_type]
         if self.nh_event and not self.nh_events:

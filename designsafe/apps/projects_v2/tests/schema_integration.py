@@ -44,7 +44,10 @@ def validate_entities(name: str = "designsafe.project", model: BaseModel = BaseP
     gen = iterate_entities(name)
     for entity in gen:
         try:
-            model.model_validate(entity["value"])
+            validated_model = model.model_validate(entity["value"])
+            model_json = validated_model.model_dump()
+            # Assert that subsequent validation does not affect the data.
+            assert model.model_validate(model_json).model_dump() == model_json
         except ValidationError as exc:
             print(entity["uuid"])
             print(entity)
