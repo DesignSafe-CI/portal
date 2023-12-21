@@ -274,13 +274,16 @@ class Project(MetadataModel):
                 "name": "Designsafe-CI",
                 "url": "https://designsafe-ci.org"
             },
-            "funding": {
-                "@type": "Grant",
-                "name": self.award_number[0],
-            },
-            "hasPart": {}
+            "funding": [],
+            "hasPart": [],
         }
-
+        if len(self.award_number) and type(self.award_number[0]) is not dict:
+            self.award_number = [{'order': 0, 'name': ''.join(self.award_number)}]
+            dataset_json['funding'] = generate_awards(self.award_number)
+        awards = sorted(
+            self.award_number,
+            key=lambda x: (x.get('order', 0), x.get('name', ''), x.get('number', ''))
+        )
         if getattr(self, 'team_order', False):
             authors = sorted(self.team_order, key=lambda x: x['order'])
         else:
@@ -293,6 +296,7 @@ class Project(MetadataModel):
             dataset_json['license'] = license_info[0]["url"]
         except (DocumentNotFound, AttributeError):
             pass
+        
 
         if self.dois:
             dataset_json['identifier']['@id'] = "https://doi.org/" + self.dois[0]
@@ -303,35 +307,26 @@ class Project(MetadataModel):
             related_ents = self.related_entities()
             for i in range(len(related_ents)):
                 if hasattr(related_ents[i], 'dois') and related_ents[i].dois:
-                    dataset_json['hasPart']['relatedIdentifier_' + str(i)] = {
+
+                    if getattr(related_ents[i], 'team_order', False):
+                        authors = sorted(related_ents[i].team_order, key=lambda x: x['order'])
+                    else:
+                        authors = [{'name': username} for username in [self.pi] + self.co_pis]
+                        
+                    dataset_json['hasPart'].append({
                         "@context": "http://schema.org",
                         "@type": "Dataset",
                         "url": "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/" + self.project_id,
-                        "identifier":  {
-                            "@id": "",
+                        "identifier": {
+                            "@id": "https://doi.org/" + related_ents[i].dois[0],
                             "@type": "PropertyValue",
                             "propertyID": "https://registry.identifiers.org/registry/doi",
-                            "value": "",
-                            "url": ""
+                            "value": "doi:" + related_ents[i].dois[0],
+                            "url": "https://doi.org/" + related_ents[i].dois[0],
                         },
                         "name": related_ents[i].title,
-                        "creator": [
-                            {
-                                "name": "",
-                                "affiliation": "",
-                                "@id": "",
-                                "identifier": "",
-                                "@type":"Person",
-                            }
-                        ],
-                        "author": [
-                            {
-                                "name": "",
-                                "affiliation": "",
-                                "@id": "",
-                                "identifier": ""
-                            }
-                        ],
+                        "creator": generate_creators(authors),
+                        "author": generate_creators(authors),
                         "datePublished": related_ents[i].created,
                         "dateModified": related_ents[i].to_body_dict()['lastUpdated'],
                         "description": related_ents[i].description,
@@ -347,46 +342,25 @@ class Project(MetadataModel):
                             "url": "https://designsafe-ci.org",
                             "@id": "https://designsafe-ci.org",
                             "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
+                            "funder": {
+                                "@type": "Organization",
+                                "name": "U.S. National Science Foundation"
+                            }  
                         },
                         "includedInDataCatalog": {
                             "@type": "DataCatalog",
                             "name": "Designsafe-CI",
                             "description": "DesignSafe is a comprehensive cyberinfrastructure that is part of the NSF-funded Natural Hazard Engineering Research Infrastructure (NHERI) and provides cloud-based tools to manage, analyze, understand, and publish critical data for research to understand the impacts of natural hazards",
                             "url": "https://designsafe-ci.org",
+                            "@id": "https://designsafe-ci.org",
                             "funder": {
                                 "@type": "Organization",
                                 "name": "U.S. National Science Foundation"
                             }
                         },
-                        "funding": {},
-                    }
-                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['identifier']['@id'] = "https://doi.org/" + related_ents[i].dois[0]
-                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['identifier']['url'] = "https://doi.org/" + related_ents[i].dois[0]
-                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['identifier']['value'] = "doi:" + related_ents[i].dois[0]
-                    if len(self.award_number) and type(self.award_number[0]) is not dict:
-                        self.award_number = [{'order': 0, 'name': ''.join(self.award_number)}]
-                    awards = sorted(
-                        self.award_number,
-                        key=lambda x: (x.get('order', 0), x.get('name', ''), x.get('number', ''))
-                    )
-                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['funding'] = []
-                    for award in awards:
-                        dataset_json['hasPart']['relatedIdentifier_' + str(i)]['funding'].append({
-                            "@type": "Grant",
-                            'name': award['name'],
-                            'identifier': '' if 'number' not in award else award['number']
-                        })
-
-                    if getattr(related_ents[i], 'team_order', False):
-                        authors = sorted(related_ents[i].team_order, key=lambda x: x['order'])
-                    else:
-                        authors = [{'name': username} for username in [self.pi] + self.co_pis]
-                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['creator'] = generate_creators(authors)
-                    dataset_json['hasPart']['relatedIdentifier_' + str(i)]['author'] = generate_creators(authors)
-                    try:
-                        dataset_json['hasPart']['relatedIdentifier_' + str(i)]['license'] = dataset_json['license']
-                    except (DocumentNotFound, AttributeError):
-                        pass
+                        "funding": generate_awards(awards[i]) if i < len(awards) else '',
+                    })
+                    
 
         return dataset_json 
 
@@ -597,6 +571,15 @@ def generate_licenses(pub):
             "license": pub.licenses.software
         })
     return license_details
+
+def generate_awards(award):
+    awards_list = []
+    awards_list.append({
+        "@type": "Grant",
+        'name': award['name'],
+        'identifier': ')' if 'number' not in award else award['number']
+    })
+    return awards_list
 
 def _process_authors(authors):
     """Process authors.
