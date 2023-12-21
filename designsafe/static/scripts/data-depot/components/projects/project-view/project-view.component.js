@@ -1,4 +1,5 @@
 import ProjectViewTemplate from './project-view.component.html';
+const FacilityData = require('../../../../projects/components/facility-data.json');
 
 class ProjectViewCtrl {
 
@@ -24,6 +25,7 @@ class ProjectViewCtrl {
     this.ui = {
       showEdit: true,
       showOverview: true,
+      facilities: FacilityData.facility.facilities_list,
     };
     this.projectId = this.$stateParams.projectId
     this.filePath = this.$stateParams.filePath
@@ -123,6 +125,23 @@ class ProjectViewCtrl {
         },
         size: 'lg',
     });
+  }
+
+  getEF(str) {
+    if (str !='' && str !='None') {
+        let efs = this.ui.facilities;
+        let ef = efs.find((ef) => {
+            return ef.name === str;
+        });
+        return ef.label;
+    }
+  }
+
+  isValid(ent) {
+    if (ent && ent != '' && ent != 'None') {
+        return true;
+    }
+    return false;
   }
 
   workingDirectory() {

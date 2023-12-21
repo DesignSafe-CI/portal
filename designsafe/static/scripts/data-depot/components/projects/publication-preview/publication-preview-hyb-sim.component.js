@@ -1,5 +1,6 @@
 import PublicationPreviewHybSimTemplate from './publication-preview-hyb-sim.component.html';
 import PublicationPopupTemplate from './publication-popup.html';
+import facilityData from '../../../../projects/components/facility-data.json';
 
 class PublicationPreviewHybSimCtrl {
 
@@ -31,7 +32,8 @@ class PublicationPreviewHybSimCtrl {
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.ui = {
             fileNav: true,
-            loading: true
+            loading: true,
+            facilities: facilityData.facility,
         };
         this.fl = {
             showSelect: false,
@@ -122,6 +124,16 @@ class PublicationPreviewHybSimCtrl {
             return true;
         }
         return false;
+    }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities.facilities_list;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }   
     }
 
     goWork() {

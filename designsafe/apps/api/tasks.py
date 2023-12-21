@@ -499,6 +499,8 @@ def index_projects_listing(projects):
         project_dict['value']['awardNumber'] = award_number
 
         project_dict['value'].pop('nhEventStart', None)
+        project_dict['value'].pop('fileObjs', None)
+        project_dict['value'].pop('project', None)
         project_dict['value'].pop('nhEventEnd', None)
         project_dict['value'].pop('referencedData', None)
         project_dict['value'].pop('relatedFiles', None)
