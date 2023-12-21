@@ -220,7 +220,7 @@ class Project(MetadataModel):
 
     def to_dataset_json(self, **kwargs):
         """
-        Serialize project to json for google dataset search
+        Serialize project to json for google dataset and scholar search
         https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/BMNJPS
         """
         dataset_json = {
