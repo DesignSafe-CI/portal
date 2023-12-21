@@ -13,7 +13,7 @@ from designsafe.apps.projects.models.categories import Category
 from designsafe.apps.projects_v2 import constants as names
 from designsafe.apps.projects_v2.migration_utils.publication_transforms import (
     transform_entity,
-    construct_users
+    construct_users,
 )
 
 # map metadata 'name' field to allowed (direct) children
@@ -178,13 +178,28 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
     root_entity = entity_listing[0]
 
     pub_graph = nx.DiGraph()
-    root_node_id = "NODE_ROOT"
-    root_node_data = {
-        "uuid": root_entity["uuid"],
-        "name": root_entity["name"],
-    }
 
+    project_type = root_entity["value"]["projectType"]
+
+    root_node_id = "NODE_ROOT"
+    if project_type == "other":
+        root_node_data = {"uuid": None, "name": None, "projectType": "other"}
+    else:
+        root_node_data = {
+            "uuid": root_entity["uuid"],
+            "name": root_entity["name"],
+            "projectType": root_entity["value"]["projectType"],
+        }
     pub_graph.add_node(root_node_id, **root_node_data)
+    if project_type == "other":
+        base_node_data = {
+            "uuid": root_entity["uuid"],
+            "name": root_entity["name"],
+            "projectType": root_entity["value"]["projectType"],
+        }
+        base_node_id = f"NODE_{uuid4()}"
+        pub_graph.add_node(base_node_id, **base_node_data)
+        pub_graph.add_edge(root_node_id, base_node_id)
     construct_graph_recurse(pub_graph, entity_listing, root_entity, root_node_id)
 
     pub_graph.nodes["NODE_ROOT"]["basePath"] = f"/{project_id}"
@@ -238,14 +253,21 @@ def transform_pub_entities(project_id, version=None):
     pub_graph = construct_publication_graph(project_id, version)
 
     for _, node_data in pub_graph.nodes.items():
-        node_entity = next(e for e in entity_listing if e["uuid"] == node_data["uuid"])
-        data_path = str(Path(node_data["basePath"]) / "data")
-        new_entity_value = transform_entity(
-            node_entity, base_pub_meta, data_path
+        node_entity = next(
+            (e for e in entity_listing if e["uuid"] == node_data["uuid"]), None
         )
+        if not node_entity:
+            continue
+        data_path = str(Path(node_data["basePath"]) / "data")
+        new_entity_value = transform_entity(node_entity, base_pub_meta, data_path)
         node_data["value"] = new_entity_value
 
     project_users = construct_users(entity_listing[0])
-    pub_graph.nodes["NODE_ROOT"]["value"]["users"] = project_users
+    base_node = next(
+        node
+        for (node, node_data) in pub_graph.nodes.items()
+        if node_data["uuid"] == entity_listing[0]["uuid"]
+    )
+    pub_graph.nodes[base_node]["value"]["users"] = project_users
 
     return pub_graph
