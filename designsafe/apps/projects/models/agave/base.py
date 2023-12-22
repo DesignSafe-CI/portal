@@ -245,6 +245,7 @@ class Project(MetadataModel):
         """
         Serialize project to json for google dataset and scholar search
         https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/BMNJPS
+        And to work with Google Scholar
         """
         dataset_json = {
             "@context": "http://schema.org",
@@ -324,7 +325,7 @@ class Project(MetadataModel):
         if self.dois:
             dataset_json['identifier']['@id'] = "https://doi.org/" + self.dois[0]
             dataset_json['identifier']['url'] = "https://doi.org/" + self.dois[0]
-            dataset_json['identifier']['value'] = "doi:" + related_ents[i].dois[0]
+            dataset_json['identifier']['value'] = "doi:" + self.dois[0]
 
         else:
             related_ents = self.related_entities()
