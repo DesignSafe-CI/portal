@@ -36,7 +36,6 @@ class DataBrowserCopyCtrl {
         this.options = [
             { api: 'agave', label: 'My Data' },
             { api: 'projects', label: 'My Projects' },
-            { api: 'googledrive', label: 'Google Drive' },
             { api: 'box', label: 'Box' },
             { api: 'dropbox', label: 'Dropbox' },
         ];

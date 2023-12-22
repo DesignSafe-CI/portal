@@ -115,10 +115,12 @@ class Mission(RelatedEntity):
             )
             attributes['fundingReferences'] = []
             for award in awards:
-                attributes['fundingReferences'].append({
-                    'awardTitle': award['name'],
-                    'awardNumber': award['number']
-                    })
+                if award.get("number", "").lower().startswith("nsf"):
+                    attributes['fundingReferences'].append({
+                        'awardTitle': award['name'],
+                        'awardNumber': award['number'],
+                        "funderName": "National Science Foundation",
+                        })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -303,10 +305,12 @@ class Report(RelatedEntity):
             )
             attributes['fundingReferences'] = []
             for award in awards:
-                attributes['fundingReferences'].append({
-                    'awardTitle': award['name'],
-                    'awardNumber': award['number']
-                    })
+                if award.get("number", "").lower().startswith("nsf"):
+                    attributes['fundingReferences'].append({
+                        'awardTitle': award['name'],
+                        'awardNumber': award['number'],
+                        "funderName": "National Science Foundation",
+                        })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
