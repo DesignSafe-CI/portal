@@ -3,8 +3,9 @@ import json
 import logging
 import os
 import re
-import copy
+from copy import deepcopy
 import exifread
+from celery import shared_task
 from designsafe.apps.api.agave import service_account
 from PIL import Image
 
@@ -94,7 +95,15 @@ def scrape_metadata_from_file(file):
 
     return metadata
 
+def create_or_update_meta(client, meta_body):
+    existing_meta = query_file_meta(meta_body["value"]["system"], meta_body["value"]["path"])
+    if not existing_meta:
+        return client.meta.addMetadata(body=json.dumps(meta_body))
+    existing_uuid = existing_meta[0]["uuid"]
+    return client.meta.updateMetadata(uuid=existing_uuid, body=meta_body)
 
+
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
 def update_meta(src_system, src_path, dest_system, dest_path):
     """
     Check for and update metadata record(s)
@@ -105,16 +114,24 @@ def update_meta(src_system, src_path, dest_system, dest_path):
     meta_listing = query_file_meta(system=src_system, path=src_path)
     if meta_listing:
         for meta in meta_listing:
-            meta.value['system'] = dest_system
-            meta.value['path'] = meta.value['path'].replace(src_path, dest_path)
-            meta.value['basePath'] = meta.value['basePath'].replace(
-                os.path.dirname(src_path),
-                os.path.dirname(dest_path)
-            )
-            updates.append({"uuid": meta.uuid, "update": meta})
-        sa_client.meta.bulkUpdate(body=json.dumps(updates))
+            meta_dict = deepcopy(dict(meta))
+            new_path = meta_dict['value']['path'].replace(src_path.rstrip("/"), dest_path, 1)
+            if not new_path.startswith("/"):
+                new_path = f"/{new_path}"
+            
+            new_meta_value = {**meta_dict["value"],
+                                   "system": dest_system,
+                                   "path": new_path,
+                                   "basePath": os.path.dirname(new_path)}
+
+            meta_body = {"name": "designsafe.file", "value": new_meta_value}
+            updates.append({"uuid": meta_dict["uuid"], "body": meta_body})
+        
+        for update in updates:
+            sa_client.meta.updateMetadata(uuid=update["uuid"], body=json.dumps(update["body"]))
 
 
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
 def copy_meta(src_system, src_path, dest_system, dest_path):
     """
     Check for and copy metadata record(s)
@@ -125,14 +142,21 @@ def copy_meta(src_system, src_path, dest_system, dest_path):
     meta_listing = query_file_meta(system=src_system, path=src_path)
     if meta_listing:
         for meta in meta_listing:
-            meta_dict = copy.deepcopy(dict(meta))
-            meta_copy = file_meta_obj(
-                path=meta_dict['value']['path'].replace(src_path, dest_path),
-                system=dest_system,
-                meta=meta_dict['value']
-            )
-            copies.append(meta_copy)
-        sa_client.meta.bulkCreate(body=json.dumps(copies))
+            meta_dict = deepcopy(dict(meta))
+            new_path = meta_dict['value']['path'].replace(src_path.rstrip("/"), dest_path, 1)
+            if not new_path.startswith("/"):
+                new_path = f"/{new_path}"
+            
+            copy_meta_value = {**meta_dict["value"],
+                                   "system": dest_system,
+                                   "path": new_path,
+                                   "basePath": os.path.dirname(new_path)}
+
+            meta_body = {"name": "designsafe.file", "value": copy_meta_value}
+            copies.append(meta_body)
+
+        for copy in copies:
+            create_or_update_meta(sa_client, copy)
 
 
 def create_meta(path, system, meta):

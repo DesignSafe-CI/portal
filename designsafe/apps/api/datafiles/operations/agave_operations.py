@@ -251,12 +251,12 @@ def move(client, src_system, src_path, dest_system, dest_path):
         filePath=urllib.parse.quote(src_path),
         body=body
     )
-    update_meta(
-        src_system=src_system,
-        src_path=src_path,
-        dest_system=dest_system,
-        dest_path=full_dest_path
-    )
+    update_meta.apply_async(kwargs={
+        "src_system": src_system,
+        "src_path": src_path,
+        "dest_system": dest_system,
+        "dest_path": full_dest_path
+    }, queue="indexing")
 
     if os.path.dirname(src_path) != full_dest_path or src_path != full_dest_path:
         agave_indexer.apply_async(kwargs={
@@ -328,12 +328,12 @@ def copy(client, src_system, src_path, dest_system, dest_path):
             urlToIngest=src_url
         )
 
-    copy_meta(
-        src_system=src_system,
-        src_path=src_path,
-        dest_system=dest_system,
-        dest_path=full_dest_path
-    )
+    copy_meta.apply_async(kwargs={
+        "src_system": src_system,
+        "src_path": src_path,
+        "dest_system": dest_system,
+        "dest_path": full_dest_path
+    }, queue='indexing')
 
     if copy_result['nativeFormat'] == 'dir':
         agave_indexer.apply_async(kwargs={
@@ -390,12 +390,12 @@ def rename(client, system, path, new_name):
         filePath=urllib.parse.quote(os.path.join('/', path)),
         body=body
     )
-    update_meta(
-        src_system=system,
-        src_path=path,
-        dest_system=system,
-        dest_path=os.path.join(os.path.dirname(path), new_name)
-    )
+    update_meta.apply_async(kwargs={
+        "src_system": system,
+        "src_path": path,
+        "dest_system": system,
+        "dest_path": os.path.join(os.path.dirname(path), new_name)
+    }, queue="indexing")
 
     # if rename_result['nativeFormat'] == 'dir':
     if listing[0].type == 'dir':
