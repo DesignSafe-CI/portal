@@ -1,0 +1,14 @@
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4200[22m/[39m
+Could not find 'nx' module in this workspace. Error: ENOENT: no such file or directory, open '/Users/jrosenberg/Code/hack/portal/client/client/.nx/cache/terminalOutputs/4285715700900535617'
+[90m    at Object.openSync (node:fs:590:3)[39m
+[90m    at writeFileSync (node:fs:2202:35)[39m
+    at process.<anonymous> [90m(/Users/jrosenberg/Code/hack/portal/client/client/[39mnode_modules/[4mnx[24m/bin/run-executor.js:53:36[90m)[39m
+[90m    at process.emit (node:events:525:35)[39m
+[90m    at process.exit (node:internal/process/per_thread:190:15)[39m
+    at process.<anonymous> [90m(/Users/jrosenberg/Code/hack/portal/client/client/[39mnode_modules/[4mnx[24m/bin/run-executor.js:60:17[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m {
+  errno: [33m-2[39m,
+  syscall: [32m'open'[39m,
+  code: [32m'ENOENT'[39m,
+  path: [32m'/Users/jrosenberg/Code/hack/portal/client/client/.nx/cache/terminalOutputs/4285715700900535617'[39m
+}
