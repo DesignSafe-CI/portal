@@ -9,7 +9,8 @@
             "outputs": ["{options.outputPath}"],
             "defaultConfiguration": "production",
             "options": {
-                "outputPath": "dist/apps/designsafe"
+                "outputPath": "dist/apps/designsafe",
+                "base": "/static" 
             },
             "configurations": {
                 "development": {

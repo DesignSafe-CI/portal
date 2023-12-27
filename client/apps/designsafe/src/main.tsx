@@ -3,9 +3,12 @@ import * as ReactDOM from 'react-dom/client';
 
 import App from './app/app';
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-root.render(
+const appsElement = document.getElementById('apps-root');
+if (appsElement) {
+  const appsRoot = ReactDOM.createRoot(appsElement as HTMLElement);
+  appsRoot.render(
     <StrictMode>
-        <App />
+      <App />
     </StrictMode>
-);
+  );
+}
