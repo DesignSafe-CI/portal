@@ -51,5 +51,6 @@
                 "linter": "eslint"
             }
         }
-    }
+    },
+    "defaultProject": "client"
 }

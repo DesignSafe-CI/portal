@@ -6,7 +6,7 @@ import fs from 'fs';
 
 export default defineConfig({
     root: __dirname,
-    cacheDir: '../../node_modules/.vite/apps/designsafe',
+    cacheDir: './node_modules/.vite/.',
 
     server: {
         port: 4200,
@@ -30,8 +30,7 @@ export default defineConfig({
     // },
 
     build: {
-        outDir: '../../dist/apps/designsafe',
-        assetsDir: 'react-assets',
+        outDir: './dist/client',
         reportCompressedSize: true,
         commonjsOptions: {
             transformMixedEsModules: true,
@@ -41,14 +40,14 @@ export default defineConfig({
     test: {
         globals: true,
         cache: {
-            dir: '../../node_modules/.vitest',
+            dir: './node_modules/.vitest',
         },
         environment: 'jsdom',
         include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
 
         reporters: ['default'],
         coverage: {
-            reportsDirectory: '../../coverage/apps/designsafe',
+            reportsDirectory: './coverage/client',
             provider: 'v8',
         },
     },

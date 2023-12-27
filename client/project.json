@@ -1,7 +1,7 @@
 {
-    "name": "designsafe",
-    "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "sourceRoot": "apps/designsafe/src",
+    "name": "client",
+    "$schema": "node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "./src",
     "projectType": "application",
     "targets": {
         "build": {
@@ -9,7 +9,7 @@
             "outputs": ["{options.outputPath}"],
             "defaultConfiguration": "production",
             "options": {
-                "outputPath": "dist/apps/designsafe",
+                "outputPath": "dist/client",
                 "base": "/static" 
             },
             "configurations": {
@@ -25,15 +25,15 @@
             "executor": "@nx/vite:dev-server",
             "defaultConfiguration": "development",
             "options": {
-                "buildTarget": "designsafe:build"
+                "buildTarget": "client:build"
             },
             "configurations": {
                 "development": {
-                    "buildTarget": "designsafe:build:development",
+                    "buildTarget": "client:build:development",
                     "hmr": true
                 },
                 "production": {
-                    "buildTarget": "designsafe:build:production",
+                    "buildTarget": "client:build:production",
                     "hmr": false
                 }
             }
@@ -42,14 +42,14 @@
             "executor": "@nx/vite:preview-server",
             "defaultConfiguration": "development",
             "options": {
-                "buildTarget": "designsafe:build"
+                "buildTarget": "client:build"
             },
             "configurations": {
                 "development": {
-                    "buildTarget": "designsafe:build:development"
+                    "buildTarget": "client:build:development"
                 },
                 "production": {
-                    "buildTarget": "designsafe:build:production"
+                    "buildTarget": "client:build:production"
                 }
             }
         },
@@ -57,12 +57,15 @@
             "executor": "@nx/vite:test",
             "outputs": ["{options.reportsDirectory}"],
             "options": {
-                "reportsDirectory": "../../coverage/apps/designsafe"
+                "reportsDirectory": "coverage/client"
             }
         },
         "lint": {
             "executor": "@nx/eslint:lint",
-            "outputs": ["{options.outputFile}"]
+            "outputs": ["{options.outputFile}"],
+            "options": {
+                "lintFilePatterns": ["./src"]
+            }
         }
     },
     "tags": []
