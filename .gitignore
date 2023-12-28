@@ -52,9 +52,8 @@ data/NEHRI/
 # stats
 stats/
 
-# no node modules or package-lock
+# no node modules
 node_modules/
-package-lock.json
 
 # in case you leave that here
 datadump.json

@@ -4,7 +4,7 @@ import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/modules/workspace',
+  cacheDir: '../../node_modules/.vite/modules/hooks',
 
   plugins: [react(), nxViteTsPaths()],
 
@@ -16,12 +16,12 @@ export default defineConfig({
   test: {
     globals: true,
     cache: { dir: '../../node_modules/.vitest' },
+    passWithNoTests: true,
     environment: 'jsdom',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
-    setupFiles: ['./src/vitest.setup.ts'],
     coverage: {
-      reportsDirectory: '../../coverage/modules/workspace',
+      reportsDirectory: '../../coverage/modules/hooks',
       provider: 'v8',
     },
   },

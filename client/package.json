@@ -10,8 +10,11 @@
   "private": true,
   "dependencies": {
     "@swc/helpers": "~0.5.2",
+    "@tanstack/react-query": "^5.15.0",
+    "axios": "^1.6.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-router-dom": "^6.21.1",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
@@ -47,6 +50,7 @@
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "jsdom": "~22.1.0",
+    "msw": "^2.0.11",
     "nx": "17.2.7",
     "prettier": "^2.6.2",
     "typescript": "~5.2.2",
