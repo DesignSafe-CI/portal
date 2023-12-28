@@ -1,15 +1,15 @@
 import { render } from '@client/test-fixtures';
 
-import App from './app';
+import Workspace from './Workspace';
 
 describe('App', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<App />);
+    const { baseElement } = render(<Workspace />);
     expect(baseElement).toBeTruthy();
   });
 
   it('should have a greeting as the title', () => {
-    const { getByText } = render(<App />);
+    const { getByText } = render(<Workspace />);
     expect(getByText(/Welcome/gi)).toBeTruthy();
   });
 });
