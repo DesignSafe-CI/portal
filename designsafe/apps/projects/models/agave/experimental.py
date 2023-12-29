@@ -98,10 +98,12 @@ class Experiment(RelatedEntity):
             )
             attributes['fundingReferences'] = []
             for award in awards:
-                attributes['fundingReferences'].append({
-                    'awardTitle': award['name'],
-                    'awardNumber': award['number']
-                    })
+                if award.get("number", "").lower().startswith("nsf"):
+                    attributes['fundingReferences'].append({
+                        'awardTitle': award['name'],
+                        'awardNumber': award['number'],
+                        "funderName": "National Science Foundation",
+                        })
         attributes['types']['resourceType'] = "Experiment/{experiment_type}".format(
             experiment_type=self.experiment_type.title()
         )

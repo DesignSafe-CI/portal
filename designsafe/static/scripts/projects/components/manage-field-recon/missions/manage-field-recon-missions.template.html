@@ -85,7 +85,7 @@
                         style="flex: 1; min-width: 150px">
                         <option value="">-- Select a Facility --</option>
                     </select>
-                    <input class="form-control" type="text" placeholder="Custom Facility" ng-model="$ctrl.form.facility.name"
+                    <input class="form-control" type="text" placeholder="Custom Facility" ng-required="true" ng-model="$ctrl.form.facility.name"
                         ng-if="$ctrl.form.facility.id == 'other'" style="margin-left: 5px;" />
                 </div>
             </div>
