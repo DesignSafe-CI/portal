@@ -203,6 +203,17 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
     construct_graph_recurse(pub_graph, entity_listing, root_entity, root_node_id)
 
     pub_graph.nodes["NODE_ROOT"]["basePath"] = f"/{project_id}"
+    pub_graph = construct_entity_filepaths(entity_listing, pub_graph)
+
+    return pub_graph
+
+
+def construct_entity_filepaths(entity_listing: list[dict], pub_graph: nx.DiGraph):
+    """
+    Walk the publication graph and construct base file paths for each node.
+    The file path for a node contains the titles of each entity above it in the
+    hierarchy. Returns the publication graph with basePath data added for each node.
+    """
     for parent_node, child_node in nx.bfs_edges(pub_graph, "NODE_ROOT"):
         # Construct paths based on the entity hierarchy
         parent_base_path = pub_graph.nodes[parent_node]["basePath"]
@@ -221,7 +232,6 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
             child_path = Path(parent_base_path) / entity_dirname
 
         pub_graph.nodes[child_node]["basePath"] = str(child_path)
-
     return pub_graph
 
 
