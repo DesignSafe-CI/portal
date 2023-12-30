@@ -8,10 +8,10 @@ from django.utils.text import slugify
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers.publication import FIELD_MAP
-from designsafe.apps.projects_v2.schema_models import PATH_SLUGS
+from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
 from designsafe.apps.projects.models.categories import Category
-from designsafe.apps.projects_v2 import constants as names
-from designsafe.apps.projects_v2.migration_utils.publication_transforms import (
+from designsafe.apps.api.projects_v2 import constants as names
+from designsafe.apps.api.projects_v2.migration_utils.publication_transforms import (
     transform_entity,
     construct_users,
 )

@@ -1,8 +1,8 @@
 """Pydantic schema models for Hybrid Simulation entities"""
 from typing import Annotated, Optional
 from pydantic import BeforeValidator, Field, model_validator
-from designsafe.apps.projects_v2.schema_models._field_models import MetadataModel
-from designsafe.apps.projects_v2.schema_models._field_models import (
+from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
+from designsafe.apps.api.projects_v2.schema_models._field_models import (
     AssociatedProject,
     DropdownValue,
     FileObj,
@@ -11,12 +11,12 @@ from designsafe.apps.projects_v2.schema_models._field_models import (
     Ref,
     ReferencedWork,
 )
-from designsafe.apps.projects_v2.schema_models._field_transforms import (
+from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
     handle_legacy_authors,
     handle_dropdown_value,
 )
-from designsafe.apps.projects_v2.constants import HYBRID_SIM_TYEPS
+from designsafe.apps.api.projects_v2.constants import HYBRID_SIM_TYEPS
 
 
 class HybridSimulation(MetadataModel):

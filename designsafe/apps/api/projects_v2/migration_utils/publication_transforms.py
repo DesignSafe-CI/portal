@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import TypedDict
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from designsafe.apps.projects_v2.schema_models import SCHEMA_MAPPING
+from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING
 
 user_model = get_user_model()
 

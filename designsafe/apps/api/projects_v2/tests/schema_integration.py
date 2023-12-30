@@ -2,8 +2,8 @@
 import json
 from typing import Iterator
 from pydantic import BaseModel, ValidationError
-from designsafe.apps.projects_v2.schema_models.base import BaseProject
-from designsafe.apps.projects_v2.migration_utils.graph_constructor import (
+from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
+from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
     transform_pub_entities,
 )
 from designsafe.apps.api.agave import service_account

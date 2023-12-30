@@ -2,8 +2,8 @@
 import itertools
 from typing import Optional, Annotated
 from pydantic import BeforeValidator, Field, ConfigDict, model_validator, AliasChoices
-from designsafe.apps.projects_v2.schema_models._field_models import MetadataModel
-from designsafe.apps.projects_v2.schema_models._field_models import (
+from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
+from designsafe.apps.api.projects_v2.schema_models._field_models import (
     AssociatedProject,
     DropdownValue,
     FileObj,
@@ -12,12 +12,12 @@ from designsafe.apps.projects_v2.schema_models._field_models import (
     Ref,
     ReferencedWork,
 )
-from designsafe.apps.projects_v2.schema_models._field_transforms import (
+from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
     handle_legacy_authors,
     handle_dropdown_value,
 )
-from designsafe.apps.projects_v2.constants import (
+from designsafe.apps.api.projects_v2.constants import (
     FACILITY_OPTIONS,
     EQUIPMENT_TYPES,
     EXPERIMENT_TYPES,

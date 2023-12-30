@@ -1,13 +1,13 @@
 """Pydantic models for all project entities."""
-from designsafe.apps.projects_v2 import constants
-from designsafe.apps.projects_v2.schema_models import (
+from designsafe.apps.api.projects_v2 import constants
+from designsafe.apps.api.projects_v2.schema_models import (
     base,
     experimental,
     hybrid_sim,
     simulation,
     field_recon,
 )
-from designsafe.apps.projects_v2.schema_models._field_models import MetadataModel
+from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
 
 
 SCHEMA_MAPPING: dict[str, MetadataModel] = {
