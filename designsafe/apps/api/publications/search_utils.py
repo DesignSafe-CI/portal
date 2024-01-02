@@ -51,9 +51,11 @@ def simulation_type_query(simulation_type):
 
 def nh_type_query(nh_type):
     NON_OTHER_NH_TYPES = [
+        "Drought",
         "Earthquake",
         "Extreme Temperatures",
         "Fire",
+        "Wildfire",
         "Flood",
         "Hurricane/Tropical Storm",
         "Landslide",
@@ -62,7 +64,8 @@ def nh_type_query(nh_type):
         "Thunderstorm",
         "Storm Surge",
         "Pandemic",
-        "Wind"
+        "Wind",
+        "Other"
     ]
     if nh_type == "Other":
         return ~Q({'terms': {'project.value.nhTypes.keyword': NON_OTHER_NH_TYPES}})
@@ -79,28 +82,31 @@ def other_facility_query(facility):
 
 def other_type_query(data_type):
     data_types = [
-            'Benchmark Dataset',
-            'Check Sheet',
-            'Code',
-            'Database',
-            'Dataset',
-            'Field Survey',
-            'Image',
-            'Jupyter Notebook',
-            'Learning Object',
-            'Model',
-            'Paper',
-            'Proceeding',
-            'Poster',
-            'Presentation',
-            'Report',
-            'Reseach Experience for Undergraduates',
-            'SimCenter Testbed',
-            'Social Sciences',
-            'Survey Instrument',
-            'Testbed',
-            'Video',
-            'White Paper',
+            "Archival Materials",
+            "Audio",
+            "Benchmark Dataset",
+            "Check Sheet",
+            "Code",
+            "Database",
+            "Dataset",
+            "Engineering",
+            "Image",
+            "Interdisciplinary",
+            "Jupyter Notebook",
+            "Learning Object",
+            "Model",
+            "Paper",
+            "Proceeding",
+            "Poster",
+            "Presentation",
+            "Report",
+            "Research Experience for Undergraduates",
+            "SimCenter Testbed",
+            "Social Sciences",
+            "Survey Instrument",
+            "Testbed",
+            "Video",
+            "Other"
     ]
     if data_type == 'Other':
         return ~Q({'terms': {'project.value.dataType.keyword': data_types}}) # | ~Q({'exists', {'field': 'project.value.dataType.keyword'}})

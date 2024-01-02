@@ -3,7 +3,7 @@ import logging
 import json
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ class Mission(RelatedEntity):
     project = fields.RelatedObjectField(FieldReconProject)
     dois = fields.ListField('Dois')
 
-    def to_datacite_json(self):
+    def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
         attributes = super(Mission, self).to_datacite_json()
         attributes['types']['resourceType'] = "Mission/{location}".format(
@@ -94,6 +94,33 @@ class Mission(RelatedEntity):
                     "name": self.facility["name"],
                 }
             ]
+        # Metadata from project level
+        if project:
+            attributes["titles"] = attributes.get("titles", []) + [
+                {   "titleType": 'Subtitle',
+                    "title": project.title }
+            ]
+            attributes["descriptions"] = attributes.get("descriptions", []) + [
+                {
+                    'descriptionType': 'Abstract',
+                    'description': project.description,
+                    'lang': 'en-Us',
+                }
+            ]
+            if len(project.award_number) and type(project.award_number[0]) is not dict:
+                project.award_number = [{'order': 0, 'name': ''.join(project.award_number)}]
+            awards = sorted(
+                project.award_number,
+                key=lambda x: (x.get('order', 0), x.get('name', ''))
+            )
+            attributes['fundingReferences'] = []
+            for award in awards:
+                if award.get("number", "").lower().startswith("nsf"):
+                    attributes['fundingReferences'].append({
+                        'awardTitle': award['name'],
+                        'awardNumber': award['number'],
+                        "funderName": "National Science Foundation",
+                        })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -172,6 +199,7 @@ class Collection(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class SocialScience(RelatedEntity):
     model_name = 'designsafe.project.field_recon.social_science'
@@ -194,6 +222,7 @@ class SocialScience(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Planning(RelatedEntity):
     model_name = 'designsafe.project.field_recon.planning'
@@ -205,6 +234,7 @@ class Planning(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Geoscience(RelatedEntity):
     model_name = 'designsafe.project.field_recon.geoscience'
@@ -223,6 +253,7 @@ class Geoscience(RelatedEntity):
     missions = fields.RelatedObjectField(Mission)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 class Report(RelatedEntity):
     model_name = 'designsafe.project.field_recon.report'
@@ -235,9 +266,10 @@ class Report(RelatedEntity):
     project = fields.RelatedObjectField(FieldReconProject)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
     dois = fields.ListField('Dois')
 
-    def to_datacite_json(self):
+    def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
         attributes = super(Report, self).to_datacite_json()
         attributes['types']['resourceType'] = "Project/Report"
@@ -252,6 +284,33 @@ class Report(RelatedEntity):
                     "name": self.facility["name"],
                 }
             ]
+        # Metadata from project level
+        if project:
+            attributes["titles"] = attributes.get("titles", []) + [
+                {   "titleType": 'Subtitle',
+                    "title": project.title }
+            ]
+            attributes["descriptions"] = attributes.get("descriptions", []) + [
+                {
+                    'descriptionType': 'Abstract',
+                    'description': project.description,
+                    'lang': 'en-Us',
+                }
+            ]
+            if len(project.award_number) and type(project.award_number[0]) is not dict:
+                project.award_number = [{'order': 0, 'name': ''.join(project.award_number)}]
+            awards = sorted(
+                project.award_number,
+                key=lambda x: (x.get('order', 0), x.get('name', ''))
+            )
+            attributes['fundingReferences'] = []
+            for award in awards:
+                if award.get("number", "").lower().startswith("nsf"):
+                    attributes['fundingReferences'].append({
+                        'awardTitle': award['name'],
+                        'awardNumber': award['number'],
+                        "funderName": "National Science Foundation",
+                        })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:

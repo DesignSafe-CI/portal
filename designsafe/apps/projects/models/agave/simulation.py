@@ -3,7 +3,7 @@ import logging
 import six
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
+from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class Simulation(RelatedEntity):
     project = fields.RelatedObjectField(SimulationProject)
     dois = fields.ListField('Dois')
 
-    def to_datacite_json(self):
+    def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
         attributes = super(Simulation, self).to_datacite_json()
         if self.simulation_type_other:
@@ -80,6 +80,33 @@ class Simulation(RelatedEntity):
                     "name": self.facility["name"],
                 }
             ]
+        # Metadata from project level
+        if project:
+            attributes["titles"] = attributes.get("titles", []) + [
+                {   "titleType": 'Subtitle',
+                    "title": project.title }
+            ]
+            attributes["descriptions"] = attributes.get("descriptions", []) + [
+                {
+                    'descriptionType': 'Abstract',
+                    'description': project.description,
+                    'lang': 'en-Us',
+                }
+            ]
+            if len(project.award_number) and type(project.award_number[0]) is not dict:
+                project.award_number = [{'order': 0, 'name': ''.join(project.award_number)}]
+            awards = sorted(
+                project.award_number,
+                key=lambda x: (x.get('order', 0), x.get('name', ''))
+            )
+            attributes['fundingReferences'] = []
+            for award in awards:
+                if award.get("number", "").lower().startswith("nsf"):
+                    attributes['fundingReferences'].append({
+                        'awardTitle': award['name'],
+                        'awardNumber': award['number'],
+                        "funderName": "National Science Foundation",
+                        })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -141,6 +168,7 @@ class Model(RelatedEntity):
     simulations = fields.RelatedObjectField(Simulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Input(RelatedEntity):
@@ -152,6 +180,7 @@ class Input(RelatedEntity):
     model_configs = fields.RelatedObjectField(Model)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Output(RelatedEntity):
@@ -164,6 +193,7 @@ class Output(RelatedEntity):
     sim_inputs = fields.RelatedObjectField(Input)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Analysis(RelatedEntity):
@@ -176,6 +206,7 @@ class Analysis(RelatedEntity):
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)
 
 
 class Report(RelatedEntity):
@@ -187,3 +218,4 @@ class Report(RelatedEntity):
     sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     file_tags = fields.ListField('File Tags', list_cls=DataTag)
+    file_objs = fields.ListField('File Objects', list_cls=FileObjModel)

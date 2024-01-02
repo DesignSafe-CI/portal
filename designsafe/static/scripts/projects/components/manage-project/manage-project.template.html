@@ -168,9 +168,16 @@
                             style="margin-bottom: 5px;"
                             ng-options="item for item in $ctrl.fieldResearchTypes"
                             ng-model="$ctrl.form.frTypes[$index]"
-                            ng-required="$first">
+                            ng-required="$first"
+                            ng-if="!$ctrl.isOther($ctrl.form.frTypes[$index], $ctrl.fieldResearchTypes)">
                         <option value="">-- Select Field Research Type --</option>
                     </select>
+                    <div ng-if="$ctrl.isOther($ctrl.form.frTypes[$index], $ctrl.fieldResearchTypes)">
+                        <input type="text"
+                            ng-model="$ctrl.form.frTypes[$index]"
+                            class="form-control"
+                        />
+                    </div>
                 </div>
                 <button class="btn-project-add-rm"
                         ng-click="$ctrl.addField($ctrl.form.frTypes)">
@@ -273,6 +280,7 @@
                     type="text"
                     style="margin-left: 5px"
                     placeholder="Custom Facility"
+                    ng-required="true"
                     ng-model="$ctrl.form.facilities[$index].name"
                     ng-if="$ctrl.form.facilities[$index].id == 'other'"/>
                 </div>
@@ -286,6 +294,7 @@
                         ng-disabled="$ctrl.checkEmpty($ctrl.form.facilities)">
                         &#x2212; Remove Facility
                 </button>
+                </div>
             </div>
             <!-- Add user Errors -->
             <div class="form-group" ng-if="$ctrl.ui.invalidUserError">
