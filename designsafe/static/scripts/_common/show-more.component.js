@@ -12,7 +12,7 @@ class ShowMoreCtrl {
 
         // get height
         angular.element(document).ready(() => {
-            let height = document.getElementById('show-more').clientHeight;
+            let height = document.getElementsByClassName('show-more').clientHeight;
             if (height > 80) {
                 this.bypass = false
             }
