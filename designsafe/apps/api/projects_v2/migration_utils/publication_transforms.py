@@ -173,15 +173,7 @@ def update_file_tag_paths(entity: dict, base_path: str) -> list[FileTagDict]:
         tags = convert_legacy_tags(entity)
 
     updated_tags = []
-    is_type_other = entity["value"].get("projectType", None) == "other"
-    if is_type_other:
-        # type Other is a special case since all files are associated at the root.
-        path_mapping = {"": base_path}
-    else:
-        path_mapping = {
-            file_obj["path"]: str(Path(base_path) / Path(file_obj["path"]).name)
-            for file_obj in entity["fileObjs"]
-        }
+    path_mapping = get_path_mapping(entity, base_path)
 
     for tag in tags:
         if not tag.get("path", None):
@@ -197,13 +189,41 @@ def update_file_tag_paths(entity: dict, base_path: str) -> list[FileTagDict]:
     return updated_tags
 
 
-def update_file_objs(entity: dict, base_path: str):
+def get_path_mapping(entity: dict, base_path: str):
+    """map fileObj paths to published paths and handle duplicate names"""
+    file_objs = entity["value"]["fileObjs"]
+    is_type_other = entity["value"].get("projectType", None) == "other"
+
+    if is_type_other:
+        # type Other is a special case since all files are associated at the root.
+        return {"": base_path}
+    path_mapping = {}
+    duplicate_counts = {}
+    for file_obj in file_objs:
+        pub_path = str(Path(base_path) / Path(file_obj["path"]).name)
+        if pub_path in path_mapping.values():
+            duplicate_counts[pub_path] = duplicate_counts.get(pub_path, 0) + 1
+            # splice dupe count into name, e.g. "myfile(1).txt"
+            [base_name, *ext] = Path(pub_path).name.split(".", 1)
+            deduped_name = f"{base_name}({duplicate_counts[pub_path]})"
+
+            pub_path = str(Path(base_path) / ".".join([deduped_name, *ext]))
+        path_mapping[file_obj["path"]] = pub_path
+
+    return path_mapping
+
+
+def update_file_objs(
+    entity: dict, base_path: str, system_id="designsafe.storage.published"
+):
     """Return an updated file_objs array relative to a new base path."""
     file_objs = entity["value"]["fileObjs"]
+    path_mapping = get_path_mapping(entity, base_path)
     updated_file_objs = []
     for file_obj in file_objs:
-        new_path = Path(base_path) / Path(file_obj["path"]).name
-        updated_file_objs.append({**file_obj, "path": str(new_path)})
+        updated_file_objs.append(
+            {**file_obj, "path": path_mapping[file_obj["path"]], "system": system_id}
+        )
     return updated_file_objs
 
 
@@ -225,17 +245,17 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
         new_style_tags = convert_legacy_tags(entity)
         entity["value"]["fileTags"] = new_style_tags
 
-    if entity["value"].get("fileTags", False):
-        entity["value"]["fileTags"] = update_file_tag_paths(entity, base_path)
-
     file_objs = entity.get("fileObjs", None)
     # Some legacy experiment/hybrid sim entities have file_objs incorrectly
     # populated from their children. In these cases, _filepaths is empty.
     if file_objs and entity.get("_filePaths", None) != []:
-        for file in file_objs:
-            file["system"] = settings.PUBLISHED_SYSTEM
         entity["value"]["fileObjs"] = file_objs
-        entity["value"]["fileObjs"] = update_file_objs(entity, base_path)
+        if entity["value"].get("fileTags", False):
+            entity["value"]["fileTags"] = update_file_tag_paths(entity, base_path)
+            print(entity["value"]["fileTags"])
+        entity["value"]["fileObjs"] = update_file_objs(
+            entity, base_path, system_id=settings.PUBLISHED_SYSTEM
+        )
 
     validated_model = model.model_validate(entity["value"])
     return validated_model.model_dump()
