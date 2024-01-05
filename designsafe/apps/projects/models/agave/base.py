@@ -517,11 +517,11 @@ class Project(MetadataModel):
         )
         attributes['fundingReferences'] = []
         for award in awards:
-                attributes['fundingReferences'].append({
-                    'awardTitle': award['name'],
-                    'awardNumber': award['number'],
-                    "funderName": award.get("fundingSource", "N/A"),
-                    })
+            attributes['fundingReferences'].append({
+                'awardTitle': award['name'],
+                'awardNumber': award['number'],
+                "funderName": award.get("fundingSource", "N/A"),
+                })
 
         attributes['relatedIdentifiers'] = []
 
