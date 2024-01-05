@@ -218,7 +218,7 @@ class ManageProjectCtrl {
         }
         if (hasPrjType) {
             projectData.guestMembers = this.validInputs(this.form.guestMembers, ['fname', 'lname']);
-            projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number']);
+            projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number', 'fundingSource']);
             if (this.form.projectType === 'other') {
                 projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
                 projectData.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
