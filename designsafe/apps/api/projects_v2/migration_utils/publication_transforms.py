@@ -252,7 +252,6 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
         entity["value"]["fileObjs"] = file_objs
         if entity["value"].get("fileTags", False):
             entity["value"]["fileTags"] = update_file_tag_paths(entity, base_path)
-            print(entity["value"]["fileTags"])
         entity["value"]["fileObjs"] = update_file_objs(
             entity, base_path, system_id=settings.PUBLISHED_SYSTEM
         )

@@ -1,6 +1,6 @@
 """Utils for constructing project trees from legacy association IDs."""
 import json
-from typing import TypedDict
+from typing import TypedDict, Optional
 from uuid import uuid4
 from pathlib import Path
 import networkx as nx
@@ -202,13 +202,15 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
         pub_graph.add_edge(root_node_id, base_node_id)
     construct_graph_recurse(pub_graph, entity_listing, root_entity, root_node_id)
 
-    pub_graph.nodes["NODE_ROOT"]["basePath"] = f"/{project_id}"
-    pub_graph = construct_entity_filepaths(entity_listing, pub_graph)
+    pub_graph.nodes["NODE_ROOT"]["basePath"] = f"{project_id}"
+    pub_graph = construct_entity_filepaths(entity_listing, pub_graph, version)
 
     return pub_graph
 
 
-def construct_entity_filepaths(entity_listing: list[dict], pub_graph: nx.DiGraph):
+def construct_entity_filepaths(
+    entity_listing: list[dict], pub_graph: nx.DiGraph, version: Optional[int] = None
+):
     """
     Walk the publication graph and construct base file paths for each node.
     The file path for a node contains the titles of each entity above it in the
@@ -225,7 +227,10 @@ def construct_entity_filepaths(entity_listing: list[dict], pub_graph: nx.DiGraph
         )
         entity_dirname = f"{entity_name_slug}--{slugify(entity_title)}"
 
-        if parent_node in pub_graph.successors("NODE_ROOT"):
+        if version and child_node in pub_graph.successors("NODE_ROOT"):
+            # Version datasets if the containing publication is versioned.
+            child_path = Path(parent_base_path) / f"{entity_dirname}--v{version}"
+        elif parent_node in pub_graph.successors("NODE_ROOT"):
             # Publishable entities have a "data" folder in Bagit ontology.
             child_path = Path(parent_base_path) / "data" / entity_dirname
         else:
@@ -256,7 +261,7 @@ def get_entity_orders(
     return prj_orders.to_dict().get("orders", [])
 
 
-def transform_pub_entities(project_id, version=None):
+def transform_pub_entities(project_id: str, version: Optional[int] = None):
     """Validate publication entities against their corresponding model."""
     entity_listing = get_entities_from_publication(project_id, version=version)
     base_pub_meta = IndexedPublication.from_id(project_id, revision=version).to_dict()
@@ -279,5 +284,36 @@ def transform_pub_entities(project_id, version=None):
         if node_data["uuid"] == entity_listing[0]["uuid"]
     )
     pub_graph.nodes[base_node]["value"]["users"] = project_users
+
+    for pub in pub_graph.successors("NODE_ROOT"):
+        if version and version > 1:
+            pub_graph.nodes[pub]["version"] = version
+            pub_graph.nodes[pub]["versionInfo"] = base_pub_meta.get(
+                "revisionText", None
+            )
+            pub_graph.nodes[pub]["versionDate"] = base_pub_meta.get(
+                "revisionDate", None
+            )
+        else:
+            pub_graph.nodes[pub]["version"] = 1
+
+    return pub_graph
+
+
+def combine_pub_versions(project_id: str) -> nx.DiGraph:
+    """Construct a tree of all versions of published datasets in a project."""
+    latest_version: int = IndexedPublication.max_revision(project_id)
+
+    pub_graph = transform_pub_entities(project_id)
+    if not latest_version:
+        return pub_graph
+
+    versions = range(2, latest_version + 1)
+    for version in versions:
+        version_graph = transform_pub_entities(project_id, version)
+        version_pubs = version_graph.successors("NODE_ROOT")
+        pub_graph: nx.DiGraph = nx.compose(pub_graph, version_graph)
+        for node_id in version_pubs:
+            pub_graph.add_edge("NODE_ROOT", node_id)
 
     return pub_graph
