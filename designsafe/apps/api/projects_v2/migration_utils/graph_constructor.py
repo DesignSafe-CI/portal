@@ -202,7 +202,7 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
         pub_graph.add_edge(root_node_id, base_node_id)
     construct_graph_recurse(pub_graph, entity_listing, root_entity, root_node_id)
 
-    pub_graph.nodes["NODE_ROOT"]["basePath"] = f"{project_id}"
+    pub_graph.nodes["NODE_ROOT"]["basePath"] = f"/{project_id}"
     pub_graph = construct_entity_filepaths(entity_listing, pub_graph, version)
 
     return pub_graph
