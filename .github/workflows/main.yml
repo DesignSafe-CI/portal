@@ -60,3 +60,32 @@ jobs:
 
     - run: npm ci
     - run: npm run test
+
+  React_NX_unit_tests:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+        cache: npm
+        working-directory: client
+    - run: npm ci
+      working-directory: client
+
+    - uses: nrwl/nx-set-shas@v3
+      # Check linting/formatting of workspace files.
+    - run: npx nx format:check
+      working-directory: client
+
+    # Lint/test/build any apps and libs that have been impacted by the diff.
+    - run: npx nx affected --target=lint --parallel=3
+      working-directory: client
+    - run: npx nx affected --target=test --parallel=3 --ci --code-coverage
+      working-directory: client
+    - run: npx nx affected --target=build --parallel=3
+      working-directory: client
