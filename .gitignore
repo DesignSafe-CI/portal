@@ -1,9 +1,6 @@
 # ignore intellij IDE things
 .idea/
 
-i# ignore vsCode things
-settings.json
-
 # OsX DS_Store nonsense
 .DS_Store
 
@@ -37,7 +34,6 @@ designsafe/apps/nco/templates/designsafe/apps/nco/ttc_grants.html
 # local config files
 conf/elasticsearch/logging.yml
 conf/redis.conf
-settings.json
 
 # don't commit certs
 certs/
@@ -99,6 +95,3 @@ metrics/
 # ignore Google Drive API secrets
 *secrets.json
 *secrets.py
-
-# vscode
-.vscode/
