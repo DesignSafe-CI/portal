@@ -13,6 +13,7 @@ module.exports = (env) => {
             geo: './designsafe/static/scripts/geo/index.js',
             base: './designsafe/static/scripts/ng-designsafe/ng-designsafe.js',
             dd: './designsafe/static/scripts/data-depot/index.js',
+            workspace: './designsafe/static/scripts/workspace/app.js',
             search: './designsafe/static/scripts/search/index.js',
             dashboard: './designsafe/static/scripts/dashboard/index.js',
             applications: './designsafe/static/scripts/applications/app.js',
@@ -125,6 +126,15 @@ module.exports = (env) => {
                     inject : false,
                     template : './designsafe/apps/data/templates/data/data_depot.j2',
                     filename: '../../apps/data/templates/data/data_depot.html',
+                    minify: false,
+                }
+            ),
+            new HtmlWebpackPlugin(
+                {
+                    chunks: ['workspace'],
+                    inject : false,
+                    template : './designsafe/apps/workspace/templates/designsafe/apps/workspace/index.j2',
+                    filename: '../../apps/workspace/templates/designsafe/apps/workspace/index.html',
                     minify: false,
                 }
             ),
