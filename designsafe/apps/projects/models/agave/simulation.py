@@ -101,12 +101,11 @@ class Simulation(RelatedEntity):
             )
             attributes['fundingReferences'] = []
             for award in awards:
-                if award.get("number", "").lower().startswith("nsf"):
-                    attributes['fundingReferences'].append({
-                        'awardTitle': award['name'],
-                        'awardNumber': award['number'],
-                        "funderName": "National Science Foundation",
-                        })
+                attributes['fundingReferences'].append({
+                    'awardTitle': award['name'],
+                    'awardNumber': award['number'],
+                    "funderName": award.get("fundingSource", "N/A"),
+                    })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
