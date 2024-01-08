@@ -12,9 +12,15 @@ class ShowMoreCtrl {
 
         // get height
         angular.element(document).ready(() => {
-            let height = document.getElementsByClassName('show-more').clientHeight;
-            if (height > 80) {
-                this.bypass = false
+            let showMoreElement = document.getElementById('show-more');
+
+            if (showMoreElement) {
+                let height = showMoreElement.clientHeight;
+                if (height > 80) {
+                    this.bypass = false;
+                }
+            } else {
+                console.warn('Element with ID "show-more" not found.');
             }
         });
     }
