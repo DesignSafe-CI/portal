@@ -118,6 +118,21 @@ class BaseProject(MetadataModel):
     coverage_temporal: Optional[str] = None
     lat_long_name: Optional[str] = None
 
+    def construct_users(self) -> list[ProjectUser]:
+        """Fill in missing user information from the database."""
+        users = []
+        if self.pi != "None":
+            users.append(ProjectUser.from_username(self.pi, role="pi"))
+        for co_pi in self.co_pis:
+            if len(co_pi) == 1 or co_pi == "None":
+                continue
+            users.append(ProjectUser.from_username(co_pi, role="co_pi"))
+        for team_member in self.team_members:
+            if len(team_member) == 1 or team_member == "None":
+                continue
+            users.append(ProjectUser.from_username(team_member, role="team_member"))
+        return users
+
     @model_validator(mode="after")
     def post_validate(self):
         """Populate derived fields if they don't exist yet."""
@@ -139,4 +154,6 @@ class BaseProject(MetadataModel):
             ]
         if self.award_number and not self.award_numbers:
             self.award_numbers = self.award_number
+        if (not self.users) and (users := self.construct_users()):
+            self.users = users
         return self

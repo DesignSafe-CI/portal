@@ -4,6 +4,8 @@ from functools import partial
 from typing import Annotated, Literal, Optional
 from pydantic import AliasChoices, BaseModel, BeforeValidator, ConfigDict, Field
 from pydantic.alias_generators import to_camel
+from django.contrib.auth import get_user_model
+from pytas.http import TASClient
 
 
 class MetadataModel(BaseModel):
@@ -38,6 +40,40 @@ class ProjectUser(MetadataModel):
 
     authorship: Optional[bool] = None
 
+    @classmethod
+    def from_username(cls, username: str, role: str = "team_member", **kwargs):
+        """Fill in a user object using values from the db."""
+        user_model = get_user_model()
+        try:
+            user_obj = user_model.objects.get(username=username)
+            return cls(
+                username=username,
+                fname=user_obj.first_name,
+                lname=user_obj.last_name,
+                email=user_obj.email,
+                inst=user_obj.profile.institution,
+                role=role,
+                **kwargs
+            )
+        except user_model.DoesNotExist:
+            try:
+                tas_client = TASClient()
+                tas_user = tas_client.get_user(username=username)
+                return cls(
+                    username=username,
+                    fname=tas_user["firstName"],
+                    lname=tas_user["lastName"],
+                    email=tas_user["email"],
+                    inst=tas_user["institution"],
+                    role=role,
+                    **kwargs
+                )
+            # pylint:disable=broad-exception-caught
+            except Exception as _:
+                print(username)
+                print("unrecoverable username")
+            return cls(username=username, role=role, guest=False)
+
 
 class GuestMember(MetadataModel):
     """Model for guest members."""
@@ -59,6 +95,7 @@ class ProjectAward(MetadataModel):
         str, BeforeValidator(lambda n: n if isinstance(n, str) else "")
     ] = ""
     number: str = ""
+    funding_source: Optional[str] = None
 
 
 class AssociatedProject(MetadataModel):

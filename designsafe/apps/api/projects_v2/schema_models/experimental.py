@@ -138,6 +138,9 @@ class ExperimentSensor(MetadataModel):
     # This field is ONLY present on pub PRJ-1649
     analysis: Optional[list[str]] = None
 
+    # This field ONLY Present on sensor 8078182091498319385-242ac11c-0001-012
+    load: Optional[list[str]] = Field(default=None, exclude=True)
+
 
 class ExperimentEvent(MetadataModel):
     """Model for experimental events."""

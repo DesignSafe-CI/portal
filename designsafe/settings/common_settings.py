@@ -84,6 +84,7 @@ INSTALLED_APPS = (
     'designsafe.apps.api',
     'designsafe.apps.api.notifications',
     'designsafe.apps.api.datafiles',
+    'designsafe.apps.api.projects_v2',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -463,6 +464,7 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@designsafe-c
 MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe-ci.org')
 
 NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@designsafe-ci.org,')
+PROJECT_ADMIN_USERS = ['ds_admin', 'prjadmin']
 PROJECT_ADMINS_EMAIL = ['maria@tacc.utexas.edu', 'gendlerk@tacc.utexas.edu']
 DEV_PROJECT_ADMINS_EMAIL = ['tbrown@tacc.utexas.edu', 'sgray@tacc.utexas.edu', 'vgonzalez@tacc.utexas.edu']
 
