@@ -9,6 +9,10 @@ import { fileModel, spinnerOnLoad, httpSrc, accessfiles,
          dsUser, dsUserList, dsAuthorList, dsFixTop, yamzTerm, iframeOnload,
         } from './ng-designsafe-directives';
 import { prjMetadata, prjPubPreviewMetadata, relatedWork, referencedData, prjPubCollections } from './project-directives';
+import { ShowMoreComponent } from '../../_common/show-more.component';
+
+let ddComponents = angular.module('dd.components', ['dd.components.projects']);
+ddComponents.component('showMore', ShowMoreComponent);
 
 designsafeDirectives.directive('ddAltmetrics', ['$sce', '$filter', ddAltmetrics]);
 // designsafeDirectives.directive('myDataBrowser', myDataBrowser);
