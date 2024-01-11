@@ -37,8 +37,9 @@ class AppTrayEntry(models.Model):
     available = models.BooleanField(help_text='App visibility in app tray', default=True)
     appType = models.CharField(help_text='Application type', max_length=10, choices=APP_TYPES, default='tapis')
 
-    # Tapis Apps
     appId = models.CharField(help_text='The id of this app. The app id + version denotes a unique app', max_length=64)
+
+    # Tapis Apps
     version = models.CharField(help_text='The version number of the app', max_length=64, blank=True)
 
     # HTML Apps

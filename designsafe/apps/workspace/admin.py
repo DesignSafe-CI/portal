@@ -26,11 +26,11 @@ class AppTrayEntryAdmin(admin.ModelAdmin):
                 'overview',
                 'available'
                 'appType',
+                'appId',
             )
         }),
         ('Tapis App Specification', {
             'fields': (
-                'appId',
                 'version',
             )
         }),
