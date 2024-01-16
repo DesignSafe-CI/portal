@@ -2,9 +2,11 @@
 from typing import Optional, TypedDict
 
 
-def handle_award_number(award: list[dict] | str) -> list[dict]:
+def handle_award_number(award: list[dict] | list[str] | str) -> list[dict]:
     """Handle the case where awards are saved as strings."""
     if isinstance(award, list):
+        if award and isinstance(award[0], str):
+            return [{"number": "".join(award)}]
         return award
     if isinstance(award, str):
         return [{"number": award}]

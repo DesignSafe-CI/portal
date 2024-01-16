@@ -55,6 +55,11 @@ class ProjectMetadata(models.Model):
         """Return an iterable of all metadata objects for a given project ID."""
         return cls.objects.filter(base_project__value__projectId=project_id)
 
+    @property
+    def project_id(self):
+        """Convenience method for retrieving project IDs."""
+        return self.base_project.value.get("projectId")
+
     def save(self, *args, **kwargs):
         if self.name == constants.PROJECT:
             self.base_project = self
@@ -72,6 +77,14 @@ class ProjectMetadata(models.Model):
         indexes = [
             models.Index(models.F("value__projectId"), name="value_project_id"),
             models.Index(fields=["name"]),
+        ]
+
+        constraints = [
+            models.UniqueConstraint(
+                models.F("value__projectId"),
+                condition=models.Q(name=constants.PROJECT),
+                name="unique_id_per_project",
+            )
         ]
 
 
