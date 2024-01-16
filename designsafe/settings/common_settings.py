@@ -483,6 +483,11 @@ GOOGLE_SITE_VERIFICATION_ID = os.environ.get('GOOGLE_SITE_VERIFICATION_ID', Fals
 #
 RAMP_VERIFICATION_ID = os.environ.get('RAMP_VERIFICATION_ID', False)
 
+# Project registration credentials
+TRAM_SERVICES_URL = os.environ.get('TRAM_SERVICES_URL', None)
+TRAM_SERVICES_KEY = os.environ.get('TRAM_SERVICES_KEY', None)
+TRAM_PROJECT_ID = os.environ.get('TRAM_PROJECT_ID', None)
+
 ###
 # Agave Integration
 #

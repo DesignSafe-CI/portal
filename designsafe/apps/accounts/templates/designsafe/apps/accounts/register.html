@@ -21,11 +21,28 @@
     </div>
     <div>
         <h3 class="text-center">
-            If you do not have an account, please use the
-            <a href="https://accounts.tacc.utexas.edu/register">TACC User Registration form</a>
-            to request an account.
+            If you do not have an account, please enter your email below to request an account. 
+            <br/>
             Once your account has been approved, you will then be able to log into DesignSafe.
+            <br/>&nbsp;
+            <br/>
+            For additional information regarding user accounts, please visit the 
+            <a href="https://www.designsafe-ci.org/user-guide/">User Guide</a>.
+
           </h3>
+          <div style="display:flex; flex-direction: column; align-items: center; margin-bottom: 50px;">
+          <form action="/account/register/" method="POST">
+            {% csrf_token %}
+            <label for="register-email">Email:</label>
+            <input required id="register-email" class="form-control" style="max-width:300px; margin-bottom:20px" name="email" type="email">
+            <div class="g-recaptcha" data-sitekey="{{RECAPTCHA_PUBLIC_KEY}}"></div>
+            <br/>
+            <button class="btn btn-primary" style="width:300px;" type="submit" value="Submit">Submit</button>
+          </form>
+        </div>
+          {% if recaptcha_success %}
+            Recaptcha was succesfully validated.
+          {% endif %} 
           <p>
           For citizens of countries designated as “countries of concern” by United States government 
           regulations, additional documentation in the form of a currently valid visa and passport will 
