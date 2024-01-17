@@ -2,6 +2,7 @@
 """Mapping of possible metadata names."""
 
 PROJECT = "designsafe.project"
+PROJECT_GRAPH = "designsafe.project.graph"
 # Experimental
 EXPERIMENT = "designsafe.project.experiment"
 EXPERIMENT_REPORT = "designsafe.project.report"

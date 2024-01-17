@@ -11,6 +11,7 @@ from designsafe.apps.projects.managers.publication import FIELD_MAP
 from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
 from designsafe.apps.projects.models.categories import Category
 from designsafe.apps.api.projects_v2 import constants as names
+from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.migration_utils.publication_transforms import (
     transform_entity,
     construct_users,
@@ -103,11 +104,37 @@ def construct_graph(project_id) -> nx.DiGraph:
 
     construct_graph_recurse(project_graph, entity_listing, root_entity, root_node_id)
 
-    deprecated_mission_nodes = (
+    deprecated_mission_nodes = [
         node
         for (node, data) in project_graph.nodes.data()
         if data["name"] == names.FIELD_RECON_COLLECTION
-    )
+    ]
+    project_graph.remove_nodes_from(deprecated_mission_nodes)
+
+    return project_graph
+
+
+def construct_graph_from_db(project_id) -> nx.DiGraph:
+    """Construct a directed graph from a project's association IDs using the db."""
+    prj_entities = ProjectMetadata.get_entities_by_project_id(project_id)
+    root_entity = prj_entities.get(name="designsafe.project").to_dict()
+    entity_listing = [e.to_dict() for e in prj_entities]
+
+    project_graph = nx.DiGraph()
+    root_node_id = "NODE_ROOT"
+    root_node_data = {
+        "uuid": root_entity["uuid"],
+        "name": root_entity["name"],
+    }
+    project_graph.add_node(root_node_id, **root_node_data)
+
+    construct_graph_recurse(project_graph, entity_listing, root_entity, root_node_id)
+
+    deprecated_mission_nodes = [
+        node
+        for (node, data) in project_graph.nodes.data()
+        if data["name"] == names.FIELD_RECON_COLLECTION
+    ]
     project_graph.remove_nodes_from(deprecated_mission_nodes)
 
     return project_graph

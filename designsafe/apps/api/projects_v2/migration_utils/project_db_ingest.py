@@ -1,8 +1,10 @@
 """Utilities for ingesting projects using the ProjectMetadata db model."""
 from pydantic import ValidationError
+import networkx as nx
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
     get_entities_by_project_id,
+    construct_graph_from_db,
 )
 from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING
 from designsafe.apps.api.projects_v2.tests.schema_integration import iterate_entities
@@ -46,7 +48,10 @@ def ingest_base_projects():
         ProjectMetadata.objects.update_or_create(
             uuid=project_meta["uuid"],
             name=project_meta["name"],
-            defaults={"value": value_model.model_dump(mode="json")},
+            defaults={
+                "value": value_model.model_dump(mode="json"),
+                "created": project_meta["created"],
+            },
         )
 
 
@@ -70,6 +75,8 @@ def ingest_entities_by_name(name):
                 defaults={
                     "value": value_model.model_dump(mode="json"),
                     "base_project": prj,
+                    "created": entity["created"],
+                    "association_ids": entity["associationIds"],
                 },
             )
         except ProjectMetadata.DoesNotExist:
@@ -77,8 +84,25 @@ def ingest_entities_by_name(name):
 
 
 def ingest_sub_entities():
-    """Ingest all entities other than base project metadata."""
+    """Ingest all entities other than base project metadata.
+    Run AFTER ingesting projects."""
     for name in SCHEMA_MAPPING:
         if name != "designsafe.project":
             print(f"ingesting for type: {name}")
             ingest_entities_by_name(name)
+
+
+def ingest_graphs():
+    """Construct project graphs and ingest into the db.
+    Run AFTER ingesting projects/entities"""
+
+    base_projects = ProjectMetadata.objects.filter(name="designsafe.project")
+    for project in base_projects:
+        prj_graph = construct_graph_from_db(project.value["projectId"])
+        graph_json = nx.node_link_data(prj_graph)
+
+        ProjectMetadata.objects.update_or_create(
+            name="designsafe.project.graph",
+            base_project__uuid=project.uuid,
+            defaults={"value": graph_json, "base_project": project},
+        )
