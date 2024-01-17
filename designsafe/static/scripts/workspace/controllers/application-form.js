@@ -123,15 +123,17 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         let items = [];
         if ($scope.form.schema.properties.inputs) {
             items.push('inputs');
+        }
+        if ($scope.form.schema.properties.parameters) {
+            items.push('parameters');
+        }
+        if (items.length) {
             $scope.form.form.push({
                 type: 'fieldset',
                 readonly: readOnly,
                 title: 'Inputs',
                 items: items,
             });
-        }
-        if ($scope.form.schema.properties.parameters) {
-            items.push('parameters');
         }
 
         /* job details */
