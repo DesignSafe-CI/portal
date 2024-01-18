@@ -4,6 +4,7 @@ from typing import Literal, Optional, Annotated
 from pydantic import (
     BeforeValidator,
     AliasChoices,
+    ConfigDict,
     model_validator,
     Field,
 )
@@ -17,6 +18,7 @@ from designsafe.apps.api.projects_v2.schema_models._field_models import (
     AssociatedProject,
     DropdownValue,
     FileTag,
+    FileObj,
     GuestMember,
     HazmapperMap,
     NaturalHazardEvent,
@@ -31,6 +33,15 @@ from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_dropdown_values,
     handle_keywords,
 )
+
+
+class PartialEntityWithFiles(MetadataModel):
+    """Model for representing an entity with associated files."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
 
 
 class BaseProject(MetadataModel):
@@ -108,6 +119,7 @@ class BaseProject(MetadataModel):
     dois: list[str] = []
 
     file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
     hazmapper_maps: list[HazmapperMap] = []
 
     facilities: list[DropdownValue] = []

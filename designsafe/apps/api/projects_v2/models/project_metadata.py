@@ -68,7 +68,7 @@ class ProjectMetadata(models.Model):
     )
 
     @property
-    def project_id(self):
+    def project_id(self) -> str:
         """Convenience method for retrieving project IDs."""
         return self.base_project.value.get("projectId")
 

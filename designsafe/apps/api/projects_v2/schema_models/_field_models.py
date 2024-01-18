@@ -124,7 +124,7 @@ class ReferencedWork(MetadataModel):
 class FileTag(MetadataModel):
     """Model for file tags."""
 
-    file_uuid: str
+    file_uuid: Optional[str] = Field(default=None, exclude=True)
     tag_name: str
     path: Optional[str] = None
 
