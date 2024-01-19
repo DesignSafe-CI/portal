@@ -13,7 +13,7 @@ from designsafe.apps.api.projects_v2.models import ProjectMetadata
 
 def create_project_metdata(value):
     """Create a project metadata object in the database."""
-    schema_model = SCHEMA_MAPPING.get(constants.PROJECT)
+    schema_model = SCHEMA_MAPPING[constants.PROJECT]
     validated_model = schema_model.model_validate(value)
 
     project_db_model = ProjectMetadata(
@@ -26,7 +26,7 @@ def create_project_metdata(value):
 def create_entity_metadata(project_id, name, value):
     """Create entity metadata associated with an existing project."""
     base_project = ProjectMetadata.get_project_by_id(project_id)
-    schema_model = SCHEMA_MAPPING.get(name)
+    schema_model = SCHEMA_MAPPING[name]
     validated_model = schema_model.model_validate(value)
 
     entity_db_model = ProjectMetadata(
@@ -40,7 +40,7 @@ def patch_metadata(uuid, value):
     """Update an entity's `value` attribute. This method patches the metadata
     so that only fields in the payload are overwritten."""
     entity = ProjectMetadata.objects.get(uuid=uuid)
-    schema_model = SCHEMA_MAPPING.get(entity.name)
+    schema_model = SCHEMA_MAPPING[entity.name]
     validated_model = schema_model.model_validate(value)
 
     patched_metadata = {**entity.value, **validated_model.model_dump()}
@@ -78,7 +78,7 @@ def _merge_file_objs(
     deduped_file_objs = [fo for fo in prev_file_objs if fo.path not in new_file_paths]
 
     return sorted(
-        [*deduped_file_objs, *new_file_objs], operator.attrgetter("name", "path")
+        [*deduped_file_objs, *new_file_objs], key=operator.attrgetter("name", "path")
     )
 
 
