@@ -36,6 +36,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+RENDER_REACT = False
 TEST = True
 
 ALLOWED_HOSTS = ['*']

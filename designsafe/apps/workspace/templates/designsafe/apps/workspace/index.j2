@@ -3,6 +3,8 @@
 {% block title %}Tools & Applications{% endblock %}
 {% block content %}
 
+<div id="apps-root"></div>
+{% if not react_flag %}
 <div class="container">
     <h1 class="headline headline-research">
         <span class="hl hl-research">Tools & Applications</span>
@@ -30,6 +32,7 @@
          ng-init="panel.collapsed = true"></div>
   </div>
 </div>
+{% endif %}
 
 {% addtoblock "css" %}
 <link href="{% static 'scripts/workspace/styles/workspace.css' %}" rel="stylesheet">
@@ -48,6 +51,22 @@
 <script src="{% static 'scripts/applications/services/apps-wizard-service.js' %}"></script>
 <script src="{% static 'scripts/workspace/directives/asf-agave-file-picker.js' %}"></script>
 <script src="<%= htmlWebpackPlugin.files.js %>"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+{% if debug and react_flag %}
+<script type="module">
+    import RefreshRuntime from 'https://designsafe.dev:4200/static/@react-refresh';
+    RefreshRuntime.injectIntoGlobalHook(window);
+    window.$RefreshReg$ = () => {};
+    window.$RefreshSig$ = () => (type) => type;
+    window.__vite_plugin_react_preamble_installed__ = true;
+  </script>
+  <script type="module" src="https://designsafe.dev:4200/static/@vite/client"></script>
+  <script type="module" src="https://designsafe.dev:4200/static/src/main.tsx"></script>
+{% else %}
+<!--TODO: setup non-dev static import for React code-->
+{% endif %}
 {% endaddtoblock %}
 
 {% endblock %}
