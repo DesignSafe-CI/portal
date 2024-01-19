@@ -25,8 +25,8 @@ mysql.cnf
 designsafe/templates/base.html
 designsafe/apps/applications/templates/designsafe/apps/applications/index.html
 designsafe/apps/data/templates/data/data_depot.html
-designsafe/apps/workspace/templates/designsafe/apps/workspace/index.html
 designsafe/apps/rapid/templates/designsafe/apps/rapid/rapid_base.html
+designsafe/apps/workspace/templates/designsafe/apps/workspace/index.html
 designsafe/apps/geo/templates/designsafe/apps/geo/index.html
 designsafe/apps/search/templates/designsafe/apps/search/index.html
 designsafe/apps/dashboard/templates/designsafe/apps/dashboard/index.html
@@ -53,9 +53,8 @@ data/NEHRI/
 # stats
 stats/
 
-# no node modules or package-lock
+# no node modules
 node_modules/
-package-lock.json
 
 # in case you leave that here
 datadump.json
