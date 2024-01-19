@@ -55,7 +55,6 @@ def nh_type_query(nh_type):
         "Earthquake",
         "Extreme Temperatures",
         "Fire",
-        "Wildfire",
         "Flood",
         "Hurricane/Tropical Storm",
         "Landslide",

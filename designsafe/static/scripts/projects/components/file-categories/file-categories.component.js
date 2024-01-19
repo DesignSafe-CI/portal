@@ -288,7 +288,10 @@ class FileCategoriesCtrl {
 
         if (this.scheme === 'public') {
             return tags.filter((tag) => {
-                let substring = `/${this.project.value.projectId}`;
+                let substring = `${this.project.value.projectId}`;
+                if (this.file.path.startsWith('/')) {
+                    substring = `/${substring}`
+                }
                 if (this.version > 0) {
                     substring = substring + `v${this.version}`;
                 }

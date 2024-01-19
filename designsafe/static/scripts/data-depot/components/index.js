@@ -1,6 +1,6 @@
 import angular from 'angular';
 import './projects';
-import { ShowMoreComponent } from './_common/show-more.component';
+import { ShowMoreComponent } from '../../_common/show-more.component';
 import { DataDepotToolbarComponent } from './data-depot-toolbar/data-depot-toolbar.component';
 import { DataDepotNavComponent } from './data-depot-nav/data-depot-nav.component';
 import { PublishedComponent } from './published/published.component';
