@@ -67,7 +67,7 @@ class BaseProject(MetadataModel):
     guest_members: Annotated[
         list[GuestMember], BeforeValidator(handle_array_of_none)
     ] = []
-    pi: str
+    pi: Optional[str] = None
     co_pis: list[str] = []
     data_type: Annotated[
         Optional[DropdownValue],
@@ -133,7 +133,7 @@ class BaseProject(MetadataModel):
     def construct_users(self) -> list[ProjectUser]:
         """Fill in missing user information from the database."""
         users = []
-        if self.pi != "None":
+        if self.pi and self.pi != "None":
             users.append(ProjectUser.from_username(self.pi, role="pi"))
         for co_pi in self.co_pis:
             if len(co_pi) == 1 or co_pi == "None":

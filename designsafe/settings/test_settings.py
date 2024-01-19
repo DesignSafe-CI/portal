@@ -473,6 +473,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'auth': json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
     }
 }
+PROJECT_ADMIN_USERS = ["test_prjadmin"]
 
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
 

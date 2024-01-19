@@ -2,7 +2,6 @@
 import uuid
 from django.utils import timezone
 from django.db import models
-from django.contrib.postgres import fields as postgres_fields
 from django.core.validators import MinLengthValidator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import get_user_model
@@ -61,8 +60,7 @@ class ProjectMetadata(models.Model):
     created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
 
-    association_ids = postgres_fields.ArrayField(
-        models.CharField(max_length=256),
+    association_ids = models.JSONField(
         default=list,
         help_text="(DEPRECATE IN V3) Tapis V2 association IDs.",
     )

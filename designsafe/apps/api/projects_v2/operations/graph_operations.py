@@ -86,7 +86,7 @@ def initialize_project_graph(project_id: str):
             root_node_id, **{"uuid": None, "name": None, "projectType": "other"}
         )
         base_node_id = f"NODE_project_{uuid.uuid4()}"
-        project_graph.add_node(f"NODE_project_{uuid.uuid4()}", **base_node_data)
+        project_graph.add_node(base_node_id, **base_node_data)
         project_graph.add_edge(root_node_id, base_node_id)
     else:
         project_graph.add_node(root_node_id, **base_node_data)
