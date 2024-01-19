@@ -5,52 +5,60 @@
 {% block title %}Register for a DesignSafe-CI/TACC Account{% endblock %}
 
 {% block content %}
-<div class="container">
-  <h1 class="headline headline-research">Register an Account</h1>
+<div class="container" style="max-width:970px;">
+  <h1 class="headline headline-research" style="margin-bottom:40px;">Register an Account</h1>
 
   <div class="row">
-    <div class="callout callout-default">
-        <p class="text-center">
-          <img style="max-width:200px" alt="TACC" src="{% static 'images/tacc-logo-outline.svg'%}">
+    <div class="col-md-6 col-md-push-6" style="padding-left:75px;">
+      <div class="callout callout-default" style="margin-top: 0px; border: 1px solid gray; padding:25px;">
+        <p class="text-center"><b>Powered By:</b></p>
+        <p class="text-center" style="margin-bottom:20px;">
+          <img style="max-width:200px" alt="TACC" src="{% static 'images/TACC-formal-Black-1c.svg'%}">
+        </p>
+        <p style="margin-bottom:50px;">
+          If you already have a TACC account, log in with your TACC username and password to access DesignSafe.
         </p>
         <p class="text-center">
-          If you already have a TACC account, simply
-          <a href="{% url 'designsafe_auth:agave_oauth' %}">log in</a> with your TACC
-          username and password to access DesignSafe.
+          <a href="{% url 'designsafe_auth:agave_oauth' %}"><button class="btn btn-default"
+              style="width:100%; font-weight: bold;">Log
+              in</button></a>
         </p>
+      </div>
     </div>
-    <div>
-        <h3 class="text-center">
-            If you do not have an account, please enter your email below to request an account. 
-            <br/>
-            Once your account has been approved, you will then be able to log into DesignSafe.
-            <br/>&nbsp;
-            <br/>
-            For additional information regarding user accounts, please visit the 
-            <a href="https://www.designsafe-ci.org/user-guide/">User Guide</a>.
-
-          </h3>
-          <div style="display:flex; flex-direction: column; align-items: center; margin-bottom: 50px;">
+    <div class="col-md-6 col-md-pull-6" style="padding-right:75px;">
+      <div>
+        <p>Any natural hazards researcher that wants an environment to store, analyze, curate, publish, and discover
+          data with a community of peers can register an account.</p>
+        <p>Submit your email to request an account. Upon approval, you'll receive an email with instructions to finalize
+          your account setup.</p>
+        <div style="display:flex; flex-direction: column; margin-bottom: 10px;">
           <form action="/account/register/" method="POST">
             {% csrf_token %}
             <label for="register-email">Email:</label>
-            <input required id="register-email" class="form-control" style="max-width:300px; margin-bottom:20px" name="email" type="email">
-            <div class="g-recaptcha" data-sitekey="{{RECAPTCHA_PUBLIC_KEY}}"></div>
-            <br/>
-            <button class="btn btn-primary" style="width:300px;" type="submit" value="Submit">Submit</button>
+            <input required id="register-email" class="form-control" style="margin-bottom:20px" name="email"
+              type="email">
+            <div class="g-recaptcha g-recaptcha-responsive" style="width:500px" data-sitekey="{{RECAPTCHA_PUBLIC_KEY}}">
+            </div>
+            <br />
+            <button class="btn btn-success" style="width:100%" type="submit" value="Submit">Submit Request</button>
           </form>
         </div>
-          {% if recaptcha_success %}
-            Recaptcha was succesfully validated.
-          {% endif %} 
-          <p>
-          For citizens of countries designated as “countries of concern” by United States government 
-          regulations, additional documentation in the form of a currently valid visa and passport will 
-          be requested after the account registration form has been submitted. Citizens of these countries 
+        <p style="margin-bottom: 20px;">For additional information, visit the <a target="_blank"
+            href="https://www.designsafe-ci.org/user-guide/tools/advanced/dsfaq/#faq-users">FAQ for Users & Accounts</a>
+        </p>
+        <p style="color:gray; font-style:italic">
+          For citizens of countries designated as “countries of concern” by United States government
+          regulations, additional documentation in the form of a currently valid visa and passport will
+          be requested after the account registration form has been submitted. Citizens of these countries
           are only eligible to have accounts while legally residing in the United States.
         </p>
+      </div>
     </div>
+
+
   </div>
 
 </div>
 {% endblock %}
+
+{% block footer %}{% include 'includes/footer.html' %}{% endblock footer %}
