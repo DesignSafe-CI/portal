@@ -2,6 +2,10 @@ from django.db import models
 from cms.models import Page as CMSPage
 
 
+APP_TYPES = [('tapis', 'Tapis'), ('html', 'HTML')]
+LICENSE_TYPES = [('OS', 'Open Source'), ('LS', 'Licensed')]
+
+
 class AppTrayCategory(models.Model):
     category = models.CharField(help_text='A category for the app tray', max_length=64)
     priority = models.IntegerField(help_text='Category priority, where higher priority tabs appear before lower ones', default=0)
@@ -11,9 +15,6 @@ class AppTrayCategory(models.Model):
 
 
 class AppTrayEntry(models.Model):
-    APP_TYPES = [('tapis', 'Tapis'), ('html', 'HTML')]
-    LICENSE_TYPES = [('OS', 'Open Source'), ('LS', 'Licensed')]
-
     label = models.CharField(help_text='The display name of this app in the App Tray', max_length=64, blank=True)
     icon = models.CharField(help_text='The icon to apply to this application', max_length=64, blank=True)
     category = models.ForeignKey(
@@ -35,17 +36,26 @@ class AppTrayEntry(models.Model):
     )
 
     available = models.BooleanField(help_text='App visibility in app tray', default=True)
+
+    appId = models.CharField(help_text='The id of this app or app bundle. The id appears in the unique url path to the app.', max_length=64)
+
+    class Meta:
+        abstract = True
+
+
+class AppItem(AppTrayEntry):
+    """
+    Note: uniqueness must be appId + version (even if version does not exist)
+    """
+
     appType = models.CharField(help_text='Application type', max_length=10, choices=APP_TYPES, default='tapis')
 
-    appId = models.CharField(help_text='The id of this app. The app id + version denotes a unique app', max_length=64)
-
     # Tapis Apps
-    version = models.CharField(help_text='The version number of the app', max_length=64, blank=True)
+    version = models.CharField(help_text='The version number of the app. The app id + version denotes a unique app', max_length=64, blank=True)
 
     # HTML Apps
     html = models.TextField(help_text='HTML definition to display when Application is loaded',
                             default="", blank=True)
-
 
     def __str__(self):
         if self.appType == "html":
@@ -54,4 +64,19 @@ class AppTrayEntry(models.Model):
             f"{self.label}: " if self.label else "",
             self.appId,
             f"-{self.version}" if self.version else ""
+        )
+
+class AppBundle(AppTrayEntry):
+    """
+    An AppBundle is :
+    1) a card on the apps CMS layout page that links to an overview page, and
+    2) a binned app in the apps workspace, where each related app (bundledApps) is a dropdown item.
+    """
+
+    bundledApps = models.ManyToManyField("self", help_text="Related apps that will display on app overview page", blank=True)
+
+    def __str__(self):
+        return "%s%s%s" % (
+            f"{self.label}: " if self.label else "",
+            self.appId
         )
