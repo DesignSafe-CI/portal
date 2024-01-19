@@ -16,7 +16,7 @@ from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_legacy_authors,
     handle_dropdown_value,
 )
-from designsafe.apps.api.projects_v2.constants import HYBRID_SIM_TYEPS
+from designsafe.apps.api.projects_v2.constants import HYBRID_SIM_TYPES
 
 
 class HybridSimulation(MetadataModel):
@@ -26,7 +26,7 @@ class HybridSimulation(MetadataModel):
     description: str = ""
     simulation_type: Annotated[
         DropdownValue,
-        BeforeValidator(lambda v: handle_dropdown_value(v, HYBRID_SIM_TYEPS)),
+        BeforeValidator(lambda v: handle_dropdown_value(v, HYBRID_SIM_TYPES)),
     ]
     simulation_type_other: str = Field(exclude=True)
     procedure_start: str = ""

@@ -58,7 +58,9 @@ class ProjectUser(MetadataModel):
         except user_model.DoesNotExist:
             try:
                 tas_client = TASClient()
-                tas_user = tas_client.get_user(username=username)
+                tas_user: Optional[dict] = tas_client.get_user(username=username)
+                if not tas_user:
+                    return cls(username=username, role=role, guest=False)
                 return cls(
                     username=username,
                     fname=tas_user["firstName"],

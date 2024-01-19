@@ -325,7 +325,7 @@ SIMULATION_TYPES = [
     {"id": "Other", "name": "Other"},
 ]
 
-HYBRID_SIM_TYEPS = [
+HYBRID_SIM_TYPES = [
     {"id": "Earthquake", "name": "Earthquake"},
     {"id": "Wind", "name": "Wind"},
     {"id": "Other", "name": "Other"},

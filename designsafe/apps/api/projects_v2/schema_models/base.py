@@ -153,7 +153,7 @@ class BaseProject(MetadataModel):
             self.authors = _authors
         if self.data_type and not self.data_types:
             self.data_types = [self.data_type]
-        if self.nh_event and not self.nh_events:
+        if self.nh_event and self.nh_event_start and not self.nh_events:
             self.nh_events = [
                 NaturalHazardEvent(
                     event_name=self.nh_event,
