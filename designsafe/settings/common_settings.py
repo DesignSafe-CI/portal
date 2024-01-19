@@ -36,6 +36,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+RENDER_REACT = os.environ.get('RENDER_REACT', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
 # Application definition
