@@ -171,6 +171,12 @@
 
 <!-- Description -->
 <div ng-if="$ctrl.project.value.description">
-  <p>{{ $ctrl.project.value.description }}</p>
+  <p>
+    <show-more
+        label="'Description'"
+        content="$ctrl.project.value.description"
+    >
+    </show-more>
+  </p>
 </div>
 <!-- end Description -->

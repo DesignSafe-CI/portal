@@ -35,6 +35,7 @@ class DataBrowserCopyCtrl {
         this.projectBreadcrumbs = {};
         this.options = [
             { api: 'agave', label: 'My Data' },
+            { api: 'agaveWork', label: 'HPC Work' },
             { api: 'projects', label: 'My Projects' },
             { api: 'box', label: 'Box' },
             { api: 'dropbox', label: 'Dropbox' },
@@ -42,6 +43,7 @@ class DataBrowserCopyCtrl {
 
         this.initialParams = {
             agave: { api: 'agave', scheme: 'private', system: 'designsafe.storage.default', path: this.Django.user },
+            agaveWork: { api: 'agave', scheme: 'private', system: 'designsafe.storage.frontera.work', path: this.Django.user },
             googledrive: { api: 'googledrive', scheme: 'private', system: 'googledrive', path: '' },
             box: { api: 'box', scheme: 'private', system: 'box', path: '' },
             dropbox: { api: 'dropbox', scheme: 'private', system: 'dropbox', path: '' },

@@ -89,6 +89,14 @@ export class FileListingService {
                     customRoot: { label: 'My Data', path: this.Django.user },
                 },
             },
+            agaveWork: {
+                api: 'agave',
+                scheme: 'private',
+                breadcrumbParams: {
+                    skipRoot: true,
+                    customRoot: { label: 'HPC Work', path: this.Django.user },
+                },
+            },
             shared: {
                 api: 'shared',
                 scheme: 'private',
