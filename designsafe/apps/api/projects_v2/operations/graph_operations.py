@@ -73,7 +73,7 @@ def _reorder_nodes(graph: nx.DiGraph, node_id: str, new_index: int):
     )
 
     if new_index > old_index:
-        for node_to_dec in sorted_siblings[old_index+1:new_index+1]:
+        for node_to_dec in sorted_siblings[old_index + 1 : new_index + 1]:
             _graph.nodes[node_to_dec]["order"] -= 1
     if new_index < old_index:
         for node_to_inc in sorted_siblings[new_index:old_index]:
