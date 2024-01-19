@@ -59,45 +59,27 @@ def _remove_nodes_from_graph(graph: nx.DiGraph, node_ids: list[str]) -> nx.DiGra
 
 def _reorder_nodes(graph: nx.DiGraph, node_id: str, new_index: int):
     """
-    Reorder nodes in a graph.
-    Algorithm:
-        1. Set the node's `order` number to a temp value that is the new order plus a
-        fractional value (-0.5 if the order is decreasing, +0.5 if it is increasing).
-        2. Sort the nodes on their `order` value and re-set their order to the position
-        in this sorted set.
-
-    Example: nodes are ordered [A, B, C, D] and we want to move A to position 3. The
-    temp_index for A will be 3.5. The `order` values for the nodes are then:
-        A->3.5
-        B->1
-        C->2
-        D->3
-    After sorting and enumerating:
-        B->(index 0, `order` 1)
-        C->(index 1, `order` 2)
-        D->(index 2, `order` 3)
-        A->(index 3, `order` 3.5)
-    Resetting `order` to the enumerated index:
-        B->0
-        C->1
-        D->2
-        A->3
+    Update `order` values so that the given node has the `order` specified by the
+    `new_index` arg. Any other children of the node's parent are also updated to
+    preserve the sequential ordering.
     """
     _graph: nx.DiGraph = copy.deepcopy(graph)
 
     parent = next(_graph.predecessors(node_id))
-    old_index = graph.nodes[node_id]["order"]
-    if new_index >= old_index:
-        temp_index = new_index + 0.5
-    else:
-        temp_index = new_index - 0.5
+    old_index = _graph.nodes[node_id]["order"]
 
-    _graph.nodes[node_id]["order"] = temp_index
-    sorted_siblings = sorted(
-        _graph.successors(parent), key=lambda n: _graph.nodes[n]["order"]
+    sorted_siblings: list[str] = sorted(
+        list(_graph.successors(parent)), key=lambda n: _graph.nodes[n]["order"]
     )
-    for i, node in enumerate(sorted_siblings):
-        _graph.nodes[node]["order"] = i
+
+    if new_index > old_index:
+        for node_to_dec in sorted_siblings[old_index+1:new_index+1]:
+            _graph.nodes[node_to_dec]["order"] -= 1
+    if new_index < old_index:
+        for node_to_inc in sorted_siblings[new_index:old_index]:
+            _graph.nodes[node_to_inc]["order"] += 1
+
+    _graph.nodes[node_id]["order"] = new_index
 
     return _graph
 
