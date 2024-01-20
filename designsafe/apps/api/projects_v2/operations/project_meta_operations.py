@@ -74,7 +74,7 @@ def _merge_file_objs(
     prev_file_objs: list[FileObj], new_file_objs: list[FileObj]
 ) -> list[FileObj]:
     """Combine two arrays of FileObj models, overwriting the first if there are conflicts."""
-    new_file_paths = (f.path for f in new_file_objs)
+    new_file_paths = [f.path for f in new_file_objs]
     deduped_file_objs = [fo for fo in prev_file_objs if fo.path not in new_file_paths]
 
     return sorted(
@@ -91,7 +91,7 @@ def _filter_file_objs(
     )
 
 
-def associate_files_to_entity(uuid: str, new_file_objs: list[FileObj]):
+def add_file_associations(uuid: str, new_file_objs: list[FileObj]):
     """Associate one or more file objects to an entity."""
     # Use atomic transaction here to prevent multiple calls from clobbering each other
     with transaction.atomic():
@@ -102,6 +102,7 @@ def associate_files_to_entity(uuid: str, new_file_objs: list[FileObj]):
         entity.value["fileObjs"] = [f.model_dump() for f in merged_file_objs]
 
         entity.save()
+    return entity
 
 
 def remove_file_associations(uuid: str, file_paths: list[str]):
@@ -112,8 +113,8 @@ def remove_file_associations(uuid: str, file_paths: list[str]):
 
         filtered_file_objs = _filter_file_objs(entity_file_model.file_objs, file_paths)
         entity.value["fileObjs"] = [f.model_dump() for f in filtered_file_objs]
-
         entity.save()
+    return entity
 
 
 def _check_file_tag_included(tag: FileTag, tag_list: list[FileTag]):
@@ -127,7 +128,9 @@ def _merge_file_tags(
     prev_file_tags: list[FileTag], new_file_tags: list[FileTag]
 ) -> list[FileTag]:
     deduped_file_tags = [
-        tag for tag in prev_file_tags if _check_file_tag_included(tag, new_file_tags)
+        tag
+        for tag in prev_file_tags
+        if not _check_file_tag_included(tag, new_file_tags)
     ]
     return [*deduped_file_tags, *new_file_tags]
 
@@ -136,7 +139,9 @@ def _filter_file_tags(
     prev_file_tags: list[FileTag], tags_to_remove: list[FileTag]
 ) -> list[FileTag]:
     return [
-        tag for tag in prev_file_tags if _check_file_tag_included(tag, tags_to_remove)
+        tag
+        for tag in prev_file_tags
+        if not _check_file_tag_included(tag, tags_to_remove)
     ]
 
 
@@ -147,10 +152,12 @@ def add_file_tags(uuid: str, file_tags: list[FileTag]):
         entity_file_model = PartialEntityWithFiles.model_validate(entity.value)
         # If a file with this path already exists, remove it from the list.
 
-        entity.value["fileTags"] = _merge_file_tags(
-            entity_file_model.file_tags, file_tags
-        )
+        entity.value["fileTags"] = [
+            t.model_dump()
+            for t in _merge_file_tags(entity_file_model.file_tags, file_tags)
+        ]
         entity.save()
+    return entity
 
 
 def remove_file_tags(uuid: str, file_tags: list[FileTag]):
@@ -161,7 +168,9 @@ def remove_file_tags(uuid: str, file_tags: list[FileTag]):
         entity_file_model = PartialEntityWithFiles.model_validate(entity.value)
         # If a file with this path already exists, remove it from the list.
 
-        entity.value["fileTags"] = _filter_file_tags(
-            entity_file_model.file_tags, file_tags
-        )
+        entity.value["fileTags"] = [
+            t.model_dump()
+            for t in _filter_file_tags(entity_file_model.file_tags, file_tags)
+        ]
         entity.save()
+    return entity

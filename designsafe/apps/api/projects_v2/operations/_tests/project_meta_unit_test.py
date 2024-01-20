@@ -6,7 +6,13 @@ from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     create_project_metdata,
     create_entity_metadata,
+    add_file_associations,
+    remove_file_associations,
+    add_file_tags,
+    remove_file_tags,
     ProjectMetadata,
+    FileObj,
+    FileTag,
 )
 from designsafe.apps.api.projects_v2.operations.graph_operations import (
     initialize_project_graph,
@@ -239,3 +245,96 @@ def test_graph_node_reorder():
     assert nx_graph.nodes[new_node_4]["order"] == 1
     assert nx_graph.nodes[new_node_2]["order"] == 2
     assert nx_graph.nodes[new_node_5]["order"] == 3
+
+
+@pytest.mark.django_db
+def test_add_file_associations():
+    project_value = {
+        "title": "Test Project",
+        "projectId": "PRJ-1234",
+        "users": [],
+        "projectType": "experimental",
+    }
+    entity_value = {
+        "title": "Test Entity",
+        "description": "Entity with file associations",
+    }
+    create_project_metdata(project_value)
+
+    entity_meta = create_entity_metadata(
+        "PRJ-1234", name=constants.EXPERIMENT_EVENT, value=entity_value
+    )
+
+    file_objs = [
+        FileObj(
+            system="project.system", name="file1", path="/path/to/file1", type="file"
+        ),
+        FileObj(
+            system="project.system", name="file2", path="/path/to/file2", type="file"
+        ),
+    ]
+
+    assert len(entity_meta.value["fileObjs"]) == 0
+    updated_entity = add_file_associations(entity_meta.uuid, file_objs)
+
+    assert len(updated_entity.value["fileObjs"]) == 2
+
+    more_file_objs = [
+        FileObj(
+            system="project.system", name="file2", path="/path/to/file2", type="file"
+        ),
+        FileObj(
+            system="project.system", name="file3", path="/path/to/file3", type="file"
+        ),
+    ]
+    updated_entity = add_file_associations(entity_meta.uuid, more_file_objs)
+
+    assert len(updated_entity.value["fileObjs"]) == 3
+
+    updated_entity = remove_file_associations(
+        entity_meta.uuid, ["/path/to/file1", "/path/to/file2", "/path/to/file3"]
+    )
+    assert len(updated_entity.value["fileObjs"]) == 0
+
+
+@pytest.mark.django_db
+def test_add_file_tags():
+    project_value = {
+        "title": "Test Project",
+        "projectId": "PRJ-1234",
+        "users": [],
+        "projectType": "experimental",
+    }
+    entity_value = {
+        "title": "Test Entity",
+        "description": "Entity with file associations",
+    }
+    create_project_metdata(project_value)
+
+    entity_meta = create_entity_metadata(
+        "PRJ-1234", name=constants.EXPERIMENT_EVENT, value=entity_value
+    )
+
+    file_tags = [
+        FileTag(tag_name="tag1", path="/path/to/file1"),
+        FileTag(tag_name="tag2", path="/path/to/file1"),
+        FileTag(tag_name="tag1", path="/path/to/file2"),
+    ]
+
+    assert len(entity_meta.value["fileTags"]) == 0
+    updated_entity = add_file_tags(entity_meta.uuid, file_tags)
+
+    assert len(updated_entity.value["fileTags"]) == 3
+
+    more_file_tags = [
+        FileTag(tag_name="tag1", path="/path/to/file1"),
+        FileTag(tag_name="tag2", path="/path/to/file1"),
+        FileTag(tag_name="tag2", path="/path/to/file2"),
+    ]
+    updated_entity = add_file_tags(entity_meta.uuid, more_file_tags)
+
+    assert len(updated_entity.value["fileTags"]) == 4
+
+    updated_entity = remove_file_tags(entity_meta.uuid, (file_tags + more_file_tags))
+
+    assert len(updated_entity.value["fileTags"]) == 0

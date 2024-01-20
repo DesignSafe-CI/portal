@@ -137,7 +137,7 @@ class FileObj(MetadataModel):
     system: str
     name: str
     path: str
-    type: str
+    type: Literal["file", "dir"]
     length: Optional[int] = None
     last_modified: Optional[str] = None
     uuid: Optional[str] = None
