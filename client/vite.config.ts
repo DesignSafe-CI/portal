@@ -2,7 +2,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import fs from 'fs';
 
 export default defineConfig({
   root: __dirname,
@@ -10,11 +9,7 @@ export default defineConfig({
 
   server: {
     port: 4200,
-    host: 'designsafe.dev',
-    https: {
-      key: fs.readFileSync('../conf/nginx/certificates/designsafe.dev.key'),
-      cert: fs.readFileSync('../conf/nginx/certificates/designsafe.dev.crt'),
-    },
+    origin: 'designsafe.dev',
   },
 
   preview: {
