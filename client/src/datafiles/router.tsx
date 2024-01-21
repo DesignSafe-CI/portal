@@ -5,25 +5,40 @@ import {
   Navigate,
   useParams,
   NavigateProps,
+  generatePath,
   useLocation,
 } from 'react-router-dom';
 
-const NavigateToUrlSafePath: React.FC<NavigateProps> = ({
+const NavigateToUrlSafePath: React.FC<NavigateProps & { to: string }> = ({
   to,
   relative,
   replace,
   state,
 }) => {
-  const { '*': splatPath } = useParams();
-  const location = useLocation();
-  const newPath = location.pathname.replace(
-    splatPath ?? '',
-    `${to}/${encodeURIComponent(splatPath ?? '')}`
-  );
+  const { '*': splatPath, ...params } = useParams();
 
   return (
     <Navigate
-      to={`${newPath}`}
+      to={generatePath(to, {
+        ...params,
+        path: encodeURIComponent(splatPath ?? ''),
+      })}
+      relative={relative}
+      replace={replace}
+      state={state}
+    />
+  );
+};
+
+const RedirectAgaveToTapis: React.FC<Omit<NavigateProps, 'to'>> = ({
+  relative,
+  replace,
+  state,
+}) => {
+  const location = useLocation();
+  return (
+    <Navigate
+      to={location.pathname.replace('agave', 'tapis')}
       relative={relative}
       replace={replace}
       state={state}
@@ -37,31 +52,26 @@ const datafilesRouter = createBrowserRouter(
       path: '/',
       element: (
         <div>
-          hello from datafiles, <Outlet />
+          hello from datafiles! <Outlet />
         </div>
       ),
       children: [
         {
           path: 'public-legacy',
-          element: <div>These are legacy publications</div>,
+          element: <Navigate to="/public/nees.public" replace />,
         },
         {
           path: 'public/nees.public',
-          element: (
-            <div>
-              NEES landing page <Outlet />
-            </div>
-          ),
           children: [
             {
               path: '',
-              element: <Navigate to="/public-legacy" />,
+              element: <div>NEES publication listing</div>,
             },
             {
               path: ':neesid',
               element: (
                 <div>
-                  NEES Project Landing Page <Outlet />
+                  NEES publication Landing Page <Outlet />
                 </div>
               ),
               children: [
@@ -71,16 +81,16 @@ const datafilesRouter = createBrowserRouter(
           ],
         },
         {
-          path: 'public/designsafe.storage.community',
-          element: <div>Community Data</div>,
+          path: 'public/designsafe.storage.community/*',
+          element: (
+            <NavigateToUrlSafePath
+              to="/tapis/designsafe.storage.community/:path"
+              replace
+            />
+          ),
         },
         {
           path: 'public',
-          element: (
-            <div>
-              Published Works <Outlet />
-            </div>
-          ),
           children: [
             {
               path: '',
@@ -100,7 +110,7 @@ const datafilesRouter = createBrowserRouter(
                 },
                 {
                   path: '*',
-                  element: <NavigateToUrlSafePath to="" />,
+                  element: <NavigateToUrlSafePath to=":path" replace />,
                 },
               ],
             },
@@ -109,19 +119,14 @@ const datafilesRouter = createBrowserRouter(
 
         {
           path: 'projects',
-          element: (
-            <div>
-              Projects Base <Outlet />
-            </div>
-          ),
           children: [
             {
               path: '',
               element: <div>Projects Listing</div>,
             },
             {
-              path: ':uuid/curation',
-              element: <div>Curation Pipeline</div>,
+              path: ':uuid/prepare-to-publish',
+              element: <div>Publication Pipeline</div>,
             },
             {
               path: ':uuid/preview',
@@ -145,30 +150,72 @@ const datafilesRouter = createBrowserRouter(
                 },
                 {
                   path: '*',
-                  element: <NavigateToUrlSafePath to="workdir" />,
+                  element: <NavigateToUrlSafePath to="workdir/:path" replace />,
                 },
               ],
             },
           ],
         },
         {
-          path: ':api/:system',
-          element: <Outlet />,
+          path: 'googledrive',
           children: [
             {
               path: ':path?',
-              element: <div>this is base file listing</div>,
+              element: <div>standard listing goes here</div>,
             },
             {
               path: '*',
-              element: <NavigateToUrlSafePath to="" />,
+              element: <NavigateToUrlSafePath to=":path" replace />,
+            },
+          ],
+        },
+        {
+          path: 'dropbox',
+          children: [
+            {
+              path: ':path?',
+              element: <div>standard listing goes here</div>,
+            },
+            {
+              path: '*',
+              element: <NavigateToUrlSafePath to=":path" replace />,
+            },
+          ],
+        },
+        {
+          path: 'box',
+          children: [
+            {
+              path: ':path?',
+              element: <div>standard listing goes here</div>,
+            },
+            {
+              path: '*',
+              element: <NavigateToUrlSafePath to=":path" replace />,
+            },
+          ],
+        },
+        {
+          path: 'agave/*',
+          element: <RedirectAgaveToTapis replace />,
+        },
+        {
+          path: ':api/:system',
+          children: [
+            {
+              path: ':path?',
+              element: <div>standard listing goes here</div>,
+            },
+            {
+              path: '*',
+              element: <NavigateToUrlSafePath to=":path" />,
             },
           ],
         },
       ],
     },
   ],
-  { basename: '/data/browser' }
+  { basename: '/data/browser/' }
 );
 
 export default datafilesRouter;
