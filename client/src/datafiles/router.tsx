@@ -1,4 +1,6 @@
 import React from 'react';
+import DataFilesRoot from './layouts/DataFilesRoot';
+
 import {
   createBrowserRouter,
   Outlet,
@@ -50,11 +52,7 @@ const datafilesRouter = createBrowserRouter(
   [
     {
       path: '/',
-      element: (
-        <div>
-          hello from datafiles! <Outlet />
-        </div>
-      ),
+      element: <DataFilesRoot />,
       children: [
         {
           path: 'public-legacy',
@@ -94,6 +92,10 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: '',
+              element: <Navigate to="designsafe.storage.published" replace />,
+            },
+            {
+              path: 'designsafe.storage.published',
               element: <div>Base Publication listing</div>,
             },
             {

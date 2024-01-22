@@ -95,7 +95,7 @@ Data Depot
     <base href="{% url 'designsafe_data:data_depot' %}">
 {% endblock %}
 {% block content %}
-    <div id="datafiles-root"></div>
+    <div id="datafiles-root" style="height:100%; display: flex;"></div>
 
     {%if not react_flag%}
     <div class="container dd-container">
