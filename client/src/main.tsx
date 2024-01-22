@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/router';
-import datafilesRouter from './datafiles/router';
+import datafilesRouter from './datafiles/datafilesRouter';
 
 const queryClient = new QueryClient();
 

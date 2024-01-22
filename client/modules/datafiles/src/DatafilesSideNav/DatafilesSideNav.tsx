@@ -48,6 +48,7 @@ export const DatafilesSideNav: React.FC = () => {
       </DataFilesNavLink>
 
       <hr style={{ margin: '0' }} />
+
       <DataFilesNavLink to="/public/nees.public">
         Published (NEES)
       </DataFilesNavLink>

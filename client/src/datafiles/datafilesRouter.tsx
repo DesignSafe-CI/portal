@@ -1,15 +1,25 @@
 import React from 'react';
-import DataFilesRoot from './layouts/DataFilesRoot';
+import DataFilesRoot from './layouts/DataFilesBaseLayout';
 
 import {
   createBrowserRouter,
-  Outlet,
   Navigate,
   useParams,
   NavigateProps,
   generatePath,
   useLocation,
 } from 'react-router-dom';
+import { ProjectPreviewLayout } from './layouts/projects/ProjectPreviewLayout';
+import { NEESListingLayout } from './layouts/nees/NeesListingLayout';
+import { NeesDetailLayout } from './layouts/nees/NeesDetailLayout';
+import { FileListingLayout } from './layouts/FileListingLayout';
+import { ProjectDetailLayout } from './layouts/projects/ProjectDetailLayout';
+import { PublishedDetailLayout } from './layouts/published/PublishedDetailLayout';
+import { PublishedListingLayout } from './layouts/published/PublishedListingLayout';
+import { ProjectListingLayout } from './layouts/projects/ProjectListingLayout';
+import { ProjectPipelineLayout } from './layouts/projects/ProjectPipelineLayout';
+import { ProjectCurationLayout } from './layouts/projects/ProjectCurationLayout';
+import { ProjectWorkdirLayout } from './layouts/projects/ProjectWorkdirLayout';
 
 const NavigateToUrlSafePath: React.FC<NavigateProps & { to: string }> = ({
   to,
@@ -63,18 +73,12 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: '',
-              element: <div>NEES publication listing</div>,
+              element: <NEESListingLayout />,
             },
             {
               path: ':neesid',
-              element: (
-                <div>
-                  NEES publication Landing Page <Outlet />
-                </div>
-              ),
-              children: [
-                { path: ':path', element: <div>NEES file listing</div> },
-              ],
+              element: <NeesDetailLayout />,
+              children: [{ path: ':path', element: <FileListingLayout /> }],
             },
           ],
         },
@@ -96,19 +100,15 @@ const datafilesRouter = createBrowserRouter(
             },
             {
               path: 'designsafe.storage.published',
-              element: <div>Base Publication listing</div>,
+              element: <PublishedListingLayout />,
             },
             {
               path: 'designsafe.storage.published/:projectId',
-              element: (
-                <div>
-                  Project Landing Page <Outlet />
-                </div>
-              ),
+              element: <PublishedDetailLayout />,
               children: [
                 {
                   path: ':path',
-                  element: <div>Publication Listing</div>,
+                  element: <FileListingLayout />,
                 },
                 {
                   path: '*',
@@ -124,31 +124,27 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: '',
-              element: <div>Projects Listing</div>,
+              element: <ProjectListingLayout />,
             },
             {
               path: ':uuid/prepare-to-publish',
-              element: <div>Publication Pipeline</div>,
+              element: <ProjectPipelineLayout />,
             },
             {
               path: ':uuid/preview',
-              element: <div>Publication Preview</div>,
+              element: <ProjectPreviewLayout />,
             },
             {
               path: ':uuid',
-              element: (
-                <div>
-                  Project Landing Page <Outlet />
-                </div>
-              ),
+              element: <ProjectDetailLayout />,
               children: [
                 {
                   path: 'curation/:path?',
-                  element: <div>Curation View</div>,
+                  element: <ProjectCurationLayout />,
                 },
                 {
                   path: 'workdir/:path?',
-                  element: <div>Working Directory View</div>,
+                  element: <ProjectWorkdirLayout />,
                 },
                 {
                   path: '*',
@@ -163,7 +159,7 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: ':path?',
-              element: <div>standard listing goes here</div>,
+              element: <FileListingLayout />,
             },
             {
               path: '*',
@@ -176,7 +172,7 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: ':path?',
-              element: <div>standard listing goes here</div>,
+              element: <FileListingLayout />,
             },
             {
               path: '*',
@@ -189,7 +185,7 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: ':path?',
-              element: <div>standard listing goes here</div>,
+              element: <FileListingLayout />,
             },
             {
               path: '*',
@@ -206,7 +202,7 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: ':path?',
-              element: <div>standard listing goes here</div>,
+              element: <FileListingLayout />,
             },
             {
               path: '*',
