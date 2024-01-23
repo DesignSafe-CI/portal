@@ -1,1 +1,36 @@
 /* You can add global styles to this file, and also import other style files */
+.ant-spin-nested-loading {
+  height: 100%;
+}
+
+.ant-spin-container {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.ant-table {
+  overflow: hidden;
+}
+
+.ant-table-container {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.ant-table-header th {
+  border-bottom: 1px solid black !important;
+}
+
+.ant-table-header {
+  flex: none;
+}
+
+.ant-table-body {
+  overflow: scroll;
+}
+
+.ant-table-pagination {
+  flex: none;
+}

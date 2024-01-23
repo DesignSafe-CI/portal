@@ -23,6 +23,7 @@ metrics = logging.getLogger('metrics')
 def get_client(user, api):
     client_mappings = {
         'agave': 'agave_oauth',
+        'tapis': 'agave_oauth',
         'shared': 'agave_oauth',
         'googledrive': 'googledrive_user_token',
         'box': 'box_user_token',
@@ -56,7 +57,7 @@ class DataFilesView(BaseApiView):
                 client = get_client(request.user, api)
             except AttributeError:
                 raise resource_unconnected_handler(api)
-        elif api == 'agave':
+        elif api == 'agave' or api == 'tapis':
             client = service_account()
         else:
             return JsonResponse({'message': 'Please log in to access this feature.'}, status=403)

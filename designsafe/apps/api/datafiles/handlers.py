@@ -21,6 +21,7 @@ notify_actions = ['move', 'copy', 'rename', 'trash', 'mkdir', 'upload']
 
 operations_mapping = {
     'agave': agave_operations,
+    'tapis': agave_operations,
     'googledrive': googledrive_operations,
     'box': box_operations,
     'dropbox': dropbox_operations,

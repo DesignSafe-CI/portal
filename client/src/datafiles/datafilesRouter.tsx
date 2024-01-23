@@ -158,6 +158,7 @@ const datafilesRouter = createBrowserRouter(
           path: 'googledrive',
           children: [
             {
+              id: 'googledrive',
               path: ':path?',
               element: <FileListingLayout />,
             },
@@ -172,6 +173,7 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: ':path?',
+              id: 'dropbox',
               element: <FileListingLayout />,
             },
             {
@@ -185,6 +187,7 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: ':path?',
+              id: 'box',
               element: <FileListingLayout />,
             },
             {
@@ -202,6 +205,7 @@ const datafilesRouter = createBrowserRouter(
           children: [
             {
               path: ':path?',
+              id: 'tapis',
               element: <FileListingLayout />,
             },
             {
