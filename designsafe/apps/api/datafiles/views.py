@@ -57,7 +57,9 @@ class DataFilesView(BaseApiView):
                 client = get_client(request.user, api)
             except AttributeError:
                 raise resource_unconnected_handler(api)
-        elif api == 'agave' and system in (settings.COMMUNITY_SYSTEM, settings.PUBLISHED_SYSTEM):
+        elif api == 'agave' and system in (settings.COMMUNITY_SYSTEM, 
+                                           settings.PUBLISHED_SYSTEM, 
+                                           settings.NEES_PUBLIC_SYSTEM):
             client = service_account()
         else:
             return JsonResponse({'message': 'Please log in to access this feature.'}, status=403)
