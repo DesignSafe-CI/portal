@@ -23,17 +23,10 @@ class AppTrayEntry(models.Model):
         help_text="The App Category for this app entry",
         on_delete=models.CASCADE
     )
-    relatedApps = models.ManyToManyField("self", help_text="Related apps that will display on app overview page", blank=True)
-    popular = models.BooleanField(help_text='Mark as popular on tools & apps overview', default=True)
+    popular = models.BooleanField(help_text='Mark as popular on tools & apps overview', default=False)
     licenseType = models.CharField(max_length=2, choices=LICENSE_TYPES, help_text='License Type', default='OS')
 
-    overview = models.ForeignKey(
-        CMSPage,
-        related_name="+",
-        help_text="The overview page for this app entry. Leave blank if none exists.",
-        on_delete=models.CASCADE,
-        blank=True
-    )
+    overview = models.CharField(help_text='Link to overview page for this app.', max_length=128, blank=True)
 
     available = models.BooleanField(help_text='App visibility in app tray', default=True)
 
@@ -47,6 +40,8 @@ class AppItem(AppTrayEntry):
     """
     Note: uniqueness must be appId + version (even if version does not exist)
     """
+
+    relatedApps = models.ManyToManyField("self", help_text="Related apps that will display on app overview page", blank=True)
 
     appType = models.CharField(help_text='Application type', max_length=10, choices=APP_TYPES, default='tapis')
 
@@ -73,7 +68,9 @@ class AppBundle(AppTrayEntry):
     2) a binned app in the apps workspace, where each related app (bundledApps) is a dropdown item.
     """
 
-    bundledApps = models.ManyToManyField(AppItem, help_text="Related apps that will display on app overview page", blank=True)
+    relatedApps = models.ManyToManyField(AppItem, related_name="+", help_text="Related apps that will display on app overview page", blank=True)
+
+    bundledApps = models.ManyToManyField(AppItem, related_name="+", help_text="Apps that will be bundled together", blank=True)
 
     def __str__(self):
         return "%s%s%s" % (
