@@ -73,7 +73,7 @@ class AppBundle(AppTrayEntry):
     2) a binned app in the apps workspace, where each related app (bundledApps) is a dropdown item.
     """
 
-    bundledApps = models.ManyToManyField("self", help_text="Related apps that will display on app overview page", blank=True)
+    bundledApps = models.ManyToManyField(AppItem, help_text="Related apps that will display on app overview page", blank=True)
 
     def __str__(self):
         return "%s%s%s" % (
