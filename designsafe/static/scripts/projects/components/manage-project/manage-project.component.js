@@ -218,14 +218,14 @@ class ManageProjectCtrl {
         }
         if (hasPrjType) {
             projectData.guestMembers = this.validInputs(this.form.guestMembers, ['fname', 'lname']);
-            projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number']);
+            projectData.awardNumber = this.validInputs(this.form.awardNumber, ['name', 'number', 'fundingSource']);
             if (this.form.projectType === 'other') {
                 projectData.associatedProjects = this.validInputs(this.form.associatedProjects, ['title', 'href']);
                 projectData.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
 
                 const facilities = this.form.facilities.filter((fac) => fac && !!fac.id).map((fac) => {
                     if (fac.id === 'other') {
-                        return {id: 'other', name: fac.name}
+                        return {id: 'other', name: fac.name ?? ""}
                     } else {
                         return {id: fac.id, name: this.ui.facilities.find((f) => f.name === fac.id).label}
                     }

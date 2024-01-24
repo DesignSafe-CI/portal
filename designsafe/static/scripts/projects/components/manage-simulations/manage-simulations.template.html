@@ -85,7 +85,7 @@
                         ng-model="$ctrl.form.facility.id">
                         <option value="">-- Select a Facility --</option>
                     </select>
-                    <input class="form-control" type="text" placeholder="Custom Facility" style="margin-left: 5px"
+                    <input class="form-control" ng-required="true" type="text" placeholder="Custom Facility" style="margin-left: 5px"
                         ng-model="$ctrl.form.facility.name" ng-if="$ctrl.form.facility.id == 'other'" />
                 </div>
             </div>

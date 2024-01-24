@@ -280,6 +280,7 @@
                     type="text"
                     style="margin-left: 5px"
                     placeholder="Custom Facility"
+                    ng-required="true"
                     ng-model="$ctrl.form.facilities[$index].name"
                     ng-if="$ctrl.form.facilities[$index].id == 'other'"/>
                 </div>
@@ -540,8 +541,9 @@
                 <div class="form-group">
                     <table class="manage-prj-table">
                         <colgroup>
-                            <col style="width: 60%">
-                            <col style="width: 38%">
+                            <col style="width: 40%">
+                            <col style="width: 30%">
+                            <col style="width: 28%">
                             <col style="width: 2%">
                         </colgroup>
                         <tr>
@@ -563,6 +565,9 @@
                             <td>
                                 Award Number
                             </td>
+                            <td>
+                                Funding Source
+                            </td>
                         </tr>
                         <tr ng-repeat="award in $ctrl.form.awardNumber track by $index">
                             <td class="manage-prj-td">
@@ -581,6 +586,16 @@
                                         id="award-number{{$index}}"
                                         name="award-number"
                                         ng-model="award.number"
+                                        ng-disabled="!$ctrl.ui.require.awardNumber"
+                                        ng-required="$ctrl.ui.require.awardNumber"
+                                        required>
+                            </td>
+                            <td class="manage-prj-td">
+                                <input  class="project-form-input"
+                                        type="text"
+                                        id="award-funder{{$index}}"
+                                        name="award-funder"
+                                        ng-model="award.fundingSource"
                                         ng-disabled="!$ctrl.ui.require.awardNumber"
                                         ng-required="$ctrl.ui.require.awardNumber"
                                         required>

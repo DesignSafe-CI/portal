@@ -103,7 +103,8 @@ class Simulation(RelatedEntity):
             for award in awards:
                 attributes['fundingReferences'].append({
                     'awardTitle': award['name'],
-                    'awardNumber': award['number']
+                    'awardNumber': award['number'],
+                    "funderName": award.get("fundingSource", "N/A"),
                     })
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
