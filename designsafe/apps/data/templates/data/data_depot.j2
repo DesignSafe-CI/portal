@@ -126,19 +126,3 @@ Data Depot
     {% endif %}
     {% endaddtoblock %}
 {% endblock %}
-
-{% addtoblock "js" %}
-{% if debug and react_flag %}
-<script type="module">
-    import RefreshRuntime from 'http://localhost:4200/static/@react-refresh';
-    RefreshRuntime.injectIntoGlobalHook(window);
-    window.$RefreshReg$ = () => {};
-    window.$RefreshSig$ = () => (type) => type;
-    window.__vite_plugin_react_preamble_installed__ = true;
-  </script>
-  <script type="module" src="http://localhost:4200/static/@vite/client"></script>
-  <script type="module" src="http://localhost:4200/static/src/main.tsx"></script>
-{% else %}
-<!--TODO: setup non-dev static import for React code-->
-{% endif %}
-{% endaddtoblock %}

@@ -3,11 +3,32 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Table, TableColumnsType } from 'antd';
 import { useFileListing, TFileListing } from '@client/hooks';
 
+function toBytes(bytes?: number, precision: number = 1) {
+  if (bytes === 0) return '0 bytes';
+  if (!bytes) return '-';
+  const units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
+  const orderOfMagnitude = Math.floor(Math.log(bytes) / Math.log(1000));
+  const bytesInUnits = bytes / Math.pow(1000, orderOfMagnitude);
+  return `${bytesInUnits.toFixed(precision)} ${units[orderOfMagnitude]}`;
+}
+
+const columns: TableColumnsType<TFileListing> &
+  { dataIndex: keyof TFileListing }[] = [
+  { title: 'File Name', dataIndex: 'name', width: '50%' },
+  { title: 'Size', dataIndex: 'length', render: (d) => toBytes(d) },
+  {
+    title: 'Last Modified',
+    dataIndex: 'lastModified',
+    render: (d) => new Date(d).toLocaleString(),
+  },
+];
+
 export const FileListing: React.FC<{
   api: string;
   system?: string;
   path?: string;
-}> = ({ api, system, path }) => {
+  scheme?: string;
+}> = ({ api, system, path = '', scheme = 'private' }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 20;
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
@@ -15,7 +36,7 @@ export const FileListing: React.FC<{
       api,
       system: system ?? '-',
       path: path ?? '',
-      scheme: 'private',
+      scheme,
       pageSize: limit,
     });
 
@@ -28,17 +49,6 @@ export const FileListing: React.FC<{
       setTotalItems((data?.pages.length ?? 0) * limit);
     }
   }, [data, hasNextPage]);
-
-  const columns: TableColumnsType<TFileListing> &
-    { dataIndex: keyof TFileListing }[] = [
-    { title: 'File Name', dataIndex: 'name', width: '50%' },
-    { title: 'Size', dataIndex: 'length' },
-    {
-      title: 'Last Modified',
-      dataIndex: 'lastModified',
-      render: (d) => new Date(d).toLocaleString(),
-    },
-  ];
 
   const onPageChange = (page: number) => {
     const loadedPages = data?.pages.length ?? 0;
@@ -76,6 +86,7 @@ export const FileListing: React.FC<{
         current: currentPage,
         total: totalItems,
         showSizeChanger: false,
+        style: { marginTop: 'auto', paddingTop: '16px' },
         onChange: onPageChange,
       }}
       loading={isLoading || isFetchingNextPage}

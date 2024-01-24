@@ -1,2 +1,3 @@
-export { default as useFileListing } from './UseFileListing';
-export type { FileListingResponse, TFileListing } from './UseFileListing';
+export { default as useFileListing } from './useFileListing';
+export type { FileListingResponse, TFileListing } from './useFileListing';
+export { default as useFileListingRouteParams } from './useFileListingRouteParams';

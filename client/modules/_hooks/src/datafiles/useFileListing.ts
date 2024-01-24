@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
+import { AxiosError } from 'axios';
 
 export type TFileListing = {
   system: string;
@@ -51,7 +52,10 @@ function useFileListing({
   scheme = 'private',
   pageSize = 100,
 }: TFileListingHookArgs) {
-  return useInfiniteQuery<FileListingResponse>({
+  return useInfiniteQuery<
+    FileListingResponse,
+    AxiosError<{ message?: string }>
+  >({
     initialPageParam: 0,
     queryKey: ['datafiles', 'fileListing', api, system, path],
     queryFn: ({ pageParam, signal }) =>
@@ -61,6 +65,9 @@ function useFileListing({
     getNextPageParam: (lastPage, allpages) => {
       return lastPage.listing.length >= pageSize ? allpages.length : null;
     },
+    retry: (failureCount, error) =>
+      // only retry on 5XX errors
+      (error.response?.status ?? 0) > 500 && failureCount < 3,
   });
 }
 

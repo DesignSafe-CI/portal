@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './DatafilesSideNav.module.css';
+import { useAuthenticatedUser } from '@client/hooks';
 
 const DataFilesNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
   to,
@@ -16,6 +17,7 @@ const DataFilesNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
 };
 
 export const DatafilesSideNav: React.FC = () => {
+  const { user } = useAuthenticatedUser();
   return (
     <ul
       style={{
@@ -24,24 +26,32 @@ export const DatafilesSideNav: React.FC = () => {
         paddingLeft: '0px',
       }}
     >
-      <DataFilesNavLink to="/tapis/designsafe.storage.default">
-        My Data
-      </DataFilesNavLink>
-      <DataFilesNavLink to="/tapis/designsafe.storage.work">
-        My Data (Work)
-      </DataFilesNavLink>
-      <DataFilesNavLink to="/projects">My Projects</DataFilesNavLink>
-      <DataFilesNavLink to="/shared/designsafe.storage.default">
-        Shared with Me
-      </DataFilesNavLink>
+      {user && (
+        <>
+          <DataFilesNavLink
+            to={`/tapis/designsafe.storage.default/${user.username}`}
+          >
+            My Data
+          </DataFilesNavLink>
+          <DataFilesNavLink
+            to={`/tapis/designsafe.storage.work/${user.username}`}
+          >
+            My Data (Work)
+          </DataFilesNavLink>
+          <DataFilesNavLink to="/projects">My Projects</DataFilesNavLink>
+          <DataFilesNavLink to="/shared/designsafe.storage.default">
+            Shared with Me
+          </DataFilesNavLink>
 
-      <hr style={{ margin: '0' }} />
+          <hr style={{ margin: '0' }} />
 
-      <DataFilesNavLink to="/box">Box.com</DataFilesNavLink>
-      <DataFilesNavLink to="/dropbox">Dropbox.com</DataFilesNavLink>
-      <DataFilesNavLink to="/googledrive">Google Drive</DataFilesNavLink>
+          <DataFilesNavLink to="/box">Box.com</DataFilesNavLink>
+          <DataFilesNavLink to="/dropbox">Dropbox.com</DataFilesNavLink>
+          <DataFilesNavLink to="/googledrive">Google Drive</DataFilesNavLink>
 
-      <hr style={{ margin: '0' }} />
+          <hr style={{ margin: '0' }} />
+        </>
+      )}
 
       <DataFilesNavLink to="/public/designsafe.storage.published">
         Published

@@ -137,6 +137,14 @@
                 </div>")
         }
     </script>
+    <script type="module">
+        window.__authenticatedUser__ = "{{request.user.is_authenticated}}" === 'True' && {
+            username: "{{request.user.username}}",
+            firstName: "{{ request.user.first_name }}",
+            lastName: "{{ request.user.last_name }}",
+            email: "{{ request.user.email }}",
+        };
+    </script>
 
     <script type="module" id="js-open-pdfs-ext-links-new-window">
     import findLinksAndSetTargets from 'https://cdn.jsdelivr.net/gh/TACC/Core-CMS@v3.11.0-alpha.1/taccsite_cms/static/site_cms/js/modules/setTargetForExternalLinks.js';
