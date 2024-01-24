@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 //import styles from './FileListing.module.css';
 import { Table, TableColumnsType } from 'antd';
 import { useFileListing, TFileListing } from '@client/hooks';
+import { NavLink } from 'react-router-dom';
 
 function toBytes(bytes?: number, precision: number = 1) {
   if (bytes === 0) return '0 bytes';
@@ -14,7 +15,24 @@ function toBytes(bytes?: number, precision: number = 1) {
 
 const columns: TableColumnsType<TFileListing> &
   { dataIndex: keyof TFileListing }[] = [
-  { title: 'File Name', dataIndex: 'name', width: '50%' },
+  {
+    title: 'File Name',
+    dataIndex: 'name',
+    width: '50%',
+    render: (data, record) =>
+      record.type === 'dir' ? (
+        <NavLink
+          to={`/tapis/designsafe.storage.default/${encodeURIComponent(
+            record.path.slice(1)
+          )}`}
+          replace={false}
+        >
+          {data}
+        </NavLink>
+      ) : (
+        data
+      ),
+  },
   { title: 'Size', dataIndex: 'length', render: (d) => toBytes(d) },
   {
     title: 'Last Modified',
@@ -29,8 +47,10 @@ export const FileListing: React.FC<{
   path?: string;
   scheme?: string;
 }> = ({ api, system, path = '', scheme = 'private' }) => {
-  const [currentPage, setCurrentPage] = useState(1);
   const limit = 20;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
+
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useFileListing({
       api,
@@ -39,24 +59,6 @@ export const FileListing: React.FC<{
       scheme,
       pageSize: limit,
     });
-
-  const [totalItems, setTotalItems] = useState<number>(0);
-  useEffect(() => {
-    if (data?.pages.length && hasNextPage) {
-      setTotalItems(data.pages.length * limit + 1);
-    }
-    if (!hasNextPage) {
-      setTotalItems((data?.pages.length ?? 0) * limit);
-    }
-  }, [data, hasNextPage]);
-
-  const onPageChange = (page: number) => {
-    const loadedPages = data?.pages.length ?? 0;
-    if (page > loadedPages) {
-      fetchNextPage();
-    }
-    setCurrentPage(page);
-  };
 
   const combinedListing = useMemo(
     () =>
@@ -67,10 +69,26 @@ export const FileListing: React.FC<{
     [data?.pages]
   );
 
+  const onPageChange = (page: number) => {
+    const loadedPages = data?.pages.length ?? 0;
+    if (page > loadedPages) {
+      fetchNextPage();
+    }
+    setCurrentPage(page);
+  };
+
+  useEffect(() => {
+    if (data?.pages.length && hasNextPage) {
+      setTotalItems(data.pages.length * limit + 1);
+    }
+    if (!hasNextPage) {
+      setTotalItems((data?.pages.length ?? 0) * limit);
+    }
+  }, [data, hasNextPage]);
+
   // reset the listing if the parameters change.
   useEffect(() => {
     setCurrentPage(1);
-    //setTotalItems(0);
   }, [api, system, path]);
 
   return (

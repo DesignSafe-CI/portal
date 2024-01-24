@@ -28,14 +28,10 @@ export const DatafilesSideNav: React.FC = () => {
     >
       {user && (
         <>
-          <DataFilesNavLink
-            to={`/tapis/designsafe.storage.default/${user.username}`}
-          >
+          <DataFilesNavLink to={`/tapis/designsafe.storage.default`}>
             My Data
           </DataFilesNavLink>
-          <DataFilesNavLink
-            to={`/tapis/designsafe.storage.work/${user.username}`}
-          >
+          <DataFilesNavLink to={`/tapis/designsafe.storage.frontera.work`}>
             My Data (Work)
           </DataFilesNavLink>
           <DataFilesNavLink to="/projects">My Projects</DataFilesNavLink>
