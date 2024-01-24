@@ -3,6 +3,7 @@ import logging
 from boxsdk.exception import BoxOAuthException
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from designsafe.apps.api.datafiles.handlers import datafiles_get_handler, datafiles_post_handler, datafiles_put_handler, resource_unconnected_handler, resource_expired_handler
 from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
 from designsafe.apps.api.datafiles.notifications import notify
@@ -56,7 +57,9 @@ class DataFilesView(BaseApiView):
                 client = get_client(request.user, api)
             except AttributeError:
                 raise resource_unconnected_handler(api)
-        elif api == 'agave':
+        elif api == 'agave' and system in (settings.COMMUNITY_SYSTEM, 
+                                           settings.PUBLISHED_SYSTEM, 
+                                           settings.NEES_PUBLIC_SYSTEM):
             client = service_account()
         else:
             return JsonResponse({'message': 'Please log in to access this feature.'}, status=403)
