@@ -3,6 +3,15 @@
   height: 100%;
 }
 
+.ant-spin.ant-spin.ant-spin {
+  max-height: 100%;
+}
+
+.table--pull-spinner-bottom .ant-spin.ant-spin {
+  height: fit-content;
+  top: calc(100% - 20px);
+}
+
 .ant-spin-container {
   height: 100%;
   display: flex;
@@ -11,6 +20,10 @@
 
 .ant-table {
   overflow: hidden;
+}
+
+.ant-table .ant-table-body .ant-table-placeholder > td {
+  border-bottom-color: transparent;
 }
 
 .ant-table-container {

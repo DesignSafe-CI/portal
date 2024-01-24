@@ -9,6 +9,7 @@ export const FileListingLayout: React.FC = () => {
   const { user } = useAuthenticatedUser();
   if (
     !path &&
+    api === 'tapis' &&
     ['designsafe.storage.default', 'designsafe.storage.frontera.work'].includes(
       system
     )
@@ -17,7 +18,13 @@ export const FileListingLayout: React.FC = () => {
   }
   return (
     <Layout style={{ backgroundColor: 'transparent' }}>
-      <Layout.Content style={{ display: 'flex', flexDirection: 'column' }}>
+      <Layout.Content
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          paddingBottom: '16px',
+        }}
+      >
         <div style={{ flex: '1 0 0', overflow: 'auto' }}>
           <FileListing api={api} system={system} path={path} scheme={scheme} />
         </div>

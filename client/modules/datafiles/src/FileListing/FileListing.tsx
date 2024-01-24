@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 //import styles from './FileListing.module.css';
 import { Table, TableColumnsType } from 'antd';
 import { useFileListing, TFileListing } from '@client/hooks';
@@ -48,8 +48,10 @@ export const FileListing: React.FC<{
   scheme?: string;
 }> = ({ api, system, path = '', scheme = 'private' }) => {
   const limit = 20;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState<number>(0);
+  const tableRef = useRef<{
+    nativeElement: HTMLDivElement;
+    scrollTo: () => null;
+  }>(null);
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useFileListing({
@@ -69,51 +71,52 @@ export const FileListing: React.FC<{
     [data?.pages]
   );
 
-  const onPageChange = (page: number) => {
-    const loadedPages = data?.pages.length ?? 0;
-    if (page > loadedPages) {
-      fetchNextPage();
-    }
-    setCurrentPage(page);
-  };
+  const scrollEvent = useCallback(
+    (evt: Event) => {
+      const target = evt?.target as HTMLElement;
+      const reachedBottom =
+        target.scrollTop === target.scrollHeight - target.offsetHeight;
+      console.log(reachedBottom);
+      console.log(hasNextPage);
+      if (reachedBottom && hasNextPage && !(isLoading || isFetchingNextPage)) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isLoading, isFetchingNextPage, fetchNextPage]
+  );
 
   useEffect(() => {
-    if (data?.pages.length && hasNextPage) {
-      setTotalItems(data.pages.length * limit + 1);
-    }
-    if (!hasNextPage) {
-      setTotalItems((data?.pages.length ?? 0) * limit);
-    }
-  }, [data, hasNextPage]);
+    const tableBody =
+      tableRef.current?.nativeElement.getElementsByClassName(
+        'ant-table-body'
+      )[0];
+    tableBody && tableBody.addEventListener('scroll', scrollEvent);
 
-  // reset the listing if the parameters change.
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [api, system, path]);
+    return () => {
+      tableBody && tableBody.removeEventListener('scroll', scrollEvent);
+    };
+  }, [tableRef, scrollEvent]);
 
   return (
     <Table
+      ref={tableRef}
+      className={`${
+        (combinedListing?.length ?? 0) > 0 ? 'table--pull-spinner-bottom' : ''
+      }`}
       style={{ height: '100%' }}
       rowSelection={{ type: 'checkbox' }}
       scroll={{ y: '100%', x: '500px' }}
       columns={columns}
       rowKey={(record) => record.path}
       dataSource={combinedListing}
-      pagination={{
-        pageSize: limit,
-        current: currentPage,
-        total: totalItems,
-        showSizeChanger: false,
-        style: { marginTop: 'auto', paddingTop: '16px' },
-        onChange: onPageChange,
-      }}
+      pagination={false}
       loading={isLoading || isFetchingNextPage}
       locale={{
         emptyText:
           isLoading || isFetchingNextPage ? (
-            <div style={{ flex: '1' }} />
+            <div style={{ display: 'none' }}>sup</div>
           ) : (
-            'No files to list.'
+            <div style={{ display: 'none' }}>sup</div>
           ),
       }}
     >
