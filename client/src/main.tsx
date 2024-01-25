@@ -23,6 +23,11 @@ const themeConfig: ThemeConfig = {
       borderColor: 'rgb(215, 215, 215)',
       colorText: 'rgb(112, 112, 112)',
     },
+    Layout: {
+      triggerBg: "#136ac9",
+      lightTriggerBg: "#136ac9",
+      lightTriggerColor: "rgb(230, 246, 255)",
+    },
     Menu: {
       itemHeight: 60,
       itemMarginInline: 0,

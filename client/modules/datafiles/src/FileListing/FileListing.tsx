@@ -24,6 +24,7 @@ const columns: TableColumnsType<TFileListing> &
   {
     title: 'File Name',
     dataIndex: 'name',
+    ellipsis: true,
     width: '50%',
     render: (data, record) =>
       record.type === 'dir' ? (
@@ -38,6 +39,7 @@ const columns: TableColumnsType<TFileListing> &
   {
     title: 'Last Modified',
     dataIndex: 'lastModified',
+    ellipsis: true,
     render: (d) => new Date(d).toLocaleString(),
   },
 ];

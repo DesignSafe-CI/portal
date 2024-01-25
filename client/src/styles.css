@@ -47,3 +47,15 @@
 .ant-table-pagination {
   flex: none;
 }
+
+.ant-layout-sider-collapsed {
+  margin-right: 30px;
+}
+.ant-layout-sider-collapsed .ant-layout-sider-zero-width-trigger {
+  right: -20px !important;
+}
+
+.ant-layout-sider-zero-width-trigger {
+  right: 0px !important;
+  top: 20px !important;
+}
