@@ -25,7 +25,7 @@ export const FileListingLayout: React.FC = () => {
           paddingBottom: '16px',
         }}
       >
-        <div style={{ flex: '1 0 0', overflow: 'auto' }}>
+        <div style={{ flex: '1 0 0', maxHeight: "1000px", overflow: 'auto' }}>
           <FileListing api={api} system={system} path={path} scheme={scheme} />
         </div>
       </Layout.Content>

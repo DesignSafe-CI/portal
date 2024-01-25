@@ -1,15 +1,21 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 //import styles from './FileListing.module.css';
 import { Table, TableColumnsType } from 'antd';
 import { useFileListing, TFileListing } from '@client/hooks';
 import { NavLink } from 'react-router-dom';
 
-function toBytes(bytes?: number, precision: number = 1) {
+type TableRef = {
+  nativeElement: HTMLDivElement;
+  scrollTo: (config: { index?: number; key?: React.Key; top?: number }) => void;
+};
+
+function toBytes(bytes?: number) {
   if (bytes === 0) return '0 bytes';
   if (!bytes) return '-';
   const units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
-  const orderOfMagnitude = Math.floor(Math.log(bytes) / Math.log(1000));
-  const bytesInUnits = bytes / Math.pow(1000, orderOfMagnitude);
+  const orderOfMagnitude = Math.floor(Math.log(bytes) / Math.log(1024));
+  const precision = orderOfMagnitude === 0 ? 0 : 1;
+  const bytesInUnits = bytes / Math.pow(1024, orderOfMagnitude);
   return `${bytesInUnits.toFixed(precision)} ${units[orderOfMagnitude]}`;
 }
 
@@ -48,10 +54,9 @@ export const FileListing: React.FC<{
   scheme?: string;
 }> = ({ api, system, path = '', scheme = 'private' }) => {
   const limit = 20;
-  const tableRef = useRef<{
-    nativeElement: HTMLDivElement;
-    scrollTo: () => null;
-  }>(null);
+  const [scrollElement, setScrollElement] = useState<Element | undefined>(
+    undefined
+  );
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useFileListing({
@@ -76,8 +81,6 @@ export const FileListing: React.FC<{
       const target = evt?.target as HTMLElement;
       const reachedBottom =
         target.scrollTop === target.scrollHeight - target.offsetHeight;
-      console.log(reachedBottom);
-      console.log(hasNextPage);
       if (reachedBottom && hasNextPage && !(isLoading || isFetchingNextPage)) {
         fetchNextPage();
       }
@@ -85,21 +88,29 @@ export const FileListing: React.FC<{
     [hasNextPage, isLoading, isFetchingNextPage, fetchNextPage]
   );
 
-  useEffect(() => {
-    const tableBody =
-      tableRef.current?.nativeElement.getElementsByClassName(
-        'ant-table-body'
-      )[0];
-    tableBody && tableBody.addEventListener('scroll', scrollEvent);
+  const scrollRefCallback = useCallback(
+    (node: TableRef) => {
+      if (node !== null) {
+        const tableBody =
+          node.nativeElement.getElementsByClassName('ant-table-body')[0];
+        setScrollElement(tableBody);
+      }
+    },
+    [setScrollElement]
+  );
 
+  // Set and clean up scroll event listener on the table ref.
+  // Duplicate listeners will be set if they are added directly in the ref callback.
+  useEffect(() => {
+    scrollElement && scrollElement.addEventListener('scroll', scrollEvent);
     return () => {
-      tableBody && tableBody.removeEventListener('scroll', scrollEvent);
+      scrollElement && scrollElement.removeEventListener('scroll', scrollEvent);
     };
-  }, [tableRef, scrollEvent]);
+  }, [scrollElement, scrollEvent]);
 
   return (
     <Table
-      ref={tableRef}
+      ref={scrollRefCallback}
       className={`${
         (combinedListing?.length ?? 0) > 0 ? 'table--pull-spinner-bottom' : ''
       }`}
