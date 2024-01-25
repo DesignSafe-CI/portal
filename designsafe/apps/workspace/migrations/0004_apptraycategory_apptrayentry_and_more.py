@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
     dependencies = [
         (
             "workspace",
-            "0003_rename_appdescription_appdescription_appdescription_and_more",
+            "0002_auto_20200423_1940",
         ),
     ]
 
