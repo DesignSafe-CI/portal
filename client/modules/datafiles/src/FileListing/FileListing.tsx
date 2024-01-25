@@ -27,12 +27,7 @@ const columns: TableColumnsType<TFileListing> &
     width: '50%',
     render: (data, record) =>
       record.type === 'dir' ? (
-        <NavLink
-          to={`/tapis/designsafe.storage.default/${encodeURIComponent(
-            record.path.slice(1)
-          )}`}
-          replace={false}
-        >
+        <NavLink to={`../${encodeURIComponent(record.path)}`} replace={false}>
           {data}
         </NavLink>
       ) : (
@@ -53,7 +48,7 @@ export const FileListing: React.FC<{
   path?: string;
   scheme?: string;
 }> = ({ api, system, path = '', scheme = 'private' }) => {
-  const limit = 20;
+  const limit = 100;
   const [scrollElement, setScrollElement] = useState<Element | undefined>(
     undefined
   );
@@ -67,33 +62,19 @@ export const FileListing: React.FC<{
       pageSize: limit,
     });
 
-  const combinedListing = useMemo(
-    () =>
-      data?.pages.reduce<TFileListing[]>(
-        (acc, curr) => [...acc, ...curr.listing],
-        [] as TFileListing[]
-      ),
-    [data?.pages]
-  );
-
-  const scrollEvent = useCallback(
-    (evt: Event) => {
-      const target = evt?.target as HTMLElement;
-      const reachedBottom =
-        target.scrollTop === target.scrollHeight - target.offsetHeight;
-      if (reachedBottom && hasNextPage && !(isLoading || isFetchingNextPage)) {
-        fetchNextPage();
-      }
-    },
-    [hasNextPage, isLoading, isFetchingNextPage, fetchNextPage]
-  );
+  const combinedListing = useMemo(() => {
+    const cl: TFileListing[] = [];
+    data?.pages.forEach((page) => [cl.push(...page.listing)]);
+    return cl;
+  }, [data]);
 
   const scrollRefCallback = useCallback(
     (node: TableRef) => {
       if (node !== null) {
-        const tableBody =
-          node.nativeElement.getElementsByClassName('ant-table-body')[0];
-        setScrollElement(tableBody);
+        const lastRow = node.nativeElement.querySelectorAll(
+          '.ant-table-row:last-child'
+        )[0];
+        setScrollElement(lastRow);
       }
     },
     [setScrollElement]
@@ -102,11 +83,29 @@ export const FileListing: React.FC<{
   // Set and clean up scroll event listener on the table ref.
   // Duplicate listeners will be set if they are added directly in the ref callback.
   useEffect(() => {
-    scrollElement && scrollElement.addEventListener('scroll', scrollEvent);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (
+          entry.isIntersecting &&
+          hasNextPage &&
+          !(isFetchingNextPage || isLoading)
+        ) {
+          fetchNextPage();
+        }
+      });
+    });
+    scrollElement && observer.observe(scrollElement);
+
     return () => {
-      scrollElement && scrollElement.removeEventListener('scroll', scrollEvent);
+      observer.disconnect();
     };
-  }, [scrollElement, scrollEvent]);
+  }, [
+    scrollElement,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    isLoading,
+  ]);
 
   return (
     <Table
@@ -125,9 +124,9 @@ export const FileListing: React.FC<{
       locale={{
         emptyText:
           isLoading || isFetchingNextPage ? (
-            <div style={{ display: 'none' }}>sup</div>
+            <div style={{ display: 'none' }}></div>
           ) : (
-            <div style={{ display: 'none' }}>sup</div>
+            <div>Placeholder for empty data.</div>
           ),
       }}
     >

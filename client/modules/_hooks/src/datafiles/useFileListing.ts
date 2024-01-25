@@ -17,6 +17,7 @@ export type TFileListing = {
 export type FileListingResponse = {
   listing: TFileListing[];
   reachedEnd: boolean;
+  nextPageToken?: string;
 };
 
 async function getFileListing(
@@ -26,13 +27,14 @@ async function getFileListing(
   scheme: string = 'private',
   limit: number = 100,
   page: number = 0,
+  nextPageToken: string | undefined,
   { signal }: { signal: AbortSignal }
 ) {
   const offset = page * limit;
 
   const res = await apiClient.get<FileListingResponse>(
     `/api/datafiles/${api}/${scheme}/listing/${system}/${path}`,
-    { signal, params: { offset, limit } }
+    { signal, params: { offset, limit, nextPageToken } }
   );
   return res.data;
 }
@@ -43,6 +45,11 @@ type TFileListingHookArgs = {
   path: string;
   scheme: string;
   pageSize: number;
+};
+
+type TFileListingPageParam = {
+  page: number;
+  nextPageToken?: string;
 };
 
 function useFileListing({
@@ -59,11 +66,22 @@ function useFileListing({
     initialPageParam: 0,
     queryKey: ['datafiles', 'fileListing', api, system, path],
     queryFn: ({ pageParam, signal }) =>
-      getFileListing(api, system, path, scheme, pageSize, pageParam as number, {
-        signal,
-      }),
-    getNextPageParam: (lastPage, allpages) => {
-      return lastPage.listing.length >= pageSize ? allpages.length : null;
+      getFileListing(
+        api,
+        system,
+        path,
+        scheme,
+        pageSize,
+        (pageParam as TFileListingPageParam).page,
+        (pageParam as TFileListingPageParam).nextPageToken,
+        {
+          signal,
+        }
+      ),
+    getNextPageParam: (lastPage, allpages): TFileListingPageParam | null => {
+      return lastPage.listing.length >= pageSize
+        ? { page: allpages.length, nextPageToken: lastPage.nextPageToken }
+        : null;
     },
     retry: (failureCount, error) =>
       // only retry on 5XX errors
