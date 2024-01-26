@@ -6,7 +6,8 @@ from django.db import models
 from django.forms import CheckboxSelectMultiple
 from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from designsafe.apps.workspace.models.app_entries import (
-    AppTrayEntry,
+    AppListingEntry,
+    AppVariant,
     AppTrayCategory,
 )
 
@@ -14,37 +15,35 @@ admin.site.register(AppDescription)
 admin.site.register(AppTrayCategory)
 
 
-@admin.register(AppTrayEntry)
-class AppTrayEntryAdmin(admin.ModelAdmin):
-    """Admin layout for AppTrayEntry items."""
+class AppVariantInline(admin.StackedInline):
+    """Admin layout for app variants."""
+
+    extra = 0
+    model = AppVariant
+    fk_name = "bundle"
 
     def get_fieldsets(self, request, obj=None):
-        default_fieldset = [
-            ("Tapis App Type", {"fields": ("app_type",)}),
+        return [
             (
-                "Display Options",
+                "Tapis App information",
                 {
-                    "fields": [
+                    "fields": (
+                        "app_type",
                         "app_id",
-                        "category",
-                        "label",
-                        "icon",
-                        "available",
-                    ],
+                        "license_type",
+                        "version",
+                    )
                 },
             ),
-        ]
-        tapis_fieldset = [
             (
-                "Tapis App Specification for app_type: Tapis",
+                "Display information",
                 {
-                    "classes": ["collapse"],
-                    "fields": ["version"],
+                    "fields": (
+                        "label",
+                        "enabled",
+                    )
                 },
             ),
-        ]
-
-        html_fieldset = [
             (
                 "HTML App Body for app_type: HTML",
                 {
@@ -54,46 +53,46 @@ class AppTrayEntryAdmin(admin.ModelAdmin):
             ),
         ]
 
-        bundle_fieldset = [
+
+@admin.register(AppListingEntry)
+class AppTrayEntryAdmin(admin.ModelAdmin):
+    """Admin layout for AppTrayEntry items."""
+
+    class Media:
+        css = {"all": ("styles/cms-form-styles.css",)}
+
+    inlines = [AppVariantInline]
+
+    def get_fieldsets(self, request, obj=None):
+        default_fieldset = [
             (
-                "Bundled Apps",
+                "Portal Display Options",
                 {
-                    "classes": ["collapse"],
-                    "fields": ["bundled_apps"],
-                },
-            )
-        ]
-        cms_fieldset = [
-            (
-                "CMS Display Options",
-                {
-                    "classes": ["collapse"],
                     "fields": [
-                        "related_apps",
-                        "popular",
-                        "license_type",
-                        "overview",
+                        "category",
+                        "label",
+                        "icon",
+                        "enabled",
                     ],
                 },
             ),
         ]
 
-        if obj is not None:
-            match obj.app_type:
-                case "tapis":
-                    return default_fieldset + tapis_fieldset + cms_fieldset
-                case "html":
-                    return default_fieldset + html_fieldset + cms_fieldset
-                case "bundle":
-                    return default_fieldset + bundle_fieldset + cms_fieldset
+        cms_fieldset = [
+            (
+                "CMS Display Options",
+                {
+                    "fields": [
+                        "href",
+                        "popular",
+                        "not_bundled",
+                        "related_apps",
+                    ],
+                },
+            ),
+        ]
 
-        return (
-            default_fieldset
-            + tapis_fieldset
-            + html_fieldset
-            + bundle_fieldset
-            + cms_fieldset
-        )
+        return default_fieldset + cms_fieldset
 
     formfield_overrides = {
         models.ManyToManyField: {"widget": CheckboxSelectMultiple},

@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AppDescription',
             fields=[
-                ('appId', models.CharField(max_length=120, primary_key=True, serialize=False, unique=True)),
-                ('appDescription', models.TextField(help_text=b'App dropdown description text for apps that have a dropdown.')),
+                ('appid', models.CharField(max_length=120, primary_key=True, serialize=False, unique=True)),
+                ('appdescription', models.TextField(help_text=b'App dropdown description text for apps that have a dropdown.')),
             ],
         ),
     ]
