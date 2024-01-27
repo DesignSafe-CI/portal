@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 //import styles from './FileListing.module.css';
-import { Table, TableColumnsType } from 'antd';
+import { Table, TableColumnsType, Button } from 'antd';
 import { useFileListing, TFileListing } from '@client/hooks';
 import { NavLink } from 'react-router-dom';
+import DatafilesModal from '../DatafilesModal/DatafilesModal';
 
 type TableRef = {
   nativeElement: HTMLDivElement;
@@ -32,7 +33,14 @@ const columns: TableColumnsType<TFileListing> &
           {data}
         </NavLink>
       ) : (
-        data
+        <DatafilesModal.Preview
+          api="tapis"
+          system={record.system}
+          path={record.path}
+          scheme="private"
+        >
+          <Button type="link">{data}</Button>
+        </DatafilesModal.Preview>
       ),
   },
   { title: 'Size', dataIndex: 'length', render: (d) => toBytes(d) },

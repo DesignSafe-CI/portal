@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 const themeConfig: ThemeConfig = {
   token: {
     borderRadius: 0,
-    colorPrimary: '#136ac9',
+    colorPrimary: '#337ab7',
     colorPrimaryTextHover: 'black',
   },
   components: {
@@ -24,9 +24,9 @@ const themeConfig: ThemeConfig = {
       colorText: 'rgb(112, 112, 112)',
     },
     Layout: {
-      triggerBg: "#136ac9",
-      lightTriggerBg: "#136ac9",
-      lightTriggerColor: "rgb(230, 246, 255)",
+      triggerBg: '#136ac9',
+      lightTriggerBg: '#136ac9',
+      lightTriggerColor: 'rgb(230, 246, 255)',
     },
     Menu: {
       itemHeight: 60,

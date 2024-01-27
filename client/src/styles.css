@@ -59,3 +59,10 @@
   right: 0px !important;
   top: 20px !important;
 }
+
+.ant-btn-link {
+  padding-inline: 0px !important;
+  height: unset;
+  padding: 0px !important;
+  color: #337ab7 !important;
+}
