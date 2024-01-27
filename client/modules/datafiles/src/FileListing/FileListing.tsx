@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 //import styles from './FileListing.module.css';
 import { Table, TableColumnsType, Button } from 'antd';
-import { useFileListing, TFileListing } from '@client/hooks';
+import { useFileListing, TFileListing, useSelectedFiles } from '@client/hooks';
 import { NavLink } from 'react-router-dom';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 
@@ -27,6 +27,7 @@ const columns: TableColumnsType<TFileListing> &
     dataIndex: 'name',
     ellipsis: true,
     width: '50%',
+    //shouldCellUpdate: (record, prevRecord) => record.name !== prevRecord.name,
     render: (data, record) =>
       record.type === 'dir' ? (
         <NavLink to={`../${encodeURIComponent(record.path)}`} replace={false}>
@@ -63,6 +64,20 @@ export const FileListing: React.FC<{
     undefined
   );
 
+  const { selectedFiles, setSelectedFiles } = useSelectedFiles(
+    api,
+    system ?? '-',
+    path
+  );
+  const onSelectionChange = useCallback(
+    (_: React.Key[], selection: TFileListing[]) => setSelectedFiles(selection),
+    [setSelectedFiles]
+  );
+  const selectedRowKeys = useMemo(
+    () => selectedFiles.map((s) => s.path),
+    [selectedFiles]
+  );
+
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useFileListing({
       api,
@@ -74,7 +89,7 @@ export const FileListing: React.FC<{
 
   const combinedListing = useMemo(() => {
     const cl: TFileListing[] = [];
-    data?.pages.forEach((page) => [cl.push(...page.listing)]);
+    data?.pages.forEach((page) => cl.push(...page.listing));
     return cl;
   }, [data]);
 
@@ -124,7 +139,11 @@ export const FileListing: React.FC<{
         (combinedListing?.length ?? 0) > 0 ? 'table--pull-spinner-bottom' : ''
       }`}
       style={{ height: '100%' }}
-      rowSelection={{ type: 'checkbox' }}
+      rowSelection={{
+        type: 'checkbox',
+        onChange: onSelectionChange,
+        selectedRowKeys,
+      }}
       scroll={{ y: '100%', x: '500px' }}
       columns={columns}
       rowKey={(record) => record.path}

@@ -8,3 +8,7 @@ export type {
   TFilePreviewResponse,
 } from './useFilePreview';
 export { useConsumePostit } from './useConsumePostit';
+export {
+  useSelectedFiles,
+  useSelectedFilesForSystem,
+} from './useSelectedFiles';
