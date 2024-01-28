@@ -3,6 +3,7 @@ import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
 import { Layout } from 'antd';
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import styles from './layout.module.css';
 
 export const FileListingLayout: React.FC = () => {
   const { api, path, scheme, system } = useFileListingRouteParams();
@@ -18,14 +19,8 @@ export const FileListingLayout: React.FC = () => {
   }
   return (
     <Layout style={{ backgroundColor: 'transparent' }}>
-      <Layout.Content
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          paddingBottom: '16px',
-        }}
-      >
-        <div style={{ flex: '1 0 0', maxHeight: '1000px', overflow: 'auto' }}>
+      <Layout.Content className={styles['listing-main']}>
+        <div className={styles['listing-container']}>
           <FileListing api={api} system={system} path={path} scheme={scheme} />
         </div>
       </Layout.Content>

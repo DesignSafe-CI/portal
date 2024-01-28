@@ -71,6 +71,7 @@ export const FileListingTable: React.FC<{
   useEffect(() => {
     // Set and clean up scroll event listener on the table ref.
     const observer = new IntersectionObserver((entries) => {
+      // Fetch the next page when the final listing item enters the viewport.
       entries.forEach((entry) => {
         if (
           entry.isIntersecting &&
@@ -100,7 +101,7 @@ export const FileListingTable: React.FC<{
       ref={scrollRefCallback}
       className={`${styles['listing-table-base']} ${
         (combinedListing?.length ?? 0) > 0 ? 'table--pull-spinner-bottom' : ''
-      }`}
+      } ${className}`}
       rowSelection={{
         type: 'checkbox',
         onChange: onSelectionChange,

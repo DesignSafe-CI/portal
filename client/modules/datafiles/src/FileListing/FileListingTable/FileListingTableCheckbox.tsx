@@ -5,6 +5,10 @@ export const FileListingTableCheckbox: React.FC<{
   checked?: boolean;
   onChange: React.ChangeEventHandler;
 }> = ({ checked, onChange }) => {
+  /* 
+  This checkbox component is more barebones than the checkbox exported by Ant,
+  and is suited to large file listings where it will be rerendered extensively. 
+  */
   return (
     <label className={styles['checkbox-wrapper']}>
       <span
