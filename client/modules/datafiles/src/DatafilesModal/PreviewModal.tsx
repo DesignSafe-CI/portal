@@ -79,7 +79,7 @@ type TPreviewModal = React.FC<{
   path: string;
   children: ReactElement;
 }>;
-export const PreviewModal: TPreviewModal = ({
+const _PreviewModal: TPreviewModal = ({
   api,
   system,
   scheme,
@@ -133,3 +133,13 @@ export const PreviewModal: TPreviewModal = ({
     </>
   );
 };
+
+// Memoize here to prevent expensive rerenders when file selections change.
+export const PreviewModal = React.memo(
+  _PreviewModal,
+  (prev, next) =>
+    prev.api === next.api &&
+    prev.scheme === next.scheme &&
+    prev.system === next.system &&
+    prev.path === next.path
+);

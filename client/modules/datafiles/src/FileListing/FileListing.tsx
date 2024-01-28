@@ -27,7 +27,7 @@ const columns: TableColumnsType<TFileListing> &
     dataIndex: 'name',
     ellipsis: true,
     width: '50%',
-    //shouldCellUpdate: (record, prevRecord) => record.name !== prevRecord.name,
+    shouldCellUpdate: () => false,
     render: (data, record) =>
       record.type === 'dir' ? (
         <NavLink to={`../${encodeURIComponent(record.path)}`} replace={false}>
@@ -44,12 +44,18 @@ const columns: TableColumnsType<TFileListing> &
         </DatafilesModal.Preview>
       ),
   },
-  { title: 'Size', dataIndex: 'length', render: (d) => toBytes(d) },
+  {
+    title: 'Size',
+    dataIndex: 'length',
+    render: (d) => toBytes(d),
+    shouldCellUpdate: () => false,
+  },
   {
     title: 'Last Modified',
     dataIndex: 'lastModified',
     ellipsis: true,
     render: (d) => new Date(d).toLocaleString(),
+    shouldCellUpdate: () => false,
   },
 ];
 
@@ -143,6 +149,7 @@ export const FileListing: React.FC<{
         type: 'checkbox',
         onChange: onSelectionChange,
         selectedRowKeys,
+        checkStrictly: false
       }}
       scroll={{ y: '100%', x: '500px' }}
       columns={columns}
