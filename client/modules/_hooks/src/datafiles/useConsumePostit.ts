@@ -1,14 +1,12 @@
-import { UseQueryOptions, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import { AxiosError } from 'axios';
+import { TQueryOptionExtras } from '../queryConfig';
 
 type TPostitParams = {
   href: string;
   responseType?: 'text' | 'blob';
-  queryOptions: Omit<
-    UseQueryOptions<string | Blob, AxiosError>,
-    'queryKey' | 'queryFn'
-  >;
+  queryOptions: TQueryOptionExtras<string | Blob, AxiosError>;
 };
 
 async function fetchPostit({

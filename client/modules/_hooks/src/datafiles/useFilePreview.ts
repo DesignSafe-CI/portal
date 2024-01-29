@@ -1,6 +1,6 @@
-import { UseQueryOptions, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
-import type { TApiError } from '../apiClient';
+import { TQueryOptionExtras } from '../queryConfig';
 
 export type TPreviewParams = {
   api: string;
@@ -47,10 +47,7 @@ export function useFilePreview({
   path,
   queryOptions,
 }: TPreviewParams & {
-  queryOptions?: Omit<
-    UseQueryOptions<TFilePreviewResponse, TApiError>,
-    'queryKey' | 'queryFn'
-  >;
+  queryOptions?: TQueryOptionExtras<TFilePreviewResponse>;
 }) {
   return useQuery({
     queryKey: ['datafiles', 'preview', api, system, path],
