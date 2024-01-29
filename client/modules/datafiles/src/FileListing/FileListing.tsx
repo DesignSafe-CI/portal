@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 //import styles from './FileListing.module.css';
 import { Button } from 'antd';
 import {
@@ -6,7 +6,7 @@ import {
   TFileListingColumns,
 } from './FileListingTable/FileListingTable';
 import { NavLink } from 'react-router-dom';
-import DatafilesModal from '../DatafilesModal/DatafilesModal';
+import { PreviewModalBody } from '../DatafilesModal/PreviewModal';
 
 function toBytes(bytes?: number) {
   if (bytes === 0) return '0 bytes';
@@ -20,11 +20,16 @@ function toBytes(bytes?: number) {
 
 export const FileListing: React.FC<{
   api: string;
-  system?: string;
+  system: string;
   path?: string;
   scheme?: string;
 }> = ({ api, system, path = '', scheme = 'private' }) => {
   // Base file listing for use with My Data/Community Data
+  const [previewModalState, setPreviewModalState] = useState<{
+    isOpen: boolean;
+    path?: string;
+  }>({ isOpen: false });
+
   const columns: TFileListingColumns = useMemo(
     () => [
       {
@@ -42,14 +47,14 @@ export const FileListing: React.FC<{
               {data}
             </NavLink>
           ) : (
-            <DatafilesModal.Preview
-              api={api}
-              system={record.system}
-              path={record.path}
-              scheme={scheme}
+            <Button
+              type="link"
+              onClick={() =>
+                setPreviewModalState({ isOpen: true, path: record.path })
+              }
             >
-              <Button type="link">{data}</Button>
-            </DatafilesModal.Preview>
+              {data}
+            </Button>
           ),
       },
       {
@@ -66,16 +71,27 @@ export const FileListing: React.FC<{
         shouldCellUpdate: () => false,
       },
     ],
-    [api, scheme]
+    [setPreviewModalState]
   );
 
   return (
-    <FileListingTable
-      api={api}
-      system={system}
-      scheme={scheme}
-      path={path}
-      columns={columns}
-    />
+    <>
+      <FileListingTable
+        api={api}
+        system={system}
+        scheme={scheme}
+        path={path}
+        columns={columns}
+      />
+      {previewModalState.path && (
+        <PreviewModalBody
+          isOpen={previewModalState.isOpen}
+          api={api}
+          system={system}
+          path={previewModalState.path}
+          handleCancel={() => setPreviewModalState({ isOpen: false })}
+        />
+      )}
+    </>
   );
 };

@@ -1,4 +1,4 @@
-import { FileListing } from '@client/datafiles';
+import { DatafilesToolbar, FileListing } from '@client/datafiles';
 import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
 import { Layout } from 'antd';
 import React from 'react';
@@ -19,6 +19,7 @@ export const FileListingLayout: React.FC = () => {
   }
   return (
     <Layout style={{ backgroundColor: 'transparent' }}>
+      <DatafilesToolbar />
       <Layout.Content className={styles['listing-main']}>
         <div className={styles['listing-container']}>
           <FileListing api={api} system={system} path={path} scheme={scheme} />

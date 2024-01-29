@@ -5,7 +5,7 @@ import {
   TPreviewFileType,
 } from '@client/hooks';
 import { Button, Modal, Spin } from 'antd';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import styles from './PreviewModal.module.css';
 
 const PreviewSpinner: React.FC = () => <Spin className={styles.spinner} />;
@@ -79,7 +79,7 @@ type TPreviewModal = React.FC<{
   path: string;
   children: ReactElement;
 }>;
-const _PreviewModal: TPreviewModal = ({
+export const PreviewModal: TPreviewModal = ({
   api,
   system,
   scheme,
@@ -87,59 +87,88 @@ const _PreviewModal: TPreviewModal = ({
   children,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const queryClient = useQueryClient();
-
-  const { data, isLoading } = useFilePreview({
-    api,
-    system,
-    scheme,
-    path,
-    queryOptions: { enabled: isModalOpen },
-  });
 
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleCancel = () => {
-    // Flush queries on close to prevent stale postits being read from cache.
-    queryClient.removeQueries({ queryKey: ['datafiles', 'preview'] });
     setIsModalOpen(false);
   };
+
   return (
     <>
       {React.cloneElement(children as ReactElement, { onClick: showModal })}
-      <Modal
-        title={<h2>File Preview: {children.props.children}</h2>}
-        width="60%"
-        open={isModalOpen}
-        footer={() => (
-          <Button onClick={handleCancel} type="primary">
-            Close
-          </Button>
-        )}
-        onCancel={handleCancel}
-      >
-        <div className={styles.modalContentContainer}>
-          {isLoading && <PreviewSpinner />}
-          {data && isModalOpen && (
-            <PreviewPanel
-              href={data.href}
-              fileType={data.fileType}
-            ></PreviewPanel>
-          )}
-        </div>
-      </Modal>
+      <PreviewModalBody
+        api={api}
+        system={system}
+        scheme={scheme}
+        path={path}
+        isOpen={isModalOpen}
+        handleCancel={handleCancel}
+      />
     </>
   );
 };
 
-// Memoize here to prevent expensive rerenders when file selections change.
-export const PreviewModal = React.memo(
-  _PreviewModal,
-  (prev, next) =>
-    prev.api === next.api &&
-    prev.scheme === next.scheme &&
-    prev.system === next.system &&
-    prev.path === next.path
-);
+export type TPreviewModalProps = {
+  isOpen: boolean;
+  api: string;
+  system: string;
+  scheme?: string;
+  path: string;
+  handleCancel: () => void;
+};
+
+export const PreviewModalBody: React.FC<{
+  isOpen: boolean;
+  api: string;
+  system: string;
+  scheme?: string;
+  path: string;
+  handleCancel: () => void;
+}> = ({ isOpen, api, system, scheme, path, handleCancel }) => {
+  /* 
+  Typically modals are rendered in the same component as the button that manages the
+  open/closed state. The modal body is exported separately for file previews, since 
+  the modal might be rendered hundreds of times in a listing and impact performance.
+   */
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useFilePreview({
+    api,
+    system,
+    scheme,
+    path,
+    queryOptions: { enabled: isOpen },
+  });
+
+  const handleClose = useCallback(() => {
+    // Flush queries on close to prevent stale postits being read from cache.
+    queryClient.removeQueries({ queryKey: ['datafiles', 'preview'] });
+    handleCancel();
+  }, [handleCancel, queryClient]);
+
+  return (
+    <Modal
+      title={<h2>File Preview: {path}</h2>}
+      width="60%"
+      open={isOpen}
+      footer={() => (
+        <Button onClick={handleClose} type="primary">
+          Close
+        </Button>
+      )}
+      onCancel={handleClose}
+    >
+      <div className={styles.modalContentContainer}>
+        {isLoading && <PreviewSpinner />}
+        {data && isOpen && (
+          <PreviewPanel
+            href={data.href}
+            fileType={data.fileType}
+          ></PreviewPanel>
+        )}
+      </div>
+    </Modal>
+  );
+};
