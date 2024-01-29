@@ -5,8 +5,9 @@ import {
   TPreviewFileType,
 } from '@client/hooks';
 import { Button, Modal, Spin } from 'antd';
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styles from './PreviewModal.module.css';
+import { TModalChildren } from './DatafilesModal';
 
 const PreviewSpinner: React.FC = () => <Spin className={styles.spinner} />;
 
@@ -77,7 +78,7 @@ type TPreviewModal = React.FC<{
   system: string;
   scheme?: string;
   path: string;
-  children: ReactElement;
+  children: TModalChildren;
 }>;
 export const PreviewModal: TPreviewModal = ({
   api,
@@ -98,7 +99,7 @@ export const PreviewModal: TPreviewModal = ({
 
   return (
     <>
-      {React.cloneElement(children as ReactElement, { onClick: showModal })}
+      {React.createElement(children, {onClick: showModal})}
       <PreviewModalBody
         api={api}
         system={system}

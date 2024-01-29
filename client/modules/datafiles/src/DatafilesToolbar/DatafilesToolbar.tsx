@@ -44,13 +44,16 @@ export const DatafilesToolbar: React.FC = () => {
           scheme={scheme}
           path={selectedFiles[0]?.path ?? ''}
         >
-          <ToolbarButton
-            disabled={!rules.canPreview}
-            className={styles.toolbarButton}
-          >
-            <i role="none" className="fa fa-binoculars" />
-            <span>Preview</span>
-          </ToolbarButton>
+          {({ onClick }) => (
+            <ToolbarButton
+              onClick={onClick}
+              disabled={!rules.canPreview}
+              className={styles.toolbarButton}
+            >
+              <i role="none" className="fa fa-binoculars" />
+              <span>Preview</span>
+            </ToolbarButton>
+          )}
         </DatafilesModal.Preview>
       </div>
     </div>
