@@ -963,3 +963,12 @@ li .popover.right {
 .feedback-modal .modal-body {
     padding: 30px;
 }
+
+@media(min-width:992px) {
+  .reg-right-col {
+    padding-left:75px;
+  }
+  .reg-left-col {
+    padding-right:75px;
+  }
+}
