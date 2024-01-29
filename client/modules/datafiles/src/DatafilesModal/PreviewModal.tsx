@@ -99,7 +99,7 @@ export const PreviewModal: TPreviewModal = ({
 
   return (
     <>
-      {React.createElement(children, {onClick: showModal})}
+      {React.createElement(children, { onClick: showModal })}
       <PreviewModalBody
         api={api}
         system={system}

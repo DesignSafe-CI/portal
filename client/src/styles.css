@@ -33,7 +33,7 @@
 }
 
 .ant-table-header th {
-  border-bottom: 1px solid black !important;
+  border-bottom: 1px solid #333333 !important;
 }
 
 .ant-table-header {
@@ -65,4 +65,8 @@
   height: unset;
   padding: 0px !important;
   color: #337ab7 !important;
+}
+
+.listing-nav-link {
+  text-decoration: none !important;
 }

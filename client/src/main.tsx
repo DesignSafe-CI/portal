@@ -18,15 +18,13 @@ const themeConfig: ThemeConfig = {
     Table: {
       cellPaddingBlock: 8,
       headerBg: 'transparent',
-      headerColor: 'black',
+      headerColor: '#333333',
       rowHoverBg: 'rgb(230, 246, 255)',
       borderColor: 'rgb(215, 215, 215)',
       colorText: 'rgb(112, 112, 112)',
     },
     Layout: {
-      triggerBg: '#136ac9',
-      lightTriggerBg: '#136ac9',
-      lightTriggerColor: 'rgb(230, 246, 255)',
+      bodyBg: 'transparent',
     },
     Menu: {
       itemHeight: 60,

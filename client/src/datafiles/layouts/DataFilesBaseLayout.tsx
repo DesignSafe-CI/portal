@@ -1,11 +1,18 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Layout } from 'antd';
 import { DatafilesSideNav } from '@client/datafiles';
+import { useAuthenticatedUser } from '@client/hooks';
 
 const { Sider } = Layout;
 
 const DataFilesRoot: React.FC = () => {
+  const { user } = useAuthenticatedUser();
+  const defaultPath = user?.username
+    ? '/tapis/designsafe.storage.default'
+    : '/tapis/designsafe.storage.community';
+  const { pathname } = useLocation();
+
   return (
     <Layout
       hasSider
@@ -23,6 +30,7 @@ const DataFilesRoot: React.FC = () => {
 
         <DatafilesSideNav />
       </Sider>
+      {pathname === '/' && <Navigate to={defaultPath} replace></Navigate>}
       <Outlet />
     </Layout>
   );

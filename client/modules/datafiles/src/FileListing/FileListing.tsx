@@ -37,13 +37,20 @@ export const FileListing: React.FC<{
         dataIndex: 'name',
         ellipsis: true,
         width: '50%',
-        shouldCellUpdate: () => false,
         render: (data, record) =>
           record.type === 'dir' ? (
             <NavLink
+              className="listing-nav-link"
               to={`../${encodeURIComponent(record.path)}`}
               replace={false}
             >
+              <i
+                role="none"
+                style={{ color: '#333333' }}
+                className="fa fa-folder"
+              >
+                &nbsp;&nbsp;
+              </i>
               {data}
             </NavLink>
           ) : (
@@ -53,6 +60,13 @@ export const FileListing: React.FC<{
                 setPreviewModalState({ isOpen: true, path: record.path })
               }
             >
+              <i
+                role="none"
+                style={{ color: '#333333' }}
+                className="fa fa-file"
+              >
+                &nbsp;&nbsp;
+              </i>
               {data}
             </Button>
           ),
@@ -61,14 +75,12 @@ export const FileListing: React.FC<{
         title: 'Size',
         dataIndex: 'length',
         render: (d) => toBytes(d),
-        shouldCellUpdate: () => false,
       },
       {
         title: 'Last Modified',
         dataIndex: 'lastModified',
         ellipsis: true,
         render: (d) => new Date(d).toLocaleString(),
-        shouldCellUpdate: () => false,
       },
     ],
     [setPreviewModalState]
