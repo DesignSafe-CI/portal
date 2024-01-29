@@ -1,6 +1,10 @@
 import React, { useMemo } from 'react';
 import styles from './DatafilesToolbar.module.css';
-import { useFileListingRouteParams, useSelectedFiles } from '@client/hooks';
+import {
+  useAuthenticatedUser,
+  useFileListingRouteParams,
+  useSelectedFiles,
+} from '@client/hooks';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
 
@@ -22,6 +26,7 @@ const ToolbarButton: React.FC<ButtonProps> = (props) => {
 export const DatafilesToolbar: React.FC = () => {
   const { api, system, scheme, path } = useFileListingRouteParams();
   const { selectedFiles } = useSelectedFiles(api, system, path);
+  const { user } = useAuthenticatedUser();
 
   const rules = useMemo(
     function () {
@@ -29,9 +34,10 @@ export const DatafilesToolbar: React.FC = () => {
       return {
         canPreview:
           selectedFiles.length === 1 && selectedFiles[0].type === 'file',
+        canCopy: user && selectedFiles.length >= 1,
       };
     },
-    [selectedFiles]
+    [selectedFiles, user]
   );
 
   return (
@@ -55,6 +61,18 @@ export const DatafilesToolbar: React.FC = () => {
             </ToolbarButton>
           )}
         </DatafilesModal.Preview>
+        <DatafilesModal.Copy>
+          {({ onClick }) => (
+            <ToolbarButton
+              onClick={onClick}
+              disabled={!rules.canCopy}
+              className={styles.toolbarButton}
+            >
+              <i role="none" className="fa fa-copy" />
+              <span>Copy</span>
+            </ToolbarButton>
+          )}
+        </DatafilesModal.Copy>
       </div>
     </div>
   );

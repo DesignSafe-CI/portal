@@ -7,7 +7,7 @@ import {
 import { Button, Modal, Spin } from 'antd';
 import React, { useCallback, useState } from 'react';
 import styles from './PreviewModal.module.css';
-import { TModalChildren } from './DatafilesModal';
+import { TModalChildren } from '../DatafilesModal';
 
 const PreviewSpinner: React.FC = () => <Spin className={styles.spinner} />;
 

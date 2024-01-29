@@ -4,7 +4,7 @@ import {
   FileListing,
 } from '@client/datafiles';
 import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
-import { Flex, Layout } from 'antd';
+import { Layout } from 'antd';
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import styles from './layout.module.css';
@@ -38,7 +38,7 @@ export const FileListingLayout: React.FC = () => {
   const redirectHome =
     user?.username && !path && api === 'tapis' && isUserHomeSystem;
   return (
-    <Flex vertical gap={5}>
+    <Layout style={{ gap: '5px' }}>
       <DatafilesToolbar />
       <DatafilesBreadcrumb
         initialBreadcrumbs={initialBreadcrumbs}
@@ -56,7 +56,7 @@ export const FileListingLayout: React.FC = () => {
           <FileListing api={api} system={system} path={path} scheme={scheme} />
         </div>
       </Layout.Content>
-    </Flex>
+    </Layout>
   );
 };
 //

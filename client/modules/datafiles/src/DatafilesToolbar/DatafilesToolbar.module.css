@@ -8,6 +8,11 @@
   justify-content: space-between;
 }
 
+.toolbarButtonContainer {
+  display: flex;
+  gap: 5px;
+}
+
 .toolbarButton {
   display: flex;
   flex-direction: column;
