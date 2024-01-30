@@ -19,7 +19,7 @@
 }
 
 .ant-table {
-  overflow: hidden;
+  overflow: auto;
 }
 
 .ant-table .ant-table-body .ant-table-placeholder > td {

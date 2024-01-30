@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './FileListingTable.module.css';
-import { Table, TableColumnsType } from 'antd';
+import { Table, TableColumnsType, TableProps } from 'antd';
 import { useFileListing, TFileListing, useSelectedFiles } from '@client/hooks';
 import { FileListingTableCheckbox } from './FileListingTableCheckbox';
 
@@ -12,14 +12,16 @@ type TableRef = {
 export type TFileListingColumns = TableColumnsType<TFileListing> &
   { dataIndex: keyof TFileListing }[];
 
-export const FileListingTable: React.FC<{
-  api: string;
-  system?: string;
-  path?: string;
-  scheme?: string;
-  columns: TFileListingColumns;
-  className?: string;
-}> = ({ api, system, path = '', scheme = 'private', columns, className }) => {
+export const FileListingTable: React.FC<
+  {
+    api: string;
+    system?: string;
+    path?: string;
+    scheme?: string;
+    columns: TFileListingColumns;
+    className?: string;
+  } & Omit<TableProps, 'columns' | 'className'>
+> = ({ api, system, path = '', scheme = 'private', columns, className, ...props }) => {
   const limit = 100;
   const [scrollElement, setScrollElement] = useState<Element | undefined>(
     undefined
@@ -101,7 +103,7 @@ export const FileListingTable: React.FC<{
       ref={scrollRefCallback}
       className={`${styles['listing-table-base']} ${
         (combinedListing?.length ?? 0) > 0 ? 'table--pull-spinner-bottom' : ''
-      } ${className}`}
+      } ${className ?? ''}`}
       rowSelection={{
         type: 'checkbox',
         onChange: onSelectionChange,
@@ -113,7 +115,7 @@ export const FileListingTable: React.FC<{
           />
         ),
       }}
-      scroll={{ y: '100%', x: '500px' }}
+      scroll={{ y: '100%', x: '500px' }} // set to undefined to disable sticky header
       columns={columns}
       rowKey={(record) => record.path}
       dataSource={combinedListing}
@@ -127,6 +129,7 @@ export const FileListingTable: React.FC<{
             <div>Placeholder for empty data.</div>
           ),
       }}
+      {...props}
     >
       placeholder
     </Table>
