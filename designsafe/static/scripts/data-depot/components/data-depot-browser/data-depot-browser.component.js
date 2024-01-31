@@ -60,11 +60,14 @@ class DataDepotBrowserCtrl {
         this.scheme = this.FileListingService.fileMgrMappings[this.apiParams.fileMgr].scheme;
         const system = this.$stateParams.systemId || 'external';
         const path = this.$stateParams.filePath
+        if (system === 'designsafe.storage.community') {
+            this.exclude = ['.Trash']
+        }
 
         this.offset = 0;
         this.limit = 15;
         const queryString = this.$stateParams.query_string;
-        this.FileListingService.browse({section: this.section, api: this.api, scheme: this.scheme, system, path, query_string: queryString});
+        this.FileListingService.browse({section: this.section, api: this.api, scheme: this.scheme, system, path, query_string: queryString, exclude: this.exclude});
     }
 
     onBrowse(file) {
