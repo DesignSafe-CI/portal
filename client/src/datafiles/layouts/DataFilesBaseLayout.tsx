@@ -24,7 +24,7 @@ const DataFilesRoot: React.FC = () => {
         overflowX: 'auto',
       }}
     >
-      <Sider width={170} theme="light" breakpoint="md" collapsedWidth={0}>
+      <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
         <h1 className="headline headline-research" id="headline-data-depot">
           <span className="hl hl-research">Data Depot</span>
         </h1>

@@ -8,7 +8,7 @@ import {
 import { NavLink } from 'react-router-dom';
 import { PreviewModalBody } from '../DatafilesModal/PreviewModal';
 
-function toBytes(bytes?: number) {
+export function toBytes(bytes?: number) {
   if (bytes === 0) return '0 bytes';
   if (!bytes) return '-';
   const units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];

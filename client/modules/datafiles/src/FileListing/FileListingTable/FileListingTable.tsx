@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './FileListingTable.module.css';
-import { Table, TableColumnsType, TableProps } from 'antd';
+import { Table, TableColumnType, TableProps } from 'antd';
 import { useFileListing, TFileListing, useSelectedFiles } from '@client/hooks';
 import { FileListingTableCheckbox } from './FileListingTableCheckbox';
 
@@ -9,8 +9,9 @@ type TableRef = {
   scrollTo: (config: { index?: number; key?: React.Key; top?: number }) => void;
 };
 
-export type TFileListingColumns = TableColumnsType<TFileListing> &
-  { dataIndex: keyof TFileListing }[];
+export type TFileListingColumns = (TableColumnType<TFileListing> & {
+  dataIndex: keyof TFileListing;
+})[];
 
 export const FileListingTable: React.FC<
   {
@@ -19,6 +20,7 @@ export const FileListingTable: React.FC<
     path?: string;
     scheme?: string;
     columns: TFileListingColumns;
+    filterFn?: (listing: TFileListing[]) => TFileListing[];
     className?: string;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({
@@ -26,6 +28,7 @@ export const FileListingTable: React.FC<
   system,
   path = '',
   scheme = 'private',
+  filterFn,
   columns,
   className,
   ...props
@@ -48,8 +51,11 @@ export const FileListingTable: React.FC<
   const combinedListing = useMemo(() => {
     const cl: TFileListing[] = [];
     data?.pages.forEach((page) => cl.push(...page.listing));
+    if (filterFn) {
+      return filterFn(cl);
+    }
     return cl;
-  }, [data]);
+  }, [data, filterFn]);
 
   /* HANDLE FILE SELECTION */
   const { selectedFiles, setSelectedFiles } = useSelectedFiles(

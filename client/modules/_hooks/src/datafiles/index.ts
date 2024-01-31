@@ -12,3 +12,5 @@ export {
   useSelectedFiles,
   useSelectedFilesForSystem,
 } from './useSelectedFiles';
+
+export { useFileCopy } from './useFileCopy';

@@ -1,5 +1,5 @@
 import {
-  DatafilesBreadcrumb,
+  BaseFileListingBreadcrumb,
   DatafilesToolbar,
   FileListing,
 } from '@client/datafiles';
@@ -9,26 +9,9 @@ import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import styles from './layout.module.css';
 
-function getBaseRouteName(api: string, system: string): string {
-  if (api === 'googledrive') return 'Google Drive';
-  if (api === 'box') return 'Box';
-  if (api === 'dropbox') return 'Dropbox';
-  return (
-    {
-      'designsafe.storage.default': 'My Data',
-      'designsafe.storage.frontera.work': 'My Data (Work)',
-      'designsafe.storage.community': 'Community Data',
-    }[system] ?? 'Data Files'
-  );
-}
-
 export const FileListingLayout: React.FC = () => {
   const { api, path, scheme, system } = useFileListingRouteParams();
   const { user } = useAuthenticatedUser();
-
-  const initialBreadcrumbs = [
-    { path: `/${api}/${system}`, title: getBaseRouteName(api, system) },
-  ];
 
   const isUserHomeSystem = [
     'designsafe.storage.default',
@@ -41,12 +24,11 @@ export const FileListingLayout: React.FC = () => {
     <Layout style={{ gap: '5px', minWidth: '500px' }}>
       <DatafilesToolbar />
       {true && (
-        <DatafilesBreadcrumb
-          initialBreadcrumbs={initialBreadcrumbs}
+        <BaseFileListingBreadcrumb
+          api={api}
+          system={system}
           path={path}
-          excludeBasePath={isUserHomeSystem}
           itemRender={(obj) => {
-            //const last = items.indexOf(obj) === items.length - 1;
             return (
               <Link className="breadcrumb-link" to={obj.path ?? '/'}>
                 {obj.title}

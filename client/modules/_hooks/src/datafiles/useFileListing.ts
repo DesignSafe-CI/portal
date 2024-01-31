@@ -68,7 +68,7 @@ function useFileListing({
     queryFn: ({ pageParam, signal }) =>
       getFileListing(
         api,
-        system,
+        system || '-', // Backend throws errors if an empty string is passed.
         path,
         scheme,
         pageSize,
