@@ -63,7 +63,7 @@ export const FileListing: React.FC<{
               <i
                 role="none"
                 style={{ color: '#333333' }}
-                className="fa fa-file"
+                className="fa fa-file-o"
               >
                 &nbsp;&nbsp;
               </i>

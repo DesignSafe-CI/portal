@@ -21,7 +21,15 @@ export const FileListingTable: React.FC<
     columns: TFileListingColumns;
     className?: string;
   } & Omit<TableProps, 'columns' | 'className'>
-> = ({ api, system, path = '', scheme = 'private', columns, className, ...props }) => {
+> = ({
+  api,
+  system,
+  path = '',
+  scheme = 'private',
+  columns,
+  className,
+  ...props
+}) => {
   const limit = 100;
   const [scrollElement, setScrollElement] = useState<Element | undefined>(
     undefined

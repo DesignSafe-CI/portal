@@ -6,7 +6,7 @@ import {
 import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
 import { Layout } from 'antd';
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import styles from './layout.module.css';
 
 function getBaseRouteName(api: string, system: string): string {
@@ -38,13 +38,23 @@ export const FileListingLayout: React.FC = () => {
   const redirectHome =
     user?.username && !path && api === 'tapis' && isUserHomeSystem;
   return (
-    <Layout style={{ gap: '5px' }}>
+    <Layout style={{ gap: '5px', minWidth: '500px' }}>
       <DatafilesToolbar />
-      <DatafilesBreadcrumb
-        initialBreadcrumbs={initialBreadcrumbs}
-        path={path}
-        excludeBasePath={isUserHomeSystem}
-      />
+      {true && (
+        <DatafilesBreadcrumb
+          initialBreadcrumbs={initialBreadcrumbs}
+          path={path}
+          excludeBasePath={isUserHomeSystem}
+          itemRender={(obj) => {
+            //const last = items.indexOf(obj) === items.length - 1;
+            return (
+              <Link className="breadcrumb-link" to={obj.path ?? '/'}>
+                {obj.title}
+              </Link>
+            );
+          }}
+        />
+      )}
       <Layout.Content className={styles['listing-main']}>
         <div className={styles['listing-container']}>
           {redirectHome && (

@@ -61,7 +61,7 @@ export const DatafilesToolbar: React.FC = () => {
             </ToolbarButton>
           )}
         </DatafilesModal.Preview>
-        <DatafilesModal.Copy>
+        <DatafilesModal.Copy api={api} system={system} path={path}>
           {({ onClick }) => (
             <ToolbarButton
               onClick={onClick}

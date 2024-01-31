@@ -20,7 +20,12 @@ export function useFileListingRouteParams() {
     ? 'public'
     : 'private';
 
-  return { api, scheme, system: system ?? '-', path: path ?? '' };
+  return {
+    api,
+    scheme,
+    system: system ?? '-',
+    path: encodeURIComponent(path ?? ''),
+  };
 }
 
 export type TFileListingParams = ReturnType<typeof useFileListingRouteParams>;

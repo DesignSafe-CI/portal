@@ -1,47 +1,45 @@
-import { Breadcrumb } from 'antd';
+import { Breadcrumb, BreadcrumbProps } from 'antd';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styles from './DatafilesBreadcrumb.module.css';
 
-function getPathRoutes(
-  base: string,
-  path?: string,
-  excludeFirstNItems?: number
-) {
+function getPathRoutes(base: string, path?: string) {
   if (!path) return [];
-  const pathComponents = path.split('/').filter((p) => !!p);
-  return pathComponents
-    .map((comp, i) => ({
-      title: comp,
-      path: `${base}/${encodeURIComponent(
-        '/' + pathComponents.slice(0, i + 1).join('/')
-      )}`,
-    }))
-    .slice(excludeFirstNItems);
+  const pathComponents = decodeURIComponent(path)
+    .split('/')
+    .filter((p) => !!p);
+
+  return pathComponents.map((comp, i) => ({
+    title: comp,
+    path: `${base}/${encodeURIComponent(
+      '/' + pathComponents.slice(0, i + 1).join('/')
+    )}`,
+  }));
 }
 
-export const DatafilesBreadcrumb: React.FC<{
-  initialBreadcrumbs: { title: string; path: string }[];
-  path: string;
-  excludeBasePath: boolean;
-}> = ({ initialBreadcrumbs, path, excludeBasePath }) => {
+export const DatafilesBreadcrumb: React.FC<
+  {
+    initialBreadcrumbs: { title: string; path: string }[];
+    path: string;
+    excludeBasePath: boolean;
+  } & BreadcrumbProps
+> = ({ initialBreadcrumbs, path, excludeBasePath, ...props }) => {
   const basePath = initialBreadcrumbs.slice(-1)[0].path ?? '/';
-  const breadcrumbItems = [
+
+  let breadcrumbItems = [
     ...initialBreadcrumbs,
-    ...getPathRoutes(basePath, path, excludeBasePath ? 1 : 0),
+    ...getPathRoutes(basePath, path),
   ];
+
+  if (excludeBasePath && breadcrumbItems.length > 1) {
+    breadcrumbItems[1].title = initialBreadcrumbs.slice(-1)[0].title;
+    breadcrumbItems = breadcrumbItems.slice(1);
+  }
+
   return (
     <Breadcrumb
       className={styles.datafilesBreadcrumb}
       items={breadcrumbItems}
-      itemRender={(obj, _, items) => {
-        //const last = items.indexOf(obj) === items.length - 1;
-        return (
-          <Link className={styles.breadcrumbLink} to={obj.path ?? '/'}>
-            {obj.title}
-          </Link>
-        );
-      }}
+      {...props}
     />
   );
 };

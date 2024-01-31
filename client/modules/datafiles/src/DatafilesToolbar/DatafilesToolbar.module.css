@@ -2,7 +2,8 @@
   background-color: #f0f0f0;
   border: 1px solid #dddddd;
   display: flex;
-  flex-direction: row;
+  flex-flow: row nowrap;
+  overflow-x: auto;
   align-items: center;
   padding: 5px;
   justify-content: space-between;
