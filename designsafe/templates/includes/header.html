@@ -45,9 +45,7 @@
           class="sr-only">API Session Not Available. Click for details.</span></a>
       {% endif %}
     </span>
-    <span ng-controller="NotificationBadgeCtrl" id="id_user_notify"
-      ng-include="'{% static 'scripts/notifications/html/badge.html' %}'">
-    </span>
+   <notification-badge></notification-badge> 
     <div class="btn-group">
       <a href="{% url 'designsafe_dashboard:index' %}" class="btn btn-link-alt">Welcome, {{ user.first_name }}!</a>
       <button type="button" class="btn btn-link-alt dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
