@@ -933,11 +933,13 @@ li .popover.right {
 }
 
 .o-site {
-  display: grid;
   height: 100vh;
-  grid-template-rows: auto 1fr auto;
+  display: flex;
+  flex-direction: column;
 }
 .o-site__body {
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: auto;
