@@ -14,3 +14,7 @@ export {
 } from './useSelectedFiles';
 
 export { useFileCopy } from './useFileCopy';
+export {
+  usePathDisplayName,
+  getSystemRootDisplayName,
+} from './usePathDisplayName';

@@ -1,7 +1,7 @@
 import { Breadcrumb, BreadcrumbProps } from 'antd';
 import React from 'react';
 import styles from './DatafilesBreadcrumb.module.css';
-import { useAuthenticatedUser } from '@client/hooks';
+import { getSystemRootDisplayName, useAuthenticatedUser } from '@client/hooks';
 
 function getPathRoutes(
   baseRoute: string,
@@ -59,19 +59,6 @@ export const DatafilesBreadcrumb: React.FC<
   );
 };
 
-export function getBaseRouteName(api: string, system: string): string {
-  if (api === 'googledrive') return 'Google Drive';
-  if (api === 'box') return 'Box';
-  if (api === 'dropbox') return 'Dropbox';
-  return (
-    {
-      'designsafe.storage.default': 'My Data',
-      'designsafe.storage.frontera.work': 'My Data (Work)',
-      'designsafe.storage.community': 'Community Data',
-    }[system] ?? 'Data Files'
-  );
-}
-
 function isUserHomeSystem(system: string) {
   return [
     'designsafe.storage.default',
@@ -92,7 +79,7 @@ export const BaseFileListingBreadcrumb: React.FC<
       systemRoot={
         isUserHomeSystem(system) ? encodeURIComponent('/' + user?.username) : ''
       }
-      systemRootAlias={getBaseRouteName(api, system)}
+      systemRootAlias={getSystemRootDisplayName(api, system)}
       {...props}
     />
   );

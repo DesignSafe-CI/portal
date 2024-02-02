@@ -4,6 +4,7 @@ import { Button, Modal, Table } from 'antd';
 import {
   useAuthenticatedUser,
   useFileCopy,
+  usePathDisplayName,
   useSelectedFiles,
 } from '@client/hooks';
 import {
@@ -19,6 +20,22 @@ const SelectedFilesColumns: TFileListingColumns = [
   },
 ];
 
+const DestHeaderTitle: React.FC<{
+  api: string;
+  system: string;
+  path: string;
+}> = ({ api, system, path }) => {
+  const getPathName = usePathDisplayName();
+  return (
+    <span style={{ fontWeight: 'normal' }}>
+      <i role="none" className="fa fa-folder-o">
+        &nbsp;&nbsp;
+      </i>
+      {getPathName(api, system, path)}
+    </span>
+  );
+};
+
 function getDestFilesColumns(
   api: string,
   system: string,
@@ -28,60 +45,31 @@ function getDestFilesColumns(
 ): TFileListingColumns {
   return [
     {
-      title: () => (
-        <BaseFileListingBreadcrumb
-          style={{
-            backgroundColor: 'transparent',
-            fontWeight: 'normal',
-            padding: '0px',
-          }}
-          api={api}
-          system={system}
-          path={path}
-          separator={null}
-          itemRender={(item, _, routes) =>
-            item === routes.slice(-1)[0] && (
-              <>
-                <i
-                  role="none"
-                  style={{ color: '#333333' }}
-                  className="fa fa-folder-o"
-                >
-                  &nbsp;&nbsp;
-                </i>
-                {item.title}
-              </>
-            )
-          }
-        />
-      ),
+      title: <DestHeaderTitle api={api} system={system} path={path} />,
       dataIndex: 'name',
       ellipsis: true,
 
-      render: (data, record) =>
-        record.type === 'dir' ? (
-          <Button
-            style={{ marginLeft: '3rem' }}
-            onClick={() => navCallback(encodeURIComponent(record.path))}
-            type="link"
+      render: (data, record) => (
+        <Button
+          style={{ marginLeft: '3rem' }}
+          onClick={() => navCallback(encodeURIComponent(record.path))}
+          type="link"
+        >
+          <i
+            role="none"
+            style={{ color: '#333333' }}
+            className="fa fa-folder-o"
           >
-            <i
-              role="none"
-              style={{ color: '#333333' }}
-              className="fa fa-folder-o"
-            >
-              &nbsp;&nbsp;
-            </i>
-            {data}
-          </Button>
-        ) : (
-          data
-        ),
+            &nbsp;&nbsp;
+          </i>
+          {data}
+        </Button>
+      ),
     },
     {
       dataIndex: 'path',
       align: 'end',
-      title: () => (
+      title: (
         <Button
           type="primary"
           onClick={() => mutationCallback(decodeURIComponent(path))}
@@ -89,7 +77,7 @@ function getDestFilesColumns(
           Copy
         </Button>
       ),
-      render: (data, record) => (
+      render: (_, record) => (
         <Button type="primary" onClick={() => mutationCallback(record.path)}>
           Copy
         </Button>
@@ -142,6 +130,7 @@ export const CopyModal: React.FC<{
           dest: { api: destApi, system: destSystem, path: dPath },
         })
       );
+      handleClose();
     },
     [selectedFiles, mutate, destApi, destSystem, api, system]
   );
@@ -219,14 +208,13 @@ export const CopyModal: React.FC<{
               }}
             >
               <FileListingTable
-                style={{}}
                 api={destApi}
                 system={destSystem}
                 path={destPath}
                 columns={DestFilesColumns}
                 rowSelection={undefined}
                 filterFn={(listing) => listing.filter((f) => f.type === 'dir')}
-                scroll={{ y: undefined }}
+                scroll={undefined}
               ></FileListingTable>
             </div>
           </section>

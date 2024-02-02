@@ -25,6 +25,9 @@
 .ant-table .ant-table-body .ant-table-placeholder > td {
   border-bottom-color: transparent;
 }
+.ant-table .ant-table-tbody .ant-table-placeholder > td {
+  border-bottom-color: transparent;
+}
 
 .ant-table-container {
   height: 100%;

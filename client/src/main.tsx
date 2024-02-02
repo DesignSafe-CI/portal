@@ -19,6 +19,7 @@ const themeConfig: ThemeConfig = {
       cellPaddingBlock: 8,
       headerBg: 'transparent',
       headerColor: '#333333',
+      headerSplitColor: 'transparent',
       rowHoverBg: 'rgb(230, 246, 255)',
       borderColor: 'rgb(215, 215, 215)',
       colorText: 'rgb(112, 112, 112)',
