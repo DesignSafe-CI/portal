@@ -12,11 +12,18 @@ import {
   TFileListingColumns,
 } from '../../FileListing/FileListingTable/FileListingTable';
 import { BaseFileListingBreadcrumb } from '../../DatafilesBreadcrumb/DatafilesBreadcrumb';
+import styles from './CopyModal.module.css';
+import { toBytes } from '../../FileListing/FileListing';
 
 const SelectedFilesColumns: TFileListingColumns = [
   {
-    title: () => <span>Files to Copy</span>,
+    title: 'Files/Folders to Copy',
     dataIndex: 'name',
+  },
+  {
+    title: <span />,
+    dataIndex: 'length',
+    render: (value) => toBytes(value),
   },
 ];
 
@@ -51,7 +58,7 @@ function getDestFilesColumns(
 
       render: (data, record) => (
         <Button
-          style={{ marginLeft: '3rem' }}
+          style={{ marginLeft: '3rem', textAlign: 'center' }}
           onClick={() => navCallback(encodeURIComponent(record.path))}
           type="link"
         >
@@ -59,9 +66,8 @@ function getDestFilesColumns(
             role="none"
             style={{ color: '#333333' }}
             className="fa fa-folder-o"
-          >
-            &nbsp;&nbsp;
-          </i>
+          />
+          &nbsp;&nbsp;
           {data}
         </Button>
       ),
@@ -154,36 +160,21 @@ export const CopyModal: React.FC<{
         open={isModalOpen}
         onCancel={handleClose}
         width="80%"
-        title="Copy Files"
+        title={<h2>Copy Files</h2>}
         footer={null}
       >
-        <div
-          style={{
-            display: 'flex',
-            maxHeight: '60vh',
-            minHeight: '400px',
-            gap: '50px',
-          }}
-        >
-          <section style={{ flex: 1, overflow: 'auto' }}>
+        <article className={styles.copyModalContent}>
+          <section className={styles.srcFilesSection}>
             <Table
-              style={{ border: '1px solid gray', height: '100%' }}
+              className={styles.srcFilesTable}
               columns={SelectedFilesColumns}
               dataSource={selectedFiles}
               pagination={false}
               rowKey={(record) => record.path}
-              scroll={{ y: undefined }}
+              scroll={{ y: '100%' }}
             />
           </section>
-          <section
-            style={{
-              display: 'flex',
-              flex: 1,
-              flexDirection: 'column',
-              overflow: 'auto',
-              border: '1px solid gray',
-            }}
-          >
+          <section className={styles.destFilesSection}>
             <BaseFileListingBreadcrumb
               api={destApi}
               system={destSystem}
@@ -199,14 +190,7 @@ export const CopyModal: React.FC<{
                 );
               }}
             />
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'auto',
-              }}
-            >
+            <div className={styles.destFilesTableContainer}>
               <FileListingTable
                 api={destApi}
                 system={destSystem}
@@ -215,10 +199,10 @@ export const CopyModal: React.FC<{
                 rowSelection={undefined}
                 filterFn={(listing) => listing.filter((f) => f.type === 'dir')}
                 scroll={undefined}
-              ></FileListingTable>
+              />
             </div>
           </section>
-        </div>
+        </article>
       </Modal>
     </>
   );
