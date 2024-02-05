@@ -1,0 +1,35 @@
+.copyModalContent {
+  display: flex;
+  max-height: 60vh;
+  min-height: 400px;
+  gap: 50px;
+}
+
+.copyModalContent td {
+  vertical-align: middle;
+}
+
+.srcFilesSection {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid #707070;
+}
+
+.srcFilesTable {
+  height: 100%;
+}
+
+.destFilesSection {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid #707070;
+}
+
+.destFilesTableContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+}

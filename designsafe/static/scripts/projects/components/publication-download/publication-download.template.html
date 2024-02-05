@@ -12,9 +12,20 @@
     </h3>
 </div>
 <div class="modal-body" ng-if="$ctrl.loaded">
-    <div ng-if="!$ctrl.error" style="margin-top: 5px;">
+    <div ng-if="!$ctrl.error && $ctrl.arcData.length <= 2147483648" style="margin-top: 5px;">
         <p>
             This download is a ZIP file of the complete project dataset. The size of the ZIP file is <strong>{{$ctrl.arcData.length|bytes}}</strong>.
+            <!-- A JSON file is included that contains all of the metadata. -->
+        </p>
+    </div>
+    <div ng-if="!$ctrl.error && $ctrl.arcData.length > 2147483648" style="margin-top: 5px;">
+        <p>
+            This project zipped is <strong>{{$ctrl.arcData.length|bytes}}</strong>, exceeding the <strong>2 GB</strong> download limit. To download, 
+            <a href="https://accounts.tacc.utexas.edu/register" target="_blank" aria-describedby="msg-open-new-window">create an account</a>
+            and follow the 
+            <a href="/user-guide/managingdata/#data-transfer-guides" target="_blank" aria-describedby="msg-open-new-window">Data Transfer Guide</a>. 
+            Alternatively, download files individually by selecting the file and using the download
+            button in the toolbar.
             <!-- A JSON file is included that contains all of the metadata. -->
         </p>
     </div>
@@ -140,7 +151,7 @@
         <a href="/rw/user-guides/curating-publishing-projects/policies/publication/" target="_blank" aria-describedby="msg-open-new-window">Data Usage Agreement</a>
     </p>
     <br>
-    <div class="text-right" ng-if="!$ctrl.error">
+    <div class="text-right" ng-if="!$ctrl.error && $ctrl.arcData.length <= 2147483648">
         <button class="btn btn-add" ng-click="$ctrl.download()" ng-disabled="!$ctrl.loaded || $ctrl.retrievingPostit">
             <div class="btn-container" ng-if="!$ctrl.retrievingPostit">
                 <span class="curation-download"></span>

@@ -10,7 +10,11 @@
           "error",
           {
             "enforceBuildableLibDependency": true,
-            "allow": ["@client/hooks", "@client/test-fixtures"],
+            "allow": [
+              "@client/hooks",
+              "@client/test-fixtures",
+              "@client/common-components"
+            ],
             "depConstraints": [
               {
                 "sourceTag": "*",

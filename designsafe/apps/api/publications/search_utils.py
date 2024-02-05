@@ -128,7 +128,7 @@ def author_query(author):
              {"path": "users",
                  "ignore_unmapped": True,
               "query": {
-                  "query_string": {"fields": ["users.first_name", "users.last_name", "users.username"], "query": author}
+                  "query_string": {"fields": ["users.first_name", "users.last_name", "users.username"], "query": author, "type": "cross_fields"}
               }
 
               }})
@@ -140,7 +140,7 @@ def author_query(author):
                            "authors.fname",
                            "authors.lname", ]
 
-    aq2 = Q('multi_match', query=author, fields=other_author_fields, operator="AND", type="cross_fields")
+    aq2 = Q('query_string', type="cross_fields", query=author, fields=other_author_fields)
 
     return aq1 | aq2
 
@@ -196,11 +196,19 @@ def description_query(description):
 def search_string_query(search_string):
     if not search_string:
         return None
-    q1 =  Q('query_string', query=f"\"{search_string}\"", fields=['project.value.description',
+    q1 =  Q('query_string', query=search_string, default_operator="AND", type="cross_fields", fields=['project.value.description',
                                                           'project.value.keywords',
                                                           'project.value.title',
                                                           'projectId',
                                                           'project.value.projectType',
-                                                          'project.value.dataType'])
+                                                          'project.value.dataType', "project.value.pi",
+                                                          "project.value.teamOrder.fname",
+                                                          "project.value.teamOrder.lname",
+                                                          "project.value.teamOrder.name",
+                                                          "authors.fname",
+                                                          "authors.lname",
+                                                          "authors.email",
+                                                          "authors.inst",
+                                                          "users"])
     q2 = Q({'term': {'projectId._exact': search_string}})
-    return q1 | q2 | author_query(search_string)
+    return q1 | q2
