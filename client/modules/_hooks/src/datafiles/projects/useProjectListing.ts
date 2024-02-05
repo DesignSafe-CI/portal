@@ -2,25 +2,25 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../apiClient';
 
 export type TProjectListingItem = {
-  uuid: string,
-  lastUpdated: string,
+  uuid: string;
+  lastUpdated: string;
   value: {
-    title: string,
-    projectId: string,
+    title: string;
+    projectId: string;
     users: {
-      fname: string,
-      lname: string,
-      role: string,
-      email: string,
-      inst: string
-    }[]
-  }
-}
+      fname: string;
+      lname: string;
+      role: string;
+      email: string;
+      inst: string;
+    }[];
+  };
+};
 
 export type TProjectListingResponse = {
-  total: number,
-  result: TProjectListingItem[]
-}
+  total: number;
+  result: TProjectListingItem[];
+};
 
 async function getProjectListing({
   page = 1,
@@ -31,11 +31,13 @@ async function getProjectListing({
   limit: number;
   signal: AbortSignal;
 }) {
-
-  const resp = await apiClient.get<TProjectListingResponse>('/api/projects/v2', {
-    signal,
-    params: { offset: (page - 1) * limit, limit },
-  });
+  const resp = await apiClient.get<TProjectListingResponse>(
+    '/api/projects/v2',
+    {
+      signal,
+      params: { offset: (page - 1) * limit, limit },
+    }
+  );
   return resp.data;
 }
 
