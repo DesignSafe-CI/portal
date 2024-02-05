@@ -18,3 +18,4 @@ export {
   usePathDisplayName,
   getSystemRootDisplayName,
 } from './usePathDisplayName';
+export * from './projects';
