@@ -1,7 +1,10 @@
-<style id="css-app-card-pattern">
+/* STRUCTURE */
+
+/* To load most structure from Core-Styles */
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-s-app-card/dist/trumps/s-app-card.css");
 
-/* STRUCTURE */
+/* To support equal-height columns in Bootstrap 3 */
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-s-app-card/dist/components/bootstrap.row.css");
 
 /* To stretch card to fill column height */
 :where( .col, [class^="col-"] ) .app-card {
@@ -20,9 +23,3 @@
 .app-card > :not(h3) {
     font-size: 1rem; /* HELP: Let 14px cascade instead? */
 }
-
-</style>
-<style id="css-app-card-pattern--supplemental">
-/* To support equal-height columns in Bootstrap 3 */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-s-app-card/dist/components/bootstrap.row.css");
-</style>
