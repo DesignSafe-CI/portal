@@ -73,3 +73,23 @@
 .listing-nav-link {
   text-decoration: none !important;
 }
+
+.success-button {
+  background-color: #1cb500 !important;
+  border: 1px solid #158600;
+}
+.success-button:hover {
+  background-color: #158600 !important;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-2 {
+  flex: 2;
+}
+
+.inner-form-item {
+  margin-bottom: 0;
+}

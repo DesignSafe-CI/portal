@@ -86,14 +86,16 @@ export const PreviewModal: TPreviewModal = ({
   return (
     <>
       {React.createElement(children, { onClick: showModal })}
-      <PreviewModalBody
-        api={api}
-        system={system}
-        scheme={scheme}
-        path={path}
-        isOpen={isModalOpen}
-        handleCancel={handleCancel}
-      />
+      {isModalOpen && (
+        <PreviewModalBody
+          api={api}
+          system={system}
+          scheme={scheme}
+          path={path}
+          isOpen={isModalOpen}
+          handleCancel={handleCancel}
+        />
+      )}
     </>
   );
 };
