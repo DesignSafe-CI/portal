@@ -35,6 +35,7 @@ export const DatafilesToolbar: React.FC = () => {
         canPreview:
           selectedFiles.length === 1 && selectedFiles[0].type === 'file',
         canCopy: user && selectedFiles.length >= 1,
+        canTrash: user && selectedFiles.length >= 1,
       };
     },
     [selectedFiles, user]
@@ -73,6 +74,14 @@ export const DatafilesToolbar: React.FC = () => {
             </ToolbarButton>
           )}
         </DatafilesModal.Copy>
+        <ToolbarButton
+          // onClick={!inTrash ? trash}
+          disabled={!rules.canTrash}
+          className={styles.toolbarButton}
+        >
+          <i role="none" className="fa fa-trash" />
+          <span>Trash</span>
+        </ToolbarButton>
       </div>
     </div>
   );
