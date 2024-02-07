@@ -1,10 +1,26 @@
 <style id="css-app-card-pattern">
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-s-app-card/dist/trumps/s-app-card.css");
 
+/* STRUCTURE */
+
 /* To stretch card to fill column height */
 :where( .col, [class^="col-"] ) .app-card {
     height: 100%;
 }
+
+/* SKIN */
+
+.app-card {
+    border: 1px solid #AFAFAF;
+    box-shadow: 3px 2px 2px #00000029;
+}
+.app-card > h3 {
+    font-size: 1.4rem; /* HELP: Let 20px cascade instead? */
+}
+.app-card > :not(h3) {
+    font-size: 1rem; /* HELP: Let 14px cascade instead? */
+}
+
 </style>
 <style id="css-app-card-pattern--supplemental">
 /* To support equal-height columns in Bootstrap 3 */
