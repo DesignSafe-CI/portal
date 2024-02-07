@@ -14,6 +14,7 @@ import {
   RelatedWorkInput,
   ReferencedDataInput,
 } from './_fields';
+import { TProjectUser } from './_fields/UserSelect';
 
 const customizeRequiredMark = (
   label: React.ReactNode,
@@ -41,11 +42,77 @@ const customizeRequiredMark = (
 export const BaseProjectForm: React.FC = () => {
   const [form] = Form.useForm();
 
+  function processFormData(formData: Record<string, TProjectUser[]>) {
+    const { pi, coPis, teamMembers, guestMembers, ...rest } = formData;
+    return {
+      ...rest,
+      users: [...pi, ...coPis, ...teamMembers, ...guestMembers],
+    };
+  }
+
+  function cleanInitialvalues(projectData: Record<string, TProjectUser[]>) {
+    const { users, ...rest } = projectData;
+    return {
+      ...rest,
+      pi: users.filter((u) => u.role === 'pi'),
+      coPis: users.filter((u) => u.role === 'co_pi'),
+      teamMembers: users.filter((u) => u.role === 'team_member'),
+      guestMembers: users.filter((u) => u.role === 'guest'),
+    };
+  }
+
+  const initialdata = {
+    users: [
+      {
+        fname: 'Jake',
+        lname: 'Rosenberg',
+        inst: 'University of Texas at Austin (utexas.edu)',
+        email: '...',
+        username: 'jarosenb',
+        role: 'pi',
+      },
+      {
+        fname: 'Sarah',
+        lname: 'Gray',
+        inst: 'University of Texas at Austin (utexas.edu)',
+        email: '...',
+        username: 'sgray',
+        role: 'co_pi',
+      },
+      {
+        fname: 'Ellen',
+        lname: 'Rathje',
+        inst: 'University of Texas at Austin (utexas.edu)',
+        email: '...',
+        username: 'erathje',
+        role: 'team_member',
+      },
+      {
+        fname: 'Tracy',
+        lname: 'Brown',
+        inst: 'University of Texas at Austin (utexas.edu)',
+        email: '...',
+        username: 'thbrown',
+        role: 'team_member',
+      },
+      {
+        fname: 'Tracy2',
+        lname: 'Brown2',
+        inst: 'University of Texas at Austin (utexas.edu)',
+        email: '...',
+        username: 'thbrown',
+        role: 'guest',
+      },
+    ],
+  };
+
   return (
     <Form
       form={form}
       layout="vertical"
-      onFinish={(v) => console.log(v)}
+      onFinish={(v) => console.log(processFormData(v))}
+      onFinishFailed={(v) => console.log(processFormData(v.values))}
+      initialValues={cleanInitialvalues(initialdata)}
       requiredMark={customizeRequiredMark}
     >
       <Form.Item label="Project Title" required>

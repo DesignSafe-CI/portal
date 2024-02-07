@@ -45,6 +45,13 @@ export const GuestMembersInput: React.FC<{ name: string }> = ({ name }) => {
                 >
                   <Input disabled={disabled} />
                 </Form.Item>
+                <Form.Item
+                  hidden
+                  name={disabled ? undefined : [name, 'role']}
+                  initialValue="guest"
+                >
+                  <Input hidden />
+                </Form.Item>
                 <Form.Item label="&nbsp;" hidden={disabled}>
                   <Button
                     type="primary"

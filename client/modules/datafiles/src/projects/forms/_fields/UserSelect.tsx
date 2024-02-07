@@ -17,14 +17,18 @@ export const UserSelect: React.FC<{
   userRole?: string;
   maxCount?: number;
 }> = ({ value, onChange, userRole, maxCount }) => {
-  const [data, setData] = useState<SelectProps['options']>([]);
+  const initialOptions = value?.map((u) => ({
+    label: `${u.fname} ${u.lname} (${u.email})`,
+    value: JSON.stringify(u),
+  }));
+  const [data, setData] = useState<SelectProps['options']>(initialOptions);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const debouncedSearchTerm = useDebounceValue(searchTerm, 100);
 
   useEffect(() => {
-    if (!debouncedSearchTerm || debouncedSearchTerm.length < 3) {
-      setData([]);
+    if (!debouncedSearchTerm) return;
+    if (debouncedSearchTerm && debouncedSearchTerm.length < 3) {
       return;
     }
     apiClient
