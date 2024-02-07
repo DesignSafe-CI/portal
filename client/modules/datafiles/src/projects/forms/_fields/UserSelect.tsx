@@ -1,6 +1,6 @@
 import { apiClient, useDebounceValue } from '@client/hooks';
 import { Select, SelectProps } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 export type TProjectUser = {
   fname: string;
@@ -17,24 +17,31 @@ export const UserSelect: React.FC<{
   userRole?: string;
   maxCount?: number;
 }> = ({ value, onChange, userRole, maxCount }) => {
-  const initialOptions = value?.map((u) => ({
-    label: `${u.fname} ${u.lname} (${u.email})`,
-    value: JSON.stringify(u),
-  }));
+  const initialOptions: SelectProps['options'] = useMemo(
+    () =>
+      value?.map((u) => ({
+        label: `${u.fname} ${u.lname} (${u.email})`,
+        value: JSON.stringify(u),
+      })) ?? [],
+    [value]
+  );
   const [data, setData] = useState<SelectProps['options']>(initialOptions);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const debouncedSearchTerm = useDebounceValue(searchTerm, 100);
 
   useEffect(() => {
-    if (!debouncedSearchTerm) return;
-    if (debouncedSearchTerm && debouncedSearchTerm.length < 3) {
+    if (!debouncedSearchTerm || debouncedSearchTerm.length < 3) {
+      setData([]);
       return;
     }
+    const controller = new AbortController();
     apiClient
       .get<{
         result: Omit<TProjectUser, 'role'>[];
-      }>(`/api/users/project-lookup/?q=${debouncedSearchTerm}`)
+      }>(`/api/users/project-lookup/?q=${debouncedSearchTerm}`, {
+        signal: controller.signal,
+      })
       .then((resp) =>
         resp.data.result.map((u) => ({
           label: `${u.fname} ${u.lname} (${u.email})`,
@@ -43,10 +50,12 @@ export const UserSelect: React.FC<{
       )
       .then((opts) => setData(opts))
       .catch((_) => setData([]));
+    return () => controller.abort();
   }, [debouncedSearchTerm, setData, userRole]);
 
   const changeCallback = (newValue: string[]) => {
     onChange && onChange(newValue.map((v) => JSON.parse(v)));
+    setSearchTerm('');
   };
 
   return (
@@ -57,7 +66,7 @@ export const UserSelect: React.FC<{
       mode="multiple"
       placeholder="Look up users by TACC username. Exact match required."
       showSearch
-      options={data}
+      options={debouncedSearchTerm ? data : initialOptions}
       onSearch={setSearchTerm}
       onChange={changeCallback}
     />
