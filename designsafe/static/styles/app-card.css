@@ -18,7 +18,7 @@
 /* To stretch card to fill column height */
 :where( .col, [class^="col-"] ) .app-card {
     height: 100%;
-    min-height: 200px;
+    min-height: 230px;
 }
 
 /* Features */
