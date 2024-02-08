@@ -2,7 +2,6 @@
 
 /* To load most structure from Core-Styles */
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@0f9cf809/dist/trumps/s-app-card.css");
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/add-font-weight--light/dist/settings/font.css");
 
 /* To support equal-height columns in Bootstrap 3 */
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@0f9cf809/dist/components/bootstrap.row.css");
@@ -25,6 +24,7 @@
 /* Features */
 .app-card > ul:not(:last-of-type) {
     padding: 1em;
+    font-weight: var(--medium);
 }
 
 /* Tags */
@@ -60,13 +60,9 @@ a.app-card:active,
 .app-card:has(a:active) {
     outline-width: 1px;
 }
-.app-card > :not(h3) {
-    font-size: 1rem; /* HELP: Let 14px cascade instead? */
-}
 
 /* Title */
 .app-card > h3 {
-    font-size: 1.4rem; /* HELP: Let 20px cascade instead? */
     margin-top: 0.5em;
     margin-bottom: 0;
 }
@@ -76,15 +72,19 @@ a.app-card:active,
     line-height: 1.8;
     padding-inline: 1rem;
     margin-block: 1.5rem;
-    font-weight: var(--light); /* SEE: Core-Styles dist/settings/font.css */
+    font-size: 1.2rem;
 }
 
 /* Features */
 .app-card > ul:not(:last-of-type) {
     background-color: #F4F4F4;
+    font-size: 1.2rem;
 }
 
 /* Tags */
+.app-card > ul:last-of-type {
+    font-size: 1.2rem;
+}
 .app-card > ul:last-of-type > li:has(strong) {
     background-color: #ECE4BF;
 }
