@@ -31,7 +31,6 @@ export const ProjectListing: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const { data, isLoading } = useProjectListing(currentPage, limit);
 
-  console.log(data);
   return (
     <Table
       dataSource={data ? data.result : []}

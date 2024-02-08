@@ -15,6 +15,7 @@ import {
   ReferencedDataInput,
 } from './_fields';
 import { TProjectUser } from './_fields/UserSelect';
+import { useProjectDetail } from '@client/hooks';
 
 const customizeRequiredMark = (
   label: React.ReactNode,
@@ -39,9 +40,10 @@ const customizeRequiredMark = (
   </>
 );
 
-export const BaseProjectForm: React.FC = () => {
+export const BaseProjectForm: React.FC<{projectId: string}> = ({projectId}) => {
   const [form] = Form.useForm();
-
+  const { data } = useProjectDetail(projectId ?? '');
+  if (!data) return <div>Loading</div>
   function processFormData(formData: Record<string, TProjectUser[]>) {
     const { pi, coPis, teamMembers, guestMembers, ...rest } = formData;
     return {
@@ -61,60 +63,19 @@ export const BaseProjectForm: React.FC = () => {
     };
   }
 
-  const initialdata = {
-    users: [
-      {
-        fname: 'Jake',
-        lname: 'Rosenberg',
-        inst: 'University of Texas at Austin (utexas.edu)',
-        email: '...',
-        username: 'jarosenb',
-        role: 'pi',
-      },
-      {
-        fname: 'Sarah',
-        lname: 'Gray',
-        inst: 'University of Texas at Austin (utexas.edu)',
-        email: '...',
-        username: 'sgray',
-        role: 'co_pi',
-      },
-      {
-        fname: 'Ellen',
-        lname: 'Rathje',
-        inst: 'University of Texas at Austin (utexas.edu)',
-        email: '...',
-        username: 'erathje',
-        role: 'team_member',
-      },
-      {
-        fname: 'Tracy',
-        lname: 'Brown',
-        inst: 'University of Texas at Austin (utexas.edu)',
-        email: '...',
-        username: 'thbrown',
-        role: 'team_member',
-      },
-      {
-        fname: 'Tracy2',
-        lname: 'Brown2',
-        inst: 'University of Texas at Austin (utexas.edu)',
-        email: '...',
-        username: 'thbrown',
-        role: 'guest',
-      },
-    ],
-  };
-
   return (
     <Form
       form={form}
       layout="vertical"
       onFinish={(v) => console.log(processFormData(v))}
       onFinishFailed={(v) => console.log(processFormData(v.values))}
-      initialValues={cleanInitialvalues(initialdata)}
       requiredMark={customizeRequiredMark}
     >
+      <Button
+        onClick={() => form.setFieldsValue(cleanInitialvalues(data.baseProject.value))}
+      >
+        Set form
+      </Button>
       <Form.Item label="Project Title" required>
         Incorporate the project's focus with words indicating the hazard, model,
         system, and research approach. Define all acronyms.

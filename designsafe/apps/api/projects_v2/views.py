@@ -2,7 +2,10 @@
 
 import logging
 from django.http import HttpRequest, JsonResponse
+from django.db import models
 from designsafe.apps.api.views import BaseApiView, ApiException
+from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+from designsafe.apps.api.projects_v2 import constants
 
 logger = logging.getLogger(__name__)
 
@@ -17,23 +20,14 @@ class ProjectsView(BaseApiView):
         # user = get_user_model().objects.get(username="ds_admin")
         user = request.user
 
-        if not getattr(user, "username", None):
+        if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
         projects = user.projects.order_by("last_updated")[offset : offset + limit]
         total = user.projects.count()
 
         project_json = {
-            "result": [
-                {
-                    "uuid": project.uuid,
-                    "name": project.name,
-                    "value": project.value,
-                    "lastUpdated": project.last_updated,
-                    "created": project.created,
-                }
-                for project in projects
-            ],
+            "result": [project.to_dict() for project in projects],
             "total": total,
         }
 
@@ -48,6 +42,29 @@ class ProjectInstanceView(BaseApiView):
 
     def get(self, request: HttpRequest, project_id: str):
         """Return all project metadata for a project ID"""
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        try:
+            project = user.projects.get(
+                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+            )
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
+
+        entities = ProjectMetadata.objects.filter(base_project=project)
+        return JsonResponse(
+            {
+                "baseProject": project.to_dict(),
+                "entities": [
+                    e.to_dict() for e in entities if e.name != constants.PROJECT
+                ],
+                "tree": project.project_graph.to_dict(),
+            }
+        )
 
     def put(self, request):
         """Update a project's root metadata"""

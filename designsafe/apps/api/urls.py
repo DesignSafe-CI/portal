@@ -5,6 +5,8 @@ from django.http import JsonResponse
 
 urlpatterns = [
     path("projects/v2", include('designsafe.apps.api.projects_v2.urls')),
+    path("projects/v2/", include('designsafe.apps.api.projects_v2.urls')),
+
     url(r'^projects/', include(('designsafe.apps.api.projects.urls', 'designsafe.apps.api.projects'),
                                namespace='ds_projects_api')),
 
