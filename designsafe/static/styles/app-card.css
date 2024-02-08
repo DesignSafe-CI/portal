@@ -1,25 +1,74 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-s-app-card/dist/trumps/s-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@fdf608bb/dist/trumps/s-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/add-font-weight--light/dist/settings/font.css");
 
 /* To support equal-height columns in Bootstrap 3 */
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-s-app-card/dist/components/bootstrap.row.css");
 
+/* Card */
 /* To stretch card to fill column height */
 :where( .col, [class^="col-"] ) .app-card {
     height: 100%;
 }
 
+/* Features */
+.app-card > ul:not(:last-of-type) {
+    padding: 0.75em;
+    margin-bottom: 2rem;
+}
+
+/* Tags */
+.app-card > ul:last-of-type > li {
+    --buffer--horz: 0.75em;
+    --buffer--vert: 0.50em;
+
+    padding: var(--buffer--vert) var(--buffer--horz);
+}
+.app-card > ul:last-of-type > li:has(strong) {
+    display: inline-block;
+    padding-block: var(--buffer--vert);
+    padding-inline: calc( var(--buffer--horz) * 2 );
+}
+
+
+
 /* SKIN */
 
+/* Card */
 .app-card {
     border: 1px solid #AFAFAF;
     box-shadow: 3px 2px 2px #00000029;
 }
-.app-card > h3 {
-    font-size: 1.4rem; /* HELP: Let 20px cascade instead? */
+.app-card:hover {
+    border: 2px solid #0000FF;
 }
 .app-card > :not(h3) {
     font-size: 1rem; /* HELP: Let 14px cascade instead? */
+}
+
+/* Title */
+.app-card > h3 {
+    font-size: 1.4rem; /* HELP: Let 20px cascade instead? */
+    margin-top: 0.5em;
+    margin-bottom: 0;
+}
+
+/* Description */
+.app-card > p {
+    line-height: 1.8;
+    padding-inline: 1rem;
+    margin-block: 1.5rem;
+    font-weight: var(--light); /* SEE: Core-Styles dist/settings/font.css */
+}
+
+/* Features */
+.app-card > ul:not(:last-of-type) {
+    background-color: #F4F4F4;
+}
+
+/* Tags */
+.app-card > ul:last-of-type > li:has(strong) {
+    background-color: #ECE4BF;
 }
