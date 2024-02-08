@@ -1,12 +1,12 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@664c67e3/dist/trumps/s-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@0f9cf809/dist/trumps/s-app-card.css");
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/add-font-weight--light/dist/settings/font.css");
 
 /* To support equal-height columns in Bootstrap 3 */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@664c67e3/dist/components/bootstrap.row.css");
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@664c67e3/dist/settings/space.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@0f9cf809/dist/components/bootstrap.row.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@0f9cf809/dist/settings/space.css");
 /* Add expected gap between rows of full-height columns */
 .has-row--col-stretch-content-y [class^="col-"] {
     margin-bottom: var(--global-space--bootstrap-gap);
