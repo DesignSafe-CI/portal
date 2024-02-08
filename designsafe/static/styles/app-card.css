@@ -1,22 +1,30 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@fdf608bb/dist/trumps/s-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@664c67e3/dist/trumps/s-app-card.css");
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/add-font-weight--light/dist/settings/font.css");
 
 /* To support equal-height columns in Bootstrap 3 */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-s-app-card/dist/components/bootstrap.row.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@664c67e3/dist/components/bootstrap.row.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@664c67e3/dist/settings/space.css");
+/* Add expected gap between rows of full-height columns */
+.has-row--col-stretch-content-y [class^="col-"] {
+    margin-bottom: var(--global-space--bootstrap-gap);
+}
+.has-row--col-stretch-content-y .row:last-child {
+    margin-bottom: calc( var(--global-space--bootstrap-gap) * -1 );
+}
 
 /* Card */
 /* To stretch card to fill column height */
 :where( .col, [class^="col-"] ) .app-card {
     height: 100%;
+    min-height: 160px;
 }
 
 /* Features */
 .app-card > ul:not(:last-of-type) {
-    padding: 0.75em;
-    margin-bottom: 2rem;
+    padding: 1em;
 }
 
 /* Tags */
@@ -38,11 +46,19 @@
 
 /* Card */
 .app-card {
-    border: 1px solid #AFAFAF;
+    --border-width: 1px;
+
+    border: var(--border-width) solid #AFAFAF;
     box-shadow: 3px 2px 2px #00000029;
 }
 .app-card:hover {
-    border: 2px solid #0000FF;
+    outline: 2px solid #0000FF;
+    outline-offset: calc( var(--border-width) * -1 );
+    box-shadow: none;
+}
+a.app-card:active,
+.app-card:has(a:active) {
+    outline-width: 1px;
 }
 .app-card > :not(h3) {
     font-size: 1rem; /* HELP: Let 14px cascade instead? */
