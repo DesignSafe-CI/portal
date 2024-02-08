@@ -34,6 +34,8 @@ export const DatafilesToolbar: React.FC = () => {
       return {
         canPreview:
           selectedFiles.length === 1 && selectedFiles[0].type === 'file',
+        canRename:
+          selectedFiles.length === 1 && selectedFiles[0].type === 'file',
         canCopy: user && selectedFiles.length >= 1,
         canTrash: user && selectedFiles.length >= 1,
       };
@@ -41,9 +43,28 @@ export const DatafilesToolbar: React.FC = () => {
     [selectedFiles, user]
   );
 
+  const trashFiles = (event: React.MouseEvent<HTMLElement>) => {
+    const trashPath = path.replace(/^\//, '').split('/').pop();
+    console.log(trashPath)
+    // const trashpath = path === 'myData' ? '${user}/.Trash' : '.Trash';
+  }
+    
+
   return (
     <div className={styles.toolbarRoot}>
       <span>(search bar goes here)</span>
+      <DatafilesModal.Rename api={api} system={system} path={path}>
+          {({ onClick }) => (
+            <ToolbarButton
+              onClick={onClick}
+              disabled={!rules.canRename}
+              className={styles.toolbarButton}
+            >
+              <i role="none" className="fa fa-rename" />
+              <span>Rename</span>
+            </ToolbarButton>
+          )}
+        </DatafilesModal.Rename>
       <div className={styles.toolbarButtonContainer}>
         <DatafilesModal.Preview
           api={api}
@@ -75,7 +96,7 @@ export const DatafilesToolbar: React.FC = () => {
           )}
         </DatafilesModal.Copy>
         <ToolbarButton
-          // onClick={!inTrash ? trash}
+          onClick={trashFiles}
           disabled={!rules.canTrash}
           className={styles.toolbarButton}
         >
