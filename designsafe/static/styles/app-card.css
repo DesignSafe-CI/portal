@@ -23,10 +23,21 @@
     min-height: 230px;
 }
 
+/* Title */
+.app-card > h3 {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+}
+
+/* Description */
+.app-card > p {
+    padding-inline: 1rem;
+    margin-block: 1.5rem;
+}
+
 /* Hazards */
 .app-card > ul:not(:last-of-type) {
     padding: 1em;
-    font-weight: var(--medium);
 }
 
 /* Tags */
@@ -64,23 +75,17 @@ a.app-card:active,
     outline-width: 1px;
 }
 
-/* Title */
-.app-card > h3 {
-    margin-top: 0.5em;
-    margin-bottom: 0;
-}
-
 /* Description */
 .app-card > p {
     line-height: 1.8;
-    padding-inline: 1rem;
-    margin-block: 1.5rem;
     font-size: 1.2rem;
 }
 
-/* Features */
+/* Hazards */
 .app-card > ul:not(:last-of-type) {
     background-color: #F4F4F4;
+
+    font-weight: var(--medium);
     font-size: 1.2rem;
 }
 
