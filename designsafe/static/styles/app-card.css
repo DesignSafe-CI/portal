@@ -28,6 +28,9 @@
     margin-top: 0.5em;
     margin-bottom: 0;
 }
+.app-card > h3 > .icon::before {
+    font-size: unset; /* to undo 5vw from ng-designsafe.css */
+}
 
 /* Description */
 .app-card > p {
