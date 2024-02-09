@@ -1,11 +1,11 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@959ca299/dist/trumps/s-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@11712397/dist/trumps/s-app-card.css");
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@2.23.1/dist/settings/font.css");
 
 /* To support equal-height columns in Bootstrap 3 */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@959ca299/dist/components/bootstrap.row.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@11712397/dist/components/bootstrap.row.css");
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@2.23.1/dist/settings/space.css");
 
 /* Add expected gap between rows of full-height columns */
@@ -25,6 +25,7 @@
 
 /* Hazards */
 .app-card > ul:not(:last-of-type) {
+    padding: 1em;
     font-weight: var(--medium);
 }
 
