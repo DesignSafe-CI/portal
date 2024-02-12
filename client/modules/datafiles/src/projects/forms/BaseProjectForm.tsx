@@ -15,7 +15,7 @@ import {
   ReferencedDataInput,
 } from './_fields';
 import { TProjectUser } from './_fields/UserSelect';
-import { useProjectDetail } from '@client/hooks';
+import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
 
 const customizeRequiredMark = (
   label: React.ReactNode,
@@ -40,10 +40,12 @@ const customizeRequiredMark = (
   </>
 );
 
-export const BaseProjectForm: React.FC<{projectId: string}> = ({projectId}) => {
+export const BaseProjectForm: React.FC<{ projectId: string }> = ({
+  projectId,
+}) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
-  if (!data) return <div>Loading</div>
+
   function processFormData(formData: Record<string, TProjectUser[]>) {
     const { pi, coPis, teamMembers, guestMembers, ...rest } = formData;
     return {
@@ -52,7 +54,7 @@ export const BaseProjectForm: React.FC<{projectId: string}> = ({projectId}) => {
     };
   }
 
-  function cleanInitialvalues(projectData: Record<string, TProjectUser[]>) {
+  function cleanInitialvalues(projectData: TBaseProjectValue) {
     const { users, ...rest } = projectData;
     return {
       ...rest,
@@ -63,6 +65,8 @@ export const BaseProjectForm: React.FC<{projectId: string}> = ({projectId}) => {
     };
   }
 
+  //const watchedItem = Form.useWatch([], form);
+  if (!data) return <div>Loading</div>;
   return (
     <Form
       form={form}
@@ -72,7 +76,9 @@ export const BaseProjectForm: React.FC<{projectId: string}> = ({projectId}) => {
       requiredMark={customizeRequiredMark}
     >
       <Button
-        onClick={() => form.setFieldsValue(cleanInitialvalues(data.baseProject.value))}
+        onClick={() =>
+          form.setFieldsValue(cleanInitialvalues(data.baseProject.value))
+        }
       >
         Set form
       </Button>

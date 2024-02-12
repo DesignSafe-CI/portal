@@ -139,12 +139,18 @@ const datafilesRouter = createBrowserRouter(
               element: <ProjectDetailLayout />,
               children: [
                 {
+                  path: '',
+                  element: <Navigate to="workdir" replace />,
+                },
+                {
                   path: 'curation/:path?',
                   element: <ProjectCurationLayout />,
                 },
                 {
-                  path: 'workdir/:path?',
-                  element: <ProjectWorkdirLayout />,
+                  path: 'workdir',
+                  children: [
+                    { path: ':path?', element: <ProjectWorkdirLayout /> },
+                  ],
                 },
                 {
                   path: '*',

@@ -1,25 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../apiClient';
-
-export type TProjectListingItem = {
-  uuid: string;
-  lastUpdated: string;
-  value: {
-    title: string;
-    projectId: string;
-    users: {
-      fname: string;
-      lname: string;
-      role: string;
-      email: string;
-      inst: string;
-    }[];
-  };
-};
+import { TBaseProject } from './types';
 
 export type TProjectListingResponse = {
   total: number;
-  result: TProjectListingItem[];
+  result: TBaseProject[];
 };
 
 async function getProjectListing({

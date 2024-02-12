@@ -1,9 +1,9 @@
-import { TProjectListingItem, useProjectListing } from '@client/hooks';
+import { TBaseProject, useProjectListing } from '@client/hooks';
 import { Table, TableColumnsType } from 'antd';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const columns: TableColumnsType<TProjectListingItem> = [
+const columns: TableColumnsType<TBaseProject> = [
   {
     render: (_, record) => record.value.projectId,
     title: 'Project ID',
