@@ -1,0 +1,66 @@
+:root {
+  --tree-spacing-x: 20px;
+  --tree-spacing-y: 40px;
+}
+
+.tree-list-item {
+  background-color: rgb(176, 250, 192);
+  white-space: nowrap;
+  border: 1px solid green;
+  border-radius: 5px;
+  position: relative;
+  padding: 7px;
+  font-size: 14px;
+  z-index: 100;
+}
+
+.tree-list-item::before {
+  position: absolute;
+  top: 50%;
+  content: '';
+  left: calc(-1 * var(--tree-spacing-x));
+  width: var(--tree-spacing-x);
+  border-bottom: 1px solid black;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tree-li {
+  position: relative;
+  padding-top: calc(var(--tree-spacing-y) - 11px);
+  padding-left: var(--tree-spacing-x);
+}
+
+.tree-li::before {
+  position: absolute;
+  content: '';
+  left: 0;
+  top: 0;
+  height: calc(100% + var(--tree-spacing-y));
+  border-left: 1px solid black;
+}
+
+.tree-li:only-child::before {
+  height: var(--tree-spacing-y);
+}
+
+.tree-li:last-child:not(:only-child)::before {
+  border-left: none;
+}
+
+/* Unset padding/lines on the root element */
+.tree-base > li:first-child {
+  padding-left: 0;
+}
+
+.tree-base > li:first-child::before {
+  display: none;
+}
+
+.tree-base > li:first-child > .tree-list-item::before {
+  display: none;
+}

@@ -6,6 +6,7 @@ from django.db import models
 from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2 import constants
+import networkx as nx
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ class ProjectInstanceView(BaseApiView):
                 "entities": [
                     e.to_dict() for e in entities if e.name != constants.PROJECT
                 ],
-                "tree": project.project_graph.to_dict(),
+                "tree": nx.tree_data(nx.node_link_graph(project.project_graph.value), 'NODE_ROOT')
             }
         )
 
