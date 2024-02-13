@@ -1,5 +1,5 @@
 import { Button, Form, Input, Select, Tag } from 'antd';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   nhTypeOptions,
   facilityOptions,
@@ -54,6 +54,12 @@ export const BaseProjectForm: React.FC<{ projectId: string }> = ({
     };
   }
 
+  const setValues = useCallback(() => {
+    if (data) form.setFieldsValue(cleanInitialvalues(data.baseProject.value));
+  }, [data, form]);
+
+  useEffect(() => setValues(), [setValues, projectId]);
+
   function cleanInitialvalues(projectData: TBaseProjectValue) {
     const { users, ...rest } = projectData;
     return {
@@ -75,13 +81,6 @@ export const BaseProjectForm: React.FC<{ projectId: string }> = ({
       onFinishFailed={(v) => console.log(processFormData(v.values))}
       requiredMark={customizeRequiredMark}
     >
-      <Button
-        onClick={() =>
-          form.setFieldsValue(cleanInitialvalues(data.baseProject.value))
-        }
-      >
-        Set form
-      </Button>
       <Form.Item label="Project Title" required>
         Incorporate the project's focus with words indicating the hazard, model,
         system, and research approach. Define all acronyms.
