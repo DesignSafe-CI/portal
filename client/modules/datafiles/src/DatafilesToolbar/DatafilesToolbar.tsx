@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import styles from './DatafilesToolbar.module.css';
 import {
   useAuthenticatedUser,
@@ -7,6 +7,7 @@ import {
 } from '@client/hooks';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
+import { TransitionHookPhase } from 'angular-ui-router';
 
 const toolbarTheme: ThemeConfig = {
   components: {
@@ -25,7 +26,7 @@ const ToolbarButton: React.FC<ButtonProps> = (props) => {
 
 export const DatafilesToolbar: React.FC = () => {
   const { api, system, scheme, path } = useFileListingRouteParams();
-  const { selectedFiles } = useSelectedFiles(api, system, path);
+  const { selectedFiles, setSelectedFiles } = useSelectedFiles(api, system, path);
   const { user } = useAuthenticatedUser();
 
   const rules = useMemo(
@@ -34,8 +35,7 @@ export const DatafilesToolbar: React.FC = () => {
       return {
         canPreview:
           selectedFiles.length === 1 && selectedFiles[0].type === 'file',
-        canRename:
-          selectedFiles.length === 1 && selectedFiles[0].type === 'file',
+        canRename: selectedFiles.length === 1,
         canCopy: user && selectedFiles.length >= 1,
         canTrash: user && selectedFiles.length >= 1,
       };
@@ -43,11 +43,28 @@ export const DatafilesToolbar: React.FC = () => {
     [selectedFiles, user]
   );
 
-  const trashFiles = (event: React.MouseEvent<HTMLElement>) => {
-    const trashPath = path.replace(/^\//, '').split('/').pop();
-    console.log(trashPath)
-    // const trashpath = path === 'myData' ? '${user}/.Trash' : '.Trash';
-  }
+  const updateFilesPath = (newPath: string) => {
+    const updatedFiles = selectedFiles.map(file => ({
+      ...file,
+      path: newPath,
+    }));
+    setSelectedFiles(updatedFiles);
+    console.log(newPath)
+  };
+
+  const handleUpdateClick = () => {
+    // const trashPath = path === 'myData' ? '${user.username}/.Trash' : '.Trash';
+    const userUsername: string | undefined = user?.username;
+    let trashPath: string;
+    if (typeof userUsername === 'string') {
+      trashPath = userUsername + '/.Trash'; 
+      updateFilesPath(trashPath);
+    } else {
+      // Handle the case when userUsername is undefined
+      trashPath = '.Trash'; 
+      updateFilesPath(trashPath);
+    }
+  };
     
 
   return (
@@ -60,7 +77,7 @@ export const DatafilesToolbar: React.FC = () => {
               disabled={!rules.canRename}
               className={styles.toolbarButton}
             >
-              <i role="none" className="fa fa-rename" />
+              <i role="none" className="fa fa-pencil" />
               <span>Rename</span>
             </ToolbarButton>
           )}
@@ -96,7 +113,7 @@ export const DatafilesToolbar: React.FC = () => {
           )}
         </DatafilesModal.Copy>
         <ToolbarButton
-          onClick={trashFiles}
+          onClick={handleUpdateClick}
           disabled={!rules.canTrash}
           className={styles.toolbarButton}
         >
