@@ -49,7 +49,7 @@ export const DatafilesToolbar: React.FC = () => {
       path: newPath,
     }));
     setSelectedFiles(updatedFiles);
-    console.log(newPath)
+    console.log(newPath);
   };
 
   const handleUpdateClick = () => {
