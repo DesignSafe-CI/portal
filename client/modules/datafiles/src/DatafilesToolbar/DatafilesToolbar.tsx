@@ -8,7 +8,6 @@ import {
 } from '@client/hooks';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
-import { TransitionHookPhase } from 'angular-ui-router';
 
 const toolbarTheme: ThemeConfig = {
   components: {
