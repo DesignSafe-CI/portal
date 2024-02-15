@@ -132,7 +132,7 @@ export const DatafilesToolbar: React.FC = () => {
           )}
         </DatafilesModal.Copy>
         <ToolbarButton
-          onClick={() => handleUpdateClick}
+          onClick={handleUpdateClick}
           disabled={!rules.canTrash}
           className={styles.toolbarButton}
         >
