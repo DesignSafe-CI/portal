@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import styles from './DatafilesToolbar.module.css';
 import {
   useAuthenticatedUser,
   useFileListingRouteParams,
   useSelectedFiles,
+  useTrash,
 } from '@client/hooks';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
@@ -43,14 +44,32 @@ export const DatafilesToolbar: React.FC = () => {
     [selectedFiles, user]
   );
 
-  const updateFilesPath = (newPath: string) => {
-    const updatedFiles = selectedFiles.map(file => ({
-      ...file,
-      path: newPath,
-    }));
-    setSelectedFiles(updatedFiles);
-    console.log(newPath);
-  };
+  const defaultDestParams = useMemo(
+    () => ({
+      destApi: 'tapis',
+      destSystem: 'designsafe.storage.default',
+      destPath: encodeURIComponent('/' + user?.username),
+    }),
+    [user]
+  );
+
+  const [dest, setDest] = useState(defaultDestParams);
+  const { destApi, destSystem } = dest;
+  useEffect(() => setDest(defaultDestParams), [defaultDestParams]);
+
+  const { mutate } = useTrash();
+
+  const updateFilesPath = useCallback(
+    (dPath: string) => {
+      selectedFiles.forEach((f) =>
+        mutate({
+          src: { api, system, path: encodeURIComponent(f.path) },
+          dest: { api: destApi, system: destSystem, path: dPath },
+        })
+      );
+    },
+    [selectedFiles, mutate, destApi, destSystem, api, system]
+  );
 
   const handleUpdateClick = () => {
     // const trashPath = path === 'myData' ? '${user.username}/.Trash' : '.Trash';
@@ -113,7 +132,7 @@ export const DatafilesToolbar: React.FC = () => {
           )}
         </DatafilesModal.Copy>
         <ToolbarButton
-          onClick={handleUpdateClick}
+          onClick={() => handleUpdateClick}
           disabled={!rules.canTrash}
           className={styles.toolbarButton}
         >
