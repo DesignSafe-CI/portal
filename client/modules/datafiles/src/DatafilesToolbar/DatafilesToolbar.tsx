@@ -70,7 +70,7 @@ export const DatafilesToolbar: React.FC = () => {
     [selectedFiles, mutate, destApi, destSystem, api, system]
   );
 
-  const handleUpdateClick = () => {
+  const handleTrashClick = () => {
     // const trashPath = path === 'myData' ? '${user.username}/.Trash' : '.Trash';
     const userUsername: string | undefined = user?.username;
     let trashPath: string;
@@ -82,8 +82,7 @@ export const DatafilesToolbar: React.FC = () => {
       trashPath = '.Trash'; 
       updateFilesPath(trashPath);
     }
-  };
-    
+  };  
 
   return (
     <div className={styles.toolbarRoot}>
@@ -131,7 +130,7 @@ export const DatafilesToolbar: React.FC = () => {
           )}
         </DatafilesModal.Copy>
         <ToolbarButton
-          onClick={handleUpdateClick}
+          onClick={handleTrashClick}
           disabled={!rules.canTrash}
           className={styles.toolbarButton}
         >
