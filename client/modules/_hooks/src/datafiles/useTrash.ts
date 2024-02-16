@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
-type TCopyParam = { api: string; system: string; path: string };
+type TrashParam = { api: string; system: string; path: string };
 
-function TrashFn(src: TCopyParam, dest: TCopyParam) {
+function TrashFn(src: TrashParam, dest: TrashParam) {
   return apiClient.put(
     `/api/datafiles/${src.api}/private/trash/${src.system}/${src.path}/`,
     { trash_path: dest.path }
@@ -16,8 +16,8 @@ export function useTrash() {
       src,
       dest,
     }: {
-      src: TCopyParam;
-      dest: TCopyParam;
+      src: TrashParam;
+      dest: TrashParam;
     }) => TrashFn(src, dest),
   });
 }
