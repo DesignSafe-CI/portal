@@ -14,6 +14,7 @@ export {
 } from './useSelectedFiles';
 
 export { useFileCopy } from './useFileCopy';
+export { useTrash } from './useTrash'
 export {
   usePathDisplayName,
   getSystemRootDisplayName,

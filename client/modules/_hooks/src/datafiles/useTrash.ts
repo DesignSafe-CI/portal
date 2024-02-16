@@ -5,7 +5,7 @@ type TCopyParam = { api: string; system: string; path: string };
 
 function TrashFn(src: TCopyParam, dest: TCopyParam, doi?: string) {
   return apiClient.put(
-    `/api/datafiles/${src.api}/private/move/${src.system}/${src.path}/${
+    `/api/datafiles/${src.api}/private/trash/${src.system}/${src.path}/${
       doi ? `?doi=${doi}` : ''
     }`,
     { dest_system: dest.system, dest_path: dest.path }
