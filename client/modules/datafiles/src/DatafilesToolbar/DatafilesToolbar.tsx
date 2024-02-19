@@ -87,7 +87,9 @@ export const DatafilesToolbar: React.FC = () => {
   return (
     <div className={styles.toolbarRoot}>
       <span>(search bar goes here)</span>
-      <DatafilesModal.Rename api={api} system={system} path={path}>
+      
+      <div className={styles.toolbarButtonContainer}>
+        <DatafilesModal.Rename api={api} system={system} path={path}>
           {({ onClick }) => (
             <ToolbarButton
               onClick={onClick}
@@ -99,7 +101,6 @@ export const DatafilesToolbar: React.FC = () => {
             </ToolbarButton>
           )}
         </DatafilesModal.Rename>
-      <div className={styles.toolbarButtonContainer}>
         <DatafilesModal.Preview
           api={api}
           system={system}
