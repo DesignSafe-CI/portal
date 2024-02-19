@@ -1,6 +1,6 @@
 :root {
-  --tree-spacing-x: 40px;
-  --tree-spacing-y: 30px;
+  --tree-spacing-x: 25px;
+  --tree-spacing-y: 15px;
 }
 
 .tree-list-item {
@@ -30,7 +30,7 @@
 .tree-list-item::after,
 .tree-select-item::after {
   position: absolute;
-  height: var(--tree-spacing-y);
+  height: calc(var(--tree-spacing-y) + 50%);
   left: calc(-1 * var(--tree-spacing-x));
   bottom: 50%;
   content: '';
@@ -53,7 +53,7 @@ ul {
   position: absolute;
   content: '';
   left: 0;
-  top: 0;
+  top: -5px;
   height: calc(100% + var(--tree-spacing-y));
   border-left: 1px solid black;
 }

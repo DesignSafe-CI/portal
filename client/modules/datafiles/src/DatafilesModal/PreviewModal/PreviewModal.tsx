@@ -34,6 +34,8 @@ export const PreviewModalBody: React.FC<{
     handleCancel();
   }, [handleCancel, queryClient]);
 
+  if (!isOpen) return null;
+
   return (
     <Modal
       title={<h2>File Preview: {path}</h2>}

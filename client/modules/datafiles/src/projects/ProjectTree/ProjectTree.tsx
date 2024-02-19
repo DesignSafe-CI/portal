@@ -1,131 +1,29 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import styles from './ProjectTree.module.css';
-import { useProjectDetail } from '@client/hooks';
-import { Select } from 'antd';
+import {
+  useAddEntityToTree,
+  useProjectDetail,
+  useProjectEntityReorder,
+  useRemoveEntityFromTree,
+} from '@client/hooks';
+import { Button, Select } from 'antd';
+import {
+  PROJECT_COLORS,
+  ALLOWED_RELATIONS,
+  DISPLAY_NAMES,
+  PUBLISHABLE_NAMES,
+} from '../constants';
 
-const PROJECT = 'designsafe.project';
-const PROJECT_GRAPH = 'designsafe.project.graph';
-// Experimental
-const EXPERIMENT = 'designsafe.project.experiment';
-const EXPERIMENT_REPORT = 'designsafe.project.report';
-const EXPERIMENT_ANALYSIS = 'designsafe.project.analysis';
-const EXPERIMENT_MODEL_CONFIG = 'designsafe.project.model_config';
-const EXPERIMENT_SENSOR = 'designsafe.project.sensor_list';
-const EXPERIMENT_EVENT = 'designsafe.project.event';
-// Simulation
-const SIMULATION = 'designsafe.project.simulation';
-const SIMULATION_REPORT = 'designsafe.project.simulation.report';
-const SIMULATION_ANALYSIS = 'designsafe.project.simulation.analysis';
-const SIMULATION_MODEL = 'designsafe.project.simulation.model';
-const SIMULATION_INPUT = 'designsafe.project.simulation.input';
-const SIMULATION_OUTPUT = 'designsafe.project.simulation.output';
-// Field Research
-const FIELD_RECON_MISSION = 'designsafe.project.field_recon.mission';
-const FIELD_RECON_REPORT = 'designsafe.project.field_recon.report';
-const FIELD_RECON_SOCIAL_SCIENCE =
-  'designsafe.project.field_recon.social_science';
-const FIELD_RECON_PLANNING = 'designsafe.project.field_recon.planning';
-const FIELD_RECON_GEOSCIENCE = 'designsafe.project.field_recon.geoscience';
-// Hybrid Sim
-const HYBRID_SIM = 'designsafe.project.hybrid_simulation';
-const HYBRID_SIM_GLOBAL_MODEL =
-  'designsafe.project.hybrid_simulation.global_model';
-const HYBRID_SIM_COORDINATOR =
-  'designsafe.project.hybrid_simulation.coordinator';
-const HYBRID_SIM_SIM_SUBSTRUCTURE =
-  'designsafe.project.hybrid_simulation.sim_substructure';
-const HYBRID_SIM_EXP_SUBSTRUCTURE =
-  'designsafe.project.hybrid_simulation.exp_substructure';
-const HYBRID_SIM_COORDINATOR_OUTPUT =
-  'designsafe.project.hybrid_simulation.coordinator_output';
-const HYBRID_SIM_SIM_OUTPUT = 'designsafe.project.hybrid_simulation.sim_output';
-const HYBRID_SIM_EXP_OUTPUT = 'designsafe.project.hybrid_simulation.exp_output';
-const HYBRID_SIM_ANALYSIS = 'designsafe.project.hybrid_simulation.analysis';
-const HYBRID_SIM_REPORT = 'designsafe.project.hybrid_simulation.report';
-
-const ALLOWED_RELATIONS: Record<string, string[]> = {
-  [PROJECT]: [
-    EXPERIMENT,
-    SIMULATION,
-    HYBRID_SIM,
-    FIELD_RECON_MISSION,
-    FIELD_RECON_REPORT,
-  ],
-  // Experimental
-  [EXPERIMENT]: [
-    EXPERIMENT_ANALYSIS,
-    EXPERIMENT_REPORT,
-    EXPERIMENT_MODEL_CONFIG,
-  ],
-  [EXPERIMENT_MODEL_CONFIG]: [EXPERIMENT_SENSOR],
-  [EXPERIMENT_SENSOR]: [EXPERIMENT_EVENT],
-  // Simulation
-  [SIMULATION]: [SIMULATION_ANALYSIS, SIMULATION_REPORT, SIMULATION_MODEL],
-  [SIMULATION_MODEL]: [SIMULATION_INPUT],
-  [SIMULATION_INPUT]: [SIMULATION_OUTPUT],
-  // Hybrid sim
-  [HYBRID_SIM]: [
-    HYBRID_SIM_REPORT,
-    HYBRID_SIM_GLOBAL_MODEL,
-    HYBRID_SIM_ANALYSIS,
-  ],
-  [HYBRID_SIM_GLOBAL_MODEL]: [HYBRID_SIM_COORDINATOR],
-  [HYBRID_SIM_COORDINATOR]: [
-    HYBRID_SIM_COORDINATOR_OUTPUT,
-    HYBRID_SIM_SIM_SUBSTRUCTURE,
-    HYBRID_SIM_EXP_SUBSTRUCTURE,
-  ],
-  [HYBRID_SIM_SIM_SUBSTRUCTURE]: [HYBRID_SIM_SIM_OUTPUT],
-  [HYBRID_SIM_EXP_SUBSTRUCTURE]: [HYBRID_SIM_EXP_OUTPUT],
-  // Field Recon
-  [FIELD_RECON_MISSION]: [
-    FIELD_RECON_PLANNING,
-    FIELD_RECON_SOCIAL_SCIENCE,
-    FIELD_RECON_GEOSCIENCE,
-  ],
-};
-
-const DISPLAY_NAMES: Record<string, string> = {
-  [PROJECT]: 'Project',
-  // Experimental
-  [EXPERIMENT]: 'Experiment',
-  [EXPERIMENT_MODEL_CONFIG]: 'Sensor',
-  [EXPERIMENT_SENSOR]: 'Event',
-  [EXPERIMENT_ANALYSIS]: 'Analysis',
-  [EXPERIMENT_EVENT]: 'Event',
-  [EXPERIMENT_REPORT]: 'Report',
-  // Simulation
-  [SIMULATION]: 'Simulation',
-  [SIMULATION_MODEL]: 'Simulation Model',
-  [SIMULATION_INPUT]: 'Simulation Input',
-  [SIMULATION_OUTPUT]: 'Simulation Output',
-  [SIMULATION_ANALYSIS]: 'Analysis',
-  [SIMULATION_REPORT]: 'Report',
-  // Hybrid sim
-  [HYBRID_SIM]: 'Hybrid Simulation',
-  [HYBRID_SIM_REPORT]: 'Report',
-  [HYBRID_SIM_ANALYSIS]: 'Analysis',
-  [HYBRID_SIM_GLOBAL_MODEL]: 'Global Model',
-  [HYBRID_SIM_COORDINATOR]: 'Simulation Coordinator',
-  [HYBRID_SIM_SIM_SUBSTRUCTURE]: 'Simulation Substructure',
-  [HYBRID_SIM_EXP_SUBSTRUCTURE]: 'Experimental Substructure',
-  [HYBRID_SIM_EXP_OUTPUT]: 'Experimental Output',
-  [HYBRID_SIM_COORDINATOR_OUTPUT]: 'Coordinator Output',
-  [HYBRID_SIM_SIM_OUTPUT]: 'Simulation Output',
-  // Field Recon
-  [FIELD_RECON_MISSION]: 'Mission',
-  [FIELD_RECON_GEOSCIENCE]: 'Geoscience Collection',
-  [FIELD_RECON_SOCIAL_SCIENCE]: 'Social Science Collection',
-  [FIELD_RECON_REPORT]: 'Document Collection',
-  [FIELD_RECON_PLANNING]: 'Planning Collection',
-};
-
-const EntitySelector: React.FC<{ projectId: string; entityName: string }> = ({
-  projectId,
-  entityName,
-}) => {
+const EntitySelector: React.FC<{
+  projectId: string;
+  entityName: string;
+  nodeId: string;
+}> = ({ projectId, entityName, nodeId }) => {
   const { data } = useProjectDetail(projectId);
-
+  const [selectedEntity, setSelectedEntity] = useState<string | undefined>(
+    undefined
+  );
+  const { mutate } = useAddEntityToTree(projectId, nodeId);
   if (!data) return null;
   if (!ALLOWED_RELATIONS[entityName]) return null;
   const { entities } = data;
@@ -138,18 +36,84 @@ const EntitySelector: React.FC<{ projectId: string; entityName: string }> = ({
   const placeholder = ALLOWED_RELATIONS[entityName]
     .map((n) => DISPLAY_NAMES[n])
     .join('/');
+
   return (
-    <Select
-      style={{ width: 500 }}
-      placeholder={`Select ${placeholder}`}
-      options={options}
-    ></Select>
+    <>
+      <Select
+        allowClear
+        style={{ width: 'fit-content' }}
+        placeholder={`Select ${placeholder}`}
+        value={selectedEntity}
+        onChange={(newVal) => setSelectedEntity(newVal)}
+        options={options}
+      ></Select>{' '}
+      &nbsp;
+      {selectedEntity && (
+        <Button
+          onClick={() =>
+            mutate(
+              { uuid: selectedEntity },
+              { onSuccess: () => setSelectedEntity(undefined) }
+            )
+          }
+          type="link"
+        >
+          Save
+        </Button>
+      )}
+    </>
+  );
+};
+
+const ProjectTreeDisplay: React.FC<{
+  projectId: string;
+  uuid: string;
+  nodeId: string;
+  order: number;
+  name: string;
+  isLast: boolean;
+}> = ({ projectId, uuid, nodeId, order, name, isLast }) => {
+  const { data } = useProjectDetail(projectId);
+  const { mutate } = useProjectEntityReorder(projectId, nodeId);
+  const { mutate: removeEntity } = useRemoveEntityFromTree(projectId, nodeId);
+  if (!data) return null;
+  const { entities } = data;
+  const entity = entities.find((e) => e.uuid === uuid);
+  if (!entity) return null;
+  return (
+    <>
+      <span> &nbsp;{entity.value.title}&nbsp;</span>
+      <Button
+        type="text"
+        disabled={order === 0}
+        onClick={() => mutate({ order: order - 1 })}
+      >
+        <i role="none" className="fa fa-arrow-up">
+          &nbsp;
+        </i>
+      </Button>
+      <Button
+        type="text"
+        disabled={isLast}
+        onClick={() => mutate({ order: order + 1 })}
+      >
+        <i role="none" className="fa fa-arrow-down">
+          &nbsp;
+        </i>
+      </Button>
+      {!PUBLISHABLE_NAMES.includes(name) && (
+        <Button onClick={() => removeEntity()} type="link">
+          Remove
+        </Button>
+      )}
+    </>
   );
 };
 
 type TTreeData = {
   name: string;
   id: string;
+  uuid: string;
   order: number;
   children: TTreeData[];
 };
@@ -157,9 +121,11 @@ type TTreeData = {
 function RecursiveTree({
   treeData,
   projectId,
+  isLast = false,
 }: {
   treeData: TTreeData;
   projectId: string;
+  isLast?: boolean;
 }) {
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
@@ -171,30 +137,44 @@ function RecursiveTree({
 
   return (
     <li className={styles['tree-li']}>
-      <span className={styles['tree-list-item']}>
+      <span
+        className={styles['tree-list-item']}
+        style={{
+          backgroundColor: PROJECT_COLORS[treeData.name].fill,
+          outline: `1px solid ${PROJECT_COLORS[treeData.name].outline}`,
+        }}
+      >
         {DISPLAY_NAMES[treeData.name]}
       </span>
-      {sortedChildren.length > 0 && (
-        <ul className={styles['tree-ul']}>
-          {sortedChildren.map((child) => (
-            <RecursiveTree
-              treeData={child}
-              key={child.id}
-              projectId={projectId}
-            />
-          ))}
-          {showDropdown && (
-            <li className={styles['tree-li']}>
-              <span className={styles['tree-select-item']}>
-                <EntitySelector
-                  projectId={projectId}
-                  entityName={treeData.name}
-                />
-              </span>
-            </li>
-          )}
-        </ul>
-      )}
+      <ProjectTreeDisplay
+        projectId={projectId}
+        uuid={treeData.uuid}
+        nodeId={treeData.id}
+        name={treeData.name}
+        order={treeData.order ?? 0}
+        isLast={isLast}
+      />
+      <ul className={styles['tree-ul']}>
+        {sortedChildren.map((child, idx) => (
+          <RecursiveTree
+            treeData={child}
+            key={child.id}
+            projectId={projectId}
+            isLast={idx === sortedChildren.length - 1}
+          />
+        ))}
+        {showDropdown && (
+          <li className={styles['tree-li']}>
+            <span className={styles['tree-select-item']}>
+              <EntitySelector
+                projectId={projectId}
+                entityName={treeData.name}
+                nodeId={treeData.id}
+              />
+            </span>
+          </li>
+        )}
+      </ul>
     </li>
   );
 }
@@ -206,7 +186,7 @@ export const ProjectTree: React.FC<{ projectId: string }> = ({ projectId }) => {
   if (!treeJSON) return <div>project tree</div>;
   return (
     <ul className={styles['tree-base']}>
-      <RecursiveTree treeData={treeJSON} projectId={projectId} />
+      <RecursiveTree treeData={treeJSON} projectId={projectId} isLast />
     </ul>
   );
 };

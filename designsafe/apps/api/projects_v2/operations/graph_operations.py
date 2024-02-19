@@ -1,4 +1,5 @@
 """Utilities for adding, removing, and reordering nodes in the project graph."""
+
 import uuid
 import copy
 import networkx as nx
@@ -29,10 +30,16 @@ def _renormalize_ordering(graph: nx.DiGraph) -> nx.DiGraph:
 
 def _add_node_to_graph(
     graph: nx.DiGraph, parent_node_id: str, meta_uuid: str, name: str
-) -> tuple[nx.DiGraph, str]:
+) -> tuple[nx.DiGraph, str | None]:
     """Add a node with data to a graph, and return the graph."""
     if not graph.has_node(parent_node_id):
         raise nx.exception.NodeNotFound
+
+    # no-op if metadata with this UUID is already associated.
+    if meta_uuid in (
+        graph.nodes[node]["uuid"] for node in graph.successors(parent_node_id)
+    ):
+        return (graph, None)
 
     _graph: nx.DiGraph = copy.deepcopy(graph)
     order = _get_next_child_order(_graph, parent_node_id)

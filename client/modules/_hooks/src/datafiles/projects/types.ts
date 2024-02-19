@@ -93,6 +93,14 @@ export type TBaseProjectValue = {
   fileTags: TFileTag[];
 };
 
+type TEntityValue = {
+  title: string;
+  description?: string;
+  authors?: TProjectUser[];
+  fileObjs?: TFileObj[];
+  fileTags: TFileTag[];
+};
+
 export type TProjectMeta = {
   uuid: string;
   name: string;
@@ -103,4 +111,8 @@ export type TProjectMeta = {
 export type TBaseProject = TProjectMeta & {
   name: 'designsafe.project';
   value: TBaseProjectValue;
+};
+
+export type TEntityMeta = TProjectMeta & {
+  value: TEntityValue;
 };
