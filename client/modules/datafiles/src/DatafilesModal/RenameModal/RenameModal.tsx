@@ -45,7 +45,6 @@ export const RenameModalBody: React.FC<{
   const handleRenameClick = () => {
     const path: string = user?.username ?? '';
     let newName = form.getFieldValue('newName');
-    console.log(newName)
     updateFileName(newName, path)
   };
 
@@ -107,7 +106,6 @@ export const RenameModal: React.FC<{
       <RenameModalBody
         api={api}
         system={system}
-        scheme={scheme}
         path={path}
         isOpen={isModalOpen}
         handleCancel={handleCancel}
