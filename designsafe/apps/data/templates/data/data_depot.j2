@@ -95,16 +95,36 @@ Data Depot
     <base href="{% url 'designsafe_data:data_depot' %}">
 {% endblock %}
 {% block content %}
+    {%if react_flag%}
+    <div id="datafiles-root" style="display: flex; flex-direction: column; flex: 1;"></div>
+    {% endif %}
+
+    {%if not react_flag%}
     <div class="container dd-container">
         <ddmain style="position: relative;">    
         </ddmain>
     </div>
+    {%endif%}
 
     {% addtoblock "css" %}
     {% endaddtoblock %}
 
     {% addtoblock "js" %}
-
+        {% if debug and react_flag %}
+        <script type="module">
+            import RefreshRuntime from 'http://localhost:4200/static/@react-refresh';
+            RefreshRuntime.injectIntoGlobalHook(window);
+            window.$RefreshReg$ = () => {};
+            window.$RefreshSig$ = () => (type) => type;
+            window.__vite_plugin_react_preamble_installed__ = true;
+        </script>
+        <script type="module" src="http://localhost:4200/static/@vite/client"></script>
+        <script type="module" src="http://localhost:4200/static/src/main.tsx"></script>
+        {% else %}
+        <!--TODO: setup non-dev static import for React code-->
+        {% endif %}
+    {% if not react_flag %}
     <script src="<%= htmlWebpackPlugin.files.js %>"></script>
+    {% endif %}
     {% endaddtoblock %}
 {% endblock %}
