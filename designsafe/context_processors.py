@@ -44,6 +44,7 @@ def debug(request):
         context['debug'] = True
     if settings.RENDER_REACT:
         context['react_flag'] = True
+    context['ds_environment'] = settings.DESIGNSAFE_ENVIRONMENT
     return context
 
 def site_verification(request):

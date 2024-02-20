@@ -1,0 +1,25 @@
+.toolbarRoot {
+  background-color: #f0f0f0;
+  border: 1px solid #dddddd;
+  display: flex;
+  flex-flow: row nowrap;
+  overflow-x: auto;
+  align-items: center;
+  padding: 5px;
+  justify-content: space-between;
+}
+
+.toolbarButtonContainer {
+  display: flex;
+  gap: 5px;
+}
+
+.toolbarButton {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  height: fit-content;
+  font-size: 12px;
+  padding-top: 10px;
+}

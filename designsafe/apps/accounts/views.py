@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
@@ -16,6 +17,7 @@ from pytas.http import TASClient
 from pytas.models import User as TASUser
 import logging
 import json
+import requests
 import re
 from termsandconditions.models import TermsAndConditions
 
@@ -256,8 +258,44 @@ def nees_migration(request, step=None):
                           {'form': form})
     return HttpResponseRedirect(reverse('designsafe_accounts:nees_migration'))
 
+class MissingCaptchaError(Exception):
+    pass
+
 def register(request):
-    return render(request,'designsafe/apps/accounts/register.html')
+    logger.debug("formatting %s", {"hello": "world"})
+    context={"RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY}
+    if request.method == 'POST':
+        try:
+            # Verify captcha
+            captcha_resp = requests.post("https://www.google.com/recaptcha/api/siteverify",
+                                         data={"secret": settings.RECAPTCHA_PRIVATE_KEY,
+                                               "response": request.POST.get("g-recaptcha-response")
+                                               },
+                                         timeout=10
+                                        )
+            captcha_resp.raise_for_status()
+            captcha_json = captcha_resp.json()
+            if not captcha_json.get("success", False):
+                messages.error(request, "Please complete the reCAPTCHA before submitting your account request.")
+                return render(request,'designsafe/apps/accounts/register.html', context)
+            
+            # Once captcha is verified, send request to TRAM.
+            tram_headers = {"tram-services-key": settings.TRAM_SERVICES_KEY}
+            tram_body = {"project_id": settings.TRAM_PROJECT_ID,
+                         "email": request.POST.get("email")}
+            tram_resp = requests.post(f"{settings.TRAM_SERVICES_URL}/project_invitations/create",
+                                      headers=tram_headers,
+                                      json=tram_body,
+                                      timeout=15)
+            tram_resp.raise_for_status()
+            logger.info("Received response from TRAM: %s", tram_resp.json())
+            messages.success(request, "Your request has been received. Please check your email for a project invitation.")
+                
+        except requests.HTTPError as exc:
+            logger.debug(exc)
+            messages.error(request, "An unknown error occurred. Please try again later.")
+
+    return render(request,'designsafe/apps/accounts/register.html', context)
 
 @login_required
 def profile_edit(request):
