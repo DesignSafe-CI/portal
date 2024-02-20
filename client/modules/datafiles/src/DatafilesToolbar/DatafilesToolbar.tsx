@@ -26,11 +26,7 @@ const ToolbarButton: React.FC<ButtonProps> = (props) => {
 
 export const DatafilesToolbar: React.FC = () => {
   const { api, system, scheme, path } = useFileListingRouteParams();
-  const { selectedFiles } = useSelectedFiles(
-    api,
-    system,
-    path
-  );
+  const { selectedFiles } = useSelectedFiles(api, system, path);
   const { user } = useAuthenticatedUser();
 
   const rules = useMemo(
