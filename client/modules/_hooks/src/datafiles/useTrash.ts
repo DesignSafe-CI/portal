@@ -12,12 +12,7 @@ function TrashFn(src: TTrashParam, dest: TTrashParam) {
 
 export function useTrash() {
   return useMutation({
-    mutationFn: ({
-      src,
-      dest,
-    }: {
-      src: TTrashParam;
-      dest: TTrashParam;
-    }) => TrashFn(src, dest),
+    mutationFn: ({ src, dest }: { src: TTrashParam; dest: TTrashParam }) =>
+      TrashFn(src, dest),
   });
 }

@@ -1,6 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, Modal, Form, Input } from 'antd';
-import { useAuthenticatedUser, useSelectedFiles, useRename } from '@client/hooks';
+import {
+  useAuthenticatedUser,
+  useSelectedFiles,
+  useRename,
+} from '@client/hooks';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
 
@@ -11,13 +15,14 @@ export const RenameModalBody: React.FC<{
   path: string;
   handleCancel: () => void;
 }> = ({ isOpen, api, system, path, handleCancel }) => {
-
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
   const { selectedFiles } = useSelectedFiles(api, system, path);
-  const selectedFilesName = selectedFiles.length ? selectedFiles : [{name: ''}]
+  const selectedFilesName = selectedFiles.length
+    ? selectedFiles
+    : [{ name: '' }];
   const { user } = useAuthenticatedUser();
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true); 
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const defaultDestParams = useMemo(
     () => ({
       destApi: 'tapis',
@@ -36,7 +41,7 @@ export const RenameModalBody: React.FC<{
     (newName: string, path: string) => {
       mutate({
         src: { api, system, path, name: selectedFiles[0].name },
-        dest: { api: destApi, system: destSystem, path:path, name: newName },
+        dest: { api: destApi, system: destSystem, path: path, name: newName },
       });
       handleClose();
     },
@@ -55,18 +60,22 @@ export const RenameModalBody: React.FC<{
     handleCancel();
   }, [handleCancel, queryClient]);
 
-  const validateNewName = (_: unknown, value:string) => {
+  const validateNewName = (_: unknown, value: string) => {
     if (!value) {
       return Promise.reject('Please enter a new name.');
     }
 
     if (value === selectedFilesName[0].name) {
-      return Promise.reject('New name cannot be the same as the original name.');
+      return Promise.reject(
+        'New name cannot be the same as the original name.'
+      );
     }
 
     const pattern = /^[\d\w\s\-_.()]+$/;
     if (!pattern.test(value)) {
-      return Promise.reject('New name can only contain alphanumeric characters, spaces, hyphens, underscores, periods, and parentheses.');
+      return Promise.reject(
+        'New name can only contain alphanumeric characters, spaces, hyphens, underscores, periods, and parentheses.'
+      );
     }
 
     return Promise.resolve();
@@ -124,11 +133,14 @@ export const RenameModalBody: React.FC<{
             },
           ]}
         >
-          <Input type="textarea" placeholder='Please enter a new name for this file/folder.' />
+          <Input
+            type="textarea"
+            placeholder="Please enter a new name for this file/folder."
+          />
         </Form.Item>
       </Form>
-  
-      <div style={{ marginTop: '20px', textAlign: 'right' }}> 
+
+      <div style={{ marginTop: '20px', textAlign: 'right' }}>
         <Button
           type="primary"
           onClick={async () => {
@@ -147,12 +159,12 @@ export const RenameModalBody: React.FC<{
 };
 
 export const RenameModal: React.FC<{
-    api: string;
-    system: string;
-    scheme?: string;
-    path: string;
-    children: TModalChildren;
-  }> = ({ api, system, scheme, path, children }) => {
+  api: string;
+  system: string;
+  scheme?: string;
+  path: string;
+  children: TModalChildren;
+}> = ({ api, system, scheme, path, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {

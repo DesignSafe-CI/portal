@@ -26,7 +26,11 @@ const ToolbarButton: React.FC<ButtonProps> = (props) => {
 
 export const DatafilesToolbar: React.FC = () => {
   const { api, system, scheme, path } = useFileListingRouteParams();
-  const { selectedFiles, setSelectedFiles } = useSelectedFiles(api, system, path);
+  const { selectedFiles, setSelectedFiles } = useSelectedFiles(
+    api,
+    system,
+    path
+  );
   const { user } = useAuthenticatedUser();
 
   const rules = useMemo(
@@ -75,19 +79,19 @@ export const DatafilesToolbar: React.FC = () => {
     const userUsername: string | undefined = user?.username;
     let trashPath: string;
     if (typeof userUsername === 'string') {
-      trashPath = userUsername + '/.Trash'; 
+      trashPath = userUsername + '/.Trash';
       updateFilesPath(trashPath);
     } else {
       // Handle the case when userUsername is undefined
-      trashPath = '.Trash'; 
+      trashPath = '.Trash';
       updateFilesPath(trashPath);
     }
-  };  
+  };
 
   return (
     <div className={styles.toolbarRoot}>
       <span>(search bar goes here)</span>
-      
+
       <div className={styles.toolbarButtonContainer}>
         <DatafilesModal.Rename api={api} system={system} path={path}>
           {({ onClick }) => (
