@@ -17,6 +17,7 @@ export const RenameModalBody: React.FC<{
   const { selectedFiles } = useSelectedFiles(api, system, path);
   const selectedFilesName = selectedFiles.length ? selectedFiles : [{name: ''}]
   const { user } = useAuthenticatedUser();
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true); 
   const defaultDestParams = useMemo(
     () => ({
       destApi: 'tapis',
@@ -42,10 +43,10 @@ export const RenameModalBody: React.FC<{
     [selectedFiles, mutate, destApi, destSystem, api, system]
   );
 
-  const handleRenameClick = () => {
+  const handleRenameClick = async () => {
     const path: string = user?.username ?? '';
     let newName = form.getFieldValue('newName');
-    updateFileName(newName, path)
+    updateFileName(newName, path);
   };
 
   const handleClose = useCallback(() => {
@@ -54,31 +55,93 @@ export const RenameModalBody: React.FC<{
     handleCancel();
   }, [handleCancel, queryClient]);
 
+  const validateNewName = (_: unknown, value:string) => {
+    if (!value) {
+      return Promise.reject('Please enter a new name.');
+    }
+
+    if (value === selectedFilesName[0].name) {
+      return Promise.reject('New name cannot be the same as the original name.');
+    }
+
+    const pattern = /^[\d\w\s\-_.()]+$/;
+    if (!pattern.test(value)) {
+      return Promise.reject('New name can only contain alphanumeric characters, spaces, hyphens, underscores, periods, and parentheses.');
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateForm = async () => {
+    // Validate the fields to update errors
+    const values = await form.validateFields();
+
+    // Check if any fields have validation errors
+    const hasErrors = form
+      .getFieldsError()
+      .some((fieldError) => fieldError.errors.length > 0);
+
+    setIsButtonDisabled(hasErrors);
+
+    // Return the values of the form fields
+    return values;
+  };
+
+  React.useEffect(() => {
+    const setInitialValidationStatus = async () => {
+      // Set initial validation status for the "newName" field
+      const values = await form.validateFields(['newName']);
+
+      form.setFields([
+        {
+          name: 'newName',
+          errors: ['Please enter a new name.'],
+        },
+      ]);
+
+      // Check if there are no errors and enable the button
+      setIsButtonDisabled(false);
+    };
+
+    setInitialValidationStatus();
+  }, [form]);
 
   return (
     <Modal
-      title={<h2>Rename {selectedFilesName[0].name}</h2>}  // 
+      title={<h2>Rename {selectedFilesName[0].name}</h2>}
       width="60%"
       open={isOpen}
-      footer={() => (
-        <Button type="primary" onClick={handleRenameClick} >
-            Rename
-        </Button>
-      )}
+      footer={null} // Remove the footer from here
       onCancel={handleClose}
     >
-        <Form autoComplete="off" form={form} layout="vertical">
-          <Form.Item
-            label="New Name"
-            name="newName"
-            rules={[
-              { required: true, message: "Please enter a new name for this file/folder." },
-              { pattern: /^[\d\w\s\-_.()]+$/, message: 'Please enter a valid file name (accepted characters are A-Z a-z 0-9 () - _ .)' }
-            ]}
-            >
-            <Input type="textarea" placeholder='Please enter a new name for this file/folder.'/>
-          </Form.Item>
-        </Form>
+      <Form autoComplete="off" form={form} layout="vertical">
+        <Form.Item
+          label="New Name"
+          name="newName"
+          rules={[
+            {
+              validator: validateNewName,
+            },
+          ]}
+        >
+          <Input type="textarea" placeholder='Please enter a new name for this file/folder.' />
+        </Form.Item>
+      </Form>
+  
+      <div style={{ marginTop: '20px', textAlign: 'right' }}> 
+        <Button
+          type="primary"
+          onClick={async () => {
+            if (!isButtonDisabled) {
+              await validateForm();
+              handleRenameClick(); // Call handleRenameClick only if the button is not disabled
+            }
+          }}
+          disabled={isButtonDisabled}
+        >
+          Rename
+        </Button>
+      </div>
     </Modal>
   );
 };
