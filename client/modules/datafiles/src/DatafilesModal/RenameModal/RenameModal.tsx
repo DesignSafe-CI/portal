@@ -50,7 +50,7 @@ export const RenameModalBody: React.FC<{
 
   const handleRenameClick = async () => {
     const path: string = user?.username ?? '';
-    let newName = form.getFieldValue('newName');
+    const newName = form.getFieldValue('newName');
     updateFileName(newName, path);
   };
 
@@ -99,7 +99,7 @@ export const RenameModalBody: React.FC<{
   React.useEffect(() => {
     const setInitialValidationStatus = async () => {
       // Set initial validation status for the "newName" field
-      const values = await form.validateFields(['newName']);
+      await form.validateFields(['newName']);
 
       form.setFields([
         {
