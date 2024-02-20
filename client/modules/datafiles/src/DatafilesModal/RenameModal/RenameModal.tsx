@@ -38,12 +38,11 @@ export const RenameModalBody: React.FC<{
 
   const { mutate } = useRename();
   const updateFileName = useCallback(
-    (newName: string, path: string) => {
+     (newName: string, path: string) => {
       mutate({
-        src: { api, system, path, name: selectedFiles[0].name },
-        dest: { api: destApi, system: destSystem, path: path, name: newName },
+        src: { api, system, path, name: selectedFiles[0].name, newName: newName },
       });
-      handleClose();
+        handleClose();
     },
     [selectedFiles, mutate, destApi, destSystem, api, system]
   );
