@@ -35,7 +35,7 @@ export const DatafilesToolbar: React.FC = () => {
       return {
         canPreview:
           selectedFiles.length === 1 && selectedFiles[0].type === 'file',
-        canRename: selectedFiles.length === 1,
+        canRename: user && selectedFiles.length === 1,
         canCopy: user && selectedFiles.length >= 1,
         canTrash: user && selectedFiles.length >= 1,
       };

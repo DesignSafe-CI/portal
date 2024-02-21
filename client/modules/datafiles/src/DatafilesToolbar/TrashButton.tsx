@@ -10,13 +10,11 @@ interface TrashButtonProps extends ButtonProps {
 
 const TrashButton: React.FC<TrashButtonProps> = React.memo(
   ({ api, system, selectedFiles, disabled, className, onClick, children }) => {
-    console.log(selectedFiles);
     const { user } = useAuthenticatedUser();
     const { mutate } = useTrash();
 
     const updateFilesPath = useCallback(
       (dPath: string) => {
-        console.log(selectedFiles);
         selectedFiles.forEach((f) =>
           mutate({
             src: { api, system, path: encodeURIComponent(f.path) },
