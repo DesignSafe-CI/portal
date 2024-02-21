@@ -7,54 +7,60 @@ import {
 import { Button, ButtonProps, ConfigProvider } from 'antd';
 
 interface TrashButtonProps extends ButtonProps {
-    api: string;
-    system: string;
-    path: string;
-  }
-  
-  const TrashButton: React.FC<TrashButtonProps> = React.memo(({ api, system, path, disabled, className, onClick, children }) => {    
+  api: string;
+  system: string;
+  path: string;
+}
+
+const TrashButton: React.FC<TrashButtonProps> = React.memo(
+  ({ api, system, path, disabled, className, onClick, children }) => {
     const { selectedFiles } = useSelectedFiles(api, system, path);
     const { user } = useAuthenticatedUser();
     const { mutate } = useTrash();
     const updateFilesPath = useCallback(
-        (dPath: string) => {
+      (dPath: string) => {
         selectedFiles.forEach((f) =>
-            mutate({
+          mutate({
             src: { api, system, path: encodeURIComponent(f.path) },
             dest: { api, system, path: dPath },
-            })
+          })
         );
-        },
-        [selectedFiles, mutate, api, system]
+      },
+      [selectedFiles, mutate, api, system]
     );
 
     const handleTrashClick = () => {
-        // const trashPath = path === 'myData' ? '${user.username}/.Trash' : '.Trash';
-        const userUsername: string | undefined = user?.username;
-        let trashPath: string;
-        if (typeof userUsername === 'string') {
+      // const trashPath = path === 'myData' ? '${user.username}/.Trash' : '.Trash';
+      const userUsername: string | undefined = user?.username;
+      let trashPath: string;
+      if (typeof userUsername === 'string') {
         trashPath = userUsername + '/.Trash';
         updateFilesPath(trashPath);
-        } else {
+      } else {
         // Handle the case when userUsername is undefined
         trashPath = '.Trash';
         updateFilesPath(trashPath);
-        }
+      }
     };
     // console.log(dPath);
 
-  return (
-    <ConfigProvider
-      theme={{
-        components: { Button: { colorPrimaryHover: 'rgba(0, 0, 0, 0.88)' } },
-      }}
-    >
-      <Button onClick={handleTrashClick} disabled={disabled} className={className}>
-        <i role="none" className="fa fa-trash" />
-        <span>Trash</span>
-      </Button>
-    </ConfigProvider>
-  );
-});
+    return (
+      <ConfigProvider
+        theme={{
+          components: { Button: { colorPrimaryHover: 'rgba(0, 0, 0, 0.88)' } },
+        }}
+      >
+        <Button
+          onClick={handleTrashClick}
+          disabled={disabled}
+          className={className}
+        >
+          <i role="none" className="fa fa-trash" />
+          <span>Trash</span>
+        </Button>
+      </ConfigProvider>
+    );
+  }
+);
 
 export default TrashButton;
