@@ -23,7 +23,6 @@ export const RenameModalBody: React.FC<{
   const { mutate } = useRename();
 
   const handleRenameFinish = async (values: { newName: string }) => {
-    const newPath: string = user?.username ?? '';
     const newName = values.newName;
 
     try {

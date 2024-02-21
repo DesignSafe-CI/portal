@@ -43,11 +43,6 @@ export const DatafilesToolbar: React.FC = () => {
     [selectedFiles, user]
   );
 
-  const handleTrashClick = (event: React.MouseEvent) => {
-    console.log('handleTrashClick called', event); // Add this line
-    // Rest of the logic
-  };
-
   return (
     <div className={styles.toolbarRoot}>
       <span>(search bar goes here)</span>
@@ -97,9 +92,7 @@ export const DatafilesToolbar: React.FC = () => {
         <TrashButton
           api={api}
           system={system}
-          path={selectedFiles[0]?.path ?? ''}
-          onClick={handleTrashClick}
-          disabled={!rules.canTrash}
+          selectedFiles={selectedFiles}
           className={styles.toolbarButton}
         >
           <i role="none" className="fa fa-trash" />
