@@ -1,7 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
-type TRenameParam = { api: string; system: string; path: string; name: string; newName: string };
+type TRenameParam = {
+  api: string;
+  system: string;
+  path: string;
+  name: string;
+  newName: string;
+};
 
 function renameFn(src: TRenameParam) {
   return apiClient.put(
@@ -12,11 +18,6 @@ function renameFn(src: TRenameParam) {
 
 export function useRename() {
   return useMutation({
-    mutationFn: ({
-      src,
-    }: {
-      src: TRenameParam;
-
-    }) => renameFn(src),
+    mutationFn: ({ src }: { src: TRenameParam }) => renameFn(src),
   });
 }
