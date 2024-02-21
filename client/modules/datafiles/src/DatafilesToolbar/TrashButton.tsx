@@ -8,7 +8,6 @@ interface TrashButtonProps<T> extends ButtonProps {
   selectedFiles: T[];
 }
 
-
 const TrashButton: React.FC<TrashButtonProps<{ path: string }>> = React.memo(
   ({ api, system, selectedFiles, disabled, className, onClick, children }) => {
     const { user } = useAuthenticatedUser();

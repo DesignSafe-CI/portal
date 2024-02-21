@@ -1,8 +1,5 @@
 import { Button, Modal, Form, Input } from 'antd';
-import {
-  useSelectedFiles,
-  useRename,
-} from '@client/hooks';
+import { useSelectedFiles, useRename } from '@client/hooks';
 import React, { useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
 
