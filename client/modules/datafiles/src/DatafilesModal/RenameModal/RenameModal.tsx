@@ -1,6 +1,5 @@
 import { Button, Modal, Form, Input } from 'antd';
 import {
-  useAuthenticatedUser,
   useSelectedFiles,
   useRename,
 } from '@client/hooks';
@@ -18,7 +17,6 @@ export const RenameModalBody: React.FC<{
   const selectedFilesName = selectedFiles.length
     ? selectedFiles
     : [{ name: '' }];
-  const { user } = useAuthenticatedUser();
 
   const { mutate } = useRename();
 

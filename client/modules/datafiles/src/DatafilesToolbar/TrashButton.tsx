@@ -2,22 +2,23 @@ import React, { useCallback } from 'react';
 import { useAuthenticatedUser, useTrash } from '@client/hooks';
 import { Button, ButtonProps, ConfigProvider } from 'antd';
 
-interface TrashButtonProps extends ButtonProps {
+interface TrashButtonProps<T> extends ButtonProps {
   api: string;
   system: string;
-  selectedFiles: any[];
+  selectedFiles: T[];
 }
 
-const TrashButton: React.FC<TrashButtonProps> = React.memo(
+
+const TrashButton: React.FC<TrashButtonProps<{ path: string }>> = React.memo(
   ({ api, system, selectedFiles, disabled, className, onClick, children }) => {
     const { user } = useAuthenticatedUser();
     const { mutate } = useTrash();
 
     const updateFilesPath = useCallback(
       (dPath: string) => {
-        selectedFiles.forEach((f) =>
+        selectedFiles.forEach((file) =>
           mutate({
-            src: { api, system, path: encodeURIComponent(f.path) },
+            src: { api, system, path: encodeURIComponent(file.path) },
             dest: { api, system, path: dPath },
           })
         );
