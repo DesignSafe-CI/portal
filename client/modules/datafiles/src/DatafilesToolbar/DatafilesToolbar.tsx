@@ -1,12 +1,12 @@
-import React, { useMemo, useCallback, useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import styles from './DatafilesToolbar.module.css';
 import {
   useAuthenticatedUser,
   useFileListingRouteParams,
   useSelectedFiles,
-  useTrash,
 } from '@client/hooks';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
+import TrashButton from './TrashButton';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
 
 const toolbarTheme: ThemeConfig = {
@@ -43,46 +43,7 @@ export const DatafilesToolbar: React.FC = () => {
     [selectedFiles, user]
   );
 
-  const defaultDestParams = useMemo(
-    () => ({
-      destApi: 'tapis',
-      destSystem: 'designsafe.storage.default',
-      destPath: encodeURIComponent('/' + user?.username),
-    }),
-    [user]
-  );
-
-  const [dest, setDest] = useState(defaultDestParams);
-  const { destApi, destSystem } = dest;
-  useEffect(() => setDest(defaultDestParams), [defaultDestParams]);
-
-  const { mutate } = useTrash();
-
-  const updateFilesPath = useCallback(
-    (dPath: string) => {
-      selectedFiles.forEach((f) =>
-        mutate({
-          src: { api, system, path: encodeURIComponent(f.path) },
-          dest: { api: destApi, system: destSystem, path: dPath },
-        })
-      );
-    },
-    [selectedFiles, mutate, destApi, destSystem, api, system]
-  );
-
-  const handleTrashClick = () => {
-    // const trashPath = path === 'myData' ? '${user.username}/.Trash' : '.Trash';
-    const userUsername: string | undefined = user?.username;
-    let trashPath: string;
-    if (typeof userUsername === 'string') {
-      trashPath = userUsername + '/.Trash';
-      updateFilesPath(trashPath);
-    } else {
-      // Handle the case when userUsername is undefined
-      trashPath = '.Trash';
-      updateFilesPath(trashPath);
-    }
-  };
+  const handleTrashClick = () => {};
 
   return (
     <div className={styles.toolbarRoot}>
@@ -130,14 +91,14 @@ export const DatafilesToolbar: React.FC = () => {
             </ToolbarButton>
           )}
         </DatafilesModal.Copy>
-        <ToolbarButton
+        <TrashButton
           onClick={handleTrashClick}
           disabled={!rules.canTrash}
           className={styles.toolbarButton}
         >
           <i role="none" className="fa fa-trash" />
           <span>Trash</span>
-        </ToolbarButton>
+        </TrashButton>
       </div>
     </div>
   );
