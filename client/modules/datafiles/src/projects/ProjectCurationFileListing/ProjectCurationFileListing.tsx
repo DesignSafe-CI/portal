@@ -132,6 +132,7 @@ const FileCurationSelector: React.FC<{
       </section>
     );
   }
+
   return (
     <ul style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       {entitiesForFile.map((e) => (

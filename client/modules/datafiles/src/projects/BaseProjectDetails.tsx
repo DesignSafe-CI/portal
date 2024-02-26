@@ -95,7 +95,7 @@ export const BaseProjectDetails: React.FC<{
             <td>Facilities</td>
             <td style={{ fontWeight: 'bold' }}>
               {projectValue.facilities.map((t) => (
-                <div>{t.name}</div>
+                <div key={t.name}>{t.name}</div>
               ))}
             </td>
           </tr>
@@ -103,7 +103,7 @@ export const BaseProjectDetails: React.FC<{
             <td>Events</td>
             <td style={{ fontWeight: 'bold' }}>
               {projectValue.nhEvents.map((evt) => (
-                <div>
+                <div key={JSON.stringify(evt)}>
                   {evt.eventName} | {evt.location} {evt.eventStart}-
                   {evt.eventEnd} | Lat {evt.latitude} long {evt.longitude}
                 </div>
@@ -114,7 +114,7 @@ export const BaseProjectDetails: React.FC<{
             <td>Awards</td>
             <td style={{ fontWeight: 'bold' }}>
               {projectValue.awardNumbers.map((t) => (
-                <div>
+                <div key={JSON.stringify(t)}>
                   {[t.name, t.number, t.fundingSource]
                     .filter((v) => !!v)
                     .join(' | ')}{' '}

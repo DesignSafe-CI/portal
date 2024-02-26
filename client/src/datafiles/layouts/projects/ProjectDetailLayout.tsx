@@ -9,10 +9,10 @@ export const ProjectDetailLayout: React.FC = () => {
   if (!data || !projectId) return <div>loading...</div>;
 
   return (
-    <div style={{ width: '100%' }}>
+    <section>
       <ProjectTitleHeader projectId={projectId} />
       <BaseProjectDetails projectValue={data.baseProject.value} />
       <Outlet />
-    </div>
+    </section>
   );
 };

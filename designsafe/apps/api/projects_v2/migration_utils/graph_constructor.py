@@ -1,4 +1,5 @@
 """Utils for constructing project trees from legacy association IDs."""
+
 import json
 from typing import TypedDict, Optional
 from uuid import uuid4
@@ -122,11 +123,23 @@ def construct_graph_from_db(project_id) -> nx.DiGraph:
 
     project_graph = nx.DiGraph()
     root_node_id = "NODE_ROOT"
-    root_node_data = {
+    base_node_data = {
         "uuid": root_entity["uuid"],
         "name": root_entity["name"],
+        "order": 0,
     }
-    project_graph.add_node(root_node_id, **root_node_data)
+    if root_entity["value"]["projectType"] == "other":
+        # type Other projects have a "null" parent node above the project root, to
+        # support multiple versions.
+        project_graph.add_node(
+            root_node_id,
+            **{"uuid": None, "name": None, "projectType": "other", "order": 0},
+        )
+        base_node_id = f"NODE_project_{uuid4()}"
+        project_graph.add_node(base_node_id, **base_node_data)
+        project_graph.add_edge(root_node_id, base_node_id)
+    else:
+        project_graph.add_node(root_node_id, **base_node_data)
 
     construct_graph_recurse(project_graph, entity_listing, root_entity, root_node_id)
 
@@ -323,6 +336,7 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
             )
         else:
             pub_graph.nodes[pub]["version"] = 1
+        pub_graph.nodes[pub]["publishDate"] = str(base_pub_meta["created"])
 
     return pub_graph
 

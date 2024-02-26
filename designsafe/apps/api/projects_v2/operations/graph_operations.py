@@ -109,6 +109,7 @@ def initialize_project_graph(project_id: str):
         "uuid": project_model.uuid,
         "name": project_model.name,
         "projectType": project_type,
+        "order": 0,
     }
 
     if project_type == "other":

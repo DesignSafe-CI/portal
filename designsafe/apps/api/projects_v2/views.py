@@ -17,6 +17,9 @@ from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     remove_file_associations,
     set_file_tags,
 )
+from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
+    add_values_to_tree,
+)
 from designsafe.apps.api.projects_v2.schema_models.base import FileObj
 
 
@@ -84,6 +87,34 @@ class ProjectInstanceView(BaseApiView):
 
     def post(self, request, project_id):
         """Add a new metadata entity."""
+
+
+class ProjectPreviewView(BaseApiView):
+    """View for generating the Publication Preview"""
+
+    def get(self, request: HttpRequest, project_id: str):
+        """Return all project metadata for a project ID"""
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        try:
+            project = user.projects.get(
+                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+            )
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
+        entities = ProjectMetadata.objects.filter(base_project=project)
+        preview_tree = add_values_to_tree(project.project_id)
+        return JsonResponse(
+            {
+                "baseProject": project.to_dict(),
+                "entities": [e.to_dict() for e in entities],
+                "tree": nx.tree_data(preview_tree, "NODE_ROOT"),
+            }
+        )
 
 
 class ProjectEntityOrderView(BaseApiView):

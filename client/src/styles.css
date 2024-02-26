@@ -58,6 +58,10 @@
   right: -20px !important;
 }
 
+.ant-table-tbody tr:nth-child(even) td {
+  background-color: #f9f9f9;
+}
+
 .ant-layout-sider-zero-width-trigger {
   right: 0px !important;
   top: 20px !important;
@@ -97,4 +101,8 @@
 
 .inner-form-item {
   margin-bottom: 0;
+}
+
+.ant-collapse-header:focus-visible {
+  outline: -webkit-focus-ring-color auto 1px !important;
 }

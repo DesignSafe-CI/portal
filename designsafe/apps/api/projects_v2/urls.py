@@ -8,6 +8,7 @@ from designsafe.apps.api.projects_v2.views import (
     ProjectEntityAssociationsView,
     ProjectFileAssociationsView,
     ProjectFileTagsView,
+    ProjectPreviewView,
 )
 
 urlpatterns = [
@@ -15,6 +16,8 @@ urlpatterns = [
     path("/", ProjectsView.as_view()),
     path("<str:project_id>", ProjectInstanceView.as_view()),
     path("<str:project_id>/", ProjectInstanceView.as_view()),
+    path("<str:project_id>/preview", ProjectPreviewView.as_view()),
+    path("<str:project_id>/preview/", ProjectPreviewView.as_view()),
     # path("<string:project_id>/associations", ProjectsView.as_view),
     # path("<string:project_id>/entities/<string:entity_uuid>", ProjectsView.as_view()),
     path("<str:project_id>/entities/ordering/", ProjectEntityOrderView.as_view()),
