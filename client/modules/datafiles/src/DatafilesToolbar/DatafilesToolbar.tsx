@@ -6,6 +6,7 @@ import {
   useSelectedFiles,
 } from '@client/hooks';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
+import TrashButton from './TrashButton';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
 
 const toolbarTheme: ThemeConfig = {
@@ -34,7 +35,9 @@ export const DatafilesToolbar: React.FC = () => {
       return {
         canPreview:
           selectedFiles.length === 1 && selectedFiles[0].type === 'file',
+        canRename: user && selectedFiles.length === 1,
         canCopy: user && selectedFiles.length >= 1,
+        canTrash: user && selectedFiles.length >= 1,
       };
     },
     [selectedFiles, user]
@@ -43,7 +46,20 @@ export const DatafilesToolbar: React.FC = () => {
   return (
     <div className={styles.toolbarRoot}>
       <span>(search bar goes here)</span>
+
       <div className={styles.toolbarButtonContainer}>
+        <DatafilesModal.Rename api={api} system={system} path={path}>
+          {({ onClick }) => (
+            <ToolbarButton
+              onClick={onClick}
+              disabled={!rules.canRename}
+              className={styles.toolbarButton}
+            >
+              <i role="none" className="fa fa-pencil" />
+              <span>Rename</span>
+            </ToolbarButton>
+          )}
+        </DatafilesModal.Rename>
         <DatafilesModal.Preview
           api={api}
           system={system}
@@ -73,6 +89,15 @@ export const DatafilesToolbar: React.FC = () => {
             </ToolbarButton>
           )}
         </DatafilesModal.Copy>
+        <TrashButton
+          api={api}
+          system={system}
+          selectedFiles={selectedFiles}
+          className={styles.toolbarButton}
+        >
+          <i role="none" className="fa fa-trash" />
+          <span>Trash</span>
+        </TrashButton>
       </div>
     </div>
   );
