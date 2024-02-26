@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 //import styles from './FileListing.module.css';
-import { Button } from 'antd';
+import { Button, TableProps } from 'antd';
 import {
   FileListingTable,
   TFileListingColumns,
@@ -18,12 +18,14 @@ export function toBytes(bytes?: number) {
   return `${bytesInUnits.toFixed(precision)} ${units[orderOfMagnitude]}`;
 }
 
-export const FileListing: React.FC<{
-  api: string;
-  system: string;
-  path?: string;
-  scheme?: string;
-}> = ({ api, system, path = '', scheme = 'private' }) => {
+export const FileListing: React.FC<
+  {
+    api: string;
+    system: string;
+    path?: string;
+    scheme?: string;
+  } & Omit<TableProps, 'columns'>
+> = ({ api, system, path = '', scheme = 'private', ...tableProps }) => {
   // Base file listing for use with My Data/Community Data
   const [previewModalState, setPreviewModalState] = useState<{
     isOpen: boolean;
@@ -94,6 +96,7 @@ export const FileListing: React.FC<{
         scheme={scheme}
         path={path}
         columns={columns}
+        {...tableProps}
       />
       {previewModalState.path && (
         <PreviewModalBody

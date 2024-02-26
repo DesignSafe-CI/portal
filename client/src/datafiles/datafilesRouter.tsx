@@ -127,24 +127,32 @@ const datafilesRouter = createBrowserRouter(
               element: <ProjectListingLayout />,
             },
             {
-              path: ':uuid/prepare-to-publish',
+              path: ':projectId/prepare-to-publish',
               element: <ProjectPipelineLayout />,
             },
             {
-              path: ':uuid/preview',
+              path: ':projectId/preview',
               element: <ProjectPreviewLayout />,
             },
             {
-              path: ':uuid',
+              path: ':projectId',
               element: <ProjectDetailLayout />,
               children: [
                 {
-                  path: 'curation/:path?',
-                  element: <ProjectCurationLayout />,
+                  path: '',
+                  element: <Navigate to="workdir" replace />,
                 },
                 {
-                  path: 'workdir/:path?',
-                  element: <ProjectWorkdirLayout />,
+                  path: 'curation',
+                  children: [
+                    { path: ':path?', element: <ProjectCurationLayout /> },
+                  ],
+                },
+                {
+                  path: 'workdir',
+                  children: [
+                    { path: ':path?', element: <ProjectWorkdirLayout /> },
+                  ],
                 },
                 {
                   path: '*',
