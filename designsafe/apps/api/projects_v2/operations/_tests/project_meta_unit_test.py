@@ -194,7 +194,7 @@ def test_graph_node_reorder():
         "PRJ-1234", new_node_1, "UUID4", constants.EXPERIMENT_MODEL_CONFIG
     )
     new_node_5 = add_node_to_project(
-        "PRJ-1234", new_node_1, "UUID4", constants.EXPERIMENT_MODEL_CONFIG
+        "PRJ-1234", new_node_1, "UUID5", constants.EXPERIMENT_MODEL_CONFIG
     )
 
     graph = ProjectMetadata.get_project_by_id("PRJ-1234").project_graph
