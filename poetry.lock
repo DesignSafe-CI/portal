@@ -105,24 +105,6 @@ files = [
 ]
 
 [[package]]
-name = "attrdict"
-version = "2.0.1"
-description = "A dict with attribute-style access"
-optional = false
-python-versions = "*"
-files = []
-develop = false
-
-[package.dependencies]
-six = "*"
-
-[package.source]
-type = "git"
-url = "https://github.com/DesignSafe-CI/AttrDict"
-reference = "83b779ee82d5b0e33be695d398162b8f2430ff33"
-resolved_reference = "83b779ee82d5b0e33be695d398162b8f2430ff33"
-
-[[package]]
 name = "attrs"
 version = "23.1.0"
 description = "Classes Without Boilerplate"
@@ -4066,4 +4048,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "afa925fb8ac88226c3b5c8be707883fd2ddaf484aa82a1d9f70c2ca07b6b25ce"
+content-hash = "307e3b629eb7cf6da0b854f396084fa0ff4feda5c1d8b34666d32f4b71ffece2"
