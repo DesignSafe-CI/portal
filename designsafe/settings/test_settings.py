@@ -131,7 +131,7 @@ MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
+    'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -528,7 +528,7 @@ BROKER_BACKEND = 'memory'
 
 # No token refreshes during testing
 MIDDLEWARE= [c for c in MIDDLEWARE if c !=
-                      'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
+                      'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware']
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '.media')

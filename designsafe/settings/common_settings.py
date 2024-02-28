@@ -138,7 +138,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
+    'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -523,6 +523,15 @@ AGAVE_JWT_SERVICE_ACCOUNT = os.environ.get('AGAVE_JWT_SERVICE_ACCOUNT')
 
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
 AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
+
+# Tapis Client Configuration
+PORTAL_ADMIN_USERNAME = os.environ.get('PORTAL_ADMIN_USERNAME')
+TAPIS_TENANT_BASEURL = os.environ.get('TAPIS_TENANT_BASEURL')
+TAPIS_CLIENT_ID = os.environ.get('TAPIS_CLIENT_ID')
+TAPIS_CLIENT_KEY = os.environ.get('TAPIS_CLIENT_KEY')
+TAPIS_ADMIN_JWT = os.environ.get('TAPIS_ADMIN_JWT')
+
+KEY_SERVICE_TOKEN = os.environ.get('KEY_SERVICE_TOKEN')
 
 DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
 DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
