@@ -167,7 +167,6 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
-                'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },

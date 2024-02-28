@@ -115,7 +115,7 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'designsafe.apps.auth.backends.AgaveOAuthBackend',
+    'designsafe.apps.auth.backends.TapisOAuthBackend',
     'designsafe.apps.auth.backends.TASBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -177,7 +177,6 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
-                'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },

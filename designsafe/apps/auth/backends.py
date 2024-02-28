@@ -8,8 +8,8 @@ from django.contrib.auth.backends import ModelBackend
 from tapipy.tapis import Tapis
 from tapipy.errors import BaseTapyException
 from designsafe.apps.accounts.models import DesignSafeProfile, NotificationPreferences
-from designsafe.apps.users.utils import get_user_data
-from desingsafe.apps.auth.models.TapisOAuthToken import get_masked_token
+from designsafe.apps.api.users.utils import get_user_data
+from designsafe.apps.auth.models import TapisOAuthToken
 from django.contrib.auth.signals import user_logged_out
 from django.contrib import messages
 from django.core.exceptions import ValidationError
@@ -36,7 +36,7 @@ def on_user_logged_out(sender, request, user, **kwargs):
         login_provider = "TACC"
 
     logger.info(
-        "Revoking tapis token: %s", get_masked_token(user.tapis_oauth.access_token)
+        "Revoking tapis token: %s", TapisOAuthToken().get_masked_token(user.tapis_oauth.access_token)
     )
     backend = TapisOAuthBackend()
     TapisOAuthBackend.revoke(backend, user.tapis_oauth.access_token)
@@ -139,7 +139,7 @@ class TapisOAuthBackend(ModelBackend):
             token = kwargs["token"]
 
             logger.info(
-                'Attempting login via Tapis with token "%s"' % get_masked_token(token)
+                'Attempting login via Tapis with token "%s"' % TapisOAuthToken().get_masked_token(token)
             )
             client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL, access_token=token)
 
@@ -188,7 +188,7 @@ class TapisOAuthBackend(ModelBackend):
 
     def revoke(self, token):
         self.logger.info(
-            "Attempting to revoke Tapis token %s" % get_masked_token(token)
+            "Attempting to revoke Tapis token %s" % TapisOAuthToken().get_masked_token(token)
         )
 
         client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL, access_token=token)
