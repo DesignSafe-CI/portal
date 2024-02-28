@@ -56,10 +56,10 @@ export const PROJECT_COLORS: Record<string, { outline: string; fill: string }> =
 
     [SIMULATION]: { outline: '#cccccc', fill: '#f5f5f5' },
     [SIMULATION_REPORT]: { outline: '#cccccc', fill: '#f5f5f5' },
-    [SIMULATION_ANALYSIS]: { outline: '##56C0E0', fill: '#CCECF6' },
+    [SIMULATION_ANALYSIS]: { outline: '#56C0E0', fill: '#CCECF6' },
     [SIMULATION_MODEL]: { outline: '#1568C9', fill: '#C4D9F2' },
     [SIMULATION_INPUT]: { outline: '#43A59D', fill: '#CAE9E6' },
-    [SIMULATION_OUTPUT]: { outline: '#B59300', fill: '#B59300' },
+    [SIMULATION_OUTPUT]: { outline: '#B59300', fill: '#ECE4BF' },
 
     [HYBRID_SIM]: { outline: '#cccccc', fill: '#f5f5f5' },
     [HYBRID_SIM_ANALYSIS]: { outline: '##56C0E0', fill: '#CCECF6' },
@@ -75,8 +75,8 @@ export const PROJECT_COLORS: Record<string, { outline: string; fill: string }> =
     [FIELD_RECON_REPORT]: { outline: '#cccccc', fill: '#f5f5f5' },
     [FIELD_RECON_MISSION]: { outline: '#000000', fill: '#ffffff' },
     [FIELD_RECON_GEOSCIENCE]: { outline: '#43A59D', fill: '#CAE9E6' },
-    [FIELD_RECON_PLANNING]: { outline: '#B59300', fill: '#ECE4BF' },
-    [FIELD_RECON_SOCIAL_SCIENCE]: { outline: '#43A59D', fill: '#CAE9E6' },
+    [FIELD_RECON_SOCIAL_SCIENCE]: { outline: '#B59300', fill: '#ECE4BF' },
+    [FIELD_RECON_PLANNING]: { outline: '#43A59D', fill: '#CAE9E6' },
   };
 
 export const ALLOWED_RELATIONS: Record<string, string[]> = {
@@ -153,7 +153,6 @@ export const ENTITIES_WITH_FILES: Record<
   ],
   field_recon: [
     FIELD_RECON_GEOSCIENCE,
-    FIELD_RECON_MISSION,
     FIELD_RECON_PLANNING,
     FIELD_RECON_REPORT,
     FIELD_RECON_SOCIAL_SCIENCE,
@@ -195,7 +194,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   [FIELD_RECON_GEOSCIENCE]: 'Geoscience Collection',
   [FIELD_RECON_SOCIAL_SCIENCE]: 'Social Science Collection',
   [FIELD_RECON_REPORT]: 'Document Collection',
-  [FIELD_RECON_PLANNING]: 'Planning Collection',
+  [FIELD_RECON_PLANNING]: 'Research Planning Collection',
 };
 
 export const PUBLISHABLE_NAMES = [

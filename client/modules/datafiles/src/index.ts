@@ -6,3 +6,4 @@ export { default as DatafilesModal } from './DatafilesModal/DatafilesModal';
 export * from './DatafilesToolbar/DatafilesToolbar';
 export * from './DatafilesBreadcrumb/DatafilesBreadcrumb';
 export * from './projects';
+export * from './publications';

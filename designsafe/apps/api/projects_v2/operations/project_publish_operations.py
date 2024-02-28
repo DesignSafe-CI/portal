@@ -24,7 +24,6 @@ def add_values_to_tree(project_id: str) -> nx.DiGraph:
     project_meta = ProjectMetadata.get_project_by_id(project_id)
     prj_entities = ProjectMetadata.get_entities_by_project_id(project_id)
     entity_map = {entity.uuid: entity for entity in prj_entities}
-    logger.debug(entity_map)
 
     publication_tree: nx.DiGraph = nx.node_link_graph(project_meta.project_graph.value)
     for node_id in publication_tree:
@@ -90,6 +89,9 @@ def get_publication_subtree(
         "NODE_ROOT", basePath=f"/{project_id}", **tree_with_values.nodes["NODE_ROOT"]
     )
     subtree.add_edge("NODE_ROOT", pub_root)
+    if version and version > 1:
+        # Relabel the entity root node to prevent duplicate node IDs when versioning.
+        subtree = nx.relabel_nodes(subtree, {pub_root: f"{pub_root}_V{version}"})
 
     subtree = construct_entity_filepaths(subtree, version)
     return subtree

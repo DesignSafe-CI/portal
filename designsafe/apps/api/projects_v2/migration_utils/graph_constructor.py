@@ -202,12 +202,15 @@ def construct_graph_recurse(
 def get_entities_from_publication(project_id: str, version=None):
     """Loop through a publication's fields and construct a flat entity list."""
     entity_fields: list[str] = list(FIELD_MAP.values())
+    used_fields = []
     pub = IndexedPublication.from_id(project_id, revision=version)
 
     entity_list = [pub.project.to_dict()]
     for field in entity_fields:
-        field_entities = [e.to_dict() for e in getattr(pub, field, [])]
-        entity_list += field_entities
+        if field not in used_fields:
+            field_entities = [e.to_dict() for e in getattr(pub, field, [])]
+            entity_list += field_entities
+        used_fields.append(field)
 
     return entity_list
 
@@ -324,6 +327,9 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
         if node_data["uuid"] == entity_listing[0]["uuid"]
     )
     pub_graph.nodes[base_node]["value"]["users"] = project_users
+    pub_graph.nodes[base_node]["value"]["license"] = next(
+        (v for v in base_pub_meta.get("licenses", {}).values() if v), None
+    )
 
     for pub in pub_graph.successors("NODE_ROOT"):
         if version and version > 1:
@@ -336,7 +342,8 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
             )
         else:
             pub_graph.nodes[pub]["version"] = 1
-        pub_graph.nodes[pub]["publishDate"] = str(base_pub_meta["created"])
+        pub_graph.nodes[pub]["publicationDate"] = str(base_pub_meta["created"])
+        pub_graph.nodes[pub]["status"] = "published"
 
     return pub_graph
 

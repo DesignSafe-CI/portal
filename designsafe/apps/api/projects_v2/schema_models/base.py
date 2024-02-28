@@ -117,6 +117,7 @@ class BaseProject(MetadataModel):
         BeforeValidator(lambda v: handle_dropdown_values(v, FIELD_RESEARCH_TYPES)),
     ] = []
     dois: list[str] = []
+    license: Optional[str] = None
 
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
