@@ -121,7 +121,10 @@ Data Depot
         <script type="module" src="http://localhost:4200/static/@vite/client"></script>
         <script type="module" src="http://localhost:4200/static/src/main.tsx"></script>
         {% else %}
-        <!--TODO: setup non-dev static import for React code-->
+        <!--setup non-dev static import for React code-->
+        {% endif %}
+        {% if react_flag and not debug %}
+            {% include react-assets.html %} 
         {% endif %}
     {% if not react_flag %}
     <script src="<%= htmlWebpackPlugin.files.js %>"></script>

@@ -6,6 +6,15 @@ RUN npm ci
 COPY . /designsafe/
 RUN npm run build
 
+FROM node:20 as node_nx_build
+COPY client/package.json client/package-lock.json /designsafe/
+WORKDIR /designsafe/client
+RUN npm ci
+
+COPY client/ /designsafe/client/
+RUN npm run build
+
+
 
 FROM python:3.11-buster
 
@@ -46,8 +55,14 @@ RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
 
 COPY --from=node_build /designsafe/ /srv/www/designsafe
+
+COPY --from=node_nx_build /designsafe/client/dist/client/ /srv/www/designsafe/designsafe/static/react-assets/
+COPY --from=node_nx_build /designsafe/client/dist/client/react-assets.html /srv/www/designsafe/designsafe/templates/react-assets.html
+
 RUN chown tg458981:G-816877 /srv/www/designsafe /srv/www/designsafe/*
 RUN chown -R tg458981:G-816877 /srv/www/designsafe/designsafe
+
+
 
 USER tg458981
 
