@@ -1,4 +1,4 @@
-from agavepy.agave import Agave, AgaveException, load_resource
+# from agavepy.agave import Agave, AgaveException, load_resource
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from designsafe.libs.common.decorators import profile as profile_fn
@@ -17,7 +17,7 @@ import logging
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
 
-AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
+# AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
 
 @login_required

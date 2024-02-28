@@ -11,7 +11,7 @@ from django.conf import settings
 
 from celery import shared_task
 from requests import ConnectionError, HTTPError
-from agavepy.agave import Agave, AgaveException
+# from agavepy.agave import Agave, AgaveException
 
 from designsafe.apps.api.notifications.models import Notification
 

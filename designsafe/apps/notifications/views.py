@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth import get_user_model
-from agavepy.agave import AgaveException
+# from agavepy.agave import AgaveException
 from requests import HTTPError
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.notifications.models import Notification as LegacyNotification

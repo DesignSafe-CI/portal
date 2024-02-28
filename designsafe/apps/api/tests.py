@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 from designsafe.apps.projects.models.agave.experimental import ExperimentalProject, ModelConfig, FileModel
 
-from agavepy.agave import Agave
+# from agavepy.agave import Agave
 import mock
 import json
 
