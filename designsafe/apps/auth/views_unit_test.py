@@ -1,4 +1,5 @@
 """DesignSafe Auth Tapis OAuth flow view tests"""
+
 import pytest
 from django.conf import settings
 from django.urls import reverse

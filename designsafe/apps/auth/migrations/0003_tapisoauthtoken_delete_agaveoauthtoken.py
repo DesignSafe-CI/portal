@@ -9,22 +9,37 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('designsafe_auth', '0002_auto_20160209_0427'),
+        ("designsafe_auth", "0002_auto_20160209_0427"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TapisOAuthToken',
+            name="TapisOAuthToken",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('access_token', models.CharField(max_length=2048)),
-                ('refresh_token', models.CharField(max_length=2048)),
-                ('expires_in', models.BigIntegerField()),
-                ('created', models.BigIntegerField()),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='tapis_oauth', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("access_token", models.CharField(max_length=2048)),
+                ("refresh_token", models.CharField(max_length=2048)),
+                ("expires_in", models.BigIntegerField()),
+                ("created", models.BigIntegerField()),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tapis_oauth",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.DeleteModel(
-            name='AgaveOAuthToken',
+            name="AgaveOAuthToken",
         ),
     ]

@@ -1,12 +1,12 @@
-
 import pytest
 from django.test import TransactionTestCase, override_settings
 from django.contrib.auth import get_user_model
 from mock import patch, MagicMock
 from requests import Response
 from designsafe.apps.auth.backends import TapisOAuthBackend
+
 # from designsafe.apps.auth.views import launch_setup_checks
-from tapipy.tapis import TapisResult
+# from tapipy.tapis import TapisResult
 
 
 pytestmark = pytest.mark.django_db
@@ -26,7 +26,8 @@ class TestTapisOAuthBackend(TransactionTestCase):
         self.backend = TapisOAuthBackend()
         self.mock_response = MagicMock(autospec=Response)
         self.mock_requests_patcher = patch(
-            "designsafe.apps.auth.backends.Tapis.authenticator.get_userinfo", return_value=self.mock_response
+            "designsafe.apps.auth.backends.Tapis.authenticator.get_userinfo",
+            return_value=self.mock_response,
         )
         self.mock_requests = self.mock_requests_patcher.start()
 
