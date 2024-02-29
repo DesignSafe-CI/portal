@@ -540,6 +540,15 @@ AGAVE_CLIENT_SECRET = 'example_com_client_secret'
 AGAVE_SUPER_TOKEN = 'example_com_client_token'
 AGAVE_STORAGE_SYSTEM = 'storage.example.com'
 
+# Tapis Client Configuration
+PORTAL_ADMIN_USERNAME = ''
+TAPIS_TENANT_BASEURL = 'https://designsafe.tapis.io'
+TAPIS_CLIENT_ID = 'client_id'
+TAPIS_CLIENT_KEY = 'client_key'
+TAPIS_ADMIN_JWT = 'admin_jwt'
+
+KEY_SERVICE_TOKEN = ''
+
 MIGRATION_MODULES = {
     'data': None,
     'designsafe_data': None,
