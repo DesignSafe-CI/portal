@@ -131,7 +131,7 @@ MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
+    'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -167,7 +167,6 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
-                'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
@@ -528,7 +527,7 @@ BROKER_BACKEND = 'memory'
 
 # No token refreshes during testing
 MIDDLEWARE= [c for c in MIDDLEWARE if c !=
-                      'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
+                      'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware']
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '.media')
@@ -540,6 +539,15 @@ AGAVE_CLIENT_KEY = 'example_com_client_key'
 AGAVE_CLIENT_SECRET = 'example_com_client_secret'
 AGAVE_SUPER_TOKEN = 'example_com_client_token'
 AGAVE_STORAGE_SYSTEM = 'storage.example.com'
+
+# Tapis Client Configuration
+PORTAL_ADMIN_USERNAME = ''
+TAPIS_TENANT_BASEURL = 'https://designsafe.tapis.io'
+TAPIS_CLIENT_ID = 'client_id'
+TAPIS_CLIENT_KEY = 'client_key'
+TAPIS_ADMIN_JWT = 'admin_jwt'
+
+KEY_SERVICE_TOKEN = ''
 
 MIGRATION_MODULES = {
     'data': None,

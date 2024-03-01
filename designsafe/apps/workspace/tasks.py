@@ -9,7 +9,7 @@ from django.urls import reverse
 from designsafe.apps.api.agave import impersonate_service_account
 from designsafe.apps.api.notifications.models import Notification
 from django.db import transaction
-from agavepy.agave import AgaveException
+# from agavepy.agave import AgaveException
 from celery import shared_task
 from requests import ConnectionError, HTTPError
 import logging

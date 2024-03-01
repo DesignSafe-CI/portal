@@ -28,8 +28,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView, TemplateView
 from django.urls import reverse, path
-from django.http import HttpResponse, HttpResponseRedirect
-from designsafe.apps.auth.views import login_options as des_login_options
+from django.http import HttpResponseRedirect
+from designsafe.apps.auth.views import tapis_oauth as login
 from django.contrib.auth.views import LogoutView as des_logout
 from designsafe.views import project_version as des_version, redirect_old_nees
 from impersonate import views as impersonate_views
@@ -148,7 +148,7 @@ urlpatterns = [
     # auth
     url(r'^auth/', include(('designsafe.apps.auth.urls', 'designsafe.apps.auth'), namespace='designsafe_auth')),
 
-    url(r'^login/$', des_login_options, name='login'),
+    url(r'^login/$', login, name='login'),
     url(r'^logout/$', des_logout.as_view(), name='logout'),
 
     # help

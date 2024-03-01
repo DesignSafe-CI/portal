@@ -6,3 +6,5 @@ ignore = E501, H101, W503
 exclude = __pycache__,
           tests.py,
           migrations
+
+extend-ignore = W503
