@@ -55,13 +55,14 @@ class AppListingEntry(models.Model):
 
         An HTML or External app is typically an HTML body with a link to an external resource.
 
-        An App Bundle is both:
+        An App Listing Entry (bundle) is both:
             1) a card on the apps CMS layout page that links to an overview page, and
-            2) a binned app in the apps workspace, where each app in bundled_apps is a dropdown item.
+            2) a binned app in the apps workspace, where each app variant is a dropdown item.
+
+        Note: If an App Listing Entry has only one variant, it will be treated as a single app, and not a bundle.
     """
 
     # Basic display options
-
     category = models.ForeignKey(
         AppTrayCategory,
         help_text="The category for this app entry.",
@@ -79,12 +80,7 @@ class AppListingEntry(models.Model):
         blank=True,
     )
     enabled = models.BooleanField(
-        help_text="Bundle visibility in app tray", default=True
-    )
-
-    # Bundled Apps
-    bundled_apps = models.ManyToManyField(
-        "self", help_text="Apps that will be bundled together.", blank=True
+        help_text="App bundle visibility in app tray", default=True
     )
 
     # CMS Display Options
@@ -170,7 +166,7 @@ class AppVariant(models.Model):
     )
 
     enabled = models.BooleanField(
-        help_text="Bundle visibility in app tray", default=True
+        help_text="App variant visibility in app tray", default=True
     )
 
     def __str__(self):

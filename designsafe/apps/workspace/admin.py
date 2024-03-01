@@ -30,8 +30,8 @@ class AppVariantInline(admin.StackedInline):
                     "fields": (
                         "app_type",
                         "app_id",
-                        "license_type",
                         "version",
+                        "license_type",
                     )
                 },
             ),
