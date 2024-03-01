@@ -7,3 +7,4 @@ export * from './DatafilesToolbar/DatafilesToolbar';
 export * from './DatafilesBreadcrumb/DatafilesBreadcrumb';
 
 export * from './nees';
+export * from './projects';

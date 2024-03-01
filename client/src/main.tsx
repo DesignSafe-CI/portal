@@ -12,6 +12,7 @@ const themeConfig: ThemeConfig = {
   token: {
     borderRadius: 0,
     colorPrimary: '#337ab7',
+    colorError: '#d9534f',
     colorPrimaryTextHover: 'black',
   },
   components: {
@@ -33,6 +34,10 @@ const themeConfig: ThemeConfig = {
       itemSelectedColor: 'black',
       itemHoverBg: 'rgba(96, 57, 204, 0.25)',
       itemSelectedBg: 'rgba(96, 57, 204, 0.25)',
+    },
+    Form: {
+      itemMarginBottom: 16,
+      verticalLabelPadding: 0,
     },
   },
 };

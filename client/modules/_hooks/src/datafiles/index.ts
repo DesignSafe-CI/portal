@@ -14,9 +14,12 @@ export {
 } from './useSelectedFiles';
 
 export { useFileCopy } from './useFileCopy';
+export { useTrash } from './useTrash';
+export { useRename } from './useRename';
 export {
   usePathDisplayName,
   getSystemRootDisplayName,
 } from './usePathDisplayName';
 
 export * from './nees';
+export * from './projects';
