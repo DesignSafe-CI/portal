@@ -124,7 +124,7 @@ Data Depot
         <!--setup non-dev static import for React code-->
         {% endif %}
         {% if react_flag and not debug %}
-            {% include react-assets.html %} 
+            {% include "react-assets.html" %} 
         {% endif %}
     {% if not react_flag %}
     <script src="<%= htmlWebpackPlugin.files.js %>"></script>
