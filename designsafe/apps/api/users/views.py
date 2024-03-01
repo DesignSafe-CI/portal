@@ -4,11 +4,11 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.users import utils as users_utils
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
-from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
+from django.http import HttpResponseNotFound, JsonResponse, HttpResponse, HttpRequest
 from django.views.generic.base import View
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
-
+from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.data.models.elasticsearch import IndexedFile, IndexedPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
 from elasticsearch_dsl import Q, Search
@@ -120,6 +120,25 @@ class SearchView(View):
             return JsonResponse(resp, safe=False)
         else:
             return HttpResponseNotFound()
+        
+
+class ProjectUserView(BaseApiView):
+    """View for handling search for project users"""
+    def get(self, request: HttpRequest):
+        """retrieve a user by their exact TACC username."""
+        if not request.user.is_authenticated:
+            raise ApiException(message="Authentication required", status=401)
+        
+        username_query = request.GET.get("q")
+        user_match = get_user_model().objects.filter(username__iexact=username_query)
+        user_resp = [{"fname": u.first_name,
+                     "lname": u.last_name,
+                     "inst": u.profile.institution,
+                     "email": u.email, 
+                     "username": u.username} for u in user_match]
+        
+        return JsonResponse({"result": user_resp})
+        
 
 
 class PublicView(View):

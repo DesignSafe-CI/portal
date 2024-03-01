@@ -1,4 +1,5 @@
 """Utilities for creating and managing project metadata objects/associations."""
+
 import operator
 from django.db import models, transaction
 from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING
@@ -41,10 +42,10 @@ def patch_metadata(uuid, value):
     so that only fields in the payload are overwritten."""
     entity = ProjectMetadata.objects.get(uuid=uuid)
     schema_model = SCHEMA_MAPPING[entity.name]
-    validated_model = schema_model.model_validate(value)
 
-    patched_metadata = {**entity.value, **validated_model.model_dump()}
-    entity.value = patched_metadata
+    patched_metadata = {**entity.value, **value}
+    validated_model = schema_model.model_validate(patched_metadata)
+    entity.value = validated_model.model_dump()
     entity.save()
     return entity
 
@@ -173,4 +174,21 @@ def remove_file_tags(uuid: str, file_tags: list[FileTag]):
             for t in _filter_file_tags(entity_file_model.file_tags, file_tags)
         ]
         entity.save()
+    return entity
+
+
+def set_file_tags(uuid: str, file_path: str, file_tags: list[str]):
+    """Set file tags for a specific path"""
+    with transaction.atomic():
+        entity = ProjectMetadata.objects.select_for_update().get(uuid=uuid)
+        entity_file_model = PartialEntityWithFiles.model_validate(entity.value)
+
+        unaffected_tags = [
+            tag for tag in entity_file_model.file_tags if tag.path != file_path
+        ]
+        updated_tags = [FileTag(path=file_path, tag_name=tag) for tag in file_tags]
+        tags_to_set = [*unaffected_tags, *updated_tags]
+        entity.value["fileTags"] = [t.model_dump() for t in tags_to_set]
+        entity.save()
+
     return entity
