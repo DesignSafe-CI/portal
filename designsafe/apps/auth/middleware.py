@@ -20,7 +20,11 @@ class TapisTokenRefreshMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path != reverse("logout") and request.user.is_authenticated:
+        if (
+            request.path != reverse("logout")
+            and request.path != reverse("login")
+            and request.user.is_authenticated
+        ):
             self.process_request(request)
 
         response = self.get_response(request)

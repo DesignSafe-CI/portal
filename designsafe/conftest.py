@@ -1,6 +1,9 @@
 """Base User pytest fixtures"""
 
 import pytest
+import os
+import json
+from django.conf import settings
 from designsafe.apps.auth.models import TapisOAuthToken
 
 
@@ -50,3 +53,16 @@ def project_admin_user(django_user_model):
 def authenticated_user(client, regular_user):
     client.force_login(regular_user)
     yield regular_user
+
+
+@pytest.fixture
+def tapis_tokens_create_mock():
+    yield json.load(
+        open(
+            os.path.join(
+                settings.BASE_DIR,
+                "designsafe/fixtures/tapis/auth/create-tokens-response.json",
+            ),
+            "r",
+        )
+    )

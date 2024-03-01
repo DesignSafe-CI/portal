@@ -187,10 +187,10 @@ class TapisOAuthBackend(ModelBackend):
         return user
 
     def revoke(self, token):
-        self.logger.info(
+        logger.info(
             "Attempting to revoke Tapis token %s" % TapisOAuthToken().get_masked_token(token)
         )
 
         client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL, access_token=token)
         response = client.authenticator.revoke_token(token=token)
-        self.logger.info("revoke response is %s" % response)
+        logger.info("revoke response is %s" % response)

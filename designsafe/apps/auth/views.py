@@ -51,7 +51,7 @@ def tapis_oauth(request):
     tenant_base_url = getattr(settings, "TAPIS_TENANT_BASEURL")
     client_id = getattr(settings, "TAPIS_CLIENT_ID")
 
-    METRICS.info(f"user:{request.user.username} starting oauth redirect login")
+    METRICS.debug(f"user:{request.user.username} starting oauth redirect login")
 
     # Authorization code request
     authorization_url = (
