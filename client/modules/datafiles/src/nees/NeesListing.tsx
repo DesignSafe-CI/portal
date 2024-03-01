@@ -23,7 +23,7 @@ export const NeesListing: React.FC = () => {
     },
     {
       render: (_, record) =>
-        record.pis[0]
+        record.pis
           ? `${record.pis[0].firstName} ${record.pis[0].lastName}`
           : '(N/A)',
       title: 'Project PI',
