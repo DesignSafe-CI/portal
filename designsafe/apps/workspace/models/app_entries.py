@@ -4,26 +4,26 @@
 from django.db import models
 
 APP_ICONS = [
-    ("rwhale", "rWHALE"),
-    ("hazmapper", "Hazmapper"),
-    ("compress", "Compress"),
-    ("opensees", "OpenSees/STKO"),
-    ("openfoam", "OpenFOAM"),
+    ("adcirc", "ADCIRC"),
+    ("ansys", "Ansys"),
     ("blender", "Blender"),
+    ("clawpack", "Clawpack"),
+    ("compress", "Compress"),
+    ("dakota", "Dakota"),
+    ("extract", "Extract"),
+    ("hazmapper", "Hazmapper"),
+    ("jupyter", "Jupyter"),
+    ("ls-dyna", "LS-DYNA"),
     ("matlab", "MATLAB"),
     ("ngl", "NGL"),
-    ("paraview", "Paraview"),
-    ("visit", "VisIt"),
-    ("jupyter", "Jupyter"),
-    ("qgis", "QGIS"),
-    ("adcirc", "ADCIRC"),
+    ("openfoam", "OpenFOAM"),
     ("opensees", "OpenSees"),
-    ("ls-dyna", "LS-DYNA"),
-    ("dakota", "Dakota"),
-    ("clawpack", "Clawpack"),
-    ("ansys", "Ansys"),
+    ("paraview", "Paraview"),
+    ("qgis", "QGIS"),
+    ("rwhale", "rWHALE"),
+    ("stko", "STKO"),
     ("swbatch", "swbatch"),
-    ("extract", "Extract"),
+    ("visit", "VisIt"),
 ]
 
 LICENSE_TYPES = [("OS", "Open Source"), ("LS", "Licensed")]
@@ -69,9 +69,8 @@ class AppListingEntry(models.Model):
         on_delete=models.CASCADE,
     )
     label = models.CharField(
-        help_text="The display name of this bundle in the Apps Tray.",
+        help_text="The display name of this bundle in the Apps Tray. Not used if this entry is a single app ID.",
         max_length=64,
-        blank=True,
     )
     icon = models.CharField(
         help_text="The icon associated with this app.",
@@ -80,7 +79,7 @@ class AppListingEntry(models.Model):
         blank=True,
     )
     enabled = models.BooleanField(
-        help_text="App bundle visibility in app tray", default=True
+        help_text="App bundle visibility in app tray.", default=True
     )
 
     # CMS Display Options
@@ -94,7 +93,7 @@ class AppListingEntry(models.Model):
     )
 
     not_bundled = models.BooleanField(
-        help_text="Select if this entry represents a single app ID and not a bundle",
+        help_text="Select if this entry represents a single app ID and not a bundle.",
         default=False,
     )
 
@@ -116,7 +115,7 @@ class AppListingEntry(models.Model):
 class AppVariant(models.Model):
     """Model to represent a variant of an app, e.g. a software version or execution environment"""
 
-    ENTRY_TYPES = [
+    APP_TYPES = [
         ("tapis", "Tapis App"),
         ("html", "HTML or External app"),
     ]
@@ -129,13 +128,14 @@ class AppVariant(models.Model):
     app_type = models.CharField(
         help_text="Application type.",
         max_length=10,
-        choices=ENTRY_TYPES,
+        choices=APP_TYPES,
         default="tapis",
     )
 
     label = models.CharField(
-        help_text="The display name of this app in the Apps Tray.",
+        help_text="The display name of this app in the Apps Tray. If not defined, uses notes.label from app definition.",
         max_length=64,
+        blank=True,
     )
 
     license_type = models.CharField(
@@ -144,7 +144,7 @@ class AppVariant(models.Model):
 
     bundle = models.ForeignKey(
         AppListingEntry,
-        help_text="bundle that the app belongs to",
+        help_text="Bundle that the app belongs to.",
         on_delete=models.CASCADE,
         blank=True,
         null=True,
@@ -166,7 +166,7 @@ class AppVariant(models.Model):
     )
 
     enabled = models.BooleanField(
-        help_text="App variant visibility in app tray", default=True
+        help_text="App variant visibility in app tray.", default=True
     )
 
     def __str__(self):
