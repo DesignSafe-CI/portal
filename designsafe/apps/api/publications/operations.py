@@ -171,7 +171,7 @@ def neeslisting(offset=0, limit=100, limit_fields=True, *args):
     pub_query = IndexedPublicationLegacy.search(using=client)
     pub_query = pub_query.extra(from_=offset, size=limit)
     if limit_fields:
-        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
+        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path', 'description'])
     pub_query = pub_query.sort(
             {'created': {'order': 'desc', 'unmapped_type': 'long'}}
         )
@@ -196,7 +196,7 @@ def neessearch(offset=0, limit=100, query_string='', limit_fields=True, *args):
     pub_query = IndexedPublicationLegacy.search(using=client).filter(nees_pi_query | nees_query_string_query)
     pub_query = pub_query.extra(from_=offset, size=limit)
     if limit_fields:
-        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
+        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path', 'description'])
     pub_query = pub_query.sort(
             {'created': {'order': 'desc', 'unmapped_type': 'long'}}
         )
