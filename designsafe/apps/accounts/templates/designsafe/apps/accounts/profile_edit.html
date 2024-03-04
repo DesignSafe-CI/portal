@@ -7,10 +7,9 @@
   <div class="panel-body">
     <h2>Personal Profile</h2>
     <hr>
+    Update your personal profile using the <a href="https://accounts.tacc.utexas.edu/edit_profile" target="_blank">TACC Account Management portal</a>.
     <form method="post" action="">
       {% csrf_token %}
-      {% bootstrap_form form %}
-
       <h2>Professional Profile</h2>
       <hr>
       {% bootstrap_form pro_form %}
