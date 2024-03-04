@@ -1,4 +1,4 @@
-from django.db import models
+
 from django.dispatch import receiver
 from designsafe.apps.signals.signals import generic_event
 from designsafe.apps.notifications.models import Notification
