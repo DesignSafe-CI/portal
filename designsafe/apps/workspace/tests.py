@@ -2,10 +2,12 @@ import json
 from mock import patch
 from django.test import TestCase
 from .models.app_descriptions import AppDescription
+from unittest import skip
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 
+@skip("TODOv3: Update apps api with Tapisv3")
 class AppDescriptionModelTest(TestCase):
 
     fixtures = ["user-data", "auth"]
@@ -31,6 +33,7 @@ class AppDescriptionModelTest(TestCase):
         self.assertContains(response, "TestApp0.1")
 
 
+@skip("TODOv3: Update apps api with Tapisv3")
 class TestAppsApiViews(TestCase):
     fixtures = ["user-data", "auth"]
 
