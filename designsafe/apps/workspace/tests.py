@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 
 class AppDescriptionModelTest(TestCase):
 
-    fixtures = ["user-data", "agave-oauth-token-data"]
+    fixtures = ["user-data", "auth"]
 
     def setUp(self):
         user = get_user_model().objects.get(pk=2)
@@ -32,7 +32,7 @@ class AppDescriptionModelTest(TestCase):
 
 
 class TestAppsApiViews(TestCase):
-    fixtures = ["user-data", "agave-oauth-token-data"]
+    fixtures = ["user-data", "auth"]
 
     @classmethod
     def setUpClass(cls):

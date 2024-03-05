@@ -234,6 +234,10 @@ STATICFILES_FINDERS = (
 MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
 
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'designsafe', 'fixtures'),
+]
+
 
 #####
 #

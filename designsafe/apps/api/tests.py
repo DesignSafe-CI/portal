@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # Create your tests here.
 class ProjectDataModelsTestCase(TestCase):
-    fixtures = ['user-data.json', 'agave-oauth-token-data.json']
+    fixtures = ['user-data.json', 'auth.json']
 
     def setUp(self):
         user = get_user_model().objects.get(pk=2)

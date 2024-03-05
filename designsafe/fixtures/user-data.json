@@ -1,0 +1,67 @@
+[
+    {
+      "fields": {
+        "username": "ds_admin",
+        "first_name": "DesignSafe",
+        "last_name": "Admin",
+        "is_active": true,
+        "is_superuser": true,
+        "is_staff": true,
+        "last_login": "2016-03-01T00:00:00.000Z",
+        "groups": [],
+        "user_permissions": [],
+        "password": "",
+        "email": "admin@designsafe-ci.org",
+        "date_joined": "2016-03-01T00:00:00.000Z"
+      },
+      "model": "auth.user",
+      "pk": 1
+    },
+    {
+      "fields": {
+        "username": "envision",
+        "first_name": "DesignSafe",
+        "last_name": "Admin",
+        "is_active": true,
+        "is_superuser": true,
+        "is_staff": true,
+        "last_login": "2016-03-01T00:00:00.000Z",
+        "groups": [],
+        "user_permissions": [],
+        "password": "",
+        "email": "admin@designsafe-ci.org",
+        "date_joined": "2016-03-01T00:00:00.000Z"
+      },
+      "model": "auth.user",
+      "pk": 3
+    },
+    {
+      "fields": {
+        "username": "ds_user",
+        "first_name": "DesignSafe",
+        "last_name": "User",
+        "is_active": true,
+        "is_superuser": false,
+        "is_staff": false,
+        "last_login": "2016-03-01T00:00:00.000Z",
+        "groups": [],
+        "user_permissions": [],
+        "password": "",
+        "email": "user@designsafe-ci.org",
+        "date_joined": "2016-03-01T00:00:00.000Z"
+      },
+      "model": "auth.user",
+      "pk": 2
+    },
+    {
+      "fields": {
+        "user": 2,
+        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJkMGU1YWZiZi05Yzk3LTQyOTMtOTNlMS1jYWIyYzAxY2JhMDAiLCJpc3MiOiJodHRwczovL2Rldi5kZXZlbG9wLnRhcGlzLmlvL3YzL3Rva2VucyIsInN1YiI6InRlc3R1c2VyMjAwQGRldiIsInRhcGlzL3RlbmFudF9pZCI6ImRldiIsInRhcGlzL3Rva2VuX3R5cGUiOiJhY2Nlc3MiLCJ0YXBpcy9kZWxlZ2F0aW9uIjpmYWxzZSwidGFwaXMvZGVsZWdhdGlvbl9zdWIiOm51bGwsInRhcGlzL3VzZXJuYW1lIjoidGVzdHVzZXIyMDAiLCJ0YXBpcy9hY2NvdW50X3R5cGUiOiJ1c2VyIiwiZXhwIjoxNjU2MDE5MzM1fQ.2mevJWnoS-nlUNfna17berL1HKCHKaPuX6BGi8RZQTQV2meFRLNhAu8B0nDJvROTqYiHna23N2h_FEgS51kRhpwL8N3zTuguh2cT090GxzCFw1QnI1V2rNK4zZjvxagciJxov8SbaOgta6H6_AUentKi_NFjpYTerPRjCDkuCwYitvGOJdzTUFY7cn8SX6JQvlRkcwQ7I0bfC5JN5m5Q0trPD5r2-VDIElI5JVY_isMMT9O5-lT1HTIN1BCYoOnLPgza6vkZeWdArsW9bcvpMANjDlK3mWFtc1fEybN6O3c9RaxRj8GO8zNoyngNH7h6DXeEGdsVJcrt9VWI-nW8iA",
+        "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIwYTYzNTAxOS1mNTllLTQxMjItOGUwNi0zZmRkYTNmMzYzNWEiLCJpc3MiOiJodHRwczovL2Rldi5kZXZlbG9wLnRhcGlzLmlvL3YzL3Rva2VucyIsInN1YiI6InRlc3R1c2VyMjAwQGRldiIsInRhcGlzL2luaXRpYWxfdHRsIjo2MDAsInRhcGlzL3RlbmFudF9pZCI6ImRldiIsInRhcGlzL3Rva2VuX3R5cGUiOiJyZWZyZXNoIiwiZXhwIjoxNjU2MDE5MzM1LCJ0YXBpcy9hY2Nlc3NfdG9rZW4iOnsianRpIjoiZDBlNWFmYmYtOWM5Ny00MjkzLTkzZTEtY2FiMmMwMWNiYTAwIiwiaXNzIjoiaHR0cHM6Ly9kZXYuZGV2ZWxvcC50YXBpcy5pby92My90b2tlbnMiLCJzdWIiOiJ0ZXN0dXNlcjIwMEBkZXYiLCJ0YXBpcy90ZW5hbnRfaWQiOiJkZXYiLCJ0YXBpcy90b2tlbl90eXBlIjoiYWNjZXNzIiwidGFwaXMvZGVsZWdhdGlvbiI6ZmFsc2UsInRhcGlzL2RlbGVnYXRpb25fc3ViIjpudWxsLCJ0YXBpcy91c2VybmFtZSI6InRlc3R1c2VyMjAwIiwidGFwaXMvYWNjb3VudF90eXBlIjoidXNlciIsInR0bCI6NjAwfX0.WI9vfN6SPNJwDR9uOaJ16quGzyKl-RWoaDwbOaQa1gpSQoutw8lBqsifzUb0WEJ9fqg8ZWAwbuu-IJikXTiwOiUqWy-09yHxNtCFpBARpY-jurMe20HbDCSlPGICpf8Bend-3tMSnf5c9JyuAgbVx1fnqSjhY3V7yiTVzCur-mOWqI47TiflDnddPscyQj7HBawwadinSiSwQKbnXw2FNkRIdKRrCEOaecKaZ-Hb69vHbi-A3D-HP80nhZzuQW8vzg0L_3cyGOh_Y-8qu22_21UfJwS_nWEizjrs9WTU5hCGpn2Da8U035gk01eC4S9J_WIhZjUhBRneB14QfgTNvg",
+        "expires_in": 1325391984000,
+        "created": 1536700084
+      },
+      "model": "designsafe_auth.tapisoauthtoken",
+      "pk": 1
+    }
+  ]

@@ -28,7 +28,7 @@ webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING)))
 # Create your tests here.
 @skip("Need to mock websocket call to redis")
 class NotificationsTestCase(TestCase):
-    fixtures = ["user-data.json", "agave-oauth-token-data.json"]
+    fixtures = ["user-data.json", "auth.json"]
 
     def setUp(self):
         self.wh_url = reverse("designsafe_api:jobs_wh_handler")
@@ -103,7 +103,7 @@ class NotificationsTestCase(TestCase):
 
 
 class TestWebhookViews(TestCase):
-    fixtures = ["user-data", "agave-oauth-token-data"]
+    fixtures = ["user-data", "auth"]
 
     def setUp(self):
         self.wh_url = reverse("designsafe_api:jobs_wh_handler")
