@@ -119,6 +119,39 @@ def ingest_graphs():
         )
 
 
+def fix_authors(meta: ProjectMetadata):
+    """Ensure that authors contain complete name/institution information."""
+    base_project = meta.base_project
+
+    def get_complete_author(partial_author):
+        if partial_author["name"] and not partial_author["guest"]:
+            author_info = next(
+                (
+                    user
+                    for user in base_project.value["users"]
+                    if user["username"] == partial_author["name"]
+                ),
+                partial_author,
+            )
+            author_info.pop("order", None)
+            print(author_info)
+            return {**partial_author, **author_info}
+        return partial_author
+
+    if meta.value.get("authors"):
+        meta.value["authors"] = [
+            get_complete_author(author) for author in meta.value["authors"]
+        ]
+
+    if meta.value.get("dataCollectors"):
+        meta.value["dataCollectors"] = [
+            get_complete_author(author) for author in meta.value["dataCollectors"]
+        ]
+    schema_model = SCHEMA_MAPPING[meta.name]
+    schema_model.model_validate(meta.value)
+    meta.save()
+
+
 def ingest_publications():
     """Ingest Elasticsearch-based publications into the db"""
     all_pubs = iterate_pubs()
