@@ -86,6 +86,7 @@ urlpatterns = [
         # api urls, just for the samples.
         url(r'^applications/', include(('designsafe.apps.applications.urls', 'desigsnafe.apps.applications'),
             namespace='designsafe_applications')),
+        # NOTE: /data is redirected to /data/browser via the CMS.
         url(r'^data/', include(('designsafe.apps.data.urls', 'designsafe.apps.data'), namespace='designsafe_data')),
         url(r'^rw/workspace/', include(('designsafe.apps.workspace.urls', 'designsafe.apps.workspace'),
             namespace='designsafe_workspace')),

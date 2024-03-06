@@ -34,6 +34,17 @@ def regular_user(django_user_model, mock_agave_client):
 
 
 @pytest.fixture
+def project_admin_user(django_user_model):
+    django_user_model.objects.create_user(username="test_prjadmin",
+                                          password="password",
+                                          first_name="Project",
+                                          last_name="Admin",
+    )
+    user = django_user_model.objects.get(username="test_prjadmin")
+    yield user
+
+
+@pytest.fixture
 def authenticated_user(client, regular_user):
     client.force_login(regular_user)
     yield regular_user

@@ -995,6 +995,12 @@ i[class^="icon-ls-pre/post"]:before,
 .dropdown button .curation-chevron:before {
     content: "\e902";
 }
+.curation-chevron-collapsed:before {
+    content: "\e901";
+}
+.curation-chevron-expanded:before {
+    content: "\e902";
+}
 .curation-close-window:before {
     content: "\e903";
 }

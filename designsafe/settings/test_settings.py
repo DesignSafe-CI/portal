@@ -36,6 +36,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+RENDER_REACT = False
 TEST = True
 
 ALLOWED_HOSTS = ['*']
@@ -83,6 +84,7 @@ INSTALLED_APPS = (
     'designsafe.apps.auth',
     'designsafe.apps.api',
     'designsafe.apps.api.notifications',
+    'designsafe.apps.api.projects_v2',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -472,6 +474,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'auth': json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
     }
 }
+PROJECT_ADMIN_USERS = ["test_prjadmin"]
 
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
 

@@ -8,6 +8,9 @@
       <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} | DesignSafe-CI</title>
       <meta name="viewport" content="width=device-width">
       <meta name="description" content="{{description}}">
+      {% if ds_environment != 'default' %}
+      <meta name="robots" content="noindex">
+      {% endif %}
 
       <link rel="icon" href="{% static 'favicon.ico' %}">
       {% if 'designsafe.storage.published' in request.get_full_path %}
@@ -136,6 +139,14 @@
                     </p>\
                 </div>")
         }
+    </script>
+    <script type="module">
+        window.__authenticatedUser__ = "{{request.user.is_authenticated}}" === 'True' && {
+            username: "{{request.user.username}}",
+            firstName: "{{ request.user.first_name }}",
+            lastName: "{{ request.user.last_name }}",
+            email: "{{ request.user.email }}",
+        };
     </script>
 
     <script type="module" id="js-open-pdfs-ext-links-new-window">

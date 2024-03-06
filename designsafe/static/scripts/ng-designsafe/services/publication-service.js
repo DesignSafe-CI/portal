@@ -1,6 +1,6 @@
 import _ from 'underscore';
-import { from } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { from, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
 
 export class PublicationService {
@@ -63,13 +63,21 @@ export class PublicationService {
         const operation = query_string ? 'search' : 'listing';
         const listingObservable$ = from(
             this.$http.get(`/api/publications/${operation}/`, { params: { offset, limit, query_string } })
-        ).pipe(tap(this.listingSuccessCallback));
+        ).pipe(tap(this.listingSuccessCallback), catchError(() => this.listingErrorCallback()));
         return listingObservable$;
     }
     listingSuccessCallback(resp) {
         this.listing.publications = resp.data.listing;
         this.listing.loading = false;
+        this.listing.error = false;
         this.listing.reachedEnd = resp.data.listing.length < this.listing.params.limit;
+    }
+
+    listingErrorCallback() {
+        this.listing.publications = []
+        this.listing.loading = false;
+        this.listing.error = {message: "There was an error retrieving the requested publications."}
+        return of(null);
     }
 
     scrollPublications() {

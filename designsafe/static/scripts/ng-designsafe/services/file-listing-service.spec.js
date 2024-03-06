@@ -46,7 +46,7 @@ describe('FileListingService', function() {
 
             flush();
             // Fires callback after it emits.
-            expect(FileListingService.listingSuccessCallback).toHaveBeenCalledWith('main');
+            expect(FileListingService.listingSuccessCallback).toHaveBeenCalledWith('main', undefined);
         };
         testScheduler.run(observableTests); 
     });
