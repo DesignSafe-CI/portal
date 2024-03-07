@@ -1,22 +1,8 @@
-from django.urls import re_path as url
-from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+"""Workspace URLs
+"""
+from django.urls import path
 from designsafe.apps.workspace import views
 
-# TODO look at linking directly into an app in the workspace
-
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^api/(?P<service>[a-z]+?)/$', views.call_api, name='call_api'),
-    url(r'^notification/process/(?P<pk>\d+)', views.process_notification, name='process_notification'),
+    path('', views.WorkspaceView.as_view(), name="workspace"),
 ]
-
-def menu_items(**kwargs):
-    if 'type' in kwargs and kwargs['type'] == 'research_workbench':
-        return [
-            {
-                'label': _('Workspace'),
-                'url': reverse('designsafe_workspace:index'),
-                'children': []
-            }
-        ]
