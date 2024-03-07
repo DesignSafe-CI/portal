@@ -9,4 +9,5 @@ app_name = "workspace_api"
 urlpatterns = [
     path("apps", views.AppsView.as_view()),
     path("tray", views.AppsTrayView.as_view()),
+    path("description", views.AppDescriptionView.as_view()),
 ]

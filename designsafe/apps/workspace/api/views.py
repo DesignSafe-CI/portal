@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
 from django.db.models.functions import Coalesce
@@ -15,6 +16,7 @@ from tapipy.errors import BaseTapyException, InternalServerError, UnauthorizedEr
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.tapis.serializers import BaseTapisResultSerializer
+from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from designsafe.apps.workspace.models.app_entries import (
     AppListingEntry,
     AppTrayCategory,
@@ -276,3 +278,16 @@ class AppsTrayView(BaseApiView):
         return JsonResponse(
             {"categories": categories}, encoder=BaseTapisResultSerializer
         )
+
+
+@method_decorator(login_required, name="dispatch")
+class AppDescriptionView(BaseApiView):
+    def get(self, request, *args, **kwargs):
+        app_id = request.GET.get("app_id")
+        try:
+            data = AppDescription.objects.get(appid=app_id).desc_to_dict()
+        except ObjectDoesNotExist:
+            return JsonResponse(
+                {"message": "No description found for {}".format(app_id)}
+            )
+        return JsonResponse({"response": data})
