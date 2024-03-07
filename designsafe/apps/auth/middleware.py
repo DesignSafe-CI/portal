@@ -41,7 +41,7 @@ class TapisTokenRefreshMiddleware:
                 extra={"user": request.user.username},
             )
             logout(request)
-            return HttpResponseRedirect(reverse('designsafe_auth:login'))
+            return HttpResponseRedirect(reverse("designsafe_auth:login"))
 
         if not tapis_oauth.expired:
             return
@@ -66,7 +66,7 @@ class TapisTokenRefreshMiddleware:
                         extra={"user": request.user.username},
                     )
                     logout(request)
-                    return HttpResponseRedirect(reverse('designsafe_auth:login'))
+                    return HttpResponseRedirect(reverse("designsafe_auth:login"))
 
             else:
                 logger.info(
