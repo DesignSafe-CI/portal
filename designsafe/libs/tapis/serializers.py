@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 class BaseTapisResultSerializer(json.JSONEncoder):
     """Class to serialize a Tapis response object"""
 
-    def _serialize(self, o):
-        if isinstance(o, TapisResult):
-            _wrapped = vars(o)
+    def _serialize(self, obj):
+        if isinstance(obj, TapisResult):
+            _wrapped = vars(obj)
             for key, value in _wrapped.items():
                 if isinstance(value, TapisResult):
                     _wrapped[key] = self._serialize(value)
@@ -27,13 +27,13 @@ class BaseTapisResultSerializer(json.JSONEncoder):
                         value[n_key] = self._serialize(n_value)
             return _wrapped
 
-        if isinstance(o, list):
-            for index, item in enumerate(o):
-                o[index] = self._serialize(item)
-        elif isinstance(o, dict):
-            for key, value in o.items():
-                o[key] = self._serialize(value)
-        return o
+        if isinstance(obj, list):
+            for index, item in enumerate(obj):
+                obj[index] = self._serialize(item)
+        elif isinstance(obj, dict):
+            for key, value in obj.items():
+                obj[key] = self._serialize(value)
+        return obj
 
     def default(self, o):
         if isinstance(o, (TapisResult, list, dict)):
