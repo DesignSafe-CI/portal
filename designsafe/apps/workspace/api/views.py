@@ -6,26 +6,24 @@
 import logging
 from django.http import JsonResponse
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
 from django.db.models.functions import Coalesce
-from tapipy.errors import BaseTapyException, InternalServerError, UnauthorizedError
-from designsafe.apps.api.views import BaseApiView
+from tapipy.errors import InternalServerError, UnauthorizedError
+from designsafe.apps.api.views import AuthenticatedApiView
+from designsafe.apps.api.utils import get_client_ip
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.tapis.serializers import BaseTapisResultSerializer
 from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from designsafe.apps.workspace.models.app_entries import (
-    AppListingEntry,
     AppTrayCategory,
     AppVariant,
 )
 
 
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger("metrics.{}".format(__name__))
+METRICS = logging.getLogger(f"metrics.{__name__}")
 
 
 def _app_license_type(app_def):
@@ -67,18 +65,23 @@ def _get_app(app_id, app_version, user):
     return data
 
 
-@method_decorator(login_required, name="dispatch")
-class AppsView(BaseApiView):
+class AppsView(AuthenticatedApiView):
     def get(self, request, *args, **kwargs):
+        METRICS.info(
+            "Apps",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "getAppsView",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"query": request.GET.dict()},
+            },
+        )
         tapis = request.user.tapis_oauth.client
         app_id = request.GET.get("appId")
         if app_id:
             app_version = request.GET.get("appVersion")
-            METRICS.info(
-                "user:{} is requesting app id:{} version:{}".format(
-                    request.user.username, app_id, app_version
-                )
-            )
             data = _get_app(app_id, app_version, request.user)
 
             # Check if default storage system needs keys pushed
@@ -92,7 +95,6 @@ class AppsView(BaseApiView):
                     data["systemNeedsKeys"] = True
                     data["pushKeysSystem"] = system_def
         else:
-            METRICS.info("user:{} is requesting all apps".format(request.user.username))
             data = {"appListing": tapis.apps.getApps()}
 
         return JsonResponse(
@@ -104,8 +106,7 @@ class AppsView(BaseApiView):
         )
 
 
-@method_decorator(login_required, name="dispatch")
-class AppsTrayView(BaseApiView):
+class AppsTrayView(AuthenticatedApiView):
 
     def _get_valid_apps(self, tapis_apps, portal_apps):
         """Only return Tapis apps that are known to exist and are enabled"""
@@ -133,6 +134,7 @@ class AppsTrayView(BaseApiView):
                         "label": portal_app["label"] or matching_app.notes.label,
                     }
                 )
+        return valid_tapis_apps
 
     def _getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
@@ -174,7 +176,6 @@ class AppsTrayView(BaseApiView):
                 )
                 .order_by(Coalesce("label", "app_id"))
                 # Only include bundle info if bundled
-                .annotate()
                 .annotate(
                     icon=F("bundle__icon"),
                     is_bundled=GreaterThan(Count("bundle__appvariant"), 1),
@@ -194,30 +195,38 @@ class AppsTrayView(BaseApiView):
                 )
             )
             html_apps = list(
-                AppListingEntry.objects.filter(
+                AppVariant.objects.filter(
                     enabled=True,
                     bundle__enabled=True,
                     bundle__category=category,
                     app_type="html",
                 )
                 .order_by(Coalesce("label", "app_id"))
+                # Only include bundle info if bundled
+                .annotate(
+                    icon=F("bundle__icon"),
+                    is_bundled=GreaterThan(Count("bundle__appvariant"), 1),
+                    bundle_label=F("bundle__label"),
+                    bundle_popular=F("bundle__popular"),
+                )
                 .values(
                     "app_id",
                     "app_type",
                     "bundle_id",
                     "bundle_label",
+                    "bundle_popular",
                     "html",
                     "icon",
+                    "is_bundled",
                     "label",
                     "license_type",
-                    "popular",
                     "version",
                 )
             )
 
             valid_tapis_apps = self._get_valid_apps(apps_listing, tapis_apps)
 
-            categoryResult = {
+            category_result = {
                 "title": category.category,
                 "priority": category.priority,
                 "apps": [
@@ -227,10 +236,10 @@ class AppsTrayView(BaseApiView):
                 + html_apps,
             }
 
-            categoryResult["apps"] = sorted(
-                categoryResult["apps"], key=lambda app: app["label"] or app["app_id"]
+            category_result["apps"] = sorted(
+                category_result["apps"], key=lambda app: app["label"] or app["app_id"]
             )
-            categories.append(categoryResult)
+            categories.append(category_result)
 
         return categories
 
@@ -263,7 +272,17 @@ class AppsTrayView(BaseApiView):
             ],
         }
         """
-        METRICS.info("user:%s op:%s" % (request.user.username, "getAppsTrayView"))
+        METRICS.info(
+            "Apps",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "getAppsTrayView",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"query": request.GET.dict()},
+            },
+        )
 
         categories = self._getPublicApps(request.user)
         my_apps = self._getPrivateApps(request.user)
@@ -280,14 +299,12 @@ class AppsTrayView(BaseApiView):
         )
 
 
-@method_decorator(login_required, name="dispatch")
-class AppDescriptionView(BaseApiView):
+class AppDescriptionView(AuthenticatedApiView):
+
     def get(self, request, *args, **kwargs):
         app_id = request.GET.get("app_id")
         try:
             data = AppDescription.objects.get(appid=app_id).desc_to_dict()
         except ObjectDoesNotExist:
-            return JsonResponse(
-                {"message": "No description found for {}".format(app_id)}
-            )
+            return JsonResponse({"message": f"No description found for {app_id}"})
         return JsonResponse({"response": data})

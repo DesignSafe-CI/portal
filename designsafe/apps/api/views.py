@@ -1,5 +1,6 @@
 from django.http.response import HttpResponse, HttpResponseForbidden
 from django.views.generic import View
+from django.http import JsonResponse
 from requests.exceptions import ConnectionError, HTTPError
 from .exceptions import ApiException
 import logging
@@ -15,8 +16,8 @@ class BaseApiView(View):
         """
         Dispatch override to centralize error handling.
         If the error is instance of :class: `ApiException <designsafe.apps.api.exceptions.ApiException>`.
-        An extra dictionary object will be used when calling `logger.error()`. 
-        This allows to use any information in the `extra` dictionary object on the 
+        An extra dictionary object will be used when calling `logger.error()`.
+        This allows to use any information in the `extra` dictionary object on the
         logger output.
         """
         try:
@@ -44,11 +45,18 @@ class BaseApiView(View):
                 logger.error('%s', e, exc_info=True)
                 message = str(e)
                 status = 500
-        
-        resp = {'message': message}
-                                      
-        return HttpResponse(json.dumps(resp),
-                            status=status, content_type='application/json')
+
+        return JsonResponse({'message': message}, status=status)
+
+
+class AuthenticatedApiView(BaseApiView):
+
+    def dispatch(self, request, *args, **kwargs):
+        """Returns 401 if user is not authenticated."""
+
+        if not request.user.is_authenticated:
+            return JsonResponse({"message": "Unauthenticated user"}, status=401)
+        return super(AuthenticatedApiView, self).dispatch(request, *args, **kwargs)
 
 
 class LoggerApi(BaseApiView):
@@ -80,5 +88,3 @@ class LoggerApi(BaseApiView):
             'referer': request.META.get('HTTP_REFERER')
         })
         return HttpResponse('OK', status=202)
-
-
