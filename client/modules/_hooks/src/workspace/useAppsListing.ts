@@ -13,7 +13,7 @@ type PortalApp = {
   label: string;
   license_type: string;
   version?: string;
-}
+};
 
 type AppCategory = {
   apps: PortalApp[];
@@ -23,13 +23,12 @@ type AppCategory = {
 
 type AppCategories = {
   categories: AppCategory[];
-}
+};
 
 async function getAppsListing({ signal }: { signal: AbortSignal }) {
-  const res = await apiClient.get<AppCategories>(
-    `/api/workspace/tray`,
-    { signal }
-  );
+  const res = await apiClient.get<AppCategories>(`/api/workspace/tray`, {
+    signal,
+  });
   return res.data;
 }
 
