@@ -27,12 +27,14 @@ METRICS = logging.getLogger(f"metrics.{__name__}")
 
 
 def _app_license_type(app_def):
+    """Gets an app's license type, if any."""
     app_lic_type = getattr(app_def.notes, "licenseType", None)
     lic_type = app_lic_type if app_lic_type in LICENSE_TYPES else None
     return lic_type
 
 
 def _get_user_app_license(license_type, user):
+    """Gets a user's app license from the database."""
     _, license_models = get_license_info()
     license_model = next(
         (x for x in license_models if x.license_type == license_type), None
@@ -44,6 +46,7 @@ def _get_user_app_license(license_type, user):
 
 
 def _get_app(app_id, app_version, user):
+    """Gets an app from Tapis, and includes license and execution system info in response."""
     tapis = user.tapis_oauth.client
     if app_version:
         app_def = tapis.apps.getApp(appId=app_id, appVersion=app_version)
@@ -66,7 +69,11 @@ def _get_app(app_id, app_version, user):
 
 
 class AppsView(AuthenticatedApiView):
+    """View for Tapis app listings."""
+
     def get(self, request, *args, **kwargs):
+        """Gets an app by id or returns an entire app listing."""
+
         METRICS.info(
             "Apps",
             extra={
@@ -107,9 +114,10 @@ class AppsView(AuthenticatedApiView):
 
 
 class AppsTrayView(AuthenticatedApiView):
+    """Views for Workspace Apps Tray listings."""
 
     def _get_valid_apps(self, tapis_apps, portal_apps):
-        """Only return Tapis apps that are known to exist and are enabled"""
+        """Only return Tapis apps that are known to exist and are enabled."""
         valid_tapis_apps = []
         for portal_app in portal_apps:
             portal_app_id = (
@@ -136,7 +144,8 @@ class AppsTrayView(AuthenticatedApiView):
                 )
         return valid_tapis_apps
 
-    def _getPrivateApps(self, user):
+    def _get_private_apps(self, user):
+        """Returns a listing of non-public Tapis apps owned by or shared with the user."""
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes", search="(enabled.eq.true)", listType="MINE"
@@ -155,7 +164,8 @@ class AppsTrayView(AuthenticatedApiView):
 
         return my_apps
 
-    def _getPublicApps(self, user):
+    def _get_public_apps(self, user):
+        """Returns a listing of public Tapis apps defined by the portal, sorted by category."""
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
@@ -284,8 +294,8 @@ class AppsTrayView(AuthenticatedApiView):
             },
         )
 
-        categories = self._getPublicApps(request.user)
-        my_apps = self._getPrivateApps(request.user)
+        categories = self._get_public_apps(request.user)
+        my_apps = self._get_private_apps(request.user)
 
         categories.insert(0, {"title": "My Apps", "apps": my_apps})
 
@@ -300,8 +310,10 @@ class AppsTrayView(AuthenticatedApiView):
 
 
 class AppDescriptionView(AuthenticatedApiView):
+    """Views for retreiving AppDescription objects."""
 
     def get(self, request, *args, **kwargs):
+        """Returns a dict response of the app_id's associated description, if any."""
         app_id = request.GET.get("app_id")
         try:
             data = AppDescription.objects.get(appid=app_id).desc_to_dict()

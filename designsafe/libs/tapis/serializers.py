@@ -1,7 +1,6 @@
 """
 .. module: libs.tapis.serializers
-   :synopsis: Necessary classes to serialize a class which
-    wrapps an agave object into a dict.
+   :synopsis: Serialize a Tapis object into a dict.
 """
 
 import logging
@@ -14,28 +13,29 @@ logger = logging.getLogger(__name__)
 class BaseTapisResultSerializer(json.JSONEncoder):
     """Class to serialize a Tapis response object"""
 
-    def _serialize(self, obj):
-        if isinstance(obj, TapisResult):
-            _wrapped = vars(obj)
-            for k, v in _wrapped.items():
-                if isinstance(v, TapisResult):
-                    _wrapped[k] = self._serialize(v)
-                elif isinstance(v, list):
-                    for index, item in enumerate(v):
-                        v[index] = self._serialize(item)
-                elif isinstance(v, dict):
-                    for nk, nv in v.items():
-                        v[nk] = self._serialize(nv)
+    def _serialize(self, o):
+        if isinstance(o, TapisResult):
+            _wrapped = vars(o)
+            for key, value in _wrapped.items():
+                if isinstance(value, TapisResult):
+                    _wrapped[key] = self._serialize(value)
+                elif isinstance(value, list):
+                    for index, item in enumerate(value):
+                        value[index] = self._serialize(item)
+                elif isinstance(value, dict):
+                    for n_key, n_value in value.items():
+                        value[n_key] = self._serialize(n_value)
             return _wrapped
-        elif isinstance(obj, list):
-            for index, item in enumerate(obj):
-                obj[index] = self._serialize(item)
-        elif isinstance(obj, dict):
-            for nk, nv in obj.items():
-                obj[nk] = self._serialize(nv)
-        return obj
 
-    def default(self, obj):
-        if isinstance(obj, (TapisResult, list, dict)):
-            return self._serialize(obj)
-        return json.JSONEncoder.encode(self, obj)
+        if isinstance(o, list):
+            for index, item in enumerate(o):
+                o[index] = self._serialize(item)
+        elif isinstance(o, dict):
+            for key, value in o.items():
+                o[key] = self._serialize(value)
+        return o
+
+    def default(self, o):
+        if isinstance(o, (TapisResult, list, dict)):
+            return self._serialize(o)
+        return json.JSONEncoder.encode(self, o)
