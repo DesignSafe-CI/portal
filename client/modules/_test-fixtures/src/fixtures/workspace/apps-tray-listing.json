@@ -1,66 +1,66 @@
 {
-  "categories": [
-      {
-          "title": "Simulation",
-          "priority": 5,
-          "apps": [
-              {
-                  "app_id": "openfoam",
-                  "bundle_id": 2,
-                  "label": "OpenFOAM (Frontera) - v9.0",
-                  "license_type": "OS",
-                  "icon": "openfoam",
-                  "is_bundled": false,
-                  "bundle_label": "OpenFoam",
-                  "bundle_popular": false
-              },
-              {
-                  "app_id": "opensees-mp-v35",
-                  "bundle_id": 1,
-                  "label": "OpenSeesMP V3.5 (Frontera)",
-                  "license_type": "OS",
-                  "icon": "opensees",
-                  "is_bundled": true,
-                  "bundle_label": "OpenSees",
-                  "bundle_popular": true
-              },
-              {
-                  "app_id": "opensees-sp-v35",
-                  "bundle_id": 1,
-                  "label": "OpenSeesSP V3.5 (Frontera)",
-                  "license_type": "OS",
-                  "icon": "opensees",
-                  "is_bundled": true,
-                  "bundle_label": "OpenSees",
-                  "bundle_popular": true
-              }
-          ]
-      },
-      {
-          "title": "Analysis",
-          "priority": 2,
-          "apps": [
-              {
-                  "app_id": "jupyter-lab-hpc",
-                  "bundle_id": 3,
-                  "label": "Jupyter Lab HPC (Frontera)",
-                  "license_type": "OS",
-                  "icon": "jupyter",
-                  "is_bundled": true,
-                  "bundle_label": "Jupyter",
-                  "bundle_popular": true
-              },
-              {
-                  "app_id": "jupyter-lab-hpc-cuda",
-                  "bundle_id": 3,
-                  "label": "Jupyter Lab HPC CUDA (Frontera)",
-                  "license_type": "OS",
-                  "icon": "jupyter",
-                  "is_bundled": true,
-                  "bundle_label": "Jupyter",
-                  "bundle_popular": true
-              }
-          ]
-      }
-  ]
+    "categories": [
+        {
+            "title": "Simulation",
+            "priority": 5,
+            "apps": [
+                {
+                    "app_id": "openfoam",
+                    "bundle_id": 2,
+                    "label": "OpenFOAM (Frontera) - v9.0",
+                    "license_type": "OS",
+                    "icon": "openfoam",
+                    "is_bundled": false,
+                    "bundle_label": "OpenFoam",
+                    "bundle_popular": false
+                },
+                {
+                    "app_id": "opensees-mp-v35",
+                    "bundle_id": 1,
+                    "label": "OpenSeesMP V3.5 (Frontera)",
+                    "license_type": "OS",
+                    "icon": "opensees",
+                    "is_bundled": true,
+                    "bundle_label": "OpenSees",
+                    "bundle_popular": true
+                },
+                {
+                    "app_id": "opensees-sp-v35",
+                    "bundle_id": 1,
+                    "label": "OpenSeesSP V3.5 (Frontera)",
+                    "license_type": "OS",
+                    "icon": "opensees",
+                    "is_bundled": true,
+                    "bundle_label": "OpenSees",
+                    "bundle_popular": true
+                }
+            ]
+        },
+        {
+            "title": "Analysis",
+            "priority": 2,
+            "apps": [
+                {
+                    "app_id": "jupyter-lab-hpc",
+                    "bundle_id": 3,
+                    "label": "Jupyter Lab HPC (Frontera)",
+                    "license_type": "OS",
+                    "icon": "jupyter",
+                    "is_bundled": true,
+                    "bundle_label": "Jupyter",
+                    "bundle_popular": true
+                },
+                {
+                    "app_id": "jupyter-lab-hpc-cuda",
+                    "bundle_id": 3,
+                    "label": "Jupyter Lab HPC CUDA (Frontera)",
+                    "license_type": "OS",
+                    "icon": "jupyter",
+                    "is_bundled": true,
+                    "bundle_label": "Jupyter",
+                    "bundle_popular": true
+                }
+            ]
+        }
+    ]
 }
