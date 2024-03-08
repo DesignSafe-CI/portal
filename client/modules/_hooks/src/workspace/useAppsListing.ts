@@ -1,18 +1,33 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
-type AppMeta = {
-  uuid: string;
-  value: {
-    definition: {
-      id: string;
-    };
-  };
+type PortalApp = {
+  app_id: string;
+  app_type: string;
+  bundle_id: number;
+  bundle_label: string;
+  bundle_popular: boolean;
+  html?: string;
+  icon?: string;
+  is_bundled: boolean;
+  label: string;
+  license_type: string;
+  version?: string;
+}
+
+type AppCategory = {
+  apps: PortalApp[];
+  priority: number;
+  title: string;
 };
 
+type AppCategories = {
+  categories: AppCategory[];
+}
+
 async function getAppsListing({ signal }: { signal: AbortSignal }) {
-  const res = await apiClient.get<AppMeta[]>(
-    `/applications/api/meta/?q=%7B"$and":%5B%7B"name":"ds_apps"%7D,%7B"value.definition.available":true%7D%5D%7D`,
+  const res = await apiClient.get<AppCategories>(
+    `/api/workspace/tray`,
     { signal }
   );
   return res.data;
