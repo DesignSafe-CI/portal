@@ -1,6 +1,6 @@
 import styles from './workspace.module.css';
 import { useAppsListing } from '@client/hooks';
-import { uuid } from 'uuidv4';
+import { v4 as uuidv4 } from 'uuid';
 
 /* eslint-disable-next-line */
 export interface WorkspaceProps {}
@@ -15,11 +15,11 @@ export function Workspace(props: WorkspaceProps) {
       {data && (
         <>
           {data.categories.map((category) => (
-            <div key={uuid()}>
+            <div key={uuidv4()}>
               <h3>{category.title}</h3>
               <ul>
                 {category.apps.map((app) => (
-                  <li key={uuid()}>{app.app_id}</li>
+                  <li key={uuidv4()}>{app.app_id}</li>
                 ))}
               </ul>
             </div>
