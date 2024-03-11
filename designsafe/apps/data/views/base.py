@@ -236,7 +236,11 @@ class DataDepotPublishedView(TemplateView):
         context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
 
         proj = ProjectsManager(service_account()).get_project_by_id(pub.projectId)
-        context['dc_json'] = json.dumps(proj.to_dataset_json())
+        try:
+            context['dc_json'] = json.dumps(proj.to_dataset_json())
+        except Exception:
+            # If we can't generate DataCite JSON, render the page without meta tags.
+            pass
 
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
