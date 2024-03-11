@@ -11,7 +11,6 @@ urlpatterns = [
     url(r'^identities/$', views.manage_identities, name='manage_identities'),
     url(r'^licenses/$', views.manage_licenses, name='manage_licenses'),
     url(r'^applications/$', views.manage_applications, name='manage_applications'),
-    url(r'^notifications/settings/$', views.manage_notifications, name='manage_notifications'),
     url(r'^register/$', views.register, name='register'),
     url(r'^nees-account/(?:(?P<step>\d+)/)?$', views.nees_migration, name='nees_migration'),
     url(r'^password-reset/(?:(?P<code>.+)/)?$', views.password_reset, name='password_reset'),
