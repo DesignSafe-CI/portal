@@ -2,19 +2,26 @@
 
 /* To load most structure from Core-Styles */
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.0/dist/trumps/s-app-card.css");
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.0/dist/settings/font.css");
 
 /* To support equal-height columns in Bootstrap 3 */
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.0/dist/components/bootstrap.row.css");
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.0/dist/settings/space.css");
+
+
+
+/* Bootstrap (Custom) */
 
 /* Add expected gap between rows of full-height columns */
+.has-row--col-stretch-content-y {
+    --bootstrap-gap: 30px; /* Bootstrap `.container` & `.row` */;
+}
 .has-row--col-stretch-content-y [class^="col-"] {
-    margin-bottom: var(--global-space--bootstrap-gap);
+    margin-bottom: var(--bootstrap-gap);
 }
 .has-row--col-stretch-content-y .row:last-child {
-    margin-bottom: calc( var(--global-space--bootstrap-gap) * -1 );
+    margin-bottom: calc( var(--bootstrap-gap) * -1 );
 }
+
+
 
 /* Card */
 /* To stretch card to fill column height */
@@ -59,6 +66,8 @@
 
 
 
+
+
 /* SKIN */
 
 /* Card */
@@ -88,7 +97,7 @@ a.app-card:active,
 .app-card > ul:not(:last-of-type) {
     background-color: #F4F4F4;
 
-    font-weight: var(--medium);
+    font-weight: 500; /* a.k.a. "medium" */
     font-size: 1.2rem;
 }
 
