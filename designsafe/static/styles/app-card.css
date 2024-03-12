@@ -1,7 +1,7 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-c-app-card-from-s-cap-card/dist/trumps/s-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-c-app-card-from-s-cap-card/dist/components/c-app-card.css");
 
 /* To support equal-height columns in Bootstrap 3 */
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-c-app-card-from-s-cap-card/dist/components/bootstrap.row.css");
