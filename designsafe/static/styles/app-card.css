@@ -1,10 +1,10 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.2/dist/trumps/s-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-c-app-card-from-s-cap-card/dist/trumps/s-app-card.css");
 
 /* To support equal-height columns in Bootstrap 3 */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.2/dist/components/bootstrap.row.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@feat/DES-2697-c-app-card-from-s-cap-card/dist/components/bootstrap.row.css");
 
 
 
@@ -25,42 +25,42 @@
 
 /* Card */
 /* To stretch card to fill column height */
-[class^="col-"] .app-card {
+[class^="col-"] .c-app-card {
     height: 100%;
     min-height: 230px;
 }
 
 /* Title */
-.app-card > h3 {
+.c-app-card__title {
     margin-top: 0.5em;
     margin-bottom: 0;
 }
-.app-card > h3 > .icon::before {
+.c-app-card__title > .icon::before {
     font-size: unset; /* to undo 5vw from ng-designsafe.css */
 }
 
 /* Description */
-.app-card > p {
+.c-app-card__desc {
     padding-inline: 1rem;
     margin-block: 1.5rem;
 }
 
-/* Hazards */
-.app-card > ul:not(:last-of-type) {
+/* Types */
+.c-app-card__type {
     padding: 1em;
 }
 
-/* Tags */
-.app-card > ul:last-of-type > li {
+/* Flags */
+.c-app-card__flags > * {
     --buffer--horz: 0.75em;
     --buffer--vert: 0.50em;
 
     padding-block: var(--buffer--vert);
 }
-.app-card > ul:last-of-type > li:not(:has(strong)) {
+.c-app-card__flags > *:not(:has(strong)) {
     padding-inline: var(--buffer--horz);
 }
-.app-card > ul:last-of-type > li:has(strong) {
+.c-app-card__flags > *:has(strong) {
     padding-inline: calc( var(--buffer--horz) * 2 );
 }
 
@@ -71,40 +71,39 @@
 /* SKIN */
 
 /* Card */
-.app-card {
+.c-app-card {
     --border-width: 1px;
 
     border: var(--border-width) solid #AFAFAF;
     box-shadow: 3px 2px 2px #00000029;
 }
-.app-card:hover {
+a.c-app-card:hover {
     outline: 2px solid #0000FF;
     outline-offset: calc( var(--border-width) * -1 );
     box-shadow: none;
 }
-a.app-card:active,
-.app-card:has(a:active) {
+a.c-app-card:active {
     outline-width: 1px;
 }
 
 /* Description */
-.app-card > p {
+.c-app-card__desc {
     line-height: 1.8;
     font-size: 1.2rem;
 }
 
-/* Hazards */
-.app-card > ul:not(:last-of-type) {
+/* Types */
+.c-app-card__types {
     background-color: #F4F4F4;
 
     font-weight: 500; /* a.k.a. "medium" */
     font-size: 1.2rem;
 }
 
-/* Tags */
-.app-card > ul:last-of-type {
+/* Flags */
+.c-app-card__flags {
     font-size: 1.2rem;
 }
-.app-card > ul:last-of-type > li:has(strong) {
+.c-app-card__flags > *:has(strong) {
     background-color: #ECE4BF;
 }
