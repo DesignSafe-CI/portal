@@ -8,6 +8,9 @@ from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
 )
 from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING
 from designsafe.apps.api.projects_v2.tests.schema_integration import iterate_entities
+from designsafe.apps.api.projects_v2.operations.graph_operations import (
+    _renormalize_ordering,
+)
 
 
 def ingest_project_to_db(project_id):
@@ -99,6 +102,7 @@ def ingest_graphs():
     base_projects = ProjectMetadata.objects.filter(name="designsafe.project")
     for project in base_projects:
         prj_graph = construct_graph_from_db(project.value["projectId"])
+        prj_graph = _renormalize_ordering(prj_graph)
         graph_json = nx.node_link_data(prj_graph)
 
         ProjectMetadata.objects.update_or_create(

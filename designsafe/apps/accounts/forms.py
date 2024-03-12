@@ -240,26 +240,11 @@ class UserProfileForm(forms.Form):
     """
     firstName = forms.CharField(label='First name')
     lastName = forms.CharField(label='Last name')
-    email = forms.EmailField()
-    phone = forms.CharField()
-    institutionId = forms.ChoiceField(
-        label='Institution', choices=(),
-        error_messages={'invalid': 'Please select your affiliated institution'})
-    title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
-    countryId = forms.ChoiceField(
-        label='Country of residence', choices=(),
-        error_messages={'invalid': 'Please select your Country of residence'})
-    citizenshipId = forms.ChoiceField(
-        label='Country of citizenship', choices=(),
-        error_messages={'invalid': 'Please select your Country of citizenship'})
     ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
     gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
 
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
-        self.fields['institutionId'].choices = get_institution_choices()
-        self.fields['countryId'].choices = get_country_choices()
-        self.fields['citizenshipId'].choices = get_country_choices()
 
 
 class TasUserProfileAdminForm(forms.Form):
