@@ -158,7 +158,7 @@ def ingest_publications():
     for pub in all_pubs:
         # print(pub["projectId"])
         try:
-            pub_graph = transform_pub_entities(pub["projectId"])
+            pub_graph, _ = transform_pub_entities(pub["projectId"])
             pub_base = next(
                 (
                     pub_graph.nodes[node_id]["value"]
