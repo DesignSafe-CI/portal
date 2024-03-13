@@ -1,8 +1,12 @@
 import React from 'react';
 import { Button} from 'antd';
 import { NavLink } from 'react-router-dom';
-// import styles from './DatafilesSideNav.module.css';
-import { useAuthenticatedUser } from '@client/hooks';
+import DatafilesModal from '../DatafilesModal/DatafilesModal';
+import { 
+    useAuthenticatedUser,
+    useFileListingRouteParams,
+    useSelectedFiles, 
+} from '@client/hooks';
 
 const DataFilesNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
   to,
@@ -18,6 +22,8 @@ const DataFilesNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
 };
 
 export const AddFileFolder: React.FC = () => {
+  const { api, system, scheme, path } = useFileListingRouteParams();
+  const { selectedFiles } = useSelectedFiles(api, system, path);
   const { user } = useAuthenticatedUser();
   return (
     <ul
@@ -39,11 +45,17 @@ export const AddFileFolder: React.FC = () => {
             </Button>
                 <ul className="dropdown-menu">
                     <li>
-                        <span className="fa-stack fa-lg">
-                            <i className="fa fa-folder fa-stack-2x" role="none"></i>
-                            <i className="fa fa-plus fa-stack-1x fa-inverse" role="none"></i>
-                        </span>
-                        <span>New Folder</span>   
+                        <DatafilesModal.NewFolder api={api} system={system} path={path}>
+                        {({ onClick }) => (
+                            <>
+                                <span className="fa-stack fa-lg" onClick={onClick}>
+                                <i className="fa fa-folder fa-stack-2x" role="none"></i>
+                                <i className="fa fa-plus fa-stack-1x fa-inverse" role="none"></i>
+                                </span>
+                                <span onClick={onClick}>New Folder</span>
+                            </>
+                            )}    
+                        </DatafilesModal.NewFolder>
                     </li>
                     <li>
                         <span className="fa-stack fa-lg">
@@ -67,6 +79,7 @@ export const AddFileFolder: React.FC = () => {
                         <span>Folder upload: max 25 files</span>   
                     </li>
                     <li>
+                        <a href='https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/' ></a>
                         <span className="fa-stack fa-lg">
                             <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
                         </span>
