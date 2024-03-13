@@ -62,7 +62,12 @@ def project_with_associations():
         FileObj(
             system="project.system", name="file1", path="/path/to/file1", type="file"
         ),
-        FileObj(system="project.system", name="file1", path="/path/to/other/file1", type="file"),
+        FileObj(
+            system="project.system",
+            name="file1",
+            path="/path/to/other/file1",
+            type="file",
+        ),
         FileObj(system="project.system", name="dir1", path="/path/to/dir1", type="dir"),
     ]
     add_file_associations(model_config.uuid, file_objs)

@@ -37,9 +37,12 @@ class PublicationListingView(BaseApiView):
 
 
 class PublicationDetailView(BaseApiView):
+    """View for retrieving publication details."""
+
     def get(self, request: HttpRequest, project_id):
+        """Returns the tree view and base project metadata for a publication."""
         pub_meta = Publication.objects.get(project_id=project_id)
 
-        tree_json = nx.tree_data(nx.node_link_graph(pub_meta.tree), 'NODE_ROOT')
+        tree_json = nx.tree_data(nx.node_link_graph(pub_meta.tree), "NODE_ROOT")
 
         return JsonResponse({"tree": tree_json, "baseProject": pub_meta.value})

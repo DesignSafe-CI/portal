@@ -105,7 +105,6 @@ def update_path_mappings(pub_graph: nx.DiGraph):
     """update fileObjs and fileTags to point to published paths."""
     pub_mapping = construct_published_path_mappings(pub_graph)
     for node in pub_graph:
-
         node_data = pub_graph.nodes[node]
         if (
             node not in pub_mapping
