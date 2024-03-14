@@ -3851,13 +3851,13 @@ yaml = ["pyyaml"]
 
 [[package]]
 name = "tapipy"
-version = "1.6.2"
+version = "1.6.3"
 description = "Python lib for interacting with an instance of the Tapis API Framework"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "tapipy-1.6.2-py3-none-any.whl", hash = "sha256:f41751c36ba08385610e56b901bbc554692a6d16cc20df41505ab6c2c32bb6e4"},
-    {file = "tapipy-1.6.2.tar.gz", hash = "sha256:ff4459c27bef7f45c3ece6a11cd142267684aaf9f95e65f47708d56a4f1b576c"},
+    {file = "tapipy-1.6.3-py3-none-any.whl", hash = "sha256:2166bc0ec7d16c45cf0c85a874a30d8d0a2721830d286cb9ff774ad060e733ad"},
+    {file = "tapipy-1.6.3.tar.gz", hash = "sha256:edb5e6a57a92e030d3ac3db50e5b167a2014ff33a30c0f1d1e51f9cfed808eb9"},
 ]
 
 [package.dependencies]
@@ -4312,4 +4312,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a1b7fde6f349edd60877f62686dce98ad1dca62bd33dfc01bbfdee23cab59d92"
+content-hash = "e04b94ee16e471cbaf49ff6e354a98966a2e3bb0fa9bba18df5c25dc2e56130f"
