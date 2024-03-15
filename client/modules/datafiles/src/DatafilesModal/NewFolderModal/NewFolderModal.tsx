@@ -1,5 +1,5 @@
 import { Button, Modal, Form, Input } from 'antd';
-import { useSelectedFiles, useNewFolder } from '@client/hooks';
+import { useNewFolder } from '@client/hooks';
 import React, { useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
 
@@ -30,7 +30,6 @@ export const NewFolderModalBody: React.FC<{
       console.error('Error during form submission:', error);
       // Handle error if needed
     }
-    console.log(newFolder)
   };
 
   const validateNewFolder = (_: unknown, value: string) => {

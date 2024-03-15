@@ -65,11 +65,17 @@ export const AddFileFolder: React.FC = () => {
                      </li>
                     <li role="separator" className="divider"></li>
                     <li>
-                        <span className="fa-stack fa-lg">
+                    <DatafilesModal.UploadFile api={api} system={system} path={path}>
+                        {({ onClick }) => (
+                            <>
+                        <span className="fa-stack fa-lg" onClick={onClick}>
                             <i className="fa fa-file-o fa-stack-2x" role="none"></i>
                             <i className="fa fa-cloud-upload fa-stack-1x" role="none"></i>
                         </span>
-                        <span>File upload: max 2GB</span>   
+                        <span onClick={onClick}>File upload: max 2GB</span>
+                        </>  
+                        )}
+                    </DatafilesModal.UploadFile> 
                     </li>
                     <li>
                         <span className="fa-stack fa-lg">
