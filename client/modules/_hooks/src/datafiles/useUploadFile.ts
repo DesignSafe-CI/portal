@@ -11,7 +11,7 @@ type TUploadFileParam = {
 };
 
 function uploadFileFn(src: TUploadFileParam) {
-  return apiClient.put(
+  return apiClient.post(
     `/api/datafiles/${src.api}/private/upload/${src.system}/${src.path}/`,
     { uploaded_file: src.uploaded_file }
   );

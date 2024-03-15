@@ -5,8 +5,6 @@ import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { useUploadFile } from '@client/hooks';
 import { TModalChildren } from '../DatafilesModal';
 
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-
 export const UploadFileModalBody: React.FC<{
   isOpen: boolean;
   api: string;
@@ -25,11 +23,7 @@ export const UploadFileModalBody: React.FC<{
 
   const handleUpload = async (values: { newFile: UploadFile[] }) => {
     const { newFile } = values;
-    const formData = new FormData();
-    newFile.forEach(file => {
-        formData.append('file', file.name);
-    });
-    
+
     setUploading(true);
     try {
       await mutate({
