@@ -165,15 +165,19 @@ class Command(BaseCommand):
                         remove_user(client, system, u)
 
                 create = not system_exists
-                create_or_update_workspace_system(create, client, system_id=system, title=title,
-                                                  description=description, projectRootDir=projectRootDir, owner=OWNER)
-                client.systems.shareSystem(systemId=system, users=all_users)
 
-                for u in all_writers:
-                    set_workspace_permissions(client, u, system, "writer")
+                try:
+                    create_or_update_workspace_system(create, client, system_id=system, title=title,
+                                                      description=description, projectRootDir=projectRootDir, owner=OWNER)
+                    client.systems.shareSystem(systemId=system, users=all_users)
 
-                for u in all_readers:
-                    set_workspace_permissions(client, u, system, "reader")
+                    for u in all_writers:
+                        set_workspace_permissions(client, u, system, "writer")
+
+                    for u in all_readers:
+                        set_workspace_permissions(client, u, system, "reader")
+                except Exception:
+                    logger.exception(f"Error for system:{system}")
             else:
                 system_exists_text = "System already exists" if system_exists else "System does not exist"
                 logger.info(f'Running in dry-run mode. No changes will be made. ' f'Note: {system_exists_text}')
