@@ -1,10 +1,10 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@3861529/dist/components/c-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.3/dist/components/c-app-card.css");
 
 /* To support equal-height columns in Bootstrap 3 */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@3861529/dist/components/bootstrap.row.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.3/dist/components/bootstrap.row.css");
 
 
 
