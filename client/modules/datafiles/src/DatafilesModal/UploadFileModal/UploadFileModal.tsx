@@ -24,22 +24,28 @@ export const UploadFileModalBody: React.FC<{
 
   const handleUpload = async (values: { newFile: UploadFile[] }) => {
     const { newFile } = values;
+    console.log(newFile)
+    const formData = new FormData();
+    formData.append('uploaded_file', newFile); 
+    formData.append('file_name', newFile.name);
+    formData.append('webkit_relative_path', '');
+    console.log(formData)
 
     setUploading(true);
     try {
-      await mutate({
-        src: {
-          api,
-          system,
-          scheme: "private",
-          path,
-          uploaded_file: newFile, // Make sure uploaded_file is correctly passed
-        },
-      });
-      handleCancel(); // Close the modal after creating new folder
+        await mutate({
+            src: {
+                api,
+                system,
+                scheme: "private",
+                path,
+                uploaded_file: newFile, 
+            },
+        });
+        handleCancel(); // Close the modal after creating new folder
     } catch (error) {
-      console.error('Error during form submission:', error);
-      // Handle error if needed
+        console.error('Error during form submission:', error);
+        // Handle error if needed
     }
   };
 
