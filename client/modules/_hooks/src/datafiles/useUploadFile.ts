@@ -6,13 +6,14 @@ import type { UploadFile } from 'antd';
 type TUploadFileParam = {
   api: string;
   system: string;
+  scheme?: string;
   path: string;
   uploaded_file: UploadFile[];
 };
 
 function uploadFileFn(src: TUploadFileParam) {
   return apiClient.post(
-    `/api/datafiles/${src.api}/private/upload/${src.system}/${src.path}/`,
+    `/api/datafiles/${src.api}/${src.scheme}/upload/${src.system}/${encodeURIComponent(src.path)}/`,
     { uploaded_file: src.uploaded_file }
   );
 }

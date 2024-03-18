@@ -9,9 +9,10 @@ export const UploadFileModalBody: React.FC<{
   isOpen: boolean;
   api: string;
   system: string;
+  scheme?: string;
   path: string;
   handleCancel: () => void;
-}> = ({ isOpen, api, system, path, handleCancel }) => {
+}> = ({ isOpen, api, system, scheme, path, handleCancel }) => {
   const { mutate } = useUploadFile();
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -30,6 +31,7 @@ export const UploadFileModalBody: React.FC<{
         src: {
           api,
           system,
+          scheme: "private",
           path,
           uploaded_file: newFile, // Make sure uploaded_file is correctly passed
         },
@@ -103,10 +105,10 @@ export const UploadFileModalBody: React.FC<{
 export const UploadFileModal: React.FC<{
   api: string;
   system: string;
-  scheme?: string;
+  scheme?: "private";
   path: string;
   children: TModalChildren;
-}> = ({ api, system, path, children }) => {
+}> = ({ api, system, scheme, path, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -123,6 +125,7 @@ export const UploadFileModal: React.FC<{
       <UploadFileModalBody
         api={api}
         system={system}
+        scheme={scheme}
         path={path}
         isOpen={isModalOpen}
         handleCancel={handleCancel}
