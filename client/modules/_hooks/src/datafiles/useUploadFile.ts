@@ -1,29 +1,26 @@
 import { useMutation } from '@tanstack/react-query';
 import apiClient from '../apiClient';
-import type { UploadFile } from 'antd';
-
 
 type TUploadFileParam = {
   api: string;
   system: string;
   scheme?: string;
   path: string;
-  uploaded_file: UploadFile[];
+  uploaded_file: FormData;
 };
 
-function uploadFileFn(src: TUploadFileParam) {
+function uploadFileFn(params: TUploadFileParam) {
+  const { api, system, scheme, path, uploaded_file } = params;
   return apiClient.post(
-    `/api/datafiles/${src.api}/${src.scheme}/upload/${src.system}/${encodeURIComponent(src.path)}/`,
-    { uploaded_file: src.uploaded_file }
+    `/api/datafiles/${api}/${scheme}/upload/${system}/${path}/`,
+     uploaded_file 
   );
 }
 
 export function useUploadFile() {
   return useMutation({
-    mutationFn: ({ src }: { src: TUploadFileParam }) => {
-      console.log('src object:', src);
-      console.log('uploaded_file:', src.uploaded_file);
-      return uploadFileFn(src);
+    mutationFn: (params: TUploadFileParam) => {
+      return uploadFileFn(params);
     },
   });
 }

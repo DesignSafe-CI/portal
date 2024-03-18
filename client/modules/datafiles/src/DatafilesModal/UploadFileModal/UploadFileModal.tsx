@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Modal, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import type { UploadFile, UploadProps } from 'antd';
+import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { useUploadFile } from '@client/hooks';
 import { TModalChildren } from '../DatafilesModal';
+
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 export const UploadFileModalBody: React.FC<{
   isOpen: boolean;
@@ -17,35 +19,39 @@ export const UploadFileModalBody: React.FC<{
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleReset = () => {
     setFileList([]);
+    setCurrentIndex(0);
   };
 
-  const handleUpload = async (values: { newFile: UploadFile[] }) => {
-    const { newFile } = values;
-    console.log(newFile)
-    const formData = new FormData();
-    formData.append('uploaded_file', newFile); 
-    formData.append('file_name', newFile.name);
-    formData.append('webkit_relative_path', '');
-    console.log(formData)
-
+  const handleUpload = async () => {
     setUploading(true);
     try {
-        await mutate({
-            src: {
-                api,
-                system,
-                scheme: "private",
-                path,
-                uploaded_file: newFile, 
-            },
-        });
-        handleCancel(); // Close the modal after creating new folder
+        for (let i = 0; i < fileList.length; i++) {
+          const formData = new FormData();
+          formData.append('uploaded_file', fileList[i] as FileType); 
+          formData.append('file_name', fileList[i].name);
+          formData.append('webkit_relative_path', '');
+    
+          await mutate({
+            api,
+            system,
+            scheme: 'private', // Optional
+            path,
+            uploaded_file: formData,
+          });
+        }
+
+    // All files uploaded successfully, close the modal
+    setUploading(false);
+    handleCancel();
+
     } catch (error) {
-        console.error('Error during form submission:', error);
-        // Handle error if needed
+      console.error('Error during form submission:', error);
+      // Handle error if needed
+      setUploading(false);
     }
   };
 
@@ -95,8 +101,8 @@ export const UploadFileModalBody: React.FC<{
         </div>
         <Button
             type="primary"
-            onClick={() => handleUpload({ newFile: fileList })}
-            disabled={fileList.length === 0}
+            onClick = {handleUpload}
+            disabled={fileList.length === 0 || uploading}
             loading={uploading}
             style={{ marginTop: 16 }}
         >
