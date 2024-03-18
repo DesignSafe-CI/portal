@@ -56,6 +56,7 @@ export const UploadFileModalBody: React.FC<{
   };
 
   const props: UploadProps = {
+    multiple: true, // Enable multiple file selection
     onRemove: (file) => {
       const index = fileList.indexOf(file);
       const newFileList = fileList.slice();
@@ -63,10 +64,10 @@ export const UploadFileModalBody: React.FC<{
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      setFileList([...fileList, file]);
-
-      return false;
-    },
+        // Add the selected file to the existing fileList
+        setFileList(prevFileList => [...prevFileList, file]);
+        return false; // Return false to prevent automatic uploading
+      },
     fileList,
   };
 
