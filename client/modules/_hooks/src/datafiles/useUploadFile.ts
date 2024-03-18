@@ -19,6 +19,10 @@ function uploadFileFn(src: TUploadFileParam) {
 
 export function useUploadFile() {
   return useMutation({
-    mutationFn: ({ src }: { src: TUploadFileParam }) => uploadFileFn(src),
+    mutationFn: ({ src }: { src: TUploadFileParam }) => {
+      console.log('src object:', src);
+      console.log('uploaded_file:', src.uploaded_file);
+      return uploadFileFn(src);
+    },
   });
 }

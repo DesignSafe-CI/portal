@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import type { GetProp, UploadFile, UploadProps } from 'antd';
+import type { UploadFile, UploadProps } from 'antd';
 import { useUploadFile } from '@client/hooks';
 import { TModalChildren } from '../DatafilesModal';
 
