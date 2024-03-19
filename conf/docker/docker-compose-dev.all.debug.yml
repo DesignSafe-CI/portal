@@ -82,7 +82,7 @@ services:
     hostname: des_nginx
 
   django:
-    image: designsafeci/portal:local
+    image: designsafeci/portal:tapis-v3
     env_file: ../env_files/designsafe.env
     links:
       - memcached:memcached
@@ -106,7 +106,7 @@ services:
     hostname: des_django
 
   workers:
-    image: designsafeci/portal:local
+    image: designsafeci/portal:tapis-v3
     env_file: ../env_files/designsafe.env
     links:
       - memcached:memcached
@@ -126,8 +126,8 @@ services:
     hostname: des_workers
 
 volumes:
-  redis_data:
-  des_postgres_data:
-  es_data:
-  rabbitmq_data:
-  sockets:
+  redis_data_v3:
+  des_postgres_data_v3:
+  es_data_v3:
+  rabbitmq_data_v3:
+  sockets_v3:
