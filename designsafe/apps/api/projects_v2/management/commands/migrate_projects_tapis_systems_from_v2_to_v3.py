@@ -56,12 +56,12 @@ def set_workspace_permissions(client: Tapis, username: str, system_id: str, role
     )
 
 
-def create_or_update_workspace_system(
+def create_or_update_workspace_system(  # pylint: disable=too-many-arguments
     create,
     client,
     system_id: str,
     title: str,
-    description: str,  # pylint: disable=too-many-arguments
+    description: str,
     project_root_dir: str,
     owner=None,
 ) -> str:
@@ -137,12 +137,12 @@ class Command(BaseCommand):
         dry_run = options["dry_run"]
         update_existing = options["update_existing"]
 
-        TAPIS_TENANT_BASEURL = os.environ.get(
+        TAPIS_TENANT_BASEURL = os.environ.get(  # pylint: disable=invalid-name
             "TAPIS_TENANT_BASEURL"
-        )  # pylint: disable=invalid-name
-        TAPIS_ADMIN_JWT = os.environ.get(
+        )
+        TAPIS_ADMIN_JWT = os.environ.get(  # pylint: disable=invalid-name
             "TAPIS_ADMIN_JWT"
-        )  # pylint: disable=invalid-name
+        )
         client = Tapis(base_url=TAPIS_TENANT_BASEURL, access_token=TAPIS_ADMIN_JWT)
 
         if dry_run:
