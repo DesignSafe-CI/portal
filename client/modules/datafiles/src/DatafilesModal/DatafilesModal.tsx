@@ -4,7 +4,7 @@ import { CopyModal } from './CopyModal';
 import { RenameModal } from './RenameModal';
 import { NewFolderModal } from './NewFolderModal';
 import { UploadFileModal } from './UploadFileModal';
-
+import { UploadFolderModal } from './UploadFolderModal';
 
 export type TModalChildren = (props: {
   onClick: React.MouseEventHandler<HTMLElement>;
@@ -17,5 +17,6 @@ DatafilesModal.Copy = CopyModal;
 DatafilesModal.Rename = RenameModal;
 DatafilesModal.NewFolder = NewFolderModal
 DatafilesModal.UploadFile = UploadFileModal
+DatafilesModal.UploadFolder = UploadFolderModal
 
 export default DatafilesModal;

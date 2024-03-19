@@ -78,11 +78,17 @@ export const AddFileFolder: React.FC = () => {
                     </DatafilesModal.UploadFile> 
                     </li>
                     <li>
-                        <span className="fa-stack fa-lg">
+                    <DatafilesModal.UploadFolder api={api} system={system} path={path}>
+                        {({ onClick }) => (
+                            <>
+                        <span className="fa-stack fa-lg" onClick={onClick}>
                             <i className="fa fa-folder-o fa-stack-2x" role="none"></i>
                             <i className="fa fa-cloud-upload fa-stack-1x" role="none"></i>
                         </span>
-                        <span>Folder upload: max 25 files</span>   
+                        <span onClick={onClick}>Folder upload: max 25 files</span>   
+                        </>  
+                        )}
+                    </DatafilesModal.UploadFolder> 
                     </li>
                     <li>
                         <a href='https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/' ></a>
