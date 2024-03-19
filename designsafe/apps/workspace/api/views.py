@@ -164,7 +164,7 @@ class AppsTrayView(AuthenticatedApiView):
 
         return my_apps
 
-    def _get_public_apps(self, user):
+    def _get_public_apps(self, user, verbose):
         """Returns a listing of public Tapis apps defined by the portal, sorted by category."""
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
@@ -172,6 +172,39 @@ class AppsTrayView(AuthenticatedApiView):
             search="(enabled.eq.true)",
             listType="SHARED_PUBLIC",
         )
+
+        all_values = [
+            "app_id",
+            "app_type",
+            "bundle_description",
+            "bundle_href",
+            "bundle_id",
+            "bundle_is_popular",
+            "bundle_is_simcenter",
+            "bundle_label",
+            "bundle_license_type",
+            "bundle_related_apps",
+            "bundle_tags",
+            "html",
+            "icon",
+            "is_bundled",
+            "label",
+            "version",
+        ]
+
+        reduced_values = [
+            "app_id",
+            "app_type",
+            "bundle_id",
+            "bundle_label",
+            "html",
+            "icon",
+            "is_bundled",
+            "label",
+            "version",
+        ]
+
+        values = reduced_values if not verbose else all_values
 
         categories = []
         # Traverse category records in descending priority
@@ -189,21 +222,18 @@ class AppsTrayView(AuthenticatedApiView):
                 .annotate(
                     icon=F("bundle__icon"),
                     is_bundled=GreaterThan(Count("bundle__appvariant"), 1),
+                    bundle_description=F("bundle__description"),
+                    bundle_href=F("bundle__href"),
+                    bundle_is_popular=F("bundle__is_popular"),
+                    bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
-                    bundle_popular=F("bundle__popular"),
+                    bundle_license_type=F("bundle__license_type"),
+                    bundle_related_apps=F("bundle__related_apps"),
+                    bundle_tags=F("bundle__tags"),
                 )
-                .values(
-                    "app_id",
-                    "bundle_id",
-                    "bundle_label",
-                    "bundle_popular",
-                    "icon",
-                    "is_bundled",
-                    "label",
-                    "license_type",
-                    "version",
-                )
+                .values(*values)
             )
+
             html_apps = list(
                 AppVariant.objects.filter(
                     enabled=True,
@@ -216,22 +246,16 @@ class AppsTrayView(AuthenticatedApiView):
                 .annotate(
                     icon=F("bundle__icon"),
                     is_bundled=GreaterThan(Count("bundle__appvariant"), 1),
+                    bundle_description=F("bundle__description"),
+                    bundle_href=F("bundle__href"),
+                    bundle_is_popular=F("bundle__is_popular"),
+                    bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
-                    bundle_popular=F("bundle__popular"),
+                    bundle_license_type=F("bundle__license_type"),
+                    bundle_related_apps=F("bundle__related_apps"),
+                    bundle_tags=F("bundle__tags"),
                 )
-                .values(
-                    "app_id",
-                    "app_type",
-                    "bundle_id",
-                    "bundle_label",
-                    "bundle_popular",
-                    "html",
-                    "icon",
-                    "is_bundled",
-                    "label",
-                    "license_type",
-                    "version",
-                )
+                .values(*values)
             )
 
             valid_tapis_apps = self._get_valid_apps(apps_listing, tapis_apps)
@@ -265,13 +289,20 @@ class AppsTrayView(AuthenticatedApiView):
                     "apps": [
                         {
                             "app_id": "jupyter-lab-hpc",
+                            "app_type": "tapis",
+                            "bundle_description: "Custom Jupyter notebooks.",
+                            "bundle_href": "https://designsafe-ci.org/applications/overview/jupyter,
                             "bundle_id": 1,
                             "bundle_label": "Jupyter",
-                            "bundle_popular": True,
+                            "bundle_license_type": "Open Source",
+                            "bundle_is_popular": True,
+                            "bundle_is_simcenter": False,
+                            "bundle_related_apps": [],
+                            "bundle_tags": [],
+                            "html": "",
                             "icon": "jupyter",
                             "is_bundled": True,
                             "label": Jupyter Lab HPC,
-                            "license_type": "Open Source",
                             "version": "1.0.0",
                             ...
                         },
@@ -294,10 +325,13 @@ class AppsTrayView(AuthenticatedApiView):
             },
         )
 
-        categories = self._get_public_apps(request.user)
-        my_apps = self._get_private_apps(request.user)
+        public_only = request.GET.get("public_only", False)
 
-        categories.insert(0, {"title": "My Apps", "apps": my_apps})
+        categories = self._get_public_apps(request.user, verbose=public_only)
+
+        if not public_only:
+            my_apps = self._get_private_apps(request.user)
+            categories.insert(0, {"title": "My Apps", "apps": my_apps})
 
         # Only return categories that are non-empty
         categories = list(

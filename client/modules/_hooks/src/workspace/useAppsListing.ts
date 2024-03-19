@@ -6,12 +6,10 @@ type PortalApp = {
   app_type: string;
   bundle_id: number;
   bundle_label: string;
-  bundle_popular: boolean;
   html?: string;
   icon?: string;
   is_bundled: boolean;
   label: string;
-  license_type: string;
   version?: string;
 };
 
