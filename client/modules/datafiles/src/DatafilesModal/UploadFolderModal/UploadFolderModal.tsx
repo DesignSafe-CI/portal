@@ -7,7 +7,7 @@ import { TModalChildren } from '../DatafilesModal';
 import styles from './UploadFolderModal.module.css';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-interface CustomUploadFile<T = {}> extends UploadFile<T> {
+interface CustomUploadFile<T = unknown> extends UploadFile<T> {
   webkitRelativePath?: string;
 }
 
