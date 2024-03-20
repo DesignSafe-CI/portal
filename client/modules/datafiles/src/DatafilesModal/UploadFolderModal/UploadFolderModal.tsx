@@ -6,6 +6,9 @@ import { useUploadFolder } from '@client/hooks';
 import { TModalChildren } from '../DatafilesModal';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+interface CustomUploadFile<T = any> extends UploadFile<T> {
+    webkitRelativePath?: string;
+  }
 
 export const UploadFolderModalBody: React.FC<{
   isOpen: boolean;
@@ -17,7 +20,7 @@ export const UploadFolderModalBody: React.FC<{
 }> = ({ isOpen, api, system, scheme, path, handleCancel }) => {
   const { mutate } = useUploadFolder();
 
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<CustomUploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
 
   const handleReset = () => {
@@ -29,10 +32,11 @@ export const UploadFolderModalBody: React.FC<{
     try {
         for (let i = 0; i < fileList.length; i++) {
           const formData = new FormData();
+          console.log(fileList[i]);
           formData.append('uploaded_file', fileList[i] as FileType); 
           formData.append('file_name', fileList[i].name);
-          formData.append('webkit_relative_path', '');
-    
+          formData.append('webkit_relative_path', fileList[i].webkitRelativePath || fileList[i].name);
+
           await mutate({
             api,
             system,
@@ -54,7 +58,7 @@ export const UploadFolderModalBody: React.FC<{
   };
 
   const props: UploadProps = {
-    multiple: true, // Enable multiple file selection
+    directory: true,   //Set directory to true
     onRemove: (file) => {
       const index = fileList.indexOf(file);
       const newFileList = fileList.slice();
@@ -78,7 +82,7 @@ export const UploadFolderModalBody: React.FC<{
       footer={null} // Remove the footer from here
       onCancel={handleCancel}
     >
-      <Upload directory {...props}>
+      <Upload {...props}>
         <div >Uploading to 
             <span className="fa fa-folder"> {path}:</span>
         </div>
