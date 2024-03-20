@@ -76,6 +76,8 @@ export const UploadFolderModalBody: React.FC<{
     fileList,
   };
 
+  const newPath = path.replace(/%2F/g, '/').replace(/^\//, '').replace(/^/, ' ');
+
   return (
     <>
       <Modal
@@ -88,7 +90,7 @@ export const UploadFolderModalBody: React.FC<{
         <Upload {...props}>
           <div>
             Uploading to
-            <span className={`fa fa-folder ${styles.pathText}`}>{path}</span>
+            <span className={`fa fa-folder ${styles.pathText}`}>{newPath}</span>
           </div>
           <div>
             <b>
