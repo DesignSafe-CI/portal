@@ -74,6 +74,7 @@ djangocms-admin-style = "~3.2.6"
 pydantic = "^2.5.0"
 networkx = "^3.2.1"
 tapipy = "^1.6.1"
+pycryptodome = "^3.19.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
