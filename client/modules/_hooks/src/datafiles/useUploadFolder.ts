@@ -13,7 +13,7 @@ function uploadFolderFn(params: TUploadFolderParam) {
   const { api, system, scheme, path, uploaded_folder } = params;
   return apiClient.post(
     `/api/datafiles/${api}/${scheme}/upload/${system}/${path}/`,
-     uploaded_folder 
+    uploaded_folder
   );
 }
 

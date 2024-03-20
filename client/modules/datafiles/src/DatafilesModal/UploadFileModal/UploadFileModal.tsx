@@ -29,25 +29,24 @@ export const UploadFileModalBody: React.FC<{
   const handleUpload = async () => {
     setUploading(true);
     try {
-        for (let i = 0; i < fileList.length; i++) {
-          const formData = new FormData();
-          formData.append('uploaded_file', fileList[i] as FileType); 
-          formData.append('file_name', fileList[i].name);
-          formData.append('webkit_relative_path', '');
-    
-          await mutate({
-            api,
-            system,
-            scheme: 'private', // Optional
-            path,
-            uploaded_file: formData,
-          });
-        }
+      for (let i = 0; i < fileList.length; i++) {
+        const formData = new FormData();
+        formData.append('uploaded_file', fileList[i] as FileType);
+        formData.append('file_name', fileList[i].name);
+        formData.append('webkit_relative_path', '');
 
-    // All files uploaded successfully, close the modal
-    setUploading(false);
-    handleCancel();
+        await mutate({
+          api,
+          system,
+          scheme: 'private', // Optional
+          path,
+          uploaded_file: formData,
+        });
+      }
 
+      // All files uploaded successfully, close the modal
+      setUploading(false);
+      handleCancel();
     } catch (error) {
       console.error('Error during form submission:', error);
       // Handle error if needed
@@ -64,52 +63,65 @@ export const UploadFileModalBody: React.FC<{
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-        // Add the selected file to the existing fileList
-        setFileList(prevFileList => [...prevFileList, file]);
-        return false; // Return false to prevent automatic uploading
-      },
+      // Add the selected file to the existing fileList
+      setFileList((prevFileList) => [...prevFileList, file]);
+      return false; // Return false to prevent automatic uploading
+    },
     fileList,
   };
 
   return (
     <>
-    <Modal
-      title={<h2>Upload Files</h2>}
-      width="60%"
-      open={isOpen}
-      footer={null} // Remove the footer from here
-      onCancel={handleCancel}
-    >
-      <Upload {...props}>
-        <div >Uploading to 
+      <Modal
+        title={<h2>Upload Files</h2>}
+        width="60%"
+        open={isOpen}
+        footer={null} // Remove the footer from here
+        onCancel={handleCancel}
+      >
+        <Upload {...props}>
+          <div>
+            Uploading to
             <span className="fa fa-folder"> {path}:</span>
-        </div>
-        <div><b> Select files (for more than 2GB or 25 files, please use Globus to upload)</b></div>
-        <Button icon={<UploadOutlined />}>Choose Files</Button>
-        <div>{fileList.length} staged for upload</div>
-      </Upload>
-      <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
-        <div>
+          </div>
+          <div>
+            <b>
+              {' '}
+              Select files (for more than 2GB or 25 files, please use Globus to
+              upload)
+            </b>
+          </div>
+          <Button icon={<UploadOutlined />}>Choose Files</Button>
+          <div>{fileList.length} staged for upload</div>
+        </Upload>
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
             <Button
-            type="dashed"
-            onClick={handleReset}
-            disabled={fileList.length === 0}
-            loading={uploading}
-            style={{ marginTop: 16 }}
+              type="dashed"
+              onClick={handleReset}
+              disabled={fileList.length === 0}
+              loading={uploading}
+              style={{ marginTop: 16 }}
             >
-            Reset
+              Reset
             </Button>
-        </div>
-        <Button
+          </div>
+          <Button
             type="primary"
-            onClick = {handleUpload}
+            onClick={handleUpload}
             disabled={fileList.length === 0 || uploading}
             loading={uploading}
             style={{ marginTop: 16 }}
-        >
+          >
             {uploading ? 'Uploading' : 'Start Upload'}
-        </Button>
-      </div>
+          </Button>
+        </div>
       </Modal>
     </>
   );
@@ -118,7 +130,7 @@ export const UploadFileModalBody: React.FC<{
 export const UploadFileModal: React.FC<{
   api: string;
   system: string;
-  scheme?: "private";
+  scheme?: 'private';
   path: string;
   children: TModalChildren;
 }> = ({ api, system, scheme, path, children }) => {

@@ -55,7 +55,11 @@ export const NewFolderModalBody: React.FC<{
       footer={null} // Remove the footer from here
       onCancel={handleCancel}
     >
-      <Form autoComplete="off" layout="vertical" onFinish={handleNewFolderFinish}>
+      <Form
+        autoComplete="off"
+        layout="vertical"
+        onFinish={handleNewFolderFinish}
+      >
         <Form.Item
           label="Folder Name"
           name="newFolder"
@@ -73,7 +77,7 @@ export const NewFolderModalBody: React.FC<{
 
         <div style={{ marginTop: '20px', textAlign: 'right' }}>
           <Button type="primary" htmlType="submit">
-            Create Folder 
+            Create Folder
           </Button>
         </div>
       </Form>

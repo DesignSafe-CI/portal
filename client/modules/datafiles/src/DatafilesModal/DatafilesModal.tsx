@@ -15,8 +15,8 @@ const DatafilesModal = () => <span>Data Files Modal Root</span>;
 DatafilesModal.Preview = PreviewModal;
 DatafilesModal.Copy = CopyModal;
 DatafilesModal.Rename = RenameModal;
-DatafilesModal.NewFolder = NewFolderModal
-DatafilesModal.UploadFile = UploadFileModal
-DatafilesModal.UploadFolder = UploadFolderModal
+DatafilesModal.NewFolder = NewFolderModal;
+DatafilesModal.UploadFile = UploadFileModal;
+DatafilesModal.UploadFolder = UploadFolderModal;
 
 export default DatafilesModal;
