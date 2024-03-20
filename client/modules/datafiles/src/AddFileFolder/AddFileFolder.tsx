@@ -119,10 +119,11 @@ export const AddFileFolder: React.FC = () => {
                   </DatafilesModal.UploadFolder>
                 </li>
                 <li
-                  onClick={() =>
-                    (window.location.href =
-                      'https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/')
-                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href =
+                      'https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/';
+                  }}
                 >
                   <a href="#" className={`${styles.navLink} ${styles.active}`}>
                     <span className="fa-stack fa-lg">
