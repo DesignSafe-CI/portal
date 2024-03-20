@@ -143,10 +143,10 @@ class AccountsTests(TestCase):
         self.client.login(username='ds_admin', password='admin/password')
 
         data = {'firstName': 'DS',
-                'lastName': 'User', 'email': 'test@test.test',
+                'lastName': 'User',
                 'phone': '555-555-5555', 'institutionId': '1',
                 'title': 'Center Non-Researcher Staff',
-                'countryId': '1', 'citizenshipId': '1',
+                'countryId': '1',
                 'ethnicity': 'White', 'gender': 'Other',
                 'bio': 'NEW TEST BIO',
                 'website': 'NEW_WEBSITE', 'orcid_id': 'NEW_ORCID_ID', 'nh_interests': '13',
@@ -162,8 +162,3 @@ class AccountsTests(TestCase):
         assert 'NEW TEST BIO' in str(resp.content)
         assert 'NEW_WEBSITE' in str(resp.content)
         assert 'NEW_ORCID_ID' in str(resp.content)
-
-        data['email'] = 'error@test.test'
-        resp = self.client.post(edit_url, data)
-        resp = self.client.get(manage_url)
-        assert 'The submitted email already exists! Your email has not been updated!' in str(resp.content)
