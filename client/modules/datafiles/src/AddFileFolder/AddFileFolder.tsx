@@ -1,10 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
-import {
-  useAuthenticatedUser,
-  useFileListingRouteParams,
-} from '@client/hooks';
+import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
 
 export const AddFileFolder: React.FC = () => {
   const { api, system, path } = useFileListingRouteParams();
@@ -106,11 +103,16 @@ export const AddFileFolder: React.FC = () => {
                     )}
                   </DatafilesModal.UploadFolder>
                 </li>
-                <li onClick={() => window.location.href = "https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/"}>
-                    <span className="fa-stack fa-lg">
-                        <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
-                    </span>
-                    <span>Bulk Data Transfer</span>
+                <li
+                  onClick={() =>
+                    (window.location.href =
+                      'https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/')
+                  }
+                >
+                  <span className="fa-stack fa-lg">
+                    <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
+                  </span>
+                  <span>Bulk Data Transfer</span>
                 </li>
               </ul>
             </div>
