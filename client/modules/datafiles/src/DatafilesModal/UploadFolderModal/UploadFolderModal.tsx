@@ -76,7 +76,10 @@ export const UploadFolderModalBody: React.FC<{
     fileList,
   };
 
-  const newPath = path.replace(/%2F/g, '/').replace(/^\//, '').replace(/^/, ' ');
+  const newPath = path
+    .replace(/%2F/g, '/')
+    .replace(/^\//, '')
+    .replace(/^/, ' ');
 
   return (
     <>
