@@ -194,7 +194,6 @@ class AppVariant(models.Model):
         return f"{self.bundle.label} {self.app_id} {self.version}  ({'ENABLED' if self.enabled else 'DISABLED'})"
 
     class Meta:
-
         constraints = [
             models.UniqueConstraint(
                 fields=["app_id", "version", "bundle"],
