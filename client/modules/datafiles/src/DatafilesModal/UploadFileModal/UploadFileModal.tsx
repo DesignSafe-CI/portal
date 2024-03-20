@@ -4,6 +4,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { useUploadFile } from '@client/hooks';
 import { TModalChildren } from '../DatafilesModal';
+import styles from './UploadFileModal.module.css';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -82,7 +83,7 @@ export const UploadFileModalBody: React.FC<{
         <Upload {...props}>
           <div>
             Uploading to
-            <span className="fa fa-folder"> {path}:</span>
+            <span className={`fa fa-folder ${styles.pathText}`}>{path}</span>
           </div>
           <div>
             <b>

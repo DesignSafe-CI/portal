@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from 'antd';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
+import styles from './AddFileFolder.module.css';
 
 export const AddFileFolder: React.FC = () => {
   const { api, system, path } = useFileListingRouteParams();
@@ -32,7 +33,11 @@ export const AddFileFolder: React.FC = () => {
                     path={path}
                   >
                     {({ onClick }) => (
-                      <>
+                      <a
+                        href="#"
+                        className={`${styles.navLink} ${styles.active}`}
+                        onClick={(e) => e.preventDefault()}
+                      >
                         <span className="fa-stack fa-lg" onClick={onClick}>
                           <i
                             className="fa fa-folder fa-stack-2x"
@@ -44,15 +49,17 @@ export const AddFileFolder: React.FC = () => {
                           ></i>
                         </span>
                         <span onClick={onClick}>New Folder</span>
-                      </>
+                      </a>
                     )}
                   </DatafilesModal.NewFolder>
                 </li>
                 <li>
-                  <span className="fa-stack fa-lg">
-                    <i className="fa fa-briefcase fa-2x" role="none"></i>
-                  </span>
-                  <span>New Project</span>
+                  <a href="#" className={`${styles.navLink} ${styles.active}`}>
+                    <span className="fa-stack fa-lg">
+                      <i className="fa fa-briefcase fa-2x" role="none"></i>
+                    </span>
+                    <span>New Project</span>
+                  </a>
                 </li>
                 <li role="separator" className="divider"></li>
                 <li>
@@ -62,7 +69,11 @@ export const AddFileFolder: React.FC = () => {
                     path={path}
                   >
                     {({ onClick }) => (
-                      <>
+                      <a
+                        href="#"
+                        className={`${styles.navLink} ${styles.active}`}
+                        onClick={(e) => e.preventDefault()}
+                      >
                         <span className="fa-stack fa-lg" onClick={onClick}>
                           <i
                             className="fa fa-file-o fa-stack-2x"
@@ -74,7 +85,7 @@ export const AddFileFolder: React.FC = () => {
                           ></i>
                         </span>
                         <span onClick={onClick}>File upload: max 2GB</span>
-                      </>
+                      </a>
                     )}
                   </DatafilesModal.UploadFile>
                 </li>
@@ -85,7 +96,11 @@ export const AddFileFolder: React.FC = () => {
                     path={path}
                   >
                     {({ onClick }) => (
-                      <>
+                      <a
+                        href="#"
+                        className={`${styles.navLink} ${styles.active}`}
+                        onClick={(e) => e.preventDefault()}
+                      >
                         <span className="fa-stack fa-lg" onClick={onClick}>
                           <i
                             className="fa fa-folder-o fa-stack-2x"
@@ -99,7 +114,7 @@ export const AddFileFolder: React.FC = () => {
                         <span onClick={onClick}>
                           Folder upload: max 25 files
                         </span>
-                      </>
+                      </a>
                     )}
                   </DatafilesModal.UploadFolder>
                 </li>
@@ -109,10 +124,12 @@ export const AddFileFolder: React.FC = () => {
                       'https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/')
                   }
                 >
-                  <span className="fa-stack fa-lg">
-                    <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
-                  </span>
-                  <span>Bulk Data Transfer</span>
+                  <a href="#" className={`${styles.navLink} ${styles.active}`}>
+                    <span className="fa-stack fa-lg">
+                      <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
+                    </span>
+                    <span>Bulk Data Transfer</span>
+                  </a>
                 </li>
               </ul>
             </div>
