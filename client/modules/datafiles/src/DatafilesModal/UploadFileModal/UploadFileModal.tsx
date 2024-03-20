@@ -19,7 +19,7 @@ export const UploadFileModalBody: React.FC<{
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [_currentIndex, setCurrentIndex] = useState(0);
+  const [, setCurrentIndex] = useState(0);
 
   const handleReset = () => {
     setFileList([]);
