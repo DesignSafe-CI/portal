@@ -69,10 +69,9 @@ services:
       - ../nginx/certificates/designsafe.dev.crt:/etc/ssl/designsafe.dev.crt
       - ../nginx/certificates/designsafe.dev.key:/etc/ssl/designsafe.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
-      - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/srv/www/designsafe/static
-      - ../../data/media:/srv/www/designsafe/media
+      - ../../static:/var/www/designsafe/static
+      - ../../media:/var/www/designsafe/media
     links:
       - django:django
     ports:
@@ -92,8 +91,6 @@ services:
     volumes:
       - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/srv/www/designsafe/media
     ports:
       - 127.0.0.1:5678:5678
     dns:
@@ -108,6 +105,7 @@ services:
     env_file: ../env_files/designsafe.env
     volumes:
       - ../../.:/srv/www/designsafe
+      - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     container_name: des_websockets
     command: python manage.py runserver 0.0.0.0:9000
 
@@ -122,8 +120,6 @@ services:
     volumes:
       - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/srv/www/designsafe/static
-      - ../../data/media:/srv/www/designsafe/media
     dns:
       - 8.8.8.8
       - 8.8.4.4
