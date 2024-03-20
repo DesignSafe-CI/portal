@@ -1,29 +1,13 @@
 import React from 'react';
 import { Button } from 'antd';
-import { NavLink } from 'react-router-dom';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import {
   useAuthenticatedUser,
   useFileListingRouteParams,
-  useSelectedFiles,
 } from '@client/hooks';
 
-const DataFilesNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
-  to,
-  children,
-}) => {
-  return (
-    <li>
-      <NavLink to={to}>
-        <div>{children}</div>
-      </NavLink>
-    </li>
-  );
-};
-
 export const AddFileFolder: React.FC = () => {
-  const { api, system, scheme, path } = useFileListingRouteParams();
-  const { selectedFiles } = useSelectedFiles(api, system, path);
+  const { api, system, path } = useFileListingRouteParams();
   const { user } = useAuthenticatedUser();
   return (
     <ul
@@ -122,12 +106,11 @@ export const AddFileFolder: React.FC = () => {
                     )}
                   </DatafilesModal.UploadFolder>
                 </li>
-                <li>
-                  <a href="https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/"></a>
-                  <span className="fa-stack fa-lg">
-                    <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
-                  </span>
-                  <span>Bulk Data Transfer</span>
+                <li onClick={() => window.location.href = "https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/"}>
+                    <span className="fa-stack fa-lg">
+                        <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
+                    </span>
+                    <span>Bulk Data Transfer</span>
                 </li>
               </ul>
             </div>

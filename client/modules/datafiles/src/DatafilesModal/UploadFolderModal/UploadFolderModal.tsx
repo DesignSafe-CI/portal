@@ -6,7 +6,7 @@ import { useUploadFolder } from '@client/hooks';
 import { TModalChildren } from '../DatafilesModal';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-interface CustomUploadFile<T = any> extends UploadFile<T> {
+interface CustomUploadFile<T = {}> extends UploadFile<T> {
   webkitRelativePath?: string;
 }
 
