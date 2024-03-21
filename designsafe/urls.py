@@ -156,7 +156,7 @@ urlpatterns = [
     url(r'^help/', include(('designsafe.apps.djangoRT.urls', 'designsafe.apps.djangoRT'), namespace='djangoRT')),
 
     # webhooks
-    url(r'^webhooks/', include('designsafe.webhooks')),
+    path('webhooks/', include('designsafe.apps.webhooks.urls', namespace='webhooks')),
 
     # version check
     url(r'^version/', des_version),
