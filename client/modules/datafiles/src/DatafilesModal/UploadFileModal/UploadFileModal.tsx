@@ -77,59 +77,57 @@ export const UploadFileModalBody: React.FC<{
     .replace(/^/, ' ');
 
   return (
-    <>
-      <Modal
-        title={<h2>Upload Files</h2>}
-        width="60%"
-        open={isOpen}
-        footer={null} // Remove the footer from here
-        onCancel={handleCancel}
+    <Modal
+      title={<h2>Upload Files</h2>}
+      width="60%"
+      open={isOpen}
+      footer={null} // Remove the footer from here
+      onCancel={handleCancel}
+    >
+      <Upload {...props}>
+        <div>
+          Uploading to
+          <span className={`fa fa-folder ${styles.pathText}`}>{newPath}</span>
+        </div>
+        <div>
+          <b>
+            {' '}
+            Select files (for more than 2GB or 25 files, please use Globus to
+            upload)
+          </b>
+        </div>
+        <Button icon={<UploadOutlined />}>Choose Files</Button>
+        <div>{fileList.length} staged for upload</div>
+      </Upload>
+      <div
+        style={{
+          marginTop: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
       >
-        <Upload {...props}>
-          <div>
-            Uploading to
-            <span className={`fa fa-folder ${styles.pathText}`}>{newPath}</span>
-          </div>
-          <div>
-            <b>
-              {' '}
-              Select files (for more than 2GB or 25 files, please use Globus to
-              upload)
-            </b>
-          </div>
-          <Button icon={<UploadOutlined />}>Choose Files</Button>
-          <div>{fileList.length} staged for upload</div>
-        </Upload>
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div>
-            <Button
-              type="dashed"
-              onClick={handleReset}
-              disabled={fileList.length === 0}
-              loading={uploading}
-              style={{ marginTop: 16 }}
-            >
-              Reset
-            </Button>
-          </div>
+        <div>
           <Button
-            type="primary"
-            onClick={handleUpload}
-            disabled={fileList.length === 0 || uploading}
+            type="dashed"
+            onClick={handleReset}
+            disabled={fileList.length === 0}
             loading={uploading}
             style={{ marginTop: 16 }}
           >
-            {uploading ? 'Uploading' : 'Start Upload'}
+            Reset
           </Button>
         </div>
-      </Modal>
-    </>
+        <Button
+          type="primary"
+          onClick={handleUpload}
+          disabled={fileList.length === 0 || uploading}
+          loading={uploading}
+          style={{ marginTop: 16 }}
+        >
+          {uploading ? 'Uploading' : 'Start Upload'}
+        </Button>
+      </div>
+    </Modal>
   );
 };
 

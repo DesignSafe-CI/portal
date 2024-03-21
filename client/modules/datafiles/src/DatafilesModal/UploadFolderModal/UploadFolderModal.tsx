@@ -82,53 +82,51 @@ export const UploadFolderModalBody: React.FC<{
     .replace(/^/, ' ');
 
   return (
-    <>
-      <Modal
-        title={<h2>Upload Folder</h2>}
-        width="60%"
-        open={isOpen}
-        footer={null} // Remove the footer from here
-        onCancel={handleCancel}
-      >
-        <Upload {...props}>
-          <div>
-            Uploading to
-            <span className={`fa fa-folder ${styles.pathText}`}>{newPath}</span>
-          </div>
-          <div>
-            <b>
-              {' '}
-              Select folder (for more than 2GB or 25 files, please use Globus to
-              upload)
-            </b>
-          </div>
-          <Button icon={<UploadOutlined />}>Choose Folder</Button>
-          <div>{fileList.length} staged for upload</div>
-        </Upload>
-        <div className={styles.customDiv}>
-          <div>
-            <Button
-              type="dashed"
-              onClick={handleReset}
-              disabled={fileList.length === 0}
-              loading={uploading}
-              className={styles.marginTop16}
-            >
-              Reset
-            </Button>
-          </div>
+    <Modal
+      title={<h2>Upload Folder</h2>}
+      width="60%"
+      open={isOpen}
+      footer={null} // Remove the footer from here
+      onCancel={handleCancel}
+    >
+      <Upload {...props}>
+        <div>
+          Uploading to
+          <span className={`fa fa-folder ${styles.pathText}`}>{newPath}</span>
+        </div>
+        <div>
+          <b>
+            {' '}
+            Select folder (for more than 2GB or 25 files, please use Globus to
+            upload)
+          </b>
+        </div>
+        <Button icon={<UploadOutlined />}>Choose Folder</Button>
+        <div>{fileList.length} staged for upload</div>
+      </Upload>
+      <div className={styles.customDiv}>
+        <div>
           <Button
-            type="primary"
-            onClick={handleUpload}
-            disabled={fileList.length === 0 || uploading}
+            type="dashed"
+            onClick={handleReset}
+            disabled={fileList.length === 0}
             loading={uploading}
             className={styles.marginTop16}
           >
-            {uploading ? 'Uploading' : 'Start Upload'}
+            Reset
           </Button>
         </div>
-      </Modal>
-    </>
+        <Button
+          type="primary"
+          onClick={handleUpload}
+          disabled={fileList.length === 0 || uploading}
+          loading={uploading}
+          className={styles.marginTop16}
+        >
+          {uploading ? 'Uploading' : 'Start Upload'}
+        </Button>
+      </div>
+    </Modal>
   );
 };
 
