@@ -16,6 +16,10 @@ export {
 export { useFileCopy } from './useFileCopy';
 export { useTrash } from './useTrash';
 export { useRename } from './useRename';
+export { useNewFolder } from './useNewFolder';
+export { useUploadFile } from './useUploadFile';
+export { useUploadFolder } from './useUploadFolder';
+
 export {
   usePathDisplayName,
   getSystemRootDisplayName,
