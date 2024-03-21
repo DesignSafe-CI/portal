@@ -5,3 +5,9 @@
   background-color: #f9f2f4;
   border-radius: 0px;
 }
+
+.customDiv {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }

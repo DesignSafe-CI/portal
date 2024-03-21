@@ -2,6 +2,7 @@ import { Button, Modal, Form, Input } from 'antd';
 import { useNewFolder } from '@client/hooks';
 import React, { useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
+import styles from './NewFolderModal.module.css';
 
 export const NewFolderModalBody: React.FC<{
   isOpen: boolean;
@@ -75,7 +76,7 @@ export const NewFolderModalBody: React.FC<{
           />
         </Form.Item>
 
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
+        <div className={styles.customDiv}>
           <Button type="primary" htmlType="submit">
             Create Folder
           </Button>

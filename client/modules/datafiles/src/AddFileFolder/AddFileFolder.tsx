@@ -8,16 +8,10 @@ export const AddFileFolder: React.FC = () => {
   const { api, system, path } = useFileListingRouteParams();
   const { user } = useAuthenticatedUser();
   return (
-    <ul
-      style={{
-        border: '1px solid #e3e3e3',
-        listStyleType: 'none',
-        paddingLeft: '0px',
-      }}
-    >
+    <ul className={styles.customUl}>
       {user && (
         <>
-          <div style={{ margin: '0 10px 20px' }}>
+          <div className={styles.customDiv}>
             <div className="btn-group btn-block">
               <Button
                 className="btn btn-block btn-primary dropdown-toggle"

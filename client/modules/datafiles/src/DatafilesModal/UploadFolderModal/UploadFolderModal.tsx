@@ -105,20 +105,14 @@ export const UploadFolderModalBody: React.FC<{
           <Button icon={<UploadOutlined />}>Choose Folder</Button>
           <div>{fileList.length} staged for upload</div>
         </Upload>
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}
-        >
+        <div className={styles.customDiv}>
           <div>
             <Button
               type="dashed"
               onClick={handleReset}
               disabled={fileList.length === 0}
               loading={uploading}
-              style={{ marginTop: 16 }}
+              className={styles.marginTop16}
             >
               Reset
             </Button>
@@ -128,7 +122,7 @@ export const UploadFolderModalBody: React.FC<{
             onClick={handleUpload}
             disabled={fileList.length === 0 || uploading}
             loading={uploading}
-            style={{ marginTop: 16 }}
+            className={styles.marginTop16}
           >
             {uploading ? 'Uploading' : 'Start Upload'}
           </Button>
