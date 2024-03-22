@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import signals
 from django.urls import reverse
 from tapipy.tapis import TapisResult
-from designsafe.apps.notifications.models import Notification
+from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.notifications.receivers import send_notification_ws
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.webhooks.views import validate_tapis_job
@@ -26,7 +26,7 @@ class TestValidateTapisJob(TestCase):
         mock_user_model = MagicMock()
         mock_user_model.objects.get.return_value = mock_user
         self.user_model_patcher = patch(
-            "portal.apps.webhooks.views.get_user_model", return_value=mock_user_model
+            "designsafe.apps.webhooks.views.get_user_model", return_value=mock_user_model
         )
         self.user_model = self.user_model_patcher.start()
 
@@ -35,7 +35,7 @@ class TestValidateTapisJob(TestCase):
         pass
 
     def test_valid_job(self):
-        job = validate_tapis_job("id", "username")
+        job = validate_tapis_job("id", "ds_user")
         self.assertEqual(job, self.tapis_event)
 
     def test_valid_job_invalid_user(self):
@@ -44,7 +44,7 @@ class TestValidateTapisJob(TestCase):
 
     def test_invalid_state(self):
         self.assertEqual(
-            validate_tapis_job("id", "username", disallowed_states=["STAGING_INPUTS"]),
+            validate_tapis_job("id", "ds_user", disallowed_states=["STAGING_INPUTS"]),
             None,
         )
 
@@ -61,7 +61,7 @@ class TestJobsWebhookView(TransactionTestCase):
         mock_user_model = MagicMock()
         mock_user_model.objects.get.return_value = mock_user
         self.user_model_patcher = patch(
-            "portal.apps.webhooks.views.get_user_model", return_value=mock_user_model
+            "designsafe.apps.webhooks.views.get_user_model", return_value=mock_user_model
         )
         self.user_model = self.user_model_patcher.start()
 
@@ -72,7 +72,7 @@ class TestJobsWebhookView(TransactionTestCase):
         self.user_model_patcher.stop()
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["STAGING_INPUTS"])
-    @patch("portal.apps.webhooks.views.validate_tapis_job")
+    @patch("designsafe.apps.webhooks.views.validate_tapis_job")
     def test_webhook_job_post(self, mock_validate_tapis_job):
         job_notification_event = json.load(
             open(os.path.join(os.path.dirname(__file__), "fixtures/job_event.json"))
@@ -94,7 +94,7 @@ class TestJobsWebhookView(TransactionTestCase):
         self.assertEqual(n_status, job_data["newJobStatus"])
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["RUNNING"])
-    @patch("portal.apps.webhooks.views.validate_tapis_job")
+    @patch("designsafe.apps.webhooks.views.validate_tapis_job")
     def test_webhook_job_post_invalid_state(self, mock_validate_tapis_job):
         job_event = json.load(
             open(os.path.join(os.path.dirname(__file__), "fixtures/job_event.json"))
@@ -114,11 +114,11 @@ class TestInteractiveWebhookView(TestCase):
 
     def setUp(self):
         self.mock_tapis_patcher = patch(
-            "portal.apps.auth.models.TapisOAuthToken.client", autospec=True
+            "designsafe.apps.auth.models.TapisOAuthToken.client", autospec=True
         )
         self.mock_tapis_client = self.mock_tapis_patcher.start()
 
-        self.client.force_login(get_user_model().objects.get(username="username"))
+        self.client.force_login(get_user_model().objects.get(username="ds_user"))
 
         signals.post_save.disconnect(
             sender=Notification, dispatch_uid="notification_msg"
@@ -128,7 +128,7 @@ class TestInteractiveWebhookView(TestCase):
             "event_type": "interactive_session_ready",
             "address": "https://frontera.tacc.utexas.edu:1234",
             "job_uuid": "e8a57f35-b4a7-4e17-9aea-a6e55564db4d-007",
-            "owner": "username",
+            "owner": "ds_user",
         }
 
     def tearDown(self):

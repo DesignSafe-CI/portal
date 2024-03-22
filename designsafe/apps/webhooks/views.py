@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from requests import HTTPError
 from tapipy.errors import BaseTapyException
 
-from designsafe.apps.notifications.models import Notification
+from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.tasks import agave_indexer
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.exceptions import ApiException
