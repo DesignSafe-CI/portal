@@ -5,6 +5,6 @@ describe('Workspace', () => {
   it('should render successfully', async () => {
     const { baseElement, findByText } = render(<Workspace />);
     expect(baseElement).toBeTruthy();
-    expect(await findByText(/FigureGen/)).toBeTruthy();
+    expect(await findByText(/openfoam/)).toBeTruthy();
   });
 });
