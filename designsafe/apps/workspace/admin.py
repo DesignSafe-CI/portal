@@ -9,10 +9,12 @@ from designsafe.apps.workspace.models.app_entries import (
     AppListingEntry,
     AppVariant,
     AppTrayCategory,
+    AppTag
 )
 
 admin.site.register(AppDescription)
 admin.site.register(AppTrayCategory)
+admin.site.register(AppTag)
 
 
 class AppVariantInline(admin.StackedInline):
@@ -31,7 +33,6 @@ class AppVariantInline(admin.StackedInline):
                         "app_type",
                         "app_id",
                         "version",
-                        "license_type",
                     )
                 },
             ),
@@ -84,8 +85,11 @@ class AppTrayEntryAdmin(admin.ModelAdmin):
                 {
                     "fields": [
                         "href",
-                        "popular",
-                        "not_bundled",
+                        "description",
+                        "tags",
+                        "is_popular",
+                        "is_simcenter",
+                        "license_type",
                         "related_apps",
                     ],
                 },
