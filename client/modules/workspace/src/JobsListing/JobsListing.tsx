@@ -4,10 +4,10 @@ import {
   JobsListingTable,
   TJobsListingColumns,
 } from './JobsListingTable/JobsListingTable';
-import { getStatusText } from '@client/workspace';
-import { JobsDetailModal } from '@client/workspace';
+import { getStatusText } from '../utils';
+import { JobsDetailModal } from '../JobsDetailModal/JobsDetailModal';
 
-export const JobsListing: React.FC<{} & Omit<TableProps, 'columns'>> = ({
+export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   ...tableProps
 }) => {
   const [jobDetailModalState, setJobDetailModalState] = useState<{

@@ -5,4 +5,3 @@ export type TModalChildren = (props: {
 }) => React.ReactElement;
 
 export const JobsDetailModal = () => <span>Jobs Modal Root</span>;
-
