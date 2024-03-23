@@ -6,6 +6,7 @@ import logging
 from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from tapipy.errors import BaseTapyException
 from designsafe.apps.auth.models import TapisOAuthToken
@@ -40,6 +41,7 @@ class TapisTokenRefreshMiddleware:
                 extra={"user": request.user.username},
             )
             logout(request)
+            return HttpResponseRedirect(reverse("designsafe_auth:login"))
 
         if not tapis_oauth.expired:
             return
@@ -64,6 +66,7 @@ class TapisTokenRefreshMiddleware:
                         extra={"user": request.user.username},
                     )
                     logout(request)
+                    return HttpResponseRedirect(reverse("designsafe_auth:login"))
 
             else:
                 logger.info(

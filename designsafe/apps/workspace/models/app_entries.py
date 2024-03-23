@@ -29,6 +29,17 @@ APP_ICONS = [
 LICENSE_TYPES = [("OS", "Open Source"), ("LS", "Licensed")]
 
 
+class AppTag(models.Model):
+    """Tags are strings associated with an App Listing Entry item."""
+
+    name = models.CharField(
+        help_text="A tag associated with an app.", max_length=64, unique=True
+    )
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class AppTrayCategory(models.Model):
     """Categories in which AppTrayEntry items are organized."""
 
@@ -71,6 +82,7 @@ class AppListingEntry(models.Model):
     label = models.CharField(
         help_text="The display name of this bundle in the Apps Tray. Not used if this entry is a single app ID.",
         max_length=64,
+        blank=True,
     )
     icon = models.CharField(
         help_text="The icon associated with this app.",
@@ -83,22 +95,29 @@ class AppListingEntry(models.Model):
     )
 
     # CMS Display Options
+    href = models.CharField(
+        help_text="Link to overview page for this app.", max_length=128, blank=True
+    )
+    description = models.TextField(
+        help_text="App bundle description text for tools & apps overview.", blank=True
+    )
+    tags = models.ManyToManyField(
+        AppTag, help_text="App bundle tags for tools & apps overview.", blank=True
+    )
+    is_popular = models.BooleanField(
+        help_text="Mark as popular on tools & apps overview.", default=False
+    )
+    is_simcenter = models.BooleanField(
+        help_text="Mark as 'True' if the app is built by the SimCenter team.",
+        default=False,
+    )
+    license_type = models.CharField(
+        max_length=2, choices=LICENSE_TYPES, help_text="License Type.", default="OS"
+    )
     related_apps = models.ManyToManyField(
         "self",
         help_text="Related apps that will display on app overview page.",
         blank=True,
-    )
-    popular = models.BooleanField(
-        help_text="Mark as popular on tools & apps overview.", default=False
-    )
-
-    not_bundled = models.BooleanField(
-        help_text="Select if this entry represents a single app ID and not a bundle.",
-        default=False,
-    )
-
-    href = models.CharField(
-        help_text="Link to overview page for this app.", max_length=128, blank=True
     )
 
     def __str__(self):
@@ -110,6 +129,13 @@ class AppListingEntry(models.Model):
 
     class Meta:
         verbose_name_plural = "App Listing Entries"
+
+        constraints = [
+            models.CheckConstraint(
+                check=~(models.Q(is_popular=True) & models.Q(is_simcenter=True)),
+                name="not_both_popular_and_simcenter",
+            )
+        ]
 
 
 class AppVariant(models.Model):
@@ -138,10 +164,6 @@ class AppVariant(models.Model):
         blank=True,
     )
 
-    license_type = models.CharField(
-        max_length=2, choices=LICENSE_TYPES, help_text="License Type.", default="OS"
-    )
-
     bundle = models.ForeignKey(
         AppListingEntry,
         help_text="Bundle that the app belongs to.",
@@ -153,7 +175,6 @@ class AppVariant(models.Model):
     # HTML Apps
     html = models.TextField(
         help_text="HTML definition to display when app is loaded.",
-        default="",
         blank=True,
     )
 
@@ -171,3 +192,11 @@ class AppVariant(models.Model):
 
     def __str__(self):
         return f"{self.bundle.label} {self.app_id} {self.version}  ({'ENABLED' if self.enabled else 'DISABLED'})"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["app_id", "version", "bundle"],
+                name="unique_apps_per_bundle",
+            )
+        ]

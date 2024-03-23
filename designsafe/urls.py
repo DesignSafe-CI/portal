@@ -90,6 +90,7 @@ urlpatterns = [
         url(r'^data/', include(('designsafe.apps.data.urls', 'designsafe.apps.data'), namespace='designsafe_data')),
         url(r'^rw/workspace/', include(('designsafe.apps.workspace.urls', 'designsafe.apps.workspace'),
             namespace='designsafe_workspace')),
+        path('api/workspace/', include('designsafe.apps.workspace.api.urls', namespace='workspace_api')),
         url(r'^notifications/', include(('designsafe.apps.notifications.urls', 'designsafe.apps.notifications'),
             namespace='designsafe_notifications')),
         url(r'^search/', include(('designsafe.apps.search.urls', 'designsafe.apps.search'),
